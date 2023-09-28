@@ -1,6 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.TreeCategories;
 
 namespace PictureManager.Domain.Database;
 
@@ -8,10 +7,10 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|Name|ToponymName|FCode|Parent
 /// </summary>
 public class GeoNamesDataAdapter : TreeDataAdapter<GeoNameM> {
-  private readonly GeoNamesTreeCategory _model;
+  public GeoNamesM Model { get; }
 
-  public GeoNamesDataAdapter(GeoNamesTreeCategory model) : base("GeoNames", 5) {
-    _model = model;
+  public GeoNamesDataAdapter() : base("GeoNames", 5) {
+    Model = new(this);
   }
 
   public override GeoNameM FromCsv(string[] csv) =>
@@ -26,13 +25,13 @@ public class GeoNamesDataAdapter : TreeDataAdapter<GeoNameM> {
       (geoName.Parent as GeoNameM)?.GetHashCode().ToString());
 
   public override void LinkReferences() {
-    _model.Items.Clear();
+    Model.TreeCategory.Items.Clear();
 
     foreach (var (geoName, csv) in AllCsv) {
       // reference to parent and back reference to children
       geoName.Parent = !string.IsNullOrEmpty(csv[4])
         ? AllDict[int.Parse(csv[4])]
-        : _model;
+        : Model.TreeCategory;
       geoName.Parent.Items.Add(geoName);
     }
   }

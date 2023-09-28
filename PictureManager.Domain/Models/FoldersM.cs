@@ -2,6 +2,7 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.TreeCategories;
 using System;
@@ -17,8 +18,8 @@ public sealed class FoldersM {
   public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
   public FoldersTreeCategory TreeCategory { get; }
 
-  public FoldersM() {
-    TreeCategory = new();
+  public FoldersM(FoldersDataAdapter da) {
+    TreeCategory = new(da);
   }
 
   public static string GetDriveIcon(DriveType type) =>

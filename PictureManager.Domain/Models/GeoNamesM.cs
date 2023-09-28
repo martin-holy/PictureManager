@@ -1,6 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 using System;
 using System.Globalization;
@@ -10,10 +11,11 @@ using System.Xml;
 namespace PictureManager.Domain.Models;
 
 public sealed class GeoNamesM {
-  public GeoNamesTreeCategory TreeCategory { get; } = new();
+  public GeoNamesTreeCategory TreeCategory { get; }
   public RelayCommand<object> NewGeoNameFromGpsCommand { get; }
 
-  public GeoNamesM() {
+  public GeoNamesM(GeoNamesDataAdapter da) {
+    TreeCategory = new(da);
     NewGeoNameFromGpsCommand = new(() => NewGeoNameFromGps(Core.Settings.GeoNamesUserName));
   }
 

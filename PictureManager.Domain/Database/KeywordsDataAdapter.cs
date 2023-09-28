@@ -1,7 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,19 +11,22 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|Name|Parent
 /// </summary>
 public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
-  private readonly KeywordsTreeCategory _model;
+  private readonly Db _db;
 
-  public KeywordsDataAdapter(KeywordsTreeCategory model) : base("Keywords", 3) {
-    _model = model;
-    Core.Db.ReadyEvent += OnDbReady;
+  public KeywordsM Model { get; }
+
+  public KeywordsDataAdapter(Db db) : base("Keywords", 3) {
+    _db = db;
+    _db.ReadyEvent += OnDbReady;
+    Model = new(this);
   }
 
   private void OnDbReady(object sender, EventArgs args) {
     // move all group items to root
-    Core.Db.CategoryGroups.ItemDeletedEvent += (_, e) => {
+    _db.CategoryGroups.ItemDeletedEvent += (_, e) => {
       if (e.Data.Category != Category.Keywords) return;
       foreach (var item in e.Data.Items.ToArray())
-        ItemMove(item, _model, false);
+        ItemMove(item, Model.TreeCategory, false);
     };
   }
 
@@ -38,7 +40,7 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
   }
 
   public override void Save() =>
-    SaveToFile(GetAll<KeywordM>(_model));
+    SaveToFile(GetAll<KeywordM>(Model.TreeCategory));
 
   public override KeywordM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1], null);
@@ -50,7 +52,7 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
       (keyword.Parent as KeywordM)?.GetHashCode().ToString());
 
   public override void LinkReferences() {
-    Core.Db.CategoryGroups.LinkGroups(_model, AllDict);
+    _db.CategoryGroups.LinkGroups(Model.TreeCategory, AllDict);
 
     // link hierarchical keywords
     foreach (var (keyword, csv) in AllCsv) {
@@ -63,12 +65,12 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
 
     // add loose keywords
     foreach (var keywordM in AllDict.Values.Where(x => x.Parent == null)) {
-      keywordM.Parent = _model;
-      _model.Items.Add(keywordM);
+      keywordM.Parent = Model.TreeCategory;
+      Model.TreeCategory.Items.Add(keywordM);
     }
 
     // group for keywords automatically added from MediaItems metadata
-    _model.AutoAddedGroup = _model.Items
+    Model.TreeCategory.AutoAddedGroup = Model.TreeCategory.Items
       .OfType<CategoryGroupM>()
       .SingleOrDefault(x => x.Name.Equals("Auto Added"));
   }

@@ -14,20 +14,22 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
 /// </summary>
 public class VideoClipsDataAdapter : TreeDataAdapter<VideoClipM> {
-  private readonly VideoClipsM _model;
+  private readonly Db _db;
 
+  public VideoClipsM Model { get; }
   public Dictionary<MediaItemM, ExtObservableCollection<ITreeItem>> MediaItemVideoClips { get; } = new();
 
-  public VideoClipsDataAdapter(VideoClipsM model) : base("VideoClips", 11) {
-    _model = model;
-    Core.Db.ReadyEvent += OnDbReady;
+  public VideoClipsDataAdapter(Db db) : base("VideoClips", 11) {
+    _db = db;
+    _db.ReadyEvent += OnDbReady;
+    Model = new(this);
   }
 
   private void OnDbReady(object sender, EventArgs args) {
     // move all group items to root
-    Core.Db.VideoClipsGroups.ItemDeletedEvent += (_, e) => {
+    _db.VideoClipsGroups.ItemDeletedEvent += (_, e) => {
       foreach (var item in e.Data.Items.ToArray())
-        ItemMove(item, _model.TreeCategory, false);
+        ItemMove(item, Model.TreeCategory, false);
     };
   }
 
@@ -84,12 +86,12 @@ public class VideoClipsDataAdapter : TreeDataAdapter<VideoClipM> {
   public override void LinkReferences() {
     foreach (var (vc, csv) in AllCsv) {
       // reference to MediaItem
-      vc.MediaItem = Core.Db.MediaItems.AllDict[int.Parse(csv[1])];
+      vc.MediaItem = _db.MediaItems.AllDict[int.Parse(csv[1])];
       vc.MediaItem.HasVideoClips = true;
 
       // set parent for clips not in an group
       if (vc.Parent == null) {
-        vc.Parent = _model.TreeCategory;
+        vc.Parent = Model.TreeCategory;
 
         if (!MediaItemVideoClips.ContainsKey(vc.MediaItem))
           MediaItemVideoClips.Add(vc.MediaItem, new());
@@ -97,17 +99,17 @@ public class VideoClipsDataAdapter : TreeDataAdapter<VideoClipM> {
       }
 
       // reference to People
-      vc.People = LinkList(csv[9], Core.Db.People.AllDict);
+      vc.People = LinkList(csv[9], _db.People.AllDict);
 
       // reference to Keywords
-      vc.Keywords = LinkList(csv[10], Core.Db.Keywords.AllDict);
+      vc.Keywords = LinkList(csv[10], _db.Keywords.AllDict);
     }
   }
 
   public override VideoClipM ItemCreate(ITreeItem parent, string name) {
-    MediaItemVideoClips.TryAdd(_model.CurrentMediaItem, _model.TreeCategory.Items);
+    MediaItemVideoClips.TryAdd(Model.CurrentMediaItem, Model.TreeCategory.Items);
 
-    return TreeItemCreate(new(GetNextId(), _model.CurrentMediaItem) {
+    return TreeItemCreate(new(GetNextId(), Model.CurrentMediaItem) {
       Parent = parent,
       Name = name,
       IsSelected = true
@@ -122,7 +124,7 @@ public class VideoClipsDataAdapter : TreeDataAdapter<VideoClipM> {
 
   protected override void OnItemDeleted(VideoClipM item) {
     File.Delete(item.ThumbPath);
-    item.MediaItem.HasVideoClips = _model.TreeCategory.Items.Count != 0;
+    item.MediaItem.HasVideoClips = Model.TreeCategory.Items.Count != 0;
     item.MediaItem = null;
     item.Parent.Items.Remove(item);
     item.Parent = null;

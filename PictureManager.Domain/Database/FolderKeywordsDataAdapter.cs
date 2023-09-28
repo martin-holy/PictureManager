@@ -15,24 +15,27 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID
 /// </summary>
 public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
-  private readonly FolderKeywordsTreeCategory _model;
+  private readonly Db _db;
+
+  public FolderKeywordsTreeCategory Model { get; }
 
   public static readonly FolderKeywordM FolderKeywordPlaceHolder = new(string.Empty, null);
   public List<FolderKeywordM> All2 { get; } = new();
 
-  public FolderKeywordsDataAdapter(FolderKeywordsTreeCategory model) : base("FolderKeywords", 1) {
-    _model = model;
-    Core.Db.ReadyEvent += OnDbReady;
+  public FolderKeywordsDataAdapter(Db db) : base("FolderKeywords", 1) {
+    _db = db;
+    _db.ReadyEvent += OnDbReady;
+    Model = new(this);
   }
 
   private void OnDbReady(object sender, EventArgs args) {
-    Core.Db.Folders.ItemCreatedEvent += (_, e) =>
+    _db.Folders.ItemCreatedEvent += (_, e) =>
       LoadIfContains((FolderM)e.Data.Parent);
 
-    Core.Db.Folders.ItemRenamedEvent += (_, e) =>
+    _db.Folders.ItemRenamedEvent += (_, e) =>
       LoadIfContains(e.Data);
 
-    Core.Db.Folders.ItemsDeletedEvent += (_, _) =>
+    _db.Folders.ItemsDeletedEvent += (_, _) =>
       Reload();
   }
 
@@ -49,7 +52,7 @@ public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
 
   public override void LinkReferences() {
     foreach (var id in AllDict.Keys)
-      AllDict[id] = Core.Db.Folders.AllDict[id];
+      AllDict[id] = _db.Folders.AllDict[id];
   }
 
   public void LoadIfContains(FolderM folder) {
@@ -63,18 +66,18 @@ public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
       fk.Items.Clear();
     }
 
-    _model.Items.Clear();
+    Model.Items.Clear();
     All2.Clear();
 
     if (AllDict == null)
       foreach (var folder in All)
-        LoadRecursive(folder, _model);
+        LoadRecursive(folder, Model);
     else
       foreach (var folder in AllDict.Values)
-        LoadRecursive(folder, _model);
+        LoadRecursive(folder, Model);
 
     foreach (var fk in All2) {
-      if (fk.Folders.All(x => !Core.FoldersM.IsFolderVisible(x)))
+      if (fk.Folders.All(x => !_db.Folders.Model.IsFolderVisible(x)))
         fk.IsHidden = true;
     }
   }
@@ -93,8 +96,8 @@ public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
 
     if (fk == null) {
       // remove placeholder
-      if (_model.Items.Count == 1 && FolderKeywordPlaceHolder.Equals(_model.Items[0]))
-        _model.Items.Clear();
+      if (Model.Items.Count == 1 && FolderKeywordPlaceHolder.Equals(Model.Items[0]))
+        Model.Items.Clear();
 
       fk = new(folder.Name, fkRoot);
       fkRoot.Items.SetInOrder(fk, x => ((FolderKeywordM)x).Name);

@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,8 @@ using System.Linq;
 namespace PictureManager.Domain.Models;
 
 public sealed class VideoClipsM : ObservableObject {
+  private readonly VideoClipsDataAdapter _da;
+
   public MediaItemM CurrentMediaItem { get; set; }
   public VideoClipM CurrentVideoClip { get; set; }
   public MediaPlayerM MediaPlayerM { get; set; }
@@ -19,15 +22,10 @@ public sealed class VideoClipsM : ObservableObject {
   public RelayCommand<object> SaveCommand { get; }
   public RelayCommand<int> SeekToPositionCommand { get; }
 
-  public VideoClipsM(MediaPlayerM player) {
-    Core.Db.VideoClipsGroups = new(this);
-    var da = Core.Db.VideoClips = new(this);
-    da.ItemCreatedEvent += OnItemCreated;
-
-    TreeCategory = new();
-
-    MediaPlayerM = player;
-    MediaPlayerM.SelectNextClip = SelectNext;
+  public VideoClipsM(VideoClipsDataAdapter da) {
+    _da = da;
+    _da.ItemCreatedEvent += OnItemCreated;
+    TreeCategory = new(_da);
 
     SetMarkerCommand = new(SetMarker, () => CurrentVideoClip != null);
     SetPlayTypeCommand = new(pt => MediaPlayerM.PlayType = pt);
@@ -36,13 +34,14 @@ public sealed class VideoClipsM : ObservableObject {
       VideoClipSplit,
       () => !string.IsNullOrEmpty(MediaPlayerM?.Source));
 
+    // TODO change this when refactoring groups
     SaveCommand = new(
       () => {
-        Core.Db.VideoClips.Save();
+        _da.Save();
         Core.Db.VideoClipsGroups.Save();
       },
       () =>
-        Core.Db.VideoClips.IsModified ||
+        _da.IsModified ||
         Core.Db.VideoClipsGroups.IsModified
     );
 
@@ -62,6 +61,11 @@ public sealed class VideoClipsM : ObservableObject {
       SetMarker(false);
     else
       TreeCategory.ItemCreate(TreeCategory);
+  }
+
+  public void SetPlayer(MediaPlayerM player) {
+    MediaPlayerM = player;
+    MediaPlayerM.SelectNextClip = SelectNext;
   }
 
   public void SetCurrentVideoClip(VideoClipM vc) {
@@ -88,7 +92,7 @@ public sealed class VideoClipsM : ObservableObject {
       MediaPlayerM.Volume,
       MediaPlayerM.Speed);
 
-    Core.Db.VideoClips.IsModified = true;
+    _da.IsModified = true;
 
     MediaPlayerM.ClipTimeStart = vc.TimeStart;
     MediaPlayerM.ClipTimeEnd = vc.TimeEnd;

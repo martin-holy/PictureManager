@@ -1,9 +1,11 @@
 ﻿using MH.Utils.BaseClasses;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 
 namespace PictureManager.Domain.Models;
 
 public sealed class ViewersM : ObservableObject {
+  private readonly ViewersDataAdapter _da;
   private ViewerM _current;
   private ViewerM _selected;
 
@@ -22,9 +24,9 @@ public sealed class ViewersM : ObservableObject {
   public RelayCommand<ViewerM> SetCurrentCommand { get; }
   public RelayCommand<ViewerM> UpdateExcludedCategoryGroupsCommand { get; }
 
-  public ViewersM() {
-    Core.Db.Viewers = new(this);
-    TreeCategory = new();
+  public ViewersM(ViewersDataAdapter da) {
+    _da = da;
+    TreeCategory = new(_da);
     ViewerDetailM = new(this);
     SetCurrentCommand = new(SetCurrent);
     UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
@@ -32,7 +34,7 @@ public sealed class ViewersM : ObservableObject {
 
   private void UpdateExcludedCategoryGroups() {
     Selected.UpdateExcludedCategoryGroups();
-    Core.Db.Viewers.IsModified = true;
+    _da.IsModified = true;
   }
 
   public void OpenDetail(ViewerM viewer) {

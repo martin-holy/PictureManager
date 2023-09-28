@@ -21,17 +21,15 @@ public sealed class Core {
   public static Db Db { get; } = new();
   public static Settings Settings { get; } = new();
 
-  public static FoldersM FoldersM { get; } = new();
-  public static GeoNamesM GeoNamesM { get; } = new();
-  public static KeywordsM KeywordsM { get; } = new();
-  public static MediaItemsM MediaItemsM { get; } = new();
-  public static PeopleM PeopleM { get; } = new();
-  public static SegmentsM SegmentsM { get; } = new();
-  public static VideoClipsM VideoClipsM { get; private set; }
-  public static ViewersM ViewersM { get; } = new();
+  public static FoldersM FoldersM => Db.Folders.Model;
+  public static GeoNamesM GeoNamesM => Db.GeoNames.Model;
+  public static KeywordsM KeywordsM => Db.Keywords.Model;
+  public static MediaItemsM MediaItemsM => Db.MediaItems.Model;
+  public static PeopleM PeopleM => Db.People.Model;
+  public static SegmentsM SegmentsM => Db.Segments.Model;
+  public static VideoClipsM VideoClipsM => Db.VideoClips.Model;
+  public static ViewersM ViewersM => Db.Viewers.Model;
 
-  public static FavoriteFoldersTreeCategory FavoriteFoldersTreeCategory { get; } = new();
-  public static FolderKeywordsTreeCategory FolderKeywordsTreeCategory { get; } = new();
   public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
 
   public ImageComparerM ImageComparerM { get; } = new();
@@ -51,11 +49,9 @@ public sealed class Core {
   private Core() {
     Tasks.SetUiTaskScheduler();
     Settings.Load();
-    VideoClipsM = new(MediaViewerM.MediaPlayerM);
   }
 
   public Task InitAsync(IProgress<string> progress) {
-    Db.CategoryGroups = new();
     return Task.Run(() => {
       Db.AddDataAdapters();
       SimpleDB.Migrate(4, DatabaseMigration.Resolver);
@@ -72,7 +68,7 @@ public sealed class Core {
     var scale = GetDisplayScale();
     MediaItemsViews.DefaultThumbScale = 1 / scale;
     SegmentsM.SetSegmentUiSize(scale);
-
+    VideoClipsM.SetPlayer(MediaViewerM.MediaPlayerM);
     MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
 
     KeywordsM.TreeCategory.AutoAddedGroup ??=

@@ -2,7 +2,6 @@
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,10 +12,10 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|Name|Parent
 /// </summary>
 public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
-  private readonly FoldersTreeCategory _model;
+  public FoldersM Model { get; }
 
-  public FoldersDataAdapter(FoldersTreeCategory model) : base("Folders", 3) {
-    _model = model;
+  public FoldersDataAdapter() : base("Folders", 3) {
+    Model = new(this);
   }
 
   public static IEnumerable<T> GetAll<T>(ITreeItem root) {
@@ -29,7 +28,7 @@ public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
   }
 
   public override void Save() =>
-    SaveDriveRelated(_model.Items.ToDictionary(x => x.Name, GetAll<FolderM>));
+    SaveDriveRelated(Model.TreeCategory.Items.ToDictionary(x => x.Name, GetAll<FolderM>));
 
   public override FolderM FromCsv(string[] csv) =>
     string.IsNullOrEmpty(csv[2])
@@ -43,13 +42,13 @@ public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
       (folder.Parent as FolderM)?.GetHashCode().ToString() ?? string.Empty);
 
   public override void LinkReferences() {
-    _model.Items.Clear();
+    Model.TreeCategory.Items.Clear();
 
     foreach (var (folder, csv) in AllCsv) {
       // reference to Parent and back reference from Parent to SubFolder
       folder.Parent = !string.IsNullOrEmpty(csv[2])
         ? AllDict[int.Parse(csv[2])]
-        : _model;
+        : Model.TreeCategory;
       folder.Parent.Items.Add(folder);
     }
   }

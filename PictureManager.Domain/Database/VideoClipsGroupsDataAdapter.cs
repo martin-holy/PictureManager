@@ -12,14 +12,17 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|Name|MediaItem|Clips
 /// </summary>
 public class VideoClipsGroupsDataAdapter : TreeDataAdapter<VideoClipsGroupM> {
+  private readonly Db _db;
   private readonly VideoClipsM _model;
 
-  public VideoClipsGroupsDataAdapter(VideoClipsM model) : base("VideoClipsGroups", 4) {
+  public VideoClipsGroupsDataAdapter(Db db, VideoClipsM model) : base("VideoClipsGroups", 4) {
+    _db = db;
     _model = model;
+    _model.TreeCategory.SetGroupDataAdapter(this);
   }
 
   public override void Save() =>
-    SaveDriveRelated(Core.Db.VideoClips.MediaItemVideoClips.Values
+    SaveDriveRelated(_db.VideoClips.MediaItemVideoClips.Values
       .SelectMany(x => x.OfType<VideoClipsGroupM>())
       .GroupBy(x => Tree.GetParentOf<DriveM>(x.MediaItem.Folder))
       .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
@@ -37,11 +40,11 @@ public class VideoClipsGroupsDataAdapter : TreeDataAdapter<VideoClipsGroupM> {
         : string.Join(",", vcg.Items.Select(x => x.GetHashCode().ToString())));
 
   public override void LinkReferences() {
-    var mivc = Core.Db.VideoClips.MediaItemVideoClips;
+    var mivc = _db.VideoClips.MediaItemVideoClips;
     mivc.Clear();
 
     foreach (var (group, csv) in AllCsv) {
-      group.MediaItem = Core.Db.MediaItems.AllDict[int.Parse(csv[2])];
+      group.MediaItem = _db.MediaItems.AllDict[int.Parse(csv[2])];
       group.MediaItem.HasVideoClips = true;
       group.Parent = _model.TreeCategory;
 
@@ -49,7 +52,7 @@ public class VideoClipsGroupsDataAdapter : TreeDataAdapter<VideoClipsGroupM> {
         var ids = csv[3].Split(',');
 
         foreach (var vcId in ids) {
-          var vc = Core.Db.VideoClips.AllDict[int.Parse(vcId)];
+          var vc = _db.VideoClips.AllDict[int.Parse(vcId)];
           vc.Parent = group;
           group.Items.Add(vc);
         }
@@ -71,7 +74,7 @@ public class VideoClipsGroupsDataAdapter : TreeDataAdapter<VideoClipsGroupM> {
     mi.HasVideoClips = true;
     item.MediaItem = mi;
     item.Items.CollectionChanged += GroupItems_CollectionChanged;
-    Core.Db.VideoClips.MediaItemVideoClips.TryAdd(mi, item.Parent.Items);
+    _db.VideoClips.MediaItemVideoClips.TryAdd(mi, item.Parent.Items);
   }
 
   public override string ValidateNewItemName(ITreeItem parent, string name) =>

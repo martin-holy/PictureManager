@@ -80,8 +80,8 @@ public class CategoryGroupsDataAdapter : TreeDataAdapter<CategoryGroupM> {
     IsModified = true;
   }
 
-  public void AddCategory<TI>(ITreeCategory<TI, CategoryGroupM> cat) where TI : class, ITreeItem {
+  public void AddCategory(ITreeCategory<CategoryGroupM> cat) {
     _categories.Add(cat);
-    cat.GroupDataAdapter = this;
+    cat.SetGroupDataAdapter(this);
   }
 }
