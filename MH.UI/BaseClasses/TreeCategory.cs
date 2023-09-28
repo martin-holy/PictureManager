@@ -90,8 +90,8 @@ public class TreeCategory : TreeItem, ITreeCategory {
     Tree.GetParentOf<ITreeCategory>(item);
 }
 
-public class TreeCategory<TI> : TreeCategory, ITreeCategory<TI> where TI : class, ITreeItem {
-  public ITreeDataAdapter<TI> DataAdapter { get; set; }
+public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
+  protected ITreeDataAdapter<TI> DataAdapter { get; set; }
 
   public event EventHandler<TreeItemDroppedEventArgs> AfterDropEvent = delegate { };
 
@@ -161,8 +161,8 @@ public class TreeCategory<TI> : TreeCategory, ITreeCategory<TI> where TI : class
       true)) == 1;
 }
 
-public class TreeCategory<TI, TG> : TreeCategory<TI>, ITreeCategory<TI, TG> where TI : class, ITreeItem where TG : class, ITreeItem  {
-  public ITreeDataAdapter<TG> GroupDataAdapter { get; set; }
+public class TreeCategory<TI, TG> : TreeCategory<TI>, ITreeCategory<TG> where TI : class, ITreeItem where TG : class, ITreeItem  {
+  protected ITreeDataAdapter<TG> GroupDataAdapter { get; set; }
 
   public TreeCategory(string icon, string name, int id) : base(icon, name, id) { }
 
@@ -186,4 +186,7 @@ public class TreeCategory<TI, TG> : TreeCategory<TI>, ITreeCategory<TI, TG> wher
     
     GroupDataAdapter.ItemDelete(group);
   }
+
+  public void SetGroupDataAdapter(ITreeDataAdapter<TG> gda) =>
+    GroupDataAdapter = gda;
 }

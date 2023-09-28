@@ -20,10 +20,6 @@ public interface ITreeCategory : ITreeItem {
   public void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy);
 }
 
-public interface ITreeCategory<TI> : ITreeCategory where TI : class, ITreeItem {
-  public ITreeDataAdapter<TI> DataAdapter { get; set; }
-}
-
-public interface ITreeCategory<TI, TG> : ITreeCategory<TI> where TI : class, ITreeItem where TG : class, ITreeItem {
-  public ITreeDataAdapter<TG> GroupDataAdapter { get; set; }
+public interface ITreeCategory<TG> : ITreeCategory where TG : class, ITreeItem {
+  public void SetGroupDataAdapter(ITreeDataAdapter<TG> gda);
 }
