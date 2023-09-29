@@ -19,6 +19,8 @@ public sealed class FoldersM {
 
   public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
   public FoldersTreeCategory TreeCategory { get; }
+  public event EventHandler<ObjectEventArgs<FolderM>> ItemCopiedEvent = delegate { };
+  public event EventHandler<ObjectEventArgs<FolderM>> ItemMovedEvent = delegate { };
 
   public FoldersM(FoldersDataAdapter da) {
     _da = da;
@@ -60,7 +62,15 @@ public sealed class FoldersM {
     }).ContinueWith(_ => Tasks.RunOnUiThread(() => fop.Result = 1));
 
     Dialog.Show(fop);
-    Core.Db.FolderKeywords.Reload();
+
+    switch (mode) {
+      case FileOperationMode.Copy:
+        ItemCopiedEvent(this, new(srcFolder));
+        break;
+      case FileOperationMode.Move:
+        ItemMovedEvent(this, new(srcFolder));
+        break;
+    }
   }
 
   private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
