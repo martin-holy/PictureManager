@@ -13,6 +13,7 @@ public class TreeCategory : TreeItem, ITreeCategory {
   public int Id { get; }
   public bool CanCopyItem { get; set; }
   public bool CanMoveItem { get; set; }
+  public bool UseTreeDelete { get; set; }
   public TreeView<ITreeItem> TreeView { get; } = new();
 
   public static RelayCommand<ITreeItem> ItemCreateCommand { get; } = new(
@@ -124,7 +125,10 @@ public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
     if (!DeleteAccepted(item.Name)) return;
 
     try {
-      DataAdapter.ItemDelete(item);
+      if (UseTreeDelete)
+        DataAdapter.TreeItemDelete(item);
+      else
+        DataAdapter.ItemDelete(item);
 
       // collapse parent if doesn't have any sub items
       if (item.Parent is { } parent && parent.Items.Count == 0)
