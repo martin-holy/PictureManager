@@ -78,9 +78,6 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
   public override KeywordM ItemCreate(ITreeItem parent, string name) =>
     TreeItemCreate(new(GetNextId(), name, parent));
 
-  public override void ItemDelete(ITreeItem item) =>
-    TreeItemDelete((KeywordM)item);
-
   public override string ValidateNewItemName(ITreeItem parent, string name) =>
     parent.Items.OfType<KeywordM>().Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
       ? $"{name} item already exists!"

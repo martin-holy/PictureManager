@@ -89,7 +89,7 @@ namespace PictureManager.Domain.Models {
       // remove Folders deleted outside of this application
       foreach (var item in Items.Cast<FolderM>().ToArray()) {
         if (dirNames.Contains(item.Name)) continue;
-        Core.Db.Folders.ItemDelete(item);
+        Core.Db.Folders.TreeItemDelete(item);
       }
 
       // add placeholder so the folder can be expanded

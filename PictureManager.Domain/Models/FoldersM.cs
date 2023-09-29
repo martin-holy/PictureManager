@@ -15,11 +15,23 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain.Models;
 
 public sealed class FoldersM {
+  private readonly FoldersDataAdapter _da;
+
   public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
   public FoldersTreeCategory TreeCategory { get; }
 
   public FoldersM(FoldersDataAdapter da) {
-    TreeCategory = new(da);
+    _da = da;
+    TreeCategory = new(_da);
+    _da.ItemDeletedEvent += OnItemDeleted;
+  }
+
+  private static void OnItemDeleted(object sender, ObjectEventArgs<FolderM> e) {
+    if (Directory.Exists(e.Data.FullPathCache))
+      Directory.Delete(e.Data.FullPathCache, true);
+
+    if (Directory.Exists(e.Data.FullPath))
+      Core.FileOperationDelete(new() { e.Data.FullPath }, true, false);
   }
 
   public static string GetDriveIcon(DriveType type) =>
@@ -226,7 +238,7 @@ public sealed class FoldersM {
     if (!srcExists && targetFolder == null) {
       src.Parent.Items.Remove(src);
       src.Parent = dest;
-      Core.Db.Folders.IsModified = true;
+      _da.IsModified = true;
 
       // add folder to the tree if destination is empty
       if (dest.Items.Count == 1 && FolderPlaceHolder.Equals(dest.Items[0])) {
@@ -266,7 +278,7 @@ public sealed class FoldersM {
 
     // delete if src folder was moved completely and the target folder was already in DB
     if (deleteSrc)
-      Core.Db.Folders.ItemDelete(src);
+      _da.TreeItemDelete(src);
   }
 
   public List<FolderM> GetFolders(ITreeItem item, bool recursive) {
