@@ -37,5 +37,6 @@ public interface ITreeDataAdapter<T> : IDataAdapter<T> where T : class, ITreeIte
   public void ItemCopy(ITreeItem item, ITreeItem dest);
   public void ItemMove(ITreeItem item, ITreeItem dest, bool aboveDest);
   public void ItemDelete(ITreeItem item);
+  public void TreeItemDelete(ITreeItem item);
   public string ValidateNewItemName(ITreeItem parent, string name);
 }

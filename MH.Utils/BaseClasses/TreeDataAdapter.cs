@@ -50,15 +50,16 @@ public class TreeDataAdapter<T> : DataAdapter<T>, ITreeDataAdapter<T> where T : 
     OnItemDeleted((T)item);
   }
 
-  public virtual void TreeItemDelete(T item) {
-    var items = new List<T>();
+  public virtual void TreeItemDelete(ITreeItem item) {
+    var items = new List<ITreeItem>();
     Tree.GetThisAndItemsRecursive(item, ref items);
 
     foreach (var treeItem in items)
       ItemDelete(treeItem);
 
-    RaiseItemsDeleted(items);
-    OnItemsDeleted(items);
+    var tItems = items.Cast<T>().ToArray();
+    RaiseItemsDeleted(tItems);
+    OnItemsDeleted(tItems);
   }
 
   protected override void OnItemsDeleted(IList<T> items) {
