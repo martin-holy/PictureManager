@@ -1,43 +1,56 @@
-# MH.Utils - Update
-   Resources
-    - use constant strings for icons
+        # MH.UI - Update
+## Tabs
+  - allow moving tab to left|middle|right panel
+## CategoryViewGroup
+  - GroupedBy instance for empty group with icon from View
 
 
-# MH.UI.WPF - Bugs
-  Custom Window
-    - minimize window will break full screen mode
-  CollectionView
-    - segments grouped by keywords,
-      clear grouping on keyword with sub keywords,
-      set new keyword on segments in cleared grouping,
-      cleared grouping is restored
-    - group by keyword,
-      collapse segments with the keyword,
-      set the keyword for segment in empty group,
-      group with the keyword have sub group with the same keyword
-
-# MH.UI.WPF - Update
-  General
-    - use button foreground and background for icon in IconButton and IconToggleButton
-    - add background behind text in IconTextButton
-  Style
-   - Label - remove default padding?
-   - MH.Styles.IconShadow
+        # MH.Utils - Bugs
+## WorkTask
+  - unexpected error, task was canceled. problem when returning false from catch
 
 
-# Bugs - Need Help
+        # MH.Utils - Update
+## Resources
+  - use constant strings for icons
+## Dialog
+  - add CanExecute for buttons like Yes/Ok
+
+
+        # MH.UI.WPF - Bugs
+## Custom Window
+  - minimize window will break full screen mode
+## CollectionView
+  - segments grouped by keywords,
+    clear grouping on keyword with sub keywords,
+    set new keyword on segments in cleared grouping,
+    cleared grouping is restored
+  - group by keyword,
+    collapse segments with the keyword,
+    set the keyword for segment in empty group,
+    group with the keyword have sub group with the same keyword
+
+
+        # MH.UI.WPF - Update
+## General
+  - use button foreground and background for icon in IconButton and IconToggleButton
+  - add background behind text in IconTextButton
+## Style
+  - Label - remove default padding?
+  - MH.Styles.IconShadow
+
+
+        # Picture Manager - Bugs - Need Help
 ## VideoPlayer
   - if SpeedRatio is > 2, Pause()/Play() will cause ignoring SpeedRatio and plays on SpeedRatio = 1
     setting SpeedRatio to SpeedRatio before or after Play() doesn't help
 ## MediaViewer
   - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 
-# Bugs
-##
+
+        # Picture Manager - Bugs
   - disky identifikovat podle ID a ne podle pismena (cmd dir command shows volume serial number)
-    - or store drive related data in \Temp\PictureManagerCache
-## WorkTask
-  - unexpected error, task was canceled. problem when returning false from catch
+  - or store drive related data in \Temp\PictureManagerCache
 ## MediaItems
   - D:\!test\364__32_original.jpg nejde ulozit metadata, nebo crop (resave without metadata in xnview fix the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
@@ -51,37 +64,25 @@
 ## Person Detail
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 
-# Update
+
+        # Picture Manager - Update
 ##
   - zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
   - Rethink hierarchical keywords moving
-  - check how many RAM consumes referencing objects like Folder have list of MediaItems or MediaItem have list of keywords and people, ...
   - join FileOperationDialogM and FileOperationCollisionDialogM
-  - change all Tree View Categories like Video Clips
   - Log button
   - make thumbnail images sharper (size is 2.7x bigger)
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
   - make selection border on base class level in CategoryView and remove it from segment, person, mediaItem
-## DB
-  - remove direct access to Helper.IsModified
-  - create model in DataAdapter?
 ## TreeViewCategories
   - MarkUsedKeywordsAndPeople add Keywords from Segments
   - select/mark searched item after selecting item in search result
-  - Items can be null, to save memory
-  - Folder move: rethink selecting target folder after move
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
 ## VideoClips:
   - recreate video thumbnails button
-## XAML
-  - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
-  - use BaseMarkupExtensionConverter for converters
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
-## Dialog
-  - add CanExecute for buttons like Yes/Ok
-  - remove DialogHostShow from Core
 ## Segments
   - with segment creation create unknown person (#1234) as well so that every segment has person
 ## ToggleDialog
@@ -92,16 +93,12 @@
   - show keywords groups in GroupByDialog
 ## SegmentV
   - make selection bigger. remove margin and replace it by transparent border
-## Tabs
-  - allow moving tab to left|middle|right panel
 ## MediaItemsView
   - replace mouse wheel + CTRL for zoom with slider
-## CategoryViewGroup
-  - GroupedBy instance for empty group with icon from View
 ## MediaItems
   - Imaging.GetMediaType(fileName) in MediaItemM is slowing load from DB
 
-# New
+        # New
 ##
   - Log to file
   - Virtual images from video:
