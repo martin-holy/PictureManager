@@ -67,11 +67,14 @@ namespace PictureManager.Domain.Models {
         Rating.Add(0);
     }
 
+    public void UpdateFilePath() =>
+      OnPropertyChanged(nameof(FilePath));
+
     public void Update() {
       OnPropertyChanged(nameof(DateAndTime));
-      OnPropertyChanged(nameof(FilePath));
       OnPropertyChanged(nameof(FileSize));
       UpdateRating();
+      UpdateFilePath();
     }
   }
 }
