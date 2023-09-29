@@ -97,10 +97,27 @@ public sealed class Core {
       }
     };
 
+    #region FoldersM EventHandlers
+
+    Db.Folders.ItemRenamedEvent += (_, _) => {
+      StatusPanelM.UpdateFilePath();
+    };
+
     Db.Folders.ItemDeletedEvent += (_, e) => {
       Db.FavoriteFolders.ItemDeleteByFolder(e.Data);
       Db.MediaItems.ItemsDelete(e.Data.MediaItems.ToArray());
     };
+
+    FoldersM.ItemCopiedEvent += (_, _) => {
+      Db.FolderKeywords.Reload();
+    };
+
+    FoldersM.ItemMovedEvent += (_, _) => {
+      Db.FolderKeywords.Reload();
+      StatusPanelM.UpdateFilePath();
+    };
+
+  #endregion
 
     #region PeopleM EventHandlers
 
@@ -200,7 +217,7 @@ public sealed class Core {
     MediaViewerM.PropertyChanged += (_, e) => {
       switch (e.PropertyName) {
         case nameof(MediaViewerM.IsVisible):
-          StatusPanelM.OnPropertyChanged(nameof(StatusPanelM.FilePath));
+          StatusPanelM.UpdateFilePath();
           MainWindowM.OnPropertyChanged(nameof(MainWindowM.CanOpenStatusPanel));
           break;
         case nameof(MediaViewerM.Current):
