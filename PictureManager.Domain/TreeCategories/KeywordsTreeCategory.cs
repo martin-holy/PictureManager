@@ -14,6 +14,7 @@ public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM
     DataAdapter = da;
     DataAdapter.ItemCreatedEvent += OnItemCreated;
     CanMoveItem = true;
+    UseTreeDelete = true;
   }
 
   private void OnItemCreated(object sender, ObjectEventArgs<KeywordM> e) =>

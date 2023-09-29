@@ -21,6 +21,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
 
     CanMoveItem = true;
     CanCopyItem = true;
+    UseTreeDelete = true;
   }
 
   private void OnItemCreated(object sender, ObjectEventArgs<FolderM> e) =>

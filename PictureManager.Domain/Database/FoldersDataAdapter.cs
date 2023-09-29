@@ -70,19 +70,6 @@ public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
     base.ItemRename(item, name);
   }
 
-  public override void ItemDelete(ITreeItem item) {
-    var folder = (FolderM)item;
-    // delete folder, sub folders and mediaItems from cache
-    if (Directory.Exists(folder.FullPathCache))
-      Directory.Delete(folder.FullPathCache, true);
-
-    // delete folder, sub folders and mediaItems from file system
-    if (Directory.Exists(folder.FullPath))
-      Core.FileOperationDelete(new() { folder.FullPath }, true, false);
-
-    TreeItemDelete(folder);
-  }
-
   public override string ValidateNewItemName(ITreeItem parent, string name) {
     // check if folder already exists
     if (Directory.Exists(IOExtensions.PathCombine(((FolderM)parent).FullPath, name)))
