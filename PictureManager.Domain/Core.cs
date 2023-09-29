@@ -126,16 +126,14 @@ public sealed class Core {
     };
 
     Db.People.ItemDeletedEvent  += (_, e) => {
+      var aData = new[] { e.Data };
       MediaItemsM.RemovePersonFromMediaItems(e.Data);
       Db.Segments.RemovePersonFromSegments(e.Data);
+      PeopleM.PeopleView?.ReGroupItems(aData, true);
+      SegmentsM.SegmentsView?.CvPeople.ReGroupItems(aData, true);
 
       if (ReferenceEquals(PeopleM.PersonDetail?.PersonM, e.Data))
         ToolsTabsM.Close(PeopleM.PersonDetail);
-    };
-
-    Db.People.PeopleDeletedEvent += (_, e) => {
-      PeopleM.PeopleView?.ReGroupItems(e.Data, true);
-      SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data, true);
     };
 
     PeopleM.PeopleKeywordChangedEvent += (_, e) => {

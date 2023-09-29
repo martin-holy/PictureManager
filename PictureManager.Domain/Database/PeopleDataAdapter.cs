@@ -15,15 +15,11 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
 
   public PeopleM Model { get; }
 
-  public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleDeletedEvent = delegate { };
-
   public PeopleDataAdapter(Db db) : base("People", 4) {
     _db = db;
     _db.ReadyEvent += OnDbReady;
     Model = new(this);
   }
-
-  public void RaisePeopleDeleted(ObjectEventArgs<PersonM[]> e) => PeopleDeletedEvent(this, e);
 
   private void OnDbReady(object sender, EventArgs args) {
     // move all group items to root
@@ -87,8 +83,7 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
     TreeItemCreate(new(GetNextId(), name) { Parent = parent });
 
   protected override void OnItemDeleted(PersonM item) {
-    RaisePeopleDeleted(new(new[] { item })); // TODO why?
-    item.Parent.Items.Remove(item);
+    item.Parent?.Items.Remove(item);
     item.Parent = null;
     item.Segment = null;
     item.TopSegments = null;

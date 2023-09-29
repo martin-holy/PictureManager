@@ -28,7 +28,11 @@ public sealed class PeopleM {
     TreeCategory = new(this, _da);
     OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
     OpenPersonDetailCommand = new(OpenPersonDetail);
+    _da.ItemDeletedEvent += OnItemDeleted;
   }
+
+  private void OnItemDeleted(object sender, ObjectEventArgs<PersonM> e) =>
+    Selected.Set(e.Data, false);
 
   private void OpenPeopleToolsTab() {
     PeopleToolsTabM ??= new(this);
@@ -164,13 +168,11 @@ public sealed class PeopleM {
       person.UpdateDisplayKeywords();
     }
 
-    if (PersonDetail != null && people.Contains(PersonDetail?.PersonM))
-      PersonDetail?.Reload(person);
+    if (PersonDetail != null && people.Contains(PersonDetail.PersonM))
+      PersonDetail.Reload(person);
 
     foreach (var oldPerson in people)
-      _da.All.Remove(oldPerson);
-
-    _da.RaisePeopleDeleted(new(people));
+      _da.ItemDelete(oldPerson);
   }
 
   public static PersonM[] GetFromMediaItems(MediaItemM[] mediaItems) =>
