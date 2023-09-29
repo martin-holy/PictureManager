@@ -1,10 +1,28 @@
-# MH.Utils
- # Bugs
-
- # Update
+# MH.Utils - Update
    Resources
     - use constant strings for icons
- # New
+
+
+# MH.UI.WPF - Bugs
+  Custom Window
+    - minimize window will break full screen mode
+  CollectionView
+    - segments grouped by keywords,
+      clear grouping on keyword with sub keywords,
+      set new keyword on segments in cleared grouping,
+      cleared grouping is restored
+    - group by keyword,
+      collapse segments with the keyword,
+      set the keyword for segment in empty group,
+      group with the keyword have sub group with the same keyword
+
+# MH.UI.WPF - Update
+  General
+    - use button foreground and background for icon in IconButton and IconToggleButton
+    - add background behind text in IconTextButton
+  Style
+   - Label - remove default padding?
+   - MH.Styles.IconShadow
 
 
 # Bugs - Need Help
@@ -30,27 +48,8 @@
   - kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac 
     a je to na restart appky (do OnMediaEnded se to nedostane)
   - ulozeni v klipech nezmeni modifed v main toolbaru
-## TreeViewCategories
-  - Folder reload after folder move => reload is maybe to soon
-## PeopleM
-  - remove deleted people from selection. MergePeople, ...
-## PeopleV
-  - reload when opened and person or group is created/renamed/moved in the tree
 ## Person Detail
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
-  - set top segment from selected person after PeopleMerge
-## MH.UI.WPF
-  # Custom Window
-   - minimize window will break full screen mode
-## CollectionView
-  - segments grouped by keywords,
-    clear grouping on keyword with sub keywords,
-    set new keyword on segments in cleared grouping,
-    cleared grouping is restored
-  - group by keyword,
-    collapse segments with the keyword,
-    set the keyword for segment in empty group,
-    group with the keyword have sub group with the same keyword
 
 # Update
 ##
@@ -66,7 +65,7 @@
   - make selection border on base class level in CategoryView and remove it from segment, person, mediaItem
 ## DB
   - remove direct access to Helper.IsModified
-  - derive from Sdb and add static properties for each DataAdapter?
+  - create model in DataAdapter?
 ## TreeViewCategories
   - MarkUsedKeywordsAndPeople add Keywords from Segments
   - select/mark searched item after selecting item in search result
@@ -78,12 +77,6 @@
 ## XAML
   - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
   - use BaseMarkupExtensionConverter for converters
-## MH.UI.WPF
-  - use button foreground and background for icon in IconButton and IconToggleButton
-  - add background behind text in IconTextButton
-  # Style
-   - Label - remove default padding?
-   - MH.Styles.IconShadow
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
 ## Dialog
