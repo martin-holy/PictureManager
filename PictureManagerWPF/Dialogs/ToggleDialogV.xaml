@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
-  xmlns:mhbc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
+  xmlns:mhbc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate
     DataType="{x:Type mhbc:ListItem}"
@@ -22,8 +23,8 @@
           DockPanel.Dock="Left"
           Style="{StaticResource MH.Styles.Icon}"
           Effect="{StaticResource MH.Effects.DropShadow}"
-          Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-          Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
+          Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+          Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                  ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
         <TextBlock
@@ -44,8 +45,8 @@
         Height="32"
         Margin="10"
         Data="{StaticResource IconQuestion}"/>
-      <!--TODO decide Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-      Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
+      <!--TODO decide Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+      Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
       ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"-->
 
       <Grid Margin="0,10,0,0">

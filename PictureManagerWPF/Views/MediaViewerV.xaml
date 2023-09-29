@@ -7,7 +7,8 @@
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="SegmentsRectsV.xaml"/>
@@ -19,7 +20,7 @@
       Background="Transparent"
       Focusable="True"
       FocusVisualStyle="{x:Null}"
-      Visibility="{Binding IsVisible, Converter={StaticResource AllToVisibilityConverter}}">
+      Visibility="{Binding IsVisible, Converter={mhConv:AllToVisibilityConverter}}">
 
       <Grid.InputBindings>
         <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
@@ -31,7 +32,7 @@
         <b:EventTrigger EventName="MouseWheel">
           <b:InvokeCommandAction
             Command="{Binding NavigateCommand}"
-            EventArgsConverter="{StaticResource MouseWheelConverter}"/>
+            EventArgsConverter="{mhConv:MouseWheelConverter}"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseDown">
@@ -69,7 +70,7 @@
             Width="{Binding ContentWidth}"
             Height="{Binding ContentHeight}"
             Visibility="{Binding Current.MediaType,
-                         Converter={StaticResource AllToVisibilityConverter},
+                         Converter={mhConv:AllToVisibilityConverter},
                          ConverterParameter={x:Static pmd:MediaType.Image}}"/>
 
           <!-- Video -->
@@ -84,7 +85,7 @@
             Speed="{Binding ElementName=controlPanel, Path=Speed}"
             IsMuted="{Binding MediaPlayerM.IsMuted}"
             Visibility="{Binding Current.MediaType,
-                         Converter={StaticResource AllToVisibilityConverter}, 
+                         Converter={mhConv:AllToVisibilityConverter}, 
                          ConverterParameter={x:Static pmd:MediaType.Video}}">
 
             <FrameworkElement.LayoutTransform>
@@ -126,7 +127,7 @@
         Background="#33000000"
         VerticalAlignment="Top"
         Visibility="{Binding Current.MediaType,
-                     Converter={StaticResource AllToVisibilityConverter}, 
+                     Converter={mhConv:AllToVisibilityConverter}, 
                      ConverterParameter={x:Static pmd:MediaType.Video}}"/>
 
       <!-- Segments Rects -->

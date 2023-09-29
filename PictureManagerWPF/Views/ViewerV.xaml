@@ -4,7 +4,8 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:ViewerDetailM}">
     <DataTemplate.Resources>
@@ -39,10 +40,10 @@
           <Path
             Style="{StaticResource MH.Styles.Icon}"
             Data="{Binding Icon,
-                   Converter={StaticResource ResourceConverter},
+                   Converter={mhConv:ResourceConverter},
                    FallbackValue={StaticResource IconFolder}}"
             Fill="{Binding Icon,
-                   Converter={StaticResource ResourceConverter},
+                   Converter={mhConv:ResourceConverter},
                    ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
             HorizontalAlignment="Center"/>
 
@@ -58,10 +59,8 @@
         <StackPanel Orientation="Horizontal" Background="Transparent">
           <Path
             Style="{StaticResource MH.Styles.Icon}"
-            Data="{Binding Icon,
-                   Converter={StaticResource ResourceConverter}}"
-            Fill="{Binding Icon,
-                   Converter={StaticResource ResourceConverter},
+            Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+            Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                    ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
 
           <TextBlock

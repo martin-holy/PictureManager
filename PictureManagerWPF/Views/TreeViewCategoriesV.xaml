@@ -6,7 +6,8 @@
   xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
   xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:mhui="clr-namespace:MH.UI;assembly=MH.UI">
+  xmlns:mhui="clr-namespace:MH.UI;assembly=MH.UI"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="TreeViewSearchV.xaml"/>
@@ -25,8 +26,8 @@
         <DataTemplate x:Key="BigIcon" DataType="{x:Type mhuInt:IListItem}">
           <Path
             Style="{StaticResource MH.Styles.Icon}"
-            Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-            Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
+            Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+            Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                    ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
             Width="24"
             Height="24"/>

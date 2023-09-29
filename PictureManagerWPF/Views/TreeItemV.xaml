@@ -6,7 +6,8 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-  xmlns:pmConv="clr-namespace:PictureManager.Converters">
+  xmlns:pmConv="clr-namespace:PictureManager.Converters"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent">
@@ -21,8 +22,7 @@
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
           <b:ChangePropertyAction
             PropertyName="ContextMenu"
-            Value="{Binding
-                    Converter={StaticResource ResourceConverter},
+            Value="{Binding Converter={mhConv:ResourceConverter},
                     ConverterParameter={x:Static pmd:Res.TypeToTreeContextMenuDic}}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
@@ -31,10 +31,8 @@
         x:Name="icon"
         Grid.Column="0"
         Style="{StaticResource MH.Styles.Icon}"
-        Data="{Binding Icon,
-               Converter={StaticResource ResourceConverter}}"
-        Fill="{Binding Icon,
-               Converter={StaticResource ResourceConverter},
+        Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+        Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                ConverterParameter={x:Static pmd:Res.IconToBrushDic}}"/>
       
       <TextBlock
@@ -53,7 +51,7 @@
     <HierarchicalDataTemplate.Triggers>
       <!-- ITreeCategory -->
       <DataTrigger
-        Binding="{Binding Converter={StaticResource DataTypeConverter},
+        Binding="{Binding Converter={mhConv:DataTypeConverter},
                   ConverterParameter={x:Type mhuiint:ITreeCategory}}"
         Value="True">
         <Setter TargetName="grid" Property="Height" Value="40"/>
@@ -66,7 +64,7 @@
 
       <!-- FavoriteFolderM ToolTip -->
       <DataTrigger
-        Binding="{Binding Converter={StaticResource DataTypeConverter},
+        Binding="{Binding Converter={mhConv:DataTypeConverter},
                   ConverterParameter={x:Type m:FavoriteFolderM}}"
         Value="True">
         <Setter
@@ -78,12 +76,11 @@
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition
-            Binding="{Binding Converter={StaticResource DataTypeConverter},
+            Binding="{Binding Converter={mhConv:DataTypeConverter},
                       ConverterParameter={x:Type m:PersonM}}"
             Value="True"/>
           <Condition
-            Binding="{Binding Path=(m:PersonM.Segment),
-                      Converter={StaticResource AllToBoolConverter}}"
+            Binding="{Binding Path=(m:PersonM.Segment), Converter={mhConv:AllToBoolConverter}}"
             Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter Property="ToolTip">

@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:VideoClipsM}">
     <DataTemplate.Resources>
@@ -91,7 +92,7 @@
           Margin="5,0"
           IsChecked="{Binding MediaPlayerM.PlayType,
                       Mode=OneWay,
-                      Converter={StaticResource AllToBoolConverter},
+                      Converter={mhConv:AllToBoolConverter},
                       ConverterParameter={x:Static m:PlayType.Video}}"/>
         <RadioButton
           Command="{Binding SetPlayTypeCommand}"
@@ -100,7 +101,7 @@
           Margin="5,0"
           IsChecked="{Binding MediaPlayerM.PlayType,
                       Mode=OneWay,
-                      Converter={StaticResource AllToBoolConverter},
+                      Converter={mhConv:AllToBoolConverter},
                       ConverterParameter={x:Static m:PlayType.Clip}}"/>
         <RadioButton
           Command="{Binding SetPlayTypeCommand}"
@@ -109,7 +110,7 @@
           Margin="5,0"
           IsChecked="{Binding MediaPlayerM.PlayType,
                       Mode=OneWay,
-                      Converter={StaticResource AllToBoolConverter},
+                      Converter={mhConv:AllToBoolConverter},
                       ConverterParameter={x:Static m:PlayType.Clips}}"/>
         <RadioButton
           Command="{Binding SetPlayTypeCommand}"
@@ -118,7 +119,7 @@
           Margin="5,0"
           IsChecked="{Binding MediaPlayerM.PlayType,
                       Mode=OneWay,
-                      Converter={StaticResource AllToBoolConverter},
+                      Converter={mhConv:AllToBoolConverter},
                       ConverterParameter={x:Static m:PlayType.Group}}"/>
       </StackPanel>
 

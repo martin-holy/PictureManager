@@ -7,7 +7,6 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/Converters.xaml"/>
         <wpfu:CachedResourceDictionary Source="ResourceDictionaries/DataTypes.xaml"/>
 
         <wpfu:CachedResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml"/>
