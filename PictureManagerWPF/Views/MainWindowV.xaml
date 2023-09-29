@@ -6,6 +6,7 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   DataContext="{Binding Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
   IsFullScreen="{Binding MainWindowM.IsFullScreen, Mode=TwoWay}"
@@ -78,7 +79,7 @@
           ContentTemplate="{StaticResource PM.Views.MainTabsV}"
           Visibility="{Binding MediaViewerM.IsVisible,
                        Source={x:Static pm:App.Core},
-                       Converter={StaticResource AllToVisibilityConverter}, 
+                       Converter={mhConv:AllToVisibilityConverter}, 
                        ConverterParameter={StaticResource False}}"/>
 
         <!-- Media Viewer -->
@@ -90,7 +91,7 @@
     <mhc:SlidePanelsGrid.PanelRight>
       <mhc:SlidePanel
         IsOpen="{Binding ToolsTabsM.IsOpen, Mode=TwoWay}"
-        CanOpen="{Binding ToolsTabsM.Tabs.Count, Converter={StaticResource AllToBoolConverter}}"
+        CanOpen="{Binding ToolsTabsM.Tabs.Count, Converter={mhConv:AllToBoolConverter}}"
         Content="{Binding ToolsTabsM}"
         Width="362"/>
     </mhc:SlidePanelsGrid.PanelRight>

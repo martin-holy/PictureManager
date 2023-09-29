@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
-  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
+  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type md:FolderBrowserDialogM}">
     <TreeView
@@ -43,9 +44,8 @@
           <StackPanel Orientation="Horizontal" Background="Transparent">
             <Path
               Style="{StaticResource MH.Styles.Icon}"
-              Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-              Fill="{Binding Icon,
-                      Converter={StaticResource ResourceConverter},
+              Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+              Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                       ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
               HorizontalAlignment="Center"/>
 

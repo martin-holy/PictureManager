@@ -2,7 +2,8 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type md:FileOperationCollisionDialogM}">
     <DataTemplate.Resources>
@@ -81,7 +82,7 @@
     </StackPanel>
 
     <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding Error, Converter={StaticResource AllToBoolConverter}}" Value="True">
+      <DataTrigger Binding="{Binding Error, Converter={mhConv:AllToBoolConverter}}" Value="True">
         <Setter TargetName="fileName" Property="Background" Value="#7FFF0000"/>
         <Setter TargetName="fileName" Property="ToolTip" Value="{Binding Error}"/>
       </DataTrigger>

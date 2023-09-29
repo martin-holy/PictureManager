@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="SegmentRectV.xaml"/>
@@ -13,7 +14,7 @@
     <ItemsControl
       ItemsSource="{Binding SegmentsRectsM.MediaItemSegmentsRects}"
       Visibility="{Binding SegmentsRectsM.AreVisible,
-                   Converter={StaticResource AllToVisibilityConverter}}">
+                   Converter={mhConv:AllToVisibilityConverter}}">
 
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>

@@ -6,7 +6,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:SegmentM}">
     <DataTemplate.Resources>
@@ -101,8 +102,7 @@
                 BorderThickness="1"
                 BorderBrush="Black"
                 Background="#88000000"
-                Visibility="{Binding Person,
-                             Converter={StaticResource AllToVisibilityConverter}}">
+                Visibility="{Binding Person, Converter={mhConv:AllToVisibilityConverter}}">
 
                 <TextBlock
                   FontSize="18"
@@ -112,8 +112,7 @@
 
               <ItemsControl
                 ItemsSource="{Binding Person.TopSegments}"
-                Visibility="{Binding Person.TopSegments,
-                             Converter={StaticResource AllToVisibilityConverter}}">
+                Visibility="{Binding Person.TopSegments, Converter={mhConv:AllToVisibilityConverter}}">
 
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
@@ -216,7 +215,7 @@
           <Condition
              Binding="{Binding SegmentsM.CanSelectAsSamePerson,
                        Source={x:Static pm:App.Core},
-                       Converter={StaticResource AllToBoolConverter}}"
+                       Converter={mhConv:AllToBoolConverter}}"
              Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="samePersonBtn" Property="Visibility" Value="Visible"/>

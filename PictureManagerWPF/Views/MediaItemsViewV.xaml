@@ -4,7 +4,8 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:dataViews="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type dataViews:MediaItemsView}">
     <DataTemplate.Resources>
@@ -67,7 +68,7 @@
           <b:EventTrigger EventName="PreviewMouseWheel">
             <b:InvokeCommandAction
               Command="{Binding ZoomCommand}"
-              EventArgsConverter="{StaticResource MouseWheelConverter}"/>
+              EventArgsConverter="{mhConv:MouseWheelConverter}"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
 

@@ -7,7 +7,8 @@
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:pmConv="clr-namespace:PictureManager.Converters">
+  xmlns:pmConv="clr-namespace:PictureManager.Converters"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:MediaItemM}">
     <DataTemplate.Resources>
@@ -59,7 +60,7 @@
           HorizontalAlignment="Center"
           Opacity="0.77"
           Visibility="{Binding MediaType, 
-                       Converter={StaticResource AllToVisibilityConverter},
+                       Converter={mhConv:AllToVisibilityConverter},
                        ConverterParameter={x:Static pmd:MediaType.Video}}"/>
 
         <!-- Video Clips over layer -->
@@ -71,7 +72,7 @@
           HorizontalAlignment="Right"
           VerticalAlignment="Bottom"
           Margin="5"
-          Visibility="{Binding HasVideoClips, Converter={StaticResource AllToVisibilityConverter}}"/>
+          Visibility="{Binding HasVideoClips, Converter={mhConv:AllToVisibilityConverter}}"/>
 
         <!-- Thumbnail Info Box -->
         <ItemsControl
@@ -109,7 +110,7 @@
 
       <DataTrigger Value="True">
         <DataTrigger.Binding>
-          <MultiBinding Converter="{StaticResource EqualityConverter}">
+          <MultiBinding Converter="{mhConv:EqualityConverter}">
             <Binding Path="Width" ElementName="border"/>
             <Binding Source="{StaticResource SignLessThan}"/>
             <Binding Source="{StaticResource ThumbnailInfoMinSize}"/>

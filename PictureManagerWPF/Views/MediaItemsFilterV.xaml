@@ -5,7 +5,8 @@
   xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate x:Key="MediaItemsFilterV" DataType="{x:Type m:MediaItemsFilterM}">
     <DataTemplate.Resources>
@@ -23,9 +24,9 @@
           <Path
             Style="{StaticResource MH.Styles.Icon}"
             Data="{Binding Icon,
-                   Converter={StaticResource ResourceConverter}}"
+                   Converter={mhConv:ResourceConverter}}"
             Fill="{Binding Icon,
-                   Converter={StaticResource ResourceConverter},
+                   Converter={mhConv:ResourceConverter},
                    ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
 
           <TextBlock
