@@ -275,8 +275,8 @@
           DockPanel.Dock="Left"
           Style="{StaticResource MH.Styles.Icon}"
           Effect="{StaticResource MH.Effects.DropShadow}"
-          Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-          Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
+          Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+          Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                  ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
         <TextBlock

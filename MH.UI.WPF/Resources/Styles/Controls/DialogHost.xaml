@@ -4,7 +4,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
   xmlns:mhbc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
-  xmlns:u="clr-namespace:MH.UI.WPF.Utils">
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
 
   <ResourceDictionary.MergedDictionaries>
     <u:CachedResourceDictionary Source="../../Brushes.xaml"/>
@@ -28,9 +29,9 @@
             Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="4,0,6,2"
             Data="{Binding Path=Content.(mhbc:Dialog.Icon),
-                   Converter={StaticResource ResourceConverter}}"
+                   Converter={mhConv:ResourceConverter}}"
             Fill="{Binding Path=Content.(mhbc:Dialog.Icon),
-                   Converter={StaticResource ResourceConverter},
+                   Converter={mhConv:ResourceConverter},
                    ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
           <TextBlock
@@ -78,13 +79,10 @@
                       Margin="5,5,0,5"
                       Width="12"
                       Height="12"
-                      Data="{Binding Icon,
-                             Converter={StaticResource ResourceConverter}}"
-                      Fill="{Binding Icon,
-                             Converter={StaticResource ResourceConverter},
+                      Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+                      Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                              ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
-                      Visibility="{Binding Icon,
-                                   Converter={StaticResource AllToVisibilityConverter}}"/>
+                      Visibility="{Binding Icon, Converter={mhConv:AllToVisibilityConverter}}"/>
 
                     <TextBlock
                       Text="{Binding Text}"

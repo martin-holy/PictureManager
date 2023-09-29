@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhud="clr-namespace:MH.Utils.Dialogs;assembly=MH.Utils"
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
-  xmlns:u="clr-namespace:MH.UI.WPF.Utils">
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
 
   <ResourceDictionary.MergedDictionaries>
     <u:CachedResourceDictionary Source="../../Effects.xaml"/>
@@ -19,8 +20,8 @@
         Width="32"
         Height="32"
         Margin="10"
-        Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-        Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
+        Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+        Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
       <TextBlock

@@ -58,10 +58,10 @@
           Grid.Column="1"
           Icon="{Binding
             Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
-            Converter={StaticResource ResourceConverter}}"
+            Converter={mhConv:ResourceConverter}}"
           Foreground="{Binding
             Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
-            Converter={StaticResource ResourceConverter},
+            Converter={mhConv:ResourceConverter},
             ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
           ToolTip="Group by"
           Command="{Binding View.OpenGroupByDialogCommand}"

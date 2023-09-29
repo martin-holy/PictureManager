@@ -2,7 +2,8 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
-  xmlns:res="clr-namespace:MH.UI.WPF.Resources">
+  xmlns:res="clr-namespace:MH.UI.WPF.Resources"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
 
   <DataTemplate x:Key="MH.DataTemplates.IListItem" DataType="{x:Type mhuInt:IListItem}">
     <Grid>
@@ -14,8 +15,8 @@
       <Path
         x:Name="icon"
         Style="{StaticResource MH.Styles.Icon}"
-        Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-        Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
+        Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
+        Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
                ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
 
       <TextBlock

@@ -1,23 +1,12 @@
-﻿using System;
-using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Markup;
+﻿using System.Windows.Data;
 
-namespace MH.UI.WPF.Converters {
-  public class SetPropertyConverter : MarkupExtension, IMultiValueConverter {
-    private static readonly SetPropertyConverter _converter = null;
+namespace MH.UI.WPF.Converters;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) =>
-      _converter ?? new SetPropertyConverter();
+public class SetPropertyConverter : BaseMarkupExtensionMultiConverter {
+  public override object Convert(object[] values, object parameter) {
+    if (values.Length == 2 && parameter is string propName)
+      values[0]?.GetType().GetProperty(propName)?.SetValue(values[0], values[1]);
 
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
-      if (values.Length == 2 && parameter is string propName)
-        values[0]?.GetType().GetProperty(propName)?.SetValue(values[0], values[1]);
-
-      return Binding.DoNothing;
-    }
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) =>
-      throw new NotSupportedException();
+    return Binding.DoNothing;
   }
 }
