@@ -17,7 +17,6 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
     base(Res.IconFolder, "Folders", (int)Category.Folders) {
     DataAdapter = da;
     DataAdapter.ItemCreatedEvent += OnItemCreated;
-    DataAdapter.ItemRenamedEvent += OnItemRenamed;
 
     CanMoveItem = true;
     CanCopyItem = true;
@@ -26,12 +25,6 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
 
   private void OnItemCreated(object sender, ObjectEventArgs<FolderM> e) =>
     TreeView.ScrollTo(e.Data);
-
-  private void OnItemRenamed(object sender, ObjectEventArgs<FolderM> e) {
-    // reload if the folder was selected before
-    if (e.Data.IsSelected)
-      OnItemSelected(e.Data);
-  }
 
   public override void OnItemSelected(object o) {
     // SHIFT key => recursive
@@ -93,13 +86,6 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
           return;
 
         Core.FoldersM.CopyMove(foMode, srcData, destFolder);
-
-        // reload last selected source if was moved
-        if (foMode == FileOperationMode.Move && srcData.IsSelected &&
-            Tree.GetByPath(destFolder, srcData.Name, Path.DirectorySeparatorChar) != null) {
-          destFolder.ExpandTo();
-          OnItemSelected(destFolder);
-        }
 
         break;
 
