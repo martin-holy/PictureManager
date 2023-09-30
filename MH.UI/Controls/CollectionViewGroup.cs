@@ -237,6 +237,7 @@ namespace MH.UI.Controls {
 
       if (Source.Count == 0) {
         Parent?.Items.Remove(this);
+        Clear();
         return;
       }
 
