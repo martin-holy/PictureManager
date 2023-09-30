@@ -28,10 +28,12 @@ namespace PictureManager.Domain.CollectionViews {
     public override IEnumerable<CollectionViewGroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
       var src = source.ToArray();
       var top = new List<CollectionViewGroupByItem<MediaItemM>>();
-      top.Add(GroupByItems.GetDatesInGroupFromMediaItems(src));
-      top.Add(GroupByItems.GetPeopleInGroupFromMediaItems(src));
       // TODO remove trunk from folders => remove common branch starting from root
       top.AddRange(GroupByItems.GetFoldersFromMediaItems(src));
+      top.Add(GroupByItems.GetDatesInGroupFromMediaItems(src));
+      top.Add(GroupByItems.GetKeywordsInGroupFromMediaItems(src));
+      top.Add(GroupByItems.GetPeopleInGroupFromMediaItems(src));
+
 
       return top;
     }

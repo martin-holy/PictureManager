@@ -53,6 +53,12 @@ public static class GroupByItems {
       x => new(x, GroupSegmentByFolder),
       x => x.FullPath);
 
+  public static List<CollectionViewGroupByItem<MediaItemM>> GetKeywordsFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
+    CollectionViewGroupByItem<MediaItemM>.BuildTree<MediaItemM, KeywordM, string>(
+      mediaItems.Where(x => x.Keywords != null).SelectMany(x => x.Keywords),
+      x => new(x, GroupMediaItemByKeyword),
+      x => x.FullName);
+
   public static List<CollectionViewGroupByItem<SegmentM>> GetKeywordsFromSegments(IEnumerable<SegmentM> segments) =>
     CollectionViewGroupByItem<SegmentM>.BuildTree<SegmentM, KeywordM, string>(
       segments.Where(x => x.Keywords != null).SelectMany(x => x.Keywords),
@@ -92,6 +98,14 @@ public static class GroupByItems {
     var group = new CollectionViewGroupByItem<MediaItemM>(
       _dateGroup, GroupMediaItemByDate) { IsGroup = true };
     group.AddItems(GetDatesFromMediaItems(mediaItems));
+
+    return group;
+  }
+
+  public static CollectionViewGroupByItem<MediaItemM> GetKeywordsInGroupFromMediaItems(IEnumerable<MediaItemM> mediaItems) {
+    var group = new CollectionViewGroupByItem<MediaItemM>(
+      Core.KeywordsM.TreeCategory, GroupMediaItemByKeyword) { IsGroup = true };
+    group.AddItems(GetItemsInGroups(GetKeywordsFromMediaItems(mediaItems), GroupMediaItemByKeyword));
 
     return group;
   }
@@ -195,9 +209,12 @@ public static class GroupByItems {
     ReferenceEquals(parameter, Core.KeywordsM.TreeCategory)
     || keywords?.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter) == true;
 
-  private static bool GroupSegmentByKeyword(SegmentM item, object parameter) =>
+  private static bool GroupMediaItemByKeyword(MediaItemM item, object parameter) =>
     GroupByKeyword(item.Keywords, parameter);
 
   private static bool GroupPersonByKeyword(PersonM item, object parameter) =>
+    GroupByKeyword(item.Keywords, parameter);
+
+  private static bool GroupSegmentByKeyword(SegmentM item, object parameter) =>
     GroupByKeyword(item.Keywords, parameter);
 }
