@@ -2,6 +2,7 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -98,7 +99,7 @@ public static class GroupByItems {
   public static CollectionViewGroupByItem<PersonM> GetKeywordsInGroupFromPeople(IEnumerable<PersonM> people) {
     var group = new CollectionViewGroupByItem<PersonM>(
       Core.KeywordsM.TreeCategory, GroupPersonByKeyword) { IsGroup = true };
-    group.AddItems(GetKeywordsFromPeople(people));
+    group.AddItems(GetItemsInGroups(GetKeywordsFromPeople(people), GroupPersonByKeyword));
 
     return group;
   }
@@ -106,7 +107,7 @@ public static class GroupByItems {
   public static CollectionViewGroupByItem<SegmentM> GetKeywordsInGroupFromSegments(IEnumerable<SegmentM> segments) {
     var group = new CollectionViewGroupByItem<SegmentM>(
       Core.KeywordsM.TreeCategory, GroupSegmentByKeyword) { IsGroup = true };
-    group.AddItems(GetKeywordsFromSegments(segments));
+    group.AddItems(GetItemsInGroups(GetKeywordsFromSegments(segments), GroupSegmentByKeyword));
 
     return group;
   }
@@ -114,7 +115,7 @@ public static class GroupByItems {
   public static CollectionViewGroupByItem<MediaItemM> GetPeopleInGroupFromMediaItems(IEnumerable<MediaItemM> mediaItems) {
     var group = new CollectionViewGroupByItem<MediaItemM>(
       Core.PeopleM.TreeCategory, GroupMediaItemByPerson) { IsGroup = true };
-    group.AddItems(GetPeopleFromMediaItems(mediaItems));
+    group.AddItems(GetItemsInGroups(GetPeopleFromMediaItems(mediaItems), GroupMediaItemByPerson));
 
     return group;
   }
@@ -122,9 +123,26 @@ public static class GroupByItems {
   public static CollectionViewGroupByItem<SegmentM> GetPeopleInGroupFromSegments(IEnumerable<SegmentM> segments) {
     var group = new CollectionViewGroupByItem<SegmentM>(
       Core.PeopleM.TreeCategory, GroupSegmentByPerson) { IsGroup = true };
-    group.AddItems(GetPeopleFromSegments(segments));
+    group.AddItems(GetItemsInGroups(GetPeopleFromSegments(segments), GroupSegmentByPerson));
 
     return group;
+  }
+
+  public static List<CollectionViewGroupByItem<T>> GetItemsInGroups<T>(
+    List<CollectionViewGroupByItem<T>> items, Func<T, object, bool> itemGroupBy) {
+
+    var groups = items.GroupBy(x => (x.Data as ITreeItem)?.Parent as CategoryGroupM).ToArray();
+    return groups
+      .Where(x => x.Key != null)
+      .OrderBy(x => x.Key.Name)
+      .Select(x => {
+        var group = new CollectionViewGroupByItem<T>(x.Key, itemGroupBy);
+        group.Items.AddItems(x.Cast<ITreeItem>().ToArray(), item => item.Parent = group);
+
+        return group;
+      })
+      .Concat(groups.Where(x => x.Key == null).SelectMany(x => x))
+      .ToList();
   }
 
   public static CollectionViewGroupByItem<PersonM> GetPeopleGroupsInGroupFromPeople(IEnumerable<PersonM> people) {
@@ -141,51 +159,45 @@ public static class GroupByItems {
     return group;
   }
 
+  public static bool GroupPersonByGroup(PersonM item, object parameter) =>
+    ReferenceEquals(parameter, _peopleGroupsGroup)
+    || ReferenceEquals(parameter, _unknownPeopleGroup) && item.Parent == null
+    || ReferenceEquals(parameter, item.Parent);
+
   private static bool GroupMediaItemByDate(MediaItemM item, object parameter) =>
     ReferenceEquals(parameter, _dateGroup)
     || (item.FileName.Length > 7
         && parameter is DateM date
         && string.Equals(item.FileName[..8], date.Raw, StringComparison.Ordinal));
 
+  private static bool GroupByFolder(FolderM folder, object parameter) =>
+    parameter is FolderM f && folder.GetThisAndParents().Contains(f);
+
   private static bool GroupMediaItemByFolder(MediaItemM item, object parameter) =>
-    parameter is FolderM folder
-    && item.Folder
-      .GetThisAndParents()
-      .Contains(folder);
+    GroupByFolder(item.Folder, parameter);
+
+  private static bool GroupSegmentByFolder(SegmentM item, object parameter) =>
+    GroupByFolder(item.MediaItem.Folder, parameter);
+
+  private static bool GroupByPerson(PersonM person, object parameter) =>
+    ReferenceEquals(parameter, person) || ReferenceEquals(parameter, person?.Parent);
 
   private static bool GroupMediaItemByPerson(MediaItemM item, object parameter) =>
     ReferenceEquals(parameter, Core.PeopleM.TreeCategory)
-    || item.People?.Any(x => ReferenceEquals(x, parameter)) == true
-    || item.Segments?.Any(x => ReferenceEquals(x.Person, parameter)) == true;
-
-  private static bool GroupSegmentByFolder(SegmentM item, object parameter) =>
-    parameter is FolderM folder
-    && item.MediaItem.Folder
-      .GetThisAndParents()
-      .Contains(folder);
-
-  private static bool GroupSegmentByKeyword(SegmentM item, object parameter) =>
-    ReferenceEquals(parameter, Core.KeywordsM.TreeCategory)
-    || item.Keywords != null
-    && parameter is KeywordM keyword
-    && item.Keywords
-      .SelectMany(x => x.GetThisAndParents())
-      .Contains(keyword);
+    || item.People?.Any(x => GroupByPerson(x, parameter)) == true
+    || item.Segments?.Any(x => GroupByPerson(x.Person, parameter)) == true;
 
   private static bool GroupSegmentByPerson(SegmentM item, object parameter) =>
     ReferenceEquals(parameter, Core.PeopleM.TreeCategory)
-    || ReferenceEquals(parameter, item.Person);
+    || GroupByPerson(item.Person, parameter);
 
-  public static bool GroupPersonByGroup(PersonM item, object parameter) =>
-    ReferenceEquals(parameter, _peopleGroupsGroup)
-    || ReferenceEquals(parameter, _unknownPeopleGroup) && item.Parent == null
-    || ReferenceEquals(parameter, item.Parent);
+  private static bool GroupByKeyword(IEnumerable<KeywordM> keywords, object parameter) =>
+    ReferenceEquals(parameter, Core.KeywordsM.TreeCategory)
+    || keywords?.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter) == true;
+
+  private static bool GroupSegmentByKeyword(SegmentM item, object parameter) =>
+    GroupByKeyword(item.Keywords, parameter);
 
   private static bool GroupPersonByKeyword(PersonM item, object parameter) =>
-    ReferenceEquals(parameter, Core.KeywordsM.TreeCategory)
-    || item.Keywords != null
-    && parameter is KeywordM keyword
-    && item.Keywords
-      .SelectMany(x => x.GetThisAndParents())
-      .Contains(keyword);
+    GroupByKeyword(item.Keywords, parameter);
 }
