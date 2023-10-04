@@ -8,55 +8,50 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.CollectionViews {
-  public class CollectionViewMediaItems : CollectionView<MediaItemM> {
-    public double ThumbScale { get; set; }
-    public Selecting<MediaItemM> Selected { get; } = new();
-    public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
+namespace PictureManager.Domain.CollectionViews; 
 
-    public CollectionViewMediaItems(double thumbScale) {
-      Icon = Res.IconImageMultiple;
-      Name = "Media Items";
-      ThumbScale = thumbScale;
-      ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
-    }
+public class CollectionViewMediaItems : CollectionView<MediaItemM> {
+  public double ThumbScale { get; set; }
+  public Selecting<MediaItemM> Selected { get; } = new();
+  public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
 
-    public void Reload(List<MediaItemM> source, GroupMode groupMode, CollectionViewGroupByItem<MediaItemM>[] groupByItems, bool expandAll) {
-      SetRoot(new CollectionViewGroup<MediaItemM>(source, this, groupMode, groupByItems), expandAll);
-    }
+  public CollectionViewMediaItems(double thumbScale) {
+    Icon = Res.IconImageMultiple;
+    Name = "Media Items";
+    ThumbScale = thumbScale;
+    ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
+  }
 
-    public override IEnumerable<CollectionViewGroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
-      var src = source.ToArray();
-      var top = new List<CollectionViewGroupByItem<MediaItemM>>();
-      // TODO remove trunk from folders => remove common branch starting from root
-      top.AddRange(GroupByItems.GetFoldersFromMediaItems(src));
-      top.Add(GroupByItems.GetDatesInGroupFromMediaItems(src));
-      top.Add(GroupByItems.GetKeywordsInGroupFromMediaItems(src));
-      top.Add(GroupByItems.GetPeopleInGroupFromMediaItems(src));
+  public override IEnumerable<CollectionViewGroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
+    var src = source.ToArray();
+    var top = new List<CollectionViewGroupByItem<MediaItemM>>();
+    // TODO remove trunk from folders => remove common branch starting from root
+    top.AddRange(GroupByItems.GetFoldersFromMediaItems(src));
+    top.Add(GroupByItems.GetDatesInGroupFromMediaItems(src));
+    top.Add(GroupByItems.GetKeywordsInGroupFromMediaItems(src));
+    top.Add(GroupByItems.GetPeopleInGroupFromMediaItems(src));
 
+    return top;
+  }
 
-      return top;
-    }
+  public override int GetItemWidth(MediaItemM item) {
+    var width = item.ThumbWidth;
 
-    public override int GetItemWidth(MediaItemM item) {
-      var width = item.ThumbWidth;
+    if (Math.Abs(ThumbScale - MediaItemsViews.DefaultThumbScale) > 0)
+      width = (int)Math.Round((width / MediaItemsViews.DefaultThumbScale) * ThumbScale, 0);
 
-      if (Math.Abs(ThumbScale - MediaItemsViews.DefaultThumbScale) > 0)
-        width = (int)Math.Round((width / MediaItemsViews.DefaultThumbScale) * ThumbScale, 0);
+    return width + 6;
+  }
 
-      return width + 6;
-    }
+  public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>
+    string.Compare(itemA.FileName, itemB.FileName, StringComparison.CurrentCultureIgnoreCase);
 
-    public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>
-      string.Compare(itemA.FileName, itemB.FileName, StringComparison.CurrentCultureIgnoreCase);
+  public override void OnSelectItem(IEnumerable<MediaItemM> source, MediaItemM item, bool isCtrlOn, bool isShiftOn) =>
+    Selected.Select(source.ToList(), item, isCtrlOn, isShiftOn);
 
-    public override void OnSelectItem(IEnumerable<MediaItemM> source, MediaItemM item, bool isCtrlOn, bool isShiftOn) =>
-      Selected.Select(source.ToList(), item, isCtrlOn, isShiftOn);
-
-    private void Zoom(int delta) {
-      if (delta < 0 && ThumbScale < .1) return;
-      ThumbScale += delta > 0 ? .05 : -.05;
-      ReWrapAll();
-    }
+  private void Zoom(int delta) {
+    if (delta < 0 && ThumbScale < .1) return;
+    ThumbScale += delta > 0 ? .05 : -.05;
+    ReWrapAll();
   }
 }
