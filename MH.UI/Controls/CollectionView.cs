@@ -3,162 +3,162 @@ using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MH.UI.Controls {
-  public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : ISelectable {
-    private T _topItem;
-    private ICollectionViewGroup<T> _topGroup;
-    private readonly HashSet<ICollectionViewGroup<T>> _groupByItemsRoots = new();
-    private readonly GroupByDialog<T> _groupByDialog = new();
+namespace MH.UI.Controls;
 
-    public ICollectionViewGroup<T> Root { get; set; }
-    public T TopItem { get; set; }
-    public T LastSelectedItem { get; set; }
-    public ICollectionViewGroup<T> TopGroup { get; set; }
-    public ICollectionViewRow<T> LastSelectedRow { get; set; }
-    public bool SelectionDisabled { get; set; }
-    public int GroupContentOffset { get; set; } = 0;
-    public string Icon { get; set; }
-    public string Name { get; set; }
+public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : ISelectable {
+  private T _topItem;
+  private CollectionViewGroup<T> _topGroup;
+  private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
+  private readonly GroupByDialog<T> _groupByDialog = new();
 
-    public RelayCommand<ICollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
+  public CollectionViewGroup<T> Root { get; set; }
+  public T TopItem { get; set; }
+  public T LastSelectedItem { get; set; }
+  public CollectionViewGroup<T> TopGroup { get; set; }
+  public CollectionViewRow<T> LastSelectedRow { get; set; }
+  public bool SelectionDisabled { get; set; }
+  public int GroupContentOffset { get; set; } = 0;
+  public string Icon { get; set; }
+  public string Name { get; set; }
 
-    protected CollectionView() {
-      OpenGroupByDialogCommand = new(OpenGroupByDialog);
+  public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
+
+  protected CollectionView() {
+    OpenGroupByDialogCommand = new(OpenGroupByDialog);
+  }
+
+  public abstract int GetItemWidth(T item);
+  public abstract IEnumerable<CollectionViewGroupByItem<T>> GetGroupByItems(IEnumerable<T> source);
+  public abstract int SortCompare(T itemA, T itemB);
+  public virtual void OnOpenItem(T item) { }
+  public virtual void OnSelectItem(IEnumerable<T> source, T item, bool isCtrlOn, bool isShiftOn) { }
+
+  public void OpenItem(object item) {
+    if (item is T i) OnOpenItem(i);
+  }
+
+  // TODO BUG not always unable to select, ok after reload 
+  public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn) {
+    if (SelectionDisabled || row is not CollectionViewRow<T> r || item is not T i) return;
+    LastSelectedItem = i;
+    LastSelectedRow = r;
+    OnSelectItem(((CollectionViewGroup<T>)r.Parent).Source, i, isCtrlOn, isShiftOn);
+  }
+
+  public void Reload(List<T> source, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems, bool expandAll, bool removeEmpty = true) {
+    var root = new CollectionViewGroup<T>(source) {
+      View = this,
+      IsGroupingRoot = true,
+      GroupedBy = new(new ListItem(Icon, Name, this), null),
+      IsGroupBy = groupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive,
+      IsThenBy = groupMode is GroupMode.ThenBy or GroupMode.ThenByRecursive,
+      IsRecursive = groupMode is GroupMode.GroupByRecursive or GroupMode.ThenByRecursive,
+      GroupByItems = groupByItems?.Length == 0 ? null : groupByItems
+    };
+
+    TopGroup = null;
+    TopItem = default;
+    ScrollToTopAction?.Invoke();
+    UpdateRoot(root, _ => {
+      Root = root;
+      Root.GroupIt();
+      if (removeEmpty) CollectionViewGroup<T>.RemoveEmptyGroups(Root, null, null);
+      if (expandAll) Root.SetExpanded<CollectionViewGroup<T>>(true);
+    });
+
+    _groupByItemsRoots.Clear();
+    _groupByItemsRoots.Add(Root);
+  }
+
+  public void ReWrapAll() {
+    UpdateRoot(Root, _ => CollectionViewGroup<T>.ReWrapAll(Root));
+  }
+
+  public void ReGroupItems(T[] items, bool remove) {
+    if (Root == null || items == null) return;
+
+    var toReWrap = new HashSet<CollectionViewGroup<T>>();
+
+    if (remove)
+      foreach (var item in items)
+        Root.RemoveItem(item, toReWrap);
+    else {
+      foreach (var gbiRoot in _groupByItemsRoots)
+        gbiRoot.UpdateGroupByItems(GetGroupByItems(items).ToArray());
+
+      foreach (var item in items)
+        Root.InsertItem(item, toReWrap);
     }
 
-    public abstract int GetItemWidth(T item);
-    public abstract IEnumerable<CollectionViewGroupByItem<T>> GetGroupByItems(IEnumerable<T> source);
-    public abstract int SortCompare(T itemA, T itemB);
-    public virtual void OnOpenItem(T item) { }
-    public virtual void OnSelectItem(IEnumerable<T> source, T item, bool isCtrlOn, bool isShiftOn) { }
+    RemoveEmptyGroups(Root, toReWrap);
+  }
 
-    public void OpenItem(object item) {
-      if (item is T i) OnOpenItem(i);
+  public void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
+    var removedGroups = new List<CollectionViewGroup<T>>();
+    toReWrap ??= new HashSet<CollectionViewGroup<T>>();
+    CollectionViewGroup<T>.RemoveEmptyGroups(group, toReWrap, removedGroups);
+    if (removedGroups.Contains(TopGroup)) TopGroup = null;
+    if (toReWrap.Count == 0) return;
+    foreach (var g in toReWrap) g.ReWrap();
+    if (toReWrap.Any(x => x.IsFullyExpanded()))
+      ScrollTo(TopGroup ?? Root, TopItem);
+  }
+
+  public override void OnSizeChanging(bool value) {
+    if (value) {
+      _topItem = TopItem;
+      _topGroup = TopGroup;
     }
-
-    // TODO BUG not always unable to select, ok after reload 
-    public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn) {
-      if (SelectionDisabled || row is not ICollectionViewRow<T> r || item is not T i) return;
-      LastSelectedItem = i;
-      LastSelectedRow = r;
-      OnSelectItem(((ICollectionViewGroup<T>)r.Parent).Source, i, isCtrlOn, isShiftOn);
-    }
-
-    public void Update(Action<IList<object>> itemsAction) {
-      if (itemsAction == null) return;
-      RootHolder.Execute(items => {
-        items.Clear();
-        itemsAction(items);
-        items.Add(Root);
-      });
-    }
-
-    public void SetRoot(ICollectionViewGroup<T> root, bool expandAll, bool removeEmpty = true) {
-      TopGroup = null;
-      TopItem = default;
-      ScrollToTopAction?.Invoke();
-      Update(_ => {
-        Root = root;
-        CollectionViewGroup<T>.GroupIt(Root);
-        if (removeEmpty) CollectionViewGroup<T>.RemoveEmptyGroups(Root, null, null);
-        if (expandAll) Root.SetExpanded<ICollectionViewGroup<T>>(true);
-      });
-
-      _groupByItemsRoots.Clear();
-      _groupByItemsRoots.Add(Root);
-    }
-
-    public void ReWrapAll() {
-      Update(_ => CollectionViewGroup<T>.ReWrapAll(Root));
-    }
-
-    public void ReGroupItems(T[] items, bool remove) {
-      if (Root == null || items == null) return;
-
-      var toReWrap = new HashSet<ICollectionViewGroup<T>>();
-
-      if (remove)
-        foreach (var item in items)
-          Root.RemoveItem(item, toReWrap);
-      else {
-        foreach (var gbiRoot in _groupByItemsRoots)
-          gbiRoot.UpdateGroupByItems(GetGroupByItems(items).ToArray());
-
-        foreach (var item in items)
-          Root.InsertItem(item, toReWrap);
-      }
-
-      RemoveEmptyGroups(Root, toReWrap);
-    }
-
-    public void RemoveEmptyGroups(ICollectionViewGroup<T> group, ISet<ICollectionViewGroup<T>> toReWrap) {
-      var removedGroups = new List<ICollectionViewGroup<T>>();
-      toReWrap ??= new HashSet<ICollectionViewGroup<T>>();
-      CollectionViewGroup<T>.RemoveEmptyGroups(group, toReWrap, removedGroups);
-      if (removedGroups.Contains(TopGroup)) TopGroup = null;
-      if (toReWrap.Count == 0) return;
-      foreach (var g in toReWrap) g.ReWrap();
-      if (toReWrap.Any(x => x.IsFullyExpanded()))
-        ScrollTo(TopGroup ?? Root, TopItem);
-    }
-
-    public override void OnSizeChanging(bool value) {
-      if (value) {
-        _topItem = TopItem;
-        _topGroup = TopGroup;
-      }
-      else {
-        TopItem = _topItem;
-        TopGroup = _topGroup;
-        ScrollTo(TopGroup, TopItem);
-      }
-    }
-
-    public void SetExpanded(object group) {
-      if (group is not ICollectionViewGroup<T> g) return;
-      
-      Update(_ => g.SetExpanded<ICollectionViewGroup<T>>(g.IsExpanded));
-      TopItem = default;
-      TopGroup = g;
+    else {
+      TopItem = _topItem;
+      TopGroup = _topGroup;
       ScrollTo(TopGroup, TopItem);
     }
+  }
 
-    private void OpenGroupByDialog(ICollectionViewGroup<T> group) {
-      if (_groupByDialog.Open(group, GetGroupByItems(group.Source)))
-        _groupByItemsRoots.Add(group);
-    }
+  public void SetExpanded(object group) {
+    if (group is not CollectionViewGroup<T> g) return;
+      
+    UpdateRoot(Root, _ => g.SetExpanded<CollectionViewGroup<T>>(g.IsExpanded));
+    TopItem = default;
+    TopGroup = g;
+    ScrollTo(TopGroup, TopItem);
+  }
 
-    public override void OnTopTreeItemChanged() {
-      var row = TopTreeItem as ICollectionViewRow<T>;
-      var group = TopTreeItem as ICollectionViewGroup<T>;
+  private void OpenGroupByDialog(CollectionViewGroup<T> group) {
+    if (_groupByDialog.Open(group, GetGroupByItems(group.Source)))
+      _groupByItemsRoots.Add(group);
+  }
 
-      TopItem = default;
-      TopGroup = null;
+  public override void OnTopTreeItemChanged() {
+    var row = TopTreeItem as CollectionViewRow<T>;
+    var group = TopTreeItem as CollectionViewGroup<T>;
 
-      if (group != null)
-        TopGroup = group;
-      else if (row != null) {
-        TopGroup = (ICollectionViewGroup<T>)row.Parent;
-        if (row.Leaves.Count > 0)
-          TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Leaves[0]);
-      }
-    }
+    TopItem = default;
+    TopGroup = null;
 
-    public void ScrollTo(ICollectionViewGroup<T> group, T item) {
-      if (group == null && item == null) return;
-
-      ICollectionViewRow<T> row = default;
-
-      if (item != null)
-        CollectionViewGroup<T>.FindItem(group, item, ref group, ref row);
-
+    if (group != null)
       TopGroup = group;
-      TopItem = item;
-      ScrollTo(row != null ? row : group);
+    else if (row != null) {
+      TopGroup = (CollectionViewGroup<T>)row.Parent;
+      if (row.Leaves.Count > 0)
+        TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Leaves[0]);
     }
+  }
+
+  public void ScrollTo(CollectionViewGroup<T> group, T item) {
+    if (group == null && item == null) return;
+
+    CollectionViewRow<T> row = default;
+
+    if (item != null)
+      CollectionViewGroup<T>.FindItem(group, item, ref group, ref row);
+
+    TopGroup = group;
+    TopItem = item;
+    ScrollTo(row != null ? row : group);
   }
 }

@@ -6,54 +6,58 @@ using System.Collections.Generic;
 using System.Linq;
 using MH.Utils;
 
-namespace MH.UI.Controls {
-  public class CollectionViewGroupByItem<T> : TreeItem {
-    public Func<T, object, bool> ItemGroupBy { get; }
-    public bool IsGroup { get; set; }
+namespace MH.UI.Controls; 
 
-    public CollectionViewGroupByItem(IListItem data, Func<T, object, bool> itemGroupBy) : base(null, data) {
-      ItemGroupBy = itemGroupBy;
-    }
+public class CollectionViewGroupByItem<T> : TreeItem {
+  private readonly Func<T, object, bool> _fit;
 
-    public static List<CollectionViewGroupByItem<TItem>> BuildTree<TItem, TGroup, TSort>(
-      IEnumerable<TGroup> source,
-      Func<TGroup, CollectionViewGroupByItem<TItem>> getGroupByItem,
-      Func<TGroup, TSort> orderBy) where TGroup : class, ITreeItem {
+  public bool IsGroup { get; set; }
 
-      var root = new List<CollectionViewGroupByItem<TItem>>();
-      var all = source
-        .SelectMany(x => x.GetThisAndParents())
-        .Distinct()
-        .ToDictionary(x => x, getGroupByItem);
+  public CollectionViewGroupByItem(IListItem data, Func<T, object, bool> fit) : base(null, data) {
+    _fit = fit;
+  }
 
-      foreach (var item in all.OrderBy(x => orderBy(x.Key))) {
-        if (item.Key.Parent is not TGroup parent) {
-          root.Add(item.Value);
-          continue;
-        }
+  public bool Fit(T item) =>
+    _fit(item, Data);
 
-        item.Value.Parent = all[parent];
-        item.Value.Parent.Items.Add(item.Value);
+  public static List<CollectionViewGroupByItem<TItem>> BuildTree<TItem, TGroup, TSort>(
+    IEnumerable<TGroup> source,
+    Func<TGroup, CollectionViewGroupByItem<TItem>> getGroupByItem,
+    Func<TGroup, TSort> orderBy) where TGroup : class, ITreeItem {
+
+    var root = new List<CollectionViewGroupByItem<TItem>>();
+    var all = source
+      .SelectMany(x => x.GetThisAndParents())
+      .Distinct()
+      .ToDictionary(x => x, getGroupByItem);
+
+    foreach (var item in all.OrderBy(x => orderBy(x.Key))) {
+      if (item.Key.Parent is not TGroup parent) {
+        root.Add(item.Value);
+        continue;
       }
 
-      return root;
+      item.Value.Parent = all[parent];
+      item.Value.Parent.Items.Add(item.Value);
     }
 
-    // TODO remove items as well
-    public void Update(CollectionViewGroupByItem<T>[] items) {
-      var newItems = Tree.FindItem(items, x => ReferenceEquals(x.Data, Data))?.Items.ToArray();
-      if (newItems == null) return;
-      var itemItems = Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
+    return root;
+  }
 
-      foreach (var itemItem in itemItems)
-        itemItem.Update(items);
+  // TODO remove items as well
+  public void Update(CollectionViewGroupByItem<T>[] items) {
+    var newItems = Tree.FindItem(items, x => ReferenceEquals(x.Data, Data))?.Items.ToArray();
+    if (newItems == null) return;
+    var itemItems = Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
 
-      foreach (var newItem in newItems) {
-        if (itemItems.Any(x => ReferenceEquals(x.Data, newItem.Data)))
-          continue;
+    foreach (var itemItem in itemItems)
+      itemItem.Update(items);
 
-        Items.SetInOrder(newItem, x => x.Data is IListItem d ? d.Name : string.Empty);
-      }
+    foreach (var newItem in newItems) {
+      if (itemItems.Any(x => ReferenceEquals(x.Data, newItem.Data)))
+        continue;
+
+      Items.SetInOrder(newItem, x => x.Data is IListItem d ? d.Name : string.Empty);
     }
   }
 }

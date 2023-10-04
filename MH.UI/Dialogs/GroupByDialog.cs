@@ -1,5 +1,4 @@
 ﻿using MH.UI.Controls;
-using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
@@ -23,7 +22,7 @@ namespace MH.UI.Dialogs {
         new("Cancel", "IconXCross", CloseCommand, false, true) };
     }
 
-    public bool Open(ICollectionViewGroup<T> group, IEnumerable<CollectionViewGroupByItem<T>> items) {
+    public bool Open(CollectionViewGroup<T> group, IEnumerable<CollectionViewGroupByItem<T>> items) {
       IsRecursive = group.IsRecursive;
       IsGroupBy = group.IsGroupBy;
       IsThenBy = group.IsThenBy;
@@ -35,6 +34,8 @@ namespace MH.UI.Dialogs {
 
       if (Show(this) != 1) return false;
 
+      group.IsGroupingRoot = true;
+
       if (TreeView.SelectedTreeItems.Items.Count == 0) {
         group.GroupByItems = null;
         group.Items.Clear();
@@ -42,12 +43,11 @@ namespace MH.UI.Dialogs {
         return true;
       }
 
-      group.IsRoot = true;
       group.IsRecursive = IsRecursive;
       group.IsGroupBy = IsGroupBy;
       group.IsThenBy = IsThenBy;
       group.GroupByItems = TreeView.SelectedTreeItems.Items.ToArray();
-      CollectionViewGroup<T>.GroupIt(group);
+      group.GroupIt();
       group.View.RemoveEmptyGroups(group, null);
       group.IsExpanded = true;
 
