@@ -81,18 +81,22 @@ namespace MH.UI.WPF.Controls {
 
       // scroll item to top
       if (GetValue(VirtualizingPanel.ScrollUnitProperty) is ScrollUnit.Item) {
+        if (parent.DataContext is not ITreeItem ti) {
+          _isScrollingTo = false;
+          return;
+        }
+
         var root = (ITreeItem)TreeView.RootHolder[0];
-        var scrollToItemIndex = ((ITreeItem)parent.DataContext).GetIndex(root);
+        var scrollToItemIndex = ti.GetIndex(root);
 
         parent.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => {
-          var topItem = GetTopItem();
-          if (topItem == null) {
+          var topItemIndex = GetTopItem()?.GetIndex(root);
+          if (topItemIndex is null or < 0){
             _isScrollingTo = false;
             return;
           }
 
-          var topItemIndex = topItem.GetIndex(root);
-          var diff = scrollToItemIndex - topItemIndex;
+          var diff = scrollToItemIndex - (int)topItemIndex;
           ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset + diff);
           ScrollViewer.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => {
             _isScrollingTo = false;
