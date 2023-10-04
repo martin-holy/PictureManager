@@ -7,50 +7,58 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MH.UI.Controls {
-  public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
-    private bool _isSizeChanging;
-    private ITreeItem _topTreeItem;
+namespace MH.UI.Controls; 
 
-    public ExtObservableCollection<object> RootHolder { get; } = new();
-    public Selecting<T> SelectedTreeItems { get; } = new();
-    public ITreeItem TopTreeItem { get => _topTreeItem; set { _topTreeItem = value; OnTopTreeItemChanged(); } }
-    public bool IsSizeChanging { get => _isSizeChanging; set { _isSizeChanging = value; OnSizeChanging(value); } }
-    // TODO rename and combine with single and multi select
-    public bool ShowTreeItemSelection { get; set; }
-    public Action ScrollToTopAction { get; set; }
-    public Action<IEnumerable<object>> ScrollToItemsAction { get; set; }
+public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
+  private bool _isSizeChanging;
+  private ITreeItem _topTreeItem;
 
-    public RelayCommand<object> TreeItemSelectedCommand { get; }
-    public event EventHandler<ObjectEventArgs<T>> TreeItemSelectedEvent = delegate { };
+  public ExtObservableCollection<object> RootHolder { get; } = new();
+  public Selecting<T> SelectedTreeItems { get; } = new();
+  public ITreeItem TopTreeItem { get => _topTreeItem; set { _topTreeItem = value; OnTopTreeItemChanged(); } }
+  public bool IsSizeChanging { get => _isSizeChanging; set { _isSizeChanging = value; OnSizeChanging(value); } }
+  // TODO rename and combine with single and multi select
+  public bool ShowTreeItemSelection { get; set; }
+  public Action ScrollToTopAction { get; set; }
+  public Action<IEnumerable<object>> ScrollToItemsAction { get; set; }
 
-    public TreeView() {
-      TreeItemSelectedCommand = new(OnTreeItemSelected);
-    }
+  public RelayCommand<object> TreeItemSelectedCommand { get; }
+  public event EventHandler<ObjectEventArgs<T>> TreeItemSelectedEvent = delegate { };
 
-    public virtual void OnSizeChanging(bool value) {
-      if (!value) ScrollTo(TopTreeItem);
-    }
+  public TreeView() {
+    TreeItemSelectedCommand = new(OnTreeItemSelected);
+  }
 
-    public virtual void OnTreeItemSelected(object o) {
-      if (o is not T t) return;
-      TreeItemSelectedEvent(this, new(t));
-      if (!ShowTreeItemSelection) return;
-      SelectedTreeItems.Select(t.Parent?.Items.Cast<T>().ToList(), t, Keyboard.IsCtrlOn(), Keyboard.IsShiftOn());
-    }
+  public virtual void OnSizeChanging(bool value) {
+    if (!value) ScrollTo(TopTreeItem);
+  }
 
-    public virtual void OnTopTreeItemChanged() { }
+  public virtual void OnTreeItemSelected(object o) {
+    if (o is not T t) return;
+    TreeItemSelectedEvent(this, new(t));
+    if (!ShowTreeItemSelection) return;
+    SelectedTreeItems.Select(t.Parent?.Items.Cast<T>().ToList(), t, Keyboard.IsCtrlOn(), Keyboard.IsShiftOn());
+  }
 
-    public virtual void ScrollTo(ITreeItem item) {
-      // INFO this doesn't work when SizeChanged. ScrollTo is maybe to early
-      //if (ReferenceEquals(TopTreeItem, item)) return;
+  public virtual void OnTopTreeItemChanged() { }
 
-      var branch = item.GetBranch();
-      for (int i = 0; i < branch.Count - 1; i++)
-        branch[i].IsExpanded = true;
+  public virtual void ScrollTo(ITreeItem item) {
+    // INFO this doesn't work when SizeChanged. ScrollTo is maybe to early
+    //if (ReferenceEquals(TopTreeItem, item)) return;
 
-      TopTreeItem = item;
-      ScrollToItemsAction?.Invoke(branch);
-    }
+    var branch = item.GetBranch();
+    for (int i = 0; i < branch.Count - 1; i++)
+      branch[i].IsExpanded = true;
+
+    TopTreeItem = item;
+    ScrollToItemsAction?.Invoke(branch);
+  }
+
+  public void UpdateRoot(object root, Action<IList<object>> itemsAction) {
+    RootHolder.Execute(items => {
+      items.Clear();
+      itemsAction?.Invoke(items);
+      items.Add(root);
+    });
   }
 }
