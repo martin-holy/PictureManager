@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System;
@@ -36,9 +37,6 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
         yield return personM;
 
     foreach (var personM in Model.TreeCategory.Items.OfType<PersonM>())
-      yield return personM;
-
-    foreach (var personM in All.Where(x => x.Id < 0))
       yield return personM;
   }
 
@@ -81,6 +79,20 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
 
   public override PersonM ItemCreate(ITreeItem parent, string name) =>
     TreeItemCreate(new(GetNextId(), name) { Parent = parent });
+
+  public PersonM ItemCreateUnknown(int id) =>
+    TreeItemCreate(new(id, $"P {id}") { Parent = Model.TreeCategory.UnknownGroup });
+
+  public override void ItemRename(ITreeItem item, string name) {
+    if (((PersonM)item).Id > 0)
+      base.ItemRename(item, name);
+    else
+      Dialog.Show(new MessageDialog(
+        "Person rename",
+        "Renaming unknown person is not supported yet.",
+        Res.IconPeople,
+        false));
+  }
 
   protected override void OnItemDeleted(PersonM item) {
     item.Parent?.Items.Remove(item);

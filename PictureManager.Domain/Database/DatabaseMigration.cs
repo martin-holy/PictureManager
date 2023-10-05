@@ -12,6 +12,7 @@ public static class DatabaseMigration {
     if (oldVersion < 2) From1To2();
     if (oldVersion < 3) From2To3();
     if (oldVersion < 4) From3To4();
+    if (oldVersion < 5) From4To5();
   }
 
   /// <summary>
@@ -122,5 +123,30 @@ public static class DatabaseMigration {
 
       sw.Close();
     }
+  }
+
+  /// <summary>
+  /// Delete unknown people with without segments.
+  /// Add unknown people to UnknownGroup
+  /// </summary>
+  private static void From4To5() {
+    Core.Db.ReadyEvent += (_, _) => {
+      var allPeople = Core.Db.Segments.All
+        .Where(x => x.Person?.Id < 0)
+        .Select(x => x.Person)
+        .Distinct()
+        .ToHashSet();
+      var toDelete = Core.Db.People.All
+        .Where(x => x.Id < 0 && !allPeople.Contains(x))
+        .ToArray();
+
+      foreach (var person in toDelete)
+        Core.Db.People.ItemDelete(person);
+
+      Core.PeopleM.TreeCategory.UnknownGroup.AddItems(
+        Core.Db.People.All
+          .Where(x => x.Id < 0)
+          .OrderBy(x => x.Name));
+    };
   }
 }

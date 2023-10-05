@@ -13,8 +13,6 @@ namespace PictureManager.Domain.CollectionViews;
 public static class GroupByItems {
   private static readonly ListItem _dateGroup = new(Res.IconCalendar, "Date");
   private static readonly ListItem _peopleGroupsGroup = new(Res.IconPeopleMultiple, "Groups");
-  private static readonly CategoryGroupM _unknownPeopleGroup =
-    new(-1, "Unknown", Category.People, Res.IconPeopleMultiple);
 
   private static readonly Dictionary<string, string> _mediaItemsDates = new();
   private static readonly Dictionary<string, string> _dateFormats =
@@ -164,7 +162,7 @@ public static class GroupByItems {
       _peopleGroupsGroup, GroupPersonByGroup) { IsGroup = true };
     var groupItems = people
       .GroupBy(x => x.Parent)
-      .Select(x => x.Key ?? _unknownPeopleGroup)
+      .Select(x => x.Key)
       .OrderBy(x => x.Name)
       .Select(x => new CollectionViewGroupByItem<PersonM>(x, GroupPersonByGroup));
 
@@ -175,7 +173,6 @@ public static class GroupByItems {
 
   public static bool GroupPersonByGroup(PersonM item, object parameter) =>
     ReferenceEquals(parameter, _peopleGroupsGroup)
-    || ReferenceEquals(parameter, _unknownPeopleGroup) && item.Parent == null
     || ReferenceEquals(parameter, item.Parent);
 
   private static bool GroupMediaItemByDate(MediaItemM item, object parameter) =>

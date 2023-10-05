@@ -3,11 +3,24 @@ using MH.Utils.BaseClasses;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
+using System.Linq;
 
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
   private readonly PeopleM _peopleM;
+  private CategoryGroupM _unknownGroup;
+  private const string _unknownGroupName = "Unknown";
+
+  public CategoryGroupM UnknownGroup {
+    get =>
+      _unknownGroup ??=
+        Items
+          .OfType<CategoryGroupM>()
+          .SingleOrDefault(x => x.Name.Equals(_unknownGroupName))
+        ?? Core.Db.CategoryGroups.ItemCreate(this, _unknownGroupName);
+    set => _unknownGroup = value;
+  }
 
   public PeopleTreeCategory(PeopleM peopleM, PeopleDataAdapter da) :
     base(Res.IconPeopleMultiple, "People", (int)Category.People) {
