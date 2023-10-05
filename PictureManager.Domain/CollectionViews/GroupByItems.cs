@@ -51,9 +51,13 @@ public static class GroupByItems {
       x => new(x, GroupSegmentByFolder),
       x => x.FullPath);
 
-  public static List<CollectionViewGroupByItem<MediaItemM>> GetKeywordsFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
+  public static List<CollectionViewGroupByItem<MediaItemM>> GetKeywordsFromMediaItems(MediaItemM[] mediaItems) =>
     CollectionViewGroupByItem<MediaItemM>.BuildTree<MediaItemM, KeywordM, string>(
-      mediaItems.Where(x => x.Keywords != null).SelectMany(x => x.Keywords),
+      mediaItems
+        .Where(x => x.Keywords != null).SelectMany(x => x.Keywords)
+        .Concat(mediaItems
+          .Where(x => x.Segments != null).SelectMany(x => x.Segments)
+          .Where(x => x.Keywords != null).SelectMany(x => x.Keywords)),
       x => new(x, GroupMediaItemByKeyword),
       x => x.FullName);
 
@@ -100,7 +104,7 @@ public static class GroupByItems {
     return group;
   }
 
-  public static CollectionViewGroupByItem<MediaItemM> GetKeywordsInGroupFromMediaItems(IEnumerable<MediaItemM> mediaItems) {
+  public static CollectionViewGroupByItem<MediaItemM> GetKeywordsInGroupFromMediaItems(MediaItemM[] mediaItems) {
     var group = new CollectionViewGroupByItem<MediaItemM>(
       Core.KeywordsM.TreeCategory, GroupMediaItemByKeyword) { IsGroup = true };
     group.AddItems(GetItemsInGroups(GetKeywordsFromMediaItems(mediaItems), GroupMediaItemByKeyword));
@@ -207,7 +211,8 @@ public static class GroupByItems {
     || keywords?.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter) == true;
 
   private static bool GroupMediaItemByKeyword(MediaItemM item, object parameter) =>
-    GroupByKeyword(item.Keywords, parameter);
+    GroupByKeyword(item.Keywords, parameter)
+    || item.Segments?.Any(x => GroupByKeyword(x.Keywords, parameter)) == true;
 
   private static bool GroupPersonByKeyword(PersonM item, object parameter) =>
     GroupByKeyword(item.Keywords, parameter);
