@@ -1,5 +1,7 @@
 # Picture Manager
 
+## Info in this file is outdated! I don't have any motivation to keep it up to date. 🙃
+
 ### What is new?
 - People view with people grouped by category and keywords.
 - A person can have keywords.
