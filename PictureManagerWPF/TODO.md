@@ -20,19 +20,10 @@
         # MH.UI.WPF - Bugs
 ## Custom Window
   - minimize window will break full screen mode
-## CollectionView
-  - segments grouped by keywords,
-    clear grouping on keyword with sub keywords,
-    set new keyword on segments in cleared grouping,
-    cleared grouping is restored
-  - group by keyword,
-    collapse segments with the keyword,
-    set the keyword for segment in empty group,
-    group with the keyword have sub group with the same keyword
 
 
         # MH.UI.WPF - Update
-## General
+## IconButton
   - use button foreground and background for icon in IconButton and IconToggleButton
   - add background behind text in IconTextButton
 ## Style
@@ -49,6 +40,7 @@
 
 
         # Picture Manager - Bugs
+##
   - disky identifikovat podle ID a ne podle pismena (cmd dir command shows volume serial number)
   - or store drive related data in \Temp\PictureManagerCache
 ## MediaItems
@@ -89,14 +81,14 @@
   - show selected items on dialog
 ## SegmentsMatching
   - from selected people and segments
-## PeopleV
-  - show keywords groups in GroupByDialog
 ## SegmentV
   - make selection bigger. remove margin and replace it by transparent border
 ## MediaItemsView
   - replace mouse wheel + CTRL for zoom with slider
 ## MediaItems
   - Imaging.GetMediaType(fileName) in MediaItemM is slowing load from DB
+## People
+  - add support for renaming unknown person
 
         # New
 ##
