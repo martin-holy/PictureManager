@@ -168,8 +168,7 @@ public sealed class SegmentsM : ObservableObject {
           break;
         }
 
-      newPerson = new(id, $"P {id}");
-      Core.Db.People.All.Add(newPerson);
+      newPerson = Core.Db.People.ItemCreateUnknown(id);
       toUpdate = Selected.Items.ToArray();
     }
     else {

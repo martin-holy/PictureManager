@@ -59,6 +59,12 @@ public sealed class PeopleM {
       newPerson.Segment ??= segment;
 
     if (oldPerson == null) return;
+    
+    // delete unknown people without segments
+    if (oldPerson.Id < 0 && !Core.Db.Segments.All.Any(x => ReferenceEquals(x.Person, oldPerson))) {
+      _da.ItemDelete(oldPerson);
+      return;
+    }
 
     if (oldPerson.Segment == segment)
       oldPerson.Segment = null;

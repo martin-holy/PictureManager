@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
-  /// DB fields: ID|Name|Segments|Keywords
+  /// DB fields: ID|Name|Segment|Keywords
   /// </summary>
   public sealed class PersonM : TreeItem, IEquatable<PersonM> {
     #region IEquatable implementation
