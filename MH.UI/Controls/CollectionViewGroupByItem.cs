@@ -26,10 +26,7 @@ public class CollectionViewGroupByItem<T> : TreeItem {
     Func<TGroup, TSort> orderBy) where TGroup : class, ITreeItem {
 
     var root = new List<CollectionViewGroupByItem<TItem>>();
-    var all = source
-      .SelectMany(x => x.GetThisAndParents())
-      .Distinct()
-      .ToDictionary(x => x, getGroupByItem);
+    var all = source.ToDictionary(x => x, getGroupByItem);
 
     foreach (var item in all.OrderBy(x => orderBy(x.Key))) {
       if (item.Key.Parent is not TGroup parent) {
