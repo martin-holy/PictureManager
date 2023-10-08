@@ -62,10 +62,31 @@ public sealed class KeywordsM {
       .OrderBy(x => x.FullName)
       .ToArray();
 
+  public static IEnumerable<KeywordM> GetFromMediaItems(MediaItemM[] mediaItems) =>
+    mediaItems
+      .EmptyIfNull()
+      .Where(x => x.Keywords != null)
+      .SelectMany(x => x.Keywords)
+      .Concat(GetFromSegments(SegmentsM.GetFromMediaItems(mediaItems)))
+      .Distinct()
+      .SelectMany(x => x.GetThisAndParents())
+      .Distinct();
+
   public static IEnumerable<KeywordM> GetFromPeople(IEnumerable<PersonM> people) =>
     people
       .EmptyIfNull()
       .Where(x => x.Keywords != null)
       .SelectMany(x => x.Keywords)
+      .Distinct()
+      .SelectMany(x => x.GetThisAndParents())
+      .Distinct();
+
+  public static IEnumerable<KeywordM> GetFromSegments(IEnumerable<SegmentM> segments) =>
+    segments
+      .EmptyIfNull()
+      .Where(x => x.Keywords != null)
+      .SelectMany(x => x.Keywords)
+      .Distinct()
+      .SelectMany(x => x.GetThisAndParents())
       .Distinct();
 }
