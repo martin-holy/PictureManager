@@ -1,4 +1,5 @@
 ﻿using MH.Utils;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
@@ -58,9 +59,17 @@ public sealed class KeywordsM {
   }
 
   public static IEnumerable<KeywordM> GetAllKeywords(IEnumerable<KeywordM> keywords) =>
-    keywords?
+    keywords
+      .EmptyIfNull()
       .SelectMany(x => x.GetThisAndParents())
       .Distinct()
       .OrderBy(x => x.FullName)
-      .ToArray() ?? Enumerable.Empty<KeywordM>();
+      .ToArray();
+
+  public static IEnumerable<KeywordM> GetFromPeople(IEnumerable<PersonM> people) =>
+    people
+      .EmptyIfNull()
+      .Where(x => x.Keywords != null)
+      .SelectMany(x => x.Keywords)
+      .Distinct();
 }
