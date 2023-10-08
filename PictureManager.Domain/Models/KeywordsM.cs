@@ -1,5 +1,7 @@
-﻿using MH.Utils;
+﻿using System;
+using MH.Utils;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
@@ -14,26 +16,20 @@ public sealed class KeywordsM {
     TreeCategory = new(da);
   }
 
-  // TODO refactor using Items and not All
   public KeywordM GetByFullPath(string fullPath) {
     if (string.IsNullOrEmpty(fullPath)) return null;
 
     var pathNames = fullPath.Split('/');
+    var name = pathNames[0];
+    ITreeItem root = Core.Db.Keywords.All.SingleOrDefault(
+                       x => x.Parent is not KeywordM && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                     ?? Core.Db.Keywords.ItemCreate(TreeCategory.AutoAddedGroup, name);
 
-    // get top level Keyword => Parent is not Keyword but Keywords or CategoryGroup
-    var keyword = Core.Db.Keywords.All.SingleOrDefault(x => x.Parent is not KeywordM && x.Name.Equals(pathNames[0]));
-
-    // return Keyword if it was found and is 1 level type
-    if (keyword != null && pathNames.Length == 1)
-      return keyword;
-
-    // set root as => Parent of the first Keyword from fullPath (or) CategoryGroup "Auto Added"
-    var root = keyword?.Parent ?? TreeCategory.AutoAddedGroup;
-
-    // for each keyword in pathNames => find or create
-    foreach (var name in pathNames)
-      root = root.Items.OfType<KeywordM>().SingleOrDefault(x => x.Name.Equals(name))
+    for (int i = 1; i < pathNames.Length; i++) {
+      name = pathNames[i];
+      root = root.Items.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
              ?? Core.Db.Keywords.ItemCreate(root, name);
+    }
 
     return root as KeywordM;
   }
