@@ -213,7 +213,7 @@
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding IsSelected}" Value="True"/>
           <Condition
-             Binding="{Binding SegmentsM.CanSelectAsSamePerson,
+             Binding="{Binding SegmentsM.CanSetAsSamePerson,
                        Source={x:Static pm:App.Core},
                        Converter={mhConv:AllToBoolConverter}}"
              Value="True"/>

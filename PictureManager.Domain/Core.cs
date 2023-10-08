@@ -129,15 +129,10 @@ public sealed class Core {
       var aData = new[] { e.Data };
       MediaItemsM.RemovePersonFromMediaItems(e.Data);
       Db.Segments.RemovePersonFromSegments(e.Data);
-      PeopleM.PeopleView?.ReGroupItems(aData, true);
       SegmentsM.SegmentsView?.CvPeople.ReGroupItems(aData, true);
-
-      if (ReferenceEquals(PeopleM.PersonDetail?.PersonM, e.Data))
-        ToolsTabsM.Close(PeopleM.PersonDetail);
     };
 
-    PeopleM.PeopleKeywordChangedEvent += (_, e) => {
-      PeopleM.PeopleView?.ReGroupItems(e.Data, false);
+    Db.People.PeopleKeywordsChangedEvent += (_, e) => {
       SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data, false);
     };
 
@@ -150,7 +145,7 @@ public sealed class Core {
     };
 
     Db.Keywords.ItemDeletedEvent += (_, e) => {
-      PeopleM.RemoveKeywordFromPeople(e.Data);
+      Db.People.RemoveKeywordFromPeople(e.Data);
       Db.Segments.RemoveKeywordFromSegments(e.Data);
       MediaItemsM.RemoveKeywordFromMediaItems(e.Data);
     };
@@ -233,31 +228,25 @@ public sealed class Core {
     #region SegmentsM EventHandlers
 
     Db.Segments.SegmentPersonChangedEvent += (_, e) => {
-      PeopleM.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+      Db.People.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
     };
 
-    SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
-      PeopleM.PersonDetail?.ReGroupIfContains(e.Data.Item1, false);
-      SegmentsM.SegmentsView?.CvSegments.ReGroupItems(e.Data.Item1, false);
-      SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null).ToArray(), false);
-
-      // TODO fix this after changing logic that every segment has person until is changed to real person
-      PeopleM.PeopleView?.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null).ToArray(), false);
-
-      if (MediaViewerM.IsVisible)
-        MediaViewerM.Current?.SetInfoBox();
+    Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
+      Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+      PeopleM.PersonDetail?.ReloadIf(e.Data.Item2, e.Data.Item3);
+      PeopleM.PeopleView?.ReGroupItems(e.Data.Item3?.Where(x => x.Segment != null).ToArray(), false);
+      
+      foreach (var mi in e.Data.Item2.Select(x => x.MediaItem).Distinct())
+        mi.SetInfoBox();
     };
 
-    Db.Segments.SegmentsKeywordChangedEvent += (_, e) => {
-      PeopleM.PersonDetail?.ReGroupIfContains(e.Data.Item1, false);
-      SegmentsM.SegmentsView?.CvSegments.ReGroupItems(e.Data.Item1, false);
+    Db.Segments.SegmentsKeywordsChangedEvent += (_, e) => {
+      PeopleM.PersonDetail?.ReGroupIfContains(e.Data, false);
     };
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
-      PeopleM.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
+      Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
       PeopleM.PersonDetail?.ReGroupIfContains(new[] { e.Data }, true);
-      SegmentsM.SegmentsDrawerM.Remove(e.Data);
-      SegmentsM.SegmentsView?.CvSegments.ReGroupItems(new[] { e.Data }, true);
     };
 
     #endregion

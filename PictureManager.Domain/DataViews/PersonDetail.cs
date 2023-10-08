@@ -76,6 +76,13 @@ namespace PictureManager.Domain.DataViews {
           : PersonM.TopSegments.Cast<SegmentM>().ToList(),
         GroupMode.GroupBy, null, true, "Top", false);
 
+    public void ReloadIf(IEnumerable<SegmentM> segments, IEnumerable<PersonM> people) {
+      if (people.Contains(PersonM))
+        Reload(PersonM);
+      else
+        ReGroupIfContains(segments, false);
+    }
+
     public void ReGroupIfContains(IEnumerable<SegmentM> segments, bool remove) {
       if (PersonM == null) return;
       var items = segments.Where(x => ReferenceEquals(PersonM, x.Person)).ToArray();

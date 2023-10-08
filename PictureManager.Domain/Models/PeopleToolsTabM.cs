@@ -26,8 +26,8 @@ public sealed class PeopleToolsTabM : CollectionViewPeople {
     if (result < 1) return;
 
     var items = result switch {
-      1 => PeopleM.GetFromMediaItems(Core.MediaItemsViews.Current?.GetSelectedOrAll().ToArray()),
-      2 => PeopleM.GetFromMediaItems(Core.MediaViewerM.MediaItems?.ToArray()),
+      1 => PeopleM.GetFromMediaItems(Core.MediaItemsViews.Current?.GetSelectedOrAll()),
+      2 => PeopleM.GetFromMediaItems(Core.MediaViewerM.MediaItems),
       3 => PeopleM.GetAll(),
       _ => Enumerable.Empty<PersonM>() };
 

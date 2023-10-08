@@ -15,7 +15,8 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
 
   public SegmentsM Model { get; }
   public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<(SegmentM[], KeywordM)>> SegmentsKeywordChangedEvent = delegate { };
+  public event EventHandler<ObjectEventArgs<(PersonM, SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
+  public event EventHandler<ObjectEventArgs<SegmentM[]>> SegmentsKeywordsChangedEvent = delegate { };
 
   public SegmentsDataAdapter(Db db) : base("Segments", 5) {
     _db = db;
@@ -156,28 +157,28 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
     }
   }
 
-  private void ToggleKeyword(SegmentM segment, KeywordM keyword) {
-    segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
-    IsModified = true;
-  }
-
-  private void ToggleKeyword(SegmentM[] segments, KeywordM keyword) {
-    foreach (var segment in segments)
-      ToggleKeyword(segment, keyword);
-
-    SegmentsKeywordChangedEvent(this, new((segments, keyword)));
-  }
-
   public void RemoveKeywordFromSegments(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
-  public void ToggleKeywordOnSelected(KeywordM keyword) =>
-    ToggleKeyword(Model.Selected.Items.ToArray(), keyword);
+  public void ToggleKeyword(SegmentM[] segments, KeywordM keyword) {
+    foreach (var segment in segments) {
+      segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
+      IsModified = true;
+    }
 
-  public void ChangePerson(SegmentM segment, PersonM person) {
+    SegmentsKeywordsChangedEvent(this, new(segments));
+  }
+
+  public void ChangePerson(PersonM person, SegmentM[] segments, PersonM[] people) {
+    foreach (var segment in segments)
+      ChangePerson(segment, person);
+
+    SegmentsPersonChangedEvent(this, new((person, segments, people)));
+  }
+
+  private void ChangePerson(SegmentM segment, PersonM person) {
     var oldPerson = segment.Person;
     segment.Person = person;
-    segment.MediaItem.SetInfoBox();
     IsModified = true;
     SegmentPersonChangedEvent(this, new((segment, oldPerson, person)));
   }

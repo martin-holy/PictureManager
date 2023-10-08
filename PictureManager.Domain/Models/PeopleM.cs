@@ -4,7 +4,6 @@ using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.TreeCategories;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,18 +20,30 @@ public sealed class PeopleM {
   public RelayCommand<object> OpenPeopleToolsTabCommand { get; }
   public RelayCommand<PersonM> OpenPersonDetailCommand { get; }
 
-  public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordChangedEvent = delegate { };
-
   public PeopleM(PeopleDataAdapter da) {
     _da = da;
+    _da.ItemDeletedEvent += OnItemDeleted;
+    _da.PeopleKeywordsChangedEvent += OnPeopleKeywordsChanged;
     TreeCategory = new(this, _da);
     OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
     OpenPersonDetailCommand = new(OpenPersonDetail);
-    _da.ItemDeletedEvent += OnItemDeleted;
   }
 
-  private void OnItemDeleted(object sender, ObjectEventArgs<PersonM> e) =>
+  private void OnItemDeleted(object sender, ObjectEventArgs<PersonM> e) {
     Selected.Set(e.Data, false);
+    PeopleView?.ReGroupItems(new[] { e.Data }, true);
+
+    if (ReferenceEquals(PersonDetail?.PersonM, e.Data))
+      Core.ToolsTabsM.Close(PersonDetail);
+  }
+
+  private void OnPeopleKeywordsChanged(object sender, ObjectEventArgs<PersonM[]> e) {
+    PeopleToolsTabM?.ReGroupItems(e.Data, false);
+    PeopleView?.ReGroupItems(e.Data, false);
+
+    foreach (var person in e.Data)
+      person.UpdateDisplayKeywords();
+  }
 
   private void OpenPeopleToolsTab() {
     PeopleToolsTabM ??= new(this);
@@ -54,27 +65,6 @@ public sealed class PeopleM {
     Core.ToolsTabsM.Open();
   }
 
-  public void OnSegmentPersonChanged(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
-    if (newPerson != null)
-      newPerson.Segment ??= segment;
-
-    if (oldPerson == null) return;
-    
-    // delete unknown people without segments
-    if (oldPerson.Id < 0 && !Core.Db.Segments.All.Any(x => ReferenceEquals(x.Person, oldPerson))) {
-      _da.ItemDelete(oldPerson);
-      return;
-    }
-
-    if (oldPerson.Segment == segment)
-      oldPerson.Segment = null;
-
-    if (oldPerson.TopSegments?.Contains(segment) != true) return;
-
-    oldPerson.TopSegments = ObservableCollectionExtensions.Toggle(oldPerson.TopSegments, segment, true);
-    _da.IsModified = true;
-  }
-
   public void ToggleTopSegment(PersonM person, SegmentM segment) {
     if (segment == null) return;
 
@@ -89,27 +79,6 @@ public sealed class PeopleM {
 
     _da.IsModified = true;
   }
-
-  private void ToggleKeyword(PersonM person, KeywordM keyword) {
-    person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
-    person.UpdateDisplayKeywords();
-    _da.IsModified = true;
-  }
-
-  private void ToggleKeyword(IEnumerable<PersonM> people, KeywordM keyword) {
-    var p = people.ToArray();
-    foreach (var person in p)
-      ToggleKeyword(person, keyword);
-
-    PeopleKeywordChangedEvent(this, new(p));
-  }
-
-  public void RemoveKeywordFromPeople(KeywordM keyword) =>
-    ToggleKeyword(_da.All
-      .Where(x => x.Keywords?.Contains(keyword) == true), keyword);
-
-  public void ToggleKeywordOnSelected(KeywordM keyword) =>
-    ToggleKeyword(Selected.Items, keyword);
 
   public void Select(List<PersonM> people, PersonM person, bool isCtrlOn, bool isShiftOn) {
     if (!isCtrlOn && !isShiftOn)
@@ -129,15 +98,9 @@ public sealed class PeopleM {
 
     Core.SegmentsM.Selected.Set(segmentsBefore.Except(segmentsAfter), false);
     Core.SegmentsM.Selected.Add(segmentsAfter);
-    Core.SegmentsM.SetCanSelectAsSamePerson();
+    Core.SegmentsM.SetCanSetAsSamePerson();
   }
 
-  /// <summary>
-  /// Update Person TopSegments and Keywords from People
-  /// and then remove not used People from DB
-  /// </summary>
-  /// <param name="person"></param>
-  /// <param name="people"></param>
   public void MergePeople(PersonM person, PersonM[] people) {
     if (people.Length == 0) return;
 
@@ -145,64 +108,30 @@ public sealed class PeopleM {
       .Where(x => x.TopSegments != null)
       .SelectMany(x => x.TopSegments)
       .Distinct()
+      .Cast<SegmentM>();
+
+    foreach (var segment in topSegments)
+      ToggleTopSegment(person, segment);
+
+    var keywords = KeywordsM.GetFromPeople(people)
+      .Except(person.Keywords.EmptyIfNull())
       .ToArray();
 
-    var keywords = people
-      .Where(x => x.Keywords != null)
-      .SelectMany(x => x.Keywords)
-      .Distinct()
-      .Except(person.Keywords ?? Enumerable.Empty<KeywordM>())
-      .ToArray();
-
-    if (topSegments.Any()) {
-      if (person.TopSegments == null) {
-        person.TopSegments = new();
-        person.OnPropertyChanged(nameof(person.TopSegments));
-      }
-        
-      foreach (var segment in topSegments)
-        person.TopSegments.Add(segment);
-
-      person.Segment = (SegmentM)person.TopSegments[0];
-    }
-
-    if (keywords.Any()) {
-      person.Keywords ??= new();
-      foreach (var keyword in keywords)
-        person.Keywords.Add(keyword);
-
-      person.UpdateDisplayKeywords();
-    }
-
-    if (PersonDetail != null && people.Contains(PersonDetail.PersonM))
-      PersonDetail.Reload(person);
-
-    foreach (var oldPerson in people)
-      _da.ItemDelete(oldPerson);
+    _da.ToggleKeywords(person, keywords);
   }
 
-  public static PersonM[] GetFromMediaItems(MediaItemM[] mediaItems) =>
-    mediaItems == null
-      ? Array.Empty<PersonM>()
-      : mediaItems
-        .Where(x => x.People != null)
-        .SelectMany(x => x.People)
-        .Concat(mediaItems
-          .Where(y => y.Segments != null)
-          .SelectMany(y => y.Segments)
-          .Where(y => y.Person != null)
-          .Select(y => y.Person))
-        .Distinct()
-        .ToArray();
+  public static IEnumerable<PersonM> GetFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
+    mediaItems.EmptyIfNull()
+      .SelectMany(mi => mi.People.EmptyIfNull()
+        .Concat(GetFromSegments(mi.Segments)))
+      .Distinct();
 
-  public static PersonM[] GetFromSegments(SegmentM[] segments) =>
-    segments == null
-      ? Array.Empty<PersonM>()
-      : segments
-        .Where(x => x.Person != null)
-        .Select(x => x.Person)
-        .Distinct()
-        .ToArray();
+  public static IEnumerable<PersonM> GetFromSegments(IEnumerable<SegmentM> segments) =>
+    segments
+      .EmptyIfNull()
+      .Where(x => x.Person != null)
+      .Select(x => x.Person)
+      .Distinct();
 
   public static PersonM[] GetAll() =>
     Core.Db.People.All
