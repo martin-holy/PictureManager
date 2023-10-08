@@ -41,29 +41,25 @@ public static class GroupByItems {
 
   public static List<CollectionViewGroupByItem<MediaItemM>> GetFoldersFromMediaItems(IList<MediaItemM> mediaItems) =>
     CollectionViewGroupByItem<MediaItemM>.BuildTree<MediaItemM, FolderM, string>(
-      mediaItems.Select(x => x.Folder),
+      FoldersM.GetFromMediaItems(mediaItems),
       x => new(x, GroupMediaItemByFolder),
       x => x.FullPath);
 
   public static List<CollectionViewGroupByItem<SegmentM>> GetFoldersFromSegments(IList<SegmentM> segments) =>
     CollectionViewGroupByItem<SegmentM>.BuildTree<SegmentM, FolderM, string>(
-      segments.Select(x => x.MediaItem.Folder),
+      FoldersM.GetFromSegments(segments),
       x => new(x, GroupSegmentByFolder),
       x => x.FullPath);
 
   public static List<CollectionViewGroupByItem<MediaItemM>> GetKeywordsFromMediaItems(MediaItemM[] mediaItems) =>
     CollectionViewGroupByItem<MediaItemM>.BuildTree<MediaItemM, KeywordM, string>(
-      mediaItems
-        .Where(x => x.Keywords != null).SelectMany(x => x.Keywords)
-        .Concat(mediaItems
-          .Where(x => x.Segments != null).SelectMany(x => x.Segments)
-          .Where(x => x.Keywords != null).SelectMany(x => x.Keywords)),
+      KeywordsM.GetFromMediaItems(mediaItems),
       x => new(x, GroupMediaItemByKeyword),
       x => x.FullName);
 
   public static List<CollectionViewGroupByItem<SegmentM>> GetKeywordsFromSegments(IEnumerable<SegmentM> segments) =>
     CollectionViewGroupByItem<SegmentM>.BuildTree<SegmentM, KeywordM, string>(
-      segments.Where(x => x.Keywords != null).SelectMany(x => x.Keywords),
+      KeywordsM.GetFromSegments(segments),
       x => new(x, GroupSegmentByKeyword),
       x => x.FullName);
 
