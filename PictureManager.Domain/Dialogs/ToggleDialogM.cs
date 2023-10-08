@@ -3,6 +3,7 @@ using MH.Utils.Dialogs;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Dialogs; 
 
@@ -32,8 +33,8 @@ public sealed class ToggleDialogM : Dialog {
 
     var dlg = GetInstance(Res.IconTagLabel, _keywordTitle, counts, keyword);
     switch (Show(dlg)) {
-      case 1: Core.Db.Segments.ToggleKeywordOnSelected(keyword); break;
-      case 2: Core.PeopleM.ToggleKeywordOnSelected(keyword); break;
+      case 1: Core.Db.Segments.ToggleKeyword(Core.SegmentsM.Selected.Items.ToArray(), keyword); break;
+      case 2: Core.Db.People.ToggleKeyword(Core.PeopleM.Selected.Items.ToArray(), keyword); break;
       case 3: Core.MediaItemsM.SetMetadata(keyword); break;
     }
   }

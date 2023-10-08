@@ -1,5 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System;
@@ -15,6 +16,7 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
   private readonly Db _db;
 
   public PeopleM Model { get; }
+  public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordsChangedEvent = delegate { };
 
   public PeopleDataAdapter(Db db) : base("People", 4) {
     _db = db;
@@ -80,8 +82,23 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
   public override PersonM ItemCreate(ITreeItem parent, string name) =>
     TreeItemCreate(new(GetNextId(), name) { Parent = parent });
 
-  public PersonM ItemCreateUnknown(int id) =>
-    TreeItemCreate(new(id, $"P {id}") { Parent = Model.TreeCategory.UnknownGroup });
+  public PersonM ItemCreateUnknown() {
+    var id = -1;
+    var usedIds = All
+      .Where(x => x.Id < 0)
+      .Select(x => x.Id)
+      .OrderByDescending(x => x)
+      .ToArray();
+
+    if (usedIds.Any())
+      for (var i = -1; i > usedIds.Min() - 2; i--) {
+        if (usedIds.Contains(i)) continue;
+        id = i;
+        break;
+      }
+
+    return TreeItemCreate(new(id, $"P {id}") { Parent = Model.TreeCategory.UnknownGroup });
+  }
 
   public override void ItemRename(ITreeItem item, string name) {
     if (((PersonM)item).Id > 0)
@@ -105,4 +122,50 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
   public PersonM GetPerson(string name, bool create) =>
     All.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
     ?? (create ? ItemCreate(Model.TreeCategory, name) : null);
+
+  public void OnSegmentPersonChanged(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
+    if (newPerson != null)
+      newPerson.Segment ??= segment;
+
+    if (oldPerson == null) return;
+    
+    if (oldPerson.Segment == segment)
+      oldPerson.Segment = null;
+
+    if (oldPerson.TopSegments?.Contains(segment) != true) return;
+
+    oldPerson.TopSegments = ObservableCollectionExtensions.Toggle(oldPerson.TopSegments, segment, true);
+    IsModified = true;
+  }
+
+  public void OnSegmentsPersonChanged(PersonM person, SegmentM[] segments, PersonM[] people) {
+    // delete unknown people without segments
+    var toDelete = person == null
+      ? people
+      : people.Where(x => !ReferenceEquals(x, person)).ToArray();
+
+    foreach (var ptd in toDelete)
+      if (ptd.Id < 0 && !Core.Db.Segments.All.Any(x => ReferenceEquals(x.Person, ptd)))
+        ItemDelete(ptd);
+  }
+
+  public void RemoveKeywordFromPeople(KeywordM keyword) =>
+    ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
+
+  public void ToggleKeyword(PersonM[] people, KeywordM keyword) {
+    foreach (var person in people) {
+      person.Keywords = KeywordsM.Toggle(person.Keywords, keyword);
+      IsModified = true;
+    }
+
+    PeopleKeywordsChangedEvent(this, new(people));
+  }
+
+  public void ToggleKeywords(PersonM person, IEnumerable<KeywordM> keywords) {
+    foreach (var keyword in keywords)
+      person.Keywords = KeywordsM.Toggle(person.Keywords, keyword);
+
+    IsModified = true;
+    PeopleKeywordsChangedEvent(this, new(new[] { person }));
+  }
 }

@@ -68,31 +68,20 @@ public static class GroupByItems {
       x => x.FullName);
 
   public static List<CollectionViewGroupByItem<MediaItemM>> GetPeopleFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
-    mediaItems
-      .SelectMany(mi => (mi.People ?? Enumerable.Empty<PersonM>())
-        .Concat(
-          mi.Segments == null
-            ? Enumerable.Empty<PersonM>()
-            : mi.Segments
-              .Where(s => s.Person != null)
-              .Select(s => s.Person)))
-      .Distinct()
+    PeopleM.GetFromMediaItems(mediaItems)
       .OrderBy(x => x.Name)
       .Select(x => new CollectionViewGroupByItem<MediaItemM>(x, GroupMediaItemByPerson))
       .ToList();
 
   public static List<CollectionViewGroupByItem<SegmentM>> GetPeopleFromSegments(IEnumerable<SegmentM> segments) =>
-    segments
-      .Where(x => x.Person != null)
-      .Select(x => x.Person)
-      .Distinct()
+    PeopleM.GetFromSegments(segments)
       .OrderBy(x => x.Name)
       .Select(x => new CollectionViewGroupByItem<SegmentM>(x, GroupSegmentByPerson))
       .ToList();
 
   public static List<CollectionViewGroupByItem<PersonM>> GetKeywordsFromPeople(IEnumerable<PersonM> people) =>
     CollectionViewGroupByItem<PersonM>.BuildTree<PersonM, KeywordM, string>(
-      people.Where(x => x.Keywords != null).SelectMany(x => x.Keywords),
+      KeywordsM.GetFromPeople(people),
       x => new(x, GroupPersonByKeyword),
       x => x.FullName);
 
