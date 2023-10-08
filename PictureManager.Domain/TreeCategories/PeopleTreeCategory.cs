@@ -30,13 +30,16 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
     CanMoveItem = true;
   }
 
-  private void OnItemCreated(object sender, ObjectEventArgs<PersonM> e) =>
-    TreeView.ScrollTo(e.Data);
+  private void OnItemCreated(object sender, ObjectEventArgs<PersonM> e) {
+    if (e.Data.Id > 0)
+      TreeView.ScrollTo(e.Data);
+  }
 
   public override void OnItemSelected(object o) {
     switch (o) {
       case PersonM p:
-        ToggleDialogM.TogglePerson(p);
+        if (p.Id > 0)
+          ToggleDialogM.TogglePerson(p);
         break;
       case PeopleTreeCategory:
         _peopleM.OpenPeopleView();
