@@ -304,4 +304,17 @@ public sealed class FoldersM {
 
     return output.Where(f => IsFolderVisible(f)).ToList();
   }
+
+  public static IEnumerable<FolderM> GetFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
+    mediaItems
+      .EmptyIfNull()
+      .SelectMany(x => x.Folder.GetThisAndParents())
+      .Distinct();
+
+  public static IEnumerable<FolderM> GetFromSegments(IEnumerable<SegmentM> segments) =>
+    GetFromMediaItems(
+      segments
+        .EmptyIfNull()
+        .Select(x => x.MediaItem)
+        .Distinct());
 }
