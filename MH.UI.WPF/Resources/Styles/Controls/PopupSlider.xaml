@@ -16,7 +16,7 @@
           <Grid>
             <c:IconTextButton
               Icon="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
-              Text="{Binding Value, RelativeSource={RelativeSource TemplatedParent}}">
+              Text="{Binding Value, StringFormat={}{0:G2}, RelativeSource={RelativeSource TemplatedParent}}">
               <b:Interaction.Triggers>
                 <b:EventTrigger EventName="Click">
                   <b:ChangePropertyAction
