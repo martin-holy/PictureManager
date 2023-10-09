@@ -198,13 +198,26 @@
               ToolTip="Play Panoramic Images"/>
           </StackPanel>
 
-          <!-- Image Comparer -->
+          <!-- Media Items View -->
           <StackPanel
             Orientation="Horizontal"
             Visibility="{Binding MediaItemsViews.Current, Converter={mhConv:AllToVisibilityConverter}}">
 
             <Separator/>
 
+            <!-- Thumbnails size -->
+            <Slider
+              Style="{StaticResource MH.Styles.Controls.PopupSlider}"
+              ToolTip="Thumbnails size"
+              ap:Icon.Data="{StaticResource IconMagnify}"
+              Minimum="0.1"
+              Maximum="2"
+              TickFrequency="0.1"
+              SmallChange="0.1"
+              LargeChange="0.2"
+              Value="{Binding MediaItemsViews.Current.ThumbScale, Mode=TwoWay}"/>
+
+            <!-- Image Comparer -->
             <mhc:IconButton
               ToolTip="Compare images using average hash"
               Icon="{StaticResource IconCompare}"

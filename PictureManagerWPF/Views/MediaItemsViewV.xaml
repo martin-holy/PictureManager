@@ -1,11 +1,9 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:dataViews="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type dataViews:MediaItemsView}">
     <DataTemplate.Resources>
@@ -63,14 +61,6 @@
         <mhc:CollectionView.InputBindings>
           <KeyBinding Modifiers="Control" Key="A" Command="{Binding SelectAllCommand}"/>
         </mhc:CollectionView.InputBindings>
-
-        <b:Interaction.Triggers>
-          <b:EventTrigger EventName="PreviewMouseWheel">
-            <b:InvokeCommandAction
-              Command="{Binding ZoomCommand}"
-              EventArgsConverter="{mhConv:MouseWheelConverter}"/>
-          </b:EventTrigger>
-        </b:Interaction.Triggers>
 
         <mhc:CollectionView.ItemsPanel>
           <ItemsPanelTemplate>

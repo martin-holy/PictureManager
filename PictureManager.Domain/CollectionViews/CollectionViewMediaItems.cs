@@ -1,25 +1,31 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
-using MH.Utils.BaseClasses;
-using MH.Utils.EventsArgs;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.CollectionViews; 
+namespace PictureManager.Domain.CollectionViews;
 
 public class CollectionViewMediaItems : CollectionView<MediaItemM> {
-  public double ThumbScale { get; set; }
+  private double _thumbScale;
+
+  public double ThumbScale {
+    get => _thumbScale;
+    set {
+      _thumbScale = value;
+      if (Root != null) ReWrapAll();
+      OnPropertyChanged();
+    }
+  }
+
   public Selecting<MediaItemM> Selected { get; } = new();
-  public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
 
   public CollectionViewMediaItems(double thumbScale) {
     Icon = Res.IconImageMultiple;
     Name = "Media Items";
     ThumbScale = thumbScale;
-    ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
   }
 
   public override IEnumerable<CollectionViewGroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
@@ -48,10 +54,4 @@ public class CollectionViewMediaItems : CollectionView<MediaItemM> {
 
   public override void OnSelectItem(IEnumerable<MediaItemM> source, MediaItemM item, bool isCtrlOn, bool isShiftOn) =>
     Selected.Select(source.ToList(), item, isCtrlOn, isShiftOn);
-
-  private void Zoom(int delta) {
-    if (delta < 0 && ThumbScale < .1) return;
-    ThumbScale += delta > 0 ? .05 : -.05;
-    ReWrapAll();
-  }
 }
