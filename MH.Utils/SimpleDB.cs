@@ -184,5 +184,21 @@ namespace MH.Utils {
       sw.Close();
       File.Move(newFilePath, filePath, true);
     }
+
+    public static int? GetNextRecycledId(HashSet<int> usedIds) {
+      if (!usedIds.Any()) return null;
+
+      var id = 0;
+      var max = usedIds.Max();
+
+      for (var i = 1; i < max + 1; i++)
+        if (!usedIds.Contains(i)) {
+          id = i;
+          break;
+        }
+
+      if (id == 0) return null;
+      return id;
+    }
   }
 }
