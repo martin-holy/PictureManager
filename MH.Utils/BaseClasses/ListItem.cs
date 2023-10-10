@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 
 namespace MH.Utils.BaseClasses {
   public class ListItem : ObservableObject, IListItem {
-    private protected BitVector32 Bits = new(0);
+    protected BitVector32 Bits = new(0);
 
     private string _icon;
     private string _name;
