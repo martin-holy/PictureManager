@@ -1,7 +1,9 @@
 ﻿using MH.Utils.BaseClasses;
+using PictureManager.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
@@ -22,7 +24,7 @@ namespace PictureManager.Domain.Models {
     public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
     public ObservableCollection<object> TopSegments { get; set; }
     public List<KeywordM> Keywords { get; set; }
-    public IEnumerable<KeywordM> DisplayKeywords => KeywordsM.GetAllKeywords(Keywords);
+  public IEnumerable<KeywordM> DisplayKeywords => Keywords.GetKeywords().OrderBy(x => x.FullName).ToArray();
 
     public PersonM() { }
 

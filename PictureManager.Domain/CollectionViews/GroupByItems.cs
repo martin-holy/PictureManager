@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -41,43 +42,45 @@ public static class GroupByItems {
 
   public static List<CollectionViewGroupByItem<MediaItemM>> GetFoldersFromMediaItems(IList<MediaItemM> mediaItems) =>
     CollectionViewGroupByItem<MediaItemM>.BuildTree<MediaItemM, FolderM, string>(
-      FoldersM.GetFromMediaItems(mediaItems),
+      mediaItems.GetFolders(),
       x => new(x, GroupMediaItemByFolder),
       x => x.FullPath);
 
   public static List<CollectionViewGroupByItem<SegmentM>> GetFoldersFromSegments(IList<SegmentM> segments) =>
     CollectionViewGroupByItem<SegmentM>.BuildTree<SegmentM, FolderM, string>(
-      FoldersM.GetFromSegments(segments),
+      segments.GetFolders(),
       x => new(x, GroupSegmentByFolder),
       x => x.FullPath);
 
   public static List<CollectionViewGroupByItem<MediaItemM>> GetKeywordsFromMediaItems(MediaItemM[] mediaItems) =>
     CollectionViewGroupByItem<MediaItemM>.BuildTree<MediaItemM, KeywordM, string>(
-      KeywordsM.GetFromMediaItems(mediaItems),
+      mediaItems.GetKeywords(),
       x => new(x, GroupMediaItemByKeyword),
       x => x.FullName);
 
   public static List<CollectionViewGroupByItem<SegmentM>> GetKeywordsFromSegments(IEnumerable<SegmentM> segments) =>
     CollectionViewGroupByItem<SegmentM>.BuildTree<SegmentM, KeywordM, string>(
-      KeywordsM.GetFromSegments(segments),
+      segments.GetKeywords(),
       x => new(x, GroupSegmentByKeyword),
       x => x.FullName);
 
   public static List<CollectionViewGroupByItem<MediaItemM>> GetPeopleFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
-    PeopleM.GetFromMediaItems(mediaItems)
+    mediaItems
+      .GetPeople()
       .OrderBy(x => x.Name)
       .Select(x => new CollectionViewGroupByItem<MediaItemM>(x, GroupMediaItemByPerson))
       .ToList();
 
   public static List<CollectionViewGroupByItem<SegmentM>> GetPeopleFromSegments(IEnumerable<SegmentM> segments) =>
-    PeopleM.GetFromSegments(segments)
+    segments
+      .GetPeople()
       .OrderBy(x => x.Name)
       .Select(x => new CollectionViewGroupByItem<SegmentM>(x, GroupSegmentByPerson))
       .ToList();
 
   public static List<CollectionViewGroupByItem<PersonM>> GetKeywordsFromPeople(IEnumerable<PersonM> people) =>
     CollectionViewGroupByItem<PersonM>.BuildTree<PersonM, KeywordM, string>(
-      KeywordsM.GetFromPeople(people),
+      people.GetKeywords(),
       x => new(x, GroupPersonByKeyword),
       x => x.FullName);
 

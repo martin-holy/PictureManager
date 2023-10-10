@@ -1,10 +1,12 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Extensions;
 using PictureManager.Domain.CollectionViews;
+using PictureManager.Domain.Extensions;
 using System.Linq;
 
-namespace PictureManager.Domain.Models; 
+namespace PictureManager.Domain.Models;
 
 public sealed class PeopleToolsTabM : CollectionViewPeople {
   public PeopleToolsTabM(PeopleM peopleM) : base(peopleM) { }
@@ -26,11 +28,11 @@ public sealed class PeopleToolsTabM : CollectionViewPeople {
     if (result < 1) return;
 
     var items = result switch {
-      1 => PeopleM.GetFromMediaItems(Core.MediaItemsViews.Current?.GetSelectedOrAll()),
-      2 => PeopleM.GetFromMediaItems(Core.MediaViewerM.MediaItems),
+      1 => Core.MediaItemsViews.Current?.GetSelectedOrAll().GetPeople(),
+      2 => Core.MediaViewerM.MediaItems.GetPeople(),
       3 => PeopleM.GetAll(),
       _ => Enumerable.Empty<PersonM>() };
 
-    Reload(items.OrderBy(x => x.Name).ToList(), GroupMode.GroupBy, null, true);
+    Reload(items.EmptyIfNull().OrderBy(x => x.Name).ToList(), GroupMode.GroupBy, null, true);
   }
 }
