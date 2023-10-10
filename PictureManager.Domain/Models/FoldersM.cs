@@ -302,19 +302,6 @@ public sealed class FoldersM {
       Tree.GetThisAndItemsRecursive(root, ref output);
     }
 
-    return output.Where(f => IsFolderVisible(f)).ToList();
+    return output.Where(IsFolderVisible).ToList();
   }
-
-  public static IEnumerable<FolderM> GetFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
-    mediaItems
-      .EmptyIfNull()
-      .SelectMany(x => x.Folder.GetThisAndParents())
-      .Distinct();
-
-  public static IEnumerable<FolderM> GetFromSegments(IEnumerable<SegmentM> segments) =>
-    GetFromMediaItems(
-      segments
-        .EmptyIfNull()
-        .Select(x => x.MediaItem)
-        .Distinct());
 }

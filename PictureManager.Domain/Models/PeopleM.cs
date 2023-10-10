@@ -3,6 +3,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,25 +114,13 @@ public sealed class PeopleM {
     foreach (var segment in topSegments)
       ToggleTopSegment(person, segment);
 
-    var keywords = KeywordsM.GetFromPeople(people)
+    var keywords = people
+      .GetKeywords()
       .Except(person.Keywords.EmptyIfNull())
       .ToArray();
 
     _da.ToggleKeywords(person, keywords);
   }
-
-  public static IEnumerable<PersonM> GetFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
-    mediaItems.EmptyIfNull()
-      .SelectMany(mi => mi.People.EmptyIfNull()
-        .Concat(GetFromSegments(mi.Segments)))
-      .Distinct();
-
-  public static IEnumerable<PersonM> GetFromSegments(IEnumerable<SegmentM> segments) =>
-    segments
-      .EmptyIfNull()
-      .Where(x => x.Person != null)
-      .Select(x => x.Person)
-      .Distinct();
 
   public static PersonM[] GetAll() =>
     Core.Db.People.All

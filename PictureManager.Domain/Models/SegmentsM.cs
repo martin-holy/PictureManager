@@ -2,10 +2,10 @@ using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
+using PictureManager.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -88,7 +88,7 @@ public sealed class SegmentsM : ObservableObject {
       Core.PeopleM.Selected.DeselectAll();
 
     Selected.Select(segments, segment, isCtrlOn, isShiftOn);
-    Core.PeopleM.Selected.Add(PeopleM.GetFromSegments(Selected.Items));
+    Core.PeopleM.Selected.Add(Selected.Items.GetPeople());
     SetCanSetAsSamePerson();
   }
 
@@ -119,12 +119,13 @@ public sealed class SegmentsM : ObservableObject {
   /// or that have the same Person (with id less than 0) as some of the selected.
   /// </summary>
   public void SetSelectedAsPerson(PersonM person) {
-    var unknownPeople = PeopleM.GetFromSegments(Selected.Items.Where(x => x.Id < 0)).ToHashSet();
+    var unknownPeople = Selected.Items.GetPeople().Where(x => x.Id < 0).ToHashSet();
     var segments = Selected.Items
       .Where(x => x.Person == null || x.Person.Id > 0)
       .Concat(DataAdapter.All.Where(x => unknownPeople.Contains(x.Person)))
       .ToArray();
-    var people = PeopleM.GetFromSegments(segments)
+    var people = segments
+      .GetPeople()
       .Concat(new[] { person })
       .Distinct()
       .ToArray();
@@ -138,7 +139,7 @@ public sealed class SegmentsM : ObservableObject {
 
     PersonM newPerson;
     SegmentM[] toUpdate;
-    var people = PeopleM.GetFromSegments(Selected.Items).OrderBy(x => x.Name).ToArray();
+    var people = Selected.Items.GetPeople().OrderBy(x => x.Name).ToArray();
 
     if (people.Length == 0) {
       newPerson = Core.Db.People.ItemCreateUnknown();
@@ -170,15 +171,9 @@ public sealed class SegmentsM : ObservableObject {
     if (Dialog.Show(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1)
       return;
 
-    var people = PeopleM.GetFromSegments(segments).ToArray();
+    var people = segments.GetPeople().ToArray();
     DataAdapter.ChangePerson(null, segments, people);
   }
-
-  public static IEnumerable<SegmentM> GetFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
-    mediaItems
-      .EmptyIfNull()
-      .Where(x => x.Segments != null)
-      .SelectMany(x => x.Segments);
 
   private void ViewMediaItemsWithSegment(SegmentM segmentM) {
     var items = GetMediaItemsWithSegment(segmentM);
@@ -192,18 +187,21 @@ public sealed class SegmentsM : ObservableObject {
     if (segment == null) return null;
 
     if (ReferenceEquals(SegmentsView?.CvSegments.LastSelectedItem, segment))
-      return MediaItemsM.GetFromSegments(((CollectionViewGroup<SegmentM>)SegmentsView.CvSegments.LastSelectedRow.Parent).Source)
+      return ((CollectionViewGroup<SegmentM>)SegmentsView.CvSegments.LastSelectedRow.Parent).Source
+        .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
         .ThenBy(x => x.FileName)
         .ToList();
 
     if (segment.Person != null)
-      return MediaItemsM.GetFromSegments(DataAdapter.All.Where(x => x.Person == segment.Person))
+      return DataAdapter.All.Where(x => x.Person == segment.Person)
+        .GetMediaItems()
         .OrderBy(x => x.FileName)
         .ToList();
 
     if (SegmentsDrawerM.Items.Contains(segment))
-      return MediaItemsM.GetFromSegments(SegmentsDrawerM.Items)
+      return SegmentsDrawerM.Items
+        .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
         .ThenBy(x => x.FileName)
         .ToList();
@@ -215,7 +213,7 @@ public sealed class SegmentsM : ObservableObject {
     var result = GetSegmentsToLoadUserInput();
     if (result < 1) return;
 
-    var segments = GetSegments(Core.MediaItemsViews.Current.GetSelectedOrAll(), result).ToList();
+    var segments = GetSegments(Core.MediaItemsViews.Current.GetSelectedOrAll(), result).ToArray();
     SegmentsView ??= new(Core.PeopleM, this);
     Core.MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
     SegmentsView.Reload(segments);
@@ -239,9 +237,9 @@ public sealed class SegmentsM : ObservableObject {
   private IEnumerable<SegmentM> GetSegments(IEnumerable<MediaItemM> mediaItems, int mode) {
     switch (mode) {
       case 1: // all segments from mediaItems
-        return GetFromMediaItems(mediaItems);
+        return mediaItems.GetSegments();
       case 2: // all segments with person found on segments from mediaItems
-        var people = PeopleM.GetFromSegments(GetFromMediaItems(mediaItems)).ToHashSet();
+        var people = mediaItems.GetSegments().GetPeople().ToHashSet();
 
         return DataAdapter.All
           .Where(x => x.Person != null && people.Contains(x.Person))

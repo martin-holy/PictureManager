@@ -554,9 +554,6 @@ public sealed class MediaItemsM : ObservableObject {
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.Selected.Items.ToArray();
 
-  public static IEnumerable<MediaItemM> GetFromSegments(IEnumerable<SegmentM> segments) =>
-    segments.EmptyIfNull().Select(x => x.MediaItem).Distinct();
-
   public void SetMetadata(object item) {
     var items = GetActive();
     if (items.Length == 0) return;

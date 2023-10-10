@@ -1,9 +1,8 @@
-﻿using System;
-using MH.Utils;
-using MH.Utils.Extensions;
+﻿using MH.Utils;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -53,40 +52,4 @@ public sealed class KeywordsM {
 
     return list;
   }
-
-  public static IEnumerable<KeywordM> GetAllKeywords(IEnumerable<KeywordM> keywords) =>
-    keywords
-      .EmptyIfNull()
-      .SelectMany(x => x.GetThisAndParents())
-      .Distinct()
-      .OrderBy(x => x.FullName)
-      .ToArray();
-
-  public static IEnumerable<KeywordM> GetFromMediaItems(MediaItemM[] mediaItems) =>
-    mediaItems
-      .EmptyIfNull()
-      .Where(x => x.Keywords != null)
-      .SelectMany(x => x.Keywords)
-      .Concat(GetFromSegments(SegmentsM.GetFromMediaItems(mediaItems)))
-      .Distinct()
-      .SelectMany(x => x.GetThisAndParents())
-      .Distinct();
-
-  public static IEnumerable<KeywordM> GetFromPeople(IEnumerable<PersonM> people) =>
-    people
-      .EmptyIfNull()
-      .Where(x => x.Keywords != null)
-      .SelectMany(x => x.Keywords)
-      .Distinct()
-      .SelectMany(x => x.GetThisAndParents())
-      .Distinct();
-
-  public static IEnumerable<KeywordM> GetFromSegments(IEnumerable<SegmentM> segments) =>
-    segments
-      .EmptyIfNull()
-      .Where(x => x.Keywords != null)
-      .SelectMany(x => x.Keywords)
-      .Distinct()
-      .SelectMany(x => x.GetThisAndParents())
-      .Distinct();
 }
