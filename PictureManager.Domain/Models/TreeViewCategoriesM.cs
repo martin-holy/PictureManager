@@ -1,11 +1,15 @@
 ﻿using MH.UI.BaseClasses;
 using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Models; 
+namespace PictureManager.Domain.Models;
 
 public sealed class TreeViewCategoriesM : TabControl {
   public TreeViewSearchM TreeViewSearchM { get; } = new();
@@ -34,15 +38,6 @@ public sealed class TreeViewCategoriesM : TabControl {
   public void MarkUsedKeywordsAndPeople() {
     // can be Person, Keyword, Folder, FolderKeyword, Rating or GeoName
 
-    void MarkedTagsAddWithIncrease(object tag) {
-      if (tag == null) return;
-
-      if (MarkedTags.ContainsKey(tag))
-        MarkedTags[tag]++;
-      else
-        MarkedTags.Add(tag, 1);
-    }
-
     // clear previous marked tags
     MarkedTags.Clear();
 
@@ -61,63 +56,45 @@ public sealed class TreeViewCategoriesM : TabControl {
 
     foreach (var mi in mediaItems) {
       // People
-      if (mi.People != null || mi.Segments != null) {
-        var people = (
-            mi.People == null
-              ? Array.Empty<PersonM>()
-              : mi.People.ToArray())
-          .Concat(
-            mi.Segments == null
-              ? Array.Empty<PersonM>()
-              : mi.Segments
-                .Where(x => x.Person?.Id > 0)
-                .Select(x => x.Person)
-                .ToArray())
-          .Distinct();
-
-        foreach (var person in people) {
-          MarkedTagsAddWithIncrease(person);
-          MarkedTagsAddWithIncrease(person.Parent as CategoryGroupM);
-        }
-      }
+      MarkedTagsAddWithIncrease(mi.People
+        .EmptyIfNull()
+        .Concat(mi.Segments.GetPeople())
+        .Distinct()
+        .SelectMany(x => x.GetThisAndParents<ITreeItem>()));
 
       // Keywords
-      if (mi.Keywords != null) {
-        foreach (var keyword in mi.Keywords) {
-          var k = keyword;
-          while (k != null) {
-            MarkedTagsAddWithIncrease(k);
-            MarkedTagsAddWithIncrease(k.Parent as CategoryGroupM);
-            k = k.Parent as KeywordM;
-          }
-        }
-      }
+      if (mi.Keywords != null)
+        MarkedTagsAddWithIncrease(mi.Keywords.SelectMany(x => x.GetThisAndParents<ITreeItem>()));
 
       // Folders
-      var f = mi.Folder;
-      while (f != null) {
-        MarkedTagsAddWithIncrease(f);
-        f = f.Parent as FolderM;
-      }
+      MarkedTagsAddWithIncrease(mi.Folder.GetThisAndParents());
 
       // FolderKeywords
-      var fk = mi.Folder.FolderKeyword;
-      while (fk != null) {
-        MarkedTagsAddWithIncrease(fk);
-        fk = fk.Parent as FolderKeywordM;
-      }
+      if (mi.Folder.FolderKeyword != null)
+        MarkedTagsAddWithIncrease(mi.Folder.FolderKeyword.GetThisAndParents());
 
       // GeoNames
-      var gn = mi.GeoName;
-      while (gn != null) {
-        MarkedTagsAddWithIncrease(gn);
-        gn = gn.Parent as GeoNameM;
-      }
+      if (mi.GeoName != null)
+        MarkedTagsAddWithIncrease(mi.GeoName.GetThisAndParents());
 
       // Ratings
       MarkedTagsAddWithIncrease(Core.RatingsTreeCategory.GetRatingByValue(mi.Rating));
     }
 
     OnPropertyChanged(nameof(MarkedTags));
+  }
+
+  private void MarkedTagsAddWithIncrease(IEnumerable<object> tags) {
+    foreach (var tag in tags)
+      MarkedTagsAddWithIncrease(tag);
+  }
+
+  private void MarkedTagsAddWithIncrease(object tag) {
+    if (tag == null) return;
+
+    if (MarkedTags.ContainsKey(tag))
+      MarkedTags[tag]++;
+    else
+      MarkedTags.Add(tag, 1);
   }
 }
