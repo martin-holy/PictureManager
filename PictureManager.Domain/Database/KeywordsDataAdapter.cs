@@ -12,6 +12,7 @@ namespace PictureManager.Domain.Database;
 /// </summary>
 public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
   private readonly Db _db;
+  private const string _notFoundRecordNamePrefix = "Not found ";
 
   public KeywordsM Model { get; }
 
@@ -73,6 +74,16 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
     Model.TreeCategory.AutoAddedGroup = Model.TreeCategory.Items
       .OfType<CategoryGroupM>()
       .SingleOrDefault(x => x.Name.Equals("Auto Added"));
+  }
+
+  public List<KeywordM> Link(string csv, IDataAdapter seeker) =>
+    LinkList(csv, GetNotFoundRecord, seeker);
+
+  private KeywordM GetNotFoundRecord(int notFoundId) {
+    var id = GetNextId();
+    var item = new KeywordM(id, $"{_notFoundRecordNamePrefix}{id} ({notFoundId})", Model.TreeCategory);
+    item.Parent.Items.Add(item);
+    return item;
   }
 
   public override KeywordM ItemCreate(ITreeItem parent, string name) =>

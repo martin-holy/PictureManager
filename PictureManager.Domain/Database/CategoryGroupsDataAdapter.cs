@@ -48,7 +48,7 @@ public class CategoryGroupsDataAdapter : TreeDataAdapter<CategoryGroupM> {
       cg.Parent = cat;
       cg.Parent.Items.Add(cg);
 
-      foreach (var item in items.Select(id => allDict[id])) {
+      foreach (var item in items.Where(allDict.ContainsKey).Select(id => allDict[id])) {
         item.Parent = cg;
         cg.Items.Add(item);
       }

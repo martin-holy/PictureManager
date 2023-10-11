@@ -68,10 +68,10 @@ public sealed class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
       mi.Folder.MediaItems.Add(mi);
 
       // reference to People
-      mi.People = LinkList(csv[9], _db.People.AllDict);
+      mi.People = _db.People.Link(csv[9], this);
 
       // reference to Keywords
-      mi.Keywords = LinkList(csv[10], _db.Keywords.AllDict);
+      mi.Keywords = _db.Keywords.Link(csv[10], this);
 
       // reference to GeoName
       if (!string.IsNullOrEmpty(csv[8]))

@@ -99,10 +99,10 @@ public class VideoClipsDataAdapter : TreeDataAdapter<VideoClipM> {
       }
 
       // reference to People
-      vc.People = LinkList(csv[9], _db.People.AllDict);
+      vc.People = _db.People.Link(csv[9], this);
 
       // reference to Keywords
-      vc.Keywords = LinkList(csv[10], _db.Keywords.AllDict);
+      vc.Keywords = _db.Keywords.Link(csv[10], this);
     }
   }
 
