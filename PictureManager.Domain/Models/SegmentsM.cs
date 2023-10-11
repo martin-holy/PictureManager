@@ -119,9 +119,9 @@ public sealed class SegmentsM : ObservableObject {
   /// or that have the same Person (with id less than 0) as some of the selected.
   /// </summary>
   public void SetSelectedAsPerson(PersonM person) {
-    var unknownPeople = Selected.Items.GetPeople().Where(x => x.Id < 0).ToHashSet();
+    var unknownPeople = Selected.Items.GetPeople().Where(x => x.IsUnknown).ToHashSet();
     var segments = Selected.Items
-      .Where(x => x.Person == null || x.Person.Id > 0)
+      .Where(x => x.Person == null || !x.Person.IsUnknown)
       .Concat(DataAdapter.All.Where(x => unknownPeople.Contains(x.Person)))
       .ToArray();
     var people = segments

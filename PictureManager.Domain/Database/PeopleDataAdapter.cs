@@ -1,5 +1,5 @@
-﻿using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
@@ -14,6 +14,7 @@ namespace PictureManager.Domain.Database;
 /// </summary>
 public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
   private readonly Db _db;
+  private const string _unknownPersonNamePrefix = "P -";
 
   public PeopleM Model { get; }
   public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordsChangedEvent = delegate { };
@@ -45,8 +46,20 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
   public override void Save() =>
     SaveToFile(GetAll());
 
-  public override PersonM FromCsv(string[] csv) =>
-    new(int.Parse(csv[0]), csv[1]);
+  public override PersonM FromCsv(string[] csv) {
+    var person = new PersonM(int.Parse(csv[0]), csv[1]);
+
+    if (person.Name.StartsWith(_unknownPersonNamePrefix))
+      person.IsUnknown = true;
+
+    return person;
+  }
+
+    if (person.Name.StartsWith(_unknownPersonNamePrefix))
+      person.IsUnknown = true;
+
+    return person;
+  }
 
   public override string ToCsv(PersonM person) =>
     string.Join("|",
@@ -83,32 +96,16 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
     TreeItemCreate(new(GetNextId(), name) { Parent = parent });
 
   public PersonM ItemCreateUnknown() {
-    var id = -1;
-    var usedIds = All
-      .Where(x => x.Id < 0)
-      .Select(x => x.Id)
-      .OrderByDescending(x => x)
-      .ToArray();
+    var id = SimpleDB.GetNextRecycledId(All.Select(x => x.Id).ToHashSet()) ?? GetNextId();
 
-    if (usedIds.Any())
-      for (var i = -1; i > usedIds.Min() - 2; i--) {
-        if (usedIds.Contains(i)) continue;
-        id = i;
-        break;
+    return TreeItemCreate(new(id, $"{_unknownPersonNamePrefix}{id}") {
+      Parent = Model.TreeCategory.UnknownGroup,
+      IsUnknown = true
+    });
       }
 
-    return TreeItemCreate(new(id, $"P {id}") { Parent = Model.TreeCategory.UnknownGroup });
-  }
-
-  public override void ItemRename(ITreeItem item, string name) {
-    if (((PersonM)item).Id > 0)
-      base.ItemRename(item, name);
-    else
-      Dialog.Show(new MessageDialog(
-        "Person rename",
-        "Renaming unknown person is not supported yet.",
-        Res.IconPeople,
-        false));
+  protected override void OnItemRenamed(PersonM item) {
+    if (item.IsUnknown) item.IsUnknown = false;
   }
 
   protected override void OnItemDeleted(PersonM item) {
@@ -144,8 +141,10 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
       ? people
       : people.Where(x => !ReferenceEquals(x, person)).ToArray();
 
+    // WARNING Segments.All contains only segments from available drives!
+    // When the drive is mounted, not found people will be recreated.
     foreach (var ptd in toDelete)
-      if (ptd.Id < 0 && !Core.Db.Segments.All.Any(x => ReferenceEquals(x.Person, ptd)))
+      if (ptd.IsUnknown && !Core.Db.Segments.All.Any(x => ReferenceEquals(x.Person, ptd)))
         ItemDelete(ptd);
   }
 
