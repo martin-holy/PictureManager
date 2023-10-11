@@ -46,6 +46,7 @@
 ## MediaItems
   - D:\!test\364__32_original.jpg nejde ulozit metadata, nebo crop (resave without metadata in xnview fix the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
+  - Reload metadata on video
 ## VideoPlayer
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
@@ -68,7 +69,6 @@
   - replace Equals with ReferenceEquals where possible
   - make selection border on base class level in CategoryView and remove it from segment, person, mediaItem
 ## TreeViewCategories
-  - MarkUsedKeywordsAndPeople add Keywords from Segments
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
 ## VideoClips:
@@ -83,12 +83,8 @@
   - from selected people and segments
 ## SegmentV
   - make selection bigger. remove margin and replace it by transparent border
-## MediaItemsView
-  - replace mouse wheel + CTRL for zoom with slider
-## MediaItems
-  - Imaging.GetMediaType(fileName) in MediaItemM is slowing load from DB
-## People
-  - add support for renaming unknown person
+## MediaItemsDataAdapter
+  - GetItems methods
 
         # New
 ##
