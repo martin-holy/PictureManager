@@ -10,6 +10,7 @@ namespace MH.Utils.BaseClasses;
 public class DataAdapter<T> : IDataAdapter<T> where T : class {
   private bool _isModified;
   private bool _areTablePropsModified;
+  private Dictionary<int, int> _notFoundIds;
 
   public bool IsModified {
     get => _isModified;
@@ -136,24 +137,23 @@ public class DataAdapter<T> : IDataAdapter<T> where T : class {
       AreTablePropsModified = false;
   }
 
-  public static List<TI> IdToRecord<TI>(string csv, Dictionary<int, TI> source) {
+  public static List<TI> IdToRecord<TI>(string csv, Dictionary<int, TI> source, Func<int, TI> resolveNotFound) {
     if (string.IsNullOrEmpty(csv)) return null;
 
     var items = csv
       .Split(',')
       .Select(int.Parse)
-      .Where(source.ContainsKey)
-      .Select(x => source[x])
+      .Select(x => source.TryGetValue(x, out var rec) ? rec : resolveNotFound(x))
       .ToList();
 
     return items.Count == 0 ? null : items;
   }
 
-  public static List<TI> LinkList<TI>(string csv, Dictionary<int, TI> source) =>
-    IdToRecord(csv, source);
+  public List<T> LinkList(string csv, Func<int, T> getNotFoundRecord, IDataAdapter seeker) =>
+    IdToRecord(csv, AllDict, notFoundId => ResolveNotFoundRecord(notFoundId, getNotFoundRecord, seeker));
 
   public static ObservableCollection<object> LinkObservableCollection<TI>(string csv, Dictionary<int, TI> source) {
-    var records = IdToRecord(csv, source);
+    var records = IdToRecord(csv, source, _ => default)?.Where(x => x != null);
     if (records == null) return null;
 
     var collection = new ObservableCollection<object>();
@@ -162,5 +162,18 @@ public class DataAdapter<T> : IDataAdapter<T> where T : class {
       collection.Add(item);
 
     return collection;
+  }
+
+  public T ResolveNotFoundRecord(int notFoundId, Func<int, T> getNotFoundRecord, IDataAdapter seeker) {
+    _notFoundIds ??= new();
+    seeker.IsModified = true;
+
+    if (_notFoundIds.TryGetValue(notFoundId, out var id)) return AllDict[id];
+
+    var item = getNotFoundRecord(notFoundId);
+
+    _notFoundIds.Add(notFoundId, item.GetHashCode());
+    AllDict.Add(item.GetHashCode(), item);
+    return item;
   }
 }
