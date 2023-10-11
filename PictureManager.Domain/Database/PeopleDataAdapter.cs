@@ -15,6 +15,7 @@ namespace PictureManager.Domain.Database;
 public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
   private readonly Db _db;
   private const string _unknownPersonNamePrefix = "P -";
+  private const string _notFoundRecordNamePrefix = "Not found ";
 
   public PeopleM Model { get; }
   public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordsChangedEvent = delegate { };
@@ -55,12 +56,6 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
     return person;
   }
 
-    if (person.Name.StartsWith(_unknownPersonNamePrefix))
-      person.IsUnknown = true;
-
-    return person;
-  }
-
   public override string ToCsv(PersonM person) =>
     string.Join("|",
       person.GetHashCode().ToString(),
@@ -82,14 +77,31 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
         person.Segment = (SegmentM)person.TopSegments[0];
 
       // reference to Keywords
-      person.Keywords = LinkList(csv[3], _db.Keywords.AllDict);
+      person.Keywords = _db.Keywords.Link(csv[3], this);
 
       // add loose people
-      foreach (var personM in AllDict.Values.Where(x => x.Parent == null && x.Id > 0)) {
+      foreach (var personM in AllDict.Values.Where(x => x.Parent == null)) {
         personM.Parent = Model.TreeCategory;
         Model.TreeCategory.Items.Add(personM);
       }
     }
+  }
+
+  public List<PersonM> Link(string csv, IDataAdapter seeker) =>
+    LinkList(csv, GetNotFoundRecord, seeker);
+
+  public PersonM GetPerson(int id, IDataAdapter seeker) =>
+    AllDict.TryGetValue(id, out var person)
+      ? person
+      : ResolveNotFoundRecord(id, GetNotFoundRecord, seeker);
+
+  private PersonM GetNotFoundRecord(int notFoundId) {
+    var id = GetNextId();
+    var item = new PersonM(id, $"{_notFoundRecordNamePrefix}{id} ({notFoundId})") {
+      Parent = Model.TreeCategory
+    };
+    item.Parent.Items.Add(item);
+    return item;
   }
 
   public override PersonM ItemCreate(ITreeItem parent, string name) =>
@@ -97,12 +109,12 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
 
   public PersonM ItemCreateUnknown() {
     var id = SimpleDB.GetNextRecycledId(All.Select(x => x.Id).ToHashSet()) ?? GetNextId();
-
+    
     return TreeItemCreate(new(id, $"{_unknownPersonNamePrefix}{id}") {
       Parent = Model.TreeCategory.UnknownGroup,
       IsUnknown = true
     });
-      }
+  }
 
   protected override void OnItemRenamed(PersonM item) {
     if (item.IsUnknown) item.IsUnknown = false;

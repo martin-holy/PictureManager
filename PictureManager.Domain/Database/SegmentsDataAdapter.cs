@@ -63,15 +63,8 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
         var personId = int.Parse(csv[2]);
 
         if (personId != 0) {
-          if (!_db.People.AllDict.TryGetValue(personId, out var person)) {
-            // this needs to stay because not all segments have to be loaded
-            // (segments from other drives)
-            person = new(personId, $"P {personId}");
-            _db.People.AllDict.Add(person.GetHashCode(), person);
-          }
-
-          segment.Person = person;
-          person.Segment ??= segment;
+          segment.Person = _db.People.GetPerson(personId, this);
+          segment.Person.Segment ??= segment;
         }
       }
       else {
@@ -79,7 +72,7 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
       }
 
       // reference to Keywords
-      segment.Keywords = LinkList(csv[4], _db.Keywords.AllDict);
+      segment.Keywords = _db.Keywords.Link(csv[4], this);
     }
 
     // in case MediaItem was deleted
