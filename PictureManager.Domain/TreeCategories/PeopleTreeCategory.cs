@@ -31,15 +31,14 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
   }
 
   private void OnItemCreated(object sender, ObjectEventArgs<PersonM> e) {
-    if (e.Data.Id > 0)
+    if (!e.Data.IsUnknown)
       TreeView.ScrollTo(e.Data);
   }
 
   public override void OnItemSelected(object o) {
     switch (o) {
       case PersonM p:
-        if (p.Id > 0)
-          ToggleDialogM.TogglePerson(p);
+        ToggleDialogM.TogglePerson(p);
         break;
       case PeopleTreeCategory:
         _peopleM.OpenPeopleView();

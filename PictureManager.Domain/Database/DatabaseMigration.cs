@@ -1,10 +1,11 @@
 ﻿using MH.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PictureManager.Domain.Database; 
+namespace PictureManager.Domain.Database;
 
 public static class DatabaseMigration {
   public static void Resolver(int oldVersion, int newVersion) {
@@ -13,6 +14,7 @@ public static class DatabaseMigration {
     if (oldVersion < 3) From2To3();
     if (oldVersion < 4) From3To4();
     if (oldVersion < 5) From4To5();
+    if (oldVersion < 6) From5To6();
   }
 
   /// <summary>
@@ -126,27 +128,79 @@ public static class DatabaseMigration {
   }
 
   /// <summary>
-  /// Delete unknown people with without segments.
   /// Add unknown people to UnknownGroup
   /// </summary>
   private static void From4To5() {
     Core.Db.ReadyEvent += (_, _) => {
-      var allPeople = Core.Db.Segments.All
-        .Where(x => x.Person?.Id < 0)
-        .Select(x => x.Person)
-        .Distinct()
-        .ToHashSet();
-      var toDelete = Core.Db.People.All
-        .Where(x => x.Id < 0 && !allPeople.Contains(x))
-        .ToArray();
-
-      foreach (var person in toDelete)
-        Core.Db.People.ItemDelete(person);
-
       Core.PeopleM.TreeCategory.UnknownGroup.AddItems(
         Core.Db.People.All
-          .Where(x => x.Id < 0)
+          .Where(x => x.IsUnknown && x.Parent == null)
           .OrderBy(x => x.Name));
     };
   }
+
+  /// <summary>
+  /// Change unknown person id from negative to positive.
+  /// Identification of unknown person will be Name starting with "P -"
+  /// </summary>
+  private static void From5To6() {
+    var pIds = new List<int>();
+
+    if (!SimpleDB.LoadFromFile(x => {
+          pIds.Add(int.Parse(x.Split("|")[0]));
+        }, Core.Db.People.TableFilePath)) return;
+
+    var pIdsNeg = pIds.Where(x => x < 0).ToHashSet();
+    var pIdsPos = pIds.Where(x => x > 0).ToHashSet();
+    var pIdsDic = new Dictionary<int, int>();
+
+    foreach (var pIdNeg in pIdsNeg) {
+      var pIdPos = SimpleDB.GetNextRecycledId(pIdsPos) ?? ++Core.Db.People.MaxId;
+      pIdsPos.Add(pIdPos);
+      pIdsDic.Add(pIdNeg, pIdPos);
+    }
+
+    string UpdateIds(string line, int index, Func<string[], bool> skipLine) {
+      var vars = line.Split("|");
+
+      if (skipLine?.Invoke(vars) == true
+          || string.IsNullOrEmpty(vars[index])
+          || !vars[index].Contains('-'))
+        return line;
+
+      var ids = vars[index].Split(",").Select(int.Parse).ToArray();
+      for (int i = 0; i < ids.Length; i++)
+        if (ids[i] < 0) {
+          if (!pIdsDic.TryGetValue(ids[i], out var id)) {
+            id = ++Core.Db.People.MaxId;
+            pIdsDic.Add(ids[i], id);
+          }
+
+          ids[i] = id;
+        }
+
+      vars[index] = string.Join(",", ids);
+
+      return string.Join("|", vars);
+    }
+
+    SimpleDB.MigrateFile(
+      Core.Db.CategoryGroups.TableFilePath,
+      x => UpdateIds(x, 3, vars => int.Parse(vars[2]) != (int)Category.People));
+
+    foreach (var filePath in GetDriveRelatedTableFilePaths(Core.Db.MediaItems.TableName))
+      SimpleDB.MigrateFile(filePath, x => UpdateIds(x, 9, null));
+
+    SimpleDB.MigrateFile(Core.Db.People.TableFilePath, x => UpdateIds(x, 0, null));
+
+    foreach (var filePath in GetDriveRelatedTableFilePaths(Core.Db.Segments.TableName))
+      SimpleDB.MigrateFile(filePath, x => UpdateIds(x, 2, null));
+
+    Core.Db.People.IsModified = true;
+    Core.Db.SaveIdSequences();
+  }
+
+  private static IEnumerable<string> GetDriveRelatedTableFilePaths(string tableName) =>
+    Directory.GetFiles("db")
+      .Where(x => x.StartsWith("db" + Path.DirectorySeparatorChar + $"{tableName}."));
 }
