@@ -18,14 +18,29 @@ public static class GetDataExtensions {
       .GetMediaItems()
       .GetFolders();
 
+  public static IEnumerable<GeoNameM> GetGeoNames(this MediaItemM mediaItem) =>
+    mediaItem.GeoName == null
+      ? Enumerable.Empty<GeoNameM>()
+      : mediaItem.GeoName.GetThisAndParents();
+
+  public static IEnumerable<GeoNameM> GetGeoNames(this IEnumerable<MediaItemM> mediaItems) =>
+    mediaItems
+      .EmptyIfNull()
+      .SelectMany(x => x.GetGeoNames())
+      .Distinct();
+
+  public static IEnumerable<KeywordM> GetKeywords(this MediaItemM mediaItem) =>
+    mediaItem.Keywords
+      .EmptyIfNull()
+      .Concat(mediaItem.GetSegments().GetKeywords())
+      .Distinct()
+      .SelectMany(x => x.GetThisAndParents())
+      .Distinct();
+
   public static IEnumerable<KeywordM> GetKeywords(this MediaItemM[] mediaItems) =>
     mediaItems
       .EmptyIfNull()
-      .Where(x => x.Keywords != null)
-      .SelectMany(x => x.Keywords)
-      .Concat(mediaItems.GetSegments().GetKeywords())
-      .Distinct()
-      .SelectMany(x => x.GetThisAndParents())
+      .SelectMany(x => x.GetKeywords())
       .Distinct();
 
   public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<PersonM> people) =>
@@ -58,10 +73,16 @@ public static class GetDataExtensions {
       .Select(x => x.MediaItem)
       .Distinct();
 
+  public static IEnumerable<PersonM> GetPeople(this MediaItemM mediaItem) =>
+    mediaItem.People
+      .EmptyIfNull()
+      .Concat(mediaItem.Segments.GetPeople())
+      .Distinct();
+
   public static IEnumerable<PersonM> GetPeople(this IEnumerable<MediaItemM> mediaItems) =>
-    mediaItems.EmptyIfNull()
-      .SelectMany(mi => mi.People.EmptyIfNull()
-        .Concat(mi.Segments.GetPeople()))
+    mediaItems
+      .EmptyIfNull()
+      .SelectMany(x => x.GetPeople())
       .Distinct();
 
   public static IEnumerable<PersonM> GetPeople(this IEnumerable<SegmentM> segments) =>
@@ -71,9 +92,11 @@ public static class GetDataExtensions {
       .Select(x => x.Person)
       .Distinct();
 
+  public static IEnumerable<SegmentM> GetSegments(this MediaItemM mediaItem) =>
+    mediaItem.Segments.EmptyIfNull();
+
   public static IEnumerable<SegmentM> GetSegments(this IEnumerable<MediaItemM> mediaItems) =>
     mediaItems
       .EmptyIfNull()
-      .Where(x => x.Segments != null)
-      .SelectMany(x => x.Segments);
+      .SelectMany(x => x.GetSegments());
 }
