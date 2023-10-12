@@ -1,17 +1,15 @@
 # Picture Manager
 
-## Info in this file is outdated! I don't have any motivation to keep it up to date. 🙃
+- Multilevel grouping of images/videos, people and segments by date, folder, keyword or person.
+- Filtering images/videos by keywords, people, rating, height, width or size.
+- Editing metadata of images/videos like a comment, geoNames, keywords, people or a rating.
+- Marking segments of images and adding a person and keywords to it.
+- Defining clips in videos and adding people or keywords to them, changing speed, volume and play modes.
+- Creating videos from selected images.
+- Batch compressing and resizing images and rotating images/videos.
+- Finding image duplicities.
 
-### What is new?
-- People view with people grouped by category and keywords.
-- A person can have keywords.
-- Segments of images (something like face tagging).
-- Database backup.
-- Loading thumbnails is 10x faster.
-- Thumbnail tabs have options to group by folder/date and sort.
-- And more ...
-
-_Usable but not tested by others yet!_
+### Screenshots and description is outdated! 🙃
 
 Picture Manager is a simple image and video viewer with the ability of creating clips from video, tagging faces and editing keywords like rating, people, hierarchical keywords, comments and geo names.
 
