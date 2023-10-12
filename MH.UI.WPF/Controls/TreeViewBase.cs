@@ -38,7 +38,7 @@ namespace MH.UI.WPF.Controls {
         ItemsSource = TreeView.RootHolder;
 
         TreeView.ScrollToTopAction = ScrollToTop;
-        TreeView.ScrollToItemsAction = ScrollToItems;
+        TreeView.ScrollToItemsAction = items => ScrollToItems(items.ToArray());
       }
 
       LayoutUpdated += (_, _) => {
@@ -58,16 +58,49 @@ namespace MH.UI.WPF.Controls {
       };
     }
 
-    private void ScrollToItems(IEnumerable<object> items) {
+    private void ScrollToItems(object[] items) {
       if (!IsVisible || ScrollViewer == null) {
-        _pendingScrollToItems = items.ToArray();
+        _pendingScrollToItems = items;
         return;
       }
 
-      _isScrollingTo = true;
+      var item = items[^1] as ITreeItem;
+      if (!ScrollToDiff(item, out var diff)) return;
 
-      // scroll into view
-      ItemsControl parent = this;
+      _isScrollingTo = true;
+      ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset + diff);
+      ScrollViewer.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => {
+        if (!ScrollToDiff(item, out diff)) return;
+
+        // if soft scroll did not work
+        ItemsControl parent = ScrollIntoView(this, items);
+
+        parent.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => {
+          if (!ScrollToDiff(item, out diff)) return;
+
+          ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset + diff);
+          ScrollViewer.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => {
+            _isScrollingTo = false;
+          });
+        });
+      });
+    }
+
+    private bool ScrollToDiff(ITreeItem item, out int diff) {
+      var root = (ITreeItem)TreeView.RootHolder[0];
+      var itemIndex = item?.GetIndex(root);
+      var topItemIndex = GetTopItem()?.GetIndex(root);
+      if (itemIndex is null or < 0 || topItemIndex is null or < 0) {
+        diff = 0;
+        _isScrollingTo = false;
+      }
+      else
+        diff = (int)itemIndex - (int)topItemIndex;
+
+      return diff != 0;
+    }
+
+    private ItemsControl ScrollIntoView(ItemsControl parent, IEnumerable<object> items) {
       foreach (var item in items) {
         var index = parent.Items.IndexOf(item);
         if (index < 0) break;
@@ -79,39 +112,7 @@ namespace MH.UI.WPF.Controls {
         parent = tvi;
       }
 
-      // scroll item to top
-      if (GetValue(VirtualizingPanel.ScrollUnitProperty) is ScrollUnit.Item) {
-        if (parent.DataContext is not ITreeItem ti) {
-          _isScrollingTo = false;
-          return;
-        }
-
-        var root = (ITreeItem)TreeView.RootHolder[0];
-        var scrollToItemIndex = ti.GetIndex(root);
-
-        parent.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => {
-          var topItemIndex = GetTopItem()?.GetIndex(root);
-          if (topItemIndex is null or < 0){
-            _isScrollingTo = false;
-            return;
-          }
-
-          var diff = scrollToItemIndex - (int)topItemIndex;
-          ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset + diff);
-          ScrollViewer.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => {
-            _isScrollingTo = false;
-          });
-        });
-      }
-      else {
-        parent.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => {
-          var diff = parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;
-          ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset + diff);
-          ScrollViewer.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => {
-            _isScrollingTo = false;
-          });
-        });
-      }
+      return parent;
     }
 
     private void ScrollToTop() {
