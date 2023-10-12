@@ -161,7 +161,8 @@
           x:Name="boGeoName"
           ToolTip="{Binding MediaItemsM.Current.GeoName.FullName}"
           Style="{StaticResource SBorderGroup}"
-          Margin="2,2,0,0"
+          Margin="1,2,1,0"
+          Padding="4"
           Visibility="Collapsed">
 
           <Path Data="{StaticResource IconLocationCheckin}"/>
