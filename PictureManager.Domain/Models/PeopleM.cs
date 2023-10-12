@@ -33,6 +33,7 @@ public sealed class PeopleM {
   private void OnItemDeleted(object sender, ObjectEventArgs<PersonM> e) {
     Selected.Set(e.Data, false);
     PeopleView?.ReGroupItems(new[] { e.Data }, true);
+    PeopleToolsTabM?.ReGroupItems(new[] { e.Data }, true);
 
     if (ReferenceEquals(PersonDetail?.PersonM, e.Data))
       Core.ToolsTabsM.Close(PersonDetail);
