@@ -58,6 +58,7 @@ namespace MH.Utils.Extensions {
       }
 
       try {
+        if (m > 12 || d > 31) return string.Empty;
         var dt = new DateTime(y, m, d);
         var dateFormat = locDateFormats.Aggregate(string.Empty, (f, current) => f + current.Value);
         return dt.ToString(dateFormat, CultureInfo.CurrentCulture);
