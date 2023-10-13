@@ -122,7 +122,7 @@
         TimelineLargeChange="{Binding MediaPlayerM.TimelineLargeChange}"
         Volume="{Binding MediaPlayerM.Volume}"
         Speed="{Binding MediaPlayerM.Speed}"
-        IsPlaying="{Binding MediaPlayerM.IsPlaying}"
+        IsPlaying="{Binding MediaPlayerM.IsPlaying, Mode=TwoWay}"
         SourcePath="{Binding MediaPlayerM.Source}"
         Background="#33000000"
         VerticalAlignment="Top"
