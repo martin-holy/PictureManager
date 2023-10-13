@@ -1,7 +1,7 @@
 # Picture Manager
 
 - Multilevel grouping of images/videos, people and segments by date, folder, keyword or person.
-- Filtering images/videos by keywords, people, rating, height, width or size.
+- Filtering images/videos by geoNames, keywords, people, rating, height, width or size.
 - Editing metadata of images/videos like a comment, geoNames, keywords, people or a rating.
 - Marking segments of images and adding a person and keywords to it.
 - Defining clips in videos and adding people or keywords to them, changing speed, volume and play modes.
