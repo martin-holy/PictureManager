@@ -12,6 +12,7 @@ public sealed class VideoClipsTreeCategory : TreeCategory<VideoClipM, VideoClips
     DataAdapter = da;
     IsExpanded = true;
     CanMoveItem = true;
+    TreeView.ShowTreeItemSelection = true;
 
     DataAdapter.ItemRenamedEvent += (_, _) => UpdateClipsTitles();
     DataAdapter.ItemDeletedEvent += (_, _) => UpdateClipsTitles();
