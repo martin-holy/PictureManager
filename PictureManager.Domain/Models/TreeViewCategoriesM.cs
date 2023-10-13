@@ -1,13 +1,10 @@
 ﻿using MH.UI.BaseClasses;
 using MH.UI.Controls;
-using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PictureManager.Domain.Models;
 
@@ -36,9 +33,6 @@ public sealed class TreeViewCategoriesM : TabControl {
 
   // TODO rename, check usage, use it less
   public void MarkUsedKeywordsAndPeople() {
-    // can be Person, Keyword, Folder, FolderKeyword, Rating or GeoName
-
-    // clear previous marked tags
     MarkedTags.Clear();
 
     var mediaItems = Core.MainWindowM.IsFullScreen
@@ -55,41 +49,26 @@ public sealed class TreeViewCategoriesM : TabControl {
     }
 
     foreach (var mi in mediaItems) {
-      // People
-      MarkedTagsAddWithIncrease(mi.People
-        .EmptyIfNull()
-        .Concat(mi.Segments.GetPeople())
-        .Distinct()
-        .SelectMany(x => x.GetThisAndParents<ITreeItem>()));
-
-      // Keywords
-      if (mi.Keywords != null)
-        MarkedTagsAddWithIncrease(mi.Keywords.SelectMany(x => x.GetThisAndParents<ITreeItem>()));
-
-      // Folders
-      MarkedTagsAddWithIncrease(mi.Folder.GetThisAndParents());
-
-      // FolderKeywords
-      if (mi.Folder.FolderKeyword != null)
-        MarkedTagsAddWithIncrease(mi.Folder.FolderKeyword.GetThisAndParents());
-
-      // GeoNames
-      if (mi.GeoName != null)
-        MarkedTagsAddWithIncrease(mi.GeoName.GetThisAndParents());
-
-      // Ratings
-      MarkedTagsAddWithIncrease(Core.RatingsTreeCategory.GetRatingByValue(mi.Rating));
+      Mark(mi.GetPeople(), true);
+      Mark(mi.GetKeywords(), true);
+      Mark(mi.GetFolders());
+      Mark(mi.Folder.GetFolderKeywords());
+      Mark(mi.GetGeoNames());
+      Mark(Core.RatingsTreeCategory.GetRatingByValue(mi.Rating));
     }
 
     OnPropertyChanged(nameof(MarkedTags));
   }
 
-  private void MarkedTagsAddWithIncrease(IEnumerable<object> tags) {
-    foreach (var tag in tags)
-      MarkedTagsAddWithIncrease(tag);
+  private void Mark(IEnumerable<object> tags, bool withGroups = false) {
+    foreach (var tag in tags) {
+      Mark(tag);
+      if (withGroups)
+        Mark(((ITreeItem)tag).GetCategoryGroups());
+    }
   }
 
-  private void MarkedTagsAddWithIncrease(object tag) {
+  private void Mark(object tag) {
     if (tag == null) return;
 
     if (MarkedTags.ContainsKey(tag))
