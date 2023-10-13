@@ -45,7 +45,7 @@ namespace PictureManager.Domain.Models {
       get => _speed;
       set {
         _speed = value;
-        StartClipTimer();
+        if (IsPlaying) StartClipTimer();
         OnPropertyChanged();
       }
     }
@@ -67,7 +67,7 @@ namespace PictureManager.Domain.Models {
       get => _playType;
       set {
         _playType = value;
-        StartClipTimer();
+        if (IsPlaying) StartClipTimer();
         OnPropertyChanged();
       }
     }
