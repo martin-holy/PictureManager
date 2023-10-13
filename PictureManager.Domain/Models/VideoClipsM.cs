@@ -9,9 +9,10 @@ namespace PictureManager.Domain.Models;
 
 public sealed class VideoClipsM : ObservableObject {
   private readonly VideoClipsDataAdapter _da;
+  private VideoClipM _currentVideoClip;
 
   public MediaItemM CurrentMediaItem { get; set; }
-  public VideoClipM CurrentVideoClip { get; set; }
+  public VideoClipM CurrentVideoClip { get => _currentVideoClip; set => SetCurrent(value); }
   public MediaPlayerM MediaPlayerM { get; set; }
   public VideoClipsTreeCategory TreeCategory { get; }
   public Action<string> CreateThumbnail { get; set; }
@@ -49,6 +50,14 @@ public sealed class VideoClipsM : ObservableObject {
       SetMarker(false);
     else
       TreeCategory.ItemCreate(TreeCategory);
+  }
+
+  private void SetCurrent(VideoClipM vc) {
+    if (_currentVideoClip != null)
+      _currentVideoClip.IsSelected = false;
+    _currentVideoClip = vc;
+    if (_currentVideoClip != null)
+      _currentVideoClip.IsSelected = true;
   }
 
   public void SetPlayer(MediaPlayerM player) {
@@ -99,9 +108,7 @@ public sealed class VideoClipsM : ObservableObject {
   private void SelectNext(bool inGroup, bool selectFirst) {
     var clip = GetNextClip(inGroup, selectFirst);
     if (clip == null) return;
-    if (clip.Equals(CurrentVideoClip))
-      clip.IsSelected = false;
-    clip.IsSelected = true;
+    SetCurrentVideoClip(clip);
   }
 
   private VideoClipM GetNextClip(bool inGroup, bool selectFirst) {
