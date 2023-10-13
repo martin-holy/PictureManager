@@ -4,7 +4,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager">
 
   <DataTemplate DataType="{x:Type m:VideoClipsM}">
     <DataTemplate.Resources>
@@ -48,8 +49,8 @@
           Content="S"
           Command="{Binding SplitCommand}"/>
         <mhc:IconButton
-          ToolTip="Save Video Clips"
-          Command="{Binding SaveCommand}"
+          ToolTip="Save"
+          Command="{Binding MainWindowM.SaveDbCommand, Source={x:Static pm:App.Core}}"
           Icon="{StaticResource IconSave}"
           Width="22"
           Height="22"/>

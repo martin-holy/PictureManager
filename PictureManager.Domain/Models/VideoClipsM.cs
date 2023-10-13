@@ -19,7 +19,6 @@ public sealed class VideoClipsM : ObservableObject {
   public RelayCommand<bool> SetMarkerCommand { get; }
   public RelayCommand<PlayType> SetPlayTypeCommand { get; }
   public RelayCommand<object> SplitCommand { get; }
-  public RelayCommand<object> SaveCommand { get; }
   public RelayCommand<int> SeekToPositionCommand { get; }
 
   public VideoClipsM(VideoClipsDataAdapter da) {
@@ -33,17 +32,6 @@ public sealed class VideoClipsM : ObservableObject {
     SplitCommand = new(
       VideoClipSplit,
       () => !string.IsNullOrEmpty(MediaPlayerM?.Source));
-
-    // TODO change this when refactoring groups
-    SaveCommand = new(
-      () => {
-        _da.Save();
-        Core.Db.VideoClipsGroups.Save();
-      },
-      () =>
-        _da.IsModified ||
-        Core.Db.VideoClipsGroups.IsModified
-    );
 
     SeekToPositionCommand = new(pos => MediaPlayerM.TimelinePosition = pos);
   }
