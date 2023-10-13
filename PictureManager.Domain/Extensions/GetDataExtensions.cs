@@ -1,5 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,16 +8,29 @@ using System.Linq;
 namespace PictureManager.Domain.Extensions;
 
 public static class GetDataExtensions {
+  public static IEnumerable<CategoryGroupM> GetCategoryGroups<T>(this T item) where T : ITreeItem =>
+    item.Parent is CategoryGroupM cg
+      ? cg.GetThisAndParents()
+      : Enumerable.Empty<CategoryGroupM>();
+
+  public static IEnumerable<FolderM> GetFolders(this MediaItemM mediaItem) =>
+    mediaItem.Folder.GetThisAndParents();
+
   public static IEnumerable<FolderM> GetFolders(this IEnumerable<MediaItemM> mediaItems) =>
     mediaItems
       .EmptyIfNull()
-      .SelectMany(x => x.Folder.GetThisAndParents())
+      .SelectMany(x => x.GetFolders())
       .Distinct();
 
   public static IEnumerable<FolderM> GetFolders(this IEnumerable<SegmentM> segments) =>
     segments
       .GetMediaItems()
       .GetFolders();
+
+  public static IEnumerable<FolderKeywordM> GetFolderKeywords(this FolderM folder) =>
+    folder.FolderKeyword == null
+      ? Enumerable.Empty<FolderKeywordM>()
+      : folder.FolderKeyword.GetThisAndParents();
 
   public static IEnumerable<GeoNameM> GetGeoNames(this MediaItemM mediaItem) =>
     mediaItem.GeoName == null
