@@ -90,12 +90,12 @@ namespace MH.UI.WPF.Controls {
       var root = (ITreeItem)TreeView.RootHolder[0];
       var itemIndex = item?.GetIndex(root);
       var topItemIndex = GetTopItem()?.GetIndex(root);
-      if (itemIndex is null or < 0 || topItemIndex is null or < 0) {
-        diff = 0;
-        _isScrollingTo = false;
-      }
-      else
-        diff = (int)itemIndex - (int)topItemIndex;
+
+      diff = itemIndex is not (null or < 0) && topItemIndex is not (null or < 0)
+        ? (int)itemIndex - (int)topItemIndex
+        : 0;
+
+      if (diff == 0) _isScrollingTo = false;
 
       return diff != 0;
     }
