@@ -1,4 +1,5 @@
-﻿using MH.Utils;
+﻿using MH.UI.Interfaces;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -6,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MH.UI.Controls; 
+namespace MH.UI.Controls;
 
 public enum GroupMode {
   GroupBy,
@@ -15,7 +16,7 @@ public enum GroupMode {
   ThenByRecursive
 }
 
-public class CollectionViewGroup<T> : TreeItem where T : ISelectable {
+public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : ISelectable {
   private double _width;
 
   public CollectionView<T> View { get; set; }
@@ -233,6 +234,7 @@ public class CollectionViewGroup<T> : TreeItem where T : ISelectable {
   private void SetWidth(double width) {
     if (Math.Abs(Width - width) < 1) return;
     _width = width;
+    OnPropertyChanged(nameof(Width));
     ReWrap();
 
     foreach (var group in Groups)
@@ -293,13 +295,16 @@ public class CollectionViewGroup<T> : TreeItem where T : ISelectable {
     }
   }
 
+  public int GetItemSize(object item, bool getWidth) =>
+    View.GetItemSize((T)item, getWidth);
+
   private IEnumerable<IList<T>> WrapSource() {
     var index = 0;
     var usedSpace = 0;
 
     for (int i = 0; i < Source.Count; i++) {
       var item = Source[i];
-      var itemWidth = View.GetItemWidth(item);
+      var itemWidth = GetItemSize(item, true);
 
       if (Width - usedSpace < itemWidth) {
         yield return Source.GetRange(index, i - index);

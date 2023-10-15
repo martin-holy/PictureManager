@@ -30,7 +30,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     OpenGroupByDialogCommand = new(OpenGroupByDialog);
   }
 
-  public abstract int GetItemWidth(T item);
+  public abstract int GetItemSize(T item, bool getWidth);
   public abstract IEnumerable<CollectionViewGroupByItem<T>> GetGroupByItems(IEnumerable<T> source);
   public abstract int SortCompare(T itemA, T itemB);
   public virtual void OnOpenItem(T item) { }
