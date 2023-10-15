@@ -12,40 +12,23 @@
         </ResourceDictionary.MergedDictionaries>
 
         <DataTemplate x:Key="NoSegmentIcon">
-          <Border
-            BorderThickness="2"
-            BorderBrush="Black"
-            Margin="1"
-            Background="Transparent"
-            FocusVisualStyle="{x:Null}">
-
-            <Grid
-              Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
-              Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
-
-              <Path
-                Style="{StaticResource MH.Styles.Icon}"
-                Data="{StaticResource IconPeople}"
-                Width="40"
-                Height="40"
-                Fill="Gray"/>
-            </Grid>
-          </Border>
+          <Grid>
+            <Path
+              Style="{StaticResource MH.Styles.Icon}"
+              Data="{StaticResource IconPeople}"
+              Width="40"
+              Height="40"
+              Fill="Gray"/>
+          </Grid>
         </DataTemplate>
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Grid>
-      <ContentControl x:Name="content" Content="{Binding Segment}"/>
-      <Border x:Name="border" BorderThickness="2"/>
-    </Grid>
+    <ContentControl x:Name="content" Content="{Binding Segment}"/>
 
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding Segment}" Value="{x:Null}">
         <Setter TargetName="content" Property="ContentTemplate" Value="{StaticResource NoSegmentIcon}"/>
-      </DataTrigger>
-      <DataTrigger Binding="{Binding IsSelected}" Value="True">
-        <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>

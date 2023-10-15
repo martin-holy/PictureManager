@@ -21,16 +21,7 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Border
-      x:Name="border"
-      Width="{Binding ThumbWidth, Converter={pmConv:MediaItemThumbScaleConvertor}}"
-      Height="{Binding ThumbHeight, Converter={pmConv:MediaItemThumbScaleConvertor}}"
-      MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-      BorderThickness="2"
-      BorderBrush="Black"
-      Margin="1"
-      ClipToBounds="True">
-
+    <Grid x:Name="grid">
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="MouseEnter">
           <b:InvokeCommandAction
@@ -39,75 +30,46 @@
         </b:EventTrigger>
 
         <b:EventTrigger EventName="MouseLeave">
-          <b:InvokeCommandAction
-            Command="vm:MediaItemVideoPreviewVM.HideVideoPreviewCommand"
-            CommandParameter="{Binding ElementName=grid}"/>
+          <b:InvokeCommandAction Command="vm:MediaItemVideoPreviewVM.HideVideoPreviewCommand"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
-      <Grid x:Name="grid">
-        <!-- Thumbnail Image -->
-        <Image
-          Source="{Binding IsAsync=True, Converter={pmConv:MediaItemThumbSourceConverter}}"
-          Stretch="Fill"/>
+      <!-- Thumbnail Image -->
+      <Image
+        Source="{Binding IsAsync=True, Converter={pmConv:MediaItemThumbSourceConverter}}"
+        Stretch="Fill"/>
 
-        <!-- Video over layer -->
-        <ContentControl
-          Content="&#xE29E;"
-          FontFamily="Segoe UI Symbol"
-          FontSize="20" 
-          VerticalAlignment="Center"
-          HorizontalAlignment="Center"
-          Opacity="0.77"
-          Visibility="{Binding MediaType, 
-                       Converter={mhConv:AllToVisibilityConverter},
-                       ConverterParameter={x:Static pmd:MediaType.Video}}"/>
+      <!-- Video over layer -->
+      <ContentControl
+        Content="&#xE29E;"
+        FontFamily="Segoe UI Symbol"
+        FontSize="20" 
+        VerticalAlignment="Center"
+        HorizontalAlignment="Center"
+        Opacity="0.77"
+        Visibility="{Binding MediaType, 
+                     Converter={mhConv:AllToVisibilityConverter},
+                     ConverterParameter={x:Static pmd:MediaType.Video}}"/>
 
-        <!-- Video Clips over layer -->
-        <Path
-          Style="{StaticResource MH.Styles.Icon}"
-          Data="{StaticResource IconImageMultiple}"
-          Width="20"
-          Height="20"
-          HorizontalAlignment="Right"
-          VerticalAlignment="Bottom"
-          Margin="5"
-          Visibility="{Binding HasVideoClips, Converter={mhConv:AllToVisibilityConverter}}"/>
+      <!-- Video Clips over layer -->
+      <Path
+        Style="{StaticResource MH.Styles.Icon}"
+        Data="{StaticResource IconImageMultiple}"
+        Width="20"
+        Height="20"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Bottom"
+        Margin="5"
+        Visibility="{Binding HasVideoClips, Converter={mhConv:AllToVisibilityConverter}}"/>
 
-        <!-- Thumbnail Info Box -->
-        <ItemsControl
-          x:Name="info"
-          ItemsSource="{Binding InfoBoxThumb}"
-          Style="{StaticResource InfoBoxThumbStyle}"/>
-
-        <!-- Selected over layer -->
-        <Grid x:Name="selectedOverLayer" Visibility="Hidden">
-          <Polygon
-            Width="40"
-            Height="40"
-            Points="0,0 40,0 40,40"
-            Stroke="Black"
-            StrokeThickness="2"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Fill="{DynamicResource AccentColorBrush}"/>
-
-          <Border
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            BorderThickness="2"
-            BorderBrush="Black"/>
-        </Grid>
-
-      </Grid>
-    </Border>
-
+      <!-- Thumbnail Info Box -->
+      <ItemsControl
+        x:Name="info"
+        ItemsSource="{Binding InfoBoxThumb}"
+        Style="{StaticResource InfoBoxThumbStyle}"/>
+    </Grid>
+    
     <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding IsSelected}" Value="True">
-        <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
-        <Setter TargetName="selectedOverLayer" Property="Visibility" Value="Visible"/>
-      </DataTrigger>
-
       <DataTrigger Value="True">
         <DataTrigger.Binding>
           <MultiBinding Converter="{mhConv:EqualityConverter}">

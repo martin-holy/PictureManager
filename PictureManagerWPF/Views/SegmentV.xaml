@@ -18,14 +18,7 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Border
-      x:Name="root"
-      BorderThickness="2"
-      Margin="1"
-      Background="Transparent"
-      BorderBrush="Black"
-      FocusVisualStyle="{x:Null}">
-
+    <Grid x:Name="root" Background="Transparent">
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="ToolTipOpening">
           <b:InvokeCommandAction
@@ -35,15 +28,7 @@
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
-      <Border.InputBindings>
-        <MouseBinding
-          MouseAction="LeftDoubleClick"
-          Command="{Binding SegmentsM.ViewMediaItemsWithSegmentCommand,
-                    Source={x:Static pm:App.Core}}"
-          CommandParameter="{Binding}"/>
-      </Border.InputBindings>
-
-      <Border.ToolTip>
+      <Grid.ToolTip>
         <ToolTip Padding="0" BorderThickness="0">
           <DockPanel>
             <Grid DockPanel.Dock="Top">
@@ -124,83 +109,75 @@
             </StackPanel>
           </DockPanel>
         </ToolTip>
-      </Border.ToolTip>
+      </Grid.ToolTip>
 
-      <Grid>
-        <Image
-          Stretch="Fill"
-          Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
-          Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
-          <Image.Source>
-            <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
-              <Binding Path="FilePathCache" IsAsync="True"/>
-              <Binding/>
-            </MultiBinding>
-          </Image.Source>
-        </Image>
+      <Image Stretch="Fill">
+        <Image.Source>
+          <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
+            <Binding Path="FilePathCache" IsAsync="True"/>
+            <Binding/>
+          </MultiBinding>
+        </Image.Source>
+      </Image>
 
-        <!-- No Person Icon -->
-        <Path
-          x:Name="noPersonIcon"
-          Style="{StaticResource MH.Styles.Icon}"
-          Data="{StaticResource IconPeople}"
-          Effect="{StaticResource MH.Effects.DropShadow}"
-          Fill="Red"
-          Margin="5"
-          HorizontalAlignment="Left"
-          VerticalAlignment="Top"
-          Visibility="Hidden"/>
+      <!-- No Person Icon -->
+      <Path
+        x:Name="noPersonIcon"
+        Style="{StaticResource MH.Styles.Icon}"
+        Data="{StaticResource IconPeople}"
+        Effect="{StaticResource MH.Effects.DropShadow}"
+        Fill="Red"
+        Margin="5"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Visibility="Hidden"/>
 
-        <!-- Buttons -->
-        <DockPanel
-          x:Name="buttons"
-          VerticalAlignment="Top"
+      <!-- Buttons -->
+      <DockPanel
+        x:Name="buttons"
+        VerticalAlignment="Top"
+        Visibility="Hidden">
+
+        <!-- Open Person Detail Control -->
+        <mhc:IconButton
+          x:Name="personDetailBtn"
+          DockPanel.Dock="Right"
+          Icon="{StaticResource IconInformation}"
+          Width="20"
+          Height="20"
+          Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}"
+          CommandParameter="{Binding Person}"/>
+
+        <!-- Same Person Button -->
+        <StackPanel
+          x:Name="samePersonBtn"
+          Orientation="Horizontal"
           Visibility="Hidden">
 
-          <!-- Open Person Detail Control -->
+          <Border
+            Style="{StaticResource SBorderGroup}"
+            Background="#1181B1"
+            VerticalAlignment="Center"
+            Margin="1,1,2,0">
+
+            <TextBlock
+              Style="{StaticResource STextBlock}"
+              Text="{Binding SegmentsM.Selected.Items.Count,
+                     Source={x:Static pm:App.Core}}"/>
+          </Border>
+
           <mhc:IconButton
-            x:Name="personDetailBtn"
-            DockPanel.Dock="Right"
-            Icon="{StaticResource IconInformation}"
+            Icon="{StaticResource IconEquals}"
             Width="20"
             Height="20"
-            Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}"
-            CommandParameter="{Binding Person}"/>
-
-          <!-- Same Person Button -->
-          <StackPanel
-            x:Name="samePersonBtn"
-            Orientation="Horizontal"
-            Visibility="Hidden">
-
-            <Border
-              Style="{StaticResource SBorderGroup}"
-              Background="#1181B1"
-              VerticalAlignment="Center"
-              Margin="0,0,2,0">
-
-              <TextBlock
-                Style="{StaticResource STextBlock}"
-                Text="{Binding SegmentsM.Selected.Items.Count,
-                       Source={x:Static pm:App.Core}}"/>
-            </Border>
-
-            <mhc:IconButton
-              Icon="{StaticResource IconEquals}"
-              Width="20"
-              Height="20"
-              ToolTip="Set selected as same person"
-              Command="{Binding SegmentsM.SetSelectedAsSamePersonCommand,
-                        Source={x:Static pm:App.Core}}"/>
-          </StackPanel>
-        </DockPanel>
-      </Grid>
-    </Border>
+            ToolTip="Set selected as same person"
+            Command="{Binding SegmentsM.SetSelectedAsSamePersonCommand,
+                      Source={x:Static pm:App.Core}}"/>
+        </StackPanel>
+      </DockPanel>
+    </Grid>
 
     <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding IsSelected}" Value="True">
-        <Setter TargetName="root" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
-      </DataTrigger>
       <DataTrigger Binding="{Binding Person}" Value="{x:Null}">
         <Setter TargetName="noPersonIcon" Property="Visibility" Value="Visible"/>
         <Setter TargetName="personDetailBtn" Property="Visibility" Value="Collapsed"/>
