@@ -29,7 +29,8 @@ namespace MH.UI.WPF.Controls {
 
       ScrollViewer = (ScrollViewer)Template.FindName("PART_ScrollViewer", this);
 
-      ScrollViewer.ScrollChanged += (_, _) => {
+      ScrollViewer.ScrollChanged += (_, e) => {
+        if (e.VerticalChange == 0) return;
         if (TreeView is { IsSizeChanging: false } && !_isScrollingTo)
           TreeView.TopTreeItem = GetTopItem();
       };
