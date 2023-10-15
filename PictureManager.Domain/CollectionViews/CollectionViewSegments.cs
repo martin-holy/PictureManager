@@ -30,7 +30,7 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
     return top;
   }
 
-  public override int GetItemWidth(SegmentM item) =>
+  public override int GetItemSize(SegmentM item, bool getWidth) =>
     SegmentsM.SegmentUiFullWidth;
 
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>

@@ -24,7 +24,7 @@ public class CollectionViewPeople : CollectionView<PersonM> {
     return top;
   }
 
-  public override int GetItemWidth(PersonM item) =>
+  public override int GetItemSize(PersonM item, bool getWidth) =>
     SegmentsM.SegmentUiFullWidth;
 
   public override int SortCompare(PersonM itemA, PersonM itemB) =>

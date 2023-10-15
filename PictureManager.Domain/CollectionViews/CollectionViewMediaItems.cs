@@ -40,13 +40,13 @@ public class CollectionViewMediaItems : CollectionView<MediaItemM> {
     return top;
   }
 
-  public override int GetItemWidth(MediaItemM item) {
-    var width = item.ThumbWidth;
+  public override int GetItemSize(MediaItemM item, bool getWidth) {
+    var size = getWidth ? item.ThumbWidth : item.ThumbHeight;
 
     if (Math.Abs(ThumbScale - MediaItemsViews.DefaultThumbScale) > 0)
-      width = (int)Math.Round((width / MediaItemsViews.DefaultThumbScale) * ThumbScale, 0);
+      size = (int)Math.Round((size / MediaItemsViews.DefaultThumbScale) * ThumbScale, 0);
 
-    return width + 6;
+    return size;
   }
 
   public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>
