@@ -43,6 +43,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
   public virtual void OnTopTreeItemChanged() { }
 
   public virtual void ScrollTo(ITreeItem item) {
+    if (item == null) return;
     // INFO this doesn't work when SizeChanged. ScrollTo is maybe to early
     //if (ReferenceEquals(TopTreeItem, item)) return;
 
