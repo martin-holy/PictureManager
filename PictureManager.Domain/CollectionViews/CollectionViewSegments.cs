@@ -38,4 +38,7 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
 
   public override void OnSelectItem(IEnumerable<SegmentM> source, SegmentM item, bool isCtrlOn, bool isShiftOn) =>
     _segmentsM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
+
+  public override void OnOpenItem(SegmentM item) =>
+    _segmentsM.ViewMediaItemsWithSegment(item);
 }

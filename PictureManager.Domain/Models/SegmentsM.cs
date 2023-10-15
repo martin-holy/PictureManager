@@ -31,7 +31,6 @@ public sealed class SegmentsM : ObservableObject {
 
   public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
   public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
-  public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
   public RelayCommand<object> OpenSegmentsViewCommand { get; }
 
   public SegmentsM(SegmentsDataAdapter da) {
@@ -48,7 +47,6 @@ public sealed class SegmentsM : ObservableObject {
     SetSelectedAsUnknownCommand = new(
       () => SetAsUnknown(Selected.Items.ToArray()),
       () => Selected.Items.Count > 0);
-    ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
     OpenSegmentsViewCommand = new(
       OpenSegmentsView,
       () => Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
@@ -175,7 +173,7 @@ public sealed class SegmentsM : ObservableObject {
     DataAdapter.ChangePerson(null, segments, people);
   }
 
-  private void ViewMediaItemsWithSegment(SegmentM segmentM) {
+  public void ViewMediaItemsWithSegment(SegmentM segmentM) {
     var items = GetMediaItemsWithSegment(segmentM);
     if (items == null) return;
 

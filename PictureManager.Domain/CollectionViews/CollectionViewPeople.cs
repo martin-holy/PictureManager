@@ -32,4 +32,7 @@ public class CollectionViewPeople : CollectionView<PersonM> {
 
   public override void OnSelectItem(IEnumerable<PersonM> source, PersonM item, bool isCtrlOn, bool isShiftOn) =>
     PeopleM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
+
+  public override void OnOpenItem(PersonM item) =>
+    Core.SegmentsM.ViewMediaItemsWithSegment(item.Segment);
 }
