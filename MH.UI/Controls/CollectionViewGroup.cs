@@ -168,6 +168,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
     var firstNotEmpty = Items.FirstOrDefault(x => x is CollectionViewGroup<T> { GroupedBy: not null }) as CollectionViewGroup<T>;
     if (!groupByItems.Any(x => ReferenceEquals(x, firstNotEmpty?.GroupedBy))) {
       GroupIt();
+      this.SetExpanded<CollectionViewGroup<T>>(true);
       return;
     }
 
