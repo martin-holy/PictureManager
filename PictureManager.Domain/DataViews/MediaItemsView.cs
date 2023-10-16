@@ -20,6 +20,7 @@ namespace PictureManager.Domain.DataViews {
     private int _importCount;
     private int _importDoneCount;
     private readonly IProgress<int> _importProgress;
+    private readonly WorkTask _importTask = new();
 
     public event EventHandler SelectionChangedEventHandler = delegate { };
     public event EventHandler FilteredChangedEventHandler = delegate { };
@@ -37,12 +38,14 @@ namespace PictureManager.Domain.DataViews {
         ? FilteredItems.Count.ToString()
         : $"{FilteredItems.IndexOf(Selected.Items[0]) + 1}/{FilteredItems.Count}";
 
+    public RelayCommand<object> CancelImportCommand { get; }
     public RelayCommand<object> SelectAllCommand { get; }
 
     public MediaItemsView(double thumbScale) : base(thumbScale) {
       CanDragFunc = CanDrag;
       _importProgress = new Progress<int>(x => ImportDoneCount += x);
 
+      CancelImportCommand = new(CancelImport);
       SelectAllCommand = new(() => Selected.Set(FilteredItems));
 
       Filter.FilterChangedEventHandler += delegate { SoftLoad(LoadedItems, true, true); };
@@ -181,11 +184,15 @@ namespace PictureManager.Domain.DataViews {
       }
 
       await ReadMetadata(newItems);
-      AddMediaItems(Sort(toLoad).ToList(), and, hide);
+      var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
+      AddMediaItems(Sort(toLoad.Except(notImported)).ToList(), and, hide);
       Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
       AfterLoad();
       IsLoading = false;
     }
+
+    private async void CancelImport() =>
+      await _importTask.Cancel();
 
     private async Task ReadMetadata(List<MediaItemMetadata> items) {
       if (items.Count == 0) return;
@@ -194,14 +201,18 @@ namespace PictureManager.Domain.DataViews {
       ImportCount = items.Count;
       ImportDoneCount = 0;
 
-      await Task.Run(() =>
-        Parallel.ForEach(
-          items.Where(x => x.MediaItem.MediaType == MediaType.Image),
-          new() { MaxDegreeOfParallelism = Environment.ProcessorCount },
-          mim => {
-            Core.MediaItemsM.ReadMetadata(mim, false);
-            _importProgress.Report(1);
-          }));
+      await _importTask.Start(new(() => {
+        try {
+          Parallel.ForEach(
+            items.Where(x => x.MediaItem.MediaType == MediaType.Image),
+            new() { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _importTask.Token },
+            mim => {
+              Core.MediaItemsM.ReadMetadata(mim, false);
+              _importProgress.Report(1);
+            });
+        }
+        catch (OperationCanceledException) { }
+      }));
 
       foreach (var mim in items.Where(x => x.MediaItem.MediaType == MediaType.Video)) {
         Core.MediaItemsM.ReadMetadata(mim, false);
