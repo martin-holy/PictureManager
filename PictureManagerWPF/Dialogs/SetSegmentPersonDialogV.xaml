@@ -3,11 +3,21 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters">
 
   <DataTemplate DataType="{x:Type md:SetSegmentPersonDialogM}">
     <DataTemplate.Resources>
-      <wpfu:CachedResourceDictionary Source="../Views/SegmentLiteV.xaml"/>
+      <DataTemplate DataType="{x:Type m:SegmentM}">
+        <Image Stretch="Fill">
+          <Image.Source>
+            <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
+              <Binding Path="FilePathCache" IsAsync="True"/>
+              <Binding/>
+            </MultiBinding>
+          </Image.Source>
+        </Image>
+      </DataTemplate>
     </DataTemplate.Resources>
 
     <DockPanel
@@ -31,7 +41,15 @@
 
         <ListBox.ItemTemplate>
           <DataTemplate>
-            <ContentPresenter Content="{Binding Segment}"/>
+            <Border
+              BorderThickness="2"
+              Margin="1"
+              BorderBrush="Black"
+              Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
+              Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
+
+              <ContentPresenter Content="{Binding Segment}"/>
+            </Border>
           </DataTemplate>
         </ListBox.ItemTemplate>
 
