@@ -1,50 +1,25 @@
-        # MH.UI - Update
-## Tabs
-  - allow moving tab to left|middle|right panel
-## CategoryViewGroup
-  - GroupedBy instance for empty group with icon from View
-
-
-        # MH.Utils - Bugs
+                                *** BUGS ***
+        # MH.Utils
 ## WorkTask
   - unexpected error, task was canceled. problem when returning false from catch
 
-
-        # MH.Utils - Update
-## Resources
-  - use constant strings for icons
-## Dialog
-  - add CanExecute for buttons like Yes/Ok
-
-
-        # MH.UI.WPF - Bugs
+        # MH.UI.WPF
 ## Custom Window
   - minimize window will break full screen mode
 
-
-        # MH.UI.WPF - Update
-## IconButton
-  - use button foreground and background for icon in IconButton and IconToggleButton
-  - add background behind text in IconTextButton
-## Style
-  - Label - remove default padding?
-  - MH.Styles.IconShadow
-
-
-        # Picture Manager - Bugs - Need Help
+        # Picture Manager - Need Help
 ## VideoPlayer
   - if SpeedRatio is > 2, Pause()/Play() will cause ignoring SpeedRatio and plays on SpeedRatio = 1
     setting SpeedRatio to SpeedRatio before or after Play() doesn't help
 ## MediaViewer
-  - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
+  - app freeze on video delete when is playing
 
-
-        # Picture Manager - Bugs
+        # Picture Manager
 ##
   - disky identifikovat podle ID a ne podle pismena (cmd dir command shows volume serial number)
   - or store drive related data in \Temp\PictureManagerCache
 ## MediaItems
-  - D:\!test\364__32_original.jpg nejde ulozit metadata, nebo crop (resave without metadata in xnview fix the file)
+  - D:\!test\364__32_original.jpg save metadata or crop doesn't work (resave without metadata in xnview fixed the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
   - Reload metadata on video
 ## VideoPlayer
@@ -53,12 +28,32 @@
 ## Video Clips
   - kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac 
     a je to na restart appky (do OnMediaEnded se to nedostane)
-  - ulozeni v klipech nezmeni modifed v main toolbaru
 ## Person Detail
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 
 
-        # Picture Manager - Update
+                                  *** UPDATE ***
+        # MH.UI
+## Tabs
+  - allow moving tab to left|middle|right panel
+## CategoryViewGroup
+  - GroupedBy instance for empty group with icon from View
+
+        # MH.Utils
+## Resources
+  - use constant strings for icons
+## Dialog
+  - add CanExecute for buttons like Yes/Ok
+
+        # MH.UI.WPF
+## IconButton
+  - use button foreground and background for icon in IconButton and IconToggleButton
+  - add background behind text in IconTextButton
+## Style
+  - Label - remove default padding?
+  - MH.Styles.IconShadow
+
+        # Picture Manager
 ##
   - zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
   - Rethink hierarchical keywords moving
@@ -67,7 +62,6 @@
   - make thumbnail images sharper (size is 2.7x bigger)
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
-  - make selection border on base class level in CategoryView and remove it from segment, person, mediaItem
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
@@ -81,12 +75,12 @@
   - show selected items on dialog
 ## SegmentsMatching
   - from selected people and segments
-## SegmentV
-  - make selection bigger. remove margin and replace it by transparent border
-## MediaItemsDataAdapter
-  - GetItems methods
+## MediaItemsView
+  - add cancel import button
+## SetSegmentPersonDialogV
+  - update selection style
 
-        # New
+                                    *** NEW ***
 ##
   - Log to file
   - Virtual images from video:
