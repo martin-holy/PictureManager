@@ -102,28 +102,7 @@
   </HierarchicalDataTemplate>
 
   <DataTemplate x:Key="MH.UI.Controls.CollectionViewItem" DataType="{x:Type mhuInt:ISelectable}">
-    <Grid
-      UseLayoutRounding="True"
-      MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-      
-      <Grid.Width>
-        <MultiBinding
-          Converter="{mhConv:CollectionViewItemSizeConverter}"
-          ConverterParameter="{StaticResource True}">
-          <Binding/>
-          <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
-        </MultiBinding>
-      </Grid.Width>
-
-      <Grid.Height>
-        <MultiBinding
-          Converter="{mhConv:CollectionViewItemSizeConverter}"
-          ConverterParameter="{StaticResource False}">
-          <Binding/>
-          <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
-        </MultiBinding>
-      </Grid.Height>
-
+    <Grid UseLayoutRounding="True">
       <Border
         x:Name="border"
         BorderThickness="2"
@@ -160,6 +139,7 @@
 
   <DataTemplate x:Key="MH.UI.Controls.CollectionViewRow`1" DataType="{x:Type uic:CollectionViewRow`1}">
     <ItemsControl
+      x:Name="ic"
       ItemsSource="{Binding Leaves}"
       ItemTemplate="{StaticResource MH.UI.Controls.CollectionViewItem}"
       MaxWidth="{Binding Path=Parent.(uii:ICollectionViewGroup.Width)}">
@@ -184,6 +164,32 @@
           <StackPanel Orientation="Horizontal" Background="Transparent"/>
         </ItemsPanelTemplate>
       </ItemsControl.ItemsPanel>
+
+      <ItemsControl.ItemContainerStyle>
+        <Style TargetType="FrameworkElement">
+          <Setter Property="MaxWidth" Value="{Binding ActualWidth, ElementName=ic}"/>
+          <Setter Property="Width">
+            <Setter.Value>
+              <MultiBinding
+                Converter="{mhConv:CollectionViewItemSizeConverter}"
+                ConverterParameter="{StaticResource True}">
+                <Binding/>
+                <Binding Path="DataContext" ElementName="ic"/>
+              </MultiBinding>
+            </Setter.Value>
+          </Setter>
+          <Setter Property="Height">
+            <Setter.Value>
+              <MultiBinding
+                Converter="{mhConv:CollectionViewItemSizeConverter}"
+                ConverterParameter="{StaticResource False}">
+                <Binding/>
+                <Binding Path="DataContext" ElementName="ic"/>
+              </MultiBinding>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </ItemsControl.ItemContainerStyle>
     </ItemsControl>
   </DataTemplate>
 </ResourceDictionary>
