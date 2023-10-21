@@ -35,9 +35,9 @@
         <wpfu:CachedResourceDictionary Source="Dialogs/FolderKeywordsDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/ImagesToVideoDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/LogDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/MergePeopleDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/ResizeImagesDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
-        <wpfu:CachedResourceDictionary Source="Dialogs/SetSegmentPersonDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/ToggleDialogV.xaml"/>
 
