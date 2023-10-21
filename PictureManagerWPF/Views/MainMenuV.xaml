@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pm="clr-namespace:PictureManager">
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="Views.MainMenu">
     <DataTemplate.Resources>
@@ -47,7 +48,7 @@
           <MenuItem Header="Images to Video" Command="{Binding MediaItemsM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
           <MenuItem Header="Copy Paths" Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
           <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
-          <MenuItem Header="Segments" Command="{Binding SegmentsM.OpenSegmentsViewCommand}">
+          <MenuItem Header="Segments" Command="dv:SegmentsView.OpenCommand">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconEquals}"/>
             </MenuItem.Icon>

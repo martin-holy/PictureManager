@@ -126,14 +126,8 @@ public sealed class Core {
     };
 
     Db.People.ItemDeletedEvent  += (_, e) => {
-      var aData = new[] { e.Data };
       MediaItemsM.RemovePersonFromMediaItems(e.Data);
       Db.Segments.RemovePersonFromSegments(e.Data);
-      SegmentsM.SegmentsView?.CvPeople.ReGroupItems(aData, true);
-    };
-
-    Db.People.PeopleKeywordsChangedEvent += (_, e) => {
-      SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data, false);
     };
 
     #endregion

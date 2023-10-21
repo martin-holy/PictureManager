@@ -21,7 +21,6 @@ public sealed class SegmentsM : ObservableObject {
   public SegmentsDataAdapter DataAdapter { get; set; }
   public SegmentsRectsM SegmentsRectsM { get; }
   public SegmentsDrawerM SegmentsDrawerM { get; }
-  public SegmentsView SegmentsView { get; private set; }
   public Selecting<SegmentM> Selected { get; } = new();
   public static int SegmentSize { get; set; } = 100;
   public static int SegmentUiSize { get; set; }
@@ -32,13 +31,10 @@ public sealed class SegmentsM : ObservableObject {
 
   public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
   public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
-  public RelayCommand<object> OpenSegmentsViewCommand { get; }
 
   public SegmentsM(SegmentsDataAdapter da) {
     DataAdapter = da;
-    DataAdapter.ItemCreatedEvent += OnItemCreated;
     DataAdapter.ItemDeletedEvent += OnItemDeleted;
-    DataAdapter.SegmentsKeywordsChangedEvent += OnSegmentsKeywordsChanged;
     DataAdapter.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
 
     SegmentsRectsM = new(this);
@@ -49,20 +45,13 @@ public sealed class SegmentsM : ObservableObject {
     SetSelectedAsUnknownCommand = new(
       () => SetAsUnknown(Selected.Items.ToArray()),
       () => Selected.Items.Count > 0);
-    OpenSegmentsViewCommand = new(
-      OpenSegmentsView,
-      () => Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
     CanDragFunc = CanDrag;
   }
 
-  private void OnItemCreated(object sender, ObjectEventArgs<SegmentM> e) =>
-    SegmentsView?.CvSegments.ReGroupItems(new[] { e.Data }, false);
-
   private void OnItemDeleted(object sender, ObjectEventArgs<SegmentM> e) {
     Selected.Set(e.Data, false);
     SegmentsDrawerM.Remove(e.Data);
-    SegmentsView?.CvSegments.ReGroupItems(new[] { e.Data }, true);
 
     try {
       if (File.Exists(e.Data.FilePathCache))
@@ -73,13 +62,7 @@ public sealed class SegmentsM : ObservableObject {
     }
   }
 
-  private void OnSegmentsKeywordsChanged(object sender, ObjectEventArgs<SegmentM[]> e) {
-    SegmentsView?.CvSegments.ReGroupItems(e.Data, false);
-  }
-  
   private void OnSegmentsPersonChanged(object sender, ObjectEventArgs<(PersonM, SegmentM[], PersonM[])> e) {
-    SegmentsView?.CvSegments.ReGroupItems(e.Data.Item2, false);
-    SegmentsView?.CvPeople.ReGroupItems(e.Data.Item3?.Where(x => x.Segment != null).ToArray(), false);
     Selected.DeselectAll();
   }
 
@@ -192,8 +175,8 @@ public sealed class SegmentsM : ObservableObject {
   private List<MediaItemM> GetMediaItemsWithSegment(SegmentM segment) {
     if (segment == null) return null;
 
-    if (ReferenceEquals(SegmentsView?.CvSegments.LastSelectedItem, segment))
-      return ((CollectionViewGroup<SegmentM>)SegmentsView.CvSegments.LastSelectedRow.Parent).Source
+    if (SegmentsView.IsInst && ReferenceEquals(SegmentsView.Inst.CvSegments.LastSelectedItem, segment))
+      return ((CollectionViewGroup<SegmentM>)SegmentsView.Inst.CvSegments.LastSelectedRow.Parent).Source
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
         .ThenBy(x => x.FileName)
@@ -213,56 +196,5 @@ public sealed class SegmentsM : ObservableObject {
         .ToList();
 
     return new() { segment.MediaItem };
-  }
-
-  private void OpenSegmentsView() {
-    var result = GetSegmentsToLoadUserInput();
-    if (result < 1) return;
-
-    var segments = GetSegments(Core.MediaItemsViews.Current.GetSelectedOrAll(), result).ToArray();
-
-    if (SegmentsView == null) {
-      SegmentsView = new();
-      Core.PeopleM.AddEvents(SegmentsView.CvPeople);
-      AddEvents(SegmentsView.CvSegments);
-    }
-
-    Core.MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
-    SegmentsView.Reload(segments);
-  }
-
-  private static int GetSegmentsToLoadUserInput() {
-    var md = new MessageDialog(
-      "Segments",
-      "Do you want to load all segments, segments with persons \nor one segment from each person?",
-      Res.IconQuestion,
-      true);
-
-    md.Buttons = new DialogButton[] {
-      new("All segments", null, md.SetResult(1), true),
-      new("Segments with persons", null, md.SetResult(2)),
-      new("One from each", null, md.SetResult(3)) };
-
-    return Dialog.Show(md);
-  }
-
-  private IEnumerable<SegmentM> GetSegments(IEnumerable<MediaItemM> mediaItems, int mode) {
-    switch (mode) {
-      case 1: // all segments from mediaItems
-        return mediaItems.GetSegments();
-      case 2: // all segments with person found on segments from mediaItems
-        var people = mediaItems.GetSegments().GetPeople().ToHashSet();
-
-        return DataAdapter.All
-          .Where(x => x.Person != null && people.Contains(x.Person))
-          .OrderBy(x => x.MediaItem.FileName);
-      case 3: // one segment from each person
-        return DataAdapter.All
-          .Where(x => x.Person != null)
-          .GroupBy(x => x.Person.Id)
-          .Select(x => x.First());
-      default:
-        return Enumerable.Empty<SegmentM>();
-    }
   }
 }
