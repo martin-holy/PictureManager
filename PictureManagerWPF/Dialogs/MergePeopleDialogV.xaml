@@ -1,0 +1,28 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+
+  <DataTemplate DataType="{x:Type md:MergePeopleDialogM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <wpfu:CachedResourceDictionary Source="/Views/PersonThumbnailV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="/Views/SegmentV.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+
+    <Grid Margin="2" MinWidth="364">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+
+      <mhc:CollectionView View="{Binding PeopleView}" MaxHeight="160"/>
+      <mhc:CollectionView View="{Binding SegmentsView}" MaxHeight="450" Grid.Row="1"/>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

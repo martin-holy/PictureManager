@@ -158,11 +158,9 @@ public sealed class SegmentsM : ObservableObject {
       toUpdate = Selected.Items.Where(x => x.Person == null).ToArray();
     }
     else {
-      var spd = new SetSegmentPersonDialogM(this, people);
-      if (Dialog.Show(spd) != 1) return;
-      newPerson = spd.Person;
-      toUpdate = spd.Segments;
-      Core.PeopleM.MergePeople(newPerson, people.Where(x => !x.Equals(newPerson)).ToArray());
+      if (!MergePeopleDialogM.Open(Core.PeopleM, this, people)) return;
+      newPerson = MergePeopleDialogM.Person;
+      toUpdate = MergePeopleDialogM.SegmentsToUpdate;
     }
 
     Core.PeopleM.Selected.DeselectAll();
