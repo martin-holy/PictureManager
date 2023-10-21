@@ -5,9 +5,9 @@
     <UseWPF>true</UseWPF>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <AssemblyVersion>1.60.3</AssemblyVersion>
-    <FileVersion>1.60.3</FileVersion>
-    <Version>1.60.3</Version>
+    <AssemblyVersion>1.61.0</AssemblyVersion>
+    <FileVersion>1.61.0</FileVersion>
+    <Version>1.61.0</Version>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>

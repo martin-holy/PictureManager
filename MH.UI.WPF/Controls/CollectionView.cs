@@ -52,17 +52,21 @@ namespace MH.UI.WPF.Controls {
       };
     }
 
-    private static object GetDataContext(object source) =>
-      ((source as FrameworkElement)?.Parent as FrameworkElement)?
-      .FindTopTemplatedParent()?
-      .DataContext;
+    private static object GetDataContext(object source) {
+      if (source is not FrameworkElement fe) return null;
+      if (fe.TemplatedParent == null)
+        fe = fe.Parent as FrameworkElement;
+
+      return fe?.FindTopTemplatedParent()?.DataContext;
+    }
 
     private void OpenItem(MouseButtonEventArgs e) {
-      if (e.ChangedButton != MouseButton.Left) return;
+      if (!View.CanOpen || e.ChangedButton != MouseButton.Left) return;
       View.OpenItem(GetDataContext(e.OriginalSource));
     }
 
     private void SelectItem(MouseButtonEventArgs e) {
+      if (!View.CanSelect) return;
       var item = GetDataContext(e.OriginalSource);
       var row = (e.Source as FrameworkElement)?.DataContext;
       var btn = e.OriginalSource as Button ?? (e.OriginalSource as FrameworkElement)?.TryFindParent<Button>();
