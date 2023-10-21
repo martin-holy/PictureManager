@@ -3,6 +3,7 @@ using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,33 +20,45 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   public T LastSelectedItem { get; set; }
   public CollectionViewGroup<T> TopGroup { get; set; }
   public CollectionViewRow<T> LastSelectedRow { get; set; }
-  public bool SelectionDisabled { get; set; }
+  public bool CanOpen { get; set; } = true;
+  public bool CanSelect { get; set; } = true;
+  public bool IsMultiSelect { get; set; } = true;
   public int GroupContentOffset { get; set; } = 0;
   public string Icon { get; set; }
   public string Name { get; set; }
 
   public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
+  public event EventHandler<ObjectEventArgs<T>> ItemOpenedEvent = delegate { };
+  public event EventHandler<SelectionEventArgs<T>> ItemSelectedEvent = delegate { };
+
   protected CollectionView() {
     OpenGroupByDialogCommand = new(OpenGroupByDialog);
   }
 
+  protected void RaiseItemOpened(T item) => ItemOpenedEvent(this, new(item));
+  protected void RaiseItemSelected(SelectionEventArgs<T> args) => ItemSelectedEvent(this, args);
+
   public abstract int GetItemSize(T item, bool getWidth);
   public abstract IEnumerable<CollectionViewGroupByItem<T>> GetGroupByItems(IEnumerable<T> source);
   public abstract int SortCompare(T itemA, T itemB);
-  public virtual void OnOpenItem(T item) { }
-  public virtual void OnSelectItem(IEnumerable<T> source, T item, bool isCtrlOn, bool isShiftOn) { }
+  public virtual void OnItemOpened(T item) { }
+  public virtual void OnItemSelected(SelectionEventArgs<T> args) { }
 
   public void OpenItem(object item) {
-    if (item is T i) OnOpenItem(i);
+    if (item is not T i) return;
+    RaiseItemOpened(i);
+    OnItemOpened(i);
   }
 
-  // TODO BUG not always unable to select, ok after reload 
   public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn) {
-    if (SelectionDisabled || row is not CollectionViewRow<T> r || item is not T i) return;
+    if (row is not CollectionViewRow<T> r || item is not T i) return;
+    if (!IsMultiSelect) { isCtrlOn = false; isShiftOn = false; }
     LastSelectedItem = i;
     LastSelectedRow = r;
-    OnSelectItem(((CollectionViewGroup<T>)r.Parent).Source, i, isCtrlOn, isShiftOn);
+    var args = new SelectionEventArgs<T>(((CollectionViewGroup<T>)r.Parent).Source, i, isCtrlOn, isShiftOn);
+    RaiseItemSelected(args);
+    OnItemSelected(args);
   }
 
   public void Reload(List<T> source, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems, bool expandAll, bool removeEmpty = true) {
