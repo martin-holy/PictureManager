@@ -14,6 +14,7 @@
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <wpfu:CachedResourceDictionary Source="MediaItemThumbnailLiteV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="SegmentLiteV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -97,7 +98,8 @@
 
               <ItemsControl
                 ItemsSource="{Binding Person.TopSegments}"
-                Visibility="{Binding Person.TopSegments, Converter={mhConv:AllToVisibilityConverter}}">
+                Visibility="{Binding Person.TopSegments, Converter={mhConv:AllToVisibilityConverter}}"
+                ItemTemplate="{StaticResource PM.Views.SegmentLiteV}">
 
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>

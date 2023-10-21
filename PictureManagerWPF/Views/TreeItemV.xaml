@@ -6,8 +6,12 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-  xmlns:pmConv="clr-namespace:PictureManager.Converters"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+
+  <ResourceDictionary.MergedDictionaries>
+    <wpfu:CachedResourceDictionary Source="SegmentLiteV.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent">
@@ -86,19 +90,9 @@
         <Setter Property="ToolTip">
           <Setter.Value>
             <ToolTip BorderThickness="0" Padding="0">
-              <Border BorderThickness="1" BorderBrush="Black">
-                <Image
-                  Stretch="Fill"
-                  Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
-                  Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
-                  <Image.Source>
-                    <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
-                      <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True"/>
-                      <Binding Path="(m:PersonM.Segment)"/>
-                    </MultiBinding>
-                  </Image.Source>
-                </Image>
-              </Border>
+              <ContentPresenter
+                Content="{Binding Path=(m:PersonM.Segment)}"
+                ContentTemplate="{StaticResource PM.Views.SegmentLiteV}"/>
             </ToolTip>
           </Setter.Value>
         </Setter>

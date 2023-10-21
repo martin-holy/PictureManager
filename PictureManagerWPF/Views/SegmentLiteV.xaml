@@ -1,0 +1,27 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters">
+
+  <DataTemplate x:Key="PM.Views.SegmentLiteV" DataType="{x:Type m:SegmentM}">
+    <Border
+      BorderThickness="1"
+      BorderBrush="Black"
+      Margin="1">
+
+      <Image
+        Stretch="Fill"
+        Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
+        Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
+
+        <Image.Source>
+          <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
+            <Binding Path="FilePathCache" IsAsync="True"/>
+            <Binding/>
+          </MultiBinding>
+        </Image.Source>
+      </Image>
+    </Border>
+  </DataTemplate>
+</ResourceDictionary>
