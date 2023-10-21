@@ -117,8 +117,9 @@ namespace MH.UI.WPF.Controls {
     }
 
     private void ScrollToTop() {
-      ScrollViewer?.ScrollToTop();
-      ScrollViewer?.UpdateLayout();
+      if (ScrollViewer == null || ScrollViewer.VerticalOffset == 0) return;
+      ScrollViewer.ScrollToTop();
+      ScrollViewer.UpdateLayout();
     }
 
     private ITreeItem GetTopItem() {
