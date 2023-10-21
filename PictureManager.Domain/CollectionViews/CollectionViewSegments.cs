@@ -4,13 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.CollectionViews; 
+namespace PictureManager.Domain.CollectionViews;
 
 public class CollectionViewSegments : CollectionView<SegmentM> {
-  private readonly SegmentsM _segmentsM;
-
-  public CollectionViewSegments(SegmentsM segmentsM) {
-    _segmentsM = segmentsM;
+  public CollectionViewSegments() {
     Icon = Res.IconSegment;
     Name = "Segments";
   }
@@ -35,10 +32,4 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
 
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>
     string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);
-
-  public override void OnSelectItem(IEnumerable<SegmentM> source, SegmentM item, bool isCtrlOn, bool isShiftOn) =>
-    _segmentsM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
-
-  public override void OnOpenItem(SegmentM item) =>
-    _segmentsM.ViewMediaItemsWithSegment(item);
 }

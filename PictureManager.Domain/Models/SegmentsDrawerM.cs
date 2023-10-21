@@ -7,90 +7,90 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.Models {
-  public sealed class SegmentsDrawerM : CollectionViewSegments {
-    private readonly SegmentsM _segmentsM;
+namespace PictureManager.Domain.Models; 
 
-    public ObservableCollection<SegmentM> Items { get; } = new();
-    public CanDragFunc CanDragFunc { get; }
-    public CanDropFunc CanDropFunc { get; }
-    public DoDropAction DoDropAction { get; }
+public sealed class SegmentsDrawerM : CollectionViewSegments {
+  private readonly SegmentsM _segmentsM;
 
-    public RelayCommand<object> AddSelectedCommand { get; }
-    public RelayCommand<object> OpenCommand { get; }
+  public ObservableCollection<SegmentM> Items { get; } = new();
+  public CanDragFunc CanDragFunc { get; }
+  public CanDropFunc CanDropFunc { get; }
+  public DoDropAction DoDropAction { get; }
 
-    public SegmentsDrawerM(SegmentsM segmentsM) : base(segmentsM) {
-      _segmentsM = segmentsM;
+  public RelayCommand<object> AddSelectedCommand { get; }
+  public RelayCommand<object> OpenCommand { get; }
 
-      CanDragFunc = CanDrag;
-      CanDropFunc = CanDrop;
-      DoDropAction = DoDrop;
+  public SegmentsDrawerM(SegmentsM segmentsM) {
+    _segmentsM = segmentsM;
 
-      AddSelectedCommand = new(
-        () => Update(_segmentsM.Selected.Items.ToArray(), true),
-        () => _segmentsM.Selected.Items.Count > 0);
-      OpenCommand = new(() => Open(Core.ToolsTabsM));
-    }
+    CanDragFunc = CanDrag;
+    CanDropFunc = CanDrop;
+    DoDropAction = DoDrop;
 
-    private object CanDrag(object source) =>
-      source is SegmentM segmentM
-        ? _segmentsM.GetOneOrSelected(segmentM)
-        : null;
+    AddSelectedCommand = new(
+      () => Update(_segmentsM.Selected.Items.ToArray(), true),
+      () => _segmentsM.Selected.Items.Count > 0);
+    OpenCommand = new(() => Open(Core.ToolsTabsM));
+  }
 
-    private DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
-      if (!haveSameOrigin && !Items.Contains(data))
-        return DragDropEffects.Copy;
-      if (haveSameOrigin && (data as SegmentM[])?.Contains(target as SegmentM) == false)
-        return DragDropEffects.Move;
-      return DragDropEffects.None;
-    }
+  private object CanDrag(object source) =>
+    source is SegmentM segmentM
+      ? _segmentsM.GetOneOrSelected(segmentM)
+      : null;
 
-    private void DoDrop(object data, bool haveSameOrigin) =>
-      Update(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
+  private DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
+    if (!haveSameOrigin && !Items.Contains(data))
+      return DragDropEffects.Copy;
+    if (haveSameOrigin && (data as SegmentM[])?.Contains(target as SegmentM) == false)
+      return DragDropEffects.Move;
+    return DragDropEffects.None;
+  }
 
-    private void Update(SegmentM[] segments, bool add) {
-      if (!add && Dialog.Show(new MessageDialog(
+  private void DoDrop(object data, bool haveSameOrigin) =>
+    Update(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
+
+  private void Update(SegmentM[] segments, bool add) {
+    if (!add && Dialog.Show(new MessageDialog(
           "Segments Drawer",
           "Do you want to remove segments from drawer?",
           Res.IconQuestion,
           true)) != 1)
-        return;
+      return;
 
-      var count = Items.Count;
+    var count = Items.Count;
 
-      if (add) {
-        var toAdd = Items.Concat(segments.Except(Items)).ToArray();
-        Items.Clear();
+    if (add) {
+      var toAdd = Items.Concat(segments.Except(Items)).ToArray();
+      Items.Clear();
 
-        foreach (var segment in toAdd)
-          Items.Add(segment);
-      }
-      else
-        foreach (var segment in segments)
-          Items.Remove(segment);
-
-      if (count != Items.Count) {
-        _segmentsM.DataAdapter.AreTablePropsModified = true;
-        ReGroupItems(segments, !add);
-      }
+      foreach (var segment in toAdd)
+        Items.Add(segment);
     }
+    else
+      foreach (var segment in segments)
+        Items.Remove(segment);
 
-    public void Remove(SegmentM segment) {
-      if (!Items.Remove(segment)) return;
+    if (count != Items.Count) {
       _segmentsM.DataAdapter.AreTablePropsModified = true;
-      ReGroupItems(new[] { segment }, true);
+      ReGroupItems(segments, !add);
     }
+  }
 
-    private void Open(ToolsTabsM tt) {
-      var source = Items
-        .OrderBy(x => x.MediaItem.Folder.FullPath)
-        .ThenBy(x => x.MediaItem.FileName)
-        .ToList();
-      var groupByItems = GroupByItems.GetFoldersFromSegments(source).ToArray();
+  public void Remove(SegmentM segment) {
+    if (!Items.Remove(segment)) return;
+    _segmentsM.DataAdapter.AreTablePropsModified = true;
+    ReGroupItems(new[] { segment }, true);
+  }
 
-      Reload(source, GroupMode.GroupByRecursive, groupByItems, true);
-      tt.Activate(Res.IconSegment, "Segments", this);
-      tt.Open();
-    }
+  private void Open(ToolsTabsM tt) {
+    var source = Items
+      .OrderBy(x => x.MediaItem.Folder.FullPath)
+      .ThenBy(x => x.MediaItem.FileName)
+      .ToList();
+    var groupByItems = GroupByItems.GetFoldersFromSegments(source).ToArray();
+
+    Reload(source, GroupMode.GroupByRecursive, groupByItems, true);
+    tt.Activate(Res.IconSegment, "Segments", this);
+    tt.Open();
   }
 }
