@@ -1,5 +1,6 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
 using System;
@@ -52,6 +53,6 @@ public class CollectionViewMediaItems : CollectionView<MediaItemM> {
   public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>
     string.Compare(itemA.FileName, itemB.FileName, StringComparison.CurrentCultureIgnoreCase);
 
-  public override void OnSelectItem(IEnumerable<MediaItemM> source, MediaItemM item, bool isCtrlOn, bool isShiftOn) =>
-    Selected.Select(source.ToList(), item, isCtrlOn, isShiftOn);
+  public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) =>
+    Selected.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 }

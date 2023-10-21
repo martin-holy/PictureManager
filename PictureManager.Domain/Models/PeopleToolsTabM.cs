@@ -9,8 +9,6 @@ using System.Linq;
 namespace PictureManager.Domain.Models;
 
 public sealed class PeopleToolsTabM : CollectionViewPeople {
-  public PeopleToolsTabM(PeopleM peopleM) : base(peopleM) { }
-
   public void ReloadFrom() {
     var md = new MessageDialog(
       "Reload People",

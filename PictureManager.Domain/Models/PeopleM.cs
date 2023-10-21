@@ -1,11 +1,11 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.TreeCategories;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.Models;
@@ -48,20 +48,33 @@ public sealed class PeopleM {
   }
 
   private void OpenPeopleToolsTab() {
-    PeopleToolsTabM ??= new(this);
+    if (PeopleToolsTabM == null) {
+      PeopleToolsTabM = new();
+      AddEvents(PeopleToolsTabM);
+    }
+
     PeopleToolsTabM.ReloadFrom();
     Core.ToolsTabsM.Activate(Res.IconPeopleMultiple, "People", PeopleToolsTabM);
     Core.ToolsTabsM.Open();
   }
 
   public void OpenPeopleView() {
-    PeopleView ??= new(this);
+    if (PeopleView == null) {
+      PeopleView = new();
+      AddEvents(PeopleView);
+    }
+
     PeopleView.Reload();
     Core.MainTabs.Activate(Res.IconPeopleMultiple, "People", PeopleView);
   }
 
   public void OpenPersonDetail(PersonM person) {
-    PersonDetail ??= new(this, Core.SegmentsM);
+    if (PersonDetail == null) {
+      PersonDetail = new(this, Core.SegmentsM);
+      Core.SegmentsM.AddEvents(PersonDetail.TopSegments);
+      Core.SegmentsM.AddEvents(PersonDetail.AllSegments);
+    }
+
     PersonDetail.Reload(person);
     Core.ToolsTabsM.Activate(Res.IconPeople, "Person", PersonDetail);
     Core.ToolsTabsM.Open();
@@ -82,8 +95,16 @@ public sealed class PeopleM {
     _da.IsModified = true;
   }
 
-  public void Select(List<PersonM> people, PersonM person, bool isCtrlOn, bool isShiftOn) {
-    if (!isCtrlOn && !isShiftOn)
+  public void AddEvents(CollectionViewPeople cv) {
+    cv.ItemOpenedEvent += (_, e) => Open(e);
+    cv.ItemSelectedEvent += (_, e) => Select(e);
+  }
+
+  public void Open(ObjectEventArgs<PersonM> e) =>
+    Core.SegmentsM.ViewMediaItemsWithSegment(e.Data.Segment);
+
+  public void Select(SelectionEventArgs<PersonM> e) {
+    if (!e.IsCtrlOn && !e.IsShiftOn)
       Core.SegmentsM.Selected.DeselectAll();
 
     var segmentsBefore = Selected.Items
@@ -91,7 +112,7 @@ public sealed class PeopleM {
       .Select(x => x.Segment)
       .ToArray();
 
-    Selected.Select(people, person, isCtrlOn, isShiftOn);
+    Selected.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 
     var segmentsAfter = Selected.Items
       .Where(x => x.Segment != null)

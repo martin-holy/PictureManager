@@ -2,6 +2,7 @@ using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
@@ -42,6 +43,7 @@ public sealed class SegmentsM : ObservableObject {
 
     SegmentsRectsM = new(this);
     SegmentsDrawerM = new(this);
+    AddEvents(SegmentsDrawerM);
 
     SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
     SetSelectedAsUnknownCommand = new(
@@ -80,6 +82,14 @@ public sealed class SegmentsM : ObservableObject {
     SegmentsView?.CvPeople.ReGroupItems(e.Data.Item3?.Where(x => x.Segment != null).ToArray(), false);
     Selected.DeselectAll();
   }
+
+  public void AddEvents(CollectionViewSegments cv) {
+    cv.ItemOpenedEvent += (_, e) => ViewMediaItemsWithSegment(e.Data);
+    cv.ItemSelectedEvent += (_, e) => Select(e);
+  }
+
+  public void Select(SelectionEventArgs<SegmentM> e) =>
+    Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
     if (!isCtrlOn && !isShiftOn)
@@ -212,7 +222,13 @@ public sealed class SegmentsM : ObservableObject {
     if (result < 1) return;
 
     var segments = GetSegments(Core.MediaItemsViews.Current.GetSelectedOrAll(), result).ToArray();
-    SegmentsView ??= new(Core.PeopleM, this);
+
+    if (SegmentsView == null) {
+      SegmentsView = new();
+      Core.PeopleM.AddEvents(SegmentsView.CvPeople);
+      AddEvents(SegmentsView.CvSegments);
+    }
+
     Core.MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
     SegmentsView.Reload(segments);
   }

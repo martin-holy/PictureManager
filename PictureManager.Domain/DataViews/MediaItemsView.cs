@@ -53,7 +53,7 @@ namespace PictureManager.Domain.DataViews {
       Selected.AllDeselectedEventHandler += delegate { SelectionChanged(); };
     }
 
-    public override void OnOpenItem(MediaItemM item) {
+    public override void OnItemOpened(MediaItemM item) {
       if (item == null) return;
 
       Selected.DeselectAll();
@@ -62,9 +62,9 @@ namespace PictureManager.Domain.DataViews {
       Core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), item);
     }
 
-    public override void OnSelectItem(IEnumerable<MediaItemM> source, MediaItemM item, bool isCtrlOn, bool isShiftOn) {
-      base.OnSelectItem(source, item, isCtrlOn, isShiftOn);
-      Core.MediaItemsM.Current = Selected.Items.Contains(item) ? item : null;
+    public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) {
+      base.OnItemSelected(e);
+      Core.MediaItemsM.Current = Selected.Items.Contains(e.Item) ? e.Item : null;
     }
 
     private object CanDrag(object source) {

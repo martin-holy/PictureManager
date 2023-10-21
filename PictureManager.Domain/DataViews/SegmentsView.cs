@@ -7,13 +7,8 @@ using System.Linq;
 namespace PictureManager.Domain.DataViews;
 
 public sealed class SegmentsView {
-  public CollectionViewPeople CvPeople { get; }
-  public CollectionViewSegments CvSegments { get; }
-
-  public SegmentsView(PeopleM peopleM, SegmentsM segmentsM) {
-    CvPeople = new(peopleM);
-    CvSegments = new(segmentsM);
-  }
+  public CollectionViewPeople CvPeople { get; } = new();
+  public CollectionViewSegments CvSegments { get; } = new();
 
   public void Reload(SegmentM[] items) {
     ReloadSegments(items);
