@@ -54,6 +54,7 @@ public sealed class Core {
   public Task InitAsync(IProgress<string> progress) {
     return Task.Run(() => {
       Db.AddDataAdapters();
+      Drives.UpdateSerialNumbers();
       SimpleDB.Migrate(6, DatabaseMigration.Resolver);
       Db.LoadAllTables(progress);
       Db.LinkReferences(progress);

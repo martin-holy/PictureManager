@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 
@@ -55,6 +56,7 @@ public sealed class ViewersM : ObservableObject {
     var da = Core.Db.Viewers;
     da.Save();
     Core.Instance.SaveDBPrompt();
+    Drives.UpdateSerialNumbers();
     da.DB.LoadAllTables(null);
     da.DB.LinkReferences(null);
     da.DB.ClearDataAdapters();
