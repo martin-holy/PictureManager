@@ -71,7 +71,7 @@ public class DataAdapter<T> : IDataAdapter<T> where T : class {
 
     if (SimpleDB.LoadFromFile(ParseLine, TableFilePath)) return;
 
-    foreach (var drive in Environment.GetLogicalDrives())
+    foreach (var drive in Drives.SerialNumbers.Keys)
       SimpleDB.LoadFromFile(ParseLine, GetDBFilePath(drive, TableName));
   }
 
@@ -95,8 +95,15 @@ public class DataAdapter<T> : IDataAdapter<T> where T : class {
       File.Delete(TableFilePath);
   }
 
-  private static string GetDBFilePath(string drive, string tableName) =>
-    string.Join(Path.DirectorySeparatorChar, "db", $"{tableName}.{drive[..1]}.csv");
+  private static string GetDBFilePath(string drive, string tableName) {
+    var oldPath = string.Join(Path.DirectorySeparatorChar, "db", $"{tableName}.{drive[..1]}.csv");
+    var newPath = string.Join(Path.DirectorySeparatorChar, "db", $"{tableName}.{Drives.SerialNumbers[drive]}.csv");
+
+    if (File.Exists(oldPath))
+      File.Move(oldPath, newPath);
+
+    return newPath;
+  }
 
   public void Clear() {
     AllCsv = null;
