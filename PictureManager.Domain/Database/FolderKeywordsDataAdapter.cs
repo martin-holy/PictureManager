@@ -77,7 +77,7 @@ public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
         LoadRecursive(folder, Model);
 
     foreach (var fk in All2) {
-      if (fk.Folders.All(x => !_db.Folders.Model.IsFolderVisible(x)))
+      if (fk.Folders.All(x => !_db.Viewers.Model.CanViewerSee(x)))
         fk.IsHidden = true;
     }
   }

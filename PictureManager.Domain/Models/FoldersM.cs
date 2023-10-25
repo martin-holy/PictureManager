@@ -44,9 +44,6 @@ public sealed class FoldersM {
       _ => Res.IconDrive,
     };
 
-  public bool IsFolderVisible(FolderM folder) =>
-    Tree.GetParentOf<DriveM>(folder)?.IsAvailable == true && Core.ViewersM.CanViewerSee(folder);
-
   public void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {
     var fop = new FileOperationDialogM(mode, true);
     fop.RunTask = Task.Run(() => {
@@ -302,6 +299,6 @@ public sealed class FoldersM {
       Tree.GetThisAndItemsRecursive(root, ref output);
     }
 
-    return output.Where(IsFolderVisible).ToList();
+    return output.Where(Core.ViewersM.CanViewerSee).ToList();
   }
 }
