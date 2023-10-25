@@ -140,7 +140,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
   }
 
   public void ScrollTo(FolderM folder) {
-    if (folder == null || !Core.FoldersM.IsFolderVisible(folder)) return;
+    if (folder == null || !Core.ViewersM.CanViewerSee(folder)) return;
     folder.IsExpanded = true;
     Core.TreeViewCategoriesM.Select(TreeView);
     TreeView.ScrollTo(folder);
