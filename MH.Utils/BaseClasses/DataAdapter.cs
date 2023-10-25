@@ -11,6 +11,7 @@ public class DataAdapter<T> : IDataAdapter<T> where T : class {
   private bool _isModified;
   private bool _areTablePropsModified;
   private Dictionary<int, int> _notFoundIds;
+  protected string CurrentVolumeSerialNumber;
 
   public bool IsModified {
     get => _isModified;
@@ -71,8 +72,10 @@ public class DataAdapter<T> : IDataAdapter<T> where T : class {
 
     if (SimpleDB.LoadFromFile(ParseLine, TableFilePath)) return;
 
-    foreach (var drive in Drives.SerialNumbers.Keys)
-      SimpleDB.LoadFromFile(ParseLine, GetDBFilePath(drive, TableName));
+    foreach (var drive in Drives.SerialNumbers) {
+      CurrentVolumeSerialNumber = drive.Value;
+      SimpleDB.LoadFromFile(ParseLine, GetDBFilePath(drive.Key, TableName));
+    }
   }
 
   public virtual void Save() =>
