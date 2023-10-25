@@ -32,7 +32,7 @@ public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
 
   public override FolderM FromCsv(string[] csv) =>
     string.IsNullOrEmpty(csv[2])
-      ? new DriveM(int.Parse(csv[0]), csv[1], null)
+      ? new DriveM(int.Parse(csv[0]), csv[1], null, CurrentVolumeSerialNumber)
       : new FolderM(int.Parse(csv[0]), csv[1], null);
 
   public override string ToCsv(FolderM folder) =>
@@ -82,8 +82,8 @@ public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
     return null;
   }
 
-  public DriveM AddDrive(ITreeItem parent, string name) {
-    var item = new DriveM(GetNextId(), name, parent);
+  public DriveM AddDrive(ITreeItem parent, string name, string sn) {
+    var item = new DriveM(GetNextId(), name, parent, sn);
     All.Add(item);
     return item;
   }
