@@ -6,7 +6,6 @@ using MH.Utils.Interfaces;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -109,34 +108,27 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
   }
 
   public void AddDrives() {
-    var drives = Environment.GetLogicalDrives();
-    var drivesNames = new List<string>();
+    foreach (var drive in Drives.SerialNumbers) {
+      var di = new DriveInfo(drive.Key);
 
-    foreach (var drive in drives) {
-      var di = new DriveInfo(drive);
-      var driveName = di.Name.TrimEnd(Path.DirectorySeparatorChar);
-      drivesNames.Add(driveName);
-
-      // add Drive to the database and to the tree if not already exists
-      if (Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(driveName, StringComparison.OrdinalIgnoreCase)) is
+      // add Drive to the database and to the tree if not already there
+      if (Items.Cast<DriveM>().SingleOrDefault(x => x.SerialNumber.Equals(drive.Value, StringComparison.OrdinalIgnoreCase)) is
           not { } item) {
-        item = Core.Db.Folders.AddDrive(this, driveName);
+        item = Core.Db.Folders.AddDrive(this, drive.Key, drive.Value);
         Items.Add(item);
       }
 
       item.IsAccessible = di.IsReady;
       item.Icon = FoldersM.GetDriveIcon(di.DriveType);
+      item.Name = drive.Key;
 
       // add placeholder so the Drive can be expanded
       if (di.IsReady && item.Items.Count == 0)
         item.Items.Add(FoldersM.FolderPlaceHolder);
     }
 
-    // set available drives
-    foreach (var item in Items.Cast<FolderM>()) {
-      item.IsAvailable = drivesNames.Any(x => x.Equals(item.Name, StringComparison.OrdinalIgnoreCase));
-      item.IsHidden = !Core.FoldersM.IsFolderVisible(item);
-    }
+    foreach (var item in Items.Cast<FolderM>())
+      item.IsHidden = !Core.ViewersM.CanViewerSee(item);
   }
 
   public void ScrollTo(FolderM folder) {
