@@ -64,27 +64,35 @@ namespace PictureManager.Utils {
       if (dir == null) throw new ArgumentException($"Invalid destination path. {destPath}");
       Directory.CreateDirectory(dir);
 
-      using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-        if (decoder.CodecInfo?.FileExtensions.Contains("jpg") != true || decoder.Frames[0] == null)
-          throw new BadImageFormatException($"Image is not a JPG. {srcPath}");
+      using Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+      var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+      if (decoder.Frames[0] == null)
+        throw new BadImageFormatException($"Image does not have any frames. {srcPath}");
 
-        var frame = decoder.Frames[0];
-        var orientation = (MediaOrientation)((ushort?)((BitmapMetadata)frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1);
-        var rotated = orientation is MediaOrientation.Rotate90 or MediaOrientation.Rotate270;
-        var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
-        var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
+      var frame = decoder.Frames[0];
+      var orientation = (MediaOrientation)((ushort?)TryGetQuery((BitmapMetadata)frame.Metadata, "System.Photo.Orientation") ?? 1);
+      var rotated = orientation is MediaOrientation.Rotate90 or MediaOrientation.Rotate270;
+      var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
+      var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
 
-        Domain.Utils.Imaging.GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
+      Domain.Utils.Imaging.GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
 
-        var output = new TransformedBitmap(frame, new ScaleTransform(thumbWidth / pxw, thumbHeight / pxh, 0, 0));
-        var metadata = new BitmapMetadata("jpg");
-        metadata.SetQuery("System.Photo.Orientation", (ushort)orientation);
+      var output = new TransformedBitmap(frame, new ScaleTransform(thumbWidth / pxw, thumbHeight / pxh, 0, 0));
+      var metadata = new BitmapMetadata("jpg");
+      metadata.SetQuery("System.Photo.Orientation", (ushort)orientation);
 
-        using Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite);
-        var encoder = new JpegBitmapEncoder { QualityLevel = quality };
-        encoder.Frames.Add(BitmapFrame.Create(output, null, metadata, frame.ColorContexts));
-        encoder.Save(destFileStream);
+      using Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite);
+      var encoder = new JpegBitmapEncoder { QualityLevel = quality };
+      encoder.Frames.Add(BitmapFrame.Create(output, null, metadata, frame.ColorContexts));
+      encoder.Save(destFileStream);
+    }
+
+    public static object TryGetQuery(BitmapMetadata bm, string query) {
+      try {
+        return bm.GetQuery(query);
+      }
+      catch (Exception) {
+        return null;
       }
     }
 
