@@ -21,13 +21,11 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     private bool _isAccessible;
-    private bool _isAvailable;
 
     public int Id { get; }
     public List<MediaItemM> MediaItems { get; } = new();
     public FolderKeywordM FolderKeyword { get; set; }
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); UpdateIcon(); } }
-    public bool IsAvailable { get => _isAvailable; set { _isAvailable = value; OnPropertyChanged(); } }
     public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
 
@@ -71,7 +69,7 @@ namespace PictureManager.Domain.Models {
         var folder = Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(dirName, StringComparison.OrdinalIgnoreCase));
         
         if (folder != null) {
-          folder.IsHidden = !Core.FoldersM.IsFolderVisible(folder);
+          folder.IsHidden = !Core.ViewersM.CanViewerSee(folder);
           continue;
         }
 
