@@ -63,10 +63,10 @@ namespace PictureManager.Domain.Dialogs {
       var fileName = path[(lioSep + 1)..];
       var folder = Tree.GetByPath(Core.FoldersM.TreeCategory, folderPath, Path.DirectorySeparatorChar) as FolderM;
       var mi = folder?.GetMediaItemByName(fileName);
-      
-      if (mi == null)
-        mi = Core.Db.MediaItems.ItemCreate(folder, fileName);
 
+      if (mi != null) return mi;
+
+      mi = Core.Db.MediaItems.ItemCreate(folder, fileName);
       var mim = new MediaItemMetadata(mi);
       Core.MediaItemsM.ReadMetadata(mim, false);
       if (mim.Success) mim.FindRefs();
