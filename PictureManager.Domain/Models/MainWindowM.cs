@@ -42,7 +42,6 @@ public sealed class MainWindowM : ObservableObject {
     Dialog.Show(new AboutDialogM());
 
   private static void Closing() {
-    Core.Instance.SaveMetadataPrompt();
     Core.Instance.SaveDBPrompt();
     Core.Db.BackUp();
   }

@@ -10,8 +10,6 @@ public sealed class GeoNamesTreeCategory : TreeCategory<GeoNameM> {
     DataAdapter = da;
   }
 
-  public override void OnItemSelected(object o) {
-    if (o is GeoNameM g && Core.MediaItemsM.IsEditModeOn)
-      Core.MediaItemsM.SetMetadata(g);
-  }
+  public override void OnItemSelected(object o) =>
+    Core.MediaItemsM.SetMetadata(o);
 }

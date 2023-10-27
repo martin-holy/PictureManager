@@ -76,13 +76,6 @@
                            ConverterParameter={StaticResource False}}">
               <TextBlock Text="{Binding MediaItemsViews.Current.Selected.Items.Count}"/>
             </Border>
-
-            <!-- Modified -->
-            <Border
-              Background="#CA5100" 
-              Visibility="{Binding MediaItemsM.IsEditModeOn, Converter={mhConv:AllToVisibilityConverter}}">
-              <TextBlock Text="{Binding MediaItemsM.ModifiedItemsCount}"/>
-            </Border>
           </StackPanel>
         </Border>
 

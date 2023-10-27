@@ -9,13 +9,8 @@ public sealed class RatingsTreeCategory : TreeCategory {
     Load();
   }
 
-  public override void OnItemSelected(object o) {
-    if (o is not RatingTreeM r) return;
-    if (Core.MediaItemsM.IsEditModeOn)
-      Core.MediaItemsM.SetMetadata(r);
-    else
-      Core.MediaItemsViews.Current?.Filter.Set(r.Rating, DisplayFilter.Or);
-  }
+  public override void OnItemSelected(object o) =>
+    Core.MediaItemsM.SetMetadata(o);
 
   private void Load() {
     for (var i = 0; i < 6; i++)

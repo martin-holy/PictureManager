@@ -18,9 +18,6 @@
   FontSize="14">
 
   <Window.InputBindings>
-    <KeyBinding Modifiers="Control" Key="E" Command="{Binding MediaItemsM.EditCommand}"/>
-    <KeyBinding Modifiers="Control" Key="S" Command="{Binding MediaItemsM.SaveEditCommand}"/>
-    <KeyBinding Modifiers="Control" Key="Q" Command="{Binding MediaItemsM.CancelEditCommand}"/>
     <KeyBinding Modifiers="Control" Key="R" Command="{Binding MediaItemsM.RotateCommand}"/>
     <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsM.CommentCommand}"/>
     <KeyBinding Key="F2" Command="{Binding MediaItemsM.RenameCommand}"/>

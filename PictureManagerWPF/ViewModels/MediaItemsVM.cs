@@ -14,12 +14,9 @@ using System.Windows.Media.Imaging;
 
 namespace PictureManager.ViewModels {
   public class MediaItemsVM : ObservableObject {
-    private readonly Core _core;
-
     public MediaItemsM Model { get; }
 
-    public MediaItemsVM(Core core, MediaItemsM model) {
-      _core = core;
+    public MediaItemsVM(MediaItemsM model) {
       Model = model;
 
       Model.ReadMetadata = ReadMetadata;
@@ -41,6 +38,7 @@ namespace PictureManager.ViewModels {
           
           mim.MediaItem.Width = frame.PixelWidth;
           mim.MediaItem.Height = frame.PixelHeight;
+          mim.MediaItem.IsOnlyInDb = false;
 
           // true because only media item dimensions are required
           if (frame.Metadata is not BitmapMetadata bm) {
@@ -49,7 +47,6 @@ namespace PictureManager.ViewModels {
           }
 
           ReadImageMetadata(mim, bm, gpsOnly);
-          mim.MediaItem.IsOnlyInDb = false; // TODO
           mim.Success = true;
         }
       }

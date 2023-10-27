@@ -42,7 +42,6 @@
           <MenuItem Header="Compress" Command="{Binding MediaItemsM.CompressCommand}"/>
           <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsM.RebuildThumbnailsCommand}"/>
           <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="{Binding MediaItemsM.RotateCommand}"/>
-          <MenuItem Header="Select Not Modified" Command="{Binding MediaItemsM.SelectNotModifiedCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
           <MenuItem Header="Shuffle" Command="{Binding MediaItemsViews.ShuffleCommand}"/>
           <MenuItem Header="Resize Images" Command="{Binding MediaItemsM.ResizeImagesCommand}"/>
           <MenuItem Header="Images to Video" Command="{Binding MediaItemsM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
@@ -57,19 +56,9 @@
 
         <!-- Metadata -->
         <MenuItem Header="Metadata">
-          <MenuItem Header="Edit" InputGestureText="Ctrl+E" Command="{Binding MediaItemsM.EditCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconEdit}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-          <MenuItem Header="Save" InputGestureText="Ctrl+S" Command="{Binding MediaItemsM.SaveEditCommand}">
+          <MenuItem Header="Save to files" Command="{Binding MediaItemsM.SaveToFilesCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconSave}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-          <MenuItem Header="Cancel" InputGestureText="Ctrl+Q" Command="{Binding MediaItemsM.CancelEditCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconCancel}"/>
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem Header="Comment" InputGestureText="Ctrl+K" Command="{Binding MediaItemsM.CommentCommand}">

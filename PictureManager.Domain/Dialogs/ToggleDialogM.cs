@@ -53,7 +53,7 @@ public sealed class ToggleDialogM : Dialog {
     counts = new(
       Core.SegmentsM.Selected.Items.Count,
       item is PersonM ? 0 : Core.PeopleM.Selected.Items.Count,
-      Core.MediaItemsM.IsEditModeOn ? Core.MediaItemsM.GetActive().Length : 0);
+      Core.MediaItemsM.GetActive().Length);
 
     return counts.Item1 != 0 || counts.Item2 != 0 || counts.Item3 != 0;
   }

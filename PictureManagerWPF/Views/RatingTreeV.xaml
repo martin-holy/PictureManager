@@ -14,13 +14,16 @@
 
         <MenuItem
           Header="Load"
-          Command="{Binding MediaItemsViews.LoadByTagCommand,
-                    Source={x:Static pm:App.Core}}"
+          Command="{Binding MediaItemsViews.LoadByTagCommand, Source={x:Static pm:App.Core}}"
           CommandParameter="{Binding}"/>
+        <MenuItem
+          Header="Filter Or"
+          Command="{Binding MediaItemsViews.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}"
+          CommandParameter="{Binding Path=(m:RatingTreeM.Rating)}"/>
       </ContextMenu>
     </HierarchicalDataTemplate.Resources>
 
-    <Grid>
+    <Grid Background="Transparent">
       <b:Interaction.Triggers>
         <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
