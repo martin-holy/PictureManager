@@ -21,7 +21,7 @@ namespace PictureManager {
 
       MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
 
-      MediaItemsVM = new(App.Core, Core.MediaItemsM);
+      MediaItemsVM = new(Core.MediaItemsM);
       SegmentsRectsVM = new(Core.SegmentsM.SegmentsRectsM);
     }
 

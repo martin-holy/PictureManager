@@ -176,7 +176,7 @@ public sealed class Core {
       foreach (var __ in e.Data)
         MediaItemsM.DataAdapter.IsModified = true;
 
-      MediaItemsViews.ReloadViewIfContains(e.Data);
+      MediaItemsViews.ReWrapViewIfContains(e.Data);
     };
 
     MediaItemsM.MetadataChangedEventHandler += (_, _) => {
@@ -267,21 +267,11 @@ public sealed class Core {
     #endregion
   }
 
-  public void SaveMetadataPrompt() {
-    if (MediaItemsM.ModifiedItems.Count > 0 &&
-        Dialog.Show(new MessageDialog(
-          "Metadata Edit",
-          "Some Media Items are modified, do you want to save them?",
-          Res.IconQuestion,
-          true)) == 1)
-      MediaItemsM.SaveEdit();
-  }
-
   public void SaveDBPrompt() {
     if (Db.Changes > 0 &&
         Dialog.Show(new MessageDialog(
           "Database changes",
-          "There are some changes in database, do you want to save them?",
+          "There are some changes in database. Do you want to save them?",
           Res.IconQuestion,
           true)) == 1)
       Db.SaveAllTables();

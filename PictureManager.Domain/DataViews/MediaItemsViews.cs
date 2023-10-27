@@ -85,9 +85,9 @@ namespace PictureManager.Domain.DataViews {
       Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
     }
 
-    public void ReloadViewIfContains(MediaItemM[] mediaItems) {
-      foreach (var view in _all)
-        view.ReGroupItems(view.FilteredItems.Where(mediaItems.Contains).ToArray(), false);
+    public void ReWrapViewIfContains(MediaItemM[] mediaItems) {
+      foreach (var view in _all.Where(x => x.FilteredItems.Any(mediaItems.Contains)))
+        view.ReWrapAll();
     }
 
     public async Task LoadByFolder(ITreeItem item) {

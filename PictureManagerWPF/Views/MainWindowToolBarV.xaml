@@ -92,6 +92,17 @@
             VerticalAlignment="Center"
             Margin="5 0"/>
 
+          <!-- Modified Media Items Count -->
+          <mhc:IconButton
+            ToolTip="View modified media items"
+            Icon="{StaticResource IconImageMultiple}"
+            Command="{Binding MediaItemsM.ViewModifiedCommand}"
+            Margin="3 0 0 0"/>
+          <TextBlock
+            Text="{Binding MediaItemsM.ModifiedItemsCount}"
+            VerticalAlignment="Center"
+            Margin="5 0"/>
+
           <!-- Filters Panel -->
           <ContentPresenter
             Content="{Binding MediaItemsViews.Current.Filter}"

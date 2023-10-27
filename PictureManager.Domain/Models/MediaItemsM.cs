@@ -14,19 +14,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Models; 
+namespace PictureManager.Domain.Models;
 
 public sealed class MediaItemsM : ObservableObject {
-  private bool _isEditModeOn;
   private MediaItemM _current;
 
   public MediaItemsDataAdapter DataAdapter { get; set; }
   public static HashSet<MediaItemM> ThumbIgnoreCache { get; } = new();
-  public HashSet<MediaItemM> ModifiedItems { get; } = new();
   public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
   public int MediaItemsCount => DataAdapter.All.Count;
-  public int ModifiedItemsCount => ModifiedItems.Count;
-  public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
+  public int ModifiedItemsCount => DataAdapter.All.Count(x => x.IsOnlyInDb);
 
   public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsOrientationChangedEventHandler = delegate { };
   public event EventHandler MetadataChangedEventHandler = delegate { };
@@ -38,16 +35,14 @@ public sealed class MediaItemsM : ObservableObject {
   public RelayCommand<object> RotateCommand { get; }
   public RelayCommand<object> RenameCommand { get; }
   public RelayCommand<MediaItemsView> ImagesToVideoCommand { get; }
-  public RelayCommand<object> EditCommand { get; }
-  public RelayCommand<object> SaveEditCommand { get; }
-  public RelayCommand<MediaItemsView> SelectNotModifiedCommand { get; }
-  public RelayCommand<object> CancelEditCommand { get; }
+  public RelayCommand<object> SaveToFilesCommand { get; }
   public RelayCommand<object> CommentCommand { get; }
   public RelayCommand<object> ResizeImagesCommand { get; }
   public RelayCommand<object> ReloadMetadataCommand { get; }
   public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
   public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
   public RelayCommand<object> RebuildThumbnailsCommand { get; }
+  public RelayCommand<object> ViewModifiedCommand { get; }
 
   public MediaItemsM(MediaItemsDataAdapter da) {
     DataAdapter = da;
@@ -64,12 +59,7 @@ public sealed class MediaItemsM : ObservableObject {
       () => Dialog.Show(new ResizeImagesDialogM(Core.MediaItemsViews.Current.GetSelectedOrAll())),
       () => Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
-    EditCommand = new(
-      () => IsEditModeOn = true,
-      () => !IsEditModeOn);
-
-    SaveEditCommand = new(SaveEdit, () => IsEditModeOn && ModifiedItems.Count > 0);
-    CancelEditCommand = new(CancelEdit, () => IsEditModeOn);
+    SaveToFilesCommand = new(SaveToFiles);
     CommentCommand = new(Comment, () => Current != null);
 
     ReloadMetadataCommand = new(
@@ -81,7 +71,7 @@ public sealed class MediaItemsM : ObservableObject {
       () => Core.MediaItemsViews.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
 
     ReloadMetadataInFolderCommand = new(
-      x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn()), true),
+      x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn())),
       x => x != null);
 
     RebuildThumbnailsCommand = new(
@@ -92,9 +82,7 @@ public sealed class MediaItemsM : ObservableObject {
       ImagesToVideo, 
       view => view?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
 
-    SelectNotModifiedCommand = new(
-      view => view.Selected.Set(view.FilteredItems.Except(ModifiedItems).ToArray()),
-      view => view?.FilteredItems.Count > 0);
+    ViewModifiedCommand = new(ViewModified);
   }
 
   private void OnItemCreated(object sender, ObjectEventArgs<MediaItemM> e) =>
@@ -105,7 +93,7 @@ public sealed class MediaItemsM : ObservableObject {
 
   private void OnItemDeleted(object o, ObjectEventArgs<MediaItemM> e) {
     OnPropertyChanged(nameof(MediaItemsCount));
-    SetModified(e.Data, false);
+    OnPropertyChanged(nameof(ModifiedItemsCount));
   }
 
   private void ImagesToVideo(MediaItemsView view) {
@@ -152,17 +140,6 @@ public sealed class MediaItemsM : ObservableObject {
     foreach (var c in items.Select(x => x.FilePathCache)) File.Delete(c);
     // delete from db
     DataAdapter.ItemsDelete(items);
-  }
-
-  private void SetModified(MediaItemM mi, bool value) {
-    if (value) {
-      ModifiedItems.Add(mi);
-      DataAdapter.IsModified = true;
-    }
-    else
-      ModifiedItems.Remove(mi);
-
-    OnPropertyChanged(nameof(ModifiedItemsCount));
   }
 
   /// <summary>
@@ -298,15 +275,15 @@ public sealed class MediaItemsM : ObservableObject {
     }
   }
 
-  public bool TryWriteMetadata(MediaItemM mediaItem) {
-    if (mediaItem.IsOnlyInDb) return true;
+  public bool TryWriteMetadata(MediaItemM mi) {
     try {
-      return WriteMetadata(mediaItem) ? true : throw new("Error writing metadata");
+      if (!WriteMetadata(mi)) throw new("Error writing metadata");
+      mi.IsOnlyInDb = false;
+      return true;
     }
     catch (Exception ex) {
-      Log.Error(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
-      // set MediaItem as IsOnlyInDb to not save metadata to file, but keep them just in DB
-      mediaItem.IsOnlyInDb = true;
+      Log.Error(ex, $"Metadata will be saved just in Database. {mi.FilePath}");
+      mi.IsOnlyInDb = true;
       return false;
     }
   }
@@ -332,7 +309,7 @@ public sealed class MediaItemsM : ObservableObject {
         if (lastGeoName == null) return;
 
         mi.GeoName = lastGeoName;
-        TryWriteMetadata(mi);
+        mi.IsOnlyInDb = true;
         await Tasks.RunOnUiThread(() => {
           mi.SetInfoBox();
           DataAdapter.IsModified = true;
@@ -365,126 +342,94 @@ public sealed class MediaItemsM : ObservableObject {
   }
 
   public void SetOrientation(MediaItemM[] mediaItems, MediaOrientation orientation) {
-    var progress = new ProgressBarDialog("Changing orientation ...", Res.IconImage, true, Environment.ProcessorCount);
-    progress.AddEvents(
-      mediaItems,
-      null,
-      // action
-      mi => {
-        var newOrientation = mi.RotationAngle;
+    foreach (var mi in mediaItems) {
+      var newOrientation = mi.RotationAngle;
 
-        if (mi.MediaType == MediaType.Image) {
-          switch (orientation) {
-            case MediaOrientation.Rotate90: newOrientation += 90; break;
-            case MediaOrientation.Rotate180: newOrientation += 180; break;
-            case MediaOrientation.Rotate270: newOrientation += 270; break;
-          }
+      if (mi.MediaType == MediaType.Image) {
+        switch (orientation) {
+          case MediaOrientation.Rotate90: newOrientation += 90; break;
+          case MediaOrientation.Rotate180: newOrientation += 180; break;
+          case MediaOrientation.Rotate270: newOrientation += 270; break;
         }
-        else if (mi.MediaType == MediaType.Video) {
-          // images have switched 90 and 270 angles and all application is made with this in mind
-          // so I switched orientation just for video
-          switch (orientation) {
-            case MediaOrientation.Rotate90: newOrientation += 270; break;
-            case MediaOrientation.Rotate180: newOrientation += 180; break;
-            case MediaOrientation.Rotate270: newOrientation += 90; break;
-          }
+      }
+      else if (mi.MediaType == MediaType.Video) {
+        // images have switched 90 and 270 angles and all application is made with this in mind
+        // so I switched orientation just for video
+        switch (orientation) {
+          case MediaOrientation.Rotate90: newOrientation += 270; break;
+          case MediaOrientation.Rotate180: newOrientation += 180; break;
+          case MediaOrientation.Rotate270: newOrientation += 90; break;
         }
+      }
 
-        if (newOrientation >= 360) newOrientation -= 360;
+      if (newOrientation >= 360) newOrientation -= 360;
 
-        switch (newOrientation) {
-          case 0: mi.Orientation = (int)MediaOrientation.Normal; break;
-          case 90: mi.Orientation = (int)MediaOrientation.Rotate90; break;
-          case 180: mi.Orientation = (int)MediaOrientation.Rotate180; break;
-          case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
-        }
+      switch (newOrientation) {
+        case 0: mi.Orientation = (int)MediaOrientation.Normal; break;
+        case 90: mi.Orientation = (int)MediaOrientation.Rotate90; break;
+        case 180: mi.Orientation = (int)MediaOrientation.Rotate180; break;
+        case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
+      }
 
-        TryWriteMetadata(mi);
-        mi.SetThumbSize(true);
-        mi.OnPropertyChanged(nameof(mi.FilePathCache));
-      },
-      mi => mi.FilePath,
-      // onCompleted
-      (_, _) => MediaItemsOrientationChangedEventHandler(this, new(mediaItems)));
+      mi.IsOnlyInDb = true;
+      mi.SetThumbSize(true);
+      ThumbIgnoreCache.Add(mi);
+      File.Delete(mi.FilePathCache);
+    }
 
-    progress.Start();
-    Dialog.Show(progress);
+    MediaItemsOrientationChangedEventHandler(this, new(mediaItems));
   }
 
-  public void SaveEdit() {
-    var progress = new ProgressBarDialog("Saving metadata ...", Res.IconImage, true, Environment.ProcessorCount);
-    progress.AddEvents(
-      ModifiedItems.ToArray(),
-      null,
-      // action
-      async mi => {
-        TryWriteMetadata(mi);
-        await Tasks.RunOnUiThread(() => SetModified(mi, false));
-      },
-      mi => mi.FilePath,
-      // onCompleted
-      (_, e) => {
-        if (e.Cancelled)
-          CancelEdit();
-        else
-          IsEditModeOn = false;
+  public void SaveToFiles() {
+    var mediaItems = Core.MediaItemsViews.Current?.FilteredItems
+      .Where(x => x.IsSelected && x.IsOnlyInDb && x.MediaType == MediaType.Image)
+      .ToArray();
 
-        Core.StatusPanelM.OnPropertyChanged(nameof(Core.StatusPanelM.FileSize));
-      });
+    if (mediaItems == null || !mediaItems.Any()) return;
+    if (Dialog.Show(new MessageDialog(
+          "Save metadata to files",
+          $"Do you really want to save image metadata to {mediaItems.Length} files?",
+          Res.IconQuestion,
+          true)) != 1) return;
 
+    var progress = new ProgressBarDialog("Saving metadata to files...", Res.IconImage, true, Environment.ProcessorCount);
+    progress.AddEvents(mediaItems, null, mi => TryWriteMetadata(mi), mi => mi.FilePath, null);
     progress.Start();
     Dialog.Show(progress);
+    Core.StatusPanelM.OnPropertyChanged(nameof(Core.StatusPanelM.FileSize));
+    OnPropertyChanged(nameof(ModifiedItemsCount));
   }
 
-  public void CancelEdit() {
-    var progress = new ProgressBarDialog("Reloading metadata ...", Res.IconImage, false, Environment.ProcessorCount);
+  public void ReloadMetadata(List<MediaItemM> mediaItems) {
+    if (mediaItems.Count == 0 ||
+        Dialog.Show(new MessageDialog(
+          "Reload metadata from files",
+          $"Do you really want to reload image metadata for {mediaItems.Count} files?",
+          Res.IconQuestion,
+          true)) != 1) return;
+
+    var progress = new ProgressBarDialog("Reloading metadata...", Res.IconImage, true, Environment.ProcessorCount);
     progress.AddEvents(
-      ModifiedItems.ToArray(),
+      mediaItems.ToArray(),
       null,
-      // action
       async mi => {
         var mim = new MediaItemMetadata(mi);
         ReadMetadata(mim, false);
 
         await Tasks.RunOnUiThread(() => {
           if (mim.Success) mim.FindRefs();
-          SetModified(mi, false);
+          DataAdapter.IsModified = true;
+          mi.IsOnlyInDb = false;
           mi.SetInfoBox();
         });
       },
       mi => mi.FilePath,
-      // onCompleted
-      (_, _) => {
-        MetadataChangedEventHandler(this, EventArgs.Empty);
-        IsEditModeOn = false;
-      });
+      null);
 
     progress.Start();
     Dialog.Show(progress);
-  }
-
-  public void ReloadMetadata(List<MediaItemM> mediaItems, bool updateInfoBox = false) {
-    var progress = new ProgressBarDialog("Reloading metadata ...", Res.IconImage, true, Environment.ProcessorCount);
-    progress.AddEvents(
-      mediaItems.ToArray(),
-      null,
-      // action
-      async (mi) => {
-        var mim = new MediaItemMetadata(mi);
-        ReadMetadata(mim, false);
-        if (mim.Success)
-          await Tasks.RunOnUiThread(() => mim.FindRefs());
-
-        // set info box just for loaded media items
-        if (updateInfoBox)
-          await Tasks.RunOnUiThread(mi.SetInfoBox);
-      },
-      mi => mi.FilePath,
-      // onCompleted
-      (_, _) => MetadataChangedEventHandler(this, EventArgs.Empty));
-
-    progress.Start();
-    Dialog.Show(progress);
+    MetadataChangedEventHandler(this, EventArgs.Empty);
+    OnPropertyChanged(nameof(ModifiedItemsCount));
   }
 
   private void Rotate() {
@@ -541,7 +486,7 @@ public sealed class MediaItemsM : ObservableObject {
     Current.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
     Current.SetInfoBox();
     Current.OnPropertyChanged(nameof(Current.Comment));
-    TryWriteMetadata(Current);
+    Current.IsOnlyInDb = true;
     DataAdapter.IsModified = true;
   }
 
@@ -587,17 +532,24 @@ public sealed class MediaItemsM : ObservableObject {
 
       if (!modified) continue;
 
-      SetModified(mi, true);
+      DataAdapter.IsModified = true;
+      mi.IsOnlyInDb = true;
       mi.SetInfoBox();
       count++;
     }
 
-    if (count > 0)
-      MetadataChangedEventHandler(this, EventArgs.Empty);
+    if (count == 0) return;
+    OnPropertyChanged(nameof(ModifiedItemsCount));
+    MetadataChangedEventHandler(this, EventArgs.Empty);
   }
 
   public static bool IsPanoramic(MediaItemM mi) =>
     mi.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270
       ? mi.Height / (double)mi.Width > 16.0 / 9.0
       : mi.Width / (double)mi.Height > 16.0 / 9.0;
+
+  private async void ViewModified() {
+    Core.MediaItemsViews.AddView("Modified");
+    await Core.MediaItemsViews.Current.LoadByTag(DataAdapter.All.Where(x => x.IsOnlyInDb).ToArray());
+  }
 }
