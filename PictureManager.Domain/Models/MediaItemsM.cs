@@ -301,7 +301,7 @@ public sealed class MediaItemsM : ObservableObject {
           var mim = new MediaItemMetadata(mi);
           ReadMetadata(mim, true);
           if (mim.Success)
-            await Tasks.RunOnUiThread(() => mim.FindRefs());
+            await Tasks.RunOnUiThread(() => mim.FindGeoName());
         }
         if (mi.Lat == null || mi.Lng == null) return;
 
