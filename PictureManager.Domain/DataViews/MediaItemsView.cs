@@ -177,8 +177,7 @@ namespace PictureManager.Domain.DataViews {
           select new MediaItemMetadata(Core.Db.MediaItems.ItemCreate(folder, fileName)));
 
         // remove MediaItems deleted outside of this application
-        foreach (var mi in mediaItems.Values)
-          Core.MediaItemsM.DataAdapter.ItemDelete(mi);
+        Core.MediaItemsM.DataAdapter.ItemsDelete(mediaItems.Values.ToArray());
 
         toLoad.AddRange(folder.MediaItems);
       }
