@@ -108,8 +108,11 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
     TreeItemCreate(new(GetNextId(), name) { Parent = parent });
 
   public PersonM ItemCreateUnknown() {
-    var id = SimpleDB.GetNextRecycledId(All.Select(x => x.Id).ToHashSet()) ?? GetNextId();
-    
+    if (SimpleDB.GetNextRecycledId(All.Select(x => x.Id).ToHashSet()) is { } id)
+      IsModified = true;
+    else
+      id = GetNextId();
+
     return TreeItemCreate(new(id, $"{_unknownPersonNamePrefix}{id}") {
       Parent = Model.TreeCategory.UnknownGroup,
       IsUnknown = true
