@@ -1,8 +1,6 @@
 ﻿using MH.Utils;
-using MH.Utils.Interfaces;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,24 +11,6 @@ public sealed class KeywordsM {
 
   public KeywordsM(KeywordsDataAdapter da) {
     TreeCategory = new(da);
-  }
-
-  public KeywordM GetByFullPath(string fullPath) {
-    if (string.IsNullOrEmpty(fullPath)) return null;
-
-    var pathNames = fullPath.Split('/');
-    var name = pathNames[0];
-    ITreeItem root = Core.Db.Keywords.All.SingleOrDefault(
-                       x => x.Parent is not KeywordM && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-                     ?? Core.Db.Keywords.ItemCreate(TreeCategory.AutoAddedGroup, name);
-
-    for (int i = 1; i < pathNames.Length; i++) {
-      name = pathNames[i];
-      root = root.Items.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-             ?? Core.Db.Keywords.ItemCreate(root, name);
-    }
-
-    return root as KeywordM;
   }
 
   public static List<KeywordM> Toggle(List<KeywordM> list, KeywordM keyword) {
