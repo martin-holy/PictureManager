@@ -32,5 +32,11 @@ namespace MH.Utils.Extensions {
       result = intA + intB / dp;
       return true;
     }
+
+    /// <summary>
+    /// Replaces first string format item with count and second with 's' if count > 1.
+    /// </summary>
+    public static string Plural(this string s, int count) =>
+      string.Format(s, count, count > 1 ? "s" : string.Empty);
   }
 }
