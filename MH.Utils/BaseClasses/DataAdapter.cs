@@ -186,4 +186,8 @@ public class DataAdapter<T> : IDataAdapter<T> where T : class {
     AllDict.Add(item.GetHashCode(), item);
     return item;
   }
+
+  public virtual void Modify(T item) {
+    IsModified = true;
+  }
 }
