@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System;
@@ -93,4 +94,31 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
     parent.Items.OfType<KeywordM>().Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
       ? $"{name} item already exists!"
       : null;
+
+  public KeywordM GetByFullPath(string fullPath) {
+    if (string.IsNullOrEmpty(fullPath)) return null;
+
+    var path = fullPath.Split('/');
+    var keywords = All
+      .Where(x => x.Parent is not KeywordM && x.Name.Equals(path[0], StringComparison.OrdinalIgnoreCase))
+      .Select(x => GetByFullPath(path, x, false))
+      .Where(x => x != null)
+      .ToArray();
+
+    return keywords.Length switch {
+      0 => GetByFullPath(path, ItemCreate(Model.TreeCategory.AutoAddedGroup, path[0]), true),
+      1 => keywords[0],
+      _ => keywords.FirstOrDefault(x => !x.HasThisParent(Model.TreeCategory.AutoAddedGroup)) ?? keywords[0]
+    };
+  }
+
+  private KeywordM GetByFullPath(IReadOnlyList<string> path, KeywordM item, bool create) {
+    for (int i = 1; i < path.Count; i++) {
+      var subItem = item.Items.SingleOrDefault(x => x.Name.Equals(path[i], StringComparison.OrdinalIgnoreCase)) as KeywordM;
+      if (subItem != null) { item = subItem; continue; }
+      if (!create) return null;
+      item = ItemCreate(item, path[i]);
+    }
+    return item;
+  }
 }
