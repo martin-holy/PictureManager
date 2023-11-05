@@ -144,10 +144,14 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
   }
 
   public void RemovePersonFromSegments(PersonM person) {
-    foreach (var segment in All.Where(s => s.Person?.Equals(person) == true)) {
+    var segments = All.Where(s => s.Person?.Equals(person) == true).ToArray();
+    if (segments.Length == 0) return;
+    foreach (var segment in segments) {
       segment.Person = null;
       IsModified = true;
     }
+
+    SegmentsPersonChangedEvent(this, new((null, segments, new[] { person })));
   }
 
   public void RemoveKeywordFromSegments(KeywordM keyword) =>

@@ -159,6 +159,7 @@ public sealed class Core {
 
     Db.MediaItems.ItemsDeletedEvent += (_, e) => {
       MediaItemsViews.RemoveMediaItems(e.Data);
+      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.ModifiedItemsCount));
 
       if (MediaViewerM.IsVisible) {
         MediaViewerM.MediaItems.Remove(e.Data[0]);
@@ -169,17 +170,15 @@ public sealed class Core {
       }
     };
 
-    MediaItemsM.MediaItemsOrientationChangedEventHandler += (_, e) => {
+    MediaItemsM.MediaItemsOrientationChangedEvent += (_, e) => {
       if (MediaViewerM.IsVisible && e.Data.Contains(MediaItemsM.Current))
         MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
-
-      foreach (var __ in e.Data)
-        MediaItemsM.DataAdapter.IsModified = true;
 
       MediaItemsViews.ReWrapViewIfContains(e.Data);
     };
 
-    MediaItemsM.MetadataChangedEventHandler += (_, _) => {
+    MediaItemsM.MetadataChangedEvent += (_, _) => {
+      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.ModifiedItemsCount));
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       StatusPanelM.UpdateRating();
     };
@@ -224,19 +223,23 @@ public sealed class Core {
 
     Db.Segments.SegmentPersonChangedEvent += (_, e) => {
       Db.People.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+      Db.MediaItems.Modify(e.Data.Item1.MediaItem);
     };
 
     Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
       Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
       PeopleM.PersonDetail?.ReloadIf(e.Data.Item2, e.Data.Item3);
       PeopleM.PeopleView?.ReGroupItems(e.Data.Item3?.Where(x => x.Segment != null).ToArray(), false);
-      
-      foreach (var mi in e.Data.Item2.Select(x => x.MediaItem).Distinct())
-        mi.SetInfoBox();
+      MediaItemsM.OnSegmentsPersonChanged(e.Data.Item2.Select(x => x.MediaItem).Distinct());
     };
 
     Db.Segments.SegmentsKeywordsChangedEvent += (_, e) => {
       PeopleM.PersonDetail?.ReGroupIfContains(e.Data, false);
+      
+      foreach (var segment in e.Data)
+        Db.MediaItems.Modify(segment.MediaItem);
+
+      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.ModifiedItemsCount));
     };
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
