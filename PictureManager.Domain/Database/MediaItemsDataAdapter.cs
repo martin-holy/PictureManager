@@ -20,7 +20,15 @@ public sealed class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
 
   public MediaItemsDataAdapter(Db db) : base("MediaItems", 12) {
     _db = db;
+    _db.ReadyEvent += OnDbReady;
     Model = new(this);
+  }
+
+  private void OnDbReady(object sender, EventArgs args) {
+    _db.Segments.ItemCreatedEvent += (_, e) => {
+      Modify(e.Data.MediaItem);
+      Model.OnPropertyChanged(nameof(Model.ModifiedItemsCount));
+    };
   }
 
   private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, new(item));
@@ -77,6 +85,11 @@ public sealed class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
       if (!string.IsNullOrEmpty(csv[8]))
         mi.GeoName = _db.GeoNames.AllDict[int.Parse(csv[8])];
     }
+  }
+
+  public override void Modify(MediaItemM item) {
+    base.Modify(item);
+    item.IsOnlyInDb = true;
   }
 
   public IEnumerable<MediaItemM> GetItems(RatingM rating) =>

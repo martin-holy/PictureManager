@@ -25,8 +25,8 @@ public sealed class MediaItemsM : ObservableObject {
   public int MediaItemsCount => DataAdapter.All.Count;
   public int ModifiedItemsCount => DataAdapter.All.Count(x => x.IsOnlyInDb);
 
-  public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsOrientationChangedEventHandler = delegate { };
-  public event EventHandler MetadataChangedEventHandler = delegate { };
+  public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsOrientationChangedEvent = delegate { };
+  public event EventHandler MetadataChangedEvent = delegate { };
   public Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
   public Func<MediaItemM, bool> WriteMetadata { get; set; }
 
@@ -63,12 +63,12 @@ public sealed class MediaItemsM : ObservableObject {
     CommentCommand = new(Comment, () => Current != null);
 
     ReloadMetadataCommand = new(
-      () => ReloadMetadata(Core.MediaItemsViews.Current.GetSelectedOrAll()),
-      () => Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
+      () => ReloadMetadata(Core.MediaItemsViews.Current?.Selected.Items.ToList()),
+      () => Core.MediaItemsViews.Current?.Selected.Items.Count > 0);
 
     AddGeoNamesFromFilesCommand = new(
       () => AddGeoNamesFromFiles(Core.Settings.GeoNamesUserName),
-      () => Core.MediaItemsViews.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
+      () => Core.MediaItemsViews.Current?.Selected.Items.Count > 0);
 
     ReloadMetadataInFolderCommand = new(
       x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn())),
@@ -110,10 +110,13 @@ public sealed class MediaItemsM : ObservableObject {
     );
   }
 
-  private void Compress() =>
+  private void Compress() {
     Dialog.Show(new CompressDialogM(
       GetActive().Where(x => x.MediaType == MediaType.Image).ToList(),
       Core.Settings.JpegQualityLevel));
+
+    OnPropertyChanged(nameof(ModifiedItemsCount));
+  }
 
   private void Delete() {
     var items = GetActive().ToList();
@@ -264,14 +267,14 @@ public sealed class MediaItemsM : ObservableObject {
   public void RemovePersonFromMediaItems(PersonM person) {
     foreach (var mi in DataAdapter.All.Where(mi => mi.People?.Contains(person) == true)) {
       mi.People = ListExtensions.Toggle(mi.People, person, true);
-      DataAdapter.IsModified = true;
+      DataAdapter.Modify(mi);
     }
   }
 
   public void RemoveKeywordFromMediaItems(KeywordM keyword) {
     foreach (var mi in DataAdapter.All.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
       mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
-      DataAdapter.IsModified = true;
+      DataAdapter.Modify(mi);
     }
   }
 
@@ -279,13 +282,14 @@ public sealed class MediaItemsM : ObservableObject {
     try {
       if (!WriteMetadata(mi)) throw new("Error writing metadata");
       mi.IsOnlyInDb = false;
-      return true;
     }
     catch (Exception ex) {
-      Log.Error(ex, $"Metadata will be saved just in Database. {mi.FilePath}");
+      Log.Error(ex, $"Metadata will be saved just in database. {mi.FilePath}");
       mi.IsOnlyInDb = true;
-      return false;
     }
+
+    DataAdapter.IsModified = true;
+    return !mi.IsOnlyInDb;
   }
 
   public void AddGeoNamesFromFiles(string geoNamesUserName) {
@@ -309,16 +313,16 @@ public sealed class MediaItemsM : ObservableObject {
         if (lastGeoName == null) return;
 
         mi.GeoName = lastGeoName;
-        mi.IsOnlyInDb = true;
         await Tasks.RunOnUiThread(() => {
           mi.SetInfoBox();
-          DataAdapter.IsModified = true;
+          DataAdapter.Modify(mi);
         });
       },
       mi => mi.FilePath,
       // onCompleted
       delegate {
         Current?.GeoName?.OnPropertyChanged(nameof(Current.GeoName.FullName));
+        MetadataChangedEvent(this, EventArgs.Empty);
       });
 
     progress.Start();
@@ -371,24 +375,24 @@ public sealed class MediaItemsM : ObservableObject {
         case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
       }
 
-      mi.IsOnlyInDb = true;
+      DataAdapter.Modify(mi);
       mi.SetThumbSize(true);
       ThumbIgnoreCache.Add(mi);
       File.Delete(mi.FilePathCache);
     }
 
-    MediaItemsOrientationChangedEventHandler(this, new(mediaItems));
+    MediaItemsOrientationChangedEvent(this, new(mediaItems));
   }
 
   public void SaveToFiles() {
     var mediaItems = Core.MediaItemsViews.Current?.FilteredItems
-      .Where(x => x.IsSelected && x.IsOnlyInDb && x.MediaType == MediaType.Image)
+      .Where(x => x.IsSelected && x.MediaType == MediaType.Image)
       .ToArray();
 
     if (mediaItems == null || !mediaItems.Any()) return;
     if (Dialog.Show(new MessageDialog(
           "Save metadata to files",
-          $"Do you really want to save image metadata to {mediaItems.Length} files?",
+          "Do you really want to save image metadata to {0} file{1}?".Plural(mediaItems.Length),
           Res.IconQuestion,
           true)) != 1) return;
 
@@ -404,7 +408,7 @@ public sealed class MediaItemsM : ObservableObject {
     if (mediaItems.Count == 0 ||
         Dialog.Show(new MessageDialog(
           "Reload metadata from files",
-          $"Do you really want to reload image metadata for {mediaItems.Count} files?",
+          "Do you really want to reload image metadata for {0} file{1}?".Plural(mediaItems.Count),
           Res.IconQuestion,
           true)) != 1) return;
 
@@ -424,12 +428,12 @@ public sealed class MediaItemsM : ObservableObject {
         });
       },
       mi => mi.FilePath,
-      null);
+      delegate {
+        MetadataChangedEvent(this, EventArgs.Empty);
+      });
 
     progress.Start();
     Dialog.Show(progress);
-    MetadataChangedEventHandler(this, EventArgs.Empty);
-    OnPropertyChanged(nameof(ModifiedItemsCount));
   }
 
   private void Rotate() {
@@ -486,8 +490,7 @@ public sealed class MediaItemsM : ObservableObject {
     Current.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
     Current.SetInfoBox();
     Current.OnPropertyChanged(nameof(Current.Comment));
-    Current.IsOnlyInDb = true;
-    DataAdapter.IsModified = true;
+    DataAdapter.Modify(Current);
   }
 
   public MediaItemM[] GetActive() =>
@@ -510,7 +513,8 @@ public sealed class MediaItemsM : ObservableObject {
 
       switch (item) {
         case PersonM p:
-          mi.People = ListExtensions.Toggle(mi.People, p, true);
+          if (mi.Segments == null || !mi.Segments.Any(x => ReferenceEquals(x.Person, p)))
+            mi.People = ListExtensions.Toggle(mi.People, p, true);
           break;
 
         case KeywordM k:
@@ -532,15 +536,12 @@ public sealed class MediaItemsM : ObservableObject {
 
       if (!modified) continue;
 
-      DataAdapter.IsModified = true;
-      mi.IsOnlyInDb = true;
+      DataAdapter.Modify(mi);
       mi.SetInfoBox();
       count++;
     }
 
-    if (count == 0) return;
-    OnPropertyChanged(nameof(ModifiedItemsCount));
-    MetadataChangedEventHandler(this, EventArgs.Empty);
+    if (count > 0) MetadataChangedEvent(this, EventArgs.Empty);
   }
 
   public static bool IsPanoramic(MediaItemM mi) =>
@@ -551,5 +552,22 @@ public sealed class MediaItemsM : ObservableObject {
   private async void ViewModified() {
     Core.MediaItemsViews.AddView("Modified");
     await Core.MediaItemsViews.Current.LoadByTag(DataAdapter.All.Where(x => x.IsOnlyInDb).ToArray());
+  }
+
+  public void OnSegmentsPersonChanged(IEnumerable<MediaItemM> items) {
+    foreach (var mi in items) {
+      if (mi.People != null && mi.Segments != null) {
+        foreach (var p in mi.Segments.Select(x => x.Person).Where(mi.People.Contains).ToArray())
+          mi.People.Remove(p);
+
+        if (!mi.People.Any())
+          mi.People = null;
+      }
+
+      DataAdapter.Modify(mi);
+      mi.SetInfoBox();
+    }
+
+    OnPropertyChanged(nameof(ModifiedItemsCount));
   }
 }
