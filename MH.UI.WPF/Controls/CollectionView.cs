@@ -25,18 +25,13 @@ namespace MH.UI.WPF.Controls {
 
     public static GroupByDialogDataTemplateSelector GroupByDialogDataTemplateSelector { get; } = new();
 
-    public RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; }
-    public RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; }
+    public static RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; } = new(OpenItem);
+    public static RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; } = new(SelectItem);
 
     static CollectionView() {
       DefaultStyleKeyProperty.OverrideMetadata(
         typeof(CollectionView),
         new FrameworkPropertyMetadata(typeof(CollectionView)));
-    }
-
-    public CollectionView() {
-      OpenItemCommand = new(OpenItem);
-      SelectItemCommand = new(SelectItem);
     }
 
     public override void OnApplyTemplate() {
@@ -60,13 +55,18 @@ namespace MH.UI.WPF.Controls {
       return fe?.FindTopTemplatedParent()?.DataContext;
     }
 
-    private void OpenItem(MouseButtonEventArgs e) {
-      if (!View.CanOpen || e.ChangedButton != MouseButton.Left) return;
-      View.OpenItem(GetDataContext(e.OriginalSource));
+    private static void OpenItem(MouseButtonEventArgs e) {
+      if (e.ChangedButton != MouseButton.Left
+          || (e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { } cv
+          || !cv.View.CanOpen) return;
+
+      cv.View.OpenItem(GetDataContext(e.OriginalSource));
     }
 
-    private void SelectItem(MouseButtonEventArgs e) {
-      if (!View.CanSelect) return;
+    private static void SelectItem(MouseButtonEventArgs e) {
+      if ((e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { } cv
+          || !cv.View.CanSelect) return;
+
       var item = GetDataContext(e.OriginalSource);
       var row = (e.Source as FrameworkElement)?.DataContext;
       var btn = e.OriginalSource as Button ?? (e.OriginalSource as FrameworkElement)?.TryFindParent<Button>();
@@ -85,7 +85,7 @@ namespace MH.UI.WPF.Controls {
         isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       }
 
-      View.SelectItem(row, item, isCtrlOn, isShiftOn);
+      cv.View.SelectItem(row, item, isCtrlOn, isShiftOn);
     }
   }
 

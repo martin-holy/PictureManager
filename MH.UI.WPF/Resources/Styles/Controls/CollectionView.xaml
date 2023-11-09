@@ -147,14 +147,12 @@
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseDoubleClick">
           <b:InvokeCommandAction
-            Command="{Binding OpenItemCommand, RelativeSource=
-                     {RelativeSource AncestorType=wpfc:CollectionView}}"
+            Command="wpfc:CollectionView.OpenItemCommand"
             PassEventArgsToCommand="True"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseUp">
           <b:InvokeCommandAction
-            Command="{Binding SelectItemCommand, RelativeSource=
-                     {RelativeSource AncestorType=wpfc:CollectionView}}"
+            Command="wpfc:CollectionView.SelectItemCommand"
             PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
