@@ -1,11 +1,9 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
-  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
     <Setter Property="Control.Template">
@@ -111,16 +109,20 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="TreeViewItem">
-          <DockPanel>
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition/>
+            </Grid.RowDefinitions>
+
             <ContentPresenter
               x:Name="PART_Header"
-              DockPanel.Dock="Top"
               ContentSource="Header"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch"/>
 
-            <ItemsPresenter x:Name="ItemsHost"/>
-          </DockPanel>
+            <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
+          </Grid>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsExpanded" Value="False">
@@ -140,10 +142,14 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="TreeViewItem">
-          <DockPanel>
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition/>
+            </Grid.RowDefinitions>
+
             <Border
               x:Name="Border"
-              DockPanel.Dock="Top"
               BorderBrush="Transparent" 
               BorderThickness="1" 
               Background="{StaticResource MH.Control.Static.Background}"
@@ -159,23 +165,28 @@
                 </b:EventTrigger>
               </b:Interaction.Triggers>
 
-              <DockPanel Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
+              <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
                 <ToggleButton
                   x:Name="Expander"
-                  DockPanel.Dock="Left"
                   Style="{StaticResource MH.Styles.Controls.TreeExpandCollapseToggle}"
                   IsChecked="{Binding IsExpanded, Mode=TwoWay}"/>
 
                 <ContentPresenter
                   x:Name="PART_Header"
+                  Grid.Column="1"
                   ContentSource="Header"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"/>
-              </DockPanel>
+              </Grid>
             </Border>
 
-            <ItemsPresenter x:Name="ItemsHost"/>
-          </DockPanel>
+            <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
+          </Grid>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsExpanded" Value="False">
@@ -258,34 +269,5 @@
       </Trigger>
     </Style.Triggers>
   </Style>
-
-  <!--TODO not used-->
-  <HierarchicalDataTemplate
-    DataType="{x:Type mhubc:TreeItem}"
-    x:Key="MH.Utils.BaseClasses.TreeItem"
-    ItemsSource="{Binding Items}">
-
-    <Border
-      Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}"
-      Padding="20,1,2,1">
-
-      <DockPanel>
-        <Path
-          DockPanel.Dock="Left"
-          Style="{StaticResource MH.Styles.Icon}"
-          Effect="{StaticResource MH.Effects.DropShadow}"
-          Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
-          Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
-                 ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
-
-        <TextBlock
-          Text="{Binding Name}"
-          VerticalAlignment="Center"
-          Margin="5,0,5,0"
-          FontSize="14"
-          Foreground="{StaticResource MH.Control.Static.Text}"/>
-      </DockPanel>
-    </Border>
-  </HierarchicalDataTemplate>
 
 </ResourceDictionary>

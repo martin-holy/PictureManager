@@ -109,7 +109,7 @@ public class TreeViewBase : TreeView {
 
   private ITreeItem GetHitTestItem(double x, double y) {
     ITreeItem outItem = null;
-    VisualTreeHelper.HitTest(this, null, e => {
+    VisualTreeHelper.HitTest(_sv, null, e => {
       if (e.VisualHit is not FrameworkElement { DataContext: ITreeItem item })
         return HitTestResultBehavior.Continue;
 
