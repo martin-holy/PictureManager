@@ -15,14 +15,14 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Grid Margin="2" MinWidth="364">
+    <Grid Margin="2" MinWidth="364" Height="450">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
+        <RowDefinition/>
       </Grid.RowDefinitions>
 
       <mhc:CollectionView View="{Binding PeopleView}" MaxHeight="160"/>
-      <mhc:CollectionView View="{Binding SegmentsView}" MaxHeight="450" Grid.Row="1"/>
+      <mhc:CollectionView View="{Binding SegmentsView}" Grid.Row="1"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>
