@@ -154,7 +154,7 @@ public sealed class Core {
     };
 
     Db.MediaItems.ItemDeletedEvent += (_, e) => {
-      Db.Segments.ItemsDelete(e.Data.Segments);
+      Db.Segments.ItemsDelete(e.Data.Segments?.ToArray());
     };
 
     Db.MediaItems.ItemsDeletedEvent += (_, e) => {
