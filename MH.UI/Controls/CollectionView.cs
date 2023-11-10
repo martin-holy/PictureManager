@@ -10,8 +10,6 @@ using System.Linq;
 namespace MH.UI.Controls;
 
 public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : ISelectable {
-  private T _topItem;
-  private CollectionViewGroup<T> _topGroup;
   private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
   private readonly GroupByDialog<T> _groupByDialog = new();
 
@@ -120,17 +118,8 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
       ScrollTo(TopGroup ?? Root, TopItem);
   }
 
-  public override void OnSizeChanging(bool value) {
-    if (value) {
-      _topItem = TopItem;
-      _topGroup = TopGroup;
-    }
-    else {
-      TopItem = _topItem;
-      TopGroup = _topGroup;
-      ScrollTo(TopGroup, TopItem);
-    }
-  }
+  public override void OnIsVisible() =>
+    ScrollTo(TopGroup, TopItem);
 
   public void SetExpanded(object group) {
     if (group is not CollectionViewGroup<T> g) return;

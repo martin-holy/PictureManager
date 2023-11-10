@@ -10,17 +10,15 @@ using System.Linq;
 namespace MH.UI.Controls; 
 
 public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
-  private bool _isSizeChanging;
   private ITreeItem _topTreeItem;
 
   public ExtObservableCollection<object> RootHolder { get; } = new();
   public Selecting<T> SelectedTreeItems { get; } = new();
   public ITreeItem TopTreeItem { get => _topTreeItem; set { _topTreeItem = value; OnTopTreeItemChanged(); } }
-  public bool IsSizeChanging { get => _isSizeChanging; set { _isSizeChanging = value; OnSizeChanging(value); } }
   // TODO rename and combine with single and multi select
   public bool ShowTreeItemSelection { get; set; }
   public Action ScrollToTopAction { get; set; }
-  public Action<IEnumerable<object>> ScrollToItemsAction { get; set; }
+  public Action<object[]> ScrollToItemsAction { get; set; }
 
   public RelayCommand<object> TreeItemSelectedCommand { get; }
   public event EventHandler<ObjectEventArgs<T>> TreeItemSelectedEvent = delegate { };
@@ -29,9 +27,8 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
     TreeItemSelectedCommand = new(OnTreeItemSelected);
   }
 
-  public virtual void OnSizeChanging(bool value) {
-    if (!value) ScrollTo(TopTreeItem);
-  }
+  public virtual void OnIsVisible() =>
+    ScrollTo(TopTreeItem);
 
   public virtual void OnTreeItemSelected(object o) {
     if (o is not T t) return;
@@ -52,7 +49,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
       branch[i].IsExpanded = true;
 
     TopTreeItem = item;
-    ScrollToItemsAction?.Invoke(branch);
+    ScrollToItemsAction?.Invoke(branch.Cast<object>().ToArray());
   }
 
   public void UpdateRoot(object root, Action<IList<object>> itemsAction) {
