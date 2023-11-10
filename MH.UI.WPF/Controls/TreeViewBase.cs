@@ -3,6 +3,7 @@ using MH.UI.WPF.Utils;
 using MH.Utils;
 using MH.Utils.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -33,9 +34,21 @@ public class TreeViewBase : TreeView {
     };
 
     if (TreeView == null) return;
-    ItemsSource = TreeView.RootHolder;
+    SetItemsSource();
     TreeView.ScrollToTopAction = ScrollToTop;
     TreeView.ScrollToItemsAction = ScrollToItems;
+    TreeView.ExpandRootWhenReadyAction = ExpandRootWhenReady;
+  }
+
+  private void SetItemsSource() {
+    var expand = false;
+    var root = TreeView.RootHolder.FirstOrDefault() as ITreeItem;
+    if (root is { IsExpanded: true }) {
+      expand = true;
+      root.IsExpanded = false;
+    }
+    ItemsSource = TreeView.RootHolder;
+    if (expand) ExpandRootWhenReady(root);
   }
 
   private void ScrollToTop() {
@@ -119,6 +132,16 @@ public class TreeViewBase : TreeView {
     }, new PointHitTestParameters(new(x, y)));
 
     return outItem;
+  }
+
+  /// <summary>
+  /// TreeView loads all items when everything is expanded.
+  /// So I collapsed the root on reload and expanded it after to load just what is in the view.
+  /// </summary>
+  private void ExpandRootWhenReady(ITreeItem root) {
+    Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => {
+      root.IsExpanded = true;
+    });
   }
 
   /// <summary>
