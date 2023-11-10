@@ -92,6 +92,8 @@
     <Setter Property="Padding" Value="0"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
     <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
     <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
     <Setter Property="VirtualizingPanel.ScrollUnit" Value="Item"/>
@@ -242,9 +244,6 @@
             x:Name="PART_ScrollViewer"
             Focusable="False"
             Padding="{TemplateBinding Padding}" 
-            CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}" 
-            HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-            VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
 
             <ItemsPresenter/>
