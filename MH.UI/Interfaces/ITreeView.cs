@@ -12,6 +12,7 @@ public interface ITreeView : INotifyPropertyChanged {
   public ITreeItem TopTreeItem { get; set; }
   public Action ScrollToTopAction { get; set; }
   public Action<object[]> ScrollToItemsAction { get; set; }
+  public Action<ITreeItem> ExpandRootWhenReadyAction { get; set; }
   public RelayCommand<object> TreeItemSelectedCommand { get; }
   public void OnIsVisible();
 }

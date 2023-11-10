@@ -19,6 +19,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
   public bool ShowTreeItemSelection { get; set; }
   public Action ScrollToTopAction { get; set; }
   public Action<object[]> ScrollToItemsAction { get; set; }
+  public Action<ITreeItem> ExpandRootWhenReadyAction { get; set; }
 
   public RelayCommand<object> TreeItemSelectedCommand { get; }
   public event EventHandler<ObjectEventArgs<T>> TreeItemSelectedEvent = delegate { };
@@ -52,11 +53,21 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
     ScrollToItemsAction?.Invoke(branch.Cast<object>().ToArray());
   }
 
-  public void UpdateRoot(object root, Action<IList<object>> itemsAction) {
+  public void UpdateRoot(ITreeItem root, Action<IList<object>> itemsAction) {
+    var expand = false;
     RootHolder.Execute(items => {
       items.Clear();
       itemsAction?.Invoke(items);
+      expand = root.IsExpanded;
+      if (expand) root.IsExpanded = false;
       items.Add(root);
     });
+
+    if (!expand) return;
+
+    if (ExpandRootWhenReadyAction == null)
+      root.IsExpanded = true;
+    else
+      ExpandRootWhenReadyAction(root);
   }
 }
