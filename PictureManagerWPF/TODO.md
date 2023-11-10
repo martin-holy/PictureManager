@@ -1,8 +1,4 @@
                                 *** BUGS ***
-        # MH.Utils
-## WorkTask
-  - unexpected error, task was canceled. problem when returning false from catch
-
         # MH.UI.WPF
 ## Custom Window
   - minimize window will break full screen mode
@@ -15,19 +11,13 @@
   - app freeze on video delete when is playing
 
         # Picture Manager
-##
-  - disky identifikovat podle ID a ne podle pismena (cmd dir command shows volume serial number)
-  - or store drive related data in \Temp\PictureManagerCache
 ## MediaItems
-  - D:\!test\364__32_original.jpg save metadata or crop doesn't work (resave without metadata in xnview fixed the file)
+  - D:\!test\364__32_original.jpg save metadata or crop doesn't work (re-save without metadata in XnView fixed the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
   - Reload metadata on video
 ## VideoPlayer
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
-## Video Clips
-  - kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac 
-    a je to na restart appky (do OnMediaEnded se to nedostane)
 ## Person Detail
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 
@@ -43,7 +33,7 @@
 ## Resources
   - use constant strings for icons
 ## Dialog
-  - add CanExecute for buttons like Yes/Ok
+  - add CanExecute for buttons like Yes/OK
 
         # MH.UI.WPF
 ## IconButton
@@ -55,11 +45,9 @@
 
         # Picture Manager
 ##
-  - zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
   - Rethink hierarchical keywords moving
   - join FileOperationDialogM and FileOperationCollisionDialogM
   - Log button
-  - make thumbnail images sharper (size is 2.7x bigger)
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
 ## TreeViewCategories
@@ -73,12 +61,8 @@
   - with segment creation create unknown person (#1234) as well so that every segment has person
 ## ToggleDialog
   - show selected items on dialog
-## SegmentsMatching
-  - from selected people and segments
-## MediaItemsView
-  - add cancel import button
-## SetSegmentPersonDialogV
-  - update selection style
+## SegmentsDataAdapter
+  - move generic methods ItemCreate, ItemsDelete, ItemDelete to DataAdapter
 
                                     *** NEW ***
 ##
@@ -92,7 +76,7 @@
       - so I need another video player mode to scroll trough VideoImages and than to next media item or MediaViewer will have mix of images, videos and videoImages?
   - slider with drag point for adjusting slider drag change value where:
     if the point is more away from the slider => change value is smaller
-    and if is clor => change value is bigger
+    and if is closer => change value is bigger
     (or zooming time line)
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
@@ -115,8 +99,6 @@
   - metadata (keywords, people, rating, comment) on file and/or Clip
   - export to mp4 (FFMPEG)
 ## MediaViewer
-  - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
-  - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
   - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima (pozor, delete je za selected)
   - func to zoom to segment
 ## ThumbnailsGrid
@@ -144,6 +126,12 @@
   - filter for segment resolution
 ## TreeView
   - show ScrollToParent on mouse hover. Icon with ToolTip (Parent.Name) for each parent. Maybe shared button for whole TreeView
+
+                                    *** DISCARDED ***
+  - make thumbnail images sharper (size is 2.7x bigger)
+## MediaViewer
+  - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
+  - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
 
 
 #Shortcuts:
