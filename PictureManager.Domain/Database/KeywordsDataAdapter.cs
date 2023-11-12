@@ -98,27 +98,31 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
   public KeywordM GetByFullPath(string fullPath) {
     if (string.IsNullOrEmpty(fullPath)) return null;
 
-    var path = fullPath.Split('/');
-    var keywords = All
-      .Where(x => x.Parent is not KeywordM && x.Name.Equals(path[0], StringComparison.OrdinalIgnoreCase))
-      .Select(x => GetByFullPath(path, x, false))
-      .Where(x => x != null)
-      .ToArray();
+    ITreeItem GetFirst(ITreeItem[] items) =>
+      items.FirstOrDefault(x => !x.HasThisParent(Model.TreeCategory.AutoAddedGroup))
+      ?? items.FirstOrDefault();
 
-    return keywords.Length switch {
-      0 => GetByFullPath(path, ItemCreate(Model.TreeCategory.AutoAddedGroup, path[0]), true),
-      1 => keywords[0],
-      _ => keywords.FirstOrDefault(x => !x.HasThisParent(Model.TreeCategory.AutoAddedGroup)) ?? keywords[0]
-    };
-  }
+    var first = true;
+    ITreeItem[] last = Array.Empty<ITreeItem>();
 
-  private KeywordM GetByFullPath(IReadOnlyList<string> path, KeywordM item, bool create) {
-    for (int i = 1; i < path.Count; i++) {
-      var subItem = item.Items.SingleOrDefault(x => x.Name.Equals(path[i], StringComparison.OrdinalIgnoreCase)) as KeywordM;
-      if (subItem != null) { item = subItem; continue; }
-      if (!create) return null;
-      item = ItemCreate(item, path[i]);
+    foreach (var path in fullPath.Split('/')) {
+      var found = (first
+          ? All.Where(x => x.Parent is not KeywordM)
+          : last.SelectMany(x => x.Items))
+        .Where(x => x.Name.Equals(path, StringComparison.OrdinalIgnoreCase))
+        .ToArray();
+
+      last = found.Length switch {
+        0 => new[] { (ITreeItem)ItemCreate(first
+          ? Model.TreeCategory.AutoAddedGroup
+          : GetFirst(last), path) },
+        1 => new[] { found[0] },
+        _ => found
+      };
+
+      first = false;
     }
-    return item;
+
+    return GetFirst(last) as KeywordM;
   }
 }
