@@ -56,6 +56,14 @@
 
         <!-- Metadata -->
         <MenuItem Header="Metadata">
+          <MenuItem
+            Header="{Binding MediaItemsM.ModifiedItemsCount}"
+            HeaderStringFormat="Show {0} modified"
+            Command="{Binding MediaItemsM.ViewModifiedCommand}">
+            <MenuItem.Icon>
+              <Path Data="{StaticResource IconImageMultiple}"/>
+            </MenuItem.Icon>
+          </MenuItem>
           <MenuItem Header="Save to files" Command="{Binding MediaItemsM.SaveToFilesCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconSave}"/>
