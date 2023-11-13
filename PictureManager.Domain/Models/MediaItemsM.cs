@@ -118,6 +118,26 @@ public sealed class MediaItemsM : ObservableObject {
     OnPropertyChanged(nameof(ModifiedItemsCount));
   }
 
+  public bool Exists(MediaItemM mi) {
+    if (mi == null || File.Exists(mi.FilePath)) return true;
+
+    var items = new[] { mi };
+    SetCurrentAfterDelete(items);
+    File.Delete(mi.FilePathCache);
+    DataAdapter.ItemsDelete(items);
+
+    return false;
+  }
+
+  private void SetCurrentAfterDelete(IList<MediaItemM> items) {
+    var view = Core.MediaItemsViews.Current;
+    Current = ListExtensions.GetNextOrPreviousItem(
+      view != null
+        ? view.FilteredItems
+        : Core.MediaViewerM.MediaItems,
+      items);
+  }
+
   private void Delete() {
     var items = GetActive().ToList();
     var count = items.Count;
@@ -129,19 +149,9 @@ public sealed class MediaItemsM : ObservableObject {
           Res.IconQuestion,
           true)) != 1) return;
 
-    // set new current media item
-    var view = Core.MediaItemsViews.Current;
-    Current = ListExtensions.GetNextOrPreviousItem(
-      view != null
-        ? view.FilteredItems
-        : Core.MediaViewerM.MediaItems,
-      items);
-
-    // delete files
+    SetCurrentAfterDelete(items);
     Core.FileOperationDelete(items.Select(x => x.FilePath).ToList(), true, false);
-    // delete cache
     foreach (var c in items.Select(x => x.FilePathCache)) File.Delete(c);
-    // delete from db
     DataAdapter.ItemsDelete(items);
   }
 

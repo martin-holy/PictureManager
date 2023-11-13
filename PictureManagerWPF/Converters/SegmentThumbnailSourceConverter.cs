@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace PictureManager.Converters; 
+namespace PictureManager.Converters;
 
 public class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter {
   public static SegmentM IgnoreImageCacheSegment { get; set; }
@@ -23,9 +23,16 @@ public class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter
 
   public override object Convert(object[] values, object parameter) {
     try {
-      if (values is not [_, SegmentM segment]) return null;
+      if (values is not [_, SegmentM segment] || segment.MediaItem == null) return null;
 
       if (!File.Exists(segment.FilePathCache)) {
+        if (!File.Exists(segment.MediaItem.FilePath)) {
+          Tasks.RunOnUiThread(() => {
+            Core.Db.MediaItems.ItemsDelete(new[] { segment.MediaItem });
+          });
+          return null;
+        }
+
         if (!_segmentsQueue.Contains(segment))
           _segmentsQueue.Add(segment);
 
