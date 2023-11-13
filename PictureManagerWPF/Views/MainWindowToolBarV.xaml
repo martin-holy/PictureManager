@@ -200,9 +200,21 @@
           </StackPanel>
 
           <!-- Media Items View -->
-          <StackPanel
-            Orientation="Horizontal"
-            Visibility="{Binding MediaItemsViews.Current, Converter={mhConv:AllToVisibilityConverter}}">
+          <StackPanel Orientation="Horizontal">
+            <StackPanel.Style>
+              <Style TargetType="StackPanel">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Style.Triggers>
+                  <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                      <Condition Binding="{Binding MediaItemsViews.Current, Converter={mhConv:AllToBoolConverter}}" Value="True"/>
+                      <Condition Binding="{Binding MainWindowM.IsFullScreen}" Value="False"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible"/>
+                  </MultiDataTrigger>
+                </Style.Triggers>
+              </Style>
+            </StackPanel.Style>
 
             <Separator/>
 
