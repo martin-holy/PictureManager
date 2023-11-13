@@ -272,10 +272,6 @@ namespace PictureManager.Domain.DataViews {
       IsLoading = true;
       Clear();
 
-      // TODO load all without check if file exists and deal with it later
-      // use empty thumbnail and after check if file not exists use Group.RemoveItem
-      // it is just about files deleted outside of this app
-
       var foldersSet = await Task.Run(() => items
         .Select(x => x.Folder)
         .Distinct()
