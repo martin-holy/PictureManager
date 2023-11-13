@@ -19,9 +19,6 @@ namespace PictureManager.Utils {
       };
 
     public static BitmapImage GetBitmapImage(string filePath, MediaOrientation rotation) {
-      if (filePath == null)
-        return null;
-
       var src = new BitmapImage();
       src.BeginInit();
       src.UriSource = new(filePath);

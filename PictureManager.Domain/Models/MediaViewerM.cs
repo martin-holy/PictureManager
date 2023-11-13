@@ -29,8 +29,8 @@ namespace PictureManager.Domain.Models {
     public MediaItemM Current {
       get => _current;
       set {
+        if (!Core.MediaItemsM.Exists(value)) return;
         _current = value;
-
         OnPropertyChanged();
         OnPropertyChanged(nameof(PositionSlashCount));
         SetMediaItemSource(value);
