@@ -96,12 +96,12 @@ public sealed class PeopleM {
   }
 
   public void AddEvents(CollectionViewPeople cv) {
-    cv.ItemOpenedEvent += (_, e) => Open(e);
+    cv.ItemOpenedEvent += (_, e) => Open(cv, e);
     cv.ItemSelectedEvent += (_, e) => Select(e);
   }
 
-  public void Open(ObjectEventArgs<PersonM> e) =>
-    Core.SegmentsM.ViewMediaItemsWithSegment(e.Data.Segment);
+  public void Open(object o, ObjectEventArgs<PersonM> e) =>
+    Core.SegmentsM.ViewMediaItemsWithSegment(o, e.Data.Segment);
 
   public void Select(SelectionEventArgs<PersonM> e) {
     if (!e.IsCtrlOn && !e.IsShiftOn)

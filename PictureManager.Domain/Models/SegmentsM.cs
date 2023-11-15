@@ -67,7 +67,7 @@ public sealed class SegmentsM : ObservableObject {
   }
 
   public void AddEvents(CollectionViewSegments cv) {
-    cv.ItemOpenedEvent += (_, e) => ViewMediaItemsWithSegment(e.Data);
+    cv.ItemOpenedEvent += (_, e) => ViewMediaItemsWithSegment(cv, e.Data);
     cv.ItemSelectedEvent += (_, e) => Select(e);
   }
 
@@ -164,18 +164,18 @@ public sealed class SegmentsM : ObservableObject {
     DataAdapter.ChangePerson(null, segments, people);
   }
 
-  public void ViewMediaItemsWithSegment(SegmentM segmentM) {
-    var items = GetMediaItemsWithSegment(segmentM);
+  public void ViewMediaItemsWithSegment(object source, SegmentM segment) {
+    var items = GetMediaItemsWithSegment(source, segment);
     if (items == null) return;
 
-    Core.MediaViewerM.SetMediaItems(items, segmentM.MediaItem);
+    Core.MediaViewerM.SetMediaItems(items, segment.MediaItem);
     Core.MainWindowM.IsFullScreen = true;
   }
 
-  private List<MediaItemM> GetMediaItemsWithSegment(SegmentM segment) {
+  private List<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM segment) {
     if (segment == null) return null;
 
-    if (SegmentsView.IsInst && ReferenceEquals(SegmentsView.Inst.CvSegments.LastSelectedItem, segment))
+    if (SegmentsView.IsInst && ReferenceEquals(SegmentsView.Inst.CvSegments, source))
       return ((CollectionViewGroup<SegmentM>)SegmentsView.Inst.CvSegments.LastSelectedRow.Parent).Source
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
@@ -188,7 +188,7 @@ public sealed class SegmentsM : ObservableObject {
         .OrderBy(x => x.FileName)
         .ToList();
 
-    if (SegmentsDrawerM.Items.Contains(segment))
+    if (ReferenceEquals(SegmentsDrawerM, source))
       return SegmentsDrawerM.Items
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
