@@ -18,6 +18,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   public T LastSelectedItem { get; set; }
   public CollectionViewGroup<T> TopGroup { get; set; }
   public CollectionViewRow<T> LastSelectedRow { get; set; }
+  public bool AddInOrder { get; set; } = true;
   public bool CanOpen { get; set; } = true;
   public bool CanSelect { get; set; } = true;
   public bool IsMultiSelect { get; set; } = true;

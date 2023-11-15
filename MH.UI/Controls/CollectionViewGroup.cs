@@ -150,7 +150,11 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
 
     // add the item to the source if is not present
     if (!Source.Contains(item)) {
-      Source.AddInOrder(item, View.SortCompare);
+      if (View.AddInOrder)
+        Source.AddInOrder(item, View.SortCompare);
+      else
+        Source.Add(item);
+      
       OnPropertyChanged(nameof(SourceCount));
 
       // if the group is not grouped schedule it for ReWrap
