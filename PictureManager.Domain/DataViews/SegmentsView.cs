@@ -43,7 +43,11 @@ public sealed class SegmentsView {
 
     Core.Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
       _inst.CvSegments.ReGroupItems(e.Data.Item2, false);
-      _inst.CvPeople.ReGroupItems(e.Data.Item3?.Where(x => x.Segment != null).ToArray(), false);
+
+      var pIn = e.Data.Item2.GetPeople().ToArray();
+      var pOut = e.Data.Item3.Except(pIn).ToArray();
+      _inst.CvPeople.ReGroupItems(pIn, false);
+      _inst.CvPeople.ReGroupItems(pOut, true);
     };
 
     return _inst;
