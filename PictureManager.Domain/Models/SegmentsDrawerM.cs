@@ -79,7 +79,7 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
   public void Remove(SegmentM segment) {
     if (!Items.Remove(segment)) return;
     _segmentsM.DataAdapter.AreTablePropsModified = true;
-    ReGroupItems(new[] { segment }, true);
+    Remove(new[] { segment });
   }
 
   private void Open(ToolsTabsM tt) {

@@ -27,27 +27,27 @@ public sealed class SegmentsView {
     Core.SegmentsM.AddEvents(_inst.CvSegments);
 
     Core.Db.People.ItemDeletedEvent  += (_, e) =>
-      _inst.CvPeople.ReGroupItems(new[] { e.Data }, true);
+      _inst.CvPeople.Remove(new[] { e.Data });
 
     Core.Db.People.PeopleKeywordsChangedEvent += (_, e) =>
-      _inst.CvPeople.ReGroupItems(e.Data, false);
+      _inst.CvPeople.Update(e.Data);
 
     Core.Db.Segments.ItemCreatedEvent += (_, e) =>
-      _inst.CvSegments.ReGroupItems(new[] { e.Data }, false);
+      _inst.CvSegments.Update(new[] { e.Data });
 
     Core.Db.Segments.ItemDeletedEvent += (_, e) =>
-      _inst.CvSegments.ReGroupItems(new[] { e.Data }, true);
+      _inst.CvSegments.Remove(new[] { e.Data });
 
     Core.Db.Segments.SegmentsKeywordsChangedEvent += (_, e) =>
-      _inst.CvSegments.ReGroupItems(e.Data, false);
+      _inst.CvSegments.Update(e.Data);
 
     Core.Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
-      _inst.CvSegments.ReGroupItems(e.Data.Item2, false);
+      _inst.CvSegments.Update(e.Data.Item2);
 
       var pIn = e.Data.Item2.GetPeople().ToArray();
       var pOut = e.Data.Item3.Except(pIn).ToArray();
-      _inst.CvPeople.ReGroupItems(pIn, false);
-      _inst.CvPeople.ReGroupItems(pOut, true);
+      _inst.CvPeople.Update(pIn);
+      _inst.CvPeople.Remove(pOut);
     };
 
     return _inst;

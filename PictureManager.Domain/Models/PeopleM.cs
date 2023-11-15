@@ -32,16 +32,16 @@ public sealed class PeopleM {
 
   private void OnItemDeleted(object sender, ObjectEventArgs<PersonM> e) {
     Selected.Set(e.Data, false);
-    PeopleView?.ReGroupItems(new[] { e.Data }, true);
-    PeopleToolsTabM?.ReGroupItems(new[] { e.Data }, true);
+    PeopleView?.Remove(new[] { e.Data });
+    PeopleToolsTabM?.Remove(new[] { e.Data });
 
     if (ReferenceEquals(PersonDetail?.PersonM, e.Data))
       Core.ToolsTabsM.Close(PersonDetail);
   }
 
   private void OnPeopleKeywordsChanged(object sender, ObjectEventArgs<PersonM[]> e) {
-    PeopleToolsTabM?.ReGroupItems(e.Data, false);
-    PeopleView?.ReGroupItems(e.Data, false);
+    PeopleToolsTabM?.Update(e.Data);
+    PeopleView?.Update(e.Data);
 
     foreach (var person in e.Data)
       person.UpdateDisplayKeywords();
