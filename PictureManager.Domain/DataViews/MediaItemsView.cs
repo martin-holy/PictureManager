@@ -236,11 +236,11 @@ namespace PictureManager.Domain.DataViews {
           if (Selected.Items.Remove(mi))
             mi.IsSelected = false;
 
-          return;
+          continue;
         }
 
-        if (and && LoadedItems.Contains(mi)) return;
-        if (!Core.ViewersM.CanViewerSee(mi)) return;
+        if (and && LoadedItems.Contains(mi)) continue;
+        if (!Core.ViewersM.CanViewerSee(mi)) continue;
 
         mi.SetThumbSize();
         mi.SetInfoBox();
@@ -248,7 +248,9 @@ namespace PictureManager.Domain.DataViews {
       }
 
       Filter.UpdateSizeRanges(LoadedItems, true);
-      FilteredItems.AddRange(items.Where(Filter.Filter));
+      if (hide) return;
+      FilteredItems.Clear();
+      FilteredItems.AddRange(LoadedItems.Where(Filter.Filter));
     }
 
     public void SoftLoad(IEnumerable<MediaItemM> items, bool sort, bool filter) {
