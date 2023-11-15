@@ -14,7 +14,7 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
 
   public void Reload(List<SegmentM> source, GroupMode groupMode, CollectionViewGroupByItem<SegmentM>[] groupByItems, bool expandAll, string rootTitle, bool removeEmpty = true) {
     Name = rootTitle;
-    Reload(source, groupMode, groupByItems, expandAll);
+    Reload(source, groupMode, groupByItems, expandAll, removeEmpty);
   }
 
   public override IEnumerable<CollectionViewGroupByItem<SegmentM>> GetGroupByItems(IEnumerable<SegmentM> source) {

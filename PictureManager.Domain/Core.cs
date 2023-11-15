@@ -228,13 +228,13 @@ public sealed class Core {
 
     Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
       Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
-      PeopleM.PersonDetail?.ReloadIf(e.Data.Item2, e.Data.Item3);
+      PeopleM.PersonDetail?.ReloadIf(e.Data.Item2);
       PeopleM.PeopleView?.ReGroupItems(e.Data.Item3?.Where(x => x.Segment != null).ToArray(), false);
       MediaItemsM.OnSegmentsPersonChanged(e.Data.Item2.Select(x => x.MediaItem).Distinct());
     };
 
     Db.Segments.SegmentsKeywordsChangedEvent += (_, e) => {
-      PeopleM.PersonDetail?.ReGroupIfContains(e.Data, false);
+      PeopleM.PersonDetail?.ReGroupIfContains(e.Data, true, false);
       
       foreach (var segment in e.Data)
         Db.MediaItems.Modify(segment.MediaItem);
@@ -244,7 +244,7 @@ public sealed class Core {
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
       Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
-      PeopleM.PersonDetail?.ReGroupIfContains(new[] { e.Data }, true);
+      PeopleM.PersonDetail?.ReGroupIfContains(new[] { e.Data }, true, true);
     };
 
     #endregion
@@ -268,6 +268,14 @@ public sealed class Core {
     };
 
     #endregion
+
+    ToolsTabsM.TabClosedEvent += (_, e) => {
+      switch (e.Data.Data) {
+        case PersonDetail personDetail:
+          personDetail.Reload(null);
+          break;
+      }
+    };
   }
 
   public void SaveDBPrompt() {
