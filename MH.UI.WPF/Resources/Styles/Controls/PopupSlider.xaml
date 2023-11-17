@@ -15,8 +15,8 @@
         <ControlTemplate TargetType="Slider">
           <Grid>
             <c:IconTextButton
-              Icon="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
-              Text="{Binding Value, StringFormat={}{0:G2}, RelativeSource={RelativeSource TemplatedParent}}">
+              ap:Icon.Data="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Text.Text="{Binding Value, StringFormat={}{0:G2}, RelativeSource={RelativeSource TemplatedParent}}">
               <b:Interaction.Triggers>
                 <b:EventTrigger EventName="Click">
                   <b:ChangePropertyAction
