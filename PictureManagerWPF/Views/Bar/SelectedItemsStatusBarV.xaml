@@ -1,0 +1,44 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+
+  <DataTemplate x:Key="PM.Views.SelectedItemsStatusBarV" DataType="{x:Type pmd:Core}">
+    <DataTemplate.Resources>
+      <Style TargetType="mhc:IconTextBlock" BasedOn="{StaticResource {x:Type mhc:IconTextBlock}}">
+        <Setter Property="Background" Value="{StaticResource MH.Brushes.Black55}"/>
+      </Style>
+    </DataTemplate.Resources>
+
+    <Border
+      BorderThickness="1"
+      BorderBrush="Black"
+      Margin="1,0,0,0"
+      CornerRadius="3"
+      VerticalAlignment="Center"
+      Background="{StaticResource MH.Brushes.Accent}">
+
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <mhc:IconTextBlock
+          ap:Text.Text="{Binding MediaItemsViews.Current.Selected.Items.Count, FallbackValue=0}"
+          ap:Icon.Data="{StaticResource IconImage}"/>
+        <mhc:IconTextBlock
+          Grid.Column="1"
+          ap:Text.Text="{Binding PeopleM.Selected.Items.Count}"
+          ap:Icon.Data="{StaticResource IconPeople}"/>
+        <mhc:IconTextBlock
+          Grid.Column="2"
+          ap:Text.Text="{Binding SegmentsM.Selected.Items.Count}"
+          ap:Icon.Data="{StaticResource IconSegment}"/>
+      </Grid>
+    </Border>
+  </DataTemplate>
+</ResourceDictionary>
