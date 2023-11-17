@@ -29,12 +29,15 @@
   <Color x:Key="GrayColor6">#FFCCCCCC</Color>
   <Color x:Key="White20">#33FFFFFF</Color>
   <Color x:Key="White30">#4CFFFFFF</Color>
+  <Color x:Key="Black25">#40000000</Color>
+  <Color x:Key="Black55">#8C000000</Color>
  
   <SolidColorBrush x:Key="MH.Brushes.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Foreground" Color="{StaticResource ForegroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Text" Color="{StaticResource TextColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Accent" Color="{StaticResource Accent}"/>
-
+  <SolidColorBrush x:Key="MH.Brushes.Black25" Color="{StaticResource Black25}"/>
+  <SolidColorBrush x:Key="MH.Brushes.Black55" Color="{StaticResource Black55}"/>
 
   <!-- Control -->
   <SolidColorBrush x:Key="MH.Control.Static.Border" Color="{StaticResource BorderColor}"/>
