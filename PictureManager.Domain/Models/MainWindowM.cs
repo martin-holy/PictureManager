@@ -8,7 +8,6 @@ public sealed class MainWindowM : ObservableObject {
   private bool _isFullScreen;
 
   public int ActiveLayout { get => _activeLayout; set { _activeLayout = value; OnPropertyChanged(); } }
-  public bool CanOpenStatusPanel => Core.MediaItemsViews.Current != null || Core.MediaViewerM.IsVisible;
   public bool IsFullScreen {
     get => _isFullScreen;
     set {

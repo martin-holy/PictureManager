@@ -1,51 +1,56 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:d="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
 
-  <DataTemplate x:Key="StatusPanelV" DataType="{x:Type d:Core}">
+  <DataTemplate x:Key="PM.Views.StatusBarV" DataType="{x:Type pmd:Core}">
     <DataTemplate.Resources>
-      <Style x:Key="_itemsControlStyle" TargetType="{x:Type ItemsControl}">
-        <Setter Property="ItemsPanel">
-          <Setter.Value>
-            <ItemsPanelTemplate>
-              <WrapPanel Orientation="Horizontal"/>
-            </ItemsPanelTemplate>
-          </Setter.Value>
-        </Setter>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <wpfu:CachedResourceDictionary Source="SelectedItemsStatusBarV.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
 
-        <Setter Property="ItemTemplate">
-          <Setter.Value>
-            <DataTemplate>
-              <Border Style="{StaticResource SBorderText}">
-                <TextBlock Text="{Binding}" Style="{StaticResource STextBlock}"/>
-              </Border>
-            </DataTemplate>
-          </Setter.Value>
-        </Setter>
-      </Style>
+        <Style x:Key="_itemsControlStyle" TargetType="{x:Type ItemsControl}">
+          <Setter Property="ItemsPanel">
+            <Setter.Value>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </Setter.Value>
+          </Setter>
 
-      <Style x:Key="_infoGroup" TargetType="{x:Type Border}" BasedOn="{StaticResource SBorderGroup}">
-        <Style.Resources>
-          <Style TargetType="{x:Type StackPanel}">
-            <Setter Property="Orientation" Value="Horizontal"/>
-          </Style>
+          <Setter Property="ItemTemplate">
+            <Setter.Value>
+              <DataTemplate>
+                <Border Style="{StaticResource SBorderText}">
+                  <TextBlock Text="{Binding}" Style="{StaticResource STextBlock}"/>
+                </Border>
+              </DataTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
 
-          <Style TargetType="{x:Type Border}" BasedOn="{StaticResource SBorderText}"/>
-          <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource STextBlock}"/>
-          <Style TargetType="{x:Type ItemsControl}" BasedOn="{StaticResource _itemsControlStyle}"/>
-        </Style.Resources>
-      </Style>
-
-      <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
-        <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
-      </Style>
+        <Style x:Key="_infoGroup" TargetType="{x:Type Border}" BasedOn="{StaticResource SBorderGroup}">
+          <Style.Resources>
+            <Style TargetType="{x:Type StackPanel}">
+              <Setter Property="Orientation" Value="Horizontal"/>
+            </Style>
+            <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
+              <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+            </Style>
+            <Style TargetType="{x:Type Border}" BasedOn="{StaticResource SBorderText}"/>
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource STextBlock}"/>
+            <Style TargetType="{x:Type ItemsControl}" BasedOn="{StaticResource _itemsControlStyle}"/>
+          </Style.Resources>
+        </Style>
+      </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Grid Background="#40000000">
+    <Grid Background="{StaticResource MH.Brushes.Black25}">
       <Grid.InputBindings>
         <MouseBinding
           MouseAction="LeftClick"
@@ -53,28 +58,25 @@
                    {RelativeSource AncestorType=mhc:SlidePanel}}"/>
       </Grid.InputBindings>
 
-      <WrapPanel VerticalAlignment="Bottom" Margin="0,2,0,1">
+      <WrapPanel Margin="1,0,0,0" VerticalAlignment="Center">
+        <!-- Selected items -->
+        <ContentPresenter
+          ContentTemplate="{StaticResource PM.Views.SelectedItemsStatusBarV}"/>
 
-        <!-- PositionSlashCount / Selected / Modified -->
-        <Border Style="{StaticResource _infoGroup}">
+        <!-- PositionSlashCount -->
+        <Border
+          Style="{StaticResource _infoGroup}"
+          Visibility="{Binding MediaItemsStatusBarM.IsVisible,
+                       Source={x:Static pm:App.Core},
+                       Converter={mhConv:AllToVisibilityConverter}}">
           <StackPanel Orientation="Horizontal">
             <Path Data="{StaticResource IconImageMultiple}"/>
 
-            <!-- PositionSlashCount -->
             <Border>
               <TextBlock
                 x:Name="tbPositionSlashCount"
                 Style="{StaticResource STextBlock}"
                 Text="{Binding MediaItemsViews.Current.PositionSlashCount}"/>
-            </Border>
-
-            <!-- Selected -->
-            <Border
-              Background="#1181B1"
-              Visibility="{Binding MediaViewerM.IsVisible,
-                           Converter={mhConv:AllToVisibilityConverter}, 
-                           ConverterParameter={StaticResource False}}">
-              <TextBlock Text="{Binding MediaItemsViews.Current.Selected.Items.Count}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -102,12 +104,12 @@
         <!-- File Size -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding StatusPanelM.FileSize, Converter={mhConv:AllToVisibilityConverter}}">
+          Visibility="{Binding MediaItemsStatusBarM.FileSize, Converter={mhConv:AllToVisibilityConverter}}">
           <StackPanel>
             <Path Data="{StaticResource IconPageUpload}"/>
 
             <Border>
-              <TextBlock Text="{Binding StatusPanelM.FileSize}"/>
+              <TextBlock Text="{Binding MediaItemsStatusBarM.FileSize}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -130,9 +132,9 @@
           Style="{StaticResource SBorderGroup}"
           Margin="2,0,2,0"
           VerticalAlignment="Center"
-          Visibility="{Binding StatusPanelM.Rating.Count, Converter={mhConv:AllToVisibilityConverter}}">
+          Visibility="{Binding MediaItemsStatusBarM.Rating.Count, Converter={mhConv:AllToVisibilityConverter}}">
           <Border Margin="0">
-            <ItemsControl ItemsSource="{Binding StatusPanelM.Rating}">
+            <ItemsControl ItemsSource="{Binding MediaItemsStatusBarM.Rating}">
 
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -142,7 +144,10 @@
 
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <Path Data="{StaticResource IconStar}" Style="{StaticResource MH.Styles.Icon}"/>
+                  <Path
+                    Data="{StaticResource IconStar}"
+                    Style="{StaticResource MH.Styles.Icon}"
+                    Effect="{StaticResource MH.Effects.DropShadow}"/>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -157,32 +162,34 @@
           Margin="1,2,1,0"
           Padding="4"
           Visibility="Collapsed">
-
-          <Path Data="{StaticResource IconLocationCheckin}"/>
+          <Path
+            Data="{StaticResource IconLocationCheckin}"
+            Style="{StaticResource MH.Styles.Icon}"
+            Effect="{StaticResource MH.Effects.DropShadow}"/>
         </Border>
 
         <!-- FilePath -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding StatusPanelM.FilePath, Converter={mhConv:AllToVisibilityConverter}}"
+          Visibility="{Binding MediaItemsStatusBarM.FilePath, Converter={mhConv:AllToVisibilityConverter}}"
           ToolTip="{Binding MediaItemsM.Current.FilePath}">
 
           <StackPanel>
             <Path Data="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}"/>
-            <ItemsControl ItemsSource="{Binding StatusPanelM.FilePath}"/>
+            <ItemsControl ItemsSource="{Binding MediaItemsStatusBarM.FilePath}"/>
           </StackPanel>
         </Border>
 
         <!-- DateAndTime -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding StatusPanelM.DateAndTime, Converter={mhConv:AllToVisibilityConverter}}">
+          Visibility="{Binding MediaItemsStatusBarM.DateAndTime, Converter={mhConv:AllToVisibilityConverter}}">
 
           <StackPanel>
             <Path Data="{StaticResource IconCalendar}"/>
 
             <Border>
-              <TextBlock Text="{Binding StatusPanelM.DateAndTime}"/>
+              <TextBlock Text="{Binding MediaItemsStatusBarM.DateAndTime}"/>
             </Border>
           </StackPanel>
         </Border>

@@ -93,13 +93,12 @@
         Width="362"/>
     </mhc:SlidePanelsGrid.PanelRight>
 
-    <!-- Status Panel -->
+    <!-- Status Bar -->
     <mhc:SlidePanelsGrid.PanelBottom>
       <mhc:SlidePanel
         Content="{Binding}"
-        ContentTemplate="{StaticResource StatusPanelV}"
-        CanOpen="{Binding MainWindowM.CanOpenStatusPanel}"
-        MinHeight="30"/>
+        ContentTemplate="{StaticResource PM.Views.StatusBarV}"
+        MinHeight="32"/>
     </mhc:SlidePanelsGrid.PanelBottom>
   </mhc:SlidePanelsGrid>
 </mhc:CustomWindow>

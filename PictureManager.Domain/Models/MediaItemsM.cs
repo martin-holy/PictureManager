@@ -410,7 +410,7 @@ public sealed class MediaItemsM : ObservableObject {
     progress.AddEvents(mediaItems, null, mi => TryWriteMetadata(mi), mi => mi.FilePath, null);
     progress.Start();
     Dialog.Show(progress);
-    Core.StatusPanelM.OnPropertyChanged(nameof(Core.StatusPanelM.FileSize));
+    Core.MediaItemsStatusBarM.OnPropertyChanged(nameof(Core.MediaItemsStatusBarM.FileSize));
     OnPropertyChanged(nameof(ModifiedItemsCount));
   }
 

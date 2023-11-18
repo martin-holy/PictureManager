@@ -78,7 +78,7 @@ namespace PictureManager.Domain.DataViews {
 
     private void OnViewSelectionChanged(object o, EventArgs e) {
       Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-      Core.StatusPanelM.Update();
+      Core.MediaItemsStatusBarM.Update();
     }
 
     private void OnViewFilteredChanged(object o, EventArgs e) {
