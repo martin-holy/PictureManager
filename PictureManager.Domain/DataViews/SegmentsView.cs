@@ -53,11 +53,13 @@ public sealed class SegmentsView {
     return _inst;
   }
 
-  public static void Open() {
+  private static void Open() {
     var result = GetSegmentsToLoadUserInput();
     if (result < 1) return;
     var segments = GetSegments(result).ToArray();
     Core.MainTabs.Activate(Res.IconSegment, "Segments", Inst);
+    if (Core.MediaViewerM.IsVisible)
+      Core.MainWindowM.IsFullScreen = false;
     Inst.Reload(segments);
   }
 
@@ -79,7 +81,9 @@ public sealed class SegmentsView {
   private static IEnumerable<SegmentM> GetSegments(int mode) {
     switch (mode) {
       case 1:
-        return Core.MediaItemsViews.Current?.GetSelectedOrAll().GetSegments()
+        return (Core.MediaViewerM.IsVisible
+                 ? Core.MediaViewerM.Current?.GetSegments()
+                 : Core.MediaItemsViews.Current?.GetSelectedOrAll().GetSegments())
                ?? Enumerable.Empty<SegmentM>();
       case 2:
         var people = Core.PeopleM.Selected.Items.ToHashSet();
