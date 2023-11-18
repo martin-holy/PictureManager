@@ -46,7 +46,7 @@
         <wpfu:CachedResourceDictionary Source="Views/MainWindowToolBarV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/MediaViewerV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/RatingV.xaml"/>
-        <wpfu:CachedResourceDictionary Source="Views/StatusPanelV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/Bar/StatusBarV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/TitleProgressBarV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/ToolsTabsV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/TreeViewCategoriesV.xaml"/>

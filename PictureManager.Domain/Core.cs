@@ -37,7 +37,7 @@ public sealed class Core {
   public static MainWindowM MainWindowM { get; } = new();
   public static MediaItemsViews MediaItemsViews { get; } = new();
   public static MediaViewerM MediaViewerM { get; } = new();
-  public static StatusPanelM StatusPanelM { get; } = new();
+  public static MediaItemsStatusBarM MediaItemsStatusBarM { get; } = new();
   public TitleProgressBarM TitleProgressBarM { get; } = new();
   public static ToolsTabsM ToolsTabsM { get; } = new() { CanCloseTabs = true };
   public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
@@ -101,7 +101,7 @@ public sealed class Core {
     #region FoldersM EventHandlers
 
     Db.Folders.ItemRenamedEvent += (_, _) => {
-      StatusPanelM.UpdateFilePath();
+      MediaItemsStatusBarM.UpdateFilePath();
     };
 
     Db.Folders.ItemDeletedEvent += (_, e) => {
@@ -115,7 +115,7 @@ public sealed class Core {
 
     FoldersM.ItemMovedEvent += (_, _) => {
       Db.FolderKeywords.Reload();
-      StatusPanelM.UpdateFilePath();
+      MediaItemsStatusBarM.UpdateFilePath();
     };
 
     #endregion
@@ -180,12 +180,12 @@ public sealed class Core {
     MediaItemsM.MetadataChangedEvent += (_, _) => {
       MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.ModifiedItemsCount));
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-      StatusPanelM.UpdateRating();
+      MediaItemsStatusBarM.UpdateRating();
     };
 
     MediaItemsM.PropertyChanged += (_, e) => {
       if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
-        StatusPanelM.Update();
+        MediaItemsStatusBarM.Update();
 
         if (MainWindowM.IsFullScreen)
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
@@ -197,15 +197,15 @@ public sealed class Core {
     MediaItemsViews.PropertyChanged += (_, e) => {
       if (nameof(MediaItemsViews.Current).Equals(e.PropertyName)) {
         TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-        MainWindowM.OnPropertyChanged(nameof(MainWindowM.CanOpenStatusPanel));
+        MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
       }
     };
 
     MediaViewerM.PropertyChanged += (_, e) => {
       switch (e.PropertyName) {
         case nameof(MediaViewerM.IsVisible):
-          StatusPanelM.UpdateFilePath();
-          MainWindowM.OnPropertyChanged(nameof(MainWindowM.CanOpenStatusPanel));
+          MediaItemsStatusBarM.UpdateFilePath();
+          MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
           break;
         case nameof(MediaViewerM.Current):
           SegmentsM.SegmentsRectsM.MediaItem = MediaViewerM.Current;

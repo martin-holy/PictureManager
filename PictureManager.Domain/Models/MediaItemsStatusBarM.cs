@@ -7,8 +7,10 @@ using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class StatusPanelM : ObservableObject {
+  public sealed class MediaItemsStatusBarM : ObservableObject {
     private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
+
+    public bool IsVisible => Core.MediaItemsViews.Current != null || Core.MediaViewerM.IsVisible;
 
     public string FileSize {
       get {

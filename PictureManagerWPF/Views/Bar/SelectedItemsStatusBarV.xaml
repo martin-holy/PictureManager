@@ -9,6 +9,7 @@
     <DataTemplate.Resources>
       <Style TargetType="mhc:IconTextBlock" BasedOn="{StaticResource {x:Type mhc:IconTextBlock}}">
         <Setter Property="Background" Value="{StaticResource MH.Brushes.Black55}"/>
+        <Setter Property="Margin" Value="1"/>
       </Style>
     </DataTemplate.Resources>
 
@@ -32,6 +33,7 @@
           ap:Icon.Data="{StaticResource IconImage}"/>
         <mhc:IconTextBlock
           Grid.Column="1"
+          Margin="0,1,0,1"
           ap:Text.Text="{Binding PeopleM.Selected.Items.Count}"
           ap:Icon.Data="{StaticResource IconPeople}"/>
         <mhc:IconTextBlock
