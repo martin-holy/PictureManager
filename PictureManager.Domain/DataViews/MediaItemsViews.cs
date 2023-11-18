@@ -90,6 +90,11 @@ namespace PictureManager.Domain.DataViews {
         view.ReWrapAll();
     }
 
+    public void ReGroupViewIfContains(MediaItemM[] mediaItems) {
+      foreach (var view in _all)
+        view.Update(view.FilteredItems.Where(mediaItems.Contains).ToArray());
+    }
+
     public async Task LoadByFolder(ITreeItem item) {
       if (item is FolderM { IsAccessible: false }) return;
       var and = Keyboard.IsCtrlOn();

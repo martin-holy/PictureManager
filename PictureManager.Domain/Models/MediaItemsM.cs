@@ -26,7 +26,7 @@ public sealed class MediaItemsM : ObservableObject {
   public int ModifiedItemsCount => DataAdapter.All.Count(x => x.IsOnlyInDb);
 
   public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsOrientationChangedEvent = delegate { };
-  public event EventHandler MetadataChangedEvent = delegate { };
+  public event EventHandler<ObjectEventArgs<MediaItemM[]>> MetadataChangedEvent = delegate { };
   public Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
   public Func<MediaItemM, bool> WriteMetadata { get; set; }
 
@@ -305,9 +305,10 @@ public sealed class MediaItemsM : ObservableObject {
   public void AddGeoNamesFromFiles(string geoNamesUserName) {
     if (!GeoNamesM.IsGeoNamesUserNameInSettings(geoNamesUserName)) return;
 
+    var items = Core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToArray();
     var progress = new ProgressBarDialog("Adding GeoNames ...", Res.IconLocationCheckin, true, 1);
     progress.AddEvents(
-      Core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
+      items,
       null,
       // action
       async mi => {
@@ -332,7 +333,7 @@ public sealed class MediaItemsM : ObservableObject {
       // onCompleted
       delegate {
         Current?.GeoName?.OnPropertyChanged(nameof(Current.GeoName.FullName));
-        MetadataChangedEvent(this, EventArgs.Empty);
+        MetadataChangedEvent(this, new(items));
       });
 
     progress.Start();
@@ -422,9 +423,10 @@ public sealed class MediaItemsM : ObservableObject {
           Res.IconQuestion,
           true)) != 1) return;
 
+    var items = mediaItems.ToArray();
     var progress = new ProgressBarDialog("Reloading metadata...", Res.IconImage, true, Environment.ProcessorCount);
     progress.AddEvents(
-      mediaItems.ToArray(),
+      items,
       null,
       async mi => {
         var mim = new MediaItemMetadata(mi);
@@ -439,7 +441,7 @@ public sealed class MediaItemsM : ObservableObject {
       },
       mi => mi.FilePath,
       delegate {
-        MetadataChangedEvent(this, EventArgs.Empty);
+        MetadataChangedEvent(this, new(items));
       });
 
     progress.Start();
@@ -551,7 +553,7 @@ public sealed class MediaItemsM : ObservableObject {
       count++;
     }
 
-    if (count > 0) MetadataChangedEvent(this, EventArgs.Empty);
+    if (count > 0) MetadataChangedEvent(this, new(items));
   }
 
   public static bool IsPanoramic(MediaItemM mi) =>
