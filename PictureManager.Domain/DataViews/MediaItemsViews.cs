@@ -25,7 +25,7 @@ namespace PictureManager.Domain.DataViews {
       CopyPathsCommand = new(
         () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),
         () => Current?.Selected.Items.Any() == true);
-      LoadByTagCommand = new(async item => await LoadByTag(item));
+      LoadByTagCommand = new(LoadByTag);
       ShuffleCommand = new(
         () => Current.Shuffle(),
         () => Current?.FilteredItems.Count > 0);
@@ -106,7 +106,7 @@ namespace PictureManager.Domain.DataViews {
       await Current.LoadByFolder(item, and, hide, recursive);
     }
 
-    public async Task LoadByTag(object item) {
+    public async void LoadByTag(object item) {
       var and = Keyboard.IsCtrlOn();
       var hide = Keyboard.IsAltOn();
       var recursive = Keyboard.IsShiftOn();
