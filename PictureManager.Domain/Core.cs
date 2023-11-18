@@ -232,16 +232,12 @@ public sealed class Core {
       Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
       PeopleM.PersonDetail?.ReloadIf(e.Data.Item2);
       PeopleM.PeopleView?.Update(e.Data.Item3?.Where(x => x.Segment != null).ToArray());
-      MediaItemsM.OnSegmentsPersonChanged(e.Data.Item2.Select(x => x.MediaItem).Distinct());
+      MediaItemsM.OnSegmentsPersonChanged(e.Data.Item2);
     };
 
     Db.Segments.SegmentsKeywordsChangedEvent += (_, e) => {
       PeopleM.PersonDetail?.ReGroupIfContains(e.Data, true, false);
-      
-      foreach (var segment in e.Data)
-        Db.MediaItems.Modify(segment.MediaItem);
-
-      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.ModifiedItemsCount));
+      MediaItemsM.OnSegmentsKeywordsChanged(e.Data);
     };
 
     Db.Segments.ItemDeletedEvent += (_, e) => {

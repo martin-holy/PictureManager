@@ -5,6 +5,7 @@ using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Utils;
 using System;
@@ -566,7 +567,9 @@ public sealed class MediaItemsM : ObservableObject {
     await Core.MediaItemsViews.Current.LoadByTag(DataAdapter.All.Where(x => x.IsOnlyInDb).ToArray());
   }
 
-  public void OnSegmentsPersonChanged(IEnumerable<MediaItemM> items) {
+  public void OnSegmentsPersonChanged(SegmentM[] segments) {
+    var items = segments.GetMediaItems().ToArray();
+
     foreach (var mi in items) {
       if (mi.People != null && mi.Segments != null) {
         foreach (var p in mi.Segments.Select(x => x.Person).Where(mi.People.Contains).ToArray())
@@ -580,6 +583,15 @@ public sealed class MediaItemsM : ObservableObject {
       mi.SetInfoBox();
     }
 
-    OnPropertyChanged(nameof(ModifiedItemsCount));
+    MetadataChangedEvent(this, new(items));
+  }
+
+  public void OnSegmentsKeywordsChanged(SegmentM[] segments) {
+    var items = segments.GetMediaItems().ToArray();
+
+    foreach (var item in items)
+      DataAdapter.Modify(item);
+
+    MetadataChangedEvent(this, new(items));
   }
 }
