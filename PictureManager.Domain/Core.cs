@@ -177,7 +177,8 @@ public sealed class Core {
       MediaItemsViews.ReWrapViewIfContains(e.Data);
     };
 
-    MediaItemsM.MetadataChangedEvent += (_, _) => {
+    MediaItemsM.MetadataChangedEvent += (_, e) => {
+      MediaItemsViews.ReGroupViewIfContains(e.Data);
       MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.ModifiedItemsCount));
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       MediaItemsStatusBarM.UpdateRating();
