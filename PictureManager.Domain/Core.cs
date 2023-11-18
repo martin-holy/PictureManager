@@ -209,6 +209,7 @@ public sealed class Core {
           break;
         case nameof(MediaViewerM.Current):
           SegmentsM.SegmentsRectsM.MediaItem = MediaViewerM.Current;
+          MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.FileSize));
 
           if (MediaViewerM.Current != null && MediaItemsM.Current != MediaViewerM.Current)
             MediaItemsM.Current = MediaViewerM.Current;
