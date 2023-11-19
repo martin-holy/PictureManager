@@ -53,8 +53,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         // MediaItems
         if (Core.MediaItemsViews.Current == null) break;
 
-        var selected = Core.MediaItemsViews.Current.FilteredItems
-          .Where(x => x.IsSelected)
+        var selected = Core.MediaItemsViews.Current.Selected.Items
           .Select(p => p.FilePath)
           .OrderBy(p => p)
           .ToArray();
