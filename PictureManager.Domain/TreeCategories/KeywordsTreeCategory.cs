@@ -21,7 +21,7 @@ public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM
   }
 
   private void OnItemCreated(object sender, ObjectEventArgs<KeywordM> e) =>
-    TreeView.ScrollTo(e.Data);
+    TreeView.ScrollTo(e.Data, false);
 
   public override void OnItemSelected(object o) =>
     ToggleDialogM.ToggleKeyword(o as KeywordM);

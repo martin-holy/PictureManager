@@ -32,7 +32,7 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
 
   private void OnItemCreated(object sender, ObjectEventArgs<PersonM> e) {
     if (!e.Data.IsUnknown)
-      TreeView.ScrollTo(e.Data);
+      TreeView.ScrollTo(e.Data, false);
   }
 
   public override void OnItemSelected(object o) {
