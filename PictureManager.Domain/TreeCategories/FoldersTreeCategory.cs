@@ -24,7 +24,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
   }
 
   private void OnItemCreated(object sender, ObjectEventArgs<FolderM> e) =>
-    TreeView.ScrollTo(e.Data);
+    TreeView.ScrollTo(e.Data, false);
 
   public override void OnItemSelected(object o) {
     // SHIFT key => recursive
