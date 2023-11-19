@@ -146,7 +146,7 @@ public sealed class MediaItemsM : ObservableObject {
 
     if (Dialog.Show(new MessageDialog(
           "Delete Confirmation",
-          $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?",
+          "Do you really want to delete {0} item{1}?".Plural(count),
           Res.IconQuestion,
           true)) != 1) return;
 
