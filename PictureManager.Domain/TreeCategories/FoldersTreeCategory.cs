@@ -2,6 +2,7 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Models;
@@ -89,16 +90,15 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         break;
 
       case string[]: // MediaItems
+        var items = Core.MediaItemsViews.Current.Selected.Items.ToList();
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} media items",
-              $"Do you really want to {(copy ? "copy" : "move")} media items to '{dest.Name}'?",
+              $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Count)} to '{dest.Name}'?",
               Res.IconQuestion,
               true)) != 1)
           return;
 
-        Core.MediaItemsM.CopyMove(foMode,
-          Core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToList(),
-          destFolder);
+        Core.MediaItemsM.CopyMove(foMode, items, destFolder);
         Core.MediaItemsM.DataAdapter.IsModified = true;
 
         break;
