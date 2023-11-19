@@ -18,7 +18,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
   // TODO rename and combine with single and multi select
   public bool ShowTreeItemSelection { get; set; }
   public Action ScrollToTopAction { get; set; }
-  public Action<object[]> ScrollToItemsAction { get; set; }
+  public Action<object[], bool> ScrollToItemsAction { get; set; }
   public Action<ITreeItem> ExpandRootWhenReadyAction { get; set; }
 
   public RelayCommand<object> TreeItemSelectedCommand { get; }
@@ -40,7 +40,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
 
   public virtual void OnTopTreeItemChanged() { }
 
-  public virtual void ScrollTo(ITreeItem item) {
+  public virtual void ScrollTo(ITreeItem item, bool exactly = true) {
     if (item == null) return;
     // INFO this doesn't work when SizeChanged. ScrollTo is maybe to early
     //if (ReferenceEquals(TopTreeItem, item)) return;
@@ -50,7 +50,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
       branch[i].IsExpanded = true;
 
     TopTreeItem = item;
-    ScrollToItemsAction?.Invoke(branch.Cast<object>().ToArray());
+    ScrollToItemsAction?.Invoke(branch.Cast<object>().ToArray(), exactly);
   }
 
   public void UpdateRoot(ITreeItem root, Action<IList<object>> itemsAction) {
