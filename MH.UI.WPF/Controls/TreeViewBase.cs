@@ -57,7 +57,7 @@ public class TreeViewBase : TreeView {
     _sv.UpdateLayout();
   }
 
-  private void ScrollToItems(object[] items) {
+  private void ScrollToItems(object[] items, bool exactly) {
     var root = (ITreeItem)TreeView.RootHolder[0];
     var idxItem = ((ITreeItem)items[^1]).GetIndex(root);
 
@@ -65,8 +65,13 @@ public class TreeViewBase : TreeView {
 
     _isScrollingTo = true;
 
-    if (IsDiffInView(idxItem, root)) 
+    if (IsDiffInView(idxItem, root)) {
+      if (!exactly) {
+        _isScrollingTo = false;
+        return;
+      }
       _sv.ScrollToVerticalOffset(_sv.VerticalOffset + diff);
+    }
 
     _sv.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => {
       if (!GetDiff(idxItem, root, out diff) || diff == 0) return;
