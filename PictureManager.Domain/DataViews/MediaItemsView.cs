@@ -69,7 +69,7 @@ namespace PictureManager.Domain.DataViews {
 
     private object CanDrag(object source) {
       if (source is not MediaItemM) return null;
-      var data = FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
+      var data = Selected.Items.Select(p => p.FilePath).ToArray();
       return data.Length == 0 ? null : data;
     }
 

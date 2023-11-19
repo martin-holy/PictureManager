@@ -306,7 +306,7 @@ public sealed class MediaItemsM : ObservableObject {
   public void AddGeoNamesFromFiles(string geoNamesUserName) {
     if (!GeoNamesM.IsGeoNamesUserNameInSettings(geoNamesUserName)) return;
 
-    var items = Core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToArray();
+    var items = Core.MediaItemsViews.Current.Selected.Items.ToArray();
     var progress = new ProgressBarDialog("Adding GeoNames ...", Res.IconLocationCheckin, true, 1);
     progress.AddEvents(
       items,
