@@ -271,13 +271,9 @@
         <Setter TargetName="boGeoName" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
-      <MultiDataTrigger>
-        <MultiDataTrigger.Conditions>
-          <Condition Binding="{Binding MediaViewerM.IsVisible}" Value="True"/>
-          <Condition Binding="{Binding MediaItemsM.Current.InfoBoxPeople, Converter={mhConv:AllToBoolConverter}}" Value="True"/>
-        </MultiDataTrigger.Conditions>
+      <DataTrigger Binding="{Binding MediaItemsM.Current.InfoBoxPeople, Converter={mhConv:AllToBoolConverter}}" Value="True">
         <Setter TargetName="boPeople" Property="Visibility" Value="Visible"/>
-      </MultiDataTrigger>
+      </DataTrigger>
 
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
