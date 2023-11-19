@@ -20,6 +20,8 @@
     use DB width and height for aspect ratio and add way to change it
 ## Person Detail
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
+## MainTabs
+  - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
 
 
                                   *** UPDATE ***
@@ -28,6 +30,8 @@
   - allow moving tab to left|middle|right panel
 ## CategoryViewGroup
   - GroupedBy instance for empty group with icon from View
+## CollectionView
+  - don't show expanded root if source is empty
 
         # MH.Utils
 ## Resources
@@ -53,6 +57,7 @@
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
+  - close search on mouse leave
 ## VideoClips:
   - recreate video thumbnails button
 ## Keywords
@@ -63,6 +68,9 @@
   - show selected items on dialog
 ## SegmentsDataAdapter
   - move generic methods ItemCreate, ItemsDelete, ItemDelete to DataAdapter
+## MediaItems
+  - save to file only metadata visible for viewer
+
 
                                     *** NEW ***
 ##
