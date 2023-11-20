@@ -48,11 +48,6 @@ public sealed class MainWindowM : ObservableObject {
   private static void OpenLog() =>
     Dialog.Show(new LogDialogM());
 
-  private static void OpenSettings() {
-    var result = Dialog.Show(new SettingsDialogM());
-    if (result == 0)
-      Core.Settings.Save();
-    else
-      Core.Settings.Load();
-  }
+  private static void OpenSettings() =>
+    Core.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
 }

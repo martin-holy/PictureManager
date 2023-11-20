@@ -257,6 +257,9 @@ public sealed class Core {
         case PeopleM people:
           people.Selected.DeselectAll();
           break;
+        case Settings settings:
+          settings.OnClosing();
+          break;
       }
     };
 
