@@ -38,7 +38,6 @@
         <wpfu:CachedResourceDictionary Source="Dialogs/MergePeopleDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/ResizeImagesDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
-        <wpfu:CachedResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/ToggleDialogV.xaml"/>
 
         <wpfu:CachedResourceDictionary Source="Views/MainMenuV.xaml"/>
@@ -46,6 +45,7 @@
         <wpfu:CachedResourceDictionary Source="Views/MainWindowToolBarV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/MediaViewerV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/RatingV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/SettingsV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/Bar/StatusBarV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/TitleProgressBarV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/ToolsTabsV.xaml"/>
