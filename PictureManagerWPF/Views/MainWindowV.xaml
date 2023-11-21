@@ -4,8 +4,10 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters"
+  xmlns:pmdM="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   DataContext="{Binding Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
   IsFullScreen="{Binding MainWindowM.IsFullScreen, Mode=TwoWay}"
@@ -73,7 +75,10 @@
         IsOpen="{Binding ToolsTabsM.IsOpen, Mode=TwoWay}"
         CanOpen="{Binding ToolsTabsM.Tabs.Count, Converter={mhConv:AllToBoolConverter}}"
         Content="{Binding ToolsTabsM}"
-        Width="362"/>
+        Width="{Binding Source={x:Static pmdM:SegmentsM.SegmentUiFullWidth},
+                Converter={pmConv:SegmentsViewWidthConverter},
+                ConverterParameter=4,
+                FallbackValue=362}"/>
     </mhc:SlidePanelsGrid.PanelRight>
 
     <!-- Status Bar -->
