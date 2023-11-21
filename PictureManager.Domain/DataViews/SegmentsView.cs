@@ -59,7 +59,7 @@ public sealed class SegmentsView {
     var segments = GetSegments(result).ToArray();
     Core.MainTabs.Activate(Res.IconSegment, "Segments", Inst);
     if (Core.MediaViewerM.IsVisible)
-      Core.MainWindowM.IsFullScreen = false;
+      Core.MainWindowM.IsInViewMode = false;
     Inst.Reload(segments);
   }
 

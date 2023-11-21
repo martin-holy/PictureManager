@@ -84,12 +84,12 @@ public sealed class Core {
 
   private void AttachEvents() {
     MainWindowM.PropertyChanged += (_, e) => {
-      if (nameof(MainWindowM.IsFullScreen).Equals(e.PropertyName)) {
-        var isFullScreen = MainWindowM.IsFullScreen;
+      if (nameof(MainWindowM.IsInViewMode).Equals(e.PropertyName)) {
+        var isInViewMode = MainWindowM.IsInViewMode;
 
-        MediaViewerM.IsVisible = isFullScreen;
+        MediaViewerM.IsVisible = isInViewMode;
 
-        if (!isFullScreen) {
+        if (!isInViewMode) {
           MediaItemsViews.Current?.SelectAndScrollToCurrentMediaItem();
           MediaViewerM.Deactivate();
         }
@@ -166,7 +166,7 @@ public sealed class Core {
         if (MediaItemsM.Current != null)
           MediaViewerM.Current = MediaItemsM.Current;
         else
-          MainWindowM.IsFullScreen = false;
+          MainWindowM.IsInViewMode = false;
       }
     };
 
@@ -188,7 +188,7 @@ public sealed class Core {
       if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
         MediaItemsStatusBarM.Update();
 
-        if (MainWindowM.IsFullScreen)
+        if (MainWindowM.IsInViewMode)
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       }
     };
