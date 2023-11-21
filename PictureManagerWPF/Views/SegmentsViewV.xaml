@@ -2,10 +2,12 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:dataViews="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters"
+  xmlns:pmdDv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
+  xmlns:pmdM="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
-  <DataTemplate DataType="{x:Type dataViews:SegmentsView}">
+  <DataTemplate DataType="{x:Type pmdDv:SegmentsView}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -17,7 +19,11 @@
     
     <Grid>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="280"/>
+        <ColumnDefinition
+          Width="{Binding Source={x:Static pmdM:SegmentsM.SegmentUiFullWidth},
+                  Converter={pmConv:SegmentsViewWidthConverter},
+                  ConverterParameter=3,
+                  FallbackValue=280}"/>
         <ColumnDefinition Width="3"/>
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
