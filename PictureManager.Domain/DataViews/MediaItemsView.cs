@@ -137,16 +137,13 @@ namespace PictureManager.Domain.DataViews {
     private MediaItemM GetItemToScrollTo() =>
       FilteredItems.Contains(Core.MediaItemsM.Current)
         ? Core.MediaItemsM.Current
-        : Selected.Items.Count != 0
-          ? Selected.Items[0]
-          : null;
+        : Selected.Items.FirstOrDefault();
 
     public void SelectAndScrollToCurrentMediaItem() {
       var mi = GetItemToScrollTo();
-
       Selected.DeselectAll();
+      Core.MediaItemsM.Current = mi;
       if (mi == null) return;
-
       Selected.Set(mi, true);
       ScrollTo(Root, mi);
       SelectionChanged();

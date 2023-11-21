@@ -90,7 +90,7 @@ public sealed class Core {
         MediaViewerM.IsVisible = isInViewMode;
 
         if (!isInViewMode) {
-          MediaItemsViews.Current?.SelectAndScrollToCurrentMediaItem();
+          MediaItemsViews.SelectAndScrollToCurrentMediaItem();
           MediaViewerM.Deactivate();
         }
 
