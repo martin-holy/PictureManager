@@ -42,8 +42,6 @@ public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
 
   public virtual void ScrollTo(ITreeItem item, bool exactly = true) {
     if (item == null) return;
-    // INFO this doesn't work when SizeChanged. ScrollTo is maybe to early
-    //if (ReferenceEquals(TopTreeItem, item)) return;
 
     var branch = item.GetBranch();
     for (int i = 0; i < branch.Count - 1; i++)
