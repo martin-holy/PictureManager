@@ -1,15 +1,18 @@
-﻿using System.Runtime.InteropServices;
+﻿using MH.Utils.BaseClasses;
 using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
-using MH.Utils.BaseClasses;
 
 namespace MH.UI.WPF.Controls {
   public class CustomWindow : Window {
     public static readonly DependencyProperty CanResizeProperty = DependencyProperty.Register(
       nameof(CanResize), typeof(bool), typeof(CustomWindow));
+
+    public static readonly DependencyProperty CanFullScreenProperty = DependencyProperty.Register(
+      nameof(CanFullScreen), typeof(bool), typeof(CustomWindow));
 
     public static readonly DependencyProperty IsFullScreenProperty = DependencyProperty.Register(
       nameof(IsFullScreen), typeof(bool), typeof(CustomWindow),
@@ -21,6 +24,11 @@ namespace MH.UI.WPF.Controls {
     public bool CanResize {
       get => (bool)GetValue(CanResizeProperty);
       set => SetValue(CanResizeProperty, value);
+    }
+
+    public bool CanFullScreen {
+      get => (bool)GetValue(CanFullScreenProperty);
+      set => SetValue(CanFullScreenProperty, value);
     }
 
     public bool IsFullScreen {
@@ -51,19 +59,22 @@ namespace MH.UI.WPF.Controls {
     private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
     public static RelayCommand<Window> MinimizeWindowCommand { get; } = new(
-      (window) => window.WindowState = WindowState.Minimized);
+      window => window.WindowState = WindowState.Minimized);
 
     public static RelayCommand<Window> MaximizeWindowCommand { get; } = new(
-      (window) => {
+      window => {
         window.MaxHeight = double.PositiveInfinity;
         window.WindowState = WindowState.Maximized;
       });
 
     public static RelayCommand<Window> RestoreWindowCommand { get; } = new(
-      (window) => window.WindowState = WindowState.Normal);
+      window => window.WindowState = WindowState.Normal);
 
     public static RelayCommand<Window> CloseWindowCommand { get; } = new(
-      (window) => window.Close());
+      window => window.Close());
+
+    public static RelayCommand<CustomWindow> ToggleFullScreenCommand { get; } = new(
+      window => window.IsFullScreen = !window.IsFullScreen);
 
     static CustomWindow() {
       DefaultStyleKeyProperty.OverrideMetadata(
