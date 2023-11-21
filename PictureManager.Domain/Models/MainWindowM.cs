@@ -6,13 +6,32 @@ namespace PictureManager.Domain.Models;
 public sealed class MainWindowM : ObservableObject {
   private int _activeLayout;
   private bool _isFullScreen;
+  private bool _isInViewMode;
+
+  // SlidePanelsGrid: Left, Top, Right, Bottom, FullScreen (not part of SlidePanelsGrid)
+  public object[] PinLayouts { get; set; } = {
+    new[] { true, true, false, true, false }, // browse mode
+    new[] { false, false, false, true, false } // view mode
+  };
 
   public int ActiveLayout { get => _activeLayout; set { _activeLayout = value; OnPropertyChanged(); } }
+
   public bool IsFullScreen {
     get => _isFullScreen;
     set {
+      if (_isFullScreen == value) return;
       _isFullScreen = value;
+      ((bool[])PinLayouts[ActiveLayout])[4] = value;
+      OnPropertyChanged();
+    }
+  }
+
+  public bool IsInViewMode {
+    get => _isInViewMode;
+    set {
+      _isInViewMode = value;
       ActiveLayout = value ? 1 : 0;
+      IsFullScreen = ((bool[])PinLayouts[ActiveLayout])[4];
       OnPropertyChanged();
     }
   }
@@ -28,7 +47,7 @@ public sealed class MainWindowM : ObservableObject {
     OpenAboutCommand = new(OpenAbout);
     ClosingCommand = new(Closing);
     SwitchToBrowserCommand = new(
-      () => IsFullScreen = false,
+      () => IsInViewMode = false,
       () => Core.MediaViewerM.IsVisible);
     SaveDbCommand = new(
       () => Core.Db.SaveAllTables(),

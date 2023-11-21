@@ -169,7 +169,7 @@ public sealed class SegmentsM : ObservableObject {
     if (items == null) return;
 
     Core.MediaViewerM.SetMediaItems(items, segment.MediaItem);
-    Core.MainWindowM.IsFullScreen = true;
+    Core.MainWindowM.IsInViewMode = true;
   }
 
   private List<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM segment) {

@@ -31,7 +31,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
     // MBL => show, MBL+ctrl => and, MBL+alt => hide
     if (o is not ITreeItem item) return;
     if (Core.MediaViewerM.IsVisible)
-      Core.MainWindowM.IsFullScreen = false;
+      Core.MainWindowM.IsInViewMode = false;
 
     _ = Core.MediaItemsViews.LoadByFolder(item);
   }

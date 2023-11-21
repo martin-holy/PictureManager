@@ -507,7 +507,7 @@ public sealed class MediaItemsM : ObservableObject {
   }
 
   public MediaItemM[] GetActive() =>
-    Core.MainWindowM.IsFullScreen
+    Core.MainWindowM.IsInViewMode
       ? Current == null
         ? Array.Empty<MediaItemM>()
         : new[] { Current }

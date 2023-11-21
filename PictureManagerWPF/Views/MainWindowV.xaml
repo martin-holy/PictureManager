@@ -5,7 +5,6 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   DataContext="{Binding Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
@@ -13,6 +12,7 @@
   Title="Picture Manager"
   WindowState="Maximized"
   CanResize="True"
+  CanFullScreen="True"
   UseLayoutRounding="True"
   SnapsToDevicePixels="True"
   FontSize="14">
@@ -32,26 +32,9 @@
     </b:EventTrigger>
   </b:Interaction.Triggers>
 
-  <mhc:SlidePanelsGrid ActiveLayout="{Binding MainWindowM.ActiveLayout}">
-    <mhc:SlidePanelsGrid.PinLayouts>
-      <!-- Left, Top, Right, Bottom -->
-      <x:Array Type="{x:Type sys:Array}">
-        <!-- Browser -->
-        <x:Array Type="{x:Type sys:Boolean}">
-          <sys:Boolean>True</sys:Boolean>
-          <sys:Boolean>True</sys:Boolean>
-          <sys:Boolean>False</sys:Boolean>
-          <sys:Boolean>True</sys:Boolean>
-        </x:Array>
-        <!-- Viewer -->
-        <x:Array Type="{x:Type sys:Boolean}">
-          <sys:Boolean>False</sys:Boolean>
-          <sys:Boolean>False</sys:Boolean>
-          <sys:Boolean>False</sys:Boolean>
-          <sys:Boolean>True</sys:Boolean>
-        </x:Array>
-      </x:Array>
-    </mhc:SlidePanelsGrid.PinLayouts>
+  <mhc:SlidePanelsGrid
+    ActiveLayout="{Binding MainWindowM.ActiveLayout}"
+    PinLayouts="{Binding MainWindowM.PinLayouts}">
 
     <!-- Main Window Tool Bar -->
     <mhc:SlidePanelsGrid.PanelTop>
