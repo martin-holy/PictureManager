@@ -236,5 +236,13 @@ namespace MH.Utils {
 
       return default;
     }
+
+    public static IEnumerable<ITreeItem> Flat(this IEnumerable<ITreeItem> items) {
+      foreach (var item in items) {
+        yield return item;
+        foreach (var subItem in Flat(item.Items))
+          yield return subItem;
+      }
+    }
   }
 }
