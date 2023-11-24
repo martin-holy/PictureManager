@@ -1,0 +1,29 @@
+﻿*** What's new in the Picture Manager ***
+[N] - New
+[U] - Update
+[B] - Bug fix
+
+23.11.24.    :
+ - [N] What's new information
+ - [N] VideoClips thumbnails rebuild
+ - [N] Calculated UI width for PeopleView in SegmentsView and for ToolsTabs
+ - [U] SelectAndScrollToCurrentMediaItem
+ - [N] Full screen button for viewer and browser mode
+ - [U] Opening Settings in MainTabs instead of dialog
+ - [U] Confirmation delete message
+ - [U] Not scrolling exactly to folder, keyword or person after being created if it is in the view
+ - [N] Showing people from selected media item on status bar in browser
+ - [U] Copy/Move media items dialog message
+
+23.11.18.1644:
+ - [N] Re-grouping MediaItemViews if metadata change on MediaItem or Segment
+ - [U] Switching to Browser mode when SegmentsView was opened
+ - [B] File size on status bar
+ - [N] Count of selected Media Items, People and Segments on StatusBar
+ - [B] Loading media items from multiple folders
+ - [U] View MediaItems with segment
+ - [U] SegmentsView
+ - [U] PersonDetail
+
+23.11.14.1011:
+ - todo older versions :)
