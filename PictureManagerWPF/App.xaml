@@ -51,6 +51,7 @@
         <wpfu:CachedResourceDictionary Source="Views/ToolsTabsV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/TreeViewCategoriesV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/List/PersonV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/WhatIsNewV.xaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
