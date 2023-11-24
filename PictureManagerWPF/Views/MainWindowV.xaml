@@ -66,6 +66,15 @@
 
         <!-- Media Viewer -->
         <ContentPresenter Content="{Binding MediaViewerM}"/>
+
+        <!-- Rebuild Video Clips Thumbs -->
+        <mhc:VideoFrameSaver
+          DataContext="{Binding Source={x:Static pm:App.Core}}"
+          Width="{Binding Settings.ThumbnailSize}"
+          Height="{Binding Settings.ThumbnailSize}"
+          Size="{Binding Settings.ThumbnailSize}"
+          Quality="{Binding Settings.JpegQualityLevel}"
+          Videos="{Binding VideoClipsM.VidThumbsToRebuild}"/>
       </Grid>
     </mhc:SlidePanelsGrid.PanelMiddle>
 

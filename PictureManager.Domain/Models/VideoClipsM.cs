@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 using System;
@@ -10,17 +11,20 @@ namespace PictureManager.Domain.Models;
 public sealed class VideoClipsM : ObservableObject {
   private readonly VideoClipsDataAdapter _da;
   private VideoClipM _currentVideoClip;
+  private List<KeyValuePair<string, KeyValuePair<int, string>[]>> _vidThumbsToRebuild;
 
   public MediaItemM CurrentMediaItem { get; set; }
   public VideoClipM CurrentVideoClip { get => _currentVideoClip; set => SetCurrent(value); }
   public MediaPlayerM MediaPlayerM { get; set; }
   public VideoClipsTreeCategory TreeCategory { get; }
   public Action<string> CreateThumbnail { get; set; }
+  public List<KeyValuePair<string, KeyValuePair<int, string>[]>> VidThumbsToRebuild { get => _vidThumbsToRebuild; set { _vidThumbsToRebuild = value; OnPropertyChanged(); } }
 
   public RelayCommand<bool> SetMarkerCommand { get; }
   public RelayCommand<PlayType> SetPlayTypeCommand { get; }
   public RelayCommand<object> SplitCommand { get; }
   public RelayCommand<int> SeekToPositionCommand { get; }
+  public RelayCommand<object> RebuildVideoClipsThumbnailsCommand { get; }
 
   public VideoClipsM(VideoClipsDataAdapter da) {
     _da = da;
@@ -35,6 +39,10 @@ public sealed class VideoClipsM : ObservableObject {
       () => !string.IsNullOrEmpty(MediaPlayerM?.Source));
 
     SeekToPositionCommand = new(pos => MediaPlayerM.TimelinePosition = pos);
+
+    RebuildVideoClipsThumbnailsCommand = new(
+      () => RebuildVideoClipsThumbnails(Core.MediaItemsM.GetActive()),
+      () => Core.MediaItemsM.GetActive().Any());
   }
 
   private void OnItemCreated(object sender, ObjectEventArgs<VideoClipM> e) {
@@ -143,5 +151,22 @@ public sealed class VideoClipsM : ObservableObject {
     }
 
     return null;
+  }
+
+  public void RebuildVideoClipsThumbnails(MediaItemM[] items) {
+    var data = new List<KeyValuePair<string, KeyValuePair<int, string>[]>>();
+    foreach (var mi in items.Where(x => x.MediaType == MediaType.Video && x.HasVideoClips))
+      if (_da.MediaItemVideoClips.TryGetValue(mi, out var miClips)) {
+        var clips = miClips
+          .Flat()
+          .OfType<VideoClipM>()
+          .Select(x => new KeyValuePair<int, string>(x.TimeStart, x.ThumbPath))
+          .ToArray();
+
+        if (clips.Any())
+          data.Add(new(mi.FilePath, clips));
+      }
+
+    VidThumbsToRebuild = data;
   }
 }
