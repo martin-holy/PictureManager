@@ -1,7 +1,7 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.DataViews;
-using PictureManager.Domain.Utils;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,8 +16,8 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<MediaItemsView> PHashCommand { get; }
 
     public ImageComparerM() {
-      AverageHashCommand = new(x => Compare(x, _avgHashes, Imaging.GetAvgHash));
-      PHashCommand = new(x => Compare(x, _pHashes, Imaging.GetPerceptualHash));
+      AverageHashCommand = new(x => Compare(x, _avgHashes, Imaging.GetBitmapAvgHash));
+      PHashCommand = new(x => Compare(x, _pHashes, Imaging.GetBitmapPerceptualHash));
     }
 
     public void Compare(MediaItemsView view, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {

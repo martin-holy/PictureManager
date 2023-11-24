@@ -6,7 +6,6 @@ using MH.Utils.Interfaces;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -167,7 +166,7 @@ namespace PictureManager.Domain.DataViews {
 
         // get new items from folder
         newItems.AddRange(from file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)
-          where Imaging.IsSupportedFileType(file)
+          where MediaItemsM.IsSupportedFileType(file)
           select Path.GetFileName(file)
           into fileName
           where !mediaItems.Remove(fileName)
