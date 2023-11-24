@@ -60,6 +60,12 @@
           Width="22"
           Height="22"
           ToolTip="Mute"/>
+        <mhc:IconButton
+          ToolTip="Rebuild Video Clips Thumbnails"
+          Command="{Binding VideoClipsM.RebuildVideoClipsThumbnailsCommand, Source={x:Static pm:App.Core}}"
+          Icon="{StaticResource IconMovieClapper}"
+          Width="22"
+          Height="22"/>
 
         <StackPanel Orientation="Horizontal" Margin="4">
           <TextBlock
