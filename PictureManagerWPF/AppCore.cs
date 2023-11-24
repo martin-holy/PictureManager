@@ -6,7 +6,7 @@ using PictureManager.ViewModels;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace PictureManager; 
+namespace PictureManager;
 
 public sealed class AppCore : ObservableObject {
   public SegmentsRectsVM SegmentsRectsVM { get; }
@@ -19,12 +19,8 @@ public sealed class AppCore : ObservableObject {
   public AppCore() {
     SegmentsRectsVM = new(Core.SegmentsM.SegmentsRectsM);
 
-    Dialog.Show = DialogHost.Show;
     Core.FileOperationDelete = FileOperationDelete;
     Core.GetDisplayScale = GetDisplayScale;
-
-    Domain.Utils.Imaging.GetHashPixels = Utils.Imaging.GetHashPixels;
-    Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
 
     MH.UI.WPF.Utils.Init.SetDelegates();
     MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;

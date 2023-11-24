@@ -3,7 +3,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataViews;
-using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -73,7 +72,7 @@ namespace PictureManager.Domain.Models {
       Id = id;
       Folder = folder;
       FileName = fileName;
-      MediaType = Imaging.GetMediaType(fileName);
+      MediaType = MediaItemsM.GetMediaType(fileName);
     }
 
     public void SetThumbSize(bool reload = false) {

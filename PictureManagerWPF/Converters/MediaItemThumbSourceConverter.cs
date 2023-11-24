@@ -2,13 +2,12 @@
 using MH.Utils;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Utils;
 using System;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
-namespace PictureManager.Converters; 
+namespace PictureManager.Converters;
 
 public class MediaItemThumbSourceConverter : BaseMarkupExtensionConverter {
   public override object Convert(object value, object parameter) {
@@ -25,7 +24,7 @@ public class MediaItemThumbSourceConverter : BaseMarkupExtensionConverter {
           return Binding.DoNothing;
         }
 
-        Imaging.CreateThumbnailAsync(
+        Utils.Imaging.CreateThumbnailAsync(
           mi.MediaType,
           mi.FilePath,
           mi.FilePathCache,
@@ -47,7 +46,7 @@ public class MediaItemThumbSourceConverter : BaseMarkupExtensionConverter {
       src.BeginInit();
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.UriSource = new(mi.FilePathCache);
-      src.Rotation = Imaging.MediaOrientation2Rotation((MediaOrientation)orientation);
+      src.Rotation = Utils.Imaging.MediaOrientation2Rotation((MediaOrientation)orientation);
 
       if (MediaItemsM.ThumbIgnoreCache.Remove(mi))
         src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;

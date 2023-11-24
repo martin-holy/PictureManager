@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain.Models;
 
 public sealed class MediaItemsM : ObservableObject {
+  private static readonly string[] _supportedExts = { ".jpg", ".jpeg", ".mp4" };
+  private static readonly string[] _supportedImageExts = { ".jpg", ".jpeg" };
   private MediaItemM _current;
 
   public MediaItemsDataAdapter DataAdapter { get; set; }
@@ -594,4 +596,12 @@ public sealed class MediaItemsM : ObservableObject {
 
     MetadataChangedEvent(this, new(items));
   }
+
+  public static bool IsSupportedFileType(string filePath) =>
+    _supportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
+
+  public static MediaType GetMediaType(string filePath) =>
+    _supportedImageExts.Any(x => filePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
+      ? MediaType.Image
+      : MediaType.Video;
 }

@@ -102,7 +102,7 @@ public class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter
       (int)segment.Size);
 
     try {
-      Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
+      MH.UI.WPF.Utils.Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
         ?.SaveAsJpg(80, segment.FilePathCache);
 
       IgnoreImageCacheSegment = segment;
