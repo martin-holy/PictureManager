@@ -44,7 +44,7 @@ namespace PictureManager.Domain.Models {
     public double Speed {
       get => _speed;
       set {
-        _speed = value;
+        _speed = Math.Round(value, 1);
         if (IsPlaying) StartClipTimer();
         OnPropertyChanged();
       }
