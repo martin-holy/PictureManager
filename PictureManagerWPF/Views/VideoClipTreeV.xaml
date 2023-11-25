@@ -64,7 +64,7 @@
             </StackPanel.Resources>
             
             <Path Data="{StaticResource IconClock}"/>
-            <TextBlock Text="{Binding DurationStr}"/>
+            <TextBlock Text="{Binding Duration, Converter={pmConv:TimeFormatConverter}, ConverterParameter=duration}"/>
             <Path Data="{StaticResource IconSound3}"/>
             <TextBlock Text="{Binding VolumePercent, StringFormat={}{0}%}"/>
             <Path Data="{StaticResource IconRunFast}"/>
@@ -87,9 +87,9 @@
                 </b:EventTrigger>
               </b:Interaction.Triggers>
             </TextBlock>
-            <TextBlock Text="{Binding TimeStartStr}" />
+            <TextBlock Text="{Binding TimeStart, Converter={pmConv:TimeFormatConverter}, ConverterParameter=position}" />
             <TextBlock Text=" - " />
-            <TextBlock Text="{Binding TimeEndStr}" />
+            <TextBlock Text="{Binding TimeEnd, Converter={pmConv:TimeFormatConverter}, ConverterParameter=position}" />
             <TextBlock
               x:Name="TbMarkerB"
               Text=" ] B"
