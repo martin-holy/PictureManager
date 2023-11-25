@@ -24,7 +24,7 @@ namespace PictureManager.Domain.Models {
     public int TimeStart { get => _timeStart; set { _timeStart = value; OnPropertyChanged(); } }
     public int TimeEnd { get => _timeEnd; set { _timeEnd = value; OnPropertyChanged(); } }
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public double Volume { get => _volume; set { _volume = value; OnPropertyChanged(); } }
+    public double Volume { get => _volume; set { _volume = value; OnPropertyChanged(); OnPropertyChanged(nameof(VolumePercent)); } }
     public double Speed { get => _speed; set { _speed = value; OnPropertyChanged(); } }
     public int? Rating { get; set; }
     public string Comment { get; set; }
@@ -34,8 +34,7 @@ namespace PictureManager.Domain.Models {
     public string TimeStartStr => FormatPosition(TimeStart);
     public string TimeEndStr => FormatPosition(TimeEnd);
     public string DurationStr => FormatDuration(TimeEnd - TimeStart);
-    public string VolumeStr => $"{(int)(Volume * 100)}%";
-    public string SpeedStr => $"{Speed}x";
+    public int VolumePercent => (int)(Volume * 100);
     public string ThumbPath => GetThumbPath();
 
     public VideoClipM(int id, MediaItemM mediaItem) {
@@ -85,8 +84,6 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(TimeStartStr));
       OnPropertyChanged(nameof(TimeEndStr));
       OnPropertyChanged(nameof(DurationStr));
-      OnPropertyChanged(nameof(VolumeStr));
-      OnPropertyChanged(nameof(SpeedStr));
     }
   }
 }
