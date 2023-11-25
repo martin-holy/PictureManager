@@ -66,9 +66,9 @@
             <Path Data="{StaticResource IconClock}"/>
             <TextBlock Text="{Binding DurationStr}"/>
             <Path Data="{StaticResource IconSound3}"/>
-            <TextBlock Text="{Binding VolumeStr}"/>
+            <TextBlock Text="{Binding VolumePercent, StringFormat={}{0}%}"/>
             <Path Data="{StaticResource IconRunFast}"/>
-            <TextBlock Text="{Binding SpeedStr}"/>
+            <TextBlock Text="{Binding Speed, StringFormat={}{0}x}"/>
           </StackPanel>
 
           <!-- A-B -->
