@@ -28,9 +28,13 @@ public class VideoFrameSaver : MediaElement {
   public static readonly DependencyProperty QualityProperty = DependencyProperty.Register(
     nameof(Quality), typeof(int), typeof(VideoFrameSaver));
 
+  public static readonly DependencyProperty FinishedProperty = DependencyProperty.Register(
+    nameof(Finished), typeof(Action), typeof(VideoFrameSaver));
+
   public List<KeyValuePair<string, KeyValuePair<int, string>[]>> Videos { get => (List<KeyValuePair<string, KeyValuePair<int, string>[]>>)GetValue(VideosProperty); set => SetValue(VideosProperty, value); }
   public int Size { get => (int)GetValue(SizeProperty); set => SetValue(SizeProperty, value); }
   public int Quality { get => (int)GetValue(QualityProperty); set => SetValue(QualityProperty, value); }
+  public Action Finished { get => (Action)GetValue(FinishedProperty); set => SetValue(FinishedProperty, value); }
 
   static VideoFrameSaver() {
     DefaultStyleKeyProperty.OverrideMetadata(
@@ -57,6 +61,7 @@ public class VideoFrameSaver : MediaElement {
   private void NextVideo() {
     if (_idxVideo + 1 > Videos.Count - 1) {
       Source = null;
+      Finished?.Invoke();
       return;
     }
 
