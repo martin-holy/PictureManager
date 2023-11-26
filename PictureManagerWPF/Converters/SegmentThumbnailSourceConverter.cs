@@ -4,22 +4,16 @@ using MH.Utils;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.Converters;
 
-public class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter {
-  public static SegmentM IgnoreImageCacheSegment { get; set; }
-
-  private static bool _isRunning;
-  private static readonly List<SegmentM> _segmentsQueue = new();
+public sealed class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter {
+  private static readonly TaskQueue<SegmentM> _taskQueue = new();
+  private static readonly HashSet<SegmentM> _ignoreCache = new();
 
   public override object Convert(object[] values, object parameter) {
     try {
@@ -27,17 +21,13 @@ public class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter
 
       if (!File.Exists(segment.FilePathCache)) {
         if (!File.Exists(segment.MediaItem.FilePath)) {
-          Tasks.RunOnUiThread(() => {
-            Core.Db.MediaItems.ItemsDelete(new[] { segment.MediaItem });
-          });
+          Tasks.RunOnUiThread(() => 
+            Core.Db.MediaItems.ItemsDelete(new[] { segment.MediaItem }));
           return null;
         }
 
-        if (!_segmentsQueue.Contains(segment))
-          _segmentsQueue.Add(segment);
-
-        if (!_isRunning)
-          StartQueue();
+        _taskQueue.Add(segment);
+        _taskQueue.Start(CreateThumbnail, TriggerChanged);
 
         return null;
       }
@@ -48,50 +38,25 @@ public class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter
       src.UriSource = new(segment.FilePathCache);
       src.Rotation = Utils.Imaging.MediaOrientation2Rotation((MediaOrientation)segment.MediaItem.Orientation);
 
-      if (segment.Equals(IgnoreImageCacheSegment)) {
-        IgnoreImageCacheSegment = null;
+      if (_ignoreCache.Remove(segment))
         src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-      }
 
       src.EndInit();
 
       return src;
     }
     catch (Exception ex) {
-      Debug.WriteLine(ex);
+      // The process cannot access the file 'xy' because it is being used by another process.
+      // thumb file wasn't closed yet after creation
+      if (ex.HResult == -2147024864)
+        return null;
+
+      Log.Error(ex);
       return null;
     }
   }
 
-  private static async void StartQueue() {
-    if (_segmentsQueue.Count == 0) {
-      _isRunning = false;
-      return;
-    }
-
-    _isRunning = true;
-    var segments = _segmentsQueue.ToArray();
-
-    await Task.WhenAll(
-      from partition in Partitioner.Create(segments).GetPartitions(Environment.ProcessorCount)
-      select Task.Run(() => {
-        using (partition)
-          while (partition.MoveNext()) {
-            var segment = partition.Current;
-            CreateThumbnail(segment);
-            segment?.OnPropertyChanged(nameof(segment.FilePathCache));
-          }
-        return Task.CompletedTask;
-      }));
-
-    foreach (var segment in segments)
-      _segmentsQueue.Remove(segment);
-
-    _isRunning = false;
-    StartQueue();
-  }
-
-  public static void CreateThumbnail(SegmentM segment) {
+  private static void CreateThumbnail(SegmentM segment) {
     var filePath = segment.MediaItem.MediaType == MediaType.Image
       ? segment.MediaItem.FilePath
       : segment.MediaItem.FilePathCache;
@@ -101,15 +66,11 @@ public class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter
       (int)segment.Size,
       (int)segment.Size);
 
-    try {
-      MH.UI.WPF.Utils.Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
-        ?.SaveAsJpg(80, segment.FilePathCache);
-
-      IgnoreImageCacheSegment = segment;
-      segment.OnPropertyChanged(nameof(segment.FilePathCache));
-    }
-    catch (Exception ex) {
-      Log.Error(ex, filePath);
-    }
+    _ignoreCache.Add(segment);
+    MH.UI.WPF.Utils.Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
+      ?.SaveAsJpg(80, segment.FilePathCache);
   }
+
+  private static void TriggerChanged(SegmentM segment) =>
+    segment.OnPropertyChanged(nameof(segment.FilePathCache));
 }
