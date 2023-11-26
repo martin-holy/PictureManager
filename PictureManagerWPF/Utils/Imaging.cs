@@ -79,7 +79,7 @@ public static class Imaging {
 
     using Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite);
     var encoder = new JpegBitmapEncoder { QualityLevel = quality };
-    encoder.Frames.Add(BitmapFrame.Create(output, null, metadata, frame.ColorContexts));
+    encoder.Frames.Add(BitmapFrame.Create(output, null, metadata, null));
     encoder.Save(destFileStream);
   }
 
