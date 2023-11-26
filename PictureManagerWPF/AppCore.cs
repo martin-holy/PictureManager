@@ -26,7 +26,6 @@ public sealed class AppCore : ObservableObject {
     MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
     GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
-    Core.VideoClipsM.CreateThumbnail = Utils.Imaging.CreateVideoClipThumbnail;
     Core.MediaItemsM.ReadMetadata = MediaItemsVM.ReadMetadata;
     Core.MediaItemsM.WriteMetadata = MediaItemsVM.WriteMetadata;
     Core.MediaViewerM.GetVideoMetadata = FileInformation.GetVideoMetadata;

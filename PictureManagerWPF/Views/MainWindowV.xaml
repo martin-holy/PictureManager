@@ -74,7 +74,8 @@
           Height="{Binding Settings.ThumbnailSize}"
           Size="{Binding Settings.ThumbnailSize}"
           Quality="{Binding Settings.JpegQualityLevel}"
-          Videos="{Binding VideoClipsM.VidThumbsToRebuild}"/>
+          Videos="{Binding VideoClipsM.VidThumbsToRebuild}"
+          Finished="{Binding VideoClipsM.VidThumbsRebuildFinishedAction}"/>
       </Grid>
     </mhc:SlidePanelsGrid.PanelMiddle>
 
