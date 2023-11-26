@@ -29,10 +29,8 @@ public static class Imaging {
     return src;
   }
 
-  public static Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size, int rotationAngle, int quality) =>
-    type == MediaType.Image
-      ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size, quality))
-      : CreateThumbnailAsync(srcPath, destPath, size, rotationAngle, quality);
+  public static void CreateThumbnail(string srcPath, string destPath, int size, int rotationAngle, int quality) =>
+    CreateThumbnailAsync(srcPath, destPath, size, rotationAngle, quality).GetAwaiter().GetResult();
 
   public static Task CreateThumbnailAsync(string srcPath, string destPath, int size, int rotationAngle, int quality) {
     var tcs = new TaskCompletionSource<bool>();
