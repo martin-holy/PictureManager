@@ -89,11 +89,4 @@ public static class Imaging {
       return null;
     }
   }
-
-  public static void CreateVideoClipThumbnail(string destPath) =>
-    MH.UI.WPF.Utils.Imaging.CreateThumbnailFromVisual(
-      AppCore.FullVideo,
-      destPath,
-      Core.Settings.ThumbnailSize,
-      Core.Settings.JpegQualityLevel);
 }

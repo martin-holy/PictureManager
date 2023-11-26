@@ -37,12 +37,16 @@
       <!--TODO use DockPanel or Grid-->
       <StackPanel Orientation="Horizontal">
         <Image
-          Source="{Binding ThumbPath,
-                   Converter={pmConv:ImageSourceConverter},
-                   ConverterParameter=IgnoreImageCache}" 
           Stretch="Uniform"
           Width="100"
-          Margin="0,4,4,4" />
+          Margin="0,4,4,4">
+          <Image.Source>
+            <MultiBinding Converter="{pmConv:VideoClipThumbSourceConverter}">
+              <Binding Path="ThumbPath" IsAsync="True"/>
+              <Binding/>
+            </MultiBinding>
+          </Image.Source>
+        </Image>
         
         <StackPanel>
           <TextBlock
