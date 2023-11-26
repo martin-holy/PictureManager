@@ -13,9 +13,14 @@
       ClipToBounds="True">
 
       <Grid>
-        <Image
-          Source="{Binding IsAsync=True, Converter={pmConv:MediaItemThumbSourceConverter}}"
-          Stretch="Fill"/>
+        <Image Stretch="Fill">
+          <Image.Source>
+            <MultiBinding Converter="{pmConv:MediaItemThumbSourceConverter}">
+              <Binding Path="FilePathCache" IsAsync="True"/>
+              <Binding/>
+            </MultiBinding>
+          </Image.Source>
+        </Image>
 
         <ItemsControl
           ItemsSource="{Binding InfoBoxThumb}"

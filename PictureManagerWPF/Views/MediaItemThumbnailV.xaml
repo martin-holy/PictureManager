@@ -35,9 +35,14 @@
       </b:Interaction.Triggers>
 
       <!-- Thumbnail Image -->
-      <Image
-        Source="{Binding IsAsync=True, Converter={pmConv:MediaItemThumbSourceConverter}}"
-        Stretch="Fill"/>
+      <Image Stretch="Fill">
+        <Image.Source>
+          <MultiBinding Converter="{pmConv:MediaItemThumbSourceConverter}">
+            <Binding Path="FilePathCache" IsAsync="True"/>
+            <Binding/>
+          </MultiBinding>
+        </Image.Source>
+      </Image>
 
       <!-- Video over layer -->
       <ContentControl

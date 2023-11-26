@@ -23,7 +23,6 @@ public sealed class MediaItemsM : ObservableObject {
   private MediaItemM _current;
 
   public MediaItemsDataAdapter DataAdapter { get; set; }
-  public static HashSet<MediaItemM> ThumbIgnoreCache { get; } = new();
   public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
   public int MediaItemsCount => DataAdapter.All.Count;
   public int ModifiedItemsCount => DataAdapter.All.Count(x => x.IsOnlyInDb);
@@ -352,7 +351,6 @@ public sealed class MediaItemsM : ObservableObject {
 
     foreach (var mi in mediaItems) {
       mi.SetThumbSize(true);
-      ThumbIgnoreCache.Add(mi);
       File.Delete(mi.FilePathCache);
     }
 
@@ -391,7 +389,6 @@ public sealed class MediaItemsM : ObservableObject {
 
       DataAdapter.Modify(mi);
       mi.SetThumbSize(true);
-      ThumbIgnoreCache.Add(mi);
       File.Delete(mi.FilePathCache);
     }
 
