@@ -11,6 +11,7 @@
   - app freeze on video delete when is playing
 
         # Picture Manager
+  - read only drives and creating thumbnails
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata or crop doesn't work (re-save without metadata in XnView fixed the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
@@ -32,6 +33,8 @@
   - GroupedBy instance for empty group with icon from View
 ## CollectionView
   - don't show expanded root if source is empty
+## PopupSlider
+  - close on mouse up
 
         # MH.Utils
 ## Resources
@@ -58,8 +61,6 @@
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
   - close search on mouse leave
-## VideoClips:
-  - recreate video thumbnails button
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
 ## Segments
@@ -70,6 +71,9 @@
   - move generic methods ItemCreate, ItemsDelete, ItemDelete to DataAdapter
 ## MediaItems
   - save to file only metadata visible for viewer
+## MediaItemsView
+  - change SelectAndScrollToCurrentMediaItem to scroll to exactly to media item
+    only if is not in the view otherwise scroll to top item
 
 
                                     *** NEW ***
@@ -95,9 +99,8 @@
   - GeoNames for Folders
 ## MediaItems
   - add flip H a V
-  - kdyz se nepodari ulozit metadata do obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
 ## CatTreeView
-  - filter na delku videa
+  - filter for video length
   - LeftMouseButtonClick on Person or Keyword opens menu with options (load, filter, set to person, set to segment, set to media item)
   - show small segment next to person icon or show just small segment
 ## Video Clips
