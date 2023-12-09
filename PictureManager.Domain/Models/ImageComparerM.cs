@@ -2,6 +2,7 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.DataViews;
+using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;
 

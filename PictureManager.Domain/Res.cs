@@ -1,5 +1,6 @@
 ﻿using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 

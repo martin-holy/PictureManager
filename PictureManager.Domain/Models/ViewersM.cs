@@ -1,6 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Database;
+using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
 
 namespace PictureManager.Domain.Models;
