@@ -3,11 +3,12 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:mim="clr-namespace:PictureManager.Domain.Models.MediaItems;assembly=PictureManager.Domain"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager">
 
-  <DataTemplate DataType="{x:Type m:VideoClipsM}">
+  <DataTemplate DataType="{x:Type mim:VideoClipsM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>

@@ -1,12 +1,13 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-namespace PictureManager.Domain.Models; 
+namespace PictureManager.Domain.Models;
 
 public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable {
   private bool _isSelected;
