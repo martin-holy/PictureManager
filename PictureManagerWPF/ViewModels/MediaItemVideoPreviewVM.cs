@@ -1,6 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -28,7 +27,7 @@ namespace PictureManager.ViewModels {
     }
 
     private static void ShowVideoPreview(Grid grid) {
-      if (grid?.DataContext is not MediaItemM mi || mi.MediaType != MediaType.Video) return;
+      if (grid?.DataContext is not VideoM mi) return;
 
       var rotation = new TransformGroup();
       rotation.Children.Add(new RotateTransform(mi.RotationAngle));
