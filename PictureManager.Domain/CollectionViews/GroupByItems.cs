@@ -1,4 +1,5 @@
 ﻿using MH.UI.Controls;
+using MH.UI.Extensions;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
@@ -20,9 +21,8 @@ public static class GroupByItems {
   private static readonly Dictionary<string, string> _dateFormats =
     new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
-  public static List<CollectionViewGroupByItem<MediaItemM>> GetDatesFromMediaItems(IEnumerable<MediaItemM> mediaItems) {
-    var list = new List<CollectionViewGroupByItem<MediaItemM>>();
-    var dates = mediaItems
+  public static IEnumerable<CollectionViewGroupByItem<T>> GetDatesFromMediaItems<T>(this IEnumerable<T> items) where T : MediaItemM {
+    var dates = items
       .Where(x => x.FileName.Length > 8)
       .Select(x => x.FileName[..8])
       .Distinct();
@@ -35,17 +35,15 @@ public static class GroupByItems {
       }
 
       if (!string.IsNullOrEmpty(value))
-        list.Add(new(new DateM(Res.IconCalendar, value, key), GroupMediaItemByDate));
+        yield return new(new DateM(Res.IconCalendar, value, key), GroupMediaItemByDate);
     }
-
-    return list;
   }
 
-  public static List<CollectionViewGroupByItem<MediaItemM>> GetFoldersFromMediaItems(IList<MediaItemM> mediaItems) =>
-    CollectionViewGroupByItem<MediaItemM>.BuildTree<MediaItemM, FolderM, string>(
-      mediaItems.GetFolders(),
-      x => new(x, GroupMediaItemByFolder),
-      x => x.FullPath);
+  public static IEnumerable<CollectionViewGroupByItem<T>> GetFoldersFromMediaItems<T>(IEnumerable<T> items) where T : MediaItemM =>
+    items
+      .GetFolders()
+      .ToGroupByItems<T, FolderM>(GroupMediaItemByFolder)
+      .AsTree<CollectionViewGroupByItem<T>, FolderM, string>(x => x.FullPath);
 
   public static List<CollectionViewGroupByItem<SegmentM>> GetFoldersFromSegments(IList<SegmentM> segments) =>
     CollectionViewGroupByItem<SegmentM>.BuildTree<SegmentM, FolderM, string>(
@@ -53,24 +51,11 @@ public static class GroupByItems {
       x => new(x, GroupSegmentByFolder),
       x => x.FullPath);
 
-  public static List<CollectionViewGroupByItem<MediaItemM>> GetKeywordsFromMediaItems(MediaItemM[] mediaItems) =>
-    CollectionViewGroupByItem<MediaItemM>.BuildTree<MediaItemM, KeywordM, string>(
-      mediaItems.GetKeywords(),
-      x => new(x, GroupMediaItemByKeyword),
-      x => x.FullName);
-
   public static List<CollectionViewGroupByItem<SegmentM>> GetKeywordsFromSegments(IEnumerable<SegmentM> segments) =>
     CollectionViewGroupByItem<SegmentM>.BuildTree<SegmentM, KeywordM, string>(
       segments.GetKeywords(),
       x => new(x, GroupSegmentByKeyword),
       x => x.FullName);
-
-  public static List<CollectionViewGroupByItem<MediaItemM>> GetPeopleFromMediaItems(IEnumerable<MediaItemM> mediaItems) =>
-    mediaItems
-      .GetPeople()
-      .OrderBy(x => x.Name)
-      .Select(x => new CollectionViewGroupByItem<MediaItemM>(x, GroupMediaItemByPerson))
-      .ToList();
 
   public static List<CollectionViewGroupByItem<SegmentM>> GetPeopleFromSegments(IEnumerable<SegmentM> segments) =>
     segments
@@ -85,21 +70,18 @@ public static class GroupByItems {
       x => new(x, GroupPersonByKeyword),
       x => x.FullName);
 
-  public static CollectionViewGroupByItem<MediaItemM> GetDatesInGroupFromMediaItems(IEnumerable<MediaItemM> mediaItems) {
-    var group = new CollectionViewGroupByItem<MediaItemM>(
-      _dateGroup, GroupMediaItemByDate) { IsGroup = true };
-    group.AddItems(GetDatesFromMediaItems(mediaItems));
+  public static CollectionViewGroupByItem<T> GetDatesInGroupFromMediaItems<T>(IEnumerable<T> items) where T : MediaItemM =>
+    items
+      .GetDatesFromMediaItems()
+      .InGroup(_dateGroup, GroupMediaItemByDate);
 
-    return group;
-  }
-
-  public static CollectionViewGroupByItem<MediaItemM> GetKeywordsInGroupFromMediaItems(MediaItemM[] mediaItems) {
-    var group = new CollectionViewGroupByItem<MediaItemM>(
-      Core.KeywordsM.TreeCategory, GroupMediaItemByKeyword) { IsGroup = true };
-    group.AddItems(GetItemsInGroups(GetKeywordsFromMediaItems(mediaItems), GroupMediaItemByKeyword));
-
-    return group;
-  }
+  public static CollectionViewGroupByItem<T> GetKeywordsInGroupFromMediaItems<T>(IEnumerable<T> items) where T : MediaItemM =>
+    items
+      .GetKeywords()
+      .ToGroupByItems<T, KeywordM>(GroupMediaItemByKeyword)
+      .AsTree<CollectionViewGroupByItem<T>, KeywordM, string>(x => x.FullName)
+      .InGroups<T, CategoryGroupM>(GroupMediaItemByKeyword)
+      .InGroup(Core.KeywordsM.TreeCategory, GroupMediaItemByKeyword);
 
   public static CollectionViewGroupByItem<PersonM> GetKeywordsInGroupFromPeople(IEnumerable<PersonM> people) {
     var group = new CollectionViewGroupByItem<PersonM>(
@@ -117,13 +99,13 @@ public static class GroupByItems {
     return group;
   }
 
-  public static CollectionViewGroupByItem<MediaItemM> GetPeopleInGroupFromMediaItems(IEnumerable<MediaItemM> mediaItems) {
-    var group = new CollectionViewGroupByItem<MediaItemM>(
-      Core.PeopleM.TreeCategory, GroupMediaItemByPerson) { IsGroup = true };
-    group.AddItems(GetItemsInGroups(GetPeopleFromMediaItems(mediaItems), GroupMediaItemByPerson));
-
-    return group;
-  }
+  public static CollectionViewGroupByItem<T> GetPeopleInGroupFromMediaItems<T>(IEnumerable<T> items) where T : MediaItemM =>
+    items
+      .GetPeople()
+      .OrderBy(x => x.Name)
+      .Select(x => new CollectionViewGroupByItem<T>(x, GroupMediaItemByPerson))
+      .InGroups<T, CategoryGroupM>(GroupMediaItemByPerson)
+      .InGroup(Core.PeopleM.TreeCategory, GroupMediaItemByPerson);
 
   public static CollectionViewGroupByItem<SegmentM> GetPeopleInGroupFromSegments(IEnumerable<SegmentM> segments) {
     var group = new CollectionViewGroupByItem<SegmentM>(
