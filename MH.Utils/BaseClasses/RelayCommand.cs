@@ -44,15 +44,18 @@ namespace MH.Utils.BaseClasses {
     }
 
     public bool CanExecute(object parameter) {
-      if (_canExecute != null) return _canExecute();
-      if (_canExecuteWithParameter != null) return _canExecuteWithParameter((T)parameter);
+      if (_canExecute != null)
+        return _canExecute();
+      if (_canExecuteWithParameter != null)
+        return parameter != null && _canExecuteWithParameter((T)parameter);
 
       return true;
     }
 
     public void Execute(object parameter) {
       _command?.Invoke();
-      _commandWithParameter?.Invoke((T)parameter);
+      if (_commandWithParameter != null && parameter != null)
+        _commandWithParameter((T)parameter);
     }
 
     public event EventHandler CanExecuteChanged {
