@@ -244,5 +244,20 @@ namespace MH.Utils {
           yield return subItem;
       }
     }
+
+    public static IEnumerable<TItem> AsTree<TItem, TGroup, TSort>(this IEnumerable<TItem> items, Func<TGroup, TSort> orderBy)
+      where TItem : class, ITreeItem where TGroup : class, ITreeItem {
+      var dic = items.ToDictionary(x => (TGroup)x.Data, x => x);
+
+      foreach (var item in dic.OrderBy(x => orderBy(x.Key))) {
+        if (item.Key.Parent is not TGroup parent) {
+          yield return item.Value;
+          continue;
+        }
+
+        item.Value.Parent = dic[parent];
+        item.Value.Parent.Items.Add(item.Value);
+      }
+    }
   }
 }
