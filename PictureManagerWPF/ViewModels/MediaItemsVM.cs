@@ -3,6 +3,7 @@ using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,12 @@ public static class MediaItemsVM {
   public static void ReadMetadata(MediaItemMetadata mim, bool gpsOnly = false) {
     mim.Success = false;
     try {
-      if (mim.MediaItem.MediaType == MediaType.Video) {
+      if (mim.MediaItem is VideoM) {
         ReadVideoMetadata(mim);
         return;
       }
 
-      if (mim.MediaItem.MediaType == MediaType.Image) {
+      if (mim.MediaItem is ImageM) {
         using Stream srcFileStream = File.Open(mim.MediaItem.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
         var frame = decoder.Frames[0];
@@ -81,8 +82,10 @@ public static class MediaItemsVM {
 
   private static void ReadImageMetadata(MediaItemMetadata mim, BitmapMetadata bm, bool gpsOnly) {
     try {
-      mim.MediaItem.Lat = GetGps(bm, "System.GPS.Latitude.Proxy");
-      mim.MediaItem.Lng = GetGps(bm, "System.GPS.Longitude.Proxy");
+      mim.Lat = GetGps(bm, "System.GPS.Latitude.Proxy");
+      mim.Lng = GetGps(bm, "System.GPS.Longitude.Proxy");
+      var geoNameId = TryGetQuery(bm, "/xmp/GeoNames:GeoNameId")?.ToString();
+      mim.GeoNameId = string.IsNullOrEmpty(geoNameId) ? null : int.Parse(geoNameId);
       if (gpsOnly) return;
 
       mim.PeopleSegmentsKeywords = ReadPeopleSegmentsKeywords(bm);
@@ -91,7 +94,6 @@ public static class MediaItemsVM {
       // Orientation 1: 0, 3: 180, 6: 270, 8: 90
       mim.MediaItem.Orientation = (ushort?)TryGetQuery(bm, "System.Photo.Orientation") ?? 1;
       mim.Keywords = bm.Keywords?.ToArray();
-      mim.GeoName = TryGetQuery(bm, "/xmp/GeoNames:GeoNameId")?.ToString();
     }
     catch (Exception) {
       // ignored
@@ -131,9 +133,9 @@ public static class MediaItemsVM {
     return output;
   }
 
-  public static bool WriteMetadata(MediaItemM mi) {
-    var original = new FileInfo(mi.FilePath);
-    var newFile = new FileInfo(mi.FilePath + "_newFile");
+  public static bool WriteMetadata(ImageM img, GeoNameM geoName) {
+    var original = new FileInfo(img.FilePath);
+    var newFile = new FileInfo(img.FilePath + "_newFile");
     var bSuccess = false;
     const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
@@ -145,14 +147,14 @@ public static class MediaItemsVM {
           : decoder.Frames[0].Metadata.Clone() as BitmapMetadata;
 
         if (metadata != null) {
-          WritePeople(metadata, mi);
-          metadata.Rating = mi.Rating;
-          metadata.Comment = mi.Comment ?? string.Empty;
-          metadata.Keywords = new(mi.Keywords?.Select(k => k.FullName).ToList() ?? new List<string>());
-          metadata.SetQuery("System.Photo.Orientation", (ushort)mi.Orientation);
-          SetOrRemoveQuery(metadata, "/xmp/GeoNames:GeoNameId", mi.GeoName?.Id.ToString());
+          WritePeople(metadata, img);
+          metadata.Rating = img.Rating;
+          metadata.Comment = img.Comment ?? string.Empty;
+          metadata.Keywords = new(img.Keywords?.Select(k => k.FullName).ToList() ?? new List<string>());
+          metadata.SetQuery("System.Photo.Orientation", (ushort)img.Orientation);
+          SetOrRemoveQuery(metadata, "/xmp/GeoNames:GeoNameId", geoName?.Id.ToString());
 
-          bSuccess = WriteMetadataToFile(mi, newFile, decoder, metadata, true);
+          bSuccess = WriteMetadataToFile(img, newFile, decoder, metadata, true);
         }
       }
     }
@@ -165,8 +167,8 @@ public static class MediaItemsVM {
     return bSuccess;
   }
 
-  private static void WritePeople(BitmapMetadata bm, MediaItemM mi) {
-    var peopleRects = GetPeopleSegmentsKeywords(mi);
+  private static void WritePeople(BitmapMetadata bm, ImageM img) {
+    var peopleRects = GetPeopleSegmentsKeywords(img);
     if (peopleRects == null) {
       if (bm.ContainsQuery(_msRegionInfo))
         bm.RemoveQuery(_msRegionInfo);
@@ -209,15 +211,15 @@ public static class MediaItemsVM {
       bm.SetQuery(_msRegionInfo, ri);
   }
 
-  private static List<Tuple<PersonM, string, string[]>> GetPeopleSegmentsKeywords(MediaItemM mi) {
-    var peopleOnSegments = mi.Segments.EmptyIfNull().Select(x => x.Person).Distinct().ToHashSet();
+  private static List<Tuple<PersonM, string, string[]>> GetPeopleSegmentsKeywords(ImageM img) {
+    var peopleOnSegments = img.Segments.EmptyIfNull().Select(x => x.Person).Distinct().ToHashSet();
 
-    return mi.Segments?
+    return img.Segments?
       .Select(x => new Tuple<PersonM, string, string[]>(
         x.Person,
         x.ToMsRect(),
         x.Keywords?.Select(k => k.FullName).ToArray()))
-      .Concat(mi.People
+      .Concat(img.People
         .EmptyIfNull()
         .Where(x => !peopleOnSegments.Contains(x))
         .Select(x => new Tuple<PersonM, string, string[]>(x, null, null)))
@@ -237,7 +239,7 @@ public static class MediaItemsVM {
       bm.RemoveQuery(query);
   }
 
-  private static bool WriteMetadataToFile(MediaItemM mi, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
+  private static bool WriteMetadataToFile(ImageM img, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
     bool bSuccess;
     var hResult = 0;
     var encoder = new JpegBitmapEncoder { QualityLevel = Core.Settings.JpegQualityLevel };
@@ -256,7 +258,7 @@ public static class MediaItemsVM {
 
       // don't log error if hResult is -2146233033
       if (hResult != -2146233033)
-        Log.Error(ex, mi.FilePath);
+        Log.Error(ex, img.FilePath);
     }
 
     // There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
@@ -269,7 +271,7 @@ public static class MediaItemsVM {
         return false;
       }
 
-      bSuccess = WriteMetadataToFile(mi, newFile, decoder, metadata, false);
+      bSuccess = WriteMetadataToFile(img, newFile, decoder, metadata, false);
     }
 
     return bSuccess;
