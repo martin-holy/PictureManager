@@ -30,7 +30,7 @@
               <Path Data="{StaticResource IconSettings}"/>
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem Header="GeoNames" Command="{Binding MediaItemsM.AddGeoNamesFromFilesCommand}">
+          <MenuItem Header="GeoNames" Command="{Binding ImagesM.AddGeoNamesFromFilesCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconLocationCheckin}"/>
             </MenuItem.Icon>
@@ -40,13 +40,13 @@
 
         <!-- Media Items -->
         <MenuItem Header="Media Items">
-          <MenuItem Header="Compress" Command="{Binding MediaItemsM.CompressCommand}"/>
+          <MenuItem Header="Compress" Command="{Binding ImagesM.CompressCommand}"/>
           <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsM.RebuildThumbnailsCommand}"/>
           <MenuItem Header="Rebuild Video Clips Thumbnails" Command="{Binding VideoClipsM.RebuildVideoClipsThumbnailsCommand, Source={x:Static pm:App.Core}}"/>
           <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="{Binding MediaItemsM.RotateCommand}"/>
           <MenuItem Header="Shuffle" Command="{Binding MediaItemsViews.ShuffleCommand}"/>
-          <MenuItem Header="Resize Images" Command="{Binding MediaItemsM.ResizeImagesCommand}"/>
-          <MenuItem Header="Images to Video" Command="{Binding MediaItemsM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
+          <MenuItem Header="Resize Images" Command="{Binding ImagesM.ResizeImagesCommand}"/>
+          <MenuItem Header="Images to Video" Command="{Binding ImagesM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
           <MenuItem Header="Copy Paths" Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
           <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
           <MenuItem Header="Segments" Command="dv:SegmentsView.OpenCommand">
@@ -66,7 +66,7 @@
               <Path Data="{StaticResource IconImageMultiple}"/>
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem Header="Save to files" Command="{Binding MediaItemsM.SaveToFilesCommand}">
+          <MenuItem Header="Save to files" Command="{Binding ImagesM.SaveToFilesCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconSave}"/>
             </MenuItem.Icon>
