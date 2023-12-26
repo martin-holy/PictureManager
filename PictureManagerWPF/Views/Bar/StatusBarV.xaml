@@ -157,7 +157,7 @@
         <!-- GeoName -->
         <Border
           x:Name="boGeoName"
-          ToolTip="{Binding MediaItemsM.Current.GeoName.FullName}"
+          ToolTip="{Binding MediaItemsM.CurrentGeoName.FullName}"
           Style="{StaticResource SBorderGroup}"
           Margin="1,2,1,0"
           Padding="4"
@@ -267,7 +267,7 @@
           Value="{Binding MediaViewerM.PositionSlashCount}"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding MediaItemsM.Current.GeoName, Converter={mhConv:AllToBoolConverter}}" Value="True">
+      <DataTrigger Binding="{Binding MediaItemsM.CurrentGeoName, Converter={mhConv:AllToBoolConverter}}" Value="True">
         <Setter TargetName="boGeoName" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
