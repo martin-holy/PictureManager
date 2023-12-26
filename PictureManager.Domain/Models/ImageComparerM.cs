@@ -48,8 +48,8 @@ namespace PictureManager.Domain.Models {
     }
 
     private static void GetHashes(MediaItemM[] items, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
-      var progress = new ProgressBarDialog("Computing Hashes ...", Res.IconCompare, true, 1);
-      progress.AddEvents(
+      var progress = new ProgressBarAsyncDialog("Computing Hashes ...", Res.IconCompare, true, 1);
+      progress.Init(
         items,
         null,
         // action
