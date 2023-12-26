@@ -1,177 +1,283 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
+  xmlns:uii="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
     <u:CachedResourceDictionary Source="../BaseControls/TextBlock.xaml"/>
     <u:CachedResourceDictionary Source="IconButton.xaml"/>
+    <u:CachedResourceDictionary Source="PopupSlider.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <Style x:Key="MH.Styles.Controls.MediaPlayerControlPanel" TargetType="{x:Type c:MediaPlayerControlPanel}">
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type c:MediaPlayerControlPanel}">
-          <ControlTemplate.Resources>
-            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MH.Styles.BaseControls.TextBlock}">
-              <Setter Property="Margin" Value="5"/>
-              <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
+  <DataTemplate x:Key="MH.Styles.Controls.MediaPlayerControlPanel" DataType="uic:MediaPlayer">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
 
-            <PathGeometry x:Key="IconTimelineShift.Beginning" Figures="M896 0v896l-640-448zM128 896h128v-896h-128v896z"/>
-            <PathGeometry x:Key="IconTimelineShift.LargeBack" Figures="M11.4,6.9L11.4,17.2 6.1,12.1 11.4,6.9z M6.0,6.9L6.0,17.2 0.7,12.1 6.0,6.9z"/>
-            <PathGeometry x:Key="IconTimelineShift.SmallBack" Figures="M9.3,6.9L9.3,17.2 4,12.1 9.3,6.9z"/>
-            <PathGeometry x:Key="IconTimelineShift.SmallForward" Figures="M6,6.9L11.3,12.1 6,17.2 6,6.9z"/>
-            <PathGeometry x:Key="IconTimelineShift.LargeForward" Figures="M6.1,6.9L11.4,12.1 6.1,17.2 6.1,6.9z M0.7,6.9L6.1,12.1 0.7,17.2 0.7,6.9z"/>
-            <PathGeometry x:Key="IconTimelineShift.End" Figures="M128 896v-896l640 448zM768 896h128v-896h-128v896z"/>
-            <PathGeometry x:Key="IconPlay" Figures="M1.2,5.0L12.8,11.5 1.2,17.9 1.2,5.0z"/>
-            <PathGeometry x:Key="IconPause" Figures="M8.8,7.4L11.1,7.4 11.1,17.7 8.8,17.7 8.8,7.4z M4.8,7.4L7.1,7.4 7.1,17.7 4.8,17.7 4.8,7.4z"/>
-            <PathGeometry x:Key="IconSpeed" Figures="M16.5,5.5A2,2 0 0,0 18.5,3.5A2,2 0 0,0 16.5,1.5A2,2 0 0,0 14.5,3.5A2,2 0 0,0 16.5,5.5M12.9,19.4L13.9,15L16,17V23H18V15.5L15.9,13.5L16.5,10.5C17.89,12.09 19.89,13 22,13V11C20.24,11.03 18.6,10.11 17.7,8.6L16.7,7C16.34,6.4 15.7,6 15,6C14.7,6 14.5,6.1 14.2,6.1L9,8.3V13H11V9.6L12.8,8.9L11.2,17L6.3,16L5.9,18L12.9,19.4M4,9A1,1 0 0,1 3,8A1,1 0 0,1 4,7H7V9H4M5,5A1,1 0 0,1 4,4A1,1 0 0,1 5,3H10V5H5M3,13A1,1 0 0,1 2,12A1,1 0 0,1 3,11H7V13H3Z"/>
-            <PathGeometry x:Key="IconVolume" Figures="M 20.5862,33.2547L 26.9204,33.2546L 36.4217,25.3369L 36.4217,52.2573L 26.9204,42.756L 20.5862,42.756C 18.8371,42.756 17.4191,41.338 17.4191,39.5889L 17.4191,36.4218C 17.4191,34.6726 18.8371,33.2547 20.5862,33.2547 Z M 57.0079,38.0053C 57.0079,42.8155 55.0582,47.1702 51.906,50.3225L 49.6665,48.083C 52.2456,45.5039 53.8408,41.9409 53.8408,38.0053C 53.8408,34.0279 52.2115,30.431 49.5839,27.8457L 51.4982,25.2933C 54.8892,28.4715 57.0079,32.991 57.0079,38.0053 Z M 50.6737,38.0053C 50.6737,41.4696 49.0845,44.5627 46.5954,46.5954L 44.3398,44.3399C 46.2628,42.8953 47.5066,40.5956 47.5066,38.0053C 47.5066,35.4151 46.2628,33.1153 44.3398,31.6708L 46.5954,29.4152C 49.0845,31.4479 50.6737,34.541 50.6737,38.0053 Z M 44.3395,38.0053C 44.3395,40.1167 42.9621,41.9064 41.0568,42.5248L 39.5889,39.5889C 40.4634,39.5889 41.1724,38.8799 41.1724,38.0053C 41.1724,37.1307 40.4634,36.4218 39.5889,36.4218L 41.0568,33.4858C 42.9621,34.1042 44.3395,35.8939 44.3395,38.0053 Z "/>
-          </ControlTemplate.Resources>
+      <Slider
+        Grid.Row="0"
+        Margin="2"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Center"
+        IsMoveToPointEnabled="True" 
+        IsTabStop="False"
+        IsSnapToTickEnabled="True"
+        Value="{Binding TimelinePosition}"
+        Maximum="{Binding TimelineMaximum}"
+        SmallChange="{Binding TimelineSmallChange}"
+        LargeChange="{Binding TimelineLargeChange}"
+        TickFrequency="{Binding TimelineSmallChange}">
 
-          <Grid
-            Background="{Binding Background}"
-            DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+        <b:Interaction.Triggers>
+          <b:EventTrigger EventName="ValueChanged">
+            <b:InvokeCommandAction
+              Command="{Binding TimelineSliderValueChangedCommand}"
+              EventArgsConverter="{conv:PropertyChangedConverter}"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="PreviewMouseLeftButtonDown">
+            <b:InvokeCommandAction
+              Command="{Binding TimelineSliderChangeStartedCommand}"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="PreviewMouseLeftButtonUp">
+            <b:InvokeCommandAction
+              Command="{Binding TimelineSliderChangeEndedCommand}"/>
+          </b:EventTrigger>
+        </b:Interaction.Triggers>
+      </Slider>
 
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="*"/>
-              <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+      <WrapPanel
+        Grid.Row="1"
+        Orientation="Horizontal">
 
-            <DockPanel
-              Grid.Column="0"
-              Dock="Left"
-              LastChildFill="True">
+        <!-- Time -->
+        <TextBlock
+          Margin="5"
+          VerticalAlignment="Center"
+          Text="{Binding PositionSlashDuration}"/>
 
-              <!-- Seek To -->
-              <TextBlock Text="Seek To"/>
-              <Slider
-                x:Name="PART_TimelineSlider"
-                Margin="5"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center"
-                IsMoveToPointEnabled="True" 
-                IsTabStop="False"
-                IsSnapToTickEnabled="True"
-                Value="{Binding TimelinePosition}"
-                Maximum="{Binding TimelineMaximum}"
-                SmallChange="{Binding TimelineSmallChange}"
-                LargeChange="{Binding TimelineLargeChange}"
-                TickFrequency="{Binding TimelineSmallChange}"/>
-            </DockPanel>
+        <!-- Navigation buttons -->
+        <StackPanel
+          x:Name="navPanel"
+          Orientation="Horizontal"
+          Margin="4,0"
+          VerticalAlignment="Center">
 
-            <StackPanel
-              Grid.Column="1"
-              HorizontalAlignment="Center"
-              Orientation="Horizontal">
+          <c:IconButton
+            Icon="{StaticResource IconTimelineShift.Beginning}"
+            Command="{Binding TimelineShiftCommand}"
+            CommandParameter="{x:Static uic:TimelineShift.Beginning}"/>
 
-              <!-- Time -->
-              <TextBlock Text="{Binding PositionSlashDuration}"/>
+          <c:IconButton
+            Icon="{StaticResource IconTimelineShift.LargeBack}"
+            Command="{Binding TimelineShiftCommand}"
+            CommandParameter="{x:Static uic:TimelineShift.LargeBack}"/>
 
-              <!-- Volume -->
-              <!--TODO use PopupSlider-->
-              <!--<c:PopupSlider
-                Minimum="0"
-                Maximum="1"
-                TickFrequency="0.01"
-                SmallChange="0.01"
-                LargeChange="0.1"
-                Value="{Binding Volume}"
-                Icon="{StaticResource IconVolume}"
-                ToolTip="Volume"/>-->
-              <TextBlock Text="Volume"/>
-              <Slider
-                Minimum="0"
-                Maximum="1"
-                TickFrequency="0.01"
-                IsSnapToTickEnabled="True"
-                IsTabStop="False"
-                VerticalAlignment="Center"
-                Width="70"
-                Value="{Binding Volume}"/>
+          <c:IconButton
+            Icon="{StaticResource IconTimelineShift.SmallBack}"
+            Command="{Binding TimelineShiftCommand}"
+            CommandParameter="{x:Static uic:TimelineShift.SmallBack}"/>
 
-              <!-- Speed -->
-              <!--TODO use PopupSlider-->
-              <!--<c:PopupSlider
-                Minimum="0.1"
-                Maximum="3"
-                TickFrequency="0.1"
-                SmallChange="0.1"
-                LargeChange="0.5"
-                Value="{Binding Speed, Mode=TwoWay}"
-                Icon="{StaticResource IconSpeed}"
-                ToolTip="Speed"/>-->
-              <TextBlock Text="Speed"/>
-              <Slider
-                Minimum="0.1"
-                Maximum="3"
-                TickFrequency="0.1"
-                IsSnapToTickEnabled="True"
-                IsTabStop="False"
-                VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                AutoToolTipPrecision="1"
-                Width="70"
-                Value="{Binding Speed}"/>
+          <!-- Play/Pause -->
+          <c:IconButton Command="{Binding PlayPauseToggleCommand}">
+            <c:IconButton.Style>
+              <Style TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
+                <Setter Property="Icon" Value="{StaticResource IconPlay}"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                    <Setter Property="Icon" Value="{StaticResource IconPause}"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </c:IconButton.Style>
+          </c:IconButton>
 
-              <!-- Navigation buttons -->
-              <StackPanel
-                Orientation="Horizontal"
-                Margin="4,0"
-                VerticalAlignment="Center">
+          <c:IconButton
+            Icon="{StaticResource IconTimelineShift.SmallForward}"
+            Command="{Binding TimelineShiftCommand}"
+            CommandParameter="{x:Static uic:TimelineShift.SmallForward}"/>
 
-                <c:IconButton
-                  Icon="{StaticResource IconTimelineShift.Beginning}"
-                  Command="{Binding TimelineShiftCommand}"
-                  CommandParameter="{x:Static c:TimelineShift.Beginning}"/>
+          <c:IconButton
+            Icon="{StaticResource IconTimelineShift.LargeForward}"
+            Command="{Binding TimelineShiftCommand}"
+            CommandParameter="{x:Static uic:TimelineShift.LargeForward}"/>
 
-                <c:IconButton
-                  Icon="{StaticResource IconTimelineShift.LargeBack}"
-                  Command="{Binding TimelineShiftCommand}"
-                  CommandParameter="{x:Static c:TimelineShift.LargeBack}"/>
+          <c:IconButton
+            Icon="{StaticResource IconTimelineShift.End}"
+            Command="{Binding TimelineShiftCommand}"
+            CommandParameter="{x:Static uic:TimelineShift.End}"/>
 
-                <c:IconButton
-                  Icon="{StaticResource IconTimelineShift.SmallBack}"
-                  Command="{Binding TimelineShiftCommand}"
-                  CommandParameter="{x:Static c:TimelineShift.SmallBack}"/>
+        </StackPanel>
 
-                <!-- Play/Pause -->
-                <c:IconButton Command="{Binding PlayPauseToggleCommand}">
-                  <c:IconButton.Style>
-                    <Style TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
-                      <Setter Property="Icon" Value="{StaticResource IconPlay}"/>
-                      <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                          <Setter Property="Icon" Value="{StaticResource IconPause}"/>
-                        </DataTrigger>
-                      </Style.Triggers>
-                    </Style>
-                  </c:IconButton.Style>
-                </c:IconButton>
+        <!-- Speed -->
+        <Slider
+          Style="{StaticResource MH.Styles.Controls.PopupSlider}"
+          ap:Icon.Data="{StaticResource IconSpeed}"
+          ToolTip="Speed"
+          Minimum="0.1"
+          Maximum="3"
+          TickFrequency="0.01"
+          IsTabStop="False"
+          VerticalAlignment="Center"
+          Value="{Binding Speed}"/>
 
-                <c:IconButton
-                  Icon="{StaticResource IconTimelineShift.SmallForward}"
-                  Command="{Binding TimelineShiftCommand}"
-                  CommandParameter="{x:Static c:TimelineShift.SmallForward}"/>
+        <!-- Repeat for seconds -->
+        <Slider
+          Style="{StaticResource MH.Styles.Controls.PopupSlider}"
+          Minimum="0"
+          Maximum="10"
+          Value="{Binding RepeatForSeconds, Mode=TwoWay}"
+          ap:Icon.Data="{StaticResource IconTimer}"
+          ToolTip="Time in seconds the video clip is repeated for"/>
 
-                <c:IconButton
-                  Icon="{StaticResource IconTimelineShift.LargeForward}"
-                  Command="{Binding TimelineShiftCommand}"
-                  CommandParameter="{x:Static c:TimelineShift.LargeForward}"/>
+        <!-- Volume -->
+        <Slider
+          Style="{StaticResource MH.Styles.Controls.PopupSlider}"
+          ap:Icon.Data="{StaticResource IconVolume}"
+          ToolTip="Volume"
+          Minimum="0"
+          Maximum="1"
+          TickFrequency="0.01"
+          IsTabStop="False"
+          VerticalAlignment="Center"
+          Value="{Binding Volume}"/>
 
-                <c:IconButton
-                  Icon="{StaticResource IconTimelineShift.End}"
-                  Command="{Binding TimelineShiftCommand}"
-                  CommandParameter="{x:Static c:TimelineShift.End}"/>
+        <!-- Mute -->
+        <c:IconToggleButton
+          Icon="{StaticResource IconSoundMute}"
+          IsChecked="{Binding IsMuted}"
+          Width="22"
+          Height="22"
+          ToolTip="Mute"/>
 
-              </StackPanel>
-            </StackPanel>
+        <!-- Play type -->
+        <StackPanel x:Name="playTypePanel" Orientation="Horizontal">
+          <Label Target="{Binding ElementName=cmbPlayTypes}" Content="Play:"/>
+          <ComboBox
+            x:Name="cmbPlayTypes"
+            ItemsSource="{Binding PlayTypes}"
+            DisplayMemberPath="Value"
+            SelectedValuePath="Key"
+            SelectedValue="{Binding PlayType, Mode=TwoWay}"
+            Height="26"
+            Margin="0,0,2,0"/>
+        </StackPanel>
 
-          </Grid>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-  </Style>
+        <!-- New Clip -->
+        <c:IconButton
+          ToolTip="Create new or close video clip"
+          Icon="{StaticResource IconMovieClapper}"
+          Command="{Binding SetNewClipCommand}"/>
+
+        <!-- New Image -->
+        <c:IconButton
+          ToolTip="Create new video image"
+          Icon="{StaticResource IconImage}"
+          Command="{Binding SetNewImageCommand}"/>
+
+        <!-- Markers -->
+        <Grid x:Name="markersPanel">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+
+          <c:IconButton
+            Grid.Column="0"
+            ToolTip="Set start"
+            Icon="{StaticResource IconChevronDown}"
+            Command="{Binding SetMarkerCommand}"
+            CommandParameter="{StaticResource True}"/>
+
+          <c:IconButton
+            Grid.Column="1"
+            ToolTip="Seek to start"
+            Icon="{StaticResource IconChevronRight}"
+            Command="{Binding SeekToCommand}"
+            CommandParameter="{StaticResource True}"/>
+
+          <TextBlock
+            Grid.Column="2"
+            x:Name="tbTimeStart"
+            IsEnabled="False"
+            VerticalAlignment="Center"
+            Text="0:00.000"/>
+
+          <TextBlock
+            Grid.Column="3"
+            x:Name="tbTimeEnd"
+            IsEnabled="False"
+            VerticalAlignment="Center"
+            Text=" - 0:00.000"/>
+
+          <c:IconButton
+            Grid.Column="4"
+            ToolTip="Seek to end"
+            Icon="{StaticResource IconChevronLeft}"
+            Command="{Binding SeekToCommand}"
+            CommandParameter="{StaticResource False}"/>
+
+          <c:IconButton
+            Grid.Column="5"
+            ToolTip="Set end"
+            Icon="{StaticResource IconChevronDown}"
+            Command="{Binding SetMarkerCommand}"
+            CommandParameter="{StaticResource False}"/>
+        </Grid>
+      </WrapPanel>
+
+    </Grid>
+    
+    <DataTemplate.Triggers>
+      <DataTrigger
+        Binding="{Binding CurrentItem,
+                  Converter={conv:DataTypeConverter},
+                  ConverterParameter={x:Type uii:IVideoImage}}" Value="True">
+        <Setter
+          TargetName="tbTimeStart"
+          Property="Text"
+          Value="{Binding Path=CurrentItem.(uii:IVideoImage.TimeStart),
+                  Converter={conv:TimeFormatConverter},
+                  ConverterParameter=position}"/>
+        <Setter TargetName="tbTimeStart" Property="IsEnabled" Value="True"/>
+      </DataTrigger>
+
+      <DataTrigger
+        Binding="{Binding CurrentItem,
+                  Converter={conv:DataTypeConverter},
+                  ConverterParameter={x:Type uii:IVideoClip}}" Value="True">
+        <Setter
+          TargetName="tbTimeEnd"
+          Property="Text"
+          Value="{Binding Path=CurrentItem.(uii:IVideoClip.TimeEnd),
+                  Converter={conv:TimeFormatConverter},
+                  ConverterParameter=position,
+                  StringFormat={} - {0}}"/>
+        <Setter TargetName="tbTimeEnd" Property="IsEnabled" Value="True"/>
+      </DataTrigger>
+
+      <Trigger SourceName="navPanel" Property="IsMouseOver" Value="True">
+        <Setter TargetName="navPanel" Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
+      </Trigger>
+
+      <Trigger SourceName="playTypePanel" Property="IsMouseOver" Value="True">
+        <Setter TargetName="playTypePanel" Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
+      </Trigger>
+
+      <Trigger SourceName="markersPanel" Property="IsMouseOver" Value="True">
+        <Setter TargetName="markersPanel" Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
+      </Trigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
 </ResourceDictionary>
