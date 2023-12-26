@@ -11,7 +11,7 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|MediaItemId|PersonId|SegmentBox|Keywords
 /// </summary>
-public class SegmentsDataAdapter : TableDataAdapter<SegmentM> {
+public class SegmentsDA : TableDataAdapter<SegmentM> {
   private readonly Db _db;
 
   public SegmentsM Model { get; }
@@ -19,7 +19,7 @@ public class SegmentsDataAdapter : TableDataAdapter<SegmentM> {
   public event EventHandler<ObjectEventArgs<(PersonM, SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<SegmentM[]>> SegmentsKeywordsChangedEvent = delegate { };
 
-  public SegmentsDataAdapter(Db db) : base("Segments", 5) {
+  public SegmentsDA(Db db) : base("Segments", 5) {
     _db = db;
     IsDriveRelated = true;
     Model = new(this);

@@ -7,7 +7,7 @@ using System.Linq;
 namespace PictureManager.Domain.Models.MediaItems;
 
 public sealed class VideoClipsM : ObservableObject {
-  private readonly VideoClipsDataAdapter _da;
+  private readonly VideoClipsDA _da;
   private List<VideoClipM> _clipsThumbsToRebuild;
   private List<KeyValuePair<string, KeyValuePair<int, string>[]>> _vidThumbsToRebuild;
   private VideoClipM _current;
@@ -19,7 +19,7 @@ public sealed class VideoClipsM : ObservableObject {
 
   public RelayCommand<object> RebuildVideoClipsThumbnailsCommand { get; }
 
-  public VideoClipsM(VideoClipsDataAdapter da) {
+  public VideoClipsM(VideoClipsDA da) {
     _da = da;
     _da.ItemCreatedEvent += OnItemCreated;
 

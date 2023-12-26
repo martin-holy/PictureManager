@@ -9,7 +9,7 @@ public sealed class FavoriteFoldersTreeCategory : TreeCategory<FavoriteFolderM> 
   public static RelayCommand<FolderM> AddToFavoritesCommand =>
     new(Core.Db.FavoriteFolders.ItemCreate);
 
-  public FavoriteFoldersTreeCategory(FavoriteFoldersDataAdapter da) :
+  public FavoriteFoldersTreeCategory(FavoriteFoldersDA da) :
     base(Res.IconFolderStar, "Favorites", (int)Category.FavoriteFolders) {
     DataAdapter = da;
     CanMoveItem = true;

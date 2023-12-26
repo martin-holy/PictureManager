@@ -8,21 +8,21 @@ using System.Linq;
 namespace PictureManager.Domain.Database;
 
 public sealed class Db : SimpleDB {
-  public CategoryGroupsDataAdapter CategoryGroups { get; }
-  public FavoriteFoldersDataAdapter FavoriteFolders { get; }
-  public FolderKeywordsDataAdapter FolderKeywords { get; }
-  public FoldersDataAdapter Folders { get; }
-  public GeoNamesDataAdapter GeoNames { get; }
+  public CategoryGroupsDA CategoryGroups { get; }
+  public FavoriteFoldersDA FavoriteFolders { get; }
+  public FolderKeywordsDA FolderKeywords { get; }
+  public FoldersDA Folders { get; }
+  public GeoNamesDA GeoNames { get; }
   public GeoLocationsDA GeoLocations { get; }
   public ImagesDA Images { get; }
-  public KeywordsDataAdapter Keywords { get; }
-  public MediaItemsDataAdapter MediaItems { get; }
-  public PeopleDataAdapter People { get; }
-  public SegmentsDataAdapter Segments { get; }
-  public VideoClipsDataAdapter VideoClips { get; }
+  public KeywordsDA Keywords { get; }
+  public MediaItemsDA MediaItems { get; }
+  public PeopleDA People { get; }
+  public SegmentsDA Segments { get; }
+  public VideoClipsDA VideoClips { get; }
   public VideoImagesDA VideoImages { get; }
   public VideosDA Videos { get; }
-  public ViewersDataAdapter Viewers { get; }
+  public ViewersDA Viewers { get; }
 
   public MediaItemGeoLocationDA MediaItemGeoLocation { get; }
   public VideoItemsOrderDA VideoItemsOrder { get; }

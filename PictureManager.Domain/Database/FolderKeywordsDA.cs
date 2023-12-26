@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID
 /// </summary>
-public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
+public class FolderKeywordsDA : TreeDataAdapter<FolderM> {
   private readonly Db _db;
 
   public FolderKeywordsTreeCategory Model { get; }
@@ -21,7 +21,7 @@ public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
   public static readonly FolderKeywordM FolderKeywordPlaceHolder = new(string.Empty, null);
   public List<FolderKeywordM> All2 { get; } = new();
 
-  public FolderKeywordsDataAdapter(Db db) : base("FolderKeywords", 1) {
+  public FolderKeywordsDA(Db db) : base("FolderKeywords", 1) {
     _db = db;
     _db.ReadyEvent += delegate { OnDbReady(); };
     IsDriveRelated = true;

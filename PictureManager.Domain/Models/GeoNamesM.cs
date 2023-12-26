@@ -13,13 +13,13 @@ using System.Xml;
 namespace PictureManager.Domain.Models;
 
 public sealed class GeoNamesM {
-  private readonly GeoNamesDataAdapter _da;
+  private readonly GeoNamesDA _da;
   
   public bool ApiLimitExceeded { get; set; }
   public GeoNamesTreeCategory TreeCategory { get; }
   public RelayCommand<object> NewGeoNameFromGpsCommand { get; }
 
-  public GeoNamesM(GeoNamesDataAdapter da) {
+  public GeoNamesM(GeoNamesDA da) {
     _da = da;
     TreeCategory = new(da);
     NewGeoNameFromGpsCommand = new(NewGeoNameFromGps);

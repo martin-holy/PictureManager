@@ -14,7 +14,7 @@ using System.Linq;
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
-  public FoldersTreeCategory(FoldersDataAdapter da) :
+  public FoldersTreeCategory(FoldersDA da) :
     base(Res.IconFolder, "Folders", (int)Category.Folders) {
     DataAdapter = da;
     DataAdapter.ItemCreatedEvent += OnItemCreated;

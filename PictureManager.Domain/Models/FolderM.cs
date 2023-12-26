@@ -100,7 +100,7 @@ namespace PictureManager.Domain.Models {
           else {
             if (Directory.EnumerateDirectories(item.FullPath).Any()) {
               item.Items.Add(FoldersM.FolderPlaceHolder);
-              item.FolderKeyword?.Items.Add(FolderKeywordsDataAdapter.FolderKeywordPlaceHolder);
+              item.FolderKeyword?.Items.Add(FolderKeywordsDA.FolderKeywordPlaceHolder);
             }
             item.IsAccessible = true;
           }

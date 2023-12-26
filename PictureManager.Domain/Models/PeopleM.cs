@@ -11,7 +11,7 @@ using System.Linq;
 namespace PictureManager.Domain.Models;
 
 public sealed class PeopleM {
-  private readonly PeopleDataAdapter _da;
+  private readonly PeopleDA _da;
 
   public PeopleTreeCategory TreeCategory { get; }
   public PeopleView PeopleView { get; private set; }
@@ -21,7 +21,7 @@ public sealed class PeopleM {
   public RelayCommand<object> OpenPeopleToolsTabCommand { get; }
   public RelayCommand<PersonM> OpenPersonDetailCommand { get; }
 
-  public PeopleM(PeopleDataAdapter da) {
+  public PeopleM(PeopleDA da) {
     _da = da;
     _da.ItemDeletedEvent += OnItemDeleted;
     _da.PeopleKeywordsChangedEvent += OnPeopleKeywordsChanged;

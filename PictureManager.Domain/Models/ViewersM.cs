@@ -7,7 +7,7 @@ using PictureManager.Domain.TreeCategories;
 namespace PictureManager.Domain.Models;
 
 public sealed class ViewersM : ObservableObject {
-  private readonly ViewersDataAdapter _da;
+  private readonly ViewersDA _da;
   private ViewerM _current;
   private ViewerM _selected;
 
@@ -26,7 +26,7 @@ public sealed class ViewersM : ObservableObject {
   public RelayCommand<ViewerM> SetCurrentCommand { get; }
   public RelayCommand<ViewerM> UpdateExcludedCategoryGroupsCommand { get; }
 
-  public ViewersM(ViewersDataAdapter da) {
+  public ViewersM(ViewersDA da) {
     _da = da;
     TreeCategory = new(_da);
     ViewerDetailM = new(this);

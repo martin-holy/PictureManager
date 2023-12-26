@@ -15,11 +15,11 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|Name|Category|GroupItems
 /// </summary>
-public class CategoryGroupsDataAdapter : TreeDataAdapter<CategoryGroupM> {
+public class CategoryGroupsDA : TreeDataAdapter<CategoryGroupM> {
   private readonly Db _db;
   private readonly List<ITreeCategory> _categories = new();
 
-  public CategoryGroupsDataAdapter(Db db) : base("CategoryGroups", 4) {
+  public CategoryGroupsDA(Db db) : base("CategoryGroups", 4) {
     _db = db;
   }
 
