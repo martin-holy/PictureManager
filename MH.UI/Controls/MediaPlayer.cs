@@ -217,25 +217,27 @@ public sealed class MediaPlayer : ObservableObject {
   }
 
   private void OnClipTimer(object sender, ElapsedEventArgs e) {
-    if (PlayType == PlayType.Video || ClipTimeEnd <= ClipTimeStart) return;
+    Tasks.RunOnUiThread(() => {
+      if (PlayType == PlayType.Video || ClipTimeEnd <= ClipTimeStart) return;
 
-    switch (PlayType) {
-      case PlayType.Clip:
-        TimelinePosition = ClipTimeStart;
-        break;
-
-      case PlayType.Clips:
-      case PlayType.Group:
-        if (_repeatCount > 0) {
-          _repeatCount--;
+      switch (PlayType) {
+        case PlayType.Clip:
           TimelinePosition = ClipTimeStart;
-        }
-        else {
-          SelectNextClip(PlayType == PlayType.Group, false);
-        }
+          break;
 
-        break;
-    }
+        case PlayType.Clips:
+        case PlayType.Group:
+          if (_repeatCount > 0) {
+            _repeatCount--;
+            TimelinePosition = ClipTimeStart;
+          }
+          else {
+            SelectNextClip(PlayType == PlayType.Group, false);
+          }
+
+          break;
+      }
+    });
   }
 
   private void OnTimelineTimer(object sender, ElapsedEventArgs e) {
