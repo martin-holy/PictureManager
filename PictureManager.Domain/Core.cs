@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain; 
+namespace PictureManager.Domain;
 
 public sealed class Core {
   private static Core _instance;
@@ -58,7 +58,8 @@ public sealed class Core {
     return Task.Run(() => {
       Db.AddDataAdapters();
       Drives.UpdateSerialNumbers();
-      SimpleDB.Migrate(6, DatabaseMigration.Resolver);
+      progress.Report("Migrating Database");
+      SimpleDB.Migrate(7, DatabaseMigration.Resolver);
       Db.LoadAllTables(progress);
       Db.LinkReferences(progress);
       Db.ClearDataAdapters();
@@ -170,7 +171,6 @@ public sealed class Core {
 
     Db.MediaItems.ItemsDeletedEvent += (_, e) => {
       MediaItemsViews.RemoveMediaItems(e.Data);
-      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.ModifiedItemsCount));
 
       if (MediaViewerM.IsVisible) {
         MediaViewerM.MediaItems.Remove(e.Data[0]);
@@ -190,7 +190,6 @@ public sealed class Core {
 
     MediaItemsM.MetadataChangedEvent += (_, e) => {
       MediaItemsViews.ReGroupViewIfContains(e.Data);
-      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.ModifiedItemsCount));
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       MediaItemsStatusBarM.UpdateRating();
     };
