@@ -57,6 +57,7 @@
   - Log button
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
+  - remove MediaItemFilterSizeM
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
@@ -71,9 +72,19 @@
   - move generic methods ItemCreate, ItemsDelete, ItemDelete to DataAdapter
 ## MediaItems
   - save to file only metadata visible for viewer
+  - merge ReloadMetadataInFolderCommand and ReloadMetadataCommand
 ## MediaItemsView
   - change SelectAndScrollToCurrentMediaItem to scroll to exactly to media item
     only if is not in the view otherwise scroll to top item
+
+
+
+##
+ - reset sort order button of VideoMediaItems to delete relation in DB
+ - tool tip for VideoMediaItems with all info
+ - comment and delete on VideoItem
+ - rename DataAdapter classes to DA
+
 
 
                                     *** NEW ***
