@@ -133,7 +133,7 @@ public static class DatabaseMigration {
   private static void From4To5() {
     Core.Db.ReadyEvent += (_, _) => {
       var p = Core.Db.People.All
-          .Where(x => x.IsUnknown && x.Parent == null)
+        .Where(x => x.IsUnknown && x.Parent == null)
         .OrderBy(x => x.Name)
         .ToArray();
       if (p.Length > 0)
@@ -306,18 +306,20 @@ public static class DatabaseMigration {
       //File.Delete(vcgFilePath); // do not delete it yet!
     }
 
-    // Create Keyword for each VideoClipsGroup
-    using var kSw = new StreamWriter(Path.Combine("db", "Keywords.csv"), true, Encoding.UTF8, 65536);
-    foreach (var nameIdClip in nameIdClips.OrderBy(x => x.Key))
-      kSw.WriteLine(string.Join('|', nameIdClip.Value.Item1.ToString(), nameIdClip.Key, string.Empty));
+    if (nameIdClips.Any()) {
+      // Create Keyword for each VideoClipsGroup
+      using var kSw = new StreamWriter(Path.Combine("db", "Keywords.csv"), true, Encoding.UTF8, 65536);
+      foreach (var nameIdClip in nameIdClips.OrderBy(x => x.Key))
+        kSw.WriteLine(string.Join('|', nameIdClip.Value.Item1.ToString(), nameIdClip.Key, string.Empty));
 
-    // Create CategoryGroup for VideoClipsGroups Keywords
-    using var cgSw = new StreamWriter(Path.Combine("db", "CategoryGroups.csv"), true, Encoding.UTF8, 65536);
-    cgSw.WriteLine(string.Join('|',
-      ++Core.Db.CategoryGroups.MaxId,
-      "VideoClipsGroups",
-      (int)Category.Keywords,
-      string.Join(',', nameIdClips.Select(x => x.Value.Item1))));
+      // Create CategoryGroup for VideoClipsGroups Keywords
+      using var cgSw = new StreamWriter(Path.Combine("db", "CategoryGroups.csv"), true, Encoding.UTF8, 65536);
+      cgSw.WriteLine(string.Join('|',
+        ++Core.Db.CategoryGroups.MaxId,
+        "VideoClipsGroups",
+        (int)Category.Keywords,
+        string.Join(',', nameIdClips.Select(x => x.Value.Item1))));
+    }
 
     // Update VideoClips ids to use one id sequence for all MediaItems and add Keywords
     // get max id from MediaItems
