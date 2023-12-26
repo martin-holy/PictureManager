@@ -19,11 +19,11 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
 
   public KeywordsDataAdapter(Db db) : base("Keywords", 3) {
     _db = db;
-    _db.ReadyEvent += OnDbReady;
+    _db.ReadyEvent += delegate { OnDbReady(); };
     Model = new(this);
   }
 
-  private void OnDbReady(object sender, EventArgs args) {
+  private void OnDbReady() {
     // move all group items to root
     _db.CategoryGroups.ItemDeletedEvent += (_, e) => {
       if (e.Data.Category != Category.Keywords) return;
@@ -42,7 +42,7 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
   }
 
   public override void Save() =>
-    SaveToFile(GetAll<KeywordM>(Model.TreeCategory));
+    SaveToSingleFile(GetAll<KeywordM>(Model.TreeCategory));
 
   public override KeywordM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1], null);
@@ -55,21 +55,7 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
 
   public override void LinkReferences() {
     _db.CategoryGroups.LinkGroups(Model.TreeCategory, AllDict);
-
-    // link hierarchical keywords
-    foreach (var (keyword, csv) in AllCsv) {
-      // reference to parent and back reference to children
-      if (!string.IsNullOrEmpty(csv[2])) {
-        keyword.Parent = AllDict[int.Parse(csv[2])];
-        keyword.Parent.Items.Add(keyword);
-      }
-    }
-
-    // add loose keywords
-    foreach (var keywordM in AllDict.Values.Where(x => x.Parent == null)) {
-      keywordM.Parent = Model.TreeCategory;
-      Model.TreeCategory.Items.Add(keywordM);
-    }
+    LinkTree(Model.TreeCategory, 2);
 
     // group for keywords automatically added from MediaItems metadata
     Model.TreeCategory.AutoAddedGroup = Model.TreeCategory.Items
@@ -84,6 +70,7 @@ public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
     var id = GetNextId();
     var item = new KeywordM(id, $"{_notFoundRecordNamePrefix}{id} ({notFoundId})", Model.TreeCategory);
     item.Parent.Items.Add(item);
+    IsModified = true;
     return item;
   }
 

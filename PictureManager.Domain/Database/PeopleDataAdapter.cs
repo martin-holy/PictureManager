@@ -22,11 +22,11 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
 
   public PeopleDataAdapter(Db db) : base("People", 4) {
     _db = db;
-    _db.ReadyEvent += OnDbReady;
+    _db.ReadyEvent += delegate { OnDbReady(); };
     Model = new(this);
   }
 
-  private void OnDbReady(object sender, EventArgs args) {
+  private void OnDbReady() {
     // move all group items to root
     _db.CategoryGroups.ItemDeletedEvent += (_, e) => {
       if (e.Data.Category != Category.People) return;
@@ -45,7 +45,7 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
   }
 
   public override void Save() =>
-    SaveToFile(GetAll());
+    SaveToSingleFile(GetAll());
 
   public override PersonM FromCsv(string[] csv) {
     var person = new PersonM(int.Parse(csv[0]), csv[1]);
@@ -60,12 +60,8 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
     string.Join("|",
       person.GetHashCode().ToString(),
       person.Name,
-      person.TopSegments == null
-        ? string.Empty
-        : string.Join(",", person.TopSegments.Select(x => x.GetHashCode().ToString())),
-      person.Keywords == null
-        ? string.Empty
-        : string.Join(",", person.Keywords.Select(x => x.GetHashCode().ToString())));
+      person.TopSegments.ToHashCodes().ToCsv(),
+      person.Keywords.ToHashCodes().ToCsv());
 
   public override void LinkReferences() {
     _db.CategoryGroups.LinkGroups(Model.TreeCategory, AllDict);
@@ -82,7 +78,7 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
       // add loose people
       foreach (var personM in AllDict.Values.Where(x => x.Parent == null)) {
         personM.Parent = Model.TreeCategory;
-        Model.TreeCategory.Items.Add(personM);
+        personM.Parent.Items.Add(personM);
       }
     }
   }
@@ -101,6 +97,7 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
       Parent = Model.TreeCategory
     };
     item.Parent.Items.Add(item);
+    IsModified = true;
     return item;
   }
 
@@ -108,10 +105,7 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
     TreeItemCreate(new(GetNextId(), name) { Parent = parent });
 
   public PersonM ItemCreateUnknown() {
-    if (SimpleDB.GetNextRecycledId(All.Select(x => x.Id).ToHashSet()) is { } id)
-      IsModified = true;
-    else
-      id = GetNextId();
+    var id = SimpleDB.GetNextRecycledId(All.Select(x => x.Id).ToHashSet()) ?? GetNextId();
 
     return TreeItemCreate(new(id, $"{_unknownPersonNamePrefix}{id}") {
       Parent = Model.TreeCategory.UnknownGroup,
