@@ -2,6 +2,7 @@
 using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System;
@@ -15,12 +16,15 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|Name|Category|GroupItems
 /// </summary>
 public class CategoryGroupsDataAdapter : TreeDataAdapter<CategoryGroupM> {
+  private readonly Db _db;
   private readonly List<ITreeCategory> _categories = new();
 
-  public CategoryGroupsDataAdapter() : base("CategoryGroups", 4) { }
+  public CategoryGroupsDataAdapter(Db db) : base("CategoryGroups", 4) {
+    _db = db;
+  }
 
   public override void Save() =>
-    SaveToFile(_categories.SelectMany(x => x.Items.OfType<CategoryGroupM>()));
+    SaveToSingleFile(_categories.SelectMany(x => x.Items.OfType<CategoryGroupM>()));
 
   public override CategoryGroupM FromCsv(string[] csv) {
     var category = (Category)int.Parse(csv[2]);
@@ -32,8 +36,7 @@ public class CategoryGroupsDataAdapter : TreeDataAdapter<CategoryGroupM> {
       cg.GetHashCode().ToString(),
       cg.Name,
       (int)cg.Category,
-      string.Join(",", cg.Items
-        .Select(x => x.GetHashCode().ToString())));
+      cg.Items.ToHashCodes().ToCsv());
 
   public void LinkGroups<TI>(TreeCategory cat, Dictionary<int, TI> allDict) where TI : class, ITreeItem {
     cat.Items.Clear();
@@ -77,7 +80,7 @@ public class CategoryGroupsDataAdapter : TreeDataAdapter<CategoryGroupM> {
   }
 
   private void GroupItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-    IsModified = true;
+    if (_db.IsReady) IsModified = true;
   }
 
   public void AddCategory(ITreeCategory<CategoryGroupM> cat) {

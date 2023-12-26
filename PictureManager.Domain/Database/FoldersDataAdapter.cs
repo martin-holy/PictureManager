@@ -14,8 +14,18 @@ namespace PictureManager.Domain.Database;
 public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
   public FoldersM Model { get; }
 
-  public FoldersDataAdapter() : base("Folders", 3) {
+  public FoldersDataAdapter(Db db) : base("Folders", 3) {
+    IsDriveRelated = true;
     Model = new(this);
+    db.ReadyEvent += delegate { OnDbReady(db); };
+  }
+
+  private static void OnDbReady(Db db) {
+    db.Images.ItemCreatedEvent += (_, e) =>
+      e.Data.Folder.MediaItems.Add(e.Data);
+
+    db.Videos.ItemCreatedEvent += (_, e) =>
+      e.Data.Folder.MediaItems.Add(e.Data);
   }
 
   public static IEnumerable<T> GetAll<T>(ITreeItem root) {
@@ -27,8 +37,8 @@ public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
         yield return subItem;
   }
 
-  public override void Save() =>
-    SaveDriveRelated(Model.TreeCategory.Items.ToDictionary(x => x.Name, GetAll<FolderM>));
+  public override Dictionary<string, IEnumerable<FolderM>> GetAsDriveRelated() =>
+    Model.TreeCategory.Items.ToDictionary(x => x.Name, GetAll<FolderM>);
 
   public override FolderM FromCsv(string[] csv) =>
     string.IsNullOrEmpty(csv[2])
@@ -43,14 +53,7 @@ public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
 
   public override void LinkReferences() {
     Model.TreeCategory.Items.Clear();
-
-    foreach (var (folder, csv) in AllCsv) {
-      // reference to Parent and back reference from Parent to SubFolder
-      folder.Parent = !string.IsNullOrEmpty(csv[2])
-        ? AllDict[int.Parse(csv[2])]
-        : Model.TreeCategory;
-      folder.Parent.Items.Add(folder);
-    }
+    LinkTree(Model.TreeCategory, 2);
   }
 
   public override FolderM ItemCreate(ITreeItem parent, string name) {
@@ -84,6 +87,7 @@ public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
 
   public DriveM AddDrive(ITreeItem parent, string name, string sn) {
     var item = new DriveM(GetNextId(), name, parent, sn);
+    IsModified = true;
     All.Add(item);
     return item;
   }

@@ -34,10 +34,10 @@ public class ViewersDataAdapter : TreeDataAdapter<ViewerM> {
     string.Join("|",
       viewer.GetHashCode().ToString(),
       viewer.Name,
-      string.Join(",", viewer.IncludedFolders.Select(x => x.GetHashCode().ToString())),
-      string.Join(",", viewer.ExcludedFolders.Select(x => x.GetHashCode().ToString())),
-      string.Join(",", viewer.ExcludedCategoryGroups.Select(x => x.GetHashCode().ToString())),
-      string.Join(",", viewer.ExcludedKeywords.Select(x => x.GetHashCode().ToString())),
+      viewer.IncludedFolders.ToHashCodes().ToCsv(),
+      viewer.ExcludedFolders.ToHashCodes().ToCsv(),
+      viewer.ExcludedCategoryGroups.ToHashCodes().ToCsv(),
+      viewer.ExcludedKeywords.ToHashCodes().ToCsv(),
       viewer.IsDefault
         ? "1"
         : string.Empty);

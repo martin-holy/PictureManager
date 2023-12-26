@@ -1,7 +1,7 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.TreeCategories;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.Database;
@@ -16,14 +16,12 @@ public class FavoriteFoldersDataAdapter : TreeDataAdapter<FavoriteFolderM> {
 
   public FavoriteFoldersDataAdapter(Db db) : base("FavoriteFolders", 3) {
     _db = db;
+    IsDriveRelated = true;
     Model = new(this);
   }
 
-  public override void Save() =>
-    SaveDriveRelated(Model.Items
-      .Cast<FavoriteFolderM>()
-      .GroupBy(x => Tree.GetParentOf<DriveM>(x.Folder))
-      .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
+  public override Dictionary<string, IEnumerable<FavoriteFolderM>> GetAsDriveRelated() =>
+    Db.GetAsDriveRelated(Model.Items.Cast<FavoriteFolderM>(), x => x.Folder);
 
   public override FavoriteFolderM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[2]);

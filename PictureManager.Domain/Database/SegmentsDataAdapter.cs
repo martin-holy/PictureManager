@@ -1,6 +1,7 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|MediaItemId|PersonId|SegmentBox|Keywords
 /// </summary>
-public class SegmentsDataAdapter : DataAdapter<SegmentM> {
+public class SegmentsDataAdapter : TableDataAdapter<SegmentM> {
   private readonly Db _db;
 
   public SegmentsM Model { get; }
@@ -20,13 +21,12 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
 
   public SegmentsDataAdapter(Db db) : base("Segments", 5) {
     _db = db;
+    IsDriveRelated = true;
     Model = new(this);
   }
 
-  public override void Save() =>
-    SaveDriveRelated(All
-      .GroupBy(x => Tree.GetParentOf<DriveM>(x.MediaItem.Folder))
-      .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
+  public override Dictionary<string, IEnumerable<SegmentM>> GetAsDriveRelated() =>
+    Db.GetAsDriveRelated(All, x => x.MediaItem.Folder);
 
   public override SegmentM FromCsv(string[] csv) {
     var rect = csv[3].Split(',');
@@ -41,9 +41,7 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
         ? "0"
         : segment.Person.GetHashCode().ToString(),
       string.Join(",", ((int)segment.X).ToString(), ((int)segment.Y).ToString(), ((int)segment.Size).ToString()),
-      segment.Keywords == null
-        ? string.Empty
-        : string.Join(",", segment.Keywords.Select(x => x.GetHashCode().ToString())));
+      segment.Keywords.ToHashCodes().ToCsv());
 
   public override void PropsToCsv() {
     TableProps.Clear();
@@ -55,7 +53,8 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
     var withoutMediaItem = new List<SegmentM>();
 
     foreach (var (segment, csv) in AllCsv) {
-      if (_db.MediaItems.AllDict.TryGetValue(int.Parse(csv[1]), out var mi)) {
+      var mi = _db.MediaItems.GetById(csv[1]);
+      if (mi != null) {
         segment.MediaItem = mi;
         mi.Segments ??= new();
         mi.Segments.Add(segment);
@@ -67,9 +66,8 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
           segment.Person.Segment ??= segment;
         }
       }
-      else {
+      else
         withoutMediaItem.Add(segment);
-      }
 
       // reference to Keywords
       segment.Keywords = _db.Keywords.Link(csv[4], this);
@@ -110,29 +108,9 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
       Keywords = item.Keywords?.ToList()
     });
 
-  private SegmentM ItemCreate(SegmentM item) {
-    All.Add(item);
-    RaiseItemCreated(item);
-    OnItemCreated(item);
-
-    return item;
-  }
-
   protected override void OnItemCreated(SegmentM item) {
     item.MediaItem.Segments ??= new();
     item.MediaItem.Segments.Add(item);
-  }
-
-  public void ItemsDelete(IList<SegmentM> items) {
-    if (items == null) return;
-    foreach (var item in items) ItemDelete(item);
-    RaiseItemsDeleted(items);
-  }
-
-  public void ItemDelete(SegmentM item) {
-    All.Remove(item);
-    RaiseItemDeleted(item);
-    OnItemDeleted(item);
   }
 
   protected override void OnItemDeleted(SegmentM item) {

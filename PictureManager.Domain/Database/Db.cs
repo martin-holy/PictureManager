@@ -1,4 +1,9 @@
 ﻿using MH.Utils;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Database;
 
@@ -17,10 +22,10 @@ public sealed class Db : SimpleDB {
   public ViewersDataAdapter Viewers { get; }
 
   public Db() {
-    CategoryGroups = new();
+    CategoryGroups = new(this);
     FavoriteFolders = new(this);
     FolderKeywords = new(this);
-    Folders = new();
+    Folders = new(this);
     GeoNames = new();
     Keywords = new(this);
     MediaItems = new(this);
@@ -45,4 +50,9 @@ public sealed class Db : SimpleDB {
     AddDataAdapter(FavoriteFolders);
     AddDataAdapter(Segments);
   }
+
+  public static Dictionary<string, IEnumerable<T>> GetAsDriveRelated<T>(IEnumerable<T> source, Func<T, ITreeItem> folder) =>
+    source
+      .GroupBy(x => Tree.GetParentOf<DriveM>(folder(x)))
+      .ToDictionary(x => x.Key.Name, x => x.AsEnumerable());
 }

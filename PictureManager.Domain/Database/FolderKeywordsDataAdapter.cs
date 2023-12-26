@@ -1,5 +1,4 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
@@ -24,11 +23,12 @@ public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
 
   public FolderKeywordsDataAdapter(Db db) : base("FolderKeywords", 1) {
     _db = db;
-    _db.ReadyEvent += OnDbReady;
+    _db.ReadyEvent += delegate { OnDbReady(); };
+    IsDriveRelated = true;
     Model = new(this);
   }
 
-  private void OnDbReady(object sender, EventArgs args) {
+  private void OnDbReady() {
     _db.Folders.ItemCreatedEvent += (_, e) =>
       LoadIfContains((FolderM)e.Data.Parent);
 
@@ -39,10 +39,8 @@ public class FolderKeywordsDataAdapter : TreeDataAdapter<FolderM> {
       Reload();
   }
 
-  public override void Save() =>
-    SaveDriveRelated(All
-      .GroupBy(x => Tree.GetParentOf<DriveM>(x).Name)
-      .ToDictionary(x => x.Key, x => x.Select(y => y)));
+  public override Dictionary<string, IEnumerable<FolderM>> GetAsDriveRelated() =>
+    Db.GetAsDriveRelated(All, x => x);
 
   public override FolderM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), string.Empty, null);
