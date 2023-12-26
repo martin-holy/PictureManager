@@ -256,23 +256,5 @@
       Command="mhuibc:TreeCategory.ItemDeleteCommand"
       CommandParameter="{Binding}"/>
   </ContextMenu>
-  
-  <ContextMenu
-    x:Key="TreeContextMenuVideoClipsGroup"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="mhuibc:TreeCategory.ItemCreateCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Rename Group"
-      Command="mhuibc:TreeCategory.GroupRenameCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Delete Group"
-      Command="mhuibc:TreeCategory.GroupDeleteCommand"
-      CommandParameter="{Binding}"/>
-  </ContextMenu>
     
 </ResourceDictionary>
