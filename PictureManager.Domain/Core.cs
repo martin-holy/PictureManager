@@ -100,6 +100,10 @@ public sealed class Core {
       }
     };
 
+    Settings.PropertyChanged += (_, e) => {
+      if (nameof(Settings.GeoNamesUserName).Equals(e.PropertyName))
+        GeoNamesM.ApiLimitExceeded = false;
+    };
 
     VideosM.MediaPlayer.RepeatEndedEvent += delegate {
       MediaViewerM.OnPlayerRepeatEnded();

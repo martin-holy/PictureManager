@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.Domain.Database;
@@ -26,13 +27,9 @@ public class GeoNamesDataAdapter : TreeDataAdapter<GeoNameM> {
 
   public override void LinkReferences() {
     Model.TreeCategory.Items.Clear();
-
-    foreach (var (geoName, csv) in AllCsv) {
-      // reference to parent and back reference to children
-      geoName.Parent = !string.IsNullOrEmpty(csv[4])
-        ? AllDict[int.Parse(csv[4])]
-        : Model.TreeCategory;
-      geoName.Parent.Items.Add(geoName);
-    }
+    LinkTree(Model.TreeCategory, 4);
   }
+
+  public GeoNameM ItemCreate(int id, string name, string toponymName, string fCode, ITreeItem parent) =>
+    TreeItemCreate(new(id, name, toponymName, fCode, parent));
 }
