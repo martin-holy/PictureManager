@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+  xmlns:mim="clr-namespace:PictureManager.Domain.Models.MediaItems;assembly=PictureManager.Domain"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
@@ -69,24 +69,12 @@
             Source="{Binding Current, Converter={pmConv:MediaViewerImageSourceConverter}}"
             Width="{Binding ContentWidth}"
             Height="{Binding ContentHeight}"
-            Visibility="{Binding Current.MediaType,
-                         Converter={mhConv:AllToVisibilityConverter},
-                         ConverterParameter={x:Static pmd:MediaType.Image}}"/>
+            Visibility="Collapsed"/>
 
           <!-- Video -->
           <mhc:MediaPlayer
             x:Name="player"
-            LoadedBehavior="Manual"
-            UnloadedBehavior="Stop"
-            ScrubbingEnabled="True"
-            Stretch="Uniform"
-            StretchDirection="Both"
-            Volume="{Binding ElementName=controlPanel, Path=Volume}"
-            Speed="{Binding ElementName=controlPanel, Path=Speed}"
-            IsMuted="{Binding MediaPlayerM.IsMuted}"
-            Visibility="{Binding Current.MediaType,
-                         Converter={mhConv:AllToVisibilityConverter}, 
-                         ConverterParameter={x:Static pmd:MediaType.Video}}">
+            Visibility="Collapsed">
 
             <FrameworkElement.LayoutTransform>
               <TransformGroup>
@@ -100,35 +88,10 @@
                   Command="pm:AppCore.MediaPlayerLoadedCommand"
                   PassEventArgsToCommand="True"/>
               </b:EventTrigger>
-              <b:EventTrigger EventName="MediaOpened">
-                <b:InvokeCommandAction Command="{Binding MediaPlayerM.MediaOpenedCommand}"/>
-              </b:EventTrigger>
-              <b:EventTrigger EventName="MediaEnded">
-                <b:InvokeCommandAction Command="{Binding MediaPlayerM.MediaEndedCommand}"/>
-              </b:EventTrigger>
             </b:Interaction.Triggers>
           </mhc:MediaPlayer>
         </Grid>
       </mhc:ZoomAndPan>
-
-      <!-- Media Player Control Panel -->
-      <mhc:MediaPlayerControlPanel
-        x:Name="controlPanel"
-        Player="{Binding ElementName=player}"
-        Height="30"
-        TimelinePosition="{Binding MediaPlayerM.TimelinePosition, Mode=TwoWay}"
-        TimelineMaximum="{Binding MediaPlayerM.TimelineMaximum, Mode=TwoWay}"
-        TimelineSmallChange="{Binding MediaPlayerM.TimelineSmallChange}"
-        TimelineLargeChange="{Binding MediaPlayerM.TimelineLargeChange}"
-        Volume="{Binding MediaPlayerM.Volume, Mode=TwoWay}"
-        Speed="{Binding MediaPlayerM.Speed, Mode=TwoWay}"
-        IsPlaying="{Binding MediaPlayerM.IsPlaying, Mode=TwoWay}"
-        SourcePath="{Binding MediaPlayerM.Source}"
-        Background="#33000000"
-        VerticalAlignment="Top"
-        Visibility="{Binding Current.MediaType,
-                     Converter={mhConv:AllToVisibilityConverter}, 
-                     ConverterParameter={x:Static pmd:MediaType.Video}}"/>
 
       <!-- Segments Rects -->
       <Canvas>
@@ -153,6 +116,18 @@
           Property="FocusManager.FocusedElement"
           Value="{Binding RelativeSource={RelativeSource Self}}"/>
       </Trigger>
+      <DataTrigger
+        Binding="{Binding Current, Converter={mhConv:DataTypeConverter},
+                  ConverterParameter={x:Type mim:ImageM}}"
+        Value="True">
+        <Setter TargetName="image" Property="Visibility" Value="Visible"/>
+      </DataTrigger>
+      <DataTrigger
+        Binding="{Binding Current, Converter={mhConv:DataTypeConverter},
+                  ConverterParameter={x:Type mim:VideoM}}"
+        Value="True">
+        <Setter TargetName="player" Property="Visibility" Value="Visible"/>
+      </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>
