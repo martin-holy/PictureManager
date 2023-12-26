@@ -3,6 +3,7 @@ using MH.UI.WPF.Utils;
 using MH.Utils;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,7 +58,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiCo
   }
 
   private static void CreateThumbnail(SegmentM segment) {
-    var filePath = segment.MediaItem.MediaType == MediaType.Image
+    var filePath = segment.MediaItem is ImageM
       ? segment.MediaItem.FilePath
       : segment.MediaItem.FilePathCache;
     var rect = new Int32Rect(
