@@ -4,9 +4,9 @@
     <TargetFramework>net7.0</TargetFramework>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <AssemblyVersion>1.46.0</AssemblyVersion>
-    <FileVersion>1.46.0</FileVersion>
-    <Version>1.46.0</Version>
+    <AssemblyVersion>1.47.0</AssemblyVersion>
+    <FileVersion>1.47.0</FileVersion>
+    <Version>1.47.0</Version>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
