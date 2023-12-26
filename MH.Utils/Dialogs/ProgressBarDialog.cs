@@ -4,91 +4,128 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MH.Utils.Dialogs {
-  public class ProgressBarDialog : Dialog {
-    private readonly BackgroundWorker _worker;
-    private readonly CancellationTokenSource _cts;
-    private readonly ParallelOptions _po;
-    private readonly bool _canCancel;
+namespace MH.Utils.Dialogs;
 
-    private string _message;
-    private string _stringProgress;
-    private int _intProgress;
+public abstract class ProgressBarDialog : Dialog {
+  private readonly bool _canCancel;
+  private string _message;
+  private string _stringProgress;
+  private int _intProgress;
 
-    public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
-    public string StringProgress { get => _stringProgress; set { _stringProgress = value; OnPropertyChanged(); } }
-    public int IntProgress { get => _intProgress; set { _intProgress = value; OnPropertyChanged(); } }
+  public bool IsCanceled { get; private set; }
+  public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
+  public string StringProgress { get => _stringProgress; set { _stringProgress = value; OnPropertyChanged(); } }
+  public int IntProgress { get => _intProgress; set { _intProgress = value; OnPropertyChanged(); } }
 
-    public ProgressBarDialog(string title, string icon, bool canCancel, int maxDegreeOfParallelism) : base(title, icon) {
-      _canCancel = canCancel;
-      CloseCommand = new(Cancel, () => _canCancel);
-      Buttons = new DialogButton[] { new("Cancel", "IconXCross", CloseCommand, false, true) };
+  protected ProgressBarDialog(string title, string icon, bool canCancel) : base(title, icon) {
+    _canCancel = canCancel;
+    CloseCommand = new(Cancel, () => _canCancel);
+    Buttons = new DialogButton[] { new("Cancel", "IconXCross", CloseCommand, false, true) };
+  }
 
-      _worker = new() {
-        WorkerReportsProgress = true,
-        WorkerSupportsCancellation = canCancel
-      };
+  private void Cancel() {
+    if (!_canCancel) return;
+    IsCanceled = true;
+    OnCancel();
+    Result = 0;
+  }
 
-      _cts = new();
+  protected virtual void OnCancel() { }
+}
 
-      _po = new() {
-        MaxDegreeOfParallelism = maxDegreeOfParallelism,
-        CancellationToken = _cts.Token
-      };
+public class ProgressBarSyncDialog : ProgressBarDialog {
+  public ProgressBarSyncDialog(string title, string icon, bool canCancel) : base(title, icon, canCancel) { }
+
+  public async Task Init<T>(T[] items, Func<bool> doBeforeLoop, Func<T, Task> action, Func<T, string> customMessage, Action onCompleted) {
+    if (doBeforeLoop != null && !doBeforeLoop()) return;
+
+    var count = items.Length;
+    var done = 0;
+
+    foreach (var item in items) {
+      if (IsCanceled) break;
+      done++;
+      Message = customMessage(item);
+      StringProgress = $"{done} / {count}";
+      IntProgress = Convert.ToInt32((double)done / count * 100);
+      await action(item);
     }
 
-    ~ProgressBarDialog() {
-      _cts.Dispose();
-    }
+    onCompleted?.Invoke();
+    Result = 1;
+  }
 
-    private void Cancel() {
-      if (_canCancel)
-        _worker.CancelAsync();
+  public void Start() {
+    if (Result == -1) Show(this);
+  }
+}
 
-      Result = 0;
-    }
+public class ProgressBarAsyncDialog : ProgressBarDialog {
+  private readonly BackgroundWorker _worker;
+  private readonly CancellationTokenSource _cts;
+  private readonly ParallelOptions _po;
 
-    public void Start() =>
-      _worker.RunWorkerAsync();
+  public ProgressBarAsyncDialog(string title, string icon, bool canCancel, int maxDegreeOfParallelism) : base(title, icon, canCancel) {
+    _worker = new() {
+      WorkerReportsProgress = true,
+      WorkerSupportsCancellation = canCancel
+    };
 
-    public void AddEvents<T>(T[] items, Func<bool> doBeforeLoop, Action<T> action, Func<T, string> customMessage, Action<object, RunWorkerCompletedEventArgs> onCompleted) {
-      _worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        if (doBeforeLoop != null && !doBeforeLoop()) return;
+    _cts = new();
 
-        var worker = (BackgroundWorker)o;
-        var count = items.Length;
-        var done = 0;
+    _po = new() {
+      MaxDegreeOfParallelism = maxDegreeOfParallelism,
+      CancellationToken = _cts.Token
+    };
+  }
 
-        try {
-          Parallel.ForEach(items, _po, item => {
-            if (worker.CancellationPending) {
-              e.Cancel = true;
-              _cts.Cancel();
-            }
+  ~ProgressBarAsyncDialog() {
+    _cts.Dispose();
+  }
 
-            done++;
-            worker.ReportProgress(Convert.ToInt32((double)done / count * 100),
-              new object[] { customMessage(item), done, count });
+  protected override void OnCancel() =>
+    _worker.CancelAsync();
 
-            action(item);
-          });
-        }
-        catch (OperationCanceledException) { }
-      };
+  public void Start() =>
+    _worker.RunWorkerAsync();
 
-      _worker.RunWorkerCompleted += (o, e) => {
-        onCompleted?.Invoke(o, e);
-        Result = 1;
-      };
+  public void Init<T>(T[] items, Func<bool> doBeforeLoop, Action<T> action, Func<T, string> customMessage, Action<object, RunWorkerCompletedEventArgs> onCompleted) {
+    _worker.DoWork += delegate (object o, DoWorkEventArgs e) {
+      if (doBeforeLoop != null && !doBeforeLoop()) return;
 
-      _worker.ProgressChanged += (_, e) => {
-        if (e.UserState is object[] userState) {
-          Message = (string)userState[0];
-          StringProgress = $"{userState[1]} / {userState[2]}";
-        }
+      var worker = (BackgroundWorker)o;
+      var count = items.Length;
+      var done = 0;
 
-        IntProgress = e.ProgressPercentage;
-      };
-    }
+      try {
+        Parallel.ForEach(items, _po, item => {
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            _cts.Cancel();
+          }
+
+          done++;
+          worker.ReportProgress(Convert.ToInt32((double)done / count * 100),
+            new object[] { customMessage(item), done, count });
+
+          action(item);
+        });
+      }
+      catch (OperationCanceledException) { }
+    };
+
+    _worker.RunWorkerCompleted += (o, e) => {
+      onCompleted?.Invoke(o, e);
+      Result = 1;
+    };
+
+    _worker.ProgressChanged += (_, e) => {
+      if (e.UserState is object[] userState) {
+        Message = (string)userState[0];
+        StringProgress = $"{userState[1]} / {userState[2]}";
+      }
+
+      IntProgress = e.ProgressPercentage;
+    };
   }
 }
