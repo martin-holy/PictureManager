@@ -15,10 +15,12 @@ namespace PictureManager.Converters;
 public sealed class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiConverter {
   private static readonly TaskQueue<SegmentM> _taskQueue = new();
   private static readonly HashSet<SegmentM> _ignoreCache = new();
+  private static readonly HashSet<SegmentM> _errorCache = new();
 
   public override object Convert(object[] values, object parameter) {
     try {
       if (values is not [_, SegmentM segment] || segment.MediaItem == null) return null;
+      if (_errorCache.Contains(segment)) return null;
 
       if (!File.Exists(segment.FilePathCache)) {
         if (!File.Exists(segment.MediaItem.FilePath)) {
@@ -68,8 +70,15 @@ public sealed class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiCo
       (int)segment.Size);
 
     _ignoreCache.Add(segment);
-    MH.UI.WPF.Utils.Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
-      ?.SaveAsJpg(80, segment.FilePathCache);
+
+    try {
+      MH.UI.WPF.Utils.Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
+        ?.SaveAsJpg(80, segment.FilePathCache);
+    }
+    catch (Exception ex) {
+      _errorCache.Add(segment);
+      Log.Error(ex, $"{ex.Message} ({filePath})");
+    }
   }
 
   private static void TriggerChanged(SegmentM segment) =>
