@@ -7,10 +7,10 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|Name|ToponymName|FCode|Parent
 /// </summary>
-public class GeoNamesDataAdapter : TreeDataAdapter<GeoNameM> {
+public class GeoNamesDA : TreeDataAdapter<GeoNameM> {
   public GeoNamesM Model { get; }
 
-  public GeoNamesDataAdapter() : base("GeoNames", 5) {
+  public GeoNamesDA() : base("GeoNames", 5) {
     Model = new(this);
   }
 

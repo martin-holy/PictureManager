@@ -11,10 +11,10 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class FoldersDataAdapter : TreeDataAdapter<FolderM> {
+public class FoldersDA : TreeDataAdapter<FolderM> {
   public FoldersM Model { get; }
 
-  public FoldersDataAdapter(Db db) : base("Folders", 3) {
+  public FoldersDA(Db db) : base("Folders", 3) {
     IsDriveRelated = true;
     Model = new(this);
     db.ReadyEvent += delegate { OnDbReady(db); };

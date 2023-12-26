@@ -9,7 +9,7 @@ namespace PictureManager.Domain.Models;
 public sealed class KeywordsM {
   public KeywordsTreeCategory TreeCategory { get; }
 
-  public KeywordsM(KeywordsDataAdapter da) {
+  public KeywordsM(KeywordsDA da) {
     TreeCategory = new(da);
   }
 

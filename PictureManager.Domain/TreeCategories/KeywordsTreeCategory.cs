@@ -12,7 +12,7 @@ namespace PictureManager.Domain.TreeCategories;
 public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM> {
   public CategoryGroupM AutoAddedGroup { get; set; }
 
-  public KeywordsTreeCategory(KeywordsDataAdapter da) :
+  public KeywordsTreeCategory(KeywordsDA da) :
     base(Res.IconTagLabel, "Keywords", (int)Category.Keywords) {
     DataAdapter = da;
     DataAdapter.ItemCreatedEvent += OnItemCreated;

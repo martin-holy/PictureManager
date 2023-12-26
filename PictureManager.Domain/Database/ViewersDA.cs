@@ -9,12 +9,12 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
 /// </summary>
-public class ViewersDataAdapter : TreeDataAdapter<ViewerM> {
+public class ViewersDA : TreeDataAdapter<ViewerM> {
   private readonly Db _db;
 
   public ViewersM Model { get; }
 
-  public ViewersDataAdapter(Db db) : base("Viewers", 7) {
+  public ViewersDA(Db db) : base("Viewers", 7) {
     _db = db;
     Model = new(this);
   }

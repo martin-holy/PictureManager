@@ -9,12 +9,12 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|Folder|Title
 /// </summary>
-public class FavoriteFoldersDataAdapter : TreeDataAdapter<FavoriteFolderM> {
+public class FavoriteFoldersDA : TreeDataAdapter<FavoriteFolderM> {
   private readonly Db _db;
 
   public FavoriteFoldersTreeCategory Model { get; }
 
-  public FavoriteFoldersDataAdapter(Db db) : base("FavoriteFolders", 3) {
+  public FavoriteFoldersDA(Db db) : base("FavoriteFolders", 3) {
     _db = db;
     IsDriveRelated = true;
     Model = new(this);

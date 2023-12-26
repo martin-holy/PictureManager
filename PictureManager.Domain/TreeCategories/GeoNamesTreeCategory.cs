@@ -5,7 +5,7 @@ using PictureManager.Domain.Models;
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class GeoNamesTreeCategory : TreeCategory<GeoNameM> {
-  public GeoNamesTreeCategory(GeoNamesDataAdapter da) :
+  public GeoNamesTreeCategory(GeoNamesDA da) :
     base(Res.IconLocationCheckin, "GeoNames", (int)Category.GeoNames) {
     DataAdapter = da;
   }

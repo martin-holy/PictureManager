@@ -15,14 +15,14 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain.Models;
 
 public sealed class FoldersM {
-  private readonly FoldersDataAdapter _da;
+  private readonly FoldersDA _da;
 
   public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
   public FoldersTreeCategory TreeCategory { get; }
   public event EventHandler<ObjectEventArgs<FolderM>> ItemCopiedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<FolderM>> ItemMovedEvent = delegate { };
 
-  public FoldersM(FoldersDataAdapter da) {
+  public FoldersM(FoldersDA da) {
     _da = da;
     TreeCategory = new(_da);
     _da.ItemDeletedEvent += OnItemDeleted;

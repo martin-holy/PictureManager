@@ -10,12 +10,12 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|MediaItem|TimeStart|TimeEnd|Volume|Speed|Rating|Comment|People|Keywords
 /// </summary>
-public class VideoClipsDataAdapter : TableDataAdapter<VideoClipM> {
+public class VideoClipsDA : TableDataAdapter<VideoClipM> {
   private readonly Db _db;
 
   public VideoClipsM Model { get; }
 
-  public VideoClipsDataAdapter(Db db) : base("VideoClips", 10) {
+  public VideoClipsDA(Db db) : base("VideoClips", 10) {
     _db = db;
     IsDriveRelated = true;
     Model = new(this);

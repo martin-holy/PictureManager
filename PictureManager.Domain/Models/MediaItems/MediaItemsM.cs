@@ -20,7 +20,7 @@ public sealed class MediaItemsM : ObservableObject {
   private static readonly string[] _supportedExts = { ".jpg", ".jpeg", ".mp4" };
   private MediaItemM _current;
 
-  public MediaItemsDataAdapter DataAdapter { get; }
+  public MediaItemsDA DataAdapter { get; }
   public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
   public GeoNameM CurrentGeoName => Core.Db.MediaItemGeoLocation.GetBy(Current)?.GeoName;
   public int ItemsCount => GetItemsCount();
@@ -40,7 +40,7 @@ public sealed class MediaItemsM : ObservableObject {
   public RelayCommand<FolderM> RebuildThumbnailsCommand { get; }
   public RelayCommand<object> ViewModifiedCommand { get; }
 
-  public MediaItemsM(MediaItemsDataAdapter da) {
+  public MediaItemsM(MediaItemsDA da) {
     DataAdapter = da;
     MetadataChangedEvent += OnMetadataChanged;
 

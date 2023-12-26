@@ -12,7 +12,7 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|Name|Segments|Keywords
 /// </summary>
-public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
+public class PeopleDA : TreeDataAdapter<PersonM> {
   private readonly Db _db;
   private const string _unknownPersonNamePrefix = "P -";
   private const string _notFoundRecordNamePrefix = "Not found ";
@@ -20,7 +20,7 @@ public class PeopleDataAdapter : TreeDataAdapter<PersonM> {
   public PeopleM Model { get; }
   public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordsChangedEvent = delegate { };
 
-  public PeopleDataAdapter(Db db) : base("People", 4) {
+  public PeopleDA(Db db) : base("People", 4) {
     _db = db;
     _db.ReadyEvent += delegate { OnDbReady(); };
     Model = new(this);

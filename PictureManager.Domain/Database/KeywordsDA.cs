@@ -11,13 +11,13 @@ namespace PictureManager.Domain.Database;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordsDataAdapter : TreeDataAdapter<KeywordM> {
+public class KeywordsDA : TreeDataAdapter<KeywordM> {
   private readonly Db _db;
   private const string _notFoundRecordNamePrefix = "Not found ";
 
   public KeywordsM Model { get; }
 
-  public KeywordsDataAdapter(Db db) : base("Keywords", 3) {
+  public KeywordsDA(Db db) : base("Keywords", 3) {
     _db = db;
     _db.ReadyEvent += delegate { OnDbReady(); };
     Model = new(this);

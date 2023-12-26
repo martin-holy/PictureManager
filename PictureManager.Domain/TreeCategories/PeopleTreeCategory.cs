@@ -22,7 +22,7 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
     set => _unknownGroup = value;
   }
 
-  public PeopleTreeCategory(PeopleM peopleM, PeopleDataAdapter da) :
+  public PeopleTreeCategory(PeopleM peopleM, PeopleDA da) :
     base(Res.IconPeopleMultiple, "People", (int)Category.People) {
     _peopleM = peopleM;
     DataAdapter = da;

@@ -19,7 +19,7 @@ namespace PictureManager.Domain.Models;
 public sealed class SegmentsM : ObservableObject {
   private bool _canSetAsSamePerson;
 
-  public SegmentsDataAdapter DataAdapter { get; set; }
+  public SegmentsDA DataAdapter { get; set; }
   public SegmentsRectsM SegmentsRectsM { get; }
   public SegmentsDrawerM SegmentsDrawerM { get; }
   public Selecting<SegmentM> Selected { get; } = new();
@@ -33,7 +33,7 @@ public sealed class SegmentsM : ObservableObject {
   public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
   public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
 
-  public SegmentsM(SegmentsDataAdapter da) {
+  public SegmentsM(SegmentsDA da) {
     DataAdapter = da;
     DataAdapter.ItemDeletedEvent += OnItemDeleted;
     DataAdapter.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;

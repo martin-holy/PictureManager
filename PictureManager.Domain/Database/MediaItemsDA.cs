@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace PictureManager.Domain.Database;
 
-public sealed class MediaItemsDataAdapter : TableDataAdapter<MediaItemM> {
+public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   private readonly Db _db;
   private static readonly string[] _supportedImageExts = { ".jpg", ".jpeg" };
   private static readonly string[] _supportedVideoExts = { ".mp4" };
@@ -18,7 +18,7 @@ public sealed class MediaItemsDataAdapter : TableDataAdapter<MediaItemM> {
 
   public event EventHandler<ObjectEventArgs<MediaItemM>> ItemRenamedEvent = delegate { };
 
-  public MediaItemsDataAdapter(Db db) : base(string.Empty, 0) {
+  public MediaItemsDA(Db db) : base(string.Empty, 0) {
     _db = db;
     _db.ReadyEvent += delegate { OnDbReady(); };
     Model = new(this);
