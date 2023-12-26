@@ -13,6 +13,7 @@ public sealed class Db : SimpleDB {
   public FolderKeywordsDataAdapter FolderKeywords { get; }
   public FoldersDataAdapter Folders { get; }
   public GeoNamesDataAdapter GeoNames { get; }
+  public GeoLocationsDA GeoLocations { get; }
   public ImagesDA Images { get; }
   public KeywordsDataAdapter Keywords { get; }
   public MediaItemsDataAdapter MediaItems { get; }
@@ -23,13 +24,16 @@ public sealed class Db : SimpleDB {
   public VideosDA Videos { get; }
   public ViewersDataAdapter Viewers { get; }
 
+  public MediaItemGeoLocationDA MediaItemGeoLocation { get; }
   public VideoItemsOrderDA VideoItemsOrder { get; }
+
   public Db() {
     CategoryGroups = new(this);
     FavoriteFolders = new(this);
     FolderKeywords = new(this);
     Folders = new(this);
     GeoNames = new();
+    GeoLocations = new(this);
     Images = new(this);
     Keywords = new(this);
     MediaItems = new(this);
@@ -39,6 +43,8 @@ public sealed class Db : SimpleDB {
     VideoImages = new(this);
     Videos = new(this);
     Viewers = new(this);
+
+    MediaItemGeoLocation = new(this);
     VideoItemsOrder = new(this);
   }
 
@@ -50,13 +56,15 @@ public sealed class Db : SimpleDB {
     AddTableDataAdapter(Viewers);
     AddTableDataAdapter(People); // needs to be before Segments
     AddTableDataAdapter(GeoNames);
-    AddDataAdapter(MediaItems);
+    AddTableDataAdapter(GeoLocations);
     AddTableDataAdapter(Images);
     AddTableDataAdapter(Videos);
     AddTableDataAdapter(VideoClips);
     AddTableDataAdapter(VideoImages);
     AddTableDataAdapter(FavoriteFolders);
     AddTableDataAdapter(Segments);
+
+    AddRelationDataAdapter(MediaItemGeoLocation);
     AddRelationDataAdapter(VideoItemsOrder);
   }
 

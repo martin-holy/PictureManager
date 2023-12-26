@@ -1,9 +1,11 @@
 ﻿using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain.HelperClasses;
 
@@ -12,17 +14,19 @@ public class MediaItemMetadata {
   public bool Success { get; set; }
   public string[] People { get; set; }
   public string[] Keywords { get; set; }
-  public string GeoName { get; set; }
+  public double? Lat { get; set; }
+  public double? Lng { get; set; }
+  public int? GeoNameId { get; set; }
   public List<Tuple<string, List<Tuple<string, string[]>>>> PeopleSegmentsKeywords { get; set; }
 
   public MediaItemMetadata(RealMediaItemM mediaItem) {
     MediaItem = mediaItem;
   }
 
-  public void FindRefs() {
+  public async Task FindRefs() {
     FindPeople();
     FindKeywords();
-    FindGeoName();
+    await FindGeoLocation();
   }
 
   public void FindPeople() {
@@ -99,11 +103,7 @@ public class MediaItemMetadata {
     }
   }
 
-  public void FindGeoName() {
-    if (!string.IsNullOrEmpty(GeoName)) {
-      // TODO find/create GeoName
-      MediaItem.GeoName = Core.Db.GeoNames.All
-        .SingleOrDefault(x => x.GetHashCode() == int.Parse(GeoName));
-    }
-  }
+  public async Task FindGeoLocation() =>
+    Core.Db.MediaItemGeoLocation.ItemUpdate(new(MediaItem,
+      await Core.Db.GeoLocations.GetOrCreate(Lat, Lng, GeoNameId, null)));
 }

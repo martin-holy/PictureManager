@@ -1,54 +1,73 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace PictureManager.Domain.Models;
 
 public sealed class GeoNamesM {
+  private readonly GeoNamesDataAdapter _da;
+  
+  public bool ApiLimitExceeded { get; set; }
   public GeoNamesTreeCategory TreeCategory { get; }
   public RelayCommand<object> NewGeoNameFromGpsCommand { get; }
 
   public GeoNamesM(GeoNamesDataAdapter da) {
+    _da = da;
     TreeCategory = new(da);
-    NewGeoNameFromGpsCommand = new(() => NewGeoNameFromGps(Core.Settings.GeoNamesUserName));
+    NewGeoNameFromGpsCommand = new(NewGeoNameFromGps);
   }
+  
+  public Task<GeoNameM> InsertGeoNameHierarchy(double lat, double lng) =>
+    InsertGeoNameHierarchy($"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}".Replace(",", "."));
 
-  public GeoNameM InsertGeoNameHierarchy(double lat, double lng, string userName) {
+  public Task<GeoNameM> InsertGeoNameHierarchy(int id) =>
+    InsertGeoNameHierarchy($"http://api.geonames.org/hierarchy?geonameId={id}");
+
+  private async Task<GeoNameM> InsertGeoNameHierarchy(string url) {
+    if (ApiLimitExceeded) return null;
+
+    if (string.IsNullOrEmpty(Core.Settings.GeoNamesUserName)) {
+      ApiLimitExceeded = true;
+      Log.Error("GeoNames user name was not set.", "Please register at geonames.org and set your user name in the settings.");
+      return null;
+    }
+
     try {
-      var url = $"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}&username={userName}".Replace(",", ".");
-      var xml = new XmlDocument();
-      xml.Load(url);
-      var geonames = xml.SelectNodes("/geonames/geoname");
-      if (geonames == null) return null;
+      var root = await Task.Run(() => {
+        var xml = new XmlDocument();
+        xml.Load($"{url}&username={Core.Settings.GeoNamesUserName}");
+        return xml.SelectSingleNode("/geonames");
+      });
 
-      GeoNameM parentGeoName = null;
-      foreach (XmlNode geoname in geonames) {
-        var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
-        var dbGeoName = Core.Db.GeoNames.All.SingleOrDefault(x => x.Id == geoNameId);
-
-        if (dbGeoName == null) {
-          dbGeoName = new(
-            geoNameId,
-            geoname.SelectSingleNode("name")?.InnerText,
-            geoname.SelectSingleNode("toponymName")?.InnerText,
-            geoname.SelectSingleNode("fcode")?.InnerText,
-            parentGeoName);
-
-          Core.Db.GeoNames.All.Add(dbGeoName);
-          parentGeoName?.Items.Add(dbGeoName);
-          Tasks.RunOnUiThread(() => Core.Db.GeoNames.IsModified = true);
-        }
-
-        parentGeoName = dbGeoName;
+      var geoNames = root.SelectNodes("geoname");
+      if (geoNames == null) {
+        ApiLimitExceeded = true;
+        var errorMessage = root.SelectSingleNode("/status")?.Attributes?["message"]?.Value ?? string.Empty;
+        Log.Error("Error occurred while retrieving GeoName information.", errorMessage);
+        return null;
       }
 
-      return parentGeoName;
+      GeoNameM gn = null;
+      foreach (XmlNode g in geoNames) {
+        var geoNameId = int.Parse(g.SelectSingleNode("geonameId")?.InnerText ?? "0");
+        gn = _da.All.SingleOrDefault(x => x.GetHashCode() == geoNameId) ??
+             _da.ItemCreate(
+               geoNameId,
+               g.SelectSingleNode("name")?.InnerText,
+               g.SelectSingleNode("toponymName")?.InnerText,
+               g.SelectSingleNode("fcode")?.InnerText,
+               (ITreeItem)gn ?? TreeCategory);
+      }
+
+      return gn;
     }
     catch (Exception ex) {
       Log.Error(ex);
@@ -56,7 +75,7 @@ public sealed class GeoNamesM {
     }
   }
 
-  private (double, double) ParseLatLng(string latLng) {
+  private static (double, double) ParseLatLng(string latLng) {
     try {
       var lat = double.Parse(latLng.Split(',')[0].Replace("N", "").Replace("S", "-"), CultureInfo.InvariantCulture);
       var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-"), CultureInfo.InvariantCulture);
@@ -68,21 +87,7 @@ public sealed class GeoNamesM {
     }
   }
 
-  public static bool IsGeoNamesUserNameInSettings(string userName) {
-    if (!string.IsNullOrEmpty(userName)) return true;
-
-    Dialog.Show(new MessageDialog(
-      "GeoNames User Name",
-      "GeoNames user name was not found.\nPlease register at geonames.org and set your user name in the settings.",
-      Res.IconInformation,
-      false));
-
-    return false;
-  }
-
-  public void NewGeoNameFromGps(string userName) {
-    if (!IsGeoNamesUserNameInSettings(userName)) return;
-
+  public async void NewGeoNameFromGps() {
     var inputDialog = new InputDialog(
       "GeoName latitude and longitude",
       "Enter in format: N36.75847,W3.84609",
@@ -98,6 +103,6 @@ public sealed class GeoNamesM {
     if (Dialog.Show(inputDialog) != 1) return;
 
     var (lat, lng) = ParseLatLng(inputDialog.Answer);
-    InsertGeoNameHierarchy(lat, lng, userName);
+    await InsertGeoNameHierarchy(lat, lng);
   }
 }
