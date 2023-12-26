@@ -1,7 +1,7 @@
 ﻿using MH.UI.WPF.Converters;
 using MH.Utils;
 using PictureManager.Domain;
-using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,8 +19,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMarkupExtensionMultiConv
 
       if (!File.Exists(mi.FilePathCache)) {
         if (!File.Exists(mi.FilePath)) {
-          Tasks.RunOnUiThread(() =>
-            Core.Db.MediaItems.ItemsDelete(new[] { mi }));
+          Core.Db.MediaItems.ItemsDelete(new[] { mi is VideoItemM vmi ? vmi.Video : mi });
           return null;
         }
 
@@ -30,7 +29,8 @@ public sealed class MediaItemThumbSourceConverter : BaseMarkupExtensionMultiConv
 
       var orientation = mi.Orientation;
       // swap 90 and 270 degrees for video
-      if (mi.MediaType == MediaType.Video) {
+      // TODO test it for VideoClip and VideoImage
+      if (mi is VideoM) {
         if (mi.Orientation == 6)
           orientation = 8;
         else if (mi.Orientation == 8)
@@ -63,15 +63,28 @@ public sealed class MediaItemThumbSourceConverter : BaseMarkupExtensionMultiConv
 
   private static void CreateThumbnail(MediaItemM mi) {
     _ignoreCache.Add(mi);
-    if (mi.MediaType == MediaType.Video) {
-      CreateVideoThumbnail(mi);
-      TriggerChanged(mi);
-    }
-    else {
-      _taskQueue.Add(mi);
-      _taskQueue.Start(CreateImageThumbnail, TriggerChanged);
+
+    switch (mi) {
+      case ImageM:
+        _taskQueue.Add(mi);
+        _taskQueue.Start(CreateImageThumbnail, TriggerChanged);
+        break;
+      case VideoM:
+        CreateVideoThumbnail(mi);
+        TriggerChanged(mi);
+        break;
+      case VideoItemM vi:
+        CreateVideoItemThumbnail(vi);
+        break;
     }
   }
+
+  private static void CreateImageThumbnail(MediaItemM mi) =>
+    Utils.Imaging.CreateImageThumbnail(
+      mi.FilePath,
+      mi.FilePathCache,
+      Core.Settings.ThumbnailSize,
+      Core.Settings.JpegQualityLevel);
 
   private static void CreateVideoThumbnail(MediaItemM mi) =>
     Utils.Imaging.CreateThumbnail(
@@ -81,12 +94,18 @@ public sealed class MediaItemThumbSourceConverter : BaseMarkupExtensionMultiConv
       0,
       Core.Settings.JpegQualityLevel);
 
-  private static void CreateImageThumbnail(MediaItemM mi) =>
-    Utils.Imaging.CreateImageThumbnail(
-      mi.FilePath,
-      mi.FilePathCache,
-      Core.Settings.ThumbnailSize,
-      Core.Settings.JpegQualityLevel);
+  private static void CreateVideoItemThumbnail(VideoItemM vi) {
+    if (ReferenceEquals(Core.VideosM.MediaPlayer.CurrentItem, vi)) {
+      MH.UI.WPF.Utils.Imaging.CreateThumbnailFromVisual(
+        AppCore.FullVideo,
+        vi.FilePathCache,
+        Core.Settings.ThumbnailSize,
+        Core.Settings.JpegQualityLevel);
+      TriggerChanged(vi);
+    }
+    else
+      Core.VideoClipsM.RebuildVideoClipsThumbnails(new[] { (MediaItemM)vi.Video });
+  }
 
   private static void TriggerChanged(MediaItemM mi) =>
     mi.OnPropertyChanged(nameof(mi.FilePathCache));
