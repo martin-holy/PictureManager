@@ -34,9 +34,9 @@ public static class GetDataExtensions {
       : folder.FolderKeyword.GetThisAndParents();
 
   public static IEnumerable<GeoNameM> GetGeoNames(this MediaItemM mediaItem) =>
-    mediaItem.GeoName == null
-      ? Enumerable.Empty<GeoNameM>()
-      : mediaItem.GeoName.GetThisAndParents();
+    Core.Db.MediaItemGeoLocation.All.TryGetValue(mediaItem, out var gl) && gl.GeoName != null
+      ? gl.GeoName.GetThisAndParents()
+      : Enumerable.Empty<GeoNameM>();
 
   public static IEnumerable<GeoNameM> GetGeoNames(this IEnumerable<MediaItemM> mediaItems) =>
     mediaItems
@@ -52,7 +52,7 @@ public static class GetDataExtensions {
       .SelectMany(x => x.GetThisAndParents())
       .Distinct();
 
-  public static IEnumerable<KeywordM> GetKeywords(this MediaItemM[] mediaItems) =>
+  public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<MediaItemM> mediaItems) =>
     mediaItems
       .EmptyIfNull()
       .SelectMany(x => x.GetKeywords())
