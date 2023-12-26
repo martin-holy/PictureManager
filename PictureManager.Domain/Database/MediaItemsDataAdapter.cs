@@ -1,202 +1,178 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
-using System.Linq;
+using PictureManager.Domain.Models.MediaItems;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace PictureManager.Domain.Database;
 
-/// <summary>
-/// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
-/// </summary>
-public sealed class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
+public sealed class MediaItemsDataAdapter : TableDataAdapter<MediaItemM> {
   private readonly Db _db;
+  private static readonly string[] _supportedImageExts = { ".jpg", ".jpeg" };
+  private static readonly string[] _supportedVideoExts = { ".mp4" };
 
   public MediaItemsM Model { get; }
+
   public event EventHandler<ObjectEventArgs<MediaItemM>> ItemRenamedEvent = delegate { };
 
-  public MediaItemsDataAdapter(Db db) : base("MediaItems", 12) {
+  public MediaItemsDataAdapter(Db db) : base(string.Empty, 0) {
     _db = db;
-    _db.ReadyEvent += OnDbReady;
+    _db.ReadyEvent += delegate { OnDbReady(); };
     Model = new(this);
-  }
-
-  private void OnDbReady(object sender, EventArgs args) {
-    _db.Segments.ItemCreatedEvent += (_, e) => {
-      Modify(e.Data.MediaItem);
-      Model.OnPropertyChanged(nameof(Model.ModifiedItemsCount));
-    };
   }
 
   private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, new(item));
 
-  public override void Save() =>
-    SaveDriveRelated(All
-      .GroupBy(x => Tree.GetParentOf<DriveM>(x.Folder))
-      .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
+  private void OnDbReady() {
+    MaxId = _db.Images.MaxId;
 
-  public override MediaItemM FromCsv(string[] csv) =>
-    new(int.Parse(csv[0]), null, csv[2]) {
-      Width = csv[3].IntParseOrDefault(0),
-      Height = csv[4].IntParseOrDefault(0),
-      Orientation = csv[5].IntParseOrDefault(1),
-      Rating = csv[6].IntParseOrDefault(0),
-      Comment = string.IsNullOrEmpty(csv[7]) ? null : csv[7],
-      IsOnlyInDb = csv[11] == "1"
+    _db.Segments.ItemCreatedEvent += (_, e) => {
+      Modify(e.Data.MediaItem);
+      Model.UpdateModifiedCount();
     };
 
-  public override string ToCsv(MediaItemM mediaItem) =>
-    string.Join("|",
-      mediaItem.GetHashCode().ToString(),
-      mediaItem.Folder.GetHashCode().ToString(),
-      mediaItem.FileName,
-      mediaItem.Width.ToString(),
-      mediaItem.Height.ToString(),
-      mediaItem.Orientation.ToString(),
-      mediaItem.Rating.ToString(),
-      mediaItem.Comment ?? string.Empty,
-      mediaItem.GeoName?.GetHashCode().ToString(),
-      mediaItem.People == null
-        ? string.Empty
-        : string.Join(",", mediaItem.People.Select(x => x.GetHashCode().ToString())),
-      mediaItem.Keywords == null
-        ? string.Empty
-        : string.Join(",", mediaItem.Keywords.Select(x => x.GetHashCode().ToString())),
-      mediaItem.IsOnlyInDb
-        ? "1"
-        : string.Empty);
+    _db.Images.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
+    _db.Images.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
+    _db.Images.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
+    _db.Videos.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
+    _db.Videos.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
+    _db.Videos.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
+    _db.VideoClips.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
+    _db.VideoClips.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
+    _db.VideoClips.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
+    _db.VideoImages.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
+    _db.VideoImages.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
+    _db.VideoImages.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
 
-  public override void LinkReferences() {
-    foreach (var (mi, csv) in AllCsv) {
-      // reference to Folder and back reference from Folder to MediaItems
-      mi.Folder = _db.Folders.AllDict[int.Parse(csv[1])];
-      mi.Folder.MediaItems.Add(mi);
-
-      // reference to People
-      mi.People = _db.People.Link(csv[9], this);
-
-      // reference to Keywords
-      mi.Keywords = _db.Keywords.Link(csv[10], this);
-
-      // reference to GeoName
-      if (!string.IsNullOrEmpty(csv[8]))
-        mi.GeoName = _db.GeoNames.AllDict[int.Parse(csv[8])];
-    }
+    _db.MediaItemGeoLocation.ItemDeletedEvent += (_, e) => Modify(e.Data.Key);
+    _db.MediaItemGeoLocation.ItemCreatedEvent += (_, e) => Modify(e.Data.Key);
+    _db.GeoLocations.ItemUpdatedEvent += (_, e) => {
+      foreach (var kv in _db.MediaItemGeoLocation.All.Where(x => ReferenceEquals(x.Value, e.Data)))
+        Modify(kv.Key);
+    };
   }
 
-  public override void Modify(MediaItemM item) {
-    base.Modify(item);
-    item.IsOnlyInDb = true;
-  }
-
-  public IEnumerable<MediaItemM> GetItems(RatingM rating) =>
-    All.Where(x => x.Rating == rating.Value);
-
-  public IEnumerable<MediaItemM> GetItems(PersonM person) =>
-    All.Where(mi =>
-        mi.People?.Contains(person) == true ||
-        mi.Segments?.Any(s => s.Person == person) == true)
-      .OrderBy(mi => mi.FileName);
-
-  public IEnumerable<MediaItemM> GetItems(KeywordM keyword, bool recursive) {
-    var keywords = new List<KeywordM> { keyword };
-    if (recursive) Tree.GetThisAndItemsRecursive(keyword, ref keywords);
-    var set = new HashSet<KeywordM>(keywords);
-
-    return All
-      .Where(mi => mi.Keywords?.Any(k => set.Contains(k)) == true
-                   || mi.Segments?.Any(s => s.Keywords?.Any(k => set.Contains(k)) == true) == true);
-  }
-
-  public IEnumerable<MediaItemM> GetItems(GeoNameM geoName, bool recursive) {
-    var geoNames = new List<GeoNameM> { geoName };
-    if (recursive) Tree.GetThisAndItemsRecursive(geoName, ref geoNames);
-    var set = new HashSet<GeoNameM>(geoNames);
-
-    return All.Where(mi => set.Contains(mi.GeoName))
-      .OrderBy(x => x.FileName);
-  }
-
-  public MediaItemM ItemCreate(FolderM folder, string fileName) {
-    var item = new MediaItemM(GetNextId(), folder, fileName);
-    folder.MediaItems.Add(item);
-    All.Add(item);
+  protected override void OnItemCreated(MediaItemM item) {
+    Model.UpdateItemsCount();
     RaiseItemCreated(item);
-
-    return item;
   }
 
-  public void ItemMove(MediaItemM item, FolderM folder, string fileName) {
+  protected override void OnItemDeleted(MediaItemM item) {
+    Model.UpdateItemsCount();
+    Model.UpdateModifiedCount();
+    RaiseItemDeleted(item);
+  }
+
+  protected override void OnItemsDeleted(IList<MediaItemM> items) =>
+    RaiseItemsDeleted(items);
+
+  public override int GetNextId() {
+    var id = ++MaxId;
+    _db.Images.MaxId = id;
+    _db.Videos.MaxId = id;
+    _db.VideoClips.MaxId = id;
+    _db.VideoImages.MaxId = id;
+    return id;
+  }
+
+  public override MediaItemM GetById(string id, bool nullable = false) {
+    var intId = int.Parse(id);
+    if (_db.Images.AllDict.TryGetValue(intId, out var img)) return img;
+    if (_db.Videos.AllDict.TryGetValue(intId, out var vid)) return vid;
+    if (_db.VideoClips.AllDict.TryGetValue(intId, out var vc)) return vc;
+    if (_db.VideoImages.AllDict.TryGetValue(intId, out var vi)) return vi;
+    return null;
+  }
+
+  public RealMediaItemM ItemCreate(FolderM folder, string fileName) {
+    if (_supportedImageExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
+      return _db.Images.ItemCreate(folder, fileName);
+
+    if (_supportedVideoExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
+      return _db.Videos.ItemCreate(folder, fileName);
+
+    throw new($"Can not create item. Unknown MediaItem type. {fileName}");
+  }
+
+  public void ItemRename(RealMediaItemM item, string newFileName) {
+    var oldFilePath = item.FilePath;
+    var oldFilePathCache = item.FilePathCache;
+    item.FileName = newFileName;
+
+    try {
+      File.Move(oldFilePath, item.FilePath);
+      File.Move(oldFilePathCache, item.FilePathCache);
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
+    
+    Modify(item);
+    Model.OnPropertyChanged(nameof(Model.Current));
+    RaiseItemRenamed(item);
+  }
+
+  public void ItemMove(RealMediaItemM item, FolderM folder, string fileName) {
     item.FileName = fileName;
     item.Folder.MediaItems.Remove(item);
     item.Folder = folder;
     item.Folder.MediaItems.Add(item);
-
-    IsModified = true;
+    Modify(item);
   }
 
-  public MediaItemM ItemCopy(MediaItemM item, FolderM folder, string fileName) {
-    var copy = new MediaItemM(GetNextId(), folder, fileName) {
-      Width = item.Width,
-      Height = item.Height,
-      Orientation = item.Orientation,
-      Rating = item.Rating,
-      Comment = item.Comment,
-      GeoName = item.GeoName,
-      Lat = item.Lat,
-      Lng = item.Lng
+  public RealMediaItemM ItemCopy(RealMediaItemM item, FolderM folder, string fileName) =>
+    item switch {
+      ImageM img => _db.Images.ItemCopy(img, folder, fileName),
+      VideoM vid => _db.Videos.ItemCopy(vid, folder, fileName),
+      _ => null
     };
+
+  public void ItemCopyCommon(MediaItemM item, MediaItemM copy) {
+    copy.Width = item.Width;
+    copy.Height = item.Height;
+    copy.Orientation = item.Orientation;
+    copy.Rating = item.Rating;
+    copy.Comment = item.Comment;
+
+    if (_db.MediaItemGeoLocation.All.TryGetValue(item, out var gl))
+      _db.MediaItemGeoLocation.ItemCreate(new(copy, gl));
 
     if (item.People != null)
       copy.People = new(item.People);
 
     if (item.Keywords != null)
-      copy.Keywords = new (item.Keywords);
+      copy.Keywords = new(item.Keywords);
 
     if (item.Segments != null)
       foreach (var segment in item.Segments)
         _db.Segments.ItemCopy(segment, copy);
-
-    copy.Folder.MediaItems.Add(copy);
-    All.Add(copy);
-    RaiseItemCreated(copy);
-
-    return copy;
   }
 
-  public void ItemDelete(MediaItemM item) {
-    if (item == null) return;
-    All.Remove(item);
-    IsModified = true;
-    RaiseItemDeleted(item);
-    OnItemDeleted(item);
+  public override void Modify(MediaItemM mi) {
+    switch (mi) {
+      case ImageM img: _db.Images.Modify(img); break;
+      case VideoM vid: _db.Videos.Modify(vid); break;
+      case VideoClipM vc: _db.VideoClips.Modify(vc); break;
+      case VideoImageM vi: _db.VideoImages.Modify(vi); break;
+    }
   }
 
-  public void ItemsDelete(IList<MediaItemM> items) {
-    if (items == null || items.Count == 0) return;
-    foreach (var mi in items) ItemDelete(mi);
-    RaiseItemsDeleted(items);
+  public override void ItemDelete(MediaItemM mi) {
+    switch (mi) {
+      case ImageM img: _db.Images.ItemDelete(img); break;
+      case VideoM vid: _db.Videos.ItemDelete(vid); break;
+      case VideoClipM vc: _db.VideoClips.ItemDelete(vc); break;
+      case VideoImageM vi: _db.VideoImages.ItemDelete(vi); break;
+    }
   }
 
-  protected override void OnItemDeleted(MediaItemM item) {
-    item.People = null;
-    item.Keywords = null;
-    item.GeoName = null;
-    item.Folder.MediaItems.Remove(item);
-    // TODO test this why is commented out
-    //item.Folder = null;
-  }
-
-  public void ItemRename(MediaItemM item, string newFileName) {
-    var oldFilePath = item.FilePath;
-    var oldFilePathCache = item.FilePathCache;
-    item.FileName = newFileName;
-    File.Move(oldFilePath, item.FilePath);
-    File.Move(oldFilePathCache, item.FilePathCache);
-    IsModified = true;
-    RaiseItemRenamed(item);
+  public override void ItemsDelete(IList<MediaItemM> items) {
+    _db.Images.ItemsDelete(items.OfType<ImageM>().ToArray());
+    _db.Videos.ItemsDelete(items.OfType<VideoM>().ToArray());
+    _db.VideoClips.ItemsDelete(items.OfType<VideoClipM>().ToArray());
+    _db.VideoImages.ItemsDelete(items.OfType<VideoImageM>().ToArray());
   }
 }

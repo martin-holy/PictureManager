@@ -1,19 +1,17 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Dialogs {
   public sealed class ResizeImagesDialogM : Dialog {
     private CancellationTokenSource _cts;
-    private readonly MediaItemM[] _items;
+    private readonly ImageM[] _items;
     private bool _preserveThumbnail;
     private bool _preserveMetadata;
     private string _fileName;
@@ -36,7 +34,7 @@ namespace PictureManager.Domain.Dialogs {
 
     public RelayCommand<object> OpenFolderBrowserCommand { get; }
 
-    public ResizeImagesDialogM(IEnumerable<MediaItemM> items) : base("Resize Images", Res.IconImageMultiple) {
+    public ResizeImagesDialogM(ImageM[] items) : base("Resize Images", Res.IconImageMultiple) {
       OpenFolderBrowserCommand = new(OpenFolderBrowser);
       CloseCommand = new(Cancel);
 
@@ -44,7 +42,7 @@ namespace PictureManager.Domain.Dialogs {
         new("Resize", null, new(Resize), true),
         new("Cancel", Res.IconXCross, CloseCommand, false, true) }; 
 
-      _items = items.Where(x => x.MediaType == MediaType.Image).ToArray();
+      _items = items;
       ProgressMax = _items.Length;
 
       DirPaths = new(Core.Settings.DirectorySelectFolders.Split(','));

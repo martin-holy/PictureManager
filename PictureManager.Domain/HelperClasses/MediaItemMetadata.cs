@@ -8,14 +8,14 @@ using System.Linq;
 namespace PictureManager.Domain.HelperClasses;
 
 public class MediaItemMetadata {
-  public MediaItemM MediaItem { get; }
+  public RealMediaItemM MediaItem { get; }
   public bool Success { get; set; }
   public string[] People { get; set; }
   public string[] Keywords { get; set; }
   public string GeoName { get; set; }
   public List<Tuple<string, List<Tuple<string, string[]>>>> PeopleSegmentsKeywords { get; set; }
 
-  public MediaItemMetadata(MediaItemM mediaItem) {
+  public MediaItemMetadata(RealMediaItemM mediaItem) {
     MediaItem = mediaItem;
   }
 

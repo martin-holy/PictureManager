@@ -1,5 +1,7 @@
-﻿using MH.Utils;
+﻿using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
+using PictureManager.Domain.Models.MediaItems;
 using System.Timers;
 
 namespace PictureManager.Domain.Models {
@@ -68,7 +70,7 @@ namespace PictureManager.Domain.Models {
     public void Start(MediaItemM current, bool delay) {
       if (delay
         && PlayPanoramicImages
-        && current.MediaType == MediaType.Image 
+        && current is ImageM 
         && MediaItemsM.IsPanoramic(current)) {
         Pause();
         MinAnimationDuration = Interval * 1000;
@@ -78,8 +80,8 @@ namespace PictureManager.Domain.Models {
 
       IsPaused = false;
       IsRunning = true;
-      _mediaViewerM.MediaPlayerM.PlayType = PlayType.Video;
-      _mediaViewerM.MediaPlayerM.RepeatForSeconds = Interval;
+      Core.VideosM.MediaPlayer.PlayType = PlayType.Video;
+      Core.VideosM.MediaPlayer.RepeatForSeconds = Interval;
 
       if (!delay) Next();
     }
@@ -90,7 +92,7 @@ namespace PictureManager.Domain.Models {
 
       IsPaused = false;
       IsRunning = false;
-      _mediaViewerM.MediaPlayerM.RepeatForSeconds = 0; // infinity
+      Core.VideosM.MediaPlayer.RepeatForSeconds = 0; // infinity
     }
 
     public void Pause() {
@@ -118,10 +120,11 @@ namespace PictureManager.Domain.Models {
     public void Next(MediaItemM current) {
       var isPanoramic = MediaItemsM.IsPanoramic(current);
 
-      if (IsRunning && (current.MediaType == MediaType.Video || (isPanoramic && PlayPanoramicImages))) {
+      // TODO MediaTypes
+      if (IsRunning && (current is VideoM || (isPanoramic && PlayPanoramicImages))) {
         Pause();
 
-        if (current.MediaType == MediaType.Image && isPanoramic)
+        if (current is ImageM && isPanoramic)
           Start(current, true);
       }
     }

@@ -78,8 +78,7 @@ namespace PictureManager.Domain {
       { typeof(ViewersM), "TreeContextMenuViewers" },
       { typeof(ViewerM), "TreeContextMenuViewer" },
       { typeof(VideoClipsM), "TreeContextMenuVideoClips" },
-      { typeof(CategoryGroupM), "TreeContextMenuGroup" },
-      { typeof(VideoClipsGroupM), "TreeContextMenuVideoClipsGroup" }
+      { typeof(CategoryGroupM), "TreeContextMenuGroup" }
     };
 
     public static string CategoryToIcon(Category category) =>

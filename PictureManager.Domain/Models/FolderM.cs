@@ -3,6 +3,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Database;
+using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
-  public class FolderM : TreeItem, IEquatable<FolderM> {
+    public class FolderM : TreeItem, IEquatable<FolderM> {
     #region IEquatable implementation
     public bool Equals(FolderM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as FolderM);
@@ -23,7 +24,7 @@ namespace PictureManager.Domain.Models {
     private bool _isAccessible;
 
     public int Id { get; }
-    public List<MediaItemM> MediaItems { get; } = new();
+    public List<RealMediaItemM> MediaItems { get; } = new();
     public FolderKeywordM FolderKeyword { get; set; }
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); UpdateIcon(); } }
     public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
@@ -74,14 +75,7 @@ namespace PictureManager.Domain.Models {
         }
 
         // add new Folder to the database
-        folder = new(Core.Db.Folders.GetNextId(), dirName, this);
-        Core.Db.Folders.All.Add(folder);
-
-        // add new Folder to the tree
-        Items.Add(folder);
-
-        if (FolderKeyword != null)
-          Core.Db.FolderKeywords.LinkFolderWithFolderKeyword(this, FolderKeyword);
+        Core.Db.Folders.ItemCreate(this, dirName);
       }
 
       // remove Folders deleted outside of this application
@@ -104,7 +98,7 @@ namespace PictureManager.Domain.Models {
             item.LoadSubFolders(true);
           }
           else {
-            if (Directory.EnumerateDirectories(item.FullPath).GetEnumerator().MoveNext()) {
+            if (Directory.EnumerateDirectories(item.FullPath).Any()) {
               item.Items.Add(FoldersM.FolderPlaceHolder);
               item.FolderKeyword?.Items.Add(FolderKeywordsDataAdapter.FolderKeywordPlaceHolder);
             }
@@ -120,10 +114,10 @@ namespace PictureManager.Domain.Models {
       Items.Sort(x => ((FolderM)x).Name);
     }
 
-    public MediaItemM GetMediaItemByName(string fileName) =>
+    public RealMediaItemM GetMediaItemByName(string fileName) =>
       MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
 
-    public List<MediaItemM> GetMediaItems(bool recursive) {
+    public List<RealMediaItemM> GetMediaItems(bool recursive) {
       if (!recursive) return MediaItems;
 
       // get all Folders
@@ -131,7 +125,7 @@ namespace PictureManager.Domain.Models {
       Tree.GetThisAndItemsRecursive(this, ref folders);
 
       // get all MediaItems from folders
-      var mis = new List<MediaItemM>();
+      var mis = new List<RealMediaItemM>();
       foreach (var f in folders)
         mis.AddRange(f.MediaItems);
 
