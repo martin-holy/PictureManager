@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Year>$([System.DateTime]::Now.ToString("yy"))</Year>
     <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
     <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
@@ -14,6 +14,9 @@
     <Version>$(Year).$(Month).$(Date).$(Time)</Version>
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
     <FileVersion>$(Year).$(Month).$(Date).$(Time)</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý (2015 - 2023)</Copyright>
     <ApplicationIcon>modryhory.ico</ApplicationIcon>
