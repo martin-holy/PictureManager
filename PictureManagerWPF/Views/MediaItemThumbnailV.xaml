@@ -1,16 +1,15 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:mim="clr-namespace:PictureManager.Domain.Models.MediaItems;assembly=PictureManager.Domain"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate DataType="{x:Type m:MediaItemM}">
+  <DataTemplate DataType="{x:Type mim:MediaItemM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -46,18 +45,18 @@
 
       <!-- Video over layer -->
       <ContentControl
+        x:Name="vidOverlayer"
         Content="&#xE29E;"
         FontFamily="Segoe UI Symbol"
         FontSize="20" 
         VerticalAlignment="Center"
         HorizontalAlignment="Center"
         Opacity="0.77"
-        Visibility="{Binding MediaType, 
-                     Converter={mhConv:AllToVisibilityConverter},
-                     ConverterParameter={x:Static pmd:MediaType.Video}}"/>
+        Visibility="Collapsed"/>
 
       <!-- Video Clips over layer -->
       <Path
+        x:Name="vidClipsOverlayer"
         Style="{StaticResource MH.Styles.Icon}"
         Data="{StaticResource IconImageMultiple}"
         Width="20"
@@ -65,7 +64,7 @@
         HorizontalAlignment="Right"
         VerticalAlignment="Bottom"
         Margin="5"
-        Visibility="{Binding HasVideoClips, Converter={mhConv:AllToVisibilityConverter}}"/>
+        Visibility="Collapsed"/>
 
       <!-- Thumbnail Info Box -->
       <ItemsControl
@@ -84,6 +83,24 @@
           </MultiBinding>
         </DataTrigger.Binding>
         <Setter TargetName="info" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+      
+      <MultiDataTrigger>
+        <MultiDataTrigger.Conditions>
+          <Condition
+            Binding="{Binding Converter={mhConv:DataTypeConverter},
+                      ConverterParameter={x:Type mim:VideoM}}"
+            Value="True"/>
+          <Condition Binding="{Binding Path=(mim:VideoM.HasVideoClips)}" Value="True"/>
+        </MultiDataTrigger.Conditions>
+        <Setter TargetName="vidClipsOverlayer" Property="Visibility" Value="Visible"/>
+      </MultiDataTrigger>
+      
+      <DataTrigger
+        Binding="{Binding Converter={mhConv:DataTypeConverter},
+                  ConverterParameter={x:Type mim:VideoM}}"
+        Value="True">
+        <Setter TargetName="vidOverlayer" Property="Visibility" Value="Visible"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
