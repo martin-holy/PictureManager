@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MH.Utils;
 
-namespace MH.UI.Controls; 
+namespace MH.UI.Controls;
 
 public class CollectionViewGroupByItem<T> : TreeItem {
   private readonly Func<T, object, bool> _fit;
@@ -15,6 +15,10 @@ public class CollectionViewGroupByItem<T> : TreeItem {
 
   public CollectionViewGroupByItem(IListItem data, Func<T, object, bool> fit) : base(null, data) {
     _fit = fit;
+  }
+
+  public CollectionViewGroupByItem(IListItem data, IEnumerable<ITreeItem> items, Func<T, object, bool> fit) : this(data, fit) {
+    AddItems(items);
   }
 
   public bool Fit(T item) =>
