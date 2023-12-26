@@ -132,10 +132,12 @@ public static class DatabaseMigration {
   /// </summary>
   private static void From4To5() {
     Core.Db.ReadyEvent += (_, _) => {
-      Core.PeopleM.TreeCategory.UnknownGroup.AddItems(
-        Core.Db.People.All
+      var p = Core.Db.People.All
           .Where(x => x.IsUnknown && x.Parent == null)
-          .OrderBy(x => x.Name));
+        .OrderBy(x => x.Name)
+        .ToArray();
+      if (p.Length > 0)
+        Core.PeopleM.TreeCategory.UnknownGroup.AddItems(p);
     };
   }
 
