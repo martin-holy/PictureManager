@@ -5,7 +5,7 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.HelperClasses;
-using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -68,7 +68,7 @@ namespace PictureManager.Domain.DataViews {
 
     private object CanDrag(object source) {
       if (source is not MediaItemM) return null;
-      var data = Selected.Items.Select(p => p.FilePath).ToArray();
+      var data = Selected.Items.OfType<RealMediaItemM>().Select(p => p.FilePath).ToArray();
       return data.Length == 0 ? null : data;
     }
 
@@ -173,17 +173,25 @@ namespace PictureManager.Domain.DataViews {
           select new MediaItemMetadata(Core.Db.MediaItems.ItemCreate(folder, fileName)));
 
         // remove MediaItems deleted outside of this application
-        Core.MediaItemsM.DataAdapter.ItemsDelete(mediaItems.Values.ToArray());
+        Core.Db.MediaItems.ItemsDelete(mediaItems.Values.Cast<MediaItemM>().ToArray());
 
         toLoad.AddRange(folder.MediaItems);
       }
 
       await ReadMetadata(newItems);
       var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
+      //toLoad.AddRange(GetVideoItems(toLoad));
       AddMediaItems(Sort(toLoad.Except(notImported)).ToList(), and, hide);
       Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
       AfterLoad();
       IsLoading = false;
+    }
+
+    // TODO mi rewrite move this fce
+    private static IEnumerable<MediaItemM> GetVideoItems(IEnumerable<MediaItemM> items) {
+      var videos = items.OfType<VideoM>().ToHashSet();
+      return Core.Db.VideoClips.All.Where(x => videos.Contains(x.Video)).Cast<MediaItemM>()
+        .Concat(Core.Db.VideoImages.All.Where(x => videos.Contains(x.Video)));
     }
 
     private async void CancelImport() =>
@@ -199,26 +207,30 @@ namespace PictureManager.Domain.DataViews {
       await _importTask.Start(new(() => {
         try {
           Parallel.ForEach(
-            items.Where(x => x.MediaItem.MediaType == MediaType.Image),
+            items.Where(x => x.MediaItem is ImageM),
             new() { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _importTask.Token },
             mim => {
-              Core.MediaItemsM.ReadMetadata(mim, false);
+              MediaItemsM.ReadMetadata(mim, false);
               _importProgress.Report(1);
             });
         }
         catch (OperationCanceledException) { }
       }));
 
-      foreach (var mim in items.Where(x => x.MediaItem.MediaType == MediaType.Video)) {
-        Core.MediaItemsM.ReadMetadata(mim, false);
+      foreach (var mim in items.Where(x => x.MediaItem is VideoM)) {
+        MediaItemsM.ReadMetadata(mim, false);
         _importProgress.Report(1);
       }
 
-      foreach (var mim in items)
+      ImportDoneCount = 0; // new counter for loading GeoNames if any
+      foreach (var mim in items) {
         if (mim.Success)
-          mim.FindRefs();
+          await mim.FindRefs();
         else
-          Core.MediaItemsM.DataAdapter.ItemDelete(mim.MediaItem);
+          Core.Db.MediaItems.ItemDelete(mim.MediaItem);
+
+        _importProgress.Report(1);
+      }
 
       IsImporting = false;
       IsLoading = true;

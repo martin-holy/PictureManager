@@ -90,7 +90,8 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         break;
 
       case string[]: // MediaItems
-        var items = Core.MediaItemsViews.Current.Selected.Items.ToList();
+        var items = Core.MediaItemsViews.Current.Selected.Items.OfType<RealMediaItemM>().ToList();
+        // TODO mi rewrite (don't do anything if count is 0)
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} media items",
               $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Count)} to '{dest.Name}'?",
@@ -99,7 +100,6 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
           return;
 
         Core.MediaItemsM.CopyMove(foMode, items, destFolder);
-        Core.MediaItemsM.DataAdapter.IsModified = true;
 
         break;
     }

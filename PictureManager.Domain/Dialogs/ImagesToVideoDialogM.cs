@@ -3,8 +3,8 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain.Dialogs {
   public sealed class ImagesToVideoDialogM : Dialog {
     private bool _isBusy;
-    private readonly MediaItemM[] _items;
+    private readonly ImageM[] _items;
     private Process _process;
     private readonly string _inputListPath;
     private readonly string _outputFilePath;
@@ -26,14 +26,14 @@ namespace PictureManager.Domain.Dialogs {
     public delegate void OnSuccess(FolderM folder, string fileName);
     public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
 
-    public ImagesToVideoDialogM(IEnumerable<MediaItemM> items, OnSuccess onSuccess) : base("Images to Video", Res.IconMovieClapper) {
+    public ImagesToVideoDialogM(ImageM[] items, OnSuccess onSuccess) : base("Images to Video", Res.IconMovieClapper) {
       CloseCommand = new(Cancel);
 
       Buttons = new DialogButton[] {
         new("Create Video", Res.IconMovieClapper, new(CreateVideo, () => !IsBusy), true),
         new("Cancel", Res.IconXCross, CloseCommand, false, true) };
 
-      _items = items.ToArray();
+      _items = items;
       var firstMi = _items.First();
       var fileName = IOExtensions.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
 

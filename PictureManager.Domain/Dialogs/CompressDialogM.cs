@@ -1,7 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Dialogs {
-  public class CompressDialogM : Dialog {
+    public class CompressDialogM : Dialog {
     private CancellationTokenSource _cts;
     private Task _workTask;
 
@@ -25,9 +25,9 @@ namespace PictureManager.Domain.Dialogs {
     public string TotalCompressedSize => IOExtensions.FileSizeToString(_totalCompressedSize);
     public double ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
     public bool IsWorkInProgress { get => _isWorkInProgress; set { _isWorkInProgress = value; OnPropertyChanged(); } }
-    public List<MediaItemM> Items { get; set; }
+    public List<ImageM> Items { get; set; }
 
-    public CompressDialogM(List<MediaItemM> items, int jpegQualityLevel) : base("Compress Pictures to JPG", Res.IconImage) {
+    public CompressDialogM(List<ImageM> items, int jpegQualityLevel) : base("Compress Pictures to JPG", Res.IconImage) {
       Items = items;
       JpegQualityLevel = jpegQualityLevel;
       ProgressValue = Items.Count;
@@ -82,13 +82,13 @@ namespace PictureManager.Domain.Dialogs {
       RelayCommand.InvokeCanExecuteChanged(null, EventArgs.Empty);
     }
 
-    private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(List<MediaItemM> items, [EnumeratorCancellation] CancellationToken token = default) {
+    private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(List<ImageM> items, [EnumeratorCancellation] CancellationToken token = default) {
       foreach (var mi in items) {
         if (token.IsCancellationRequested) yield break;
 
         yield return await Task.Run(() => {
           var originalSize = new FileInfo(mi.FilePath).Length;
-          var bSuccess = Core.MediaItemsM.TryWriteMetadata(mi);
+          var bSuccess = Core.ImagesM.TryWriteMetadata(mi);
           var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
           return new[] { originalSize, newSize };
         });

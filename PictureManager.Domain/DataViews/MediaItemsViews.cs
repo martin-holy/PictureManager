@@ -2,12 +2,13 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.DataViews; 
+namespace PictureManager.Domain.DataViews;
 
 public sealed class MediaItemsViews : ObservableObject {
   private readonly List<MediaItemsView> _all = new();
@@ -16,13 +17,13 @@ public sealed class MediaItemsViews : ObservableObject {
   public MediaItemsView Current { get => _current; set { _current = value; OnPropertyChanged(); } }
   public static double DefaultThumbScale { get; set; } = 1.0;
 
-  public RelayCommand<string> AddViewCommand { get; }
+  public RelayCommand<object> AddViewCommand { get; }
   public RelayCommand<object> CopyPathsCommand { get; }
   public RelayCommand<object> LoadByTagCommand { get; }
   public RelayCommand<object> ShuffleCommand { get; }
 
   public MediaItemsViews() {
-    AddViewCommand = new(AddView);
+    AddViewCommand = new(() => AddView(string.Empty));
     CopyPathsCommand = new(
       () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),
       () => Current?.Selected.Items.Any() == true);
@@ -112,10 +113,10 @@ public sealed class MediaItemsViews : ObservableObject {
     var hide = Keyboard.IsAltOn();
     var recursive = Keyboard.IsShiftOn();
     var items = item switch {
-      RatingTreeM rating => Core.Db.MediaItems.GetItems(rating.Rating),
-      PersonM person => Core.Db.MediaItems.GetItems(person),
-      KeywordM keyword => Core.Db.MediaItems.GetItems(keyword, recursive),
-      GeoNameM geoName => Core.Db.MediaItems.GetItems(geoName, recursive),
+      RatingTreeM rating => Core.MediaItemsM.GetItems(rating.Rating),
+      PersonM person => Core.MediaItemsM.GetItems(person),
+      KeywordM keyword => Core.MediaItemsM.GetItems(keyword, recursive),
+      GeoNameM geoName => Core.MediaItemsM.GetItems(geoName, recursive),
       _ => Array.Empty<MediaItemM>()
     };
 

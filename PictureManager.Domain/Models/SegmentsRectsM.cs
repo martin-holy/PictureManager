@@ -1,5 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -17,16 +18,16 @@ namespace PictureManager.Domain.Models {
     private double _scale;
     private bool _isEditOn;
     private bool _areVisible;
-    private MediaItemM _mediaItemM;
+    private MediaItemM _mediaItem;
 
     public double Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
     public bool IsEditOn { get => _isEditOn; set { _isEditOn = value; OnPropertyChanged(); } }
     public bool AreVisible { get => _areVisible; set { _areVisible = value; OnPropertyChanged(); } }
 
     public MediaItemM MediaItem {
-      get => _mediaItemM;
+      get => _mediaItem;
       set {
-        _mediaItemM = value;
+        _mediaItem = value;
         OnPropertyChanged();
         ReloadMediaItemSegmentRects();
       }
@@ -200,7 +201,7 @@ namespace PictureManager.Domain.Models {
 
       var mi = item.Segment.MediaItem;
       Core.Db.MediaItems.Modify(item.Segment.MediaItem);
-      Core.MediaItemsM.OnPropertyChanged(nameof(Core.MediaItemsM.ModifiedItemsCount));
+      Core.MediaItemsM.UpdateModifiedCount();
       SegmentsM.DataAdapter.ItemDelete(item.Segment);
       MediaItemSegmentsRects.Remove(item);
       mi.SetInfoBox();

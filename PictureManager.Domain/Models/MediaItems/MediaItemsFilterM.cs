@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.Models.MediaItems;
 
 public sealed class MediaItemsFilterM : ObservableObject {
   private bool _showImages = true;
@@ -80,8 +80,8 @@ public sealed class MediaItemsFilterM : ObservableObject {
 
   public bool Filter(MediaItemM mi) {
     // Media Type
-    if (!ShowImages && mi.MediaType == MediaType.Image) return false;
-    if (!ShowVideos && mi.MediaType == MediaType.Video) return false;
+    if (!ShowImages && mi is ImageM) return false;
+    if (!ShowVideos && mi is VideoM) return false;
 
     // GeoNames
     if (!Filter(mi.GetGeoNames().ToArray())) return false;
@@ -91,9 +91,9 @@ public sealed class MediaItemsFilterM : ObservableObject {
     if (chosenRatings.Any() && !chosenRatings.Contains(mi.Rating)) return false;
 
     // MediaItemSizes
-    if ((!Width.MaxSelection() && !Width.Fits(mi.Width))
-        || (!Height.MaxSelection() && !Height.Fits(mi.Height))
-        || (!Size.MaxSelection() && !Size.Fits((mi.Width * mi.Height) / 1000000.0)))
+    if (!Width.MaxSelection() && !Width.Fits(mi.Width)
+        || !Height.MaxSelection() && !Height.Fits(mi.Height)
+        || !Size.MaxSelection() && !Size.Fits(mi.Width * mi.Height / 1000000.0))
       return false;
 
     // People

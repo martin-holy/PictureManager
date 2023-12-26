@@ -24,11 +24,13 @@ public sealed class Core {
 
   public static FoldersM FoldersM => Db.Folders.Model;
   public static GeoNamesM GeoNamesM => Db.GeoNames.Model;
+  public static ImagesM ImagesM => Db.Images.Model;
   public static KeywordsM KeywordsM => Db.Keywords.Model;
   public static MediaItemsM MediaItemsM => Db.MediaItems.Model;
   public static PeopleM PeopleM => Db.People.Model;
   public static SegmentsM SegmentsM => Db.Segments.Model;
   public static VideoClipsM VideoClipsM => Db.VideoClips.Model;
+  public static VideosM VideosM => Db.Videos.Model;
   public static ViewersM ViewersM => Db.Viewers.Model;
 
   public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
@@ -60,9 +62,9 @@ public sealed class Core {
       Db.LoadAllTables(progress);
       Db.LinkReferences(progress);
       Db.ClearDataAdapters();
-      Db.RaiseReadyEvent();
+      Db.SetIsReady();
       AttachEvents();
-      progress.Report("Loading drives");
+      progress.Report("Loading UI");
     });
   }
 
@@ -70,8 +72,7 @@ public sealed class Core {
     var scale = GetDisplayScale();
     MediaItemsViews.DefaultThumbScale = 1 / scale;
     SegmentsM.SetSegmentUiSize(scale);
-    VideoClipsM.SetPlayer(MediaViewerM.MediaPlayerM);
-    MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
+    MediaItemsM.UpdateItemsCount();
 
     KeywordsM.TreeCategory.AutoAddedGroup ??=
       Db.CategoryGroups.ItemCreate(KeywordsM.TreeCategory, "Auto Added");
@@ -99,6 +100,11 @@ public sealed class Core {
       }
     };
 
+
+    VideosM.MediaPlayer.RepeatEndedEvent += delegate {
+      MediaViewerM.OnPlayerRepeatEnded();
+    };
+
     #region FoldersM EventHandlers
 
     Db.Folders.ItemRenamedEvent += (_, _) => {
@@ -107,7 +113,7 @@ public sealed class Core {
 
     Db.Folders.ItemDeletedEvent += (_, e) => {
       Db.FavoriteFolders.ItemDeleteByFolder(e.Data);
-      Db.MediaItems.ItemsDelete(e.Data.MediaItems.ToArray());
+      Db.MediaItems.ItemsDelete(e.Data.MediaItems.Cast<MediaItemM>().ToArray());
     };
 
     FoldersM.ItemCopiedEvent += (_, _) => {
@@ -188,6 +194,7 @@ public sealed class Core {
     MediaItemsM.PropertyChanged += (_, e) => {
       if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
         MediaItemsStatusBarM.Update();
+        VideosM.ReloadCurrentVideoItems();
 
         if (MainWindowM.IsInViewMode)
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();

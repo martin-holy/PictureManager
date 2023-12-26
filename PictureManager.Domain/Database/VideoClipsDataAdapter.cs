@@ -1,9 +1,6 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
-using System;
+using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,127 +8,68 @@ using System.Linq;
 namespace PictureManager.Domain.Database;
 
 /// <summary>
-/// DB fields: ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
+/// DB fields: ID|MediaItem|TimeStart|TimeEnd|Volume|Speed|Rating|Comment|People|Keywords
 /// </summary>
-public class VideoClipsDataAdapter : TreeDataAdapter<VideoClipM> {
+public class VideoClipsDataAdapter : TableDataAdapter<VideoClipM> {
   private readonly Db _db;
 
   public VideoClipsM Model { get; }
-  public Dictionary<MediaItemM, ExtObservableCollection<ITreeItem>> MediaItemVideoClips { get; } = new();
 
-  public VideoClipsDataAdapter(Db db) : base("VideoClips", 11) {
+  public VideoClipsDataAdapter(Db db) : base("VideoClips", 10) {
     _db = db;
-    _db.ReadyEvent += OnDbReady;
+    IsDriveRelated = true;
     Model = new(this);
   }
 
-  private void OnDbReady(object sender, EventArgs args) {
-    // move all group items to root
-    _db.VideoClipsGroups.ItemDeletedEvent += (_, e) => {
-      foreach (var item in e.Data.Items.ToArray())
-        ItemMove(item, Model.TreeCategory, false);
-    };
-  }
+  public override Dictionary<string, IEnumerable<VideoClipM>> GetAsDriveRelated() =>
+    Db.GetAsDriveRelated(All, x => x.Folder);
 
-  public IEnumerable<VideoClipM> GetAll() {
-    foreach (var item in MediaItemVideoClips.Values.SelectMany(x => x))
-      switch (item) {
-        case VideoClipsGroupM vcg:
-          foreach (var vc in vcg.Items.Cast<VideoClipM>())
-            yield return vc;
-          break;
-
-        case VideoClipM vc:
-          yield return vc;
-          break;
-      }
-  }
-
-  public override void Save() =>
-    SaveDriveRelated(GetAll()
-      .GroupBy(x => Tree.GetParentOf<DriveM>(x.MediaItem.Folder))
-      .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
-
-  public override VideoClipM FromCsv(string[] csv) =>
-    new(int.Parse(csv[0]), null) {
+  public override VideoClipM FromCsv(string[] csv) {
+    var vc = new VideoClipM(int.Parse(csv[0]), null) {
       TimeStart = csv[2].IntParseOrDefault(0),
       TimeEnd = csv[3].IntParseOrDefault(0),
-      Name = string.IsNullOrEmpty(csv[4]) ? null : csv[4],
-      Volume = csv[5].IntParseOrDefault(50) / 100.0,
-      Speed = csv[6].IntParseOrDefault(10) / 10.0,
-      Rating = csv[7].IntParseOrDefault(0),
-      Comment = string.IsNullOrEmpty(csv[8]) ? null : csv[8]
+      Volume = csv[4].IntParseOrDefault(50) / 100.0,
+      Speed = csv[5].IntParseOrDefault(10) / 10.0,
+      Rating = csv[6].IntParseOrDefault(0),
+      Comment = string.IsNullOrEmpty(csv[7]) ? null : csv[7]
     };
+
+    return vc;
+  }
 
   public override string ToCsv(VideoClipM vc) =>
     string.Join("|",
       vc.GetHashCode().ToString(),
-      vc.MediaItem.GetHashCode().ToString(),
+      vc.Video.GetHashCode().ToString(),
       vc.TimeStart.ToString(),
       vc.TimeEnd.ToString(),
-      vc.Name ?? string.Empty,
       ((int)(vc.Volume * 100)).ToString(),
       ((int)(vc.Speed * 10)).ToString(),
-      vc.Rating == 0
-        ? string.Empty
-        : vc.Rating.ToString(),
+      vc.Rating.ToString(),
       vc.Comment ?? string.Empty,
-      vc.People == null
-        ? string.Empty
-        : string.Join(",", vc.People.Select(x => x.GetHashCode().ToString())),
-      vc.Keywords == null
-        ? string.Empty
-        : string.Join(",", vc.Keywords.Select(x => x.GetHashCode().ToString())));
+      vc.People.ToHashCodes().ToCsv(),
+      vc.Keywords.ToHashCodes().ToCsv());
 
   public override void LinkReferences() {
     foreach (var (vc, csv) in AllCsv) {
-      // reference to MediaItem
-      vc.MediaItem = _db.MediaItems.AllDict[int.Parse(csv[1])];
-      vc.MediaItem.HasVideoClips = true;
-
-      // set parent for clips not in an group
-      if (vc.Parent == null) {
-        vc.Parent = Model.TreeCategory;
-
-        if (!MediaItemVideoClips.ContainsKey(vc.MediaItem))
-          MediaItemVideoClips.Add(vc.MediaItem, new());
-        MediaItemVideoClips[vc.MediaItem].Add(vc);
-      }
-
-      // reference to People
-      vc.People = _db.People.Link(csv[9], this);
-
-      // reference to Keywords
-      vc.Keywords = _db.Keywords.Link(csv[10], this);
+      vc.Video = _db.Videos.GetById(csv[1]);
+      vc.Video.HasVideoClips = true;
+      vc.People = _db.People.Link(csv[8], this);
+      vc.Keywords = _db.Keywords.Link(csv[9], this);
     }
   }
 
-  public override VideoClipM ItemCreate(ITreeItem parent, string name) {
-    MediaItemVideoClips.TryAdd(Model.CurrentMediaItem, Model.TreeCategory.Items);
+  public override int GetNextId() =>
+    _db.MediaItems.GetNextId();
 
-    return TreeItemCreate(new(GetNextId(), Model.CurrentMediaItem) {
-      Parent = parent,
-      Name = name,
-      IsSelected = true
-    });
-  }
-
-  public override void ItemRename(ITreeItem item, string name) {
-    item.Name = name;
-    IsModified = true;
-    RaiseItemRenamed((VideoClipM)item);
-  }
+  public VideoClipM ItemCreate() =>
+    ItemCreate(new(GetNextId(), _db.Videos.Model.Current));
 
   protected override void OnItemDeleted(VideoClipM item) {
-    File.Delete(item.ThumbPath);
-    item.MediaItem.HasVideoClips = Model.TreeCategory.Items.Count != 0;
-    item.MediaItem = null;
-    item.Parent.Items.Remove(item);
-    item.Parent = null;
+    File.Delete(item.FilePathCache);
+    item.Video.HasVideoClips = _db.VideoClips.All.Any(x => ReferenceEquals(x.Video, item.Video));
+    item.Video = null;
     item.People = null;
     item.Keywords = null;
   }
-
-  public override string ValidateNewItemName(ITreeItem parent, string name) =>
-    null;
 }

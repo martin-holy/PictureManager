@@ -1,150 +1,119 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
-using System;
+using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
-using System.IO;
 
-namespace PictureManager.Domain.Models {
-  public sealed class MediaViewerM : ObservableObject {
-    private double _scale;
-    private int _contentWidth;
-    private int _contentHeight;
-    private int _indexOfCurrent;
-    private MediaItemM _current;
-    private bool _isVisible;
-    private bool _reScaleToFit;
+namespace PictureManager.Domain.Models;
 
-    public MediaPlayerM MediaPlayerM { get; }
-    public Func<string, string, object[]> GetVideoMetadata { get; set; }
-    public double Scale {
-      get => _scale;
-      set {
-        _scale = value;
-        OnPropertyChanged();
-        OnPropertyChanged(nameof(ActualZoom));
+public sealed class MediaViewerM : ObservableObject {
+  private double _scale;
+  private int _contentWidth;
+  private int _contentHeight;
+  private int _indexOfCurrent;
+  private MediaItemM _current;
+  private bool _isVisible;
+  private bool _reScaleToFit;
+
+  public double Scale {
+    get => _scale;
+    set {
+      _scale = value;
+      OnPropertyChanged();
+      OnPropertyChanged(nameof(ActualZoom));
+    }
+  }
+  public int ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
+  public int ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
+  public MediaItemM Current {
+    get => _current;
+    set {
+      if (!Core.MediaItemsM.Exists(value)) return;
+      _current = value;
+      OnPropertyChanged();
+      OnPropertyChanged(nameof(PositionSlashCount));
+      Core.VideosM.SetVideoSource(value as VideoM);
+
+      if (value != null) {
+        var rotated = value.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
+
+        ContentWidth = rotated ? value.Height : value.Width;
+        ContentHeight = rotated ? value.Width : value.Height;
+        ReScaleToFit = true;
       }
     }
-    public int ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
-    public int ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
-    public MediaItemM Current {
-      get => _current;
-      set {
-        if (!Core.MediaItemsM.Exists(value)) return;
-        _current = value;
-        OnPropertyChanged();
-        OnPropertyChanged(nameof(PositionSlashCount));
-        SetMediaItemSource(value);
+  }
 
-        if (value != null) {
-          var rotated = value.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
+  public double ActualZoom => Scale * 100;
+  public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
+  public bool ReScaleToFit { get => _reScaleToFit; set { _reScaleToFit = value; OnPropertyChanged(); } }
+  public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems?.Count}";
+  public List<MediaItemM> MediaItems { get; private set; }
+  public PresentationPanelM PresentationPanel { get; }
 
-          ContentWidth = rotated ? value.Height : value.Width;
-          ContentHeight = rotated ? value.Width : value.Height;
-          ReScaleToFit = true;
-        }
-      }
-    }
+  public RelayCommand<object> NextCommand { get; }
+  public RelayCommand<object> PreviousCommand { get; }
+  public RelayCommand<MouseWheelEventArgs> NavigateCommand { get; }
 
-    public double ActualZoom => Scale * 100;
-    public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
-    public bool ReScaleToFit { get => _reScaleToFit; set { _reScaleToFit = value; OnPropertyChanged(); } }
-    public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems?.Count}";
-    public List<MediaItemM> MediaItems { get; private set; }
-    public PresentationPanelM PresentationPanel { get; }
+  public MediaViewerM() {
+    PresentationPanel = new(this);
+    NextCommand = new(Next, CanNext);
+    PreviousCommand = new(Previous, CanPrevious);
+    NavigateCommand = new(Navigate);
+  }
 
-    public RelayCommand<object> NextCommand { get; }
-    public RelayCommand<object> PreviousCommand { get; }
-    public RelayCommand<MouseWheelEventArgs> NavigateCommand { get; }
+  public void OnPlayerRepeatEnded() {
+    if (PresentationPanel.IsPaused)
+      PresentationPanel.Start(Current, false);
+  }
 
-    public MediaViewerM() {
-      MediaPlayerM = new();
-      PresentationPanel = new(this);
-      NextCommand = new(Next, CanNext);
-      PreviousCommand = new(Previous, CanPrevious);
-      NavigateCommand = new(Navigate);
+  public void Deactivate() {
+    PresentationPanel.Stop();
+    MediaItems.Clear();
+    Core.VideosM.SetVideoSource(null);
+  }
 
-      MediaPlayerM.RepeatEnded += () => {
-        if (PresentationPanel.IsPaused)
-          PresentationPanel.Start(Current, false);
-      };
-    }
-
-    public void Deactivate() {
-      PresentationPanel.Stop();
+  public void SetMediaItems(List<MediaItemM> mediaItems, MediaItemM current) {
+    if (mediaItems == null || mediaItems.Count == 0) {
       MediaItems.Clear();
-      SetMediaItemSource(null);
+      Current = null;
     }
+    else {
+      foreach (var mi in mediaItems)
+        mi.SetInfoBox();
 
-    public void SetMediaItems(List<MediaItemM> mediaItems, MediaItemM current) {
-      if (mediaItems == null || mediaItems.Count == 0) {
-        MediaItems.Clear();
-        Current = null;
-      }
-      else {
-        foreach (var mi in mediaItems)
-          mi.SetInfoBox();
-
-        _indexOfCurrent = mediaItems.IndexOf(current);
-        MediaItems = mediaItems;
-        Current = current;
-      }
+      _indexOfCurrent = mediaItems.IndexOf(current);
+      MediaItems = mediaItems;
+      Current = current;
     }
+  }
 
-    public bool CanNext() =>
-      MediaItems.Count > 0 && _indexOfCurrent < MediaItems.Count - 1;
+  public bool CanNext() =>
+    MediaItems.Count > 0 && _indexOfCurrent < MediaItems.Count - 1;
 
-    public void Next() {
-      Current = MediaItems[++_indexOfCurrent];
-      PresentationPanel.Next(Current);
+  public void Next() {
+    Current = MediaItems[++_indexOfCurrent];
+    PresentationPanel.Next(Current);
+  }
+
+  public bool CanPrevious() =>
+    _indexOfCurrent > 0;
+
+  public void Previous() {
+    if (PresentationPanel.IsRunning)
+      PresentationPanel.Stop();
+
+    Current = MediaItems[--_indexOfCurrent];
+  }
+
+  private void Navigate(MouseWheelEventArgs e) {
+    if (e.IsCtrlOn) return;
+    if (e.Delta < 0) {
+      if (CanNext())
+        Next();
     }
-
-    public bool CanPrevious() =>
-      _indexOfCurrent > 0;
-
-    public void Previous() {
-      if (PresentationPanel.IsRunning)
-        PresentationPanel.Stop();
-
-      Current = MediaItems[--_indexOfCurrent];
-    }
-
-    private void Navigate(MouseWheelEventArgs e) {
-      if (e.IsCtrlOn) return;
-      if (e.Delta < 0) {
-        if (CanNext())
-          Next();
-      }
-      else {
-        if (CanPrevious())
-          Previous();
-      }
-    }
-
-    private void SetMediaItemSource(MediaItemM mediaItem) {
-      if (mediaItem == null || mediaItem.MediaType != MediaType.Video) {
-        Core.VideoClipsM.SetMediaItem(null);
-        MediaPlayerM.IsPlaying = false;
-        MediaPlayerM.Source = String.Empty;
-        Core.ToolsTabsM.Close(Core.VideoClipsM);
-      }
-
-      if (mediaItem == null) return;
-
-      if (!File.Exists(mediaItem.FilePath)) {
-        Core.Db.MediaItems.ItemsDelete(new[] { mediaItem });
-        return;
-      }
-
-      if (mediaItem.MediaType == MediaType.Video) {
-        var data = GetVideoMetadata(mediaItem.Folder.FullPath, mediaItem.FileName);
-        var fps = (double)data[3] > 0 ? (double)data[3] : 30.0;
-        var smallChange = Math.Round(1000 / fps, 0);
-
-        Core.VideoClipsM.SetMediaItem(mediaItem);
-        MediaPlayerM.Source = mediaItem.FilePath;
-        MediaPlayerM.TimelineSmallChange = smallChange;
-        Core.ToolsTabsM.Activate(Res.IconMovieClapper, "Clips", Core.VideoClipsM);
-      }
+    else {
+      if (CanPrevious())
+        Previous();
     }
   }
 }
