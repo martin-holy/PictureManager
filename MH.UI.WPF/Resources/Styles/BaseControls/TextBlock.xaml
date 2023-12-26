@@ -3,7 +3,14 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <Style x:Key="MH.Styles.BaseControls.TextBlock" TargetType="{x:Type TextBlock}">
+    <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
     <Setter Property="TextWrapping" Value="NoWrap"/>
     <Setter Property="TextTrimming" Value="None"/>
+
+    <Style.Triggers>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+      </Trigger>
+    </Style.Triggers>
   </Style>
 </ResourceDictionary>
