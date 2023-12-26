@@ -1,37 +1,27 @@
-﻿using MH.Utils.BaseClasses;
-using System;
-using System.Collections.Generic;
-
-namespace MH.Utils.Interfaces; 
+﻿namespace MH.Utils.Interfaces;
 
 public interface IDataAdapter {
   public SimpleDB DB { get; set; }
-  public string TableName { get; }
-  public int MaxId { get; set; }
-    
+  public string Name { get; }
   public bool IsModified { get; set; }
-  public bool AreTablePropsModified { get; set; }
 
   public void Load();
   public void Save();
+}
+
+public interface ITableDataAdapter : IDataAdapter {
+  public int MaxId { get; set; }
+  public bool AreTablePropsModified { get; set; }
+
   public void LoadProps();
   public void SaveProps();
   public void LinkReferences() { }
   public void Clear();
 }
 
-public interface IDataAdapter<T> : IDataAdapter where T : class {
-  public Dictionary<int, T> AllDict { get; set; }
-  public HashSet<T> All { get; set; }
+public interface IRelationDataAdapter : IDataAdapter { }
 
-  public event EventHandler<ObjectEventArgs<T>> ItemCreatedEvent;
-  public event EventHandler<ObjectEventArgs<T>> ItemDeletedEvent;
-  public event EventHandler<ObjectEventArgs<IList<T>>> ItemsDeletedEvent;
-}
-
-public interface ITreeDataAdapter<T> : IDataAdapter<T> where T : class, ITreeItem {
-  public event EventHandler<ObjectEventArgs<T>> ItemRenamedEvent;
-
+public interface ITreeDataAdapter<out T> : ITableDataAdapter where T : class, ITreeItem {
   public T ItemCreate(ITreeItem parent, string name);
   public void ItemRename(ITreeItem item, string name);
   public void ItemCopy(ITreeItem item, ITreeItem dest);

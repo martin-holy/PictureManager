@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace MH.Utils.BaseClasses;
 
-public class TreeDataAdapter<T> : DataAdapter<T>, ITreeDataAdapter<T> where T : class, ITreeItem {
+public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where T : class, ITreeItem {
   public event EventHandler<ObjectEventArgs<T>> ItemRenamedEvent = delegate { };
 
-  public TreeDataAdapter(string tableName, int propsCount) : base(tableName, propsCount) { }
+  public TreeDataAdapter(string name, int propsCount) : base(name, propsCount) { }
 
   public virtual T ItemCreate(ITreeItem parent, string name) => throw new NotImplementedException();
   public virtual void ItemCopy(ITreeItem item, ITreeItem dest) => throw new NotImplementedException();
@@ -19,10 +19,7 @@ public class TreeDataAdapter<T> : DataAdapter<T>, ITreeDataAdapter<T> where T : 
 
   public virtual T TreeItemCreate(T item) {
     Tree.SetInOrder(item.Parent.Items, item, x => x.Name);
-    All.Add(item);
-    RaiseItemCreated(item);
-    OnItemCreated(item);
-    return item;
+    return ItemCreate(item);
   }
 
   public virtual void ItemRename(ITreeItem item, string name) {
@@ -68,6 +65,16 @@ public class TreeDataAdapter<T> : DataAdapter<T>, ITreeDataAdapter<T> where T : 
     foreach (var item in items) {
       item.Parent = null;
       item.Items.Clear();
+    }
+  }
+
+  // TODO use it everywhere
+  protected void LinkTree(ITreeItem root, int index) {
+    foreach (var (item, csv) in AllCsv) {
+      item.Parent ??= string.IsNullOrEmpty(csv[index])
+        ? root
+        : AllDict[int.Parse(csv[index])];
+      item.Parent.Items.Add(item);
     }
   }
 }
