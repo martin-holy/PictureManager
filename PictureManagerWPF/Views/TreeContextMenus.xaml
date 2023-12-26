@@ -188,8 +188,11 @@
       Command="{Binding MediaItemsM.ReloadMetadataInFolderCommand,
                 Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
-
-    <!--TODO: rebuild thumbnails-->
+    <MenuItem
+      Header="Rebuild Thumbnails"
+      Command="{Binding MediaItemsM.RebuildThumbnailsCommand,
+                Source={x:Static pm:App.Core}}"
+      CommandParameter="{Binding}"/>
   </ContextMenu>
   
   <!-- Favorite Folder -->
