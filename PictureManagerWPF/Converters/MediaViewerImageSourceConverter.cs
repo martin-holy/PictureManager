@@ -1,15 +1,15 @@
 ﻿using MH.UI.WPF.Converters;
 using MH.Utils;
 using PictureManager.Domain;
-using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 
-namespace PictureManager.Converters; 
+namespace PictureManager.Converters;
 
 public class MediaViewerImageSourceConverter : BaseMarkupExtensionConverter {
   public override object Convert(object value, object parameter) {
     try {
-      return value is MediaItemM { MediaType: MediaType.Image } mi
+      return value is ImageM mi
         ? Utils.Imaging.GetBitmapImage(mi.FilePath, (MediaOrientation)mi.Orientation)
         : null;
     }
