@@ -1,6 +1,7 @@
 ﻿using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
+using PictureManager.Domain.Models.MediaItems;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
 using System.Collections.Generic;
@@ -14,7 +15,10 @@ public sealed class AppCore : ObservableObject {
 
   public static RelayCommand<object> TestButtonCommand { get; } = new(Tests.Run);
   public static RelayCommand<RoutedEventArgs> MediaPlayerLoadedCommand { get; } =
-    new(e => FullVideo = e.Source as MediaPlayer);
+    new(e => {
+      FullVideo = e.Source as MediaPlayer;
+      FullVideo?.SetModel(Core.VideosM.MediaPlayer);
+    });
 
   public AppCore() {
     SegmentsRectsVM = new(Core.SegmentsM.SegmentsRectsM);
@@ -26,9 +30,9 @@ public sealed class AppCore : ObservableObject {
     MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
     GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
-    Core.MediaItemsM.ReadMetadata = MediaItemsVM.ReadMetadata;
+    MediaItemsM.ReadMetadata = MediaItemsVM.ReadMetadata;
     Core.MediaItemsM.WriteMetadata = MediaItemsVM.WriteMetadata;
-    Core.MediaViewerM.GetVideoMetadata = FileInformation.GetVideoMetadata;
+    Core.VideosM.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
   }
 
   private static double GetDisplayScale() =>
