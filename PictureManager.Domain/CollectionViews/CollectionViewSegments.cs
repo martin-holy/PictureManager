@@ -12,14 +12,14 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
     Name = "Segments";
   }
 
-  public void Reload(List<SegmentM> source, GroupMode groupMode, CollectionViewGroupByItem<SegmentM>[] groupByItems, bool expandAll, string rootTitle, bool removeEmpty = true) {
+  public void Reload(List<SegmentM> source, GroupMode groupMode, GroupByItem<SegmentM>[] groupByItems, bool expandAll, string rootTitle, bool removeEmpty = true) {
     Name = rootTitle;
     Reload(source, groupMode, groupByItems, expandAll, removeEmpty);
   }
 
-  public override IEnumerable<CollectionViewGroupByItem<SegmentM>> GetGroupByItems(IEnumerable<SegmentM> source) {
+  public override IEnumerable<GroupByItem<SegmentM>> GetGroupByItems(IEnumerable<SegmentM> source) {
     var src = source.ToArray();
-    var top = new List<CollectionViewGroupByItem<SegmentM>>();
+    var top = new List<GroupByItem<SegmentM>>();
     top.AddRange(GroupByItems.GetFoldersFromSegments(src));
     top.Add(GroupByItems.GetKeywordsInGroupFromSegments(src));
     top.Add(GroupByItems.GetPeopleInGroupFromSegments(src));

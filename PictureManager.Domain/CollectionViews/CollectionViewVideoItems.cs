@@ -13,9 +13,9 @@ public class CollectionViewVideoItems : CollectionView<VideoItemM> {
   public override int GetItemSize(VideoItemM item, bool getWidth) =>
     (getWidth ? item.ThumbWidth : item.ThumbHeight) / 3;
 
-  public override IEnumerable<CollectionViewGroupByItem<VideoItemM>> GetGroupByItems(IEnumerable<VideoItemM> source) {
+  public override IEnumerable<GroupByItem<VideoItemM>> GetGroupByItems(IEnumerable<VideoItemM> source) {
     var src = source.ToArray();
-    var top = new List<CollectionViewGroupByItem<VideoItemM>>();
+    var top = new List<GroupByItem<VideoItemM>>();
     top.AddRange(GroupByItems.GetFoldersFromMediaItems(src));
     top.Add(GroupByItems.GetDatesInGroupFromMediaItems(src));
     top.Add(GroupByItems.GetKeywordsInGroupFromMediaItems(src));

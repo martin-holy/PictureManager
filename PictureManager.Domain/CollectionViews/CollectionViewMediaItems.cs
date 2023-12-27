@@ -29,9 +29,9 @@ public class CollectionViewMediaItems : CollectionView<MediaItemM> {
     ThumbScale = thumbScale;
   }
 
-  public override IEnumerable<CollectionViewGroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
+  public override IEnumerable<GroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
     var src = source.ToArray();
-    var top = new List<CollectionViewGroupByItem<MediaItemM>>();
+    var top = new List<GroupByItem<MediaItemM>>();
     // TODO remove trunk from folders => remove common branch starting from root
     top.AddRange(GroupByItems.GetFoldersFromMediaItems(src));
     top.Add(GroupByItems.GetDatesInGroupFromMediaItems(src));
