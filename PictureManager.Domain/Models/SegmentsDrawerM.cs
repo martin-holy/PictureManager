@@ -87,7 +87,7 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
       .OrderBy(x => x.MediaItem.Folder.FullPath)
       .ThenBy(x => x.MediaItem.FileName)
       .ToList();
-    var groupByItems = GroupByItems.GetFoldersFromSegments(source).ToArray();
+    var groupByItems = GroupByItems.GetFolders(source).ToArray();
 
     Reload(source, GroupMode.GroupByRecursive, groupByItems, true);
     tt.Activate(Res.IconSegment, "Segments", this);

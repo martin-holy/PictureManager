@@ -20,9 +20,9 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
   public override IEnumerable<GroupByItem<SegmentM>> GetGroupByItems(IEnumerable<SegmentM> source) {
     var src = source.ToArray();
     var top = new List<GroupByItem<SegmentM>>();
-    top.AddRange(GroupByItems.GetFoldersFromSegments(src));
-    top.Add(GroupByItems.GetKeywordsInGroupFromSegments(src));
-    top.Add(GroupByItems.GetPeopleInGroupFromSegments(src));
+    top.AddRange(GroupByItems.GetFolders(src));
+    top.Add(GroupByItems.GetKeywordsInGroup(src));
+    top.Add(GroupByItems.GetPeopleInGroup(src));
 
     return top;
   }

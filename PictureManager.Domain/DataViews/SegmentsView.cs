@@ -111,8 +111,8 @@ public sealed class SegmentsView {
   private void ReloadSegments(SegmentM[] items) {
     var source = items.OrderBy(x => x.MediaItem.FileName).ToList();
     var groupByItems = new[] {
-      GroupByItems.GetPeopleInGroupFromSegments(items),
-      GroupByItems.GetKeywordsInGroupFromSegments(items)
+      GroupByItems.GetPeopleInGroup(items),
+      GroupByItems.GetKeywordsInGroup(items)
     };
 
     CvSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true);

@@ -16,10 +16,10 @@ public class CollectionViewVideoItems : CollectionView<VideoItemM> {
   public override IEnumerable<GroupByItem<VideoItemM>> GetGroupByItems(IEnumerable<VideoItemM> source) {
     var src = source.ToArray();
     var top = new List<GroupByItem<VideoItemM>>();
-    top.AddRange(GroupByItems.GetFoldersFromMediaItems(src));
-    top.Add(GroupByItems.GetDatesInGroupFromMediaItems(src));
-    top.Add(GroupByItems.GetKeywordsInGroupFromMediaItems(src));
-    top.Add(GroupByItems.GetPeopleInGroupFromMediaItems(src));
+    top.AddRange(GroupByItems.GetFolders(src));
+    top.Add(GroupByItems.GetDatesInGroup(src));
+    top.Add(GroupByItems.GetKeywordsInGroup(src));
+    top.Add(GroupByItems.GetPeopleInGroup(src));
 
     return top;
   }

@@ -43,7 +43,7 @@ public sealed class VideosM {
             .Where(x => ReferenceEquals(x.Video, Current)))
           .OrderBy(x => x.TimeStart)
           .ToList();
-    var groupByItems = new[] { GroupByItems.GetKeywordsInGroupFromMediaItems(items) };
+    var groupByItems = new[] { GroupByItems.GetKeywordsInGroup(items) };
     
     CurrentVideoItems.Reload(items, GroupMode.ThenByRecursive, groupByItems, true);
   }
