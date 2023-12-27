@@ -12,9 +12,9 @@ public class CollectionViewPeople : CollectionView<PersonM> {
     Name = "People";
   }
 
-  public override IEnumerable<CollectionViewGroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
+  public override IEnumerable<GroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
     var src = source.ToArray();
-    var top = new List<CollectionViewGroupByItem<PersonM>>();
+    var top = new List<GroupByItem<PersonM>>();
     top.Add(GroupByItems.GetPeopleGroupsInGroupFromPeople(src));
     top.Add(GroupByItems.GetKeywordsInGroupFromPeople(src));
 
