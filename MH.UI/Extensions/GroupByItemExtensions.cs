@@ -7,12 +7,12 @@ using System.Linq;
 namespace MH.UI.Extensions;
 
 public static class GroupByItemExtensions {
-  public static CollectionViewGroupByItem<T> InGroup<T>(
-    this IEnumerable<CollectionViewGroupByItem<T>> items, IListItem item, Func<T, object, bool> groupByFunc, bool isGroup = true) =>
+  public static GroupByItem<T> InGroup<T>(
+    this IEnumerable<GroupByItem<T>> items, IListItem item, Func<T, object, bool> groupByFunc, bool isGroup = true) =>
     new(item, items, groupByFunc) { IsGroup = isGroup };
 
-  public static IEnumerable<CollectionViewGroupByItem<TWhat>> GroupByParent<TWhat, TBy>(
-    this IEnumerable<CollectionViewGroupByItem<TWhat>> items, Func<TWhat, object, bool> groupByFunc)
+  public static IEnumerable<GroupByItem<TWhat>> GroupByParent<TWhat, TBy>(
+    this IEnumerable<GroupByItem<TWhat>> items, Func<TWhat, object, bool> groupByFunc)
     where TBy : class, IListItem =>
     items
       .GroupBy(x => (x.Data as ITreeItem)?.Parent as TBy)
@@ -22,8 +22,8 @@ public static class GroupByItemExtensions {
         ? x.Select(y => y)
         : new[] { x.InGroup(x.Key, groupByFunc, false) });
 
-  public static IEnumerable<CollectionViewGroupByItem<TWhat>> ToGroupByItems<TWhat, TBy>(
+  public static IEnumerable<GroupByItem<TWhat>> ToGroupByItems<TWhat, TBy>(
     this IEnumerable<TBy> items, Func<TWhat, object, bool> groupByFunc)
     where TWhat : class where TBy : IListItem =>
-    items.Select(x => new CollectionViewGroupByItem<TWhat>(x, groupByFunc));
+    items.Select(x => new GroupByItem<TWhat>(x, groupByFunc));
 }

@@ -39,7 +39,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   protected void RaiseItemSelected(SelectionEventArgs<T> args) => ItemSelectedEvent(this, args);
 
   public abstract int GetItemSize(T item, bool getWidth);
-  public abstract IEnumerable<CollectionViewGroupByItem<T>> GetGroupByItems(IEnumerable<T> source);
+  public abstract IEnumerable<GroupByItem<T>> GetGroupByItems(IEnumerable<T> source);
   public abstract int SortCompare(T itemA, T itemB);
   public virtual void OnItemOpened(T item) { }
   public virtual void OnItemSelected(SelectionEventArgs<T> args) { }
@@ -60,7 +60,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     OnItemSelected(args);
   }
 
-  public void Reload(List<T> source, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems, bool expandAll, bool removeEmpty = true) {
+  public void Reload(List<T> source, GroupMode groupMode, GroupByItem<T>[] groupByItems, bool expandAll, bool removeEmpty = true) {
     var root = new CollectionViewGroup<T>(source) {
       View = this,
       IsGroupingRoot = true,

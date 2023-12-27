@@ -11,7 +11,7 @@ namespace MH.UI.Dialogs {
     private bool _isGroupBy = true;
     private bool _isThenBy;
 
-    public TreeView<CollectionViewGroupByItem<T>> TreeView { get; } = new() { ShowTreeItemSelection = true };
+    public TreeView<GroupByItem<T>> TreeView { get; } = new() { ShowTreeItemSelection = true };
     public bool IsRecursive { get => _isRecursive; set { _isRecursive = value; OnPropertyChanged(); } }
     public bool IsGroupBy { get => _isGroupBy; set { _isGroupBy = value; OnPropertyChanged(); } }
     public bool IsThenBy { get => _isThenBy; set { _isThenBy = value; OnPropertyChanged(); } }
@@ -22,7 +22,7 @@ namespace MH.UI.Dialogs {
         new("Cancel", "IconXCross", CloseCommand, false, true) };
     }
 
-    public bool Open(CollectionViewGroup<T> group, IEnumerable<CollectionViewGroupByItem<T>> items) {
+    public bool Open(CollectionViewGroup<T> group, IEnumerable<GroupByItem<T>> items) {
       IsRecursive = group.IsRecursive;
       IsGroupBy = group.IsGroupBy;
       IsThenBy = group.IsThenBy;

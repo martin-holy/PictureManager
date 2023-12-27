@@ -23,8 +23,8 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
   public List<T> Source { get; }
   public int SourceCount => Source.Count;
   public IEnumerable<CollectionViewGroup<T>> Groups => Items.OfType<CollectionViewGroup<T>>();
-  public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
-  public CollectionViewGroupByItem<T> GroupedBy { get; set; }
+  public GroupByItem<T>[] GroupByItems { get; set; }
+  public GroupByItem<T> GroupedBy { get; set; }
   public double Width { get => _width; set => SetWidth(value); }
   public bool IsGroupingRoot { get; set; }
   public bool IsRecursive { get; set; }
@@ -37,7 +37,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
     OnPropertyChanged(nameof(SourceCount));
   }
 
-  public CollectionViewGroup(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupedBy, List<T> source) : this (source) {
+  public CollectionViewGroup(CollectionViewGroup<T> parent, GroupByItem<T> groupedBy, List<T> source) : this (source) {
     GroupedBy = groupedBy;
     Parent = parent;
     View = parent.View;
@@ -48,7 +48,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
     GroupByItems = parent.GetGroupByItemsForSubGroup();
   }
 
-  private CollectionViewGroupByItem<T>[] GetGroupByItemsForSubGroup() {
+  private GroupByItem<T>[] GetGroupByItemsForSubGroup() {
     if (GroupByItems == null || !IsThenBy)
       return null;
     if (IsRecursive && !IsGroupingRoot && GroupedBy?.Items?.Count > 0)
@@ -59,8 +59,8 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
     return null;
   }
 
-  private CollectionViewGroupByItem<T>[] GetGroupByItemsForGrouping() {
-    CollectionViewGroupByItem<T>[] groupByItems = null;
+  private GroupByItem<T>[] GetGroupByItemsForGrouping() {
+    GroupByItem<T>[] groupByItems = null;
 
     if (GroupByItems != null && (IsGroupingRoot || GroupedBy is null or { Items: { Count: 0 } })) {
       if (IsGroupBy)
@@ -69,7 +69,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
         groupByItems = new[] { GroupByItems[0] };
     }
     else if (IsRecursive && !IsGroupingRoot && GroupedBy?.Items?.Count > 0)
-      groupByItems = GroupedBy.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
+      groupByItems = GroupedBy.Items.Cast<GroupByItem<T>>().ToArray();
 
     return groupByItems;
   }
@@ -138,7 +138,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
         && (GroupedBy is { IsGroup: true } // type group
             || (GroupedBy == null && Parent?.Items.Count == 1))); // only one "empty group"
 
-  public void UpdateGroupByItems(CollectionViewGroupByItem<T>[] newGroupByItems) {
+  public void UpdateGroupByItems(GroupByItem<T>[] newGroupByItems) {
     if (GroupByItems == null) return;
 
     foreach (var gbi in GroupByItems)
