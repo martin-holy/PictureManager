@@ -63,7 +63,7 @@ public sealed class PersonDetail : ObservableObject {
       .OrderBy(x => x.MediaItem.FileName)
       .ToList();
     var groupByItems = new[] {
-      GroupByItems.GetKeywordsInGroupFromSegments(items)
+      GroupByItems.GetKeywordsInGroup(items)
     };
 
     AllSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true, "All");

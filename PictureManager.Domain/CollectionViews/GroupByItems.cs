@@ -21,12 +21,12 @@ public static class GroupByItems {
   private static readonly Dictionary<string, string> _dateFormats =
     new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
-  public static GroupByItem<T> GetDatesInGroupFromMediaItems<T>(IEnumerable<T> items) where T : MediaItemM =>
+  public static GroupByItem<T> GetDatesInGroup<T>(IEnumerable<T> items) where T : MediaItemM =>
     items
-      .GetDatesFromMediaItems()
+      .GetDates()
       .InGroup(_dateGroup, GroupMediaItemByDate);
 
-  public static IEnumerable<GroupByItem<T>> GetDatesFromMediaItems<T>(this IEnumerable<T> items) where T : MediaItemM {
+  public static IEnumerable<GroupByItem<T>> GetDates<T>(this IEnumerable<T> items) where T : MediaItemM {
     var dates = items
       .Where(x => x.FileName.Length > 8)
       .Select(x => x.FileName[..8])
@@ -44,30 +44,30 @@ public static class GroupByItems {
     }
   }
 
-  public static IEnumerable<GroupByItem<T>> GetFoldersFromMediaItems<T>(IEnumerable<T> items)
+  public static IEnumerable<GroupByItem<T>> GetFolders<T>(IEnumerable<T> items)
     where T : MediaItemM =>
     items.GetFolders().ToGroupByItemsAsTree<T>(GroupByFolder);
 
-  public static IEnumerable<GroupByItem<SegmentM>> GetFoldersFromSegments(IEnumerable<SegmentM> items) =>
+  public static IEnumerable<GroupByItem<SegmentM>> GetFolders(IEnumerable<SegmentM> items) =>
     items.GetFolders().ToGroupByItemsAsTree<SegmentM>(GroupByFolder);
 
   public static IEnumerable<GroupByItem<T>> ToGroupByItemsAsTree<T>(this IEnumerable<FolderM> items, Func<T, object, bool> func)
     where T : class =>
     items.ToGroupByItems(func).AsTree<GroupByItem<T>, FolderM, string>(x => x.FullPath);
 
-  public static IEnumerable<GroupByItem<SegmentM>> GetPeopleFromSegments(IEnumerable<SegmentM> items) =>
+  public static IEnumerable<GroupByItem<SegmentM>> GetPeople(IEnumerable<SegmentM> items) =>
     items
       .GetPeople()
       .OrderBy(x => x.Name)
       .ToGroupByItems<SegmentM, PersonM>(GroupByPerson);
 
-  public static GroupByItem<T> GetKeywordsInGroupFromMediaItems<T>(IEnumerable<T> items) where T : MediaItemM =>
+  public static GroupByItem<T> GetKeywordsInGroup<T>(IEnumerable<T> items) where T : MediaItemM =>
     items.GetKeywords().ToGroupedGroupByItemsInGroup<T>(GroupByKeyword);
 
-  public static GroupByItem<PersonM> GetKeywordsInGroupFromPeople(IEnumerable<PersonM> items) =>
+  public static GroupByItem<PersonM> GetKeywordsInGroup(IEnumerable<PersonM> items) =>
     items.GetKeywords().ToGroupedGroupByItemsInGroup<PersonM>(GroupByKeyword);
 
-  public static GroupByItem<SegmentM> GetKeywordsInGroupFromSegments(IEnumerable<SegmentM> items) =>
+  public static GroupByItem<SegmentM> GetKeywordsInGroup(IEnumerable<SegmentM> items) =>
     items.GetKeywords().ToGroupedGroupByItemsInGroup<SegmentM>(GroupByKeyword);
 
   private static GroupByItem<T> ToGroupedGroupByItemsInGroup<T>(this IEnumerable<KeywordM> items, Func<T, object, bool> func)
@@ -78,10 +78,10 @@ public static class GroupByItems {
       .GroupByParent<T, CategoryGroupM>(func)
       .InGroup(Core.KeywordsM.TreeCategory, func);
 
-  public static GroupByItem<T> GetPeopleInGroupFromMediaItems<T>(IEnumerable<T> items) where T : MediaItemM =>
+  public static GroupByItem<T> GetPeopleInGroup<T>(IEnumerable<T> items) where T : MediaItemM =>
     items.GetPeople().ToGroupedGroupByItemsInGroup<T>(GroupByPerson);
 
-  public static GroupByItem<SegmentM> GetPeopleInGroupFromSegments(IEnumerable<SegmentM> items) =>
+  public static GroupByItem<SegmentM> GetPeopleInGroup(IEnumerable<SegmentM> items) =>
     items.GetPeople().ToGroupedGroupByItemsInGroup<SegmentM>(GroupByPerson);
 
   private static GroupByItem<T> ToGroupedGroupByItemsInGroup<T>(this IEnumerable<PersonM> items, Func<T, object, bool> func)
@@ -92,7 +92,7 @@ public static class GroupByItems {
       .GroupByParent<T, CategoryGroupM>(func)
       .InGroup(Core.PeopleM.TreeCategory, func);
 
-  public static GroupByItem<PersonM> GetPeopleGroupsInGroupFromPeople(IEnumerable<PersonM> people) =>
+  public static GroupByItem<PersonM> GetPeopleGroupsInGroup(IEnumerable<PersonM> people) =>
     people
       .GroupBy(x => x.Parent)
       .Select(x => x.Key)

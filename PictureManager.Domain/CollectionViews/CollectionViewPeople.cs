@@ -15,8 +15,8 @@ public class CollectionViewPeople : CollectionView<PersonM> {
   public override IEnumerable<GroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
     var src = source.ToArray();
     var top = new List<GroupByItem<PersonM>>();
-    top.Add(GroupByItems.GetPeopleGroupsInGroupFromPeople(src));
-    top.Add(GroupByItems.GetKeywordsInGroupFromPeople(src));
+    top.Add(GroupByItems.GetPeopleGroupsInGroup(src));
+    top.Add(GroupByItems.GetKeywordsInGroup(src));
 
     return top;
   }

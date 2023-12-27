@@ -35,7 +35,7 @@ public sealed class MergePeopleDialogM : Dialog {
     Person = e.Item;
     SegmentsToUpdate = GetSegmentsToUpdate(Person, _people);
     var source = SegmentsToUpdate.OrderBy(x => x.MediaItem.FileName).ToList();
-    var groupByItems = GroupByItems.GetPeopleFromSegments(SegmentsToUpdate).ToArray();
+    var groupByItems = GroupByItems.GetPeople(SegmentsToUpdate).ToArray();
 
     SegmentsView.Reload(source, GroupMode.GroupBy, groupByItems, true, "Segments to update");
   }
