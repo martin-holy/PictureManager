@@ -108,11 +108,11 @@ public sealed class SegmentsM : ObservableObject {
 
   /// <summary>
   /// Sets new Person to all Segments that are selected 
-  /// or that have the same Person (with id less than 0) as some of the selected.
+  /// or that have the same Unknown Person as some of the selected.
   /// </summary>
-  public void SetSelectedAsPerson(PersonM person) {
-    var unknownPeople = Selected.Items.GetPeople().Where(x => x.IsUnknown).ToHashSet();
-    var segments = Selected.Items
+  public void SetSelectedAsPerson(SegmentM[] selected, PersonM person) {
+    var unknownPeople = selected.GetPeople().Where(x => x.IsUnknown).ToHashSet();
+    var segments = selected
       .Where(x => x.Person == null || !x.Person.IsUnknown)
       .Concat(DataAdapter.All.Where(x => unknownPeople.Contains(x.Person)))
       .ToArray();

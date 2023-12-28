@@ -1,5 +1,6 @@
 ﻿using MH.UI.BaseClasses;
 using PictureManager.Domain.Database;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.Domain.TreeCategories;
@@ -11,5 +12,5 @@ public sealed class GeoNamesTreeCategory : TreeCategory<GeoNameM> {
   }
 
   public override void OnItemSelected(object o) =>
-    Core.MediaItemsM.SetMetadata(o);
+    ToggleDialogM.SetGeoName(o as GeoNameM);
 }

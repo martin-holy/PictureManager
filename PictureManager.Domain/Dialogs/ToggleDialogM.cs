@@ -1,77 +1,114 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Dialogs; 
+namespace PictureManager.Domain.Dialogs;
 
 public sealed class ToggleDialogM : Dialog {
-  private static ToggleDialogM _instance;
-  private const string _message ="Add or Remove on:";
-  private const string _keywordTitle = "Add/Remove Keyword";
-  private const string _personTitle = "Add/Remove Person";
+  private static ToggleDialogM _inst;
 
-  public string Message => _message;
-  public ListItem Item { get; set; }
+  public string Message { get; private set; }
+  public ListItem Item { get; private set; }
+  public SegmentM[] Segments { get; private set; }
+  public PersonM[] People { get; private set; }
+  public MediaItemM[] MediaItems { get; private set; }
+  public VideoItemM[] VideoItems { get; private set; }
 
-  public ToggleDialogM(string icon, string title) : base(title, icon) { }
+  private ToggleDialogM(string icon, string title) : base(title, icon) { }
 
-  private static ToggleDialogM GetInstance(string icon, string title, Tuple<int, int, int> counts, ListItem item) {
-    _instance ??= new(icon, title);
-    _instance.Icon = icon;
-    _instance.Title = title;
-    _instance.Item = item;
-    _instance.Buttons = GetButtons(counts, _instance);
+  private static ToggleDialogM GetInstance(string icon, string title, string message, ListItem item) {
+    if (item == null) return null;
 
-    return _instance;
+    _inst ??= new(icon, title);
+    
+    if (!_inst.GetItems(item)) return null;
+
+    _inst.Icon = icon;
+    _inst.Title = title;
+    _inst.Message = message;
+    _inst.Item = item;
+    _inst.Buttons = _inst.GetButtons().ToArray();
+
+    return _inst;
+  }
+
+  private bool GetItems(object item) {
+    Segments = Core.SegmentsM.Selected.Items.ToArray();
+    People = item is PersonM ? Array.Empty<PersonM>() : Core.PeopleM.Selected.Items.ToArray();
+    MediaItems = Core.MediaItemsM.GetActive();
+    VideoItems = Core.VideosM.CurrentVideoItems.Selected.Items.ToArray();
+
+    return Segments.Length + People.Length + MediaItems.Length + VideoItems.Length > 0;
+  }
+
+  private IEnumerable<DialogButton> GetButtons() {
+    if (Segments.Length > 0)
+      yield return new("{0} Segment{1}".Plural(Segments.Length), Res.IconSegment, SetResult(1));
+    if (People.Length > 0)
+      yield return new("{0} Person{1}".Plural(People.Length), Res.IconPeople, SetResult(2));
+    if (MediaItems.Length > 0)
+      yield return new("{0} Media Item{1}".Plural(MediaItems.Length), Res.IconImage, SetResult(3));
+    if (VideoItems.Length > 0)
+      yield return new("{0} Video Item{1}".Plural(VideoItems.Length), Res.IconMovieClapper, SetResult(4));
+  }
+
+  public static void Clear() {
+    if (_inst == null) return;
+    _inst.Segments = null;
+    _inst.People = null;
+    _inst.MediaItems = null;
+    _inst.VideoItems = null;
   }
 
   public static void ToggleKeyword(KeywordM keyword) {
-    if (keyword == null || !GetCounts(keyword, out var counts)) return;
+    if (GetInstance(Res.IconTagLabel, "Add/Remove Keyword", "Add or Remove on:", keyword) is not { } dlg) return;
 
-    var dlg = GetInstance(Res.IconTagLabel, _keywordTitle, counts, keyword);
     switch (Show(dlg)) {
-      case 1: Core.Db.Segments.ToggleKeyword(Core.SegmentsM.Selected.Items.ToArray(), keyword); break;
-      case 2: Core.Db.People.ToggleKeyword(Core.PeopleM.Selected.Items.ToArray(), keyword); break;
-      case 3: Core.MediaItemsM.SetMetadata(keyword); break;
+      case 1: Core.Db.Segments.ToggleKeyword(dlg.Segments, keyword); break;
+      case 2: Core.Db.People.ToggleKeyword(dlg.People, keyword); break;
+      case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, keyword); break;
+      case 4: Core.MediaItemsM.SetMetadata(dlg.VideoItems.Cast<MediaItemM>().ToArray(), keyword); break;
     }
+
+    Clear();
   }
 
   public static void TogglePerson(PersonM person) {
-    if (person == null || !GetCounts(person, out var counts)) return;
+    if (GetInstance(Res.IconPeople, "Add/Remove Person", "Add or Remove on:",  person) is not { } dlg) return;
 
-    var dlg = GetInstance(Res.IconPeople, _personTitle, counts, person);
     switch (Show(dlg)) {
-      case 1: Core.SegmentsM.SetSelectedAsPerson(person); break;
-      case 3: Core.MediaItemsM.SetMetadata(person); break;
+      case 1: Core.SegmentsM.SetSelectedAsPerson(dlg.Segments, person); break;
+      case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, person); break;
+      case 4: Core.MediaItemsM.SetMetadata(dlg.VideoItems.Cast<MediaItemM>().ToArray(), person); break;
     }
+
+    Clear();
   }
 
-  private static bool GetCounts(object item, out Tuple<int, int, int> counts) {
-    counts = new(
-      Core.SegmentsM.Selected.Items.Count,
-      item is PersonM ? 0 : Core.PeopleM.Selected.Items.Count,
-      Core.MediaItemsM.GetActive().Length);
+  public static void SetGeoName(GeoNameM geoName) {
+    if (GetInstance(Res.IconPeople, "Set GeoName", "Set GeoName on:", geoName) is not { } dlg) return;
 
-    return counts.Item1 != 0 || counts.Item2 != 0 || counts.Item3 != 0;
+    switch (Show(dlg)) {
+      case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, geoName); break;
+      case 4: Core.MediaItemsM.SetMetadata(dlg.VideoItems.Cast<MediaItemM>().ToArray(), geoName); break;
+    }
+
+    Clear();
   }
 
-  private static DialogButton[] GetButtons(Tuple<int, int, int> counts, Dialog dlg) {
-    var (sCount, pCount, miCount) = counts;
-    var buttons = new List<DialogButton>();
+  public static void SetRating(RatingTreeM rating) {
+    if (GetInstance(Res.IconPeople, "Set Rating", "Set Rating on:", rating) is not { } dlg) return;
 
-    if (sCount > 0)
-      buttons.Add(new(GetTitle("Segment", "Segments", sCount), Res.IconSegment, dlg.SetResult(1)));
-    if (pCount > 0)
-      buttons.Add(new(GetTitle("Person", "People", pCount), Res.IconPeople, dlg.SetResult(2)));
-    if (miCount > 0)
-      buttons.Add(new(GetTitle("Media Item", "Media Items", miCount), Res.IconImage, dlg.SetResult(3)));
+    switch (Show(dlg)) {
+      case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, rating); break;
+      case 4: Core.MediaItemsM.SetMetadata(dlg.VideoItems.Cast<MediaItemM>().ToArray(), rating); break;
+    }
 
-    return buttons.ToArray();
+    Clear();
   }
-
-  private static string GetTitle(string one, string many, int count) =>
-    count > 1 ? $"{many} ({count})" : one;
 }

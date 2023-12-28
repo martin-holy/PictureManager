@@ -420,8 +420,7 @@ public sealed class MediaItemsM : ObservableObject {
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.Selected.Items.ToArray();
 
-  public void SetMetadata(object item) {
-    var items = GetActive();
+  public void SetMetadata(MediaItemM[] items, object item) {
     if (items.Length == 0) return;
 
     var count = 0;
