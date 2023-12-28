@@ -89,15 +89,16 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     UpdateRoot(Root, _ => CollectionViewGroup<T>.ReWrapAll(Root));
   }
 
-  public void Update(T[] items) =>
-    ReGroupItems(items, false);
+  public void Update(T[] items, bool ifContains = false) =>
+    ReGroupItems(items, false, ifContains);
 
-  public void Remove(T[] items) =>
-    ReGroupItems(items, true);
+  public void Remove(T[] items, bool ifContains = false) =>
+    ReGroupItems(items, true, ifContains);
 
-  public void ReGroupItems(T[] items, bool remove) {
-    if (Root == null || items == null || items.Length == 0) return;
-
+  public void ReGroupItems(T[] items, bool remove, bool ifContains = false) {
+    if (Root == null || items == null) return;
+    if (ifContains) items = Root.Source.Intersect(items).ToArray();
+    if (items.Length == 0) return;
     var toReWrap = new HashSet<CollectionViewGroup<T>>();
 
     if (remove)
