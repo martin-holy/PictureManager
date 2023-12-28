@@ -190,6 +190,7 @@ public sealed class Core {
 
     MediaItemsM.MetadataChangedEvent += (_, e) => {
       MediaItemsViews.ReGroupViewIfContains(e.Data);
+      VideosM.CurrentVideoItems.Update(e.Data.OfType<VideoItemM>().ToArray(), true);
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       MediaItemsStatusBarM.UpdateRating();
     };
