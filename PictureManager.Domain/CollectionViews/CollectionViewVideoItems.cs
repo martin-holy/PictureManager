@@ -30,6 +30,5 @@ public class CollectionViewVideoItems : CollectionView<VideoItemM> {
   public override void OnItemSelected(SelectionEventArgs<VideoItemM> e) {
     Selected.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
     Core.VideosM.MediaPlayer.SetCurrent(e.Item);
-    Core.VideoClipsM.Current = e.Item as VideoClipM;
   }
 }
