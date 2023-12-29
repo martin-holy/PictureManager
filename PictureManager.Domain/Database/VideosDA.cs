@@ -17,7 +17,7 @@ public sealed class VideosDA : TableDataAdapter<VideoM> {
   public VideosDA(Db db) : base("Videos", 11) {
     _db = db;
     IsDriveRelated = true;
-    Model = new(this);
+    Model = new();
   }
 
   public override Dictionary<string, IEnumerable<VideoM>> GetAsDriveRelated() =>
