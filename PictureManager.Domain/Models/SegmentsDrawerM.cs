@@ -28,7 +28,7 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
     DoDropAction = DoDrop;
 
     AddSelectedCommand = new(
-      () => Update(_segmentsM.Selected.Items.ToArray(), true),
+      () => AddOrRemove(_segmentsM.Selected.Items.ToArray(), true),
       () => _segmentsM.Selected.Items.Count > 0);
     OpenCommand = new(() => Open(Core.ToolsTabsM));
   }
@@ -47,9 +47,9 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
   }
 
   private void DoDrop(object data, bool haveSameOrigin) =>
-    Update(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
+    AddOrRemove(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
 
-  private void Update(SegmentM[] segments, bool add) {
+  private void AddOrRemove(SegmentM[] segments, bool add) {
     if (!add && Dialog.Show(new MessageDialog(
           "Segments Drawer",
           "Do you want to remove segments from drawer?",
