@@ -10,16 +10,13 @@ using System.Linq;
 namespace PictureManager.Domain.Models.MediaItems;
 
 public sealed class VideosM {
-  public VideosDA DataAdapter { get; set; }
-  public int ModifiedItemsCount => DataAdapter.All.Count(x => x.IsOnlyInDb);
   public CollectionViewVideoItems CurrentVideoItems { get; } = new();
   public VideoM Current { get; private set; }
   public MediaPlayer MediaPlayer { get; } = new();
 
   public Func<string, string, object[]> GetVideoMetadataFunc { get; set; }
 
-  public VideosM(VideosDA da) {
-    DataAdapter = da;
+  public VideosM() {
     MediaPlayer.GetNextClipFunc = GetNextClip;
     MediaPlayer.GetNewClipFunc = GetNewClip;
     MediaPlayer.GetNewImageFunc = GetNewImage;

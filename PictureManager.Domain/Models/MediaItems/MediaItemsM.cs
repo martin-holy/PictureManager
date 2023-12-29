@@ -75,8 +75,8 @@ public sealed class MediaItemsM : ObservableObject {
   public void UpdateModifiedCount() => OnPropertyChanged(nameof(ModifiedItemsCount));
 
   private int GetModifiedCount() =>
-    Core.ImagesM.ModifiedItemsCount +
-    Core.VideosM.ModifiedItemsCount;
+    Core.Db.Images.All.Count(x => x.IsOnlyInDb) +
+    Core.Db.Videos.All.Count(x => x.IsOnlyInDb);
 
   private int GetItemsCount() =>
     Core.Db.Images.All.Count +

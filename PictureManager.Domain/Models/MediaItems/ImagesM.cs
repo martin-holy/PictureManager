@@ -15,8 +15,6 @@ namespace PictureManager.Domain.Models.MediaItems;
 public sealed class ImagesM {
   private readonly ImagesDA _da;
 
-  public int ModifiedItemsCount => _da.All.Count(x => x.IsOnlyInDb);
-
   public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
   public RelayCommand<object> CompressCommand { get; }
   public RelayCommand<MediaItemsView> ImagesToVideoCommand { get; }
