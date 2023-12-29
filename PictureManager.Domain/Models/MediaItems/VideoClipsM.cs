@@ -8,9 +8,7 @@ namespace PictureManager.Domain.Models.MediaItems;
 public sealed class VideoClipsM : ObservableObject {
   private List<VideoClipM> _clipsThumbsToRebuild;
   private List<KeyValuePair<string, KeyValuePair<int, string>[]>> _vidThumbsToRebuild;
-  private VideoClipM _current;
 
-  public VideoClipM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
   public List<KeyValuePair<string, KeyValuePair<int, string>[]>> VidThumbsToRebuild { get => _vidThumbsToRebuild; set { _vidThumbsToRebuild = value; OnPropertyChanged(); } }
   
   public Action VidThumbsRebuildFinishedAction => VidThumbsRebuildFinished;
