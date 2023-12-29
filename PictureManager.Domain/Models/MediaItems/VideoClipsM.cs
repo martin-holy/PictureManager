@@ -1,5 +1,4 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,6 @@ using System.Linq;
 namespace PictureManager.Domain.Models.MediaItems;
 
 public sealed class VideoClipsM : ObservableObject {
-  private readonly VideoClipsDA _da;
   private List<VideoClipM> _clipsThumbsToRebuild;
   private List<KeyValuePair<string, KeyValuePair<int, string>[]>> _vidThumbsToRebuild;
   private VideoClipM _current;
@@ -19,17 +17,10 @@ public sealed class VideoClipsM : ObservableObject {
 
   public RelayCommand<object> RebuildVideoClipsThumbnailsCommand { get; }
 
-  public VideoClipsM(VideoClipsDA da) {
-    _da = da;
-    _da.ItemCreatedEvent += OnItemCreated;
-
+  public VideoClipsM() {
     RebuildVideoClipsThumbnailsCommand = new(
       () => RebuildVideoClipsThumbnails(Core.MediaItemsM.GetActive()),
       () => Core.MediaItemsM.GetActive().Any());
-  }
-
-  private void OnItemCreated(object sender, ObjectEventArgs<VideoClipM> e) {
-    Core.VideosM.Current.HasVideoClips = true;
   }
 
   public void RebuildVideoClipsThumbnails(MediaItemM[] items) {

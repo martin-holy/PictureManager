@@ -18,7 +18,7 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
   public VideoClipsDA(Db db) : base("VideoClips", 10) {
     _db = db;
     IsDriveRelated = true;
-    Model = new(this);
+    Model = new();
   }
 
   public override Dictionary<string, IEnumerable<VideoClipM>> GetAsDriveRelated() =>
@@ -64,6 +64,10 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
 
   public VideoClipM ItemCreate() =>
     ItemCreate(new(GetNextId(), _db.Videos.Model.Current));
+
+  protected override void OnItemCreated(VideoClipM item) {
+    item.Video.HasVideoClips = true;
+  }
 
   protected override void OnItemDeleted(VideoClipM item) {
     File.Delete(item.FilePathCache);
