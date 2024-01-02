@@ -34,6 +34,11 @@ public sealed class GeoNamesM {
   private async Task<GeoNameM> InsertGeoNameHierarchy(string url) {
     if (ApiLimitExceeded) return null;
 
+    if (!Core.Settings.LoadGeoNamesFromWeb) {
+      Log.Error("Load GeoNames from web is disabled.", "Enable it in the settings.");
+      return null;
+    }
+
     if (string.IsNullOrEmpty(Core.Settings.GeoNamesUserName)) {
       ApiLimitExceeded = true;
       Log.Error("GeoNames user name was not set.", "Please register at geonames.org and set your user name in the settings.");

@@ -19,6 +19,7 @@ public sealed class Settings : ObservableObject {
   private int _imagesToVideoQuality = 27;
   private double _imagesToVideoSpeed = 0.25;
   private string _geoNamesUserName;
+  private bool _loadGeoNamesFromWeb;
 
   public int JpegQualityLevel { get => _jpegQualityLevel; set { _jpegQualityLevel = value; OnPropertyChanged(); } }
   public string CachePath { get => _cachePath; set => OnCachePathChange(value); }
@@ -29,6 +30,7 @@ public sealed class Settings : ObservableObject {
   public int ImagesToVideoQuality { get => _imagesToVideoQuality; set { _imagesToVideoQuality = value; OnPropertyChanged(); } }
   public double ImagesToVideoSpeed { get => _imagesToVideoSpeed; set { _imagesToVideoSpeed = value; OnPropertyChanged(); } }
   public string GeoNamesUserName { get => _geoNamesUserName; set { _geoNamesUserName = value; OnPropertyChanged(); } }
+  public bool LoadGeoNamesFromWeb { get => _loadGeoNamesFromWeb; set { _loadGeoNamesFromWeb = value; OnPropertyChanged(); } }
 
   public string SettingsFileName { get; set; } = Path.Combine("db", "settings.csv");
 
@@ -58,6 +60,7 @@ public sealed class Settings : ObservableObject {
       sw.WriteLine($"{nameof(ImagesToVideoQuality)}|{ImagesToVideoQuality}");
       sw.WriteLine($"{nameof(ImagesToVideoSpeed)}|{ImagesToVideoSpeed}");
       sw.WriteLine($"{nameof(GeoNamesUserName)}|{GeoNamesUserName}");
+      sw.WriteLine($"{nameof(LoadGeoNamesFromWeb)}|{(LoadGeoNamesFromWeb ? 1 : 0)}");
 
       _settingsChanged = false;
       return true;
@@ -100,6 +103,8 @@ public sealed class Settings : ObservableObject {
         ImagesToVideoSpeed = double.Parse(imagesToVideoSpeed);
       if (props.TryGetValue(nameof(GeoNamesUserName), out var geoNamesUserName))
         GeoNamesUserName = geoNamesUserName;
+      if (props.TryGetValue(nameof(LoadGeoNamesFromWeb), out var loadGeoNamesFromWeb))
+        LoadGeoNamesFromWeb = "1".Equals(loadGeoNamesFromWeb);
 
       _settingsChanged = false;
       return true;
