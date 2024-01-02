@@ -76,6 +76,11 @@
           </x:Array>
 
           <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Load GeoNames from web:"/>
+            <CheckBox IsChecked="{Binding LoadGeoNamesFromWeb, Mode=TwoWay}"/>
+          </x:Array>
+
+          <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="{Binding JpegQualityLevel, StringFormat='Jpeg quality level: {0}'}"/>
             <Slider
               Margin="3"
