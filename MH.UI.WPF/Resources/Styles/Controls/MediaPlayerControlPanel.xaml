@@ -182,6 +182,12 @@
           Icon="{StaticResource IconImage}"
           Command="{Binding SetNewImageCommand}"/>
 
+        <!-- Delete item -->
+        <c:IconButton
+          ToolTip="Delete"
+          Icon="{StaticResource IconXCross}"
+          Command="{Binding DeleteItemCommand}"/>
+
         <!-- Markers -->
         <Grid x:Name="markersPanel">
           <Grid.ColumnDefinitions>

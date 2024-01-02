@@ -1,12 +1,13 @@
-﻿using System.Windows;
+﻿using MH.UI.Interfaces;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using UIC = MH.UI.Controls;
 
 namespace MH.UI.WPF.Controls;
 
-public class MediaPlayer : MediaElement {
-  private bool _modelSet;
+public class MediaPlayer : MediaElement, IPlatformSpecificUiMediaPlayer {
+  private UIC.MediaPlayer _model;
 
   static MediaPlayer() {
     DefaultStyleKeyProperty.OverrideMetadata(
@@ -20,35 +21,38 @@ public class MediaPlayer : MediaElement {
     ScrubbingEnabled = true;
     Stretch = Stretch.Uniform;
     StretchDirection = StretchDirection.Both;
+    MediaOpened += OnMediaOpened;
+    MediaEnded += OnMediaEnded;
   }
 
   public void SetModel(UIC.MediaPlayer model) {
-    if (_modelSet) return;
-    _modelSet = true;
+    _model = model;
+    if (_model == null) return;
+    _model.UiMediaPlayer = this;
+    SpeedRatio = _model.Speed;
+    Volume = _model.Volume;
+    IsMuted = _model.IsMuted;
 
-    model.PlayAction = Play;
-    model.PauseAction = Pause;
-    model.SetPositionAction = ms => Position = new(0, 0, 0, 0, ms);
-    model.GetPositionFunc = () => Position.TotalMilliseconds;
-    model.SetSource = s => Source = string.IsNullOrEmpty(s) ? null : new(s);
+    if (!string.IsNullOrEmpty(_model.Source))
+      Source = new(_model.Source);
+  }
 
-    model.PropertyChanged += (_, e) => {
-      switch (e.PropertyName) {
-        case nameof(model.Speed): SpeedRatio = model.Speed; break;
-        case nameof(model.Volume): Volume = model.Volume; break;
-        case nameof(model.IsMuted): IsMuted = model.IsMuted; break;
-      }
-    };
+  public void UnsetModel() {
+    Pause();
+    Source = null;
+    if (_model == null) return;
+    _model.UiMediaPlayer = null;
+    _model = null;
+  }
 
-    MediaOpened += delegate {
-      if (HasVideo)
-        model.OnMediaOpened(NaturalDuration.HasTimeSpan
-          ? (int)NaturalDuration.TimeSpan.TotalMilliseconds
-          : 0);
-    };
+  private void OnMediaEnded(object sender, RoutedEventArgs e) {
+    _model?.OnMediaEnded();
+  }
 
-    MediaEnded += delegate {
-      model.OnMediaEnded();
-    };
+  private void OnMediaOpened(object sender, RoutedEventArgs e) {
+    if (HasVideo)
+      _model?.OnMediaOpened(NaturalDuration.HasTimeSpan
+        ? (int)NaturalDuration.TimeSpan.TotalMilliseconds
+        : 0);
   }
 }
