@@ -1,4 +1,5 @@
 using MH.UI.Controls;
+using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
@@ -30,7 +31,6 @@ public sealed class Core {
   public static PeopleM PeopleM => Db.People.Model;
   public static SegmentsM SegmentsM => Db.Segments.Model;
   public static VideoClipsM VideoClipsM => Db.VideoClips.Model;
-  public static VideosM VideosM => Db.Videos.Model;
   public static ViewersM ViewersM => Db.Viewers.Model;
 
   public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
@@ -44,6 +44,9 @@ public sealed class Core {
   public TitleProgressBarM TitleProgressBarM { get; } = new();
   public static ToolsTabsM ToolsTabsM { get; } = new() { CanCloseTabs = true };
   public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
+  public static VideoDetail VideoDetail { get; } = new();
+  public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
+  public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
 
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
@@ -83,6 +86,7 @@ public sealed class Core {
     TreeViewCategoriesM.AddCategories();
     Db.CategoryGroups.AddCategory(PeopleM.TreeCategory);
     Db.CategoryGroups.AddCategory(KeywordsM.TreeCategory);
+    UiDetailVideo.SetModel(VideoDetail.MediaPlayer);
   }
 
   private void AttachEvents() {
@@ -92,9 +96,17 @@ public sealed class Core {
 
         MediaViewerM.IsVisible = isInViewMode;
 
-        if (!isInViewMode) {
+        if (isInViewMode) {
+          UiDetailVideo.UnsetModel();
+          VideoDetail.MediaPlayer.IsPlayOnOpened = true;
+          UiFullVideo.SetModel(VideoDetail.MediaPlayer);
+        }
+        else {
           MediaItemsViews.SelectAndScrollToCurrentMediaItem();
           MediaViewerM.Deactivate();
+          UiFullVideo.UnsetModel();
+          VideoDetail.MediaPlayer.IsPlayOnOpened = false;
+          UiDetailVideo.SetModel(VideoDetail.MediaPlayer);
         }
 
         TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
@@ -106,7 +118,7 @@ public sealed class Core {
         GeoNamesM.ApiLimitExceeded = false;
     };
 
-    VideosM.MediaPlayer.RepeatEndedEvent += delegate {
+    VideoDetail.MediaPlayer.RepeatEndedEvent += delegate {
       MediaViewerM.OnPlayerRepeatEnded();
     };
 
@@ -171,6 +183,7 @@ public sealed class Core {
 
     Db.MediaItems.ItemsDeletedEvent += (_, e) => {
       MediaItemsViews.RemoveMediaItems(e.Data);
+      VideoDetail.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray(), true);
 
       if (MediaViewerM.IsVisible) {
         MediaViewerM.MediaItems.Remove(e.Data[0]);
@@ -190,7 +203,7 @@ public sealed class Core {
 
     MediaItemsM.MetadataChangedEvent += (_, e) => {
       MediaItemsViews.ReGroupViewIfContains(e.Data);
-      VideosM.CurrentVideoItems.Update(e.Data.OfType<VideoItemM>().ToArray(), true);
+      VideoDetail.CurrentVideoItems.Update(e.Data.OfType<VideoItemM>().ToArray(), true);
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       MediaItemsStatusBarM.UpdateRating();
     };
@@ -198,7 +211,7 @@ public sealed class Core {
     MediaItemsM.PropertyChanged += (_, e) => {
       if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
         MediaItemsStatusBarM.Update();
-        VideosM.ReloadCurrentVideoItems();
+        VideoDetail.SetCurrent(MediaItemsM.Current);
 
         if (MainWindowM.IsInViewMode)
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
@@ -226,6 +239,8 @@ public sealed class Core {
 
           if (MediaViewerM.Current != null && MediaItemsM.Current != MediaViewerM.Current)
             MediaItemsM.Current = MediaViewerM.Current;
+          else
+            VideoDetail.SetCurrent(MediaViewerM.Current, true);
           break;
         case nameof(MediaViewerM.Scale):
           SegmentsM.SegmentsRectsM.UpdateScale(MediaViewerM.Scale);

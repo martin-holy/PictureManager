@@ -80,8 +80,8 @@ namespace PictureManager.Domain.Models {
 
       IsPaused = false;
       IsRunning = true;
-      Core.VideosM.MediaPlayer.PlayType = PlayType.Video;
-      Core.VideosM.MediaPlayer.RepeatForSeconds = Interval;
+      Core.VideoDetail.MediaPlayer.PlayType = PlayType.Video;
+      Core.VideoDetail.MediaPlayer.RepeatForSeconds = Interval;
 
       if (!delay) Next();
     }
@@ -92,7 +92,7 @@ namespace PictureManager.Domain.Models {
 
       IsPaused = false;
       IsRunning = false;
-      Core.VideosM.MediaPlayer.RepeatForSeconds = 0; // infinity
+      Core.VideoDetail.MediaPlayer.RepeatForSeconds = 0; // infinity
     }
 
     public void Pause() {

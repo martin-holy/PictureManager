@@ -72,8 +72,9 @@
             Visibility="Collapsed"/>
 
           <!-- Video -->
-          <mhc:MediaPlayer
+          <ContentControl
             x:Name="player"
+            Content="{Binding Path=UiFullVideo, Source={x:Static pm:App.Core}}"
             Visibility="Collapsed">
 
             <FrameworkElement.LayoutTransform>
@@ -81,15 +82,7 @@
                 <RotateTransform Angle="{Binding Current.RotationAngle}"/>
               </TransformGroup>
             </FrameworkElement.LayoutTransform>
-
-            <b:Interaction.Triggers>
-              <b:EventTrigger EventName="Loaded">
-                <b:InvokeCommandAction
-                  Command="pm:AppCore.MediaPlayerLoadedCommand"
-                  PassEventArgsToCommand="True"/>
-              </b:EventTrigger>
-            </b:Interaction.Triggers>
-          </mhc:MediaPlayer>
+          </ContentControl>
         </Grid>
       </mhc:ZoomAndPan>
 

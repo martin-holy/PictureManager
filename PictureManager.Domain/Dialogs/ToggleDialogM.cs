@@ -41,7 +41,7 @@ public sealed class ToggleDialogM : Dialog {
     Segments = Core.SegmentsM.Selected.Items.ToArray();
     People = item is PersonM ? Array.Empty<PersonM>() : Core.PeopleM.Selected.Items.ToArray();
     MediaItems = Core.MediaItemsM.GetActive();
-    VideoItems = Core.VideosM.CurrentVideoItems.Selected.Items.ToArray();
+    VideoItems = Core.VideoDetail.CurrentVideoItems.Selected.Items.ToArray();
 
     return Segments.Length + People.Length + MediaItems.Length + VideoItems.Length > 0;
   }

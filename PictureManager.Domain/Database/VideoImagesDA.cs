@@ -50,8 +50,8 @@ public class VideoImagesDA : TableDataAdapter<VideoImageM> {
   public override int GetNextId() =>
     _db.MediaItems.GetNextId();
 
-  public VideoImageM ItemCreate() =>
-    ItemCreate(new(GetNextId(), _db.Videos.Model.Current));
+  public VideoImageM CustomItemCreate(VideoM video) =>
+    ItemCreate(new(GetNextId(), video));
 
   protected override void OnItemDeleted(VideoImageM item) {
     File.Delete(item.FilePathCache);

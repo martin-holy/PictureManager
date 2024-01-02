@@ -10,6 +10,18 @@ public sealed class VideoItemsOrderDA : OneToManyMultiDataAdapter<VideoM, VideoI
   public VideoItemsOrderDA(Db db) : base("VideoItemsOrder", db, db.Videos) {
     _db = db;
     IsDriveRelated = true;
+    db.ReadyEvent += delegate { OnDbReady(); };
+  }
+
+  private void OnDbReady() {
+    _db.VideoClips.ItemDeletedEvent += (_, e) => RemoveValueItem(e.Data);
+    _db.VideoImages.ItemDeletedEvent += (_, e) => RemoveValueItem(e.Data);
+  }
+
+  private void RemoveValueItem(VideoItemM item) {
+    if (!All.TryGetValue(item.Video, out var value)) return;
+    if (!value.Remove(item)) return;
+    IsModified = true;
   }
 
   public override Dictionary<string, IEnumerable<KeyValuePair<VideoM, List<VideoItemM>>>> GetAsDriveRelated() =>

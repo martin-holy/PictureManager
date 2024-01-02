@@ -95,9 +95,9 @@ public sealed class MediaItemThumbSourceConverter : BaseMarkupExtensionMultiConv
       Core.Settings.JpegQualityLevel);
 
   private static void CreateVideoItemThumbnail(VideoItemM vi) {
-    if (ReferenceEquals(Core.VideosM.MediaPlayer.CurrentItem, vi)) {
+    if (ReferenceEquals(Core.VideoDetail.MediaPlayer.CurrentItem, vi)) {
       MH.UI.WPF.Utils.Imaging.CreateThumbnailFromVisual(
-        AppCore.FullVideo,
+        AppCore.CurrentMediaPlayer(),
         vi.FilePathCache,
         Core.Settings.ThumbnailSize,
         Core.Settings.JpegQualityLevel);

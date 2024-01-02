@@ -31,7 +31,6 @@ public sealed class MediaViewerM : ObservableObject {
       _current = value;
       OnPropertyChanged();
       OnPropertyChanged(nameof(PositionSlashCount));
-      Core.VideosM.SetVideoSource(value as VideoM);
 
       if (value != null) {
         var rotated = value.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
@@ -69,7 +68,6 @@ public sealed class MediaViewerM : ObservableObject {
   public void Deactivate() {
     PresentationPanel.Stop();
     MediaItems.Clear();
-    Core.VideosM.SetVideoSource(null);
   }
 
   public void SetMediaItems(List<MediaItemM> mediaItems, MediaItemM current) {
