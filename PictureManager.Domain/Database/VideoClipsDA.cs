@@ -62,8 +62,8 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
   public override int GetNextId() =>
     _db.MediaItems.GetNextId();
 
-  public VideoClipM ItemCreate() =>
-    ItemCreate(new(GetNextId(), _db.Videos.Model.Current));
+  public VideoClipM CustomItemCreate(VideoM video) =>
+    ItemCreate(new(GetNextId(), video));
 
   protected override void OnItemCreated(VideoClipM item) {
     item.Video.HasVideoClips = true;

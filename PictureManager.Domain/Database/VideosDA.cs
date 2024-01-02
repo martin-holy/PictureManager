@@ -12,12 +12,9 @@ namespace PictureManager.Domain.Database;
 public sealed class VideosDA : TableDataAdapter<VideoM> {
   private readonly Db _db;
 
-  public VideosM Model { get; }
-
   public VideosDA(Db db) : base("Videos", 11) {
     _db = db;
     IsDriveRelated = true;
-    Model = new();
   }
 
   public override Dictionary<string, IEnumerable<VideoM>> GetAsDriveRelated() =>

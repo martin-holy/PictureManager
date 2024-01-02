@@ -11,14 +11,8 @@ namespace PictureManager;
 
 public sealed class AppCore : ObservableObject {
   public SegmentsRectsVM SegmentsRectsVM { get; }
-  public static MediaPlayer FullVideo { get; private set; }
 
   public static RelayCommand<object> TestButtonCommand { get; } = new(Tests.Run);
-  public static RelayCommand<RoutedEventArgs> MediaPlayerLoadedCommand { get; } =
-    new(e => {
-      FullVideo = e.Source as MediaPlayer;
-      FullVideo?.SetModel(Core.VideosM.MediaPlayer);
-    });
 
   public AppCore() {
     SegmentsRectsVM = new(Core.SegmentsM.SegmentsRectsM);
@@ -32,7 +26,9 @@ public sealed class AppCore : ObservableObject {
 
     MediaItemsM.ReadMetadata = MediaItemsVM.ReadMetadata;
     Core.MediaItemsM.WriteMetadata = MediaItemsVM.WriteMetadata;
-    Core.VideosM.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
+    Core.VideoDetail.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
+    Core.UiFullVideo = new MediaPlayer();
+    Core.UiDetailVideo = new MediaPlayer();
   }
 
   private static double GetDisplayScale() =>
@@ -57,4 +53,7 @@ public sealed class AppCore : ObservableObject {
 
     return fops.FileOperationResult;
   }
+
+  public static MediaPlayer CurrentMediaPlayer() =>
+    (MediaPlayer)(Core.MainWindowM.IsInViewMode ? Core.UiFullVideo : Core.UiDetailVideo);
 }

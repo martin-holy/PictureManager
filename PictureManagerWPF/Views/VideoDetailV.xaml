@@ -1,0 +1,68 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
+
+  <DataTemplate DataType="{x:Type dv:VideoDetail}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <wpfu:CachedResourceDictionary Source="VideoItemThumbnailV.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
+    <Grid Background="{StaticResource ColorBrushBackground}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="200" x:Name="rowPlayer"/>
+        <RowDefinition Height="3"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <ContentControl
+        x:Name="player"
+        Content="{Binding Path=UiDetailVideo, Source={x:Static pm:App.Core}}"
+        VerticalAlignment="Top">
+
+        <FrameworkElement.LayoutTransform>
+          <TransformGroup>
+            <RotateTransform Angle="{Binding Current.RotationAngle}"/>
+          </TransformGroup>
+        </FrameworkElement.LayoutTransform>
+      </ContentControl>
+
+      <GridSplitter Grid.Row="1"/>
+
+      <ContentPresenter
+        Grid.Row="2"
+        x:Name="controlPanel"
+        Content="{Binding MediaPlayer}"
+        ContentTemplate="{StaticResource MH.Styles.Controls.MediaPlayerControlPanel}"/>
+
+      <mhc:CollectionView Grid.Row="3" View="{Binding CurrentVideoItems}"/>
+    </Grid>
+
+    <DataTemplate.Triggers>
+      <DataTrigger
+        Binding="{Binding Path=MainWindowM.IsInViewMode, Source={x:Static pm:App.Core}}"
+        Value="True">
+        <Setter TargetName="rowPlayer" Property="Height" Value="0"/>
+        <Setter TargetName="rowPlayer" Property="MaxHeight" Value="0"/>
+        <Setter TargetName="rowPlayer" Property="MinHeight" Value="0"/>
+        <Setter TargetName="player" Property="Visibility" Value="Collapsed"/>
+      </DataTrigger>
+
+      <DataTrigger
+        Binding="{Binding MediaPlayer.Source, Converter={mhConv:AllToBoolConverter}}"
+        Value="False">
+        <Setter TargetName="controlPanel" Property="IsEnabled" Value="False"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
+
+</ResourceDictionary>

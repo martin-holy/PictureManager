@@ -12,7 +12,7 @@
           <wpfu:CachedResourceDictionary Source="PeopleToolsTabV.xaml"/>
           <wpfu:CachedResourceDictionary Source="PersonDetailV.xaml"/>
           <wpfu:CachedResourceDictionary Source="SegmentsDrawerV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="VideosV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="VideoDetailV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>

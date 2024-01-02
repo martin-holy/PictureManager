@@ -44,7 +44,7 @@ public sealed class MediaItemsM : ObservableObject {
     DataAdapter = da;
     MetadataChangedEvent += OnMetadataChanged;
 
-    DeleteCommand = new(Delete, () => GetActive().Any());
+    DeleteCommand = new(() => Delete(GetActive().ToArray()), () => GetActive().Any());
     RotateCommand = new(Rotate, () => GetActive().OfType<RealMediaItemM>().Any());
     RenameCommand = new(Rename, () => Current is RealMediaItemM);
     CommentCommand = new(Comment, () => Current != null);
@@ -102,21 +102,20 @@ public sealed class MediaItemsM : ObservableObject {
       items);
   }
 
-  private void Delete() {
-    var items = GetActive().ToList();
-    var count = items.Count;
-    if (count == 0) return;
-
+  public bool Delete(MediaItemM[] items) {
+    if (items.Length == 0) return false;
     if (Dialog.Show(new MessageDialog(
           "Delete Confirmation",
-          "Do you really want to delete {0} item{1}?".Plural(count),
+          "Do you really want to delete {0} item{1}?".Plural(items.Length),
           Res.IconQuestion,
-          true)) != 1) return;
+          true)) != 1) return false;
 
-    SetCurrentAfterDelete(items);
+    if (items.Any(x => x is RealMediaItemM))
+      SetCurrentAfterDelete(items);
     Core.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).ToList(), true, false);
     foreach (var c in items.Select(x => x.FilePathCache)) File.Delete(c);
     DataAdapter.ItemsDelete(items);
+    return true;
   }
 
   /// <summary>

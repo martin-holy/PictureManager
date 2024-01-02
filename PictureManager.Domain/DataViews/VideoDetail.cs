@@ -2,37 +2,52 @@
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Database;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Domain.DataViews;
 
-public sealed class VideosM {
+public sealed class VideoDetail {
   public CollectionViewVideoItems CurrentVideoItems { get; } = new();
   public VideoM Current { get; private set; }
   public MediaPlayer MediaPlayer { get; } = new();
 
   public Func<string, string, object[]> GetVideoMetadataFunc { get; set; }
 
-  public VideosM() {
+  public VideoDetail() {
     MediaPlayer.GetNextClipFunc = GetNextClip;
     MediaPlayer.GetNewClipFunc = GetNewClip;
     MediaPlayer.GetNewImageFunc = GetNewImage;
+    MediaPlayer.OnItemDeleteAction = OnItemDelete;
     MediaPlayer.MarkerSetEvent += OnMarkerSet;
   }
 
-  public void ReloadCurrentVideoItems() {
-    // TODO mi rewrite check this. don't reload if VideoClip or VideoImage is selected with the same VideoM
-    var vid = Core.MediaItemsM.Current as VideoM ?? (Core.MediaItemsM.Current as VideoItemM)?.Video;
-    if (ReferenceEquals(Current, vid)) return;
+  public void SetCurrent(MediaItemM item, bool setSource = false) {
+    var vid = item as VideoM ?? (item as VideoItemM)?.Video;
+
+    if (vid == null) {
+      SetVideoSource(null);
+      Current = null;
+      CurrentVideoItems.Root?.Clear();
+      CurrentVideoItems.Selected.DeselectAll();
+      return;
+    }
+
+    if (ReferenceEquals(Current, vid) && !setSource) return;
 
     Current = vid;
+    SetVideoSource(Current);
+    ReloadCurrentVideoItems();
+    Core.ToolsTabsM.Activate(Res.IconMovieClapper, "Video", this);
+  }
+
+  private void ReloadCurrentVideoItems() {
     var items = Current == null
       ? new()
       : Core.Db.VideoItemsOrder.All.TryGetValue(Current, out var list)
-        ? list
+        ? list.ToList()
         : Core.Db.VideoClips.All
           .Where(x => ReferenceEquals(x.Video, Current))
           .Cast<VideoItemM>()
@@ -41,21 +56,26 @@ public sealed class VideosM {
           .OrderBy(x => x.TimeStart)
           .ToList();
     var groupByItems = new[] { GroupByItems.GetKeywordsInGroup(items) };
-    
+
     CurrentVideoItems.Reload(items, GroupMode.ThenByRecursive, groupByItems, true);
   }
 
   private IVideoClip GetNewClip() =>
-    SelectOne(Core.Db.VideoClips.ItemCreate());
+    SelectOne(Core.Db.VideoClips.CustomItemCreate(Current));
 
   private IVideoImage GetNewImage() =>
-    SelectOne(Core.Db.VideoImages.ItemCreate());
+    SelectOne(Core.Db.VideoImages.CustomItemCreate(Current));
 
   // TODO integrated it to Selected
   private T SelectOne<T>(T item) where T : VideoItemM {
     CurrentVideoItems.Selected.DeselectAll();
     CurrentVideoItems.Selected.Set(item, true);
     return item;
+  }
+
+  private void OnItemDelete() {
+    if (Core.MediaItemsM.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
+      MediaPlayer.SetCurrent(null);
   }
 
   private void OnMarkerSet(object sender, ObjectEventArgs<Tuple<IVideoItem, bool>> e) {
@@ -116,7 +136,7 @@ public sealed class VideosM {
     return null;
   }
 
-  public void SetVideoSource(VideoM vid) {
+  private void SetVideoSource(VideoM vid) {
     if (vid == null) {
       MediaPlayer.IsPlaying = false;
       MediaPlayer.Source = string.Empty;
@@ -129,6 +149,5 @@ public sealed class VideosM {
 
     MediaPlayer.Source = vid.FilePath;
     MediaPlayer.TimelineSmallChange = smallChange;
-    Core.ToolsTabsM.Activate(Res.IconMovieClapper, "Video", Core.VideosM);
   }
 }
