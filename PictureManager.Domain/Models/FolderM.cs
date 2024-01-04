@@ -114,9 +114,6 @@ namespace PictureManager.Domain.Models {
       Items.Sort(x => ((FolderM)x).Name);
     }
 
-    public RealMediaItemM GetMediaItemByName(string fileName) =>
-      MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
-
     public List<RealMediaItemM> GetMediaItems(bool recursive) {
       if (!recursive) return MediaItems;
 
