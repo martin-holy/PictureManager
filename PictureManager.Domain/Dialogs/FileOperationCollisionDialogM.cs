@@ -63,7 +63,7 @@ namespace PictureManager.Domain.Dialogs {
       var folderPath = path[..lioSep];
       var fileName = path[(lioSep + 1)..];
       var folder = Tree.GetByPath(Core.FoldersM.TreeCategory, folderPath, Path.DirectorySeparatorChar) as FolderM;
-      var mi = folder?.GetMediaItemByName(fileName);
+      var mi = folder?.MediaItems.GetByFileName(fileName);
 
       if (mi != null) return mi;
 

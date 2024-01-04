@@ -4,6 +4,7 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
+using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
@@ -88,7 +89,7 @@ public sealed class FoldersM {
         // Rename Renamed Files
         foreach (var (oldFilePath, newFileName) in renamedFiles) {
           var fileName = oldFilePath[(oldFilePath.LastIndexOf(Path.DirectorySeparatorChar) + 1)..];
-          var mi = srcFolder.GetMediaItemByName(fileName);
+          var mi = srcFolder.MediaItems.GetByFileName(fileName);
           // renamed files can contain files which are not in DB
           // TODO remove this
           if (mi == null) continue;

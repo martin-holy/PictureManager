@@ -141,3 +141,8 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     ThumbHeight = h;
   }
 }
+
+public static class MediaItemExtensions {
+  public static T GetByFileName<T>(this IEnumerable<T> items, string fileName) where T : MediaItemM =>
+    items.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
+}
