@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace MH.Utils.Extensions {
   public static class IOExtensions {
@@ -42,5 +43,8 @@ namespace MH.Utils.Extensions {
 
       return $"{doubleSize:0.##} {sizes[order]}";
     }
+
+    public static Task<bool> DirectoryExistsAsync(string path) =>
+      Task.Run(() => Directory.Exists(path));
   }
 }
