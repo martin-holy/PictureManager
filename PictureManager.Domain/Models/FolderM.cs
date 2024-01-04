@@ -67,7 +67,7 @@ namespace PictureManager.Domain.Models {
         dirNames.Add(dirName);
 
         // get existing Folder in the tree
-        var folder = Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(dirName, StringComparison.OrdinalIgnoreCase));
+      var folder = this.GetByName(dirName);
         
         if (folder != null) {
           folder.IsHidden = !Core.ViewersM.CanViewerSee(folder);
@@ -129,4 +129,9 @@ namespace PictureManager.Domain.Models {
       return mis;
     }
   }
+}
+
+public static class FolderExtensions {
+  public static FolderM GetByName(this FolderM item, string name) =>
+    item.Items.GetByName(name, StringComparison.OrdinalIgnoreCase) as FolderM;
 }

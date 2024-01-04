@@ -238,7 +238,7 @@ public sealed class FoldersM {
 
   private void MoveFolder(FolderM src, FolderM dest, ref HashSet<string> skipped) {
     // get target folder without reload!
-    var targetFolder = dest.Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(src.Name, StringComparison.OrdinalIgnoreCase));
+    var targetFolder = dest.GetByName(src.Name);
     var srcExists = Directory.Exists(src.FullPath);
     var deleteSrc = !srcExists && targetFolder != null;
 
