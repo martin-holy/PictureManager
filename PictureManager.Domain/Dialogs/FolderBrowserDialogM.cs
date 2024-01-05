@@ -50,7 +50,7 @@ namespace PictureManager.Domain.Dialogs {
       Parent = parent;
     }
 
-    public override void OnIsExpandedChanged(bool value) {
+    protected override void OnIsExpandedChanged(bool value) {
       if (value) LoadSubFolders();
       UpdateIcon();
     }

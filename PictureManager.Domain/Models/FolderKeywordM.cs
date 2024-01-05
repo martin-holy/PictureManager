@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Models {
       Parent = parent;
     }
 
-    public override void OnIsExpandedChanged(bool value) {
+    protected override void OnIsExpandedChanged(bool value) {
       if (!value) return;
       foreach (var folder in Folders)
         folder.LoadSubFolders(false);
