@@ -31,7 +31,7 @@ namespace MH.Utils.BaseClasses {
       Data = data;
     }
 
-    public virtual void OnIsExpandedChanged(bool value) { }
+    protected virtual void OnIsExpandedChanged(bool value) { }
 
     public void AddItems(IEnumerable<ITreeItem> items) =>
       Items.AddItems(items.ToList(), item => item.Parent = this);
