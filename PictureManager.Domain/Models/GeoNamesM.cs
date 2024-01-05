@@ -14,6 +14,7 @@ namespace PictureManager.Domain.Models;
 
 public sealed class GeoNamesM {
   private readonly GeoNamesDA _da;
+  private bool _webLoadDisabledLogged;
   
   public bool ApiLimitExceeded { get; set; }
   public GeoNamesTreeCategory TreeCategory { get; }
@@ -35,7 +36,11 @@ public sealed class GeoNamesM {
     if (ApiLimitExceeded) return null;
 
     if (!Core.Settings.LoadGeoNamesFromWeb) {
-      Log.Error("Load GeoNames from web is disabled.", "Enable it in the settings.");
+      if (!_webLoadDisabledLogged) {
+        _webLoadDisabledLogged = true;
+        Log.Error("Load GeoNames from web is disabled.", "Enable it in the settings.");
+      }
+
       return null;
     }
 
