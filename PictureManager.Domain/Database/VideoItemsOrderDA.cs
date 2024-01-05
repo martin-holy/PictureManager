@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 
@@ -16,12 +17,19 @@ public sealed class VideoItemsOrderDA : OneToManyMultiDataAdapter<VideoM, VideoI
   private void OnDbReady() {
     _db.VideoClips.ItemDeletedEvent += (_, e) => RemoveValueItem(e.Data);
     _db.VideoImages.ItemDeletedEvent += (_, e) => RemoveValueItem(e.Data);
+    _db.VideoClips.ItemCreatedEvent += (_, e) => OnValueItemCreated(e.Data);
+    _db.VideoImages.ItemCreatedEvent += (_, e) => OnValueItemCreated(e.Data);
   }
 
   private void RemoveValueItem(VideoItemM item) {
     if (!All.TryGetValue(item.Video, out var value)) return;
     if (!value.Remove(item)) return;
     IsModified = true;
+  }
+
+  private void OnValueItemCreated(VideoItemM item) {
+    if (!All.TryGetValue(item.Video, out var value)) return;
+    value.AddInOrder(item, (a, b) => a.TimeStart - b.TimeStart);
   }
 
   public override Dictionary<string, IEnumerable<KeyValuePair<VideoM, List<VideoItemM>>>> GetAsDriveRelated() =>
