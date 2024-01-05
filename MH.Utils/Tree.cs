@@ -106,6 +106,39 @@ namespace MH.Utils {
       return default;
     }
 
+    public static IEnumerable<T> Flatten<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> elementSelector) {
+      var stack = new Stack<IEnumerator<T>>();
+      var e = source.GetEnumerator();
+      try {
+        while (true) {
+          while (e.MoveNext()) {
+            var item = e.Current;
+            if (item == null) continue;
+            yield return item;
+            var elements = elementSelector(item);
+            if (elements == null) continue;
+            stack.Push(e);
+            e = elements.GetEnumerator();
+          }
+
+          if (stack.Count == 0) break;
+          e.Dispose();
+          e = stack.Pop();
+        }
+      }
+      finally {
+        e.Dispose();
+        while (stack.Count != 0)
+          stack.Pop().Dispose();
+      }
+    }
+
+    public static IEnumerable<T> Flatten<T>(this IEnumerable<T> items) where T : ITreeItem =>
+      items.Flatten(x => x.Items.Cast<T>());
+
+    public static IEnumerable<T> Flatten<T>(this T item) where T : ITreeItem =>
+      new[] { item }.Concat(item.Items.Cast<T>().Flatten());
+
     public static void GetThisAndItemsRecursive<T>(object root, ref List<T> output) {
       output.Add((T)root);
       if (root is not ITreeItem treeItem) return;
