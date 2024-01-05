@@ -278,7 +278,7 @@ public sealed class MediaItemsM : ObservableObject {
 
   private static void RebuildThumbnails(FolderM folder, bool recursive) {
     var mediaItems = folder != null
-      ? folder.GetMediaItems(recursive).Cast<MediaItemM>()
+      ? folder.GetMediaItems(recursive).Cast<MediaItemM>().ToList()
       : Core.MediaItemsViews.Current?.GetSelectedOrAll();
 
     if (mediaItems == null) return;
