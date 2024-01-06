@@ -350,4 +350,10 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : I
     Source.Clear();
     OnPropertyChanged(nameof(SourceCount));
   }
+
+  public T GetItemByIndex(int index) =>
+    Source.Count > index ? Source[index] : default;
+
+  public CollectionViewRow<T> GetRowWithItem(T item) =>
+    Items.OfType<CollectionViewRow<T>>().FirstOrDefault(row => row.Leaves.Contains(item));
 }
