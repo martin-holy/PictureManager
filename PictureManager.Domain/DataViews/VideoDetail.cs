@@ -17,7 +17,7 @@ public sealed class VideoDetail {
   public Func<string, string, object[]> GetVideoMetadataFunc { get; set; }
 
   public VideoDetail() {
-    MediaPlayer.GetNextClipFunc = GetNextClip;
+    MediaPlayer.SelectNextItemAction = CurrentVideoItems.SelectNextOrFirstItem;
     MediaPlayer.GetNewClipFunc = GetNewClip;
     MediaPlayer.GetNewImageFunc = GetNewImage;
     MediaPlayer.OnItemDeleteAction = OnItemDelete;
@@ -94,46 +94,6 @@ public sealed class VideoDetail {
     // TODO mi rewrite ScrollTo
     File.Delete(item.FilePathCache);
     item.OnPropertyChanged(nameof(item.FilePathCache));
-  }
-
-  // TODO mi rewrite
-  private VideoClipM GetNextClip(bool inGroup, bool selectFirst) {
-    /*var groups = new List<List<VideoClipM>>();
-
-    groups.AddRange(TreeCategory.Items
-      .OfType<VideoClipsGroupM>()
-      .Where(g => g.Items.Count > 0)
-      .Select(g => g.Items.Select(x => x.Data).Cast<VideoClipM>().ToList()));
-
-    var clips = TreeCategory.Items
-      .OfType<VideoClipTreeM>()
-      .Select(x => x.Data)
-      .Cast<VideoClipM>()
-      .ToList();
-    if (clips.Count != 0)
-      groups.Add(clips);
-
-    if (groups.Count == 0)
-      return null;
-
-    if (selectFirst)
-      return groups[0][0];
-
-    for (var i = 0; i < groups.Count; i++) {
-      var group = groups[i];
-      var idx = group.IndexOf((VideoClipM)MediaPlayer.CurrentVideoClip);
-
-      if (idx < 0) continue;
-
-      if (idx < group.Count - 1)
-        return group[idx + 1];
-
-      return inGroup
-        ? group[0]
-        : groups[i < groups.Count - 1 ? i + 1 : 0][0];
-    }*/
-
-    return null;
   }
 
   private void SetVideoSource(VideoM vid) {
