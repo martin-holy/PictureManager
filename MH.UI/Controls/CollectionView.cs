@@ -171,4 +171,37 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     TopItem = item;
     ScrollTo(row != null ? row : group);
   }
+
+  public T SelectFirstItem() {
+    if ((Root?.GetNextBranchEndOfType() ?? Root) is not { } group) return default;
+    if (group.GetItemByIndex(0) is not { } item) return default;
+    if (group.GetRowWithItem(item) is not { } row) return default;
+    SelectItem(row, item, false, false);
+    return item;
+  }
+
+  public T SelectNextItem(bool inGroup, bool first) {
+    if (LastSelectedItem == null || LastSelectedRow == null) first = true;
+    if (first) return SelectFirstItem();
+    if (LastSelectedRow.Parent is not CollectionViewGroup<T> group) return default;
+    var index = group.Source.IndexOf(LastSelectedItem);
+    var item = group.GetItemByIndex(index + 1);
+
+    if (item == null)
+      if (inGroup) item = group.Source[0];
+      else {
+        group = group.GetNextBranchEndOfType();
+        if (group != null)
+          item = group.GetItemByIndex(0);
+      }
+
+    if (item == null || group.GetRowWithItem(item) is not { } row) return default;
+    SelectItem(row, item, false, false);
+    return item;
+  }
+
+  public void SelectNextOrFirstItem(bool inGroup, bool first) {
+    var item = SelectNextItem(inGroup, first);
+    if (item == null) SelectNextItem(inGroup, true);
+  }
 }
