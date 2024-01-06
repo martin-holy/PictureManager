@@ -292,5 +292,31 @@ namespace MH.Utils {
         item.Value.Parent.Items.Add(item.Value);
       }
     }
+
+    public static T GetBranchEndOfType<T>(this T item) where T : class, ITreeItem {
+      while (item.Items.OfType<T>().Any())
+        item = item.Items.OfType<T>().First();
+
+      return item;
+    }
+
+    public static T GetNextBranchEndOfType<T>(this T current) where T : class, ITreeItem {
+      if (current == null) return default;
+
+      if (current.Items.OfType<T>().Any())
+        return current.GetBranchEndOfType();
+
+      var parent = current.Parent;
+      while (parent != null) {
+        int index = parent.Items.IndexOf(current);
+        if (parent.Items.Skip(index + 1).OfType<T>().FirstOrDefault()?.GetBranchEndOfType() is { } next)
+          return next;
+
+        current = parent as T;
+        parent = current?.Parent;
+      }
+
+      return default;
+    }
   }
 }
