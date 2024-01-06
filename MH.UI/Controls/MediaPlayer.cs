@@ -164,9 +164,9 @@ public sealed class MediaPlayer : ObservableObject {
   public RelayCommand<object> TimelineSliderChangeStartedCommand { get; }
   public RelayCommand<object> TimelineSliderChangeEndedCommand { get; }
 
-  public Func<bool, bool, IVideoClip> GetNextClipFunc { get; set; }
   public Func<IVideoClip> GetNewClipFunc { get; set; }
   public Func<IVideoImage> GetNewImageFunc { get; set; }
+  public Action<bool, bool> SelectNextItemAction { get; set; }
   public Action OnItemDeleteAction { get; set; }
 
   public event EventHandler<ObjectEventArgs<Tuple<IVideoItem, bool>>> MarkerSetEvent = delegate { };
@@ -224,7 +224,7 @@ public sealed class MediaPlayer : ObservableObject {
       ShiftTimeline(TimelineShift.Beginning);
 
     if (PlayType != PlayType.Video)
-      SelectNextClip(false, true);
+      SelectNextItemAction?.Invoke(false, true);
   }
 
   public void OnMediaEnded() {
@@ -253,9 +253,8 @@ public sealed class MediaPlayer : ObservableObject {
             _repeatCount--;
             TimelinePosition = ClipTimeStart;
           }
-          else {
-            SelectNextClip(PlayType == PlayType.Group, false);
-          }
+          else
+            SelectNextItemAction?.Invoke(PlayType == PlayType.Group, false);
 
           break;
       }
@@ -384,12 +383,6 @@ public sealed class MediaPlayer : ObservableObject {
 
   private void PlayPauseToggle() =>
     IsPlaying = !IsPlaying;
-
-  private void SelectNextClip(bool inGroup, bool selectFirst) {
-    var clip = GetNextClipFunc(inGroup, selectFirst);
-    if (clip == null) return;
-    SetCurrentVideoClip(clip);
-  }
 
   public static string FormatPosition(int ms) =>
     TimeSpan.FromMilliseconds(ms).ToString(
