@@ -289,17 +289,14 @@ public sealed class FoldersM {
       _da.TreeItemDelete(src);
   }
 
-  public List<FolderM> GetFolders(ITreeItem item, bool recursive) {
-    var roots = (item as FolderKeywordM)?.Folders ?? new List<FolderM> { (FolderM)item };
+  public FolderM[] GetFolders(ITreeItem item, bool recursive) {
+    var roots = (item as FolderKeywordM)?.Folders?.ToArray() ?? new[] { (FolderM)item };
 
     if (!recursive) return roots;
 
-    var output = new List<FolderM>();
-    foreach (var root in roots) {
+    foreach (var root in roots)
       root.LoadSubFolders(true);
-      Tree.GetThisAndItemsRecursive(root, ref output);
-    }
 
-    return output.Where(Core.ViewersM.CanViewerSee).ToList();
+    return roots.SelectMany(x => x.Flatten()).Where(Core.ViewersM.CanViewerSee).ToArray();
   }
 }
