@@ -200,8 +200,6 @@ namespace PictureManager.Domain.Models {
         true)) != 1) return;
 
       var mi = item.Segment.MediaItem;
-      Core.Db.MediaItems.Modify(item.Segment.MediaItem);
-      Core.MediaItemsM.UpdateModifiedCount();
       SegmentsM.DataAdapter.ItemDelete(item.Segment);
       MediaItemSegmentsRects.Remove(item);
       mi.SetInfoBox();

@@ -34,6 +34,11 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       Model.UpdateModifiedCount();
     };
 
+    _db.Segments.ItemDeletedEvent += (_, e) => {
+      Modify(e.Data.MediaItem);
+      Model.UpdateModifiedCount();
+    };
+
     _db.Images.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
     _db.Images.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
     _db.Images.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
