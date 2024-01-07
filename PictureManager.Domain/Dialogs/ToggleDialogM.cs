@@ -102,7 +102,7 @@ public sealed class ToggleDialogM : Dialog {
   }
 
   public static void SetRating(RatingTreeM rating) {
-    if (GetInstance(Res.IconPeople, "Set Rating", "Set Rating on:", rating) is not { } dlg) return;
+    if (GetInstance(Res.IconStar, "Set Rating", "Set Rating on:", rating) is not { } dlg) return;
 
     switch (Show(dlg)) {
       case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, rating); break;
