@@ -139,13 +139,6 @@ namespace MH.Utils {
     public static IEnumerable<T> Flatten<T>(this T item) where T : ITreeItem =>
       new[] { item }.Concat(item.Items.Cast<T>().Flatten());
 
-    public static void GetThisAndItemsRecursive<T>(object root, ref List<T> output) {
-      output.Add((T)root);
-      if (root is not ITreeItem treeItem) return;
-      foreach (var item in treeItem.Items)
-        GetThisAndItemsRecursive(item, ref output);
-    }
-
     public static IEnumerable<T> GetThisAndParents<T>(this T item) where T : class, ITreeItem {
       while (item != null) {
         yield return item;
