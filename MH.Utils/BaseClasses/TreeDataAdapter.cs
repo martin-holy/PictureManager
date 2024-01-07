@@ -48,15 +48,13 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
   }
 
   public virtual void TreeItemDelete(ITreeItem item) {
-    var items = new List<ITreeItem>();
-    Tree.GetThisAndItemsRecursive(item, ref items);
+    var items = item.Flatten().Cast<T>().ToArray();
 
     foreach (var treeItem in items)
       ItemDelete(treeItem);
 
-    var tItems = items.Cast<T>().ToArray();
-    RaiseItemsDeleted(tItems);
-    OnItemsDeleted(tItems);
+    RaiseItemsDeleted(items);
+    OnItemsDeleted(items);
   }
 
   protected override void OnItemsDeleted(IList<T> items) {
