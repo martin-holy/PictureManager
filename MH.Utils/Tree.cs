@@ -263,14 +263,6 @@ namespace MH.Utils {
       return default;
     }
 
-    public static IEnumerable<ITreeItem> Flat(this IEnumerable<ITreeItem> items) {
-      foreach (var item in items) {
-        yield return item;
-        foreach (var subItem in Flat(item.Items))
-          yield return subItem;
-      }
-    }
-
     public static IEnumerable<TItem> AsTree<TItem, TGroup, TSort>(this IEnumerable<TItem> items, Func<TGroup, TSort> orderBy)
       where TItem : class, ITreeItem where TGroup : class, ITreeItem {
       var dic = items.ToDictionary(x => (TGroup)x.Data, x => x);
