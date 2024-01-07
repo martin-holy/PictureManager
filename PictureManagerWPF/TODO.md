@@ -16,13 +16,15 @@
   - D:\!test\364__32_original.jpg save metadata or crop doesn't work (re-save without metadata in XnView fixed the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
   - Reload metadata on video
-## VideoPlayer
+## Video Items (VideoImage and VideoClip)
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
 ## Person Detail
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 ## MainTabs
   - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
+## SegmentsView
+  - do Update and Remove only if view items contains changed items
 
 
                                   *** UPDATE ***
@@ -41,8 +43,11 @@
   - use constant strings for icons
 ## Dialog
   - add CanExecute for buttons like Yes/OK
+  - make icons on buttons larger
 
         # MH.UI.WPF
+##
+  - move icons from MH.Styles.Controls.MediaPlayerControlPanel to other MH.UI.WPF
 ## IconButton
   - use button foreground and background for icon in IconButton and IconToggleButton
   - add background behind text in IconTextButton
@@ -58,6 +63,7 @@
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
   - remove MediaItemFilterSizeM
+  - change usage of GetThisAndItemsRecursive and Flat to Flatted
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
@@ -78,25 +84,9 @@
     only if is not in the view otherwise scroll to top item
 
 
-
-##
- - reset sort order button of VideoMediaItems to delete relation in DB
- - tool tip for VideoMediaItems with all info
- - comment and delete on VideoItem
- - rename DataAdapter classes to DA
-
-
-
                                     *** NEW ***
 ##
   - Log to file
-  - Virtual images from video:
-    - media type: VideoImage
-    - props: time stamp of image and media item (video) id
-    - can have keywords, people, comment, ... 
-    - has own thumbnail icon
-    - opening from thumbnail will show paused video 
-      - so I need another video player mode to scroll trough VideoImages and than to next media item or MediaViewer will have mix of images, videos and videoImages?
   - slider with drag point for adjusting slider drag change value where:
     if the point is more away from the slider => change value is smaller
     and if is closer => change value is bigger
@@ -105,7 +95,6 @@
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
     so I can choice how to display filtered data: in MediaItemsView or MediaViewer
     and choice show selected or all
-    ...
 ## Folders
   - GeoNames for Folders
 ## MediaItems
@@ -114,11 +103,15 @@
   - filter for video length
   - LeftMouseButtonClick on Person or Keyword opens menu with options (load, filter, set to person, set to segment, set to media item)
   - show small segment next to person icon or show just small segment
-## Video Clips
-  - akce na (ukoncit clip -> presun na dalsi snimek -> zacit novy clip)
-  - lock na volume a speed, aby se ignorovalo to co je u clipu
+## Video Items (VideoImage and VideoClip)
+  - edit comment on VideoItems
+  - tool tip for VideoItems with all info
+  - reset sort order button of VideoItems to delete relation in DB
+  - add changing sort order
+  - segments for video items
+  - ignore volume and speed from selected clip ToggleButton
+  - show as separate thumbs in MediaItemView
   - import/export
-  - metadata (keywords, people, rating, comment) on file and/or Clip
   - export to mp4 (FFMPEG)
 ## MediaViewer
   - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima (pozor, delete je za selected)
