@@ -66,10 +66,9 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
     }
   }
 
-  // TODO use it everywhere
   protected void LinkTree(ITreeItem root, int index) {
-    foreach (var (item, csv) in AllCsv) {
-      item.Parent ??= string.IsNullOrEmpty(csv[index])
+    foreach (var (item, csv) in AllCsv.Where(x => x.Item1.Parent == null)) {
+      item.Parent = string.IsNullOrEmpty(csv[index])
         ? root
         : AllDict[int.Parse(csv[index])];
       item.Parent.Items.Add(item);
