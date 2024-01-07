@@ -87,15 +87,11 @@ public sealed class MediaItemsViews : ObservableObject {
     Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
   }
 
-  public void ReWrapViewIfContains(MediaItemM[] mediaItems) {
-    foreach (var view in _all.Where(x => x.FilteredItems.Any(mediaItems.Contains)))
-      view.ReWrapAll();
-  }
+  public void ReWrapViews(MediaItemM[] mediaItems) =>
+    _all.ForEach(x => x.ReWrapAll(mediaItems));
 
-  public void UpdateViewsIfContains(MediaItemM[] mediaItems) {
-    foreach (var view in _all)
-      view.Update(mediaItems);
-  }
+  public void UpdateViews(MediaItemM[] mediaItems) =>
+    _all.ForEach(x => x.Update(mediaItems));
 
   public async Task LoadByFolder(ITreeItem item) {
     if (item is FolderM { IsAccessible: false }) return;

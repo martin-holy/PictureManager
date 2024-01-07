@@ -277,9 +277,10 @@ public sealed class MediaItemsM : ObservableObject {
   }
 
   private static void RebuildThumbnails(FolderM folder, bool recursive) {
-    var mediaItems = folder != null
-      ? folder.GetMediaItems(recursive).Cast<MediaItemM>().ToList()
-      : Core.MediaItemsViews.Current?.GetSelectedOrAll();
+    var mediaItems = (folder == null
+        ? Core.MediaItemsViews.Current?.GetSelectedOrAll()?.OfType<RealMediaItemM>()
+        : folder.GetMediaItems(recursive))?
+      .Cast<MediaItemM>().ToArray();
 
     if (mediaItems == null) return;
 
@@ -288,7 +289,7 @@ public sealed class MediaItemsM : ObservableObject {
       File.Delete(mi.FilePathCache);
     }
 
-    Core.MediaItemsViews.Current?.ReWrapAll();
+    Core.MediaItemsViews.ReWrapViews(mediaItems);
   }
 
   private void SetOrientation(RealMediaItemM[] mediaItems, MediaOrientation orientation) {

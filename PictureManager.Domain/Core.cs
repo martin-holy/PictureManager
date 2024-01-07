@@ -198,11 +198,11 @@ public sealed class Core {
       if (MediaViewerM.IsVisible && e.Data.Contains(MediaItemsM.Current))
         MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
 
-      MediaItemsViews.ReWrapViewIfContains(e.Data);
+      MediaItemsViews.ReWrapViews(e.Data.Cast<MediaItemM>().ToArray());
     };
 
     MediaItemsM.MetadataChangedEvent += (_, e) => {
-      MediaItemsViews.UpdateViewsIfContains(e.Data);
+      MediaItemsViews.UpdateViews(e.Data);
       VideoDetail.CurrentVideoItems.Update(e.Data.OfType<VideoItemM>().ToArray());
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       MediaItemsStatusBarM.UpdateRating();
