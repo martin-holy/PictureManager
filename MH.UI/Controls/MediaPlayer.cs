@@ -4,7 +4,10 @@ using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace MH.UI.Controls;
 
@@ -292,8 +295,24 @@ public sealed class MediaPlayer : ObservableObject {
   }
 
   public void SetCurrent(IVideoItem item) {
-    if (item is IVideoClip vc) SetCurrentVideoClip(vc);
+    switch (item) {
+      case IVideoClip vc: SetCurrentVideoClip(vc); break;
+      case IVideoImage: SetCurrentVideoImage(); break;
+    }
+
     CurrentItem = item;
+  }
+
+  private void SetCurrentVideoImage() {
+    if (!IsPlaying) return;
+    IsPlaying = false;
+    Task.Run(() => {
+      Thread.Sleep(RepeatForSeconds * 1000);
+      Tasks.RunOnUiThread(() => {
+        IsPlaying = true;
+        SelectNextItemAction?.Invoke(PlayType == PlayType.Group, false);
+      });
+    });
   }
 
   private void SetCurrentVideoClip(IVideoClip vc) {
