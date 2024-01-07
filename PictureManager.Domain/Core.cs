@@ -257,19 +257,19 @@ public sealed class Core {
 
     Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
       Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
-      PeopleM.PersonDetail?.ReloadIf(e.Data.Item2);
+      PeopleM.PersonDetail?.Update(e.Data.Item2);
       PeopleM.PeopleView?.Update(e.Data.Item3);
       MediaItemsM.OnSegmentsPersonChanged(e.Data.Item2);
     };
 
     Db.Segments.SegmentsKeywordsChangedEvent += (_, e) => {
-      PeopleM.PersonDetail?.ReGroupIfContains(e.Data, true, false);
+      PeopleM.PersonDetail?.Update(e.Data, true, false);
       MediaItemsM.OnSegmentsKeywordsChanged(e.Data);
     };
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
       Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
-      PeopleM.PersonDetail?.ReGroupIfContains(new[] { e.Data }, true, true);
+      PeopleM.PersonDetail?.Update(new[] { e.Data }, true, true);
     };
 
     #endregion

@@ -76,15 +76,15 @@ public sealed class PersonDetail : ObservableObject {
         : PersonM.TopSegments.Cast<SegmentM>().ToList(),
       GroupMode.GroupBy, null, true, "Top");
 
-  public void ReloadIf(SegmentM[] segments) {
-    ReGroupIfContains(segments, true, false);
-    ReGroupIfContains(segments, false, true);
+  public void Update(SegmentM[] segments) {
+    Update(segments, true, false);
+    Update(segments, false, true);
   }
 
-  public void ReGroupIfContains(SegmentM[] segments, bool where, bool remove) {
+  public void Update(SegmentM[] segments, bool where, bool remove) {
     if (PersonM == null) return;
     var items = segments.Where(x => ReferenceEquals(PersonM, x.Person) == where).ToArray();
-    AllSegments.ReGroupItems(items, remove);
+    AllSegments.ReGroupItems(items, remove, remove);
 
     items = remove
       ? items
@@ -92,6 +92,6 @@ public sealed class PersonDetail : ObservableObject {
         ? Array.Empty<SegmentM>()
         : items.Where(PersonM.TopSegments.Contains).ToArray();
 
-    TopSegments.ReGroupItems(items, remove);
+    TopSegments.ReGroupItems(items, remove, remove);
   }
 }
