@@ -92,9 +92,9 @@ public sealed class MediaItemsViews : ObservableObject {
       view.ReWrapAll();
   }
 
-  public void ReGroupViewIfContains(MediaItemM[] mediaItems) {
+  public void UpdateViewsIfContains(MediaItemM[] mediaItems) {
     foreach (var view in _all)
-      view.Update(view.FilteredItems.Where(mediaItems.Contains).ToArray());
+      view.Update(mediaItems);
   }
 
   public async Task LoadByFolder(ITreeItem item) {
