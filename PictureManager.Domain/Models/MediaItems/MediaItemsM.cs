@@ -518,9 +518,7 @@ public sealed class MediaItemsM : ObservableObject {
       .OrderBy(mi => mi.FileName);
 
   public IEnumerable<MediaItemM> GetItems(KeywordM keyword, bool recursive) {
-    var keywords = new List<KeywordM> { keyword };
-    if (recursive) Tree.GetThisAndItemsRecursive(keyword, ref keywords);
-    var set = new HashSet<KeywordM>(keywords);
+    var set = (recursive ? keyword.Flatten() : new[] { keyword }).ToHashSet();
 
     return GetItems(mi =>
       mi.Keywords?.Any(k => set.Contains(k)) == true ||
@@ -528,9 +526,7 @@ public sealed class MediaItemsM : ObservableObject {
   }
 
   public IEnumerable<MediaItemM> GetItems(GeoNameM geoName, bool recursive) {
-    var geoNames = new List<GeoNameM> { geoName };
-    if (recursive) Tree.GetThisAndItemsRecursive(geoName, ref geoNames);
-    var set = new HashSet<GeoNameM>(geoNames);
+    var set = (recursive ? geoName.Flatten() : new[] { geoName }).ToHashSet();
 
     return Core.Db.MediaItemGeoLocation.All
       .Where(x => x.Value.GeoName != null && set.Contains(x.Value.GeoName))
