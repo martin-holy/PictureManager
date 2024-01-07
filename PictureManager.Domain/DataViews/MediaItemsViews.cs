@@ -5,6 +5,7 @@ using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ public sealed class MediaItemsViews : ObservableObject {
   public RelayCommand<object> CopyPathsCommand { get; }
   public RelayCommand<object> LoadByTagCommand { get; }
   public RelayCommand<object> ShuffleCommand { get; }
+  public RelayCommand<FolderM> RebuildThumbnailsCommand { get; }
 
   public MediaItemsViews() {
     AddViewCommand = new(() => AddView(string.Empty));
@@ -31,6 +33,9 @@ public sealed class MediaItemsViews : ObservableObject {
     ShuffleCommand = new(
       () => Current.Shuffle(),
       () => Current?.FilteredItems.Count > 0);
+    RebuildThumbnailsCommand = new(
+      x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
+      x => x != null || Current?.FilteredItems.Count > 0);
   }
 
   public void RemoveMediaItems(IList<MediaItemM> items) {
@@ -144,5 +149,21 @@ public sealed class MediaItemsViews : ObservableObject {
       Current.SelectAndScrollToCurrentMediaItem();
     else
       Core.MediaItemsM.Current = null;
+  }
+
+  private void RebuildThumbnails(FolderM folder, bool recursive) {
+    var mediaItems = (folder == null
+        ? Current?.GetSelectedOrAll()?.OfType<RealMediaItemM>()
+        : folder.GetMediaItems(recursive))?
+      .Cast<MediaItemM>().ToArray();
+
+    if (mediaItems == null) return;
+
+    foreach (var mi in mediaItems) {
+      mi.SetThumbSize(true);
+      File.Delete(mi.FilePathCache);
+    }
+
+    ReWrapViews(mediaItems);
   }
 }

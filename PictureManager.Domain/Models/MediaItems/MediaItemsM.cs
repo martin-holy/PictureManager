@@ -37,7 +37,6 @@ public sealed class MediaItemsM : ObservableObject {
   public RelayCommand<object> CommentCommand { get; }
   public RelayCommand<object> ReloadMetadataCommand { get; }
   public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
-  public RelayCommand<FolderM> RebuildThumbnailsCommand { get; }
   public RelayCommand<object> ViewModifiedCommand { get; }
 
   public MediaItemsM(MediaItemsDA da) {
@@ -56,10 +55,6 @@ public sealed class MediaItemsM : ObservableObject {
     ReloadMetadataInFolderCommand = new(
       x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn()).ToList()),
       x => x != null);
-
-    RebuildThumbnailsCommand = new(
-      x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
-      x => x != null || Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
     ViewModifiedCommand = new(ViewModified);
   }
@@ -274,22 +269,6 @@ public sealed class MediaItemsM : ObservableObject {
         action(mi);
       }
     }
-  }
-
-  private static void RebuildThumbnails(FolderM folder, bool recursive) {
-    var mediaItems = (folder == null
-        ? Core.MediaItemsViews.Current?.GetSelectedOrAll()?.OfType<RealMediaItemM>()
-        : folder.GetMediaItems(recursive))?
-      .Cast<MediaItemM>().ToArray();
-
-    if (mediaItems == null) return;
-
-    foreach (var mi in mediaItems) {
-      mi.SetThumbSize(true);
-      File.Delete(mi.FilePathCache);
-    }
-
-    Core.MediaItemsViews.ReWrapViews(mediaItems);
   }
 
   private void SetOrientation(RealMediaItemM[] mediaItems, MediaOrientation orientation) {

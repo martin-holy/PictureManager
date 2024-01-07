@@ -190,7 +190,7 @@
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Rebuild Thumbnails"
-      Command="{Binding MediaItemsM.RebuildThumbnailsCommand,
+      Command="{Binding MediaItemsViews.RebuildThumbnailsCommand,
                 Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
   </ContextMenu>
