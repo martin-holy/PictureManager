@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using Timer = System.Timers.Timer;
 
 namespace MH.UI.Controls;
@@ -177,9 +176,9 @@ public sealed class MediaPlayer : ObservableObject {
 
   public MediaPlayer() {
     _clipTimer = new() { Interval = 10 };
-    _clipTimer.Elapsed += OnClipTimer;
+    _clipTimer.Elapsed += delegate { OnClipTimer(); };
     _timelineTimer = new() { Interval = 250 };
-    _timelineTimer.Elapsed += OnTimelineTimer;
+    _timelineTimer.Elapsed += delegate { OnTimelineTimer(); };
 
     SetPlayTypeCommand = new(x => PlayType = x);
     SeekToPositionCommand = new(x => TimelinePosition = x);
@@ -241,7 +240,7 @@ public sealed class MediaPlayer : ObservableObject {
       RepeatEndedEvent(this, EventArgs.Empty);
   }
 
-  private void OnClipTimer(object sender, ElapsedEventArgs e) {
+  private void OnClipTimer() {
     Tasks.RunOnUiThread(() => {
       if (PlayType == PlayType.Video || ClipTimeEnd <= ClipTimeStart) return;
 
@@ -264,7 +263,7 @@ public sealed class MediaPlayer : ObservableObject {
     });
   }
 
-  private void OnTimelineTimer(object sender, ElapsedEventArgs e) {
+  private void OnTimelineTimer() {
     Tasks.RunOnUiThread(() => {
       _isTimelineTimerExecuting = true;
       TimelinePosition = Math.Round(UiMediaPlayer?.Position.TotalMilliseconds ?? 0);
