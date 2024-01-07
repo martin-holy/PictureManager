@@ -16,7 +16,7 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
     
-    <Grid Background="{StaticResource ColorBrushBackground}">
+    <Grid x:Name="root" Background="{StaticResource ColorBrushBackground}">
       <Grid.RowDefinitions>
         <RowDefinition Height="200" x:Name="rowPlayer"/>
         <RowDefinition Height="3"/>
@@ -31,7 +31,7 @@
 
         <FrameworkElement.LayoutTransform>
           <TransformGroup>
-            <RotateTransform Angle="{Binding Current.RotationAngle}"/>
+            <RotateTransform Angle="{Binding Path=DataContext.(dv:VideoDetail.Current).RotationAngle, ElementName=root}"/>
           </TransformGroup>
         </FrameworkElement.LayoutTransform>
       </ContentControl>
