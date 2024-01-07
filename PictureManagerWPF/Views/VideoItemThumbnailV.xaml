@@ -6,7 +6,7 @@
   xmlns:wpfConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type mim:VideoItemM}">
-    <Grid Background="Transparent">
+    <Grid x:Name="root" Background="Transparent">
       <Image Stretch="Fill">
         <Image.Source>
           <MultiBinding Converter="{pmConv:MediaItemThumbSourceConverter}">
@@ -34,6 +34,10 @@
                   Converter={wpfConv:TimeFormatConverter},
                   ConverterParameter=duration}"/>
         <Setter TargetName="tbDuration" Property="Visibility" Value="Visible"/>
+      </DataTrigger>
+
+      <DataTrigger Binding="{Binding Comment, Converter={wpfConv:AllToBoolConverter}}" Value="True">
+        <Setter TargetName="root" Property="ToolTip" Value="{Binding Comment}"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
