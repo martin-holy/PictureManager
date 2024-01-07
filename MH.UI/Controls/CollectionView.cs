@@ -89,6 +89,10 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     UpdateRoot(Root, _ => CollectionViewGroup<T>.ReWrapAll(Root));
   }
 
+  public void ReWrapAll(IEnumerable<T> items) {
+    if (Root.Source.Intersect(items).Any()) ReWrapAll();
+  }
+
   public void Update(T[] items, bool ifContains = true) =>
     ReGroupItems(items, false, ifContains);
 
