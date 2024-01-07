@@ -89,11 +89,11 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     UpdateRoot(Root, _ => CollectionViewGroup<T>.ReWrapAll(Root));
   }
 
-  public void Update(T[] items, bool ifContains = false) =>
+  public void Update(T[] items, bool ifContains = true) =>
     ReGroupItems(items, false, ifContains);
 
-  public void Remove(T[] items, bool ifContains = false) =>
-    ReGroupItems(items, true, ifContains);
+  public void Remove(T[] items) =>
+    ReGroupItems(items, true, true);
 
   public void ReGroupItems(T[] items, bool remove, bool ifContains = false) {
     if (Root == null || items == null) return;
