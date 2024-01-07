@@ -33,7 +33,7 @@ public sealed class SegmentsView {
       _inst.CvPeople.Update(e.Data);
 
     Core.Db.Segments.ItemCreatedEvent += (_, e) =>
-      _inst.CvSegments.Update(new[] { e.Data });
+      _inst.CvSegments.Update(new[] { e.Data }, false);
 
     Core.Db.Segments.ItemDeletedEvent += (_, e) =>
       _inst.CvSegments.Remove(new[] { e.Data });
