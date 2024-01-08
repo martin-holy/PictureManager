@@ -153,7 +153,7 @@ public sealed class Core {
     #region PeopleM EventHandlers
 
     Db.People.ItemRenamedEvent += (_, e) => {
-      MediaItemsM.OnPersonRenamed(e.Data);
+      Db.MediaItems.OnPersonRenamed(e.Data);
     };
 
     Db.People.ItemDeletedEvent += (_, e) => {
@@ -173,7 +173,7 @@ public sealed class Core {
     #region KeywordsM EventHandlers
 
     Db.Keywords.ItemRenamedEvent += (_, e) => {
-      MediaItemsM.OnKeywordRenamed(e.Data);
+      Db.MediaItems.OnKeywordRenamed(e.Data);
     };
 
     Db.Keywords.ItemDeletedEvent += (_, e) => {
@@ -292,13 +292,20 @@ public sealed class Core {
     };
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
+      Db.MediaItems.OnSegmentDeleted(e.Data);
       Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
       PeopleM.PersonDetail?.Update(new[] { e.Data }, true, true);
       SegmentsView?.CvSegments.Remove(new[] { e.Data });
     };
 
-    Db.Segments.ItemCreatedEvent += (_, e) =>
+    Db.Segments.ItemsDeletedEvent += (_, e) => {
+      Db.MediaItems.OnSegmentsDeleted(e.Data);
+    };
+
+    Db.Segments.ItemCreatedEvent += (_, e) => {
+      Db.MediaItems.OnSegmentCreated(e.Data);
       SegmentsView?.CvSegments.Update(new[] { e.Data }, false);
+    };
 
     #endregion
 

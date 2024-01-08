@@ -199,10 +199,8 @@ namespace PictureManager.Domain.Models {
         Res.IconQuestion,
         true)) != 1) return;
 
-      var mi = item.Segment.MediaItem;
       SegmentsM.DataAdapter.ItemDelete(item.Segment);
       MediaItemSegmentsRects.Remove(item);
-      mi.SetInfoBox();
     }
 
     public static void MousePosToRawImage(ref double x, ref double y, double scale, MediaItemM mediaItem) {

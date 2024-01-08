@@ -108,15 +108,7 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
       Keywords = item.Keywords?.ToList()
     });
 
-  protected override void OnItemCreated(SegmentM item) {
-    item.MediaItem.Segments ??= new();
-    item.MediaItem.Segments.Add(item);
-  }
-
   protected override void OnItemDeleted(SegmentM item) {
-    if (item.MediaItem.Segments.Remove(item) && !item.MediaItem.Segments.Any())
-      item.MediaItem.Segments = null;
-
     item.MediaItem = null;
     item.Person = null;
   }

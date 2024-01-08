@@ -60,8 +60,6 @@ public sealed class ImagesM {
           await Task.Run(() => { MediaItemsM.ReadMetadata(mim, true); });
           if (mim.Success) await mim.FindGeoLocation();
         }
-
-        mi.SetInfoBox();
       },
       mi => mi.FilePath,
       // onCompleted
