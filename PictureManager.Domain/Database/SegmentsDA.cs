@@ -132,10 +132,11 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
     SegmentsPersonChangedEvent(this, new((null, segments, new[] { person })));
   }
 
-  public void RemoveKeywordFromSegments(KeywordM keyword) =>
+  public void OnKeywordDeleted(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
   public void ToggleKeyword(SegmentM[] segments, KeywordM keyword) {
+    if (segments.Length == 0) return;
     foreach (var segment in segments) {
       segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
       IsModified = true;

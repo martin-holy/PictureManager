@@ -212,18 +212,13 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   }
 
   public void OnKeywordDeleted(KeywordM keyword) {
-    Remove(_db.Images.All, x => _db.Images.Modify((ImageM)x));
-    Remove(_db.Videos.All, x => _db.Videos.Modify((VideoM)x));
-    Remove(_db.VideoClips.All, x => _db.VideoClips.Modify((VideoClipM)x));
-    Remove(_db.VideoImages.All, x => _db.VideoImages.Modify((VideoImageM)x));
-    return;
-
-    void Remove(IEnumerable<MediaItemM> items, Action<MediaItemM> action) {
-      foreach (var mi in items.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
-        // TODO check why is not nullIfEmpty set to true
-        mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
-        action(mi);
-      }
+    var items = GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray();
+    if (items.Length == 0) return;
+    foreach (var mi in items) {
+      mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
+      Modify(mi);
     }
+
+    Model.RaiseMetadataChanged(items);
   }
 }
