@@ -74,10 +74,6 @@ public sealed class ImagesDA : TableDataAdapter<ImageM> {
   }
 
   protected override void OnItemDeleted(ImageM item) {
-    item.People = null;
-    item.Keywords = null;
-    item.Folder.MediaItems.Remove(item);
-    // TODO test this why is commented out
-    //item.Folder = null;
+    _db.MediaItems.OnItemDeletedCommon(item);
   }
 }

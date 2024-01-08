@@ -70,10 +70,8 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
   }
 
   protected override void OnItemDeleted(VideoClipM item) {
-    File.Delete(item.FilePathCache);
+    _db.MediaItems.OnItemDeletedCommon(item);
     item.Video.HasVideoClips = _db.VideoClips.All.Any(x => ReferenceEquals(x.Video, item.Video));
     item.Video = null;
-    item.People = null;
-    item.Keywords = null;
   }
 }

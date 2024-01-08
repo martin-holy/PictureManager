@@ -1,5 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
@@ -69,6 +70,18 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     Model.UpdateItemsCount();
     Model.UpdateModifiedCount();
     RaiseItemDeleted(item);
+  }
+
+  public void OnItemDeletedCommon(MediaItemM item) {
+    File.Delete(item.FilePathCache);
+    item.People = null;
+    item.Keywords = null;
+    item.Segments = null;
+
+    if (item is RealMediaItemM rmi) {
+      rmi.Folder.MediaItems.Remove(rmi);
+      rmi.Folder = null;
+    }
   }
 
   protected override void OnItemsDeleted(IList<MediaItemM> items) =>
@@ -165,7 +178,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     }
   }
 
-  public override void ItemDelete(MediaItemM mi) {
+  public override void ItemDelete(MediaItemM mi, bool singleDelete = true) {
     switch (mi) {
       case ImageM img: _db.Images.ItemDelete(img); break;
       case VideoM vid: _db.Videos.ItemDelete(vid); break;
@@ -179,5 +192,36 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     _db.Videos.ItemsDelete(items.OfType<VideoM>().ToArray());
     _db.VideoClips.ItemsDelete(items.OfType<VideoClipM>().ToArray());
     _db.VideoImages.ItemsDelete(items.OfType<VideoImageM>().ToArray());
+  }
+
+  public void OnPersonDeleted(PersonM person) {
+    Remove(_db.Images.All, x => _db.Images.Modify((ImageM)x));
+    Remove(_db.Videos.All, x => _db.Videos.Modify((VideoM)x));
+    Remove(_db.VideoClips.All, x => _db.VideoClips.Modify((VideoClipM)x));
+    Remove(_db.VideoImages.All, x => _db.VideoImages.Modify((VideoImageM)x));
+    return;
+
+    void Remove(IEnumerable<MediaItemM> items, Action<MediaItemM> action) {
+      foreach (var mi in items.Where(mi => mi.People?.Contains(person) == true)) {
+        mi.People = ListExtensions.Toggle(mi.People, person, true);
+        action(mi);
+      }
+    }
+  }
+
+  public void OnKeywordDeleted(KeywordM keyword) {
+    Remove(_db.Images.All, x => _db.Images.Modify((ImageM)x));
+    Remove(_db.Videos.All, x => _db.Videos.Modify((VideoM)x));
+    Remove(_db.VideoClips.All, x => _db.VideoClips.Modify((VideoClipM)x));
+    Remove(_db.VideoImages.All, x => _db.VideoImages.Modify((VideoImageM)x));
+    return;
+
+    void Remove(IEnumerable<MediaItemM> items, Action<MediaItemM> action) {
+      foreach (var mi in items.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
+        // TODO check why is not nullIfEmpty set to true
+        mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
+        action(mi);
+      }
+    }
   }
 }
