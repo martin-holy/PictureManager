@@ -168,8 +168,9 @@ public sealed class Core {
     };
 
     Db.Keywords.ItemDeletedEvent += (_, e) => {
-      Db.People.RemoveKeywordFromPeople(e.Data);
-      Db.Segments.RemoveKeywordFromSegments(e.Data);
+      // TODO try to find generic code for the three below
+      Db.People.OnKeywordDeleted(e.Data);
+      Db.Segments.OnKeywordDeleted(e.Data);
       Db.MediaItems.OnKeywordDeleted(e.Data);
     };
 
