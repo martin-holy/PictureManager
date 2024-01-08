@@ -26,9 +26,6 @@ public sealed class SegmentsView {
     Core.PeopleM.AddEvents(_inst.CvPeople);
     Core.SegmentsM.AddEvents(_inst.CvSegments);
 
-    Core.Db.People.ItemDeletedEvent  += (_, e) =>
-      _inst.CvPeople.Remove(new[] { e.Data });
-
     Core.Db.People.PeopleKeywordsChangedEvent += (_, e) =>
       _inst.CvPeople.Update(e.Data);
 
