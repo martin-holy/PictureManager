@@ -1,6 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
@@ -201,24 +202,49 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       .Concat(_db.VideoImages.All.Where(where));
 
   public void OnPersonDeleted(PersonM person) {
-    var items = GetAll(mi => mi.People?.Contains(person) == true).ToArray();
+    ChangeMetadata(GetAll(mi => mi.People?.Contains(person) == true).ToArray(),
+      mi => mi.People = ListExtensions.Toggle(mi.People, person, true));
+
+    ChangeMetadata(GetAll(mi => mi.Segments?.GetPeople().Contains(person) == true).ToArray(), null);
+  }
+
+  public void OnPersonRenamed(PersonM person) =>
+    ChangeMetadata(GetAll(mi => mi.GetPeople().Contains(person)).ToArray(), null);
+
+  public void OnKeywordDeleted(KeywordM keyword) {
+    ChangeMetadata(GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray(),
+      mi => mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword));
+
+    ChangeMetadata(GetAll(mi => mi.Segments?.GetKeywords().Contains(keyword) == true).ToArray(), null);
+  }
+
+  public void OnKeywordRenamed(KeywordM keyword) =>
+    ChangeMetadata(GetAll(mi => mi.GetKeywords().Contains(keyword)).ToArray(), null);
+
+  private void ChangeMetadata(MediaItemM[] items, Action<MediaItemM> action) {
     if (items.Length == 0) return;
     foreach (var mi in items) {
-      mi.People = ListExtensions.Toggle(mi.People, person, true);
+      action?.Invoke(mi);
       Modify(mi);
     }
 
     Model.RaiseMetadataChanged(items);
   }
 
-  public void OnKeywordDeleted(KeywordM keyword) {
-    var items = GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray();
-    if (items.Length == 0) return;
-    foreach (var mi in items) {
-      mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
-      Modify(mi);
-    }
+  public void OnSegmentCreated(SegmentM segment) {
+    segment.MediaItem.Segments ??= new();
+    segment.MediaItem.Segments.Add(segment);
+    Modify(segment.MediaItem);
+    Model.RaiseMetadataChanged(new[] { segment.MediaItem });
+  }
 
-    Model.RaiseMetadataChanged(items);
+  public void OnSegmentDeleted(SegmentM segment) {
+    if (segment.MediaItem.Segments.Remove(segment) && !segment.MediaItem.Segments.Any())
+      segment.MediaItem.Segments = null;
+    Modify(segment.MediaItem);
+  }
+
+  public void OnSegmentsDeleted(IList<SegmentM> segments) {
+    Model.RaiseMetadataChanged(segments.GetMediaItems().ToArray());
   }
 }

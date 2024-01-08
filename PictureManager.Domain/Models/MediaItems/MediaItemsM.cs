@@ -59,8 +59,11 @@ public sealed class MediaItemsM : ObservableObject {
     ViewModifiedCommand = new(ViewModified);
   }
 
-  private void OnMetadataChanged(object sender, ObjectEventArgs<MediaItemM[]> e) =>
+  private void OnMetadataChanged(object sender, ObjectEventArgs<MediaItemM[]> e) {
     UpdateModifiedCount();
+    foreach (var mi in e.Data.Where(x => x.InfoBoxThumb != null))
+      mi.SetInfoBox();
+  }
 
   public void RaiseMetadataChanged(MediaItemM[] items) =>
     MetadataChangedEvent(this, new(items));
@@ -225,31 +228,6 @@ public sealed class MediaItemsM : ObservableObject {
     _da.ItemsDelete(replaced);
   }
 
-  public void OnPersonRenamed(PersonM person) {
-    UpdateInfoBox(Core.Db.Images.All, Where);
-    UpdateInfoBox(Core.Db.Videos.All, Where);
-    UpdateInfoBox(Core.Db.VideoClips.All, Where);
-    UpdateInfoBox(Core.Db.VideoImages.All, Where);
-    return;
-
-    bool Where(MediaItemM mi) => mi.InfoBoxPeople != null && mi.People?.Contains(person) == true;
-  }
-
-  public void OnKeywordRenamed(KeywordM keyword) {
-    UpdateInfoBox(Core.Db.Images.All, Where);
-    UpdateInfoBox(Core.Db.Videos.All, Where);
-    UpdateInfoBox(Core.Db.VideoClips.All, Where);
-    UpdateInfoBox(Core.Db.VideoImages.All, Where);
-    return;
-
-    bool Where(MediaItemM mi) => mi.InfoBoxKeywords != null && mi.Keywords?.Contains(keyword) == true;
-  }
-
-  private static void UpdateInfoBox(IEnumerable<MediaItemM> items, Func<MediaItemM, bool> where) {
-    foreach (var item in items.Where(where))
-      item.SetInfoBox();
-  }
-
   private void SetOrientation(RealMediaItemM[] mediaItems, MediaOrientation orientation) {
     foreach (var mi in mediaItems) {
       var newOrientation = mi.RotationAngle;
@@ -307,7 +285,6 @@ public sealed class MediaItemsM : ObservableObject {
           if (mim.Success) await mim.FindRefs();
           _da.Modify(mi);
           mi.IsOnlyInDb = false;
-          mi.SetInfoBox();
         });
       },
       mi => mi.FilePath,
@@ -413,7 +390,6 @@ public sealed class MediaItemsM : ObservableObject {
       if (!modified) continue;
 
       _da.Modify(mi);
-      mi.SetInfoBox();
       count++;
     }
 
@@ -443,7 +419,6 @@ public sealed class MediaItemsM : ObservableObject {
       }
 
       _da.Modify(mi);
-      mi.SetInfoBox();
     }
 
     RaiseMetadataChanged(items);
@@ -451,10 +426,7 @@ public sealed class MediaItemsM : ObservableObject {
 
   public void OnSegmentsKeywordsChanged(SegmentM[] segments) {
     var items = segments.GetMediaItems().ToArray();
-
-    foreach (var item in items)
-      _da.Modify(item);
-
+    foreach (var item in items) _da.Modify(item);
     RaiseMetadataChanged(items);
   }
 
