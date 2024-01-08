@@ -5,6 +5,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
@@ -47,10 +48,13 @@ public sealed class Core {
   public static VideoDetail VideoDetail { get; } = new();
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
+  public static SegmentsView SegmentsView { get; set; }
 
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public static Func<double> GetDisplayScale { get; set; }
+
+  public RelayCommand<object> OpenSegmentsViewCommand { get; set; }
 
   private Core() {
     Tasks.SetUiTaskScheduler();
@@ -87,6 +91,8 @@ public sealed class Core {
     Db.CategoryGroups.AddCategory(PeopleM.TreeCategory);
     Db.CategoryGroups.AddCategory(KeywordsM.TreeCategory);
     UiDetailVideo.SetModel(VideoDetail.MediaPlayer);
+
+    OpenSegmentsViewCommand = new(OpenSegmentsView);
   }
 
   private void AttachEvents() {
@@ -155,8 +161,11 @@ public sealed class Core {
       Db.Segments.OnPersonDeleted(e.Data);
       PeopleM.PeopleView?.Remove(new[] { e.Data });
       PeopleM.PeopleToolsTabM?.Remove(new[] { e.Data });
-      if (SegmentsView.IsInst)
-        SegmentsView.Inst.CvPeople.Remove(new[] { e.Data });
+      SegmentsView?.CvPeople.Remove(new[] { e.Data });
+    };
+
+    Db.People.PeopleKeywordsChangedEvent += (_, e) => {
+      SegmentsView?.CvPeople.Update(e.Data);
     };
 
     #endregion
@@ -265,17 +274,31 @@ public sealed class Core {
       PeopleM.PersonDetail?.Update(e.Data.Item2);
       PeopleM.PeopleView?.Update(e.Data.Item3);
       MediaItemsM.OnSegmentsPersonChanged(e.Data.Item2);
+
+      // TODO is this all correct?
+      if (SegmentsView != null) {
+        SegmentsView.CvSegments.Update(e.Data.Item2);
+        var pIn = e.Data.Item2.GetPeople().ToArray();
+        var pOut = e.Data.Item3.Except(pIn).ToArray();
+        SegmentsView.CvPeople.Update(pIn);
+        SegmentsView.CvPeople.Remove(pOut);
+      }
     };
 
     Db.Segments.SegmentsKeywordsChangedEvent += (_, e) => {
       PeopleM.PersonDetail?.Update(e.Data, true, false);
       MediaItemsM.OnSegmentsKeywordsChanged(e.Data);
+      SegmentsView?.CvSegments.Update(e.Data);
     };
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
       Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
       PeopleM.PersonDetail?.Update(new[] { e.Data }, true, true);
+      SegmentsView?.CvSegments.Remove(new[] { e.Data });
     };
+
+    Db.Segments.ItemCreatedEvent += (_, e) =>
+      SegmentsView?.CvSegments.Update(new[] { e.Data }, false);
 
     #endregion
 
@@ -319,5 +342,21 @@ public sealed class Core {
           Res.IconQuestion,
           true)) == 1)
       Db.SaveAllTables();
+  }
+
+  private static void OpenSegmentsView() {
+    var result = SegmentsView.GetSegmentsToLoadUserInput();
+    if (result < 1) return;
+    var segments = SegmentsView.GetSegments(result).ToArray();
+
+    if (SegmentsView == null) {
+      SegmentsView = new();
+      PeopleM.AddEvents(SegmentsView.CvPeople);
+      SegmentsM.AddEvents(SegmentsView.CvSegments);
+    }
+
+    MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
+    if (MediaViewerM.IsVisible) MainWindowM.IsInViewMode = false;
+    SegmentsView.Reload(segments);
   }
 }
