@@ -150,9 +150,13 @@ public sealed class Core {
       MediaItemsM.OnPersonRenamed(e.Data);
     };
 
-    Db.People.ItemDeletedEvent  += (_, e) => {
+    Db.People.ItemDeletedEvent += (_, e) => {
       Db.MediaItems.OnPersonDeleted(e.Data);
-      Db.Segments.RemovePersonFromSegments(e.Data);
+      Db.Segments.OnPersonDeleted(e.Data);
+      PeopleM.PeopleView?.Remove(new[] { e.Data });
+      PeopleM.PeopleToolsTabM?.Remove(new[] { e.Data });
+      if (SegmentsView.IsInst)
+        SegmentsView.Inst.CvPeople.Remove(new[] { e.Data });
     };
 
     #endregion

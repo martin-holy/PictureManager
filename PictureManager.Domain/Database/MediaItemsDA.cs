@@ -194,19 +194,21 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     _db.VideoImages.ItemsDelete(items.OfType<VideoImageM>().ToArray());
   }
 
-  public void OnPersonDeleted(PersonM person) {
-    Remove(_db.Images.All, x => _db.Images.Modify((ImageM)x));
-    Remove(_db.Videos.All, x => _db.Videos.Modify((VideoM)x));
-    Remove(_db.VideoClips.All, x => _db.VideoClips.Modify((VideoClipM)x));
-    Remove(_db.VideoImages.All, x => _db.VideoImages.Modify((VideoImageM)x));
-    return;
+  public IEnumerable<MediaItemM> GetAll(Func<MediaItemM, bool> where) =>
+    _db.Images.All.Where(where)
+      .Concat(_db.Videos.All.Where(where))
+      .Concat(_db.VideoClips.All.Where(where))
+      .Concat(_db.VideoImages.All.Where(where));
 
-    void Remove(IEnumerable<MediaItemM> items, Action<MediaItemM> action) {
-      foreach (var mi in items.Where(mi => mi.People?.Contains(person) == true)) {
-        mi.People = ListExtensions.Toggle(mi.People, person, true);
-        action(mi);
-      }
+  public void OnPersonDeleted(PersonM person) {
+    var items = GetAll(mi => mi.People?.Contains(person) == true).ToArray();
+    if (items.Length == 0) return;
+    foreach (var mi in items) {
+      mi.People = ListExtensions.Toggle(mi.People, person, true);
+      Modify(mi);
     }
+
+    Model.RaiseMetadataChanged(items);
   }
 
   public void OnKeywordDeleted(KeywordM keyword) {

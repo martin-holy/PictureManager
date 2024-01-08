@@ -121,8 +121,8 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
     item.Person = null;
   }
 
-  public void RemovePersonFromSegments(PersonM person) {
-    var segments = All.Where(s => s.Person?.Equals(person) == true).ToArray();
+  public void OnPersonDeleted(PersonM person) {
+    var segments = All.Where(x => ReferenceEquals(x.Person, person)).ToArray();
     if (segments.Length == 0) return;
     foreach (var segment in segments) {
       segment.Person = null;
