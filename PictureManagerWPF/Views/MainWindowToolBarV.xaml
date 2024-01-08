@@ -7,8 +7,7 @@
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate x:Key="MainWindowToolBarV" DataType="{x:Type pmd:Core}">
     <DataTemplate.Resources>
@@ -142,7 +141,7 @@
             <mhc:IconButton
               ToolTip="Segments View"
               Icon="{StaticResource IconSegment}"
-              Command="dv:SegmentsView.OpenCommand"/>
+              Command="{Binding OpenSegmentsViewCommand, Source={x:Static pm:App.Core}}"/>
             
             <mhc:IconButton
               ToolTip="Set selected as Unknown"

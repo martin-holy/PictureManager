@@ -49,7 +49,7 @@
           <MenuItem Header="Images to Video" Command="{Binding ImagesM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
           <MenuItem Header="Copy Paths" Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
           <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
-          <MenuItem Header="Segments" Command="dv:SegmentsView.OpenCommand">
+          <MenuItem Header="Segments" Command="{Binding OpenSegmentsViewCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconEquals}"/>
             </MenuItem.Icon>

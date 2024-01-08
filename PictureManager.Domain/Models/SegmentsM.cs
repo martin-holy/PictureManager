@@ -4,7 +4,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Database;
-using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models.MediaItems;
@@ -176,8 +175,8 @@ public sealed class SegmentsM : ObservableObject {
   private List<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM segment) {
     if (segment == null) return null;
 
-    if (SegmentsView.IsInst && ReferenceEquals(SegmentsView.Inst.CvSegments, source))
-      return ((CollectionViewGroup<SegmentM>)SegmentsView.Inst.CvSegments.LastSelectedRow.Parent).Source
+    if (Core.SegmentsView != null && ReferenceEquals(Core.SegmentsView.CvSegments, source))
+      return ((CollectionViewGroup<SegmentM>)Core.SegmentsView.CvSegments.LastSelectedRow.Parent).Source
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
         .ThenBy(x => x.FileName)
