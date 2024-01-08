@@ -54,10 +54,8 @@ public class VideoImagesDA : TableDataAdapter<VideoImageM> {
     ItemCreate(new(GetNextId(), video));
 
   protected override void OnItemDeleted(VideoImageM item) {
-    File.Delete(item.FilePathCache);
+    _db.MediaItems.OnItemDeletedCommon(item);
     item.Video.HasVideoImages = _db.VideoImages.All.Any(x => ReferenceEquals(x.Video, item.Video));
     item.Video = null;
-    item.People = null;
-    item.Keywords = null;
   }
 }

@@ -18,9 +18,9 @@ namespace PictureManager.Domain.Models.MediaItems;
 
 public sealed class MediaItemsM : ObservableObject {
   private static readonly string[] _supportedExts = { ".jpg", ".jpeg", ".mp4" };
+  private readonly MediaItemsDA _da;
   private MediaItemM _current;
-
-  public MediaItemsDA DataAdapter { get; }
+  
   public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
   public GeoNameM CurrentGeoName => Core.Db.MediaItemGeoLocation.GetBy(Current)?.GeoName;
   public int ItemsCount => GetItemsCount();
@@ -40,7 +40,7 @@ public sealed class MediaItemsM : ObservableObject {
   public RelayCommand<object> ViewModifiedCommand { get; }
 
   public MediaItemsM(MediaItemsDA da) {
-    DataAdapter = da;
+    _da = da;
     MetadataChangedEvent += OnMetadataChanged;
 
     DeleteCommand = new(() => Delete(GetActive().ToArray()), () => GetActive().Any());
@@ -83,7 +83,7 @@ public sealed class MediaItemsM : ObservableObject {
     var items = new[] { mi };
     SetCurrentAfterDelete(items);
     File.Delete(mi.FilePathCache);
-    DataAdapter.ItemsDelete(items);
+    _da.ItemsDelete(items);
 
     return false;
   }
@@ -105,11 +105,13 @@ public sealed class MediaItemsM : ObservableObject {
           Res.IconQuestion,
           true)) != 1) return false;
 
-    if (items.Any(x => x is RealMediaItemM))
+    var rItems = items.OfType<RealMediaItemM>().ToArray();
+    if (rItems.Any()) {
       SetCurrentAfterDelete(items);
-    Core.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).ToList(), true, false);
-    foreach (var c in items.Select(x => x.FilePathCache)) File.Delete(c);
-    DataAdapter.ItemsDelete(items);
+      Core.FileOperationDelete(rItems.Select(x => x.FilePath).ToList(), true, false);
+    }
+      
+    _da.ItemsDelete(items);
     return true;
   }
 
@@ -176,7 +178,7 @@ public sealed class MediaItemsM : ObservableObject {
       switch (mode) {
         case FileOperationMode.Copy:
           // create object copy
-          var miCopy = DataAdapter.ItemCopy(mi, destFolder, miNewFileName);
+          var miCopy = _da.ItemCopy(mi, destFolder, miNewFileName);
           // copy MediaItem and cache on file system
           Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
           File.Copy(mi.FilePath, miCopy.FilePath, true);
@@ -194,7 +196,7 @@ public sealed class MediaItemsM : ObservableObject {
           var srcDirPathCache = Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException();
 
           // DB
-          DataAdapter.ItemMove(mi, destFolder, miNewFileName); // TODO mi rewrite
+          _da.ItemMove(mi, destFolder, miNewFileName); // TODO mi rewrite
 
           // File System
           File.Delete(mi.FilePath);
@@ -220,20 +222,24 @@ public sealed class MediaItemsM : ObservableObject {
       done++;
     }
 
-    DataAdapter.ItemsDelete(replaced);
+    _da.ItemsDelete(replaced);
   }
 
-  public void UpdateInfoBoxWithPerson(PersonM person) {
+  public void OnPersonRenamed(PersonM person) {
     UpdateInfoBox(Core.Db.Images.All, Where);
     UpdateInfoBox(Core.Db.Videos.All, Where);
+    UpdateInfoBox(Core.Db.VideoClips.All, Where);
+    UpdateInfoBox(Core.Db.VideoImages.All, Where);
     return;
 
     bool Where(MediaItemM mi) => mi.InfoBoxPeople != null && mi.People?.Contains(person) == true;
   }
 
-  public void UpdateInfoBoxWithKeyword(KeywordM keyword) {
+  public void OnKeywordRenamed(KeywordM keyword) {
     UpdateInfoBox(Core.Db.Images.All, Where);
     UpdateInfoBox(Core.Db.Videos.All, Where);
+    UpdateInfoBox(Core.Db.VideoClips.All, Where);
+    UpdateInfoBox(Core.Db.VideoImages.All, Where);
     return;
 
     bool Where(MediaItemM mi) => mi.InfoBoxKeywords != null && mi.Keywords?.Contains(keyword) == true;
@@ -242,33 +248,6 @@ public sealed class MediaItemsM : ObservableObject {
   private static void UpdateInfoBox(IEnumerable<MediaItemM> items, Func<MediaItemM, bool> where) {
     foreach (var item in items.Where(where))
       item.SetInfoBox();
-  }
-
-  public void RemovePersonFromMediaItems(PersonM person) {
-    Remove(Core.Db.Images.All, x => Core.Db.Images.Modify((ImageM)x));
-    Remove(Core.Db.Videos.All, x => Core.Db.Videos.Modify((VideoM)x));
-    return;
-
-    void Remove(IEnumerable<MediaItemM> items, Action<MediaItemM> action) {
-      foreach (var mi in items.Where(mi => mi.People?.Contains(person) == true)) {
-        mi.People = ListExtensions.Toggle(mi.People, person, true);
-        action(mi);
-      }
-    }
-  }
-
-  public void RemoveKeywordFromMediaItems(KeywordM keyword) {
-    Remove(Core.Db.Images.All, x => Core.Db.Images.Modify((ImageM)x));
-    Remove(Core.Db.Videos.All, x => Core.Db.Videos.Modify((VideoM)x));
-    return;
-
-    void Remove(IEnumerable<MediaItemM> items, Action<MediaItemM> action) {
-      foreach (var mi in items.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
-        // TODO check why is not nullIfEmpty set to true
-        mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
-        action(mi);
-      }
-    }
   }
 
   private void SetOrientation(RealMediaItemM[] mediaItems, MediaOrientation orientation) {
@@ -298,7 +277,7 @@ public sealed class MediaItemsM : ObservableObject {
         case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
       }
 
-      DataAdapter.Modify(mi);
+      _da.Modify(mi);
       mi.SetThumbSize(true);
       File.Delete(mi.FilePathCache);
     }
@@ -326,13 +305,13 @@ public sealed class MediaItemsM : ObservableObject {
 
         await Tasks.RunOnUiThread(async () => {
           if (mim.Success) await mim.FindRefs();
-          DataAdapter.Modify(mi);
+          _da.Modify(mi);
           mi.IsOnlyInDb = false;
           mi.SetInfoBox();
         });
       },
       mi => mi.FilePath,
-      delegate { MetadataChangedEvent(this, new(items.Cast<MediaItemM>().ToArray())); });
+      delegate { RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray()); });
 
     progress.Start();
     Dialog.Show(progress);
@@ -387,7 +366,7 @@ public sealed class MediaItemsM : ObservableObject {
     Current.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
     Current.SetInfoBox();
     Current.OnPropertyChanged(nameof(Current.Comment));
-    DataAdapter.Modify(Current);
+    _da.Modify(Current);
   }
 
   public MediaItemM[] GetActive() =>
@@ -433,12 +412,12 @@ public sealed class MediaItemsM : ObservableObject {
 
       if (!modified) continue;
 
-      DataAdapter.Modify(mi);
+      _da.Modify(mi);
       mi.SetInfoBox();
       count++;
     }
 
-    if (count > 0) MetadataChangedEvent(this, new(items));
+    if (count > 0) RaiseMetadataChanged(items);;
   }
 
   public static bool IsPanoramic(MediaItemM mi) =>
@@ -463,20 +442,20 @@ public sealed class MediaItemsM : ObservableObject {
           mi.People = null;
       }
 
-      DataAdapter.Modify(mi);
+      _da.Modify(mi);
       mi.SetInfoBox();
     }
 
-    MetadataChangedEvent(this, new(items));
+    RaiseMetadataChanged(items);
   }
 
   public void OnSegmentsKeywordsChanged(SegmentM[] segments) {
     var items = segments.GetMediaItems().ToArray();
 
     foreach (var item in items)
-      DataAdapter.Modify(item);
+      _da.Modify(item);
 
-    MetadataChangedEvent(this, new(items));
+    RaiseMetadataChanged(items);
   }
 
   public static bool IsSupportedFileType(string filePath) =>

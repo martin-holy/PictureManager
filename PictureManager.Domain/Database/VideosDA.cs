@@ -71,10 +71,6 @@ public sealed class VideosDA : TableDataAdapter<VideoM> {
   }
 
   protected override void OnItemDeleted(VideoM item) {
-    item.People = null;
-    item.Keywords = null;
-    item.Folder.MediaItems.Remove(item);
-    // TODO test this why is commented out
-    //item.Folder = null;
+    _db.MediaItems.OnItemDeletedCommon(item);
   }
 }

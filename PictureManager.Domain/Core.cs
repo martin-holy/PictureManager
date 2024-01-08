@@ -147,11 +147,11 @@ public sealed class Core {
     #region PeopleM EventHandlers
 
     Db.People.ItemRenamedEvent += (_, e) => {
-      MediaItemsM.UpdateInfoBoxWithPerson(e.Data);
+      MediaItemsM.OnPersonRenamed(e.Data);
     };
 
     Db.People.ItemDeletedEvent  += (_, e) => {
-      MediaItemsM.RemovePersonFromMediaItems(e.Data);
+      Db.MediaItems.OnPersonDeleted(e.Data);
       Db.Segments.RemovePersonFromSegments(e.Data);
     };
 
@@ -160,13 +160,13 @@ public sealed class Core {
     #region KeywordsM EventHandlers
 
     Db.Keywords.ItemRenamedEvent += (_, e) => {
-      MediaItemsM.UpdateInfoBoxWithKeyword(e.Data);
+      MediaItemsM.OnKeywordRenamed(e.Data);
     };
 
     Db.Keywords.ItemDeletedEvent += (_, e) => {
       Db.People.RemoveKeywordFromPeople(e.Data);
       Db.Segments.RemoveKeywordFromSegments(e.Data);
-      MediaItemsM.RemoveKeywordFromMediaItems(e.Data);
+      Db.MediaItems.OnKeywordDeleted(e.Data);
     };
 
     #endregion
