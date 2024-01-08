@@ -47,11 +47,16 @@ public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, Li
     return item;
   }
 
-  public override void ItemDelete(KeyValuePair<TA, List<TB>> item) {
+  public override void ItemDelete(KeyValuePair<TA, List<TB>> item, bool singleDelete = true) {
     All.Remove(item.Key);
     IsModified = true;
     RaiseItemDeleted(item);
+
+    if (!singleDelete) return;
+    var items = new[] { item };
+    RaiseItemsDeleted(items);
     OnItemDeleted(item);
+    OnItemsDeleted(items);
   }
 
   public virtual TB GetValueById(string id) => throw new NotImplementedException();

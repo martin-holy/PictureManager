@@ -50,11 +50,16 @@ public class OneToOneDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, TB>>, IR
     return item;
   }
 
-  public override void ItemDelete(KeyValuePair<TA, TB> item) {
+  public override void ItemDelete(KeyValuePair<TA, TB> item, bool singleDelete = true) {
     All.Remove(item.Key);
     IsModified = true;
     RaiseItemDeleted(item);
+    
+    if (!singleDelete) return;
+    var items = new[] { item };
+    RaiseItemsDeleted(items);
     OnItemDeleted(item);
+    OnItemsDeleted(items);
   }
 
   public virtual void ItemUpdate(KeyValuePair<TA, TB> item) {

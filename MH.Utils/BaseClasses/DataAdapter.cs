@@ -130,17 +130,23 @@ public class DataAdapter<T> : DataAdapter {
     return item;
   }
 
-  public virtual void ItemDelete(T item) {
+  public virtual void ItemDelete(T item, bool singleDelete = true) {
     All.Remove(item);
     IsModified = true;
     RaiseItemDeleted(item);
+
+    if (!singleDelete) return;
+    var items = new[] { item };
+    RaiseItemsDeleted(items);
     OnItemDeleted(item);
+    OnItemsDeleted(items);
   }
 
   public virtual void ItemsDelete(IList<T> items) {
     if (items == null || items.Count == 0) return;
-    foreach (var item in items) ItemDelete(item);
+    foreach (var item in items) ItemDelete(item, false);
     RaiseItemsDeleted(items);
     OnItemsDeleted(items);
+    foreach (var item in items) OnItemDeleted(item);
   }
 }
