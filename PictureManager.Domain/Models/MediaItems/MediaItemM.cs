@@ -140,6 +140,11 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     ThumbWidth = w;
     ThumbHeight = h;
   }
+
+  public bool IsPanoramic() =>
+    Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270
+      ? Height / (double)Width > 16.0 / 9.0
+      : Width / (double)Height > 16.0 / 9.0;
 }
 
 public static class MediaItemExtensions {
