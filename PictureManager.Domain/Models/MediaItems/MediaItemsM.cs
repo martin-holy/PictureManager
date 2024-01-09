@@ -43,7 +43,7 @@ public sealed class MediaItemsM : ObservableObject {
 
     DeleteCommand = new(() => Delete(GetActive().ToArray()), () => GetActive().Any());
     RenameCommand = new(Rename, () => Current is RealMediaItemM);
-    CommentCommand = new(Comment, () => Current != null);
+    CommentCommand = new(() => Comment(Current), () => Current != null);
 
     ReloadMetadataCommand = new(
       () => ReloadMetadata(Core.MediaItemsViews.Current.Selected.Items.OfType<RealMediaItemM>().ToList()),
@@ -276,26 +276,25 @@ public sealed class MediaItemsM : ObservableObject {
       });
 
     if (Dialog.Show(dlg) != 1) return;
-
-    Core.Db.MediaItems.ItemRename((RealMediaItemM)Current, dlg.Answer + ext);
+    _da.ItemRename((RealMediaItemM)Current, dlg.Answer + ext);
   }
 
-  public void Comment() {
+  private void Comment(MediaItemM item) {
     var inputDialog = new InputDialog(
       "Comment",
       "Add a comment.",
       Res.IconNotification,
-      Current.Comment,
+      item.Comment,
       answer => answer.Length > 256
         ? "Comment is too long!"
         : string.Empty);
 
     if (Dialog.Show(inputDialog) != 1) return;
 
-    Current.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
-    Current.SetInfoBox();
-    Current.OnPropertyChanged(nameof(Current.Comment));
-    _da.Modify(Current);
+    item.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
+    item.SetInfoBox();
+    item.OnPropertyChanged();
+    _da.Modify(item);
   }
 
   public MediaItemM[] GetActive() =>
