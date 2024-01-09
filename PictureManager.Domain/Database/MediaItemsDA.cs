@@ -202,19 +202,18 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       .Concat(_db.VideoImages.All.Where(where));
 
   public void OnPersonDeleted(PersonM person) {
-    ChangeMetadata(GetAll(mi => mi.People?.Contains(person) == true).ToArray(),
-      mi => mi.People = ListExtensions.Toggle(mi.People, person, true));
-
+    TogglePerson(GetAll(mi => mi.People?.Contains(person) == true).ToArray(), person);
     ChangeMetadata(GetAll(mi => mi.Segments?.GetPeople().Contains(person) == true).ToArray(), null);
   }
 
   public void OnPersonRenamed(PersonM person) =>
     ChangeMetadata(GetAll(mi => mi.GetPeople().Contains(person)).ToArray(), null);
 
-  public void OnKeywordDeleted(KeywordM keyword) {
-    ChangeMetadata(GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray(),
-      mi => mi.Keywords = mi.Keywords.Toggle(keyword));
+  public void TogglePerson(MediaItemM[] items, PersonM person) =>
+    ChangeMetadata(items, mi => mi.People = ListExtensions.Toggle(mi.People, person, true));
 
+  public void OnKeywordDeleted(KeywordM keyword) {
+    ToggleKeyword(GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray(), keyword);
     ChangeMetadata(GetAll(mi => mi.Segments?.GetKeywords().Contains(keyword) == true).ToArray(), null);
   }
 
@@ -250,4 +249,12 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   public void OnSegmentsDeleted(IList<SegmentM> segments) {
     Model.RaiseMetadataChanged(segments.GetMediaItems().ToArray());
   }
+
+  public void SetGeoName(MediaItemM[] items, GeoNameM geoName) =>
+    ChangeMetadata(items, mi =>
+      _db.MediaItemGeoLocation.ItemUpdate(new(mi,
+        _db.GeoLocations.GetOrCreate(null, null, null, geoName).Result)));
+
+  public void SetRating(MediaItemM[] items, RatingM rating) =>
+    ChangeMetadata(items, mi => mi.Rating = rating.Value);
 }

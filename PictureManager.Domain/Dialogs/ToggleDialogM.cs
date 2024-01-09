@@ -79,12 +79,12 @@ public sealed class ToggleDialogM : Dialog {
   }
 
   public static void TogglePerson(PersonM person) {
-    if (GetInstance(Res.IconPeople, "Add/Remove Person", "Add or Remove on:",  person) is not { } dlg) return;
+    if (GetInstance(Res.IconPeople, "Add/Remove Person", "Add or Remove on:", person) is not { } dlg) return;
 
     switch (Show(dlg)) {
       case 1: Core.SegmentsM.SetSelectedAsPerson(dlg.Segments, person); break;
-      case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, person); break;
-      case 4: Core.MediaItemsM.SetMetadata(dlg.VideoItems.Cast<MediaItemM>().ToArray(), person); break;
+      case 3: Core.Db.MediaItems.TogglePerson(dlg.MediaItems, person); break;
+      case 4: Core.Db.MediaItems.TogglePerson(dlg.VideoItems.Cast<MediaItemM>().ToArray(), person); break;
     }
 
     Clear();
@@ -94,8 +94,8 @@ public sealed class ToggleDialogM : Dialog {
     if (GetInstance(Res.IconPeople, "Set GeoName", "Set GeoName on:", geoName) is not { } dlg) return;
 
     switch (Show(dlg)) {
-      case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, geoName); break;
-      case 4: Core.MediaItemsM.SetMetadata(dlg.VideoItems.Cast<MediaItemM>().ToArray(), geoName); break;
+      case 3: Core.Db.MediaItems.SetGeoName(dlg.MediaItems, geoName); break;
+      case 4: Core.Db.MediaItems.SetGeoName(dlg.VideoItems.Cast<MediaItemM>().ToArray(), geoName); break;
     }
 
     Clear();
@@ -105,8 +105,8 @@ public sealed class ToggleDialogM : Dialog {
     if (GetInstance(Res.IconStar, "Set Rating", "Set Rating on:", rating) is not { } dlg) return;
 
     switch (Show(dlg)) {
-      case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, rating); break;
-      case 4: Core.MediaItemsM.SetMetadata(dlg.VideoItems.Cast<MediaItemM>().ToArray(), rating); break;
+      case 3: Core.Db.MediaItems.SetRating(dlg.MediaItems, rating.Rating); break;
+      case 4: Core.Db.MediaItems.SetRating(dlg.VideoItems.Cast<MediaItemM>().ToArray(), rating.Rating); break;
     }
 
     Clear();
