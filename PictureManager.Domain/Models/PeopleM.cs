@@ -24,7 +24,6 @@ public sealed class PeopleM {
   public PeopleM(PeopleDA da) {
     _da = da;
     _da.ItemDeletedEvent += OnItemDeleted;
-    _da.PeopleKeywordsChangedEvent += OnPeopleKeywordsChanged;
     TreeCategory = new(this, _da);
     OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
     OpenPersonDetailCommand = new(OpenPersonDetail);
@@ -39,11 +38,8 @@ public sealed class PeopleM {
       Core.ToolsTabsM.Close(PersonDetail);
   }
 
-  private void OnPeopleKeywordsChanged(object sender, ObjectEventArgs<PersonM[]> e) {
-    PeopleToolsTabM?.Update(e.Data);
-    PeopleView?.Update(e.Data);
-
-    foreach (var person in e.Data)
+  public void OnKeywordsChanged(PersonM[] items) {
+    foreach (var person in items)
       person.UpdateDisplayKeywords();
   }
 

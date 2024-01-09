@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace PictureManager.Domain.Models.MediaItems;
 
-public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<MediaItemM> {
+public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords {
   #region IEquatable implementation
   public bool Equals(MediaItemM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as MediaItemM);

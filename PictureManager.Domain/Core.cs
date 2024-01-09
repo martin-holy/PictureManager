@@ -165,8 +165,11 @@ public sealed class Core {
       SegmentsView?.CvPeople.Remove(new[] { e.Data });
     };
 
-    Db.People.PeopleKeywordsChangedEvent += (_, e) => {
-      SegmentsView?.CvPeople.Update(e.Data);
+    Db.People.KeywordsChangedEvent += items => {
+      PeopleM.OnKeywordsChanged(items);
+      PeopleM.PeopleToolsTabM?.Update(items);
+      PeopleM.PeopleView?.Update(items);
+      SegmentsView?.CvPeople.Update(items);
     };
 
     #endregion
@@ -286,10 +289,10 @@ public sealed class Core {
       }
     };
 
-    Db.Segments.SegmentsKeywordsChangedEvent += (_, e) => {
-      PeopleM.PersonDetail?.Update(e.Data, true, false);
-      MediaItemsM.OnSegmentsKeywordsChanged(e.Data);
-      SegmentsView?.CvSegments.Update(e.Data);
+    Db.Segments.KeywordsChangedEvent += items => {
+      PeopleM.PersonDetail?.Update(items, true, false);
+      MediaItemsM.OnSegmentsKeywordsChanged(items);
+      SegmentsView?.CvSegments.Update(items);
     };
 
     Db.Segments.ItemDeletedEvent += (_, e) => {

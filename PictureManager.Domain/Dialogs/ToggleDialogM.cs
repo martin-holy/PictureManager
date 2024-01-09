@@ -71,8 +71,8 @@ public sealed class ToggleDialogM : Dialog {
     switch (Show(dlg)) {
       case 1: Core.Db.Segments.ToggleKeyword(dlg.Segments, keyword); break;
       case 2: Core.Db.People.ToggleKeyword(dlg.People, keyword); break;
-      case 3: Core.MediaItemsM.SetMetadata(dlg.MediaItems, keyword); break;
-      case 4: Core.MediaItemsM.SetMetadata(dlg.VideoItems.Cast<MediaItemM>().ToArray(), keyword); break;
+      case 3: Core.Db.MediaItems.ToggleKeyword(dlg.MediaItems, keyword); break;
+      case 4: Core.Db.MediaItems.ToggleKeyword(dlg.VideoItems.Cast<MediaItemM>().ToArray(), keyword); break;
     }
 
     Clear();
