@@ -35,7 +35,6 @@ public sealed class MediaItemsM : ObservableObject {
   public RelayCommand<object> CommentCommand { get; }
   public RelayCommand<object> ReloadMetadataCommand { get; }
   public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
-  public RelayCommand<object> ViewModifiedCommand { get; }
 
   public MediaItemsM(MediaItemsDA da) {
     _da = da;
@@ -52,8 +51,6 @@ public sealed class MediaItemsM : ObservableObject {
     ReloadMetadataInFolderCommand = new(
       x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn()).ToList()),
       x => x != null);
-
-    ViewModifiedCommand = new(ViewModified);
   }
 
   private void OnMetadataChanged(object sender, ObjectEventArgs<MediaItemM[]> e) {
@@ -305,11 +302,6 @@ public sealed class MediaItemsM : ObservableObject {
       : Core.MediaItemsViews.Current == null
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.Selected.Items.ToArray();
-
-  private async void ViewModified() {
-    Core.MediaItemsViews.AddView("Modified");
-    await Core.MediaItemsViews.Current.LoadByTag(GetItems(x => x.IsOnlyInDb).ToArray());
-  }
 
   public void OnSegmentsPersonChanged(SegmentM[] segments) {
     var items = segments.GetMediaItems().ToArray();
