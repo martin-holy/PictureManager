@@ -2,7 +2,7 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
+  xmlns:dlg="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   xmlns:pmdm="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="Views.MainMenu">
@@ -43,7 +43,7 @@
           <MenuItem Header="Compress" Command="{Binding ImagesM.CompressCommand}"/>
           <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsViews.RebuildThumbnailsCommand}"/>
           <MenuItem Header="Rebuild Video Clips Thumbnails" Command="{Binding VideoClipsM.RebuildVideoClipsThumbnailsCommand, Source={x:Static pm:App.Core}}"/>
-          <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="{Binding MediaItemsM.RotateCommand}"/>
+          <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="dlg:RotationDialogM.OpenCommand"/>
           <MenuItem Header="Shuffle" Command="{Binding MediaItemsViews.ShuffleCommand}"/>
           <MenuItem Header="Resize Images" Command="{Binding ImagesM.ResizeImagesCommand}"/>
           <MenuItem Header="Images to Video" Command="{Binding ImagesM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>

@@ -26,13 +26,11 @@ public sealed class MediaItemsM : ObservableObject {
   public int ItemsCount => GetItemsCount();
   public int ModifiedItemsCount => GetModifiedCount();
 
-  public event EventHandler<ObjectEventArgs<RealMediaItemM[]>> MediaItemsOrientationChangedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<MediaItemM[]>> MetadataChangedEvent = delegate { };
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
   public Func<ImageM, GeoNameM, bool> WriteMetadata { get; set; }
 
   public RelayCommand<object> DeleteCommand { get; }
-  public RelayCommand<object> RotateCommand { get; }
   public RelayCommand<object> RenameCommand { get; }
   public RelayCommand<object> CommentCommand { get; }
   public RelayCommand<object> ReloadMetadataCommand { get; }
@@ -44,7 +42,6 @@ public sealed class MediaItemsM : ObservableObject {
     MetadataChangedEvent += OnMetadataChanged;
 
     DeleteCommand = new(() => Delete(GetActive().ToArray()), () => GetActive().Any());
-    RotateCommand = new(Rotate, () => GetActive().OfType<RealMediaItemM>().Any());
     RenameCommand = new(Rename, () => Current is RealMediaItemM);
     CommentCommand = new(Comment, () => Current != null);
 
@@ -228,41 +225,6 @@ public sealed class MediaItemsM : ObservableObject {
     _da.ItemsDelete(replaced);
   }
 
-  private void SetOrientation(RealMediaItemM[] mediaItems, MediaOrientation orientation) {
-    foreach (var mi in mediaItems) {
-      var newOrientation = mi.RotationAngle;
-
-      if (mi is ImageM)
-        switch (orientation) {
-          case MediaOrientation.Rotate90: newOrientation += 90; break;
-          case MediaOrientation.Rotate180: newOrientation += 180; break;
-          case MediaOrientation.Rotate270: newOrientation += 270; break;
-        }
-      else if (mi is VideoM) // images have switched 90 and 270 angles and all application is made with this in mind
-        // so I switched orientation just for video
-        switch (orientation) {
-          case MediaOrientation.Rotate90: newOrientation += 270; break;
-          case MediaOrientation.Rotate180: newOrientation += 180; break;
-          case MediaOrientation.Rotate270: newOrientation += 90; break;
-        }
-
-      if (newOrientation >= 360) newOrientation -= 360;
-
-      switch (newOrientation) {
-        case 0: mi.Orientation = (int)MediaOrientation.Normal; break;
-        case 90: mi.Orientation = (int)MediaOrientation.Rotate90; break;
-        case 180: mi.Orientation = (int)MediaOrientation.Rotate180; break;
-        case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
-      }
-
-      _da.Modify(mi);
-      mi.SetThumbSize(true);
-      File.Delete(mi.FilePathCache);
-    }
-
-    MediaItemsOrientationChangedEvent(this, new(mediaItems));
-  }
-
   private void ReloadMetadata(List<RealMediaItemM> mediaItems) {
     if (mediaItems.Count == 0 ||
         Dialog.Show(new MessageDialog(
@@ -292,16 +254,6 @@ public sealed class MediaItemsM : ObservableObject {
 
     progress.Start();
     Dialog.Show(progress);
-  }
-
-  private void Rotate() {
-    var rotation = Dialog.Show(new RotationDialogM());
-    if (rotation == 0) return;
-
-    SetOrientation(GetActive().OfType<RealMediaItemM>().ToArray(), (MediaOrientation)rotation);
-
-    if (Core.MediaViewerM.IsVisible)
-      Core.MediaViewerM.Current = Core.MediaViewerM.Current;
   }
 
   public void Rename() {

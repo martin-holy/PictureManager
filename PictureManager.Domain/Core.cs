@@ -5,6 +5,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
@@ -208,11 +209,11 @@ public sealed class Core {
       }
     };
 
-    MediaItemsM.MediaItemsOrientationChangedEvent += (_, e) => {
-      if (MediaViewerM.IsVisible && e.Data.Contains(MediaItemsM.Current))
+    RotationDialogM.OrientationChangedEvent += items => {
+      if (MediaViewerM.IsVisible && items.Contains(MediaItemsM.Current))
         MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
 
-      MediaItemsViews.ReWrapViews(e.Data.Cast<MediaItemM>().ToArray());
+      MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
     };
 
     MediaItemsM.MetadataChangedEvent += (_, e) => {
