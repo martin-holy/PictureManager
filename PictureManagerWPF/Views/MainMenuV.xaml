@@ -61,7 +61,7 @@
           <MenuItem
             Header="{Binding MediaItemsM.ModifiedItemsCount}"
             HeaderStringFormat="Show {0} modified"
-            Command="{Binding MediaItemsM.ViewModifiedCommand}">
+            Command="{Binding MediaItemsViews.ViewModifiedCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconImageMultiple}"/>
             </MenuItem.Icon>

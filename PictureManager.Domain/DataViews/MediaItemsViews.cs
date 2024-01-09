@@ -23,6 +23,7 @@ public sealed class MediaItemsViews : ObservableObject {
   public RelayCommand<object> LoadByTagCommand { get; }
   public RelayCommand<object> ShuffleCommand { get; }
   public RelayCommand<FolderM> RebuildThumbnailsCommand { get; }
+  public RelayCommand<object> ViewModifiedCommand { get; }
 
   public MediaItemsViews() {
     AddViewCommand = new(() => AddView(string.Empty));
@@ -36,6 +37,7 @@ public sealed class MediaItemsViews : ObservableObject {
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.FilteredItems.Count > 0);
+    ViewModifiedCommand = new(ViewModified);
   }
 
   public void RemoveMediaItems(IList<MediaItemM> items) {
@@ -165,5 +167,10 @@ public sealed class MediaItemsViews : ObservableObject {
     }
 
     ReWrapViews(mediaItems);
+  }
+
+  private async void ViewModified() {
+    AddView("Modified");
+    await Current.LoadByTag(Core.MediaItemsM.GetItems(x => x.IsOnlyInDb).ToArray());
   }
 }
