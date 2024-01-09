@@ -320,10 +320,6 @@ public sealed class MediaItemsM : ObservableObject {
             mi.People = ListExtensions.Toggle(mi.People, p, true);
           break;
 
-        case KeywordM k:
-          mi.Keywords = KeywordsM.Toggle(mi.Keywords, k);
-          break;
-
         case RatingTreeM r:
           mi.Rating = r.Rating.Value;
           break;
@@ -344,7 +340,7 @@ public sealed class MediaItemsM : ObservableObject {
       count++;
     }
 
-    if (count > 0) RaiseMetadataChanged(items);;
+    if (count > 0) RaiseMetadataChanged(items);
   }
 
   public static bool IsPanoramic(MediaItemM mi) =>

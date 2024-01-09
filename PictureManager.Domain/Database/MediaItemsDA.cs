@@ -213,13 +213,16 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
 
   public void OnKeywordDeleted(KeywordM keyword) {
     ChangeMetadata(GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray(),
-      mi => mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword));
+      mi => mi.Keywords = mi.Keywords.Toggle(keyword));
 
     ChangeMetadata(GetAll(mi => mi.Segments?.GetKeywords().Contains(keyword) == true).ToArray(), null);
   }
 
   public void OnKeywordRenamed(KeywordM keyword) =>
     ChangeMetadata(GetAll(mi => mi.GetKeywords().Contains(keyword)).ToArray(), null);
+
+  public void ToggleKeyword(MediaItemM[] items, KeywordM keyword) =>
+    keyword.Toggle(items, Modify, () => Model.RaiseMetadataChanged(items));
 
   private void ChangeMetadata(MediaItemM[] items, Action<MediaItemM> action) {
     if (items.Length == 0) return;

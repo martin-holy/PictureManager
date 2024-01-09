@@ -17,7 +17,7 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
   public SegmentsM Model { get; }
   public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<(PersonM, SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<SegmentM[]>> SegmentsKeywordsChangedEvent = delegate { };
+  public event DataEventHandler<SegmentM[]> KeywordsChangedEvent = delegate { };
 
   public SegmentsDA(Db db) : base("Segments", 5) {
     _db = db;
@@ -127,15 +127,8 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
   public void OnKeywordDeleted(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
-  public void ToggleKeyword(SegmentM[] segments, KeywordM keyword) {
-    if (segments.Length == 0) return;
-    foreach (var segment in segments) {
-      segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
-      IsModified = true;
-    }
-
-    SegmentsKeywordsChangedEvent(this, new(segments));
-  }
+  public void ToggleKeyword(SegmentM[] segments, KeywordM keyword) =>
+    keyword.Toggle(segments, _ => IsModified = true, () => KeywordsChangedEvent(segments));
 
   public void ChangePerson(PersonM person, SegmentM[] segments, PersonM[] people) {
     foreach (var segment in segments)

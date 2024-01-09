@@ -9,7 +9,7 @@ using System.IO;
 
 namespace PictureManager.Domain.Models;
 
-public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable {
+public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable, IHaveKeywords {
   private bool _isSelected;
 
   #region DB Properties

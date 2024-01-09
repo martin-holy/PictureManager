@@ -18,7 +18,7 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
   private const string _notFoundRecordNamePrefix = "Not found ";
 
   public PeopleM Model { get; }
-  public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordsChangedEvent = delegate { };
+  public event DataEventHandler<PersonM[]> KeywordsChangedEvent = delegate { };
 
   public PeopleDA(Db db) : base("People", 4) {
     _db = db;
@@ -160,21 +160,14 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
   public void OnKeywordDeleted(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
-  public void ToggleKeyword(PersonM[] people, KeywordM keyword) {
-    if (people.Length == 0) return;
-    foreach (var person in people) {
-      person.Keywords = KeywordsM.Toggle(person.Keywords, keyword);
-      IsModified = true;
-    }
-
-    PeopleKeywordsChangedEvent(this, new(people));
-  }
+  public void ToggleKeyword(PersonM[] people, KeywordM keyword) =>
+    keyword.Toggle(people, _ => IsModified = true, () => KeywordsChangedEvent(people));
 
   public void ToggleKeywords(PersonM person, IEnumerable<KeywordM> keywords) {
     foreach (var keyword in keywords)
-      person.Keywords = KeywordsM.Toggle(person.Keywords, keyword);
+      person.Keywords = person.Keywords.Toggle(keyword);
 
     IsModified = true;
-    PeopleKeywordsChangedEvent(this, new(new[] { person }));
+    KeywordsChangedEvent(new[] { person });
   }
 }
