@@ -306,11 +306,6 @@ public sealed class MediaItemsM : ObservableObject {
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.Selected.Items.ToArray();
 
-  public static bool IsPanoramic(MediaItemM mi) =>
-    mi.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270
-      ? mi.Height / (double)mi.Width > 16.0 / 9.0
-      : mi.Width / (double)mi.Height > 16.0 / 9.0;
-
   private async void ViewModified() {
     Core.MediaItemsViews.AddView("Modified");
     await Core.MediaItemsViews.Current.LoadByTag(GetItems(x => x.IsOnlyInDb).ToArray());
