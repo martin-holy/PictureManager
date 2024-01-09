@@ -306,43 +306,6 @@ public sealed class MediaItemsM : ObservableObject {
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.Selected.Items.ToArray();
 
-  public void SetMetadata(MediaItemM[] items, object item) {
-    if (items.Length == 0) return;
-
-    var count = 0;
-
-    foreach (var mi in items) {
-      var modified = true;
-
-      switch (item) {
-        case PersonM p:
-          if (mi.Segments == null || !mi.Segments.Any(x => ReferenceEquals(x.Person, p)))
-            mi.People = ListExtensions.Toggle(mi.People, p, true);
-          break;
-
-        case RatingTreeM r:
-          mi.Rating = r.Rating.Value;
-          break;
-
-        case GeoNameM g:
-          Core.Db.MediaItemGeoLocation.ItemUpdate(new(mi,
-            Core.Db.GeoLocations.GetOrCreate(null, null, null, g).Result));
-          break;
-
-        default:
-          modified = false;
-          break;
-      }
-
-      if (!modified) continue;
-
-      _da.Modify(mi);
-      count++;
-    }
-
-    if (count > 0) RaiseMetadataChanged(items);
-  }
-
   public static bool IsPanoramic(MediaItemM mi) =>
     mi.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270
       ? mi.Height / (double)mi.Width > 16.0 / 9.0
