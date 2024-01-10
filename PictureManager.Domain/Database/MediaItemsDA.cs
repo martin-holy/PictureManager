@@ -19,6 +19,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   public MediaItemsM Model { get; }
 
   public event EventHandler<ObjectEventArgs<MediaItemM>> ItemRenamedEvent = delegate { };
+  public event DataEventHandler<MediaItemM[]> MetadataChangedEvent = delegate { };
 
   public MediaItemsDA(Db db) : base(string.Empty, 0) {
     _db = db;
@@ -27,6 +28,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   }
 
   private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, new(item));
+  public void RaiseMetadataChanged(MediaItemM[] items) => MetadataChangedEvent(items);
 
   private void OnDbReady() {
     MaxId = _db.Images.MaxId;
@@ -210,7 +212,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     ChangeMetadata(GetAll(mi => mi.GetPeople().Contains(person)).ToArray(), null);
 
   public void TogglePerson(MediaItemM[] items, PersonM person) =>
-    ChangeMetadata(items, mi => mi.People = ListExtensions.Toggle(mi.People, person, true));
+    ChangeMetadata(items, mi => mi.People = mi.People.Toggle(person, true));
 
   public void OnKeywordDeleted(KeywordM keyword) {
     ToggleKeyword(GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray(), keyword);
@@ -221,7 +223,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     ChangeMetadata(GetAll(mi => mi.GetKeywords().Contains(keyword)).ToArray(), null);
 
   public void ToggleKeyword(MediaItemM[] items, KeywordM keyword) =>
-    keyword.Toggle(items, Modify, () => Model.RaiseMetadataChanged(items));
+    keyword.Toggle(items, Modify, () => RaiseMetadataChanged(items));
 
   private void ChangeMetadata(MediaItemM[] items, Action<MediaItemM> action) {
     if (items.Length == 0) return;
@@ -230,14 +232,14 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       Modify(mi);
     }
 
-    Model.RaiseMetadataChanged(items);
+    RaiseMetadataChanged(items);
   }
 
   public void OnSegmentCreated(SegmentM segment) {
     segment.MediaItem.Segments ??= new();
     segment.MediaItem.Segments.Add(segment);
     Modify(segment.MediaItem);
-    Model.RaiseMetadataChanged(new[] { segment.MediaItem });
+    RaiseMetadataChanged(new[] { segment.MediaItem });
   }
 
   public void OnSegmentDeleted(SegmentM segment) {
@@ -247,8 +249,18 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   }
 
   public void OnSegmentsDeleted(IList<SegmentM> segments) {
-    Model.RaiseMetadataChanged(segments.GetMediaItems().ToArray());
+    RaiseMetadataChanged(segments.GetMediaItems().ToArray());
   }
+
+  public void OnSegmentsPersonChanged(SegmentM[] segments) =>
+    ChangeMetadata(segments.GetMediaItems().ToArray(), mi => {
+      if (mi.People == null) return;
+      foreach (var p in mi.Segments.GetPeople().Intersect(mi.People).ToArray())
+        mi.People = mi.People.Toggle(p, true);
+    });
+
+  public void OnSegmentsKeywordsChanged(SegmentM[] segments) =>
+    ChangeMetadata(segments.GetMediaItems().ToArray(), null);
 
   public void SetGeoName(MediaItemM[] items, GeoNameM geoName) =>
     ChangeMetadata(items, mi =>
