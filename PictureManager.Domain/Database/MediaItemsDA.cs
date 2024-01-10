@@ -269,4 +269,29 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
 
   public void SetRating(MediaItemM[] items, RatingM rating) =>
     ChangeMetadata(items, mi => mi.Rating = rating.Value);
+
+  public IEnumerable<MediaItemM> GetItems(KeywordM keyword, bool recursive) {
+    var set = (recursive ? keyword.Flatten() : new[] { keyword }).ToHashSet();
+
+    return GetAll(mi =>
+      mi.Keywords?.Any(k => set.Contains(k)) == true ||
+      mi.Segments?.Any(s => s.Keywords?.Any(k => set.Contains(k)) == true) == true);
+  }
+
+  public IEnumerable<MediaItemM> GetItems(GeoNameM geoName, bool recursive) {
+    var set = (recursive ? geoName.Flatten() : new[] { geoName }).ToHashSet();
+
+    return _db.MediaItemGeoLocation.All
+      .Where(x => x.Value.GeoName != null && set.Contains(x.Value.GeoName))
+      .Select(x => x.Key)
+      .OrderBy(mi => mi.FileName);
+  }
+
+  public IEnumerable<MediaItemM> GetItems(RatingM rating) =>
+    GetAll(mi => mi.Rating == rating.Value);
+
+  public IEnumerable<MediaItemM> GetItems(PersonM person) =>
+    GetAll(mi => mi.People?.Contains(person) == true ||
+                 mi.Segments?.Any(s => s.Person == person) == true)
+      .OrderBy(mi => mi.FileName);
 }
