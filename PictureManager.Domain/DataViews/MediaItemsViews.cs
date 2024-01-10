@@ -116,10 +116,10 @@ public sealed class MediaItemsViews : ObservableObject {
     var hide = Keyboard.IsAltOn();
     var recursive = Keyboard.IsShiftOn();
     var items = item switch {
-      RatingTreeM rating => Core.MediaItemsM.GetItems(rating.Rating),
-      PersonM person => Core.MediaItemsM.GetItems(person),
-      KeywordM keyword => Core.MediaItemsM.GetItems(keyword, recursive),
-      GeoNameM geoName => Core.MediaItemsM.GetItems(geoName, recursive),
+      RatingTreeM rating => Core.Db.MediaItems.GetItems(rating.Rating),
+      PersonM person => Core.Db.MediaItems.GetItems(person),
+      KeywordM keyword => Core.Db.MediaItems.GetItems(keyword, recursive),
+      GeoNameM geoName => Core.Db.MediaItems.GetItems(geoName, recursive),
       _ => Array.Empty<MediaItemM>()
     };
 
@@ -171,6 +171,6 @@ public sealed class MediaItemsViews : ObservableObject {
 
   private async void ViewModified() {
     AddView("Modified");
-    await Current.LoadByTag(Core.MediaItemsM.GetItems(x => x.IsOnlyInDb).ToArray());
+    await Current.LoadByTag(Core.Db.MediaItems.GetAll(x => x.IsOnlyInDb).ToArray());
   }
 }

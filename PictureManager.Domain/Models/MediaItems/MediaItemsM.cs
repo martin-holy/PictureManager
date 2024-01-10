@@ -299,36 +299,4 @@ public sealed class MediaItemsM : ObservableObject {
 
   public static bool IsSupportedFileType(string filePath) =>
     _supportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
-
-  public IEnumerable<MediaItemM> GetItems(Func<MediaItemM, bool> where) =>
-    Core.Db.Images.All.Where(where)
-      .Concat(Core.Db.Videos.All.Where(where))
-      .Concat(Core.Db.VideoClips.All.Where(where))
-      .Concat(Core.Db.VideoImages.All.Where(where));
-
-  public IEnumerable<MediaItemM> GetItems(RatingM rating) =>
-    GetItems(mi => mi.Rating == rating.Value);
-
-  public IEnumerable<MediaItemM> GetItems(PersonM person) =>
-    GetItems(mi =>
-        mi.People?.Contains(person) == true ||
-        mi.Segments?.Any(s => s.Person == person) == true)
-      .OrderBy(mi => mi.FileName);
-
-  public IEnumerable<MediaItemM> GetItems(KeywordM keyword, bool recursive) {
-    var set = (recursive ? keyword.Flatten() : new[] { keyword }).ToHashSet();
-
-    return GetItems(mi =>
-      mi.Keywords?.Any(k => set.Contains(k)) == true ||
-      mi.Segments?.Any(s => s.Keywords?.Any(k => set.Contains(k)) == true) == true);
-  }
-
-  public IEnumerable<MediaItemM> GetItems(GeoNameM geoName, bool recursive) {
-    var set = (recursive ? geoName.Flatten() : new[] { geoName }).ToHashSet();
-
-    return Core.Db.MediaItemGeoLocation.All
-      .Where(x => x.Value.GeoName != null && set.Contains(x.Value.GeoName))
-      .Select(x => x.Key)
-      .OrderBy(mi => mi.FileName);
-  }
 }
