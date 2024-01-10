@@ -4,7 +4,6 @@ using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.Extensions;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Utils;
 using System;
@@ -26,7 +25,6 @@ public sealed class MediaItemsM : ObservableObject {
   public int ItemsCount => GetItemsCount();
   public int ModifiedItemsCount => GetModifiedCount();
 
-  public event EventHandler<ObjectEventArgs<MediaItemM[]>> MetadataChangedEvent = delegate { };
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
   public Func<ImageM, GeoNameM, bool> WriteMetadata { get; set; }
 
@@ -38,7 +36,6 @@ public sealed class MediaItemsM : ObservableObject {
 
   public MediaItemsM(MediaItemsDA da) {
     _da = da;
-    MetadataChangedEvent += OnMetadataChanged;
 
     DeleteCommand = new(() => Delete(GetActive().ToArray()), () => GetActive().Any());
     RenameCommand = new(Rename, () => Current is RealMediaItemM);
@@ -53,14 +50,11 @@ public sealed class MediaItemsM : ObservableObject {
       x => x != null);
   }
 
-  private void OnMetadataChanged(object sender, ObjectEventArgs<MediaItemM[]> e) {
+  public void OnMetadataChanged(MediaItemM[] items) {
     UpdateModifiedCount();
-    foreach (var mi in e.Data.Where(x => x.InfoBoxThumb != null))
+    foreach (var mi in items.Where(x => x.InfoBoxThumb != null))
       mi.SetInfoBox();
   }
-
-  public void RaiseMetadataChanged(MediaItemM[] items) =>
-    MetadataChangedEvent(this, new(items));
 
   public void UpdateItemsCount() => OnPropertyChanged(nameof(ItemsCount));
 
@@ -247,7 +241,7 @@ public sealed class MediaItemsM : ObservableObject {
         });
       },
       mi => mi.FilePath,
-      delegate { RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray()); });
+      delegate { _da.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray()); });
 
     progress.Start();
     Dialog.Show(progress);
@@ -302,30 +296,6 @@ public sealed class MediaItemsM : ObservableObject {
       : Core.MediaItemsViews.Current == null
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.Selected.Items.ToArray();
-
-  public void OnSegmentsPersonChanged(SegmentM[] segments) {
-    var items = segments.GetMediaItems().ToArray();
-
-    foreach (var mi in items) {
-      if (mi.People != null && mi.Segments != null) {
-        foreach (var p in mi.Segments.Select(x => x.Person).Where(mi.People.Contains).ToArray())
-          mi.People.Remove(p);
-
-        if (!mi.People.Any())
-          mi.People = null;
-      }
-
-      _da.Modify(mi);
-    }
-
-    RaiseMetadataChanged(items);
-  }
-
-  public void OnSegmentsKeywordsChanged(SegmentM[] segments) {
-    var items = segments.GetMediaItems().ToArray();
-    foreach (var item in items) _da.Modify(item);
-    RaiseMetadataChanged(items);
-  }
 
   public static bool IsSupportedFileType(string filePath) =>
     _supportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));

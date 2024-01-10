@@ -219,9 +219,10 @@ public sealed class Core {
       MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
     };
 
-    MediaItemsM.MetadataChangedEvent += (_, e) => {
-      MediaItemsViews.UpdateViews(e.Data);
-      VideoDetail.CurrentVideoItems.Update(e.Data.OfType<VideoItemM>().ToArray());
+    Db.MediaItems.MetadataChangedEvent += items => {
+      MediaItemsM.OnMetadataChanged(items);
+      MediaItemsViews.UpdateViews(items);
+      VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       MediaItemsStatusBarM.UpdateRating();
     };
@@ -277,7 +278,7 @@ public sealed class Core {
       Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
       PeopleM.PersonDetail?.Update(e.Data.Item2);
       PeopleM.PeopleView?.Update(e.Data.Item3);
-      MediaItemsM.OnSegmentsPersonChanged(e.Data.Item2);
+      Db.MediaItems.OnSegmentsPersonChanged(e.Data.Item2);
 
       // TODO is this all correct?
       if (SegmentsView != null) {
@@ -291,7 +292,7 @@ public sealed class Core {
 
     Db.Segments.KeywordsChangedEvent += items => {
       PeopleM.PersonDetail?.Update(items, true, false);
-      MediaItemsM.OnSegmentsKeywordsChanged(items);
+      Db.MediaItems.OnSegmentsKeywordsChanged(items);
       SegmentsView?.CvSegments.Update(items);
     };
 
