@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MH.UI.Dialogs {
-  public class GroupByDialog<T> : Dialog where T : ISelectable {
+  public class GroupByDialog<T> : Dialog where T : class, ISelectable {
     private bool _isRecursive;
     private bool _isGroupBy = true;
     private bool _isThenBy;

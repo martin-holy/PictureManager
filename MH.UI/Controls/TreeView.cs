@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace MH.UI.Controls; 
 
-public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
+public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeItem {
   private ITreeItem _topTreeItem;
 
   public ExtObservableCollection<object> RootHolder { get; } = new();

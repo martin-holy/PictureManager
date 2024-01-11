@@ -16,7 +16,7 @@ public enum GroupMode {
   ThenByRecursive
 }
 
-public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : ISelectable {
+public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : class, ISelectable {
   private double _width;
 
   public CollectionView<T> View { get; set; }

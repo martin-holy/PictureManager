@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace MH.UI.Controls;
 
-public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : ISelectable {
+public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : class, ISelectable {
   private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
   private readonly GroupByDialog<T> _groupByDialog = new();
 
