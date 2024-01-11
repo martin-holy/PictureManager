@@ -16,8 +16,6 @@ using static MH.Utils.DragDropHelper;
 namespace PictureManager.Domain.Models;
 
 public sealed class SegmentsM : ObservableObject {
-  private bool _canSetAsSamePerson;
-
   public SegmentsDA DataAdapter { get; set; }
   public SegmentsRectsM SegmentsRectsM { get; }
   public SegmentsDrawerM SegmentsDrawerM { get; }
@@ -25,8 +23,11 @@ public sealed class SegmentsM : ObservableObject {
   public static int SegmentSize { get; set; } = 100;
   public static int SegmentUiSize { get; set; }
   public static int SegmentUiFullWidth { get; set; }
-  public bool CanSetAsSamePerson { get => _canSetAsSamePerson; set { _canSetAsSamePerson = value; OnPropertyChanged(); } }
-    
+
+  public bool CanSetAsSamePerson =>
+    Selected.Items.Count(x => x.Person == null) > 1 ||
+    Selected.Items.GetPeople().Count() > 1;
+
   public CanDragFunc CanDragFunc { get; }
 
   public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
@@ -80,19 +81,13 @@ public sealed class SegmentsM : ObservableObject {
 
     Selected.Select(segments, segment, isCtrlOn, isShiftOn);
     Core.PeopleM.Selected.Add(Selected.Items.GetPeople());
-    SetCanSetAsSamePerson();
+    OnPropertyChanged(nameof(CanSetAsSamePerson));
   }
 
   private object CanDrag(object source) =>
     source is SegmentM segmentM
       ? GetOneOrSelected(segmentM)
       : null;
-
-  public void SetCanSetAsSamePerson() {
-    CanSetAsSamePerson =
-      Selected.Items.GroupBy(x => x.Person).Count() > 1
-      || Selected.Items.Count(x => x.Person == null) > 1;
-  }
 
   public static void SetSegmentUiSize(double scale) {
     var size = (int)(SegmentSize / scale);
