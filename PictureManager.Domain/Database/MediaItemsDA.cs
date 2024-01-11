@@ -65,6 +65,9 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   }
 
   protected override void OnItemCreated(MediaItemM item) {
+    if (item is RealMediaItemM rmi)
+      rmi.Folder.MediaItems.Add(rmi);
+
     Model.UpdateItemsCount();
     RaiseItemCreated(item);
   }

@@ -14,18 +14,9 @@ namespace PictureManager.Domain.Database;
 public class FoldersDA : TreeDataAdapter<FolderM> {
   public FoldersM Model { get; }
 
-  public FoldersDA(Db db) : base("Folders", 3) {
+  public FoldersDA() : base("Folders", 3) {
     IsDriveRelated = true;
     Model = new(this);
-    db.ReadyEvent += delegate { OnDbReady(db); };
-  }
-
-  private static void OnDbReady(Db db) {
-    db.Images.ItemCreatedEvent += (_, e) =>
-      e.Data.Folder.MediaItems.Add(e.Data);
-
-    db.Videos.ItemCreatedEvent += (_, e) =>
-      e.Data.Folder.MediaItems.Add(e.Data);
   }
 
   public static IEnumerable<T> GetAll<T>(ITreeItem root) {

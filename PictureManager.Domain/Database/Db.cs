@@ -31,7 +31,7 @@ public sealed class Db : SimpleDB {
     CategoryGroups = new(this);
     FavoriteFolders = new(this);
     FolderKeywords = new(this);
-    Folders = new(this);
+    Folders = new();
     GeoNames = new();
     GeoLocations = new(this);
     Images = new(this);
