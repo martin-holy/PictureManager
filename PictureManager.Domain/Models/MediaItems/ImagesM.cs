@@ -65,7 +65,7 @@ public sealed class ImagesM {
       // onCompleted
       delegate {
         Core.MediaItemsM.CurrentGeoName?.OnPropertyChanged(nameof(Core.MediaItemsM.CurrentGeoName.FullName));
-        Core.MediaItemsM.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
+        Core.Db.MediaItems.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
       });
 
     progress.Start();
