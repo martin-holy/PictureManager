@@ -35,7 +35,7 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
     string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);
 
   public override void OnItemSelected(SelectionEventArgs<SegmentM> e) =>
-    Core.SegmentsM.Select(e);
+    Core.SegmentsM.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 
   public override void OnItemOpened(SegmentM item) =>
     Core.SegmentsM.ViewMediaItemsWithSegment(this, item);
