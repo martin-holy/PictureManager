@@ -60,16 +60,15 @@ public sealed class VideoDetail {
     CurrentVideoItems.Reload(items, GroupMode.ThenByRecursive, groupByItems, true);
   }
 
-  private IVideoClip GetNewClip() =>
-    SelectOne(Core.Db.VideoClips.CustomItemCreate(Current));
+  private IVideoClip GetNewClip() {
+    var item = Core.Db.VideoClips.CustomItemCreate(Current);
+    CurrentVideoItems.Selected.Select(item);
+    return item;
+  }
 
-  private IVideoImage GetNewImage() =>
-    SelectOne(Core.Db.VideoImages.CustomItemCreate(Current));
-
-  // TODO integrated it to Selected
-  private T SelectOne<T>(T item) where T : VideoItemM {
-    CurrentVideoItems.Selected.DeselectAll();
-    CurrentVideoItems.Selected.Set(item, true);
+  private IVideoImage GetNewImage() {
+    var item = Core.Db.VideoImages.CustomItemCreate(Current);
+    CurrentVideoItems.Selected.Select(item);
     return item;
   }
 
