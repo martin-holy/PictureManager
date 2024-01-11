@@ -24,8 +24,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiCo
 
       if (!File.Exists(segment.FilePathCache)) {
         if (!File.Exists(segment.MediaItem.FilePath)) {
-          Tasks.RunOnUiThread(() => 
-            Core.Db.MediaItems.ItemsDelete(new[] { segment.MediaItem }));
+          Tasks.RunOnUiThread(() => Core.Db.MediaItems.ItemDelete(segment.MediaItem));
           return null;
         }
 
