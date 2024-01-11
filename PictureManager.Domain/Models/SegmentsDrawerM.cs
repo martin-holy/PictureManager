@@ -23,7 +23,7 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
   public SegmentsDrawerM(SegmentsM segmentsM) {
     _segmentsM = segmentsM;
 
-    CanDragFunc = CanDrag;
+    CanDragFunc = one => _segmentsM.GetOneOrSelected(one as SegmentM);
     CanDropFunc = CanDrop;
     DoDropAction = DoDrop;
 
@@ -32,11 +32,6 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
       () => _segmentsM.Selected.Items.Count > 0);
     OpenCommand = new(() => Open(Core.ToolsTabsM));
   }
-
-  private object CanDrag(object source) =>
-    source is SegmentM segmentM
-      ? _segmentsM.GetOneOrSelected(segmentM)
-      : null;
 
   private DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
     if (!haveSameOrigin && !Items.Contains(data))

@@ -6,12 +6,18 @@ using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using System.Collections.Generic;
 using System.Linq;
+using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.DataViews;
 
 public sealed class SegmentsView {
+  public CanDragFunc CanDragFunc { get; }
   public CollectionViewPeople CvPeople { get; } = new();
   public CollectionViewSegments CvSegments { get; } = new();
+
+  public SegmentsView(SegmentsM segmentsM) {
+    CanDragFunc = one => segmentsM.GetOneOrSelected(one as SegmentM);
+  }
 
   public static int GetSegmentsToLoadUserInput() {
     var md = new MessageDialog("Segments", "Load segments from ...", Res.IconSegment, true);

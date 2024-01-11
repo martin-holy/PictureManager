@@ -8,7 +8,6 @@ using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;
-using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.Models;
 
@@ -25,8 +24,6 @@ public sealed class SegmentsM : ObservableObject {
     Selected.Items.Count(x => x.Person == null) > 1 ||
     Selected.Items.GetPeople().Count() > 1;
 
-  public CanDragFunc CanDragFunc { get; }
-
   public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
   public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
 
@@ -39,8 +36,6 @@ public sealed class SegmentsM : ObservableObject {
     SetSelectedAsUnknownCommand = new(
       () => SetAsUnknown(Selected.Items.ToArray()),
       () => Selected.Items.Count > 0);
-
-    CanDragFunc = CanDrag;
   }
 
   public void OnItemDeleted(SegmentM item) {
@@ -57,11 +52,6 @@ public sealed class SegmentsM : ObservableObject {
     OnPropertyChanged(nameof(CanSetAsSamePerson));
   }
 
-  private object CanDrag(object source) =>
-    source is SegmentM segmentM
-      ? GetOneOrSelected(segmentM)
-      : null;
-
   public static void SetSegmentUiSize(double scale) {
     var size = (int)(SegmentSize / scale);
     SegmentUiSize = size;
@@ -69,9 +59,11 @@ public sealed class SegmentsM : ObservableObject {
   }
 
   public SegmentM[] GetOneOrSelected(SegmentM one) =>
-    Selected.Items.Contains(one)
-      ? Selected.Items.ToArray()
-      : new[] { one };
+    one == null
+      ? null
+      : Selected.Items.Contains(one)
+        ? Selected.Items.ToArray()
+        : new[] { one };
 
   /// <summary>
   /// Sets new Person to all Segments that are selected 
