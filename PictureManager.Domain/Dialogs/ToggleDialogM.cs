@@ -1,6 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
@@ -38,10 +39,16 @@ public sealed class ToggleDialogM : Dialog {
   }
 
   private bool GetItems(object item) {
+    var person = item as PersonM;
     Segments = Core.SegmentsM.Selected.Items.ToArray();
-    People = item is PersonM ? Array.Empty<PersonM>() : Core.PeopleM.Selected.Items.ToArray();
+    People = person == null ? Core.PeopleM.Selected.Items.ToArray() : Array.Empty<PersonM>();
     MediaItems = Core.MediaItemsM.GetActive();
     VideoItems = Core.VideoDetail.CurrentVideoItems.Selected.Items.ToArray();
+
+    if (person != null) {
+      MediaItems = MediaItems.Where(mi => mi.Segments?.GetPeople().Contains(person) != true).ToArray();
+      VideoItems = VideoItems.Where(mi => mi.Segments?.GetPeople().Contains(person) != true).ToArray();
+    }
 
     return Segments.Length + People.Length + MediaItems.Length + VideoItems.Length > 0;
   }
