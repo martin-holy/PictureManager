@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace MH.Utils {
-  public class Selecting<T> where T : ISelectable {
+  public class Selecting<T> where T : class, ISelectable {
     public ObservableCollection<T> Items { get; } = new();
 
     public event EventHandler<ObjectEventArgs<T[]>> ItemsChangedEventHandler = delegate { };
@@ -40,7 +40,7 @@ namespace MH.Utils {
       return change;
     }
 
-    public void Set(IEnumerable<T> items) {
+    public void Set(IList<T> items) {
       if (Set(Items.Except(items), false) || Set(items.Except(Items), true))
         ItemsChangedEventHandler(this, new(Items.ToArray()));
     }
@@ -59,6 +59,9 @@ namespace MH.Utils {
       Items.Clear();
       AllDeselectedEventHandler(this, EventArgs.Empty);
     }
+
+    public void Select(T item) =>
+      Select(null, item, false, false);
 
     public void Select(List<T> items, T item, bool isCtrlOn, bool isShiftOn) {
       // single select
