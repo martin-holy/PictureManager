@@ -65,12 +65,7 @@ public sealed class PeopleM {
   }
 
   public void OpenPersonDetail(PersonM person) {
-    if (PersonDetail == null) {
-      PersonDetail = new(this, Core.SegmentsM);
-      Core.SegmentsM.AddEvents(PersonDetail.TopSegments);
-      Core.SegmentsM.AddEvents(PersonDetail.AllSegments);
-    }
-
+    PersonDetail ??= new(this, Core.SegmentsM);
     PersonDetail.Reload(person);
     Core.ToolsTabsM.Activate(Res.IconPeople, "Person", PersonDetail);
     Core.ToolsTabsM.Open();

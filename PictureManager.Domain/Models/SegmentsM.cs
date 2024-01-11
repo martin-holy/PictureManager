@@ -2,14 +2,11 @@ using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models.MediaItems;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
@@ -35,12 +32,8 @@ public sealed class SegmentsM : ObservableObject {
 
   public SegmentsM(SegmentsDA da) {
     DataAdapter = da;
-    DataAdapter.ItemDeletedEvent += OnItemDeleted;
-    DataAdapter.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
-
     SegmentsRectsM = new(this);
     SegmentsDrawerM = new(this);
-    AddEvents(SegmentsDrawerM);
 
     SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
     SetSelectedAsUnknownCommand = new(
@@ -50,26 +43,9 @@ public sealed class SegmentsM : ObservableObject {
     CanDragFunc = CanDrag;
   }
 
-  private void OnItemDeleted(object sender, ObjectEventArgs<SegmentM> e) {
-    Selected.Set(e.Data, false);
-    SegmentsDrawerM.Remove(e.Data);
-
-    try {
-      if (File.Exists(e.Data.FilePathCache))
-        File.Delete(e.Data.FilePathCache);
-    }
-    catch (Exception ex) {
-      Log.Error(ex);
-    }
-  }
-
-  private void OnSegmentsPersonChanged(object sender, ObjectEventArgs<(PersonM, SegmentM[], PersonM[])> e) {
-    Selected.DeselectAll();
-  }
-
-  public void AddEvents(CollectionViewSegments cv) {
-    cv.ItemOpenedEvent += (_, e) => ViewMediaItemsWithSegment(cv, e.Data);
-    cv.ItemSelectedEvent += (_, e) => Select(e);
+  public void OnItemDeleted(SegmentM item) {
+    Selected.Set(item, false);
+    SegmentsDrawerM.Remove(item);
   }
 
   public void Select(SelectionEventArgs<SegmentM> e) =>

@@ -1,4 +1,5 @@
 ﻿using MH.UI.Controls;
+using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -32,4 +33,10 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
 
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>
     string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);
+
+  public override void OnItemSelected(SelectionEventArgs<SegmentM> e) =>
+    Core.SegmentsM.Select(e);
+
+  public override void OnItemOpened(SegmentM item) =>
+    Core.SegmentsM.ViewMediaItemsWithSegment(this, item);
 }
