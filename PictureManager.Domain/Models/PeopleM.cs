@@ -117,7 +117,7 @@ public sealed class PeopleM {
 
     Core.SegmentsM.Selected.Set(segmentsBefore.Except(segmentsAfter), false);
     Core.SegmentsM.Selected.Add(segmentsAfter);
-    Core.SegmentsM.SetCanSetAsSamePerson();
+    Core.SegmentsM.OnPropertyChanged(nameof(Core.SegmentsM.CanSetAsSamePerson));
   }
 
   public void MergePeople(PersonM person, PersonM[] people) {
