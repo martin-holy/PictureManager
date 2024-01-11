@@ -2,6 +2,7 @@ using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Extensions;
@@ -112,16 +113,9 @@ public sealed class SegmentsM : ObservableObject {
   }
 
   private void SetAsUnknown(SegmentM[] segments) {
-    var msgCount = segments.Length == 1
-      ? "selected segment"
-      : $"{segments.Length} selected segments";
-    var msg = $"Do you want to set {msgCount} as unknown?";
-
-    if (Dialog.Show(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1)
-      return;
-
-    var people = segments.GetPeople().ToArray();
-    DataAdapter.ChangePerson(null, segments, people);
+    var msg = "Do you want to set {0} segment{1} as unknown?".Plural(segments.Length);
+    if (Dialog.Show(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1) return;
+    DataAdapter.ChangePerson(null, segments, segments.GetPeople().ToArray());
   }
 
   public void ViewMediaItemsWithSegment(object source, SegmentM segment) {
