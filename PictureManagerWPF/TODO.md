@@ -23,8 +23,6 @@
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 ## MainTabs
   - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
-## SegmentsView
-  - do Update and Remove only if view items contains changed items
 
 
                                   *** UPDATE ***
@@ -62,8 +60,6 @@
   - Log button
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
-  - remove MediaItemFilterSizeM
-  - change usage of GetThisAndItemsRecursive and Flat to Flatted
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
@@ -74,14 +70,13 @@
   - with segment creation create unknown person (#1234) as well so that every segment has person
 ## ToggleDialog
   - show selected items on dialog
-## SegmentsDataAdapter
-  - move generic methods ItemCreate, ItemsDelete, ItemDelete to DataAdapter
 ## MediaItems
   - save to file only metadata visible for viewer
   - merge ReloadMetadataInFolderCommand and ReloadMetadataCommand
 ## MediaItemsView
   - change SelectAndScrollToCurrentMediaItem to scroll to exactly to media item
     only if is not in the view otherwise scroll to top item
+  - use Filter on MediaItem type in LoadByTag GetItems
 
 
                                     *** NEW ***
