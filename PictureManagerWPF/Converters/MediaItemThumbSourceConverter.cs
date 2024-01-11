@@ -19,7 +19,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMarkupExtensionMultiConv
 
       if (!File.Exists(mi.FilePathCache)) {
         if (!File.Exists(mi.FilePath)) {
-          Core.Db.MediaItems.ItemsDelete(new[] { mi is VideoItemM vmi ? vmi.Video : mi });
+          Core.Db.MediaItems.ItemDelete(mi is VideoItemM vmi ? vmi.Video : mi);
           return null;
         }
 
