@@ -270,6 +270,15 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   public void SetRating(MediaItemM[] items, RatingM rating) =>
     ChangeMetadata(items, mi => mi.Rating = rating.Value);
 
+  public IEnumerable<MediaItemM> GetItems(object item, bool recursive) =>
+    item switch {
+      RatingTreeM rating => GetItems(rating.Rating),
+      PersonM person => GetItems(person),
+      KeywordM keyword => GetItems(keyword, recursive),
+      GeoNameM geoName => GetItems(geoName, recursive),
+      _ => Array.Empty<MediaItemM>()
+    };
+
   public IEnumerable<MediaItemM> GetItems(KeywordM keyword, bool recursive) {
     var set = (recursive ? keyword.Flatten() : new[] { keyword }).ToHashSet();
 

@@ -114,14 +114,7 @@ public sealed class MediaItemsViews : ObservableObject {
   public async void LoadByTag(object item) {
     var and = Keyboard.IsCtrlOn();
     var hide = Keyboard.IsAltOn();
-    var recursive = Keyboard.IsShiftOn();
-    var items = item switch {
-      RatingTreeM rating => Core.Db.MediaItems.GetItems(rating.Rating),
-      PersonM person => Core.Db.MediaItems.GetItems(person),
-      KeywordM keyword => Core.Db.MediaItems.GetItems(keyword, recursive),
-      GeoNameM geoName => Core.Db.MediaItems.GetItems(geoName, recursive),
-      _ => Array.Empty<MediaItemM>()
-    };
+    var items = Core.Db.MediaItems.GetItems(item, Keyboard.IsShiftOn());
 
     // if CTRL is pressed, add new items to already loaded items
     if (and) items = Current.LoadedItems.Union(items);
