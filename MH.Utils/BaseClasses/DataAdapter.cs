@@ -131,15 +131,14 @@ public class DataAdapter<T> : DataAdapter {
   }
 
   public virtual void ItemDelete(T item, bool singleDelete = true) {
+    if (singleDelete) {
+      ItemsDelete(new[] { item });
+      return;
+    }
+
     All.Remove(item);
     IsModified = true;
     RaiseItemDeleted(item);
-
-    if (!singleDelete) return;
-    var items = new[] { item };
-    RaiseItemsDeleted(items);
-    OnItemDeleted(item);
-    OnItemsDeleted(items);
   }
 
   public virtual void ItemsDelete(IList<T> items) {
