@@ -131,7 +131,12 @@ public sealed class Core {
 
     #region FoldersM EventHandlers
 
-    Db.Folders.ItemRenamedEvent += (_, _) => {
+    Db.Folders.ItemCreatedEvent += (_, e) => {
+      Db.FolderKeywords.LoadIfContains((FolderM)e.Data.Parent);
+    };
+
+    Db.Folders.ItemRenamedEvent += (_, e) => {
+      Db.FolderKeywords.LoadIfContains(e.Data);
       MediaItemsStatusBarM.UpdateFilePath();
     };
 
@@ -139,6 +144,9 @@ public sealed class Core {
       Db.FavoriteFolders.ItemDeleteByFolder(e.Data);
       Db.MediaItems.ItemsDelete(e.Data.MediaItems.Cast<MediaItemM>().ToArray());
     };
+
+    Db.Folders.ItemsDeletedEvent += (_, _) =>
+      Db.FolderKeywords.Reload();
 
     FoldersM.ItemCopiedEvent += (_, _) => {
       Db.FolderKeywords.Reload();
@@ -181,7 +189,6 @@ public sealed class Core {
     };
 
     Db.Keywords.ItemDeletedEvent += (_, e) => {
-      // TODO try to find generic code for the three below
       Db.People.OnKeywordDeleted(e.Data);
       Db.Segments.OnKeywordDeleted(e.Data);
       Db.MediaItems.OnKeywordDeleted(e.Data);

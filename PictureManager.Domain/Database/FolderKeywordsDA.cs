@@ -23,20 +23,8 @@ public class FolderKeywordsDA : TreeDataAdapter<FolderM> {
 
   public FolderKeywordsDA(Db db) : base("FolderKeywords", 1) {
     _db = db;
-    _db.ReadyEvent += delegate { OnDbReady(); };
     IsDriveRelated = true;
     Model = new(this);
-  }
-
-  private void OnDbReady() {
-    _db.Folders.ItemCreatedEvent += (_, e) =>
-      LoadIfContains((FolderM)e.Data.Parent);
-
-    _db.Folders.ItemRenamedEvent += (_, e) =>
-      LoadIfContains(e.Data);
-
-    _db.Folders.ItemsDeletedEvent += (_, _) =>
-      Reload();
   }
 
   public override Dictionary<string, IEnumerable<FolderM>> GetAsDriveRelated() =>
