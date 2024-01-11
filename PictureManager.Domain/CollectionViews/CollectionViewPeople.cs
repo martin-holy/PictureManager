@@ -1,4 +1,5 @@
 ﻿using MH.UI.Controls;
+using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -26,4 +27,10 @@ public class CollectionViewPeople : CollectionView<PersonM> {
 
   public override int SortCompare(PersonM itemA, PersonM itemB) =>
     string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);
+
+  public override void OnItemSelected(SelectionEventArgs<PersonM> e) =>
+    Core.PeopleM.Select(e);
+
+  public override void OnItemOpened(PersonM item) =>
+    Core.SegmentsM.ViewMediaItemsWithSegment(this, item.Segment);
 }

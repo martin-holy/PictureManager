@@ -362,12 +362,7 @@ public sealed class Core {
     var result = SegmentsView.GetSegmentsToLoadUserInput();
     if (result < 1) return;
     var segments = SegmentsView.GetSegments(result).ToArray();
-
-    if (SegmentsView == null) {
-      SegmentsView = new(SegmentsM);
-      PeopleM.AddEvents(SegmentsView.CvPeople);
-    }
-
+    SegmentsView ??= new(SegmentsM);
     MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
     if (MediaViewerM.IsVisible) MainWindowM.IsInViewMode = false;
     SegmentsView.Reload(segments);
