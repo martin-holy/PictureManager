@@ -1,7 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Extensions;
@@ -44,22 +43,14 @@ public sealed class PeopleM {
   }
 
   private void OpenPeopleToolsTab() {
-    if (PeopleToolsTabM == null) {
-      PeopleToolsTabM = new();
-      AddEvents(PeopleToolsTabM);
-    }
-
+    PeopleToolsTabM ??= new();
     PeopleToolsTabM.ReloadFrom();
     Core.ToolsTabsM.Activate(Res.IconPeopleMultiple, "People", PeopleToolsTabM);
     Core.ToolsTabsM.Open();
   }
 
   public void OpenPeopleView() {
-    if (PeopleView == null) {
-      PeopleView = new();
-      AddEvents(PeopleView);
-    }
-
+    PeopleView ??= new();
     PeopleView.Reload();
     Core.MainTabs.Activate(Res.IconPeopleMultiple, "People", PeopleView);
   }
@@ -85,14 +76,6 @@ public sealed class PeopleM {
 
     _da.IsModified = true;
   }
-
-  public void AddEvents(CollectionViewPeople cv) {
-    cv.ItemOpenedEvent += (_, e) => Open(cv, e);
-    cv.ItemSelectedEvent += (_, e) => Select(e);
-  }
-
-  public void Open(object o, ObjectEventArgs<PersonM> e) =>
-    Core.SegmentsM.ViewMediaItemsWithSegment(o, e.Data.Segment);
 
   public void Select(SelectionEventArgs<PersonM> e) {
     if (!e.IsCtrlOn && !e.IsShiftOn)

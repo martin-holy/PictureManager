@@ -10,7 +10,6 @@ namespace PictureManager.Domain.Dialogs;
 
 public sealed class MergePeopleDialogM : Dialog {
   private static MergePeopleDialogM _inst;
-  private readonly PeopleM _peopleM;
   private readonly SegmentsM _segmentsM;
   private static PersonM[] _people;
   private static SegmentM[] _unknownSelected;
@@ -20,8 +19,7 @@ public sealed class MergePeopleDialogM : Dialog {
   public CollectionViewPeople PeopleView { get; }
   public CollectionViewSegments SegmentsView { get; }
 
-  public MergePeopleDialogM(PeopleM peopleM, SegmentsM segmentsM) : base("Select a person for segments", Res.IconPeople) {
-    _peopleM = peopleM;
+  public MergePeopleDialogM(SegmentsM segmentsM) : base("Select a person for segments", Res.IconPeople) {
     _segmentsM = segmentsM;
     PeopleView = new() { CanOpen = false, IsMultiSelect = false };
     SegmentsView = new() { CanSelect = false, CanOpen = false };
@@ -30,9 +28,8 @@ public sealed class MergePeopleDialogM : Dialog {
       new("Cancel", Res.IconXCross, CloseCommand, false, true) };
   }
 
-  public void SetPerson(SelectionEventArgs<PersonM> e) {
-    _peopleM.Select(e);
-    Person = e.Item;
+  public void SetPerson(PersonM person) {
+    Person = person;
     SegmentsToUpdate = GetSegmentsToUpdate(Person, _people);
     var source = SegmentsToUpdate.OrderBy(x => x.MediaItem.FileName).ToList();
     var groupByItems = GroupByItems.GetPeople(SegmentsToUpdate).ToArray();
@@ -55,14 +52,15 @@ public sealed class MergePeopleDialogM : Dialog {
 
   public static bool Open(PeopleM peopleM, SegmentsM segmentsM, PersonM[] people) {
     if (_inst == null) {
-      _inst = new(peopleM, segmentsM);
+      _inst = new(segmentsM);
       _inst.PeopleView.ItemSelectedEvent += (_, e) =>
-        _inst.SetPerson(e);
+        _inst.SetPerson(e.Item);
     }
 
     _people = people;
     _unknownSelected = segmentsM.Selected.Items.Where(x => x.Person == null).ToArray();
-    _inst.SetPerson(new(null, people[0], false, false));
+    peopleM.Selected.Select(people[0]);
+    _inst.SetPerson(people[0]);
     _inst.PeopleView.Reload(people.ToList(), GroupMode.ThenByRecursive, null, true);
 
     if (Show(_inst) != 1) {
