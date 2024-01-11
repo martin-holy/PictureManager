@@ -30,7 +30,11 @@
       
       <mhc:CollectionView View="{Binding CvPeople}"/>
       <GridSplitter Grid.Column="1"/>
-      <mhc:CollectionView Grid.Column="2" View="{Binding CvSegments}"/>
+      <mhc:CollectionView
+        Grid.Column="2"
+        View="{Binding CvSegments}"
+        wpfu:DragDropHelper.IsDragEnabled="True"
+        wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

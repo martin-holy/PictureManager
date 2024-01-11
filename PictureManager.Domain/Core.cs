@@ -364,7 +364,7 @@ public sealed class Core {
     var segments = SegmentsView.GetSegments(result).ToArray();
 
     if (SegmentsView == null) {
-      SegmentsView = new();
+      SegmentsView = new(SegmentsM);
       PeopleM.AddEvents(SegmentsView.CvPeople);
     }
 
