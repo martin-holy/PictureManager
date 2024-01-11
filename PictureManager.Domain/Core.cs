@@ -279,6 +279,7 @@ public sealed class Core {
       PeopleM.PersonDetail?.Update(e.Data.Item2);
       PeopleM.PeopleView?.Update(e.Data.Item3);
       Db.MediaItems.OnSegmentsPersonChanged(e.Data.Item2);
+      SegmentsM.Selected.DeselectAll();
 
       // TODO is this all correct?
       if (SegmentsView != null) {
@@ -301,6 +302,7 @@ public sealed class Core {
       Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
       PeopleM.PersonDetail?.Update(new[] { e.Data }, true, true);
       SegmentsView?.CvSegments.Remove(new[] { e.Data });
+      SegmentsM.OnItemDeleted(e.Data);
     };
 
     Db.Segments.ItemsDeletedEvent += (_, e) => {
@@ -364,7 +366,6 @@ public sealed class Core {
     if (SegmentsView == null) {
       SegmentsView = new();
       PeopleM.AddEvents(SegmentsView.CvPeople);
-      SegmentsM.AddEvents(SegmentsView.CvSegments);
     }
 
     MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);

@@ -4,6 +4,7 @@ using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Database;
@@ -109,6 +110,7 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
     });
 
   protected override void OnItemDeleted(SegmentM item) {
+    File.Delete(item.FilePathCache);
     item.MediaItem = null;
     item.Person = null;
   }
