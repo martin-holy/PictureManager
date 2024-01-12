@@ -41,7 +41,7 @@ public sealed class SegmentsM : ObservableObject {
 
   public void OnItemDeleted(SegmentM item) {
     Selected.Set(item, false);
-    SegmentsDrawerM.Remove(item);
+    SegmentsDrawerM.RemoveIfContains(item);
   }
 
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
