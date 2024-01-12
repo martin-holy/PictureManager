@@ -97,6 +97,16 @@ public sealed class Core {
   }
 
   private void AttachEvents() {
+    AttachCategoryGroupsEventHandlers();
+    AttachFoldersEventHandlers();
+    AttachGeoLocationsEventHandlers();
+    AttachGeoNamesEventHandlers();
+    AttachKeywordsEventHandlers();
+    AttachMediaItemGeoLocationEventHandlers();
+    AttachMediaItemsEventHandlers();
+    AttachPeopleEventHandlers();
+    AttachSegmentsEventHandlers();
+
     MainWindowM.PropertyChanged += (_, e) => {
       if (nameof(MainWindowM.IsInViewMode).Equals(e.PropertyName)) {
         var isInViewMode = MainWindowM.IsInViewMode;
@@ -129,163 +139,6 @@ public sealed class Core {
       MediaViewerM.OnPlayerRepeatEnded();
     };
 
-    #region CategoryGroupsM EventHandlers
-
-    Db.CategoryGroups.ItemDeletedEvent += (_, e) => {
-      Db.Keywords.MoveGroupItemsToRoot(e.Data);
-      Db.People.MoveGroupItemsToRoot(e.Data);
-    };
-
-    #endregion
-
-    #region FoldersM EventHandlers
-
-    Db.Folders.ItemCreatedEvent += (_, e) => {
-      Db.FolderKeywords.LoadIfContains((FolderM)e.Data.Parent);
-    };
-
-    Db.Folders.ItemRenamedEvent += (_, e) => {
-      Db.FolderKeywords.LoadIfContains(e.Data);
-      MediaItemsStatusBarM.UpdateFilePath();
-    };
-
-    Db.Folders.ItemDeletedEvent += (_, e) => {
-      Db.FavoriteFolders.ItemDeleteByFolder(e.Data);
-      Db.MediaItems.ItemsDelete(e.Data.MediaItems.Cast<MediaItemM>().ToArray());
-    };
-
-    Db.Folders.ItemsDeletedEvent += (_, _) =>
-      Db.FolderKeywords.Reload();
-
-    FoldersM.ItemCopiedEvent += (_, _) => {
-      Db.FolderKeywords.Reload();
-    };
-
-    FoldersM.ItemMovedEvent += (_, _) => {
-      Db.FolderKeywords.Reload();
-      MediaItemsStatusBarM.UpdateFilePath();
-    };
-
-    #endregion
-
-    #region GeoLocation EventHandlers
-
-    Db.GeoLocations.ItemUpdatedEvent += (_, e) => {
-      foreach (var kv in Db.MediaItemGeoLocation.All.Where(x => ReferenceEquals(x.Value, e.Data)))
-        Db.MediaItems.Modify(kv.Key);
-    };
-
-    #endregion
-
-    #region GeoNamesM EventHandlers
-
-    Db.GeoNames.ItemDeletedEvent += (_, e) => {
-      Db.GeoLocations.RemoveGeoName(e.Data);
-    };
-
-    #endregion
-
-    #region PeopleM EventHandlers
-
-    Db.People.ItemRenamedEvent += (_, e) => {
-      Db.MediaItems.ModifyIfContains(e.Data);
-    };
-
-    Db.People.ItemDeletedEvent += (_, e) => {
-      Db.MediaItems.RemovePerson(e.Data);
-      Db.Segments.RemovePerson(e.Data);
-      PeopleM.PeopleView?.Remove(new[] { e.Data });
-      PeopleM.PeopleToolsTabM?.Remove(new[] { e.Data });
-      SegmentsView?.CvPeople.Remove(new[] { e.Data });
-    };
-
-    Db.People.KeywordsChangedEvent += items => {
-      PeopleM.OnKeywordsChanged(items);
-      PeopleM.PeopleToolsTabM?.Update(items);
-      PeopleM.PeopleView?.Update(items);
-      SegmentsView?.CvPeople.Update(items);
-    };
-
-    #endregion
-
-    #region KeywordsM EventHandlers
-
-    Db.Keywords.ItemRenamedEvent += (_, e) => {
-      Db.MediaItems.ModifyIfContains(e.Data);
-    };
-
-    Db.Keywords.ItemDeletedEvent += (_, e) => {
-      Db.People.RemoveKeyword(e.Data);
-      Db.Segments.RemoveKeyword(e.Data);
-      Db.MediaItems.RemoveKeyword(e.Data);
-    };
-
-    #endregion
-
-    #region MediaItemsM EventHandlers
-
-    Db.MediaItems.ItemRenamedEvent += (_, _) => {
-      MediaItemsViews.Current?.SoftLoad(MediaItemsViews.Current.FilteredItems, true, false);
-    };
-
-    Db.MediaItems.ItemDeletedEvent += (_, e) => {
-      Db.Segments.ItemsDelete(e.Data.Segments?.ToArray());
-    };
-
-    Db.MediaItems.ItemsDeletedEvent += (_, e) => {
-      MediaItemsViews.RemoveMediaItems(e.Data);
-      VideoDetail.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
-
-      if (MediaViewerM.IsVisible) {
-        MediaViewerM.MediaItems.Remove(e.Data[0]);
-        if (MediaItemsM.Current != null)
-          MediaViewerM.Current = MediaItemsM.Current;
-        else
-          MainWindowM.IsInViewMode = false;
-      }
-    };
-
-    RotationDialogM.OrientationChangedEvent += items => {
-      if (MediaViewerM.IsVisible && items.Contains(MediaItemsM.Current))
-        MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
-
-      MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
-    };
-
-    Db.MediaItems.MetadataChangedEvent += items => {
-      MediaItemsM.OnMetadataChanged(items);
-      MediaItemsViews.UpdateViews(items);
-      VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
-      TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-      MediaItemsStatusBarM.UpdateRating();
-    };
-
-    MediaItemsM.PropertyChanged += (_, e) => {
-      if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
-        MediaItemsStatusBarM.Update();
-        VideoDetail.SetCurrent(MediaItemsM.Current);
-
-        if (MainWindowM.IsInViewMode)
-          TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-      }
-    };
-
-    #endregion
-
-    #region MediaItemGeoLocation EventHandlers
-
-    Db.MediaItemGeoLocation.ItemDeletedEvent += (_, e) => Db.MediaItems.Modify(e.Data.Key);
-    Db.MediaItemGeoLocation.ItemCreatedEvent += (_, e) => Db.MediaItems.Modify(e.Data.Key);
-
-    #endregion
-
-    MediaItemsViews.PropertyChanged += (_, e) => {
-      if (nameof(MediaItemsViews.Current).Equals(e.PropertyName)) {
-        TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-        MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
-      }
-    };
-
     MediaViewerM.PropertyChanged += (_, e) => {
       switch (e.PropertyName) {
         case nameof(MediaViewerM.IsVisible):
@@ -307,56 +160,6 @@ public sealed class Core {
       }
     };
 
-    #region SegmentsM EventHandlers
-
-    Db.Segments.SegmentPersonChangedEvent += (_, e) => {
-      Db.People.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
-      Db.MediaItems.Modify(e.Data.Item1.MediaItem);
-    };
-
-    Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
-      Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
-      PeopleM.PersonDetail?.Update(e.Data.Item2);
-      PeopleM.PeopleView?.Update(e.Data.Item3);
-      Db.MediaItems.TogglePerson(e.Data.Item2);
-      SegmentsM.Selected.DeselectAll();
-
-      // TODO is this all correct?
-      if (SegmentsView != null) {
-        SegmentsView.CvSegments.Update(e.Data.Item2);
-        var pIn = e.Data.Item2.GetPeople().ToArray();
-        var pOut = e.Data.Item3.Except(pIn).ToArray();
-        SegmentsView.CvPeople.Update(pIn);
-        SegmentsView.CvPeople.Remove(pOut);
-      }
-    };
-
-    Db.Segments.KeywordsChangedEvent += items => {
-      PeopleM.PersonDetail?.Update(items, true, false);
-      Db.MediaItems.ModifyIfContains(items);
-      SegmentsView?.CvSegments.Update(items);
-    };
-
-    Db.Segments.ItemDeletedEvent += (_, e) => {
-      Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
-      PeopleM.PersonDetail?.Update(new[] { e.Data }, true, true);
-      SegmentsView?.CvSegments.Remove(new[] { e.Data });
-      SegmentsM.OnItemDeleted(e.Data);
-    };
-
-    Db.Segments.ItemsDeletedEvent += (_, e) => {
-      Db.MediaItems.RemoveSegments(e.Data);
-    };
-
-    Db.Segments.ItemCreatedEvent += (_, e) => {
-      Db.MediaItems.AddSegment(e.Data);
-      SegmentsView?.CvSegments.Update(new[] { e.Data }, false);
-    };
-
-    #endregion
-
-    #region MainTabs EventHandlers
-
     MainTabs.TabClosedEvent += (_, e) => {
       switch (e.Data.Data) {
         case MediaItemsView miView:
@@ -376,14 +179,193 @@ public sealed class Core {
         MediaItemsViews.SetCurrentView(MainTabs.Selected?.Data as MediaItemsView);
     };
 
-    #endregion
-
     ToolsTabsM.TabClosedEvent += (_, e) => {
       switch (e.Data.Data) {
         case PersonDetail personDetail:
           personDetail.Reload(null);
           break;
       }
+    };
+  }
+
+  private static void AttachCategoryGroupsEventHandlers() =>
+    Db.CategoryGroups.ItemDeletedEvent += (_, e) => {
+      Db.Keywords.MoveGroupItemsToRoot(e.Data);
+      Db.People.MoveGroupItemsToRoot(e.Data);
+    };
+
+  private static void AttachFoldersEventHandlers() {
+    Db.Folders.ItemCreatedEvent += (_, e) =>
+      Db.FolderKeywords.LoadIfContains((FolderM)e.Data.Parent);
+
+    Db.Folders.ItemRenamedEvent += (_, e) => {
+      Db.FolderKeywords.LoadIfContains(e.Data);
+      MediaItemsStatusBarM.UpdateFilePath();
+    };
+
+    Db.Folders.ItemDeletedEvent += (_, e) => {
+      Db.FavoriteFolders.ItemDeleteByFolder(e.Data);
+      Db.MediaItems.ItemsDelete(e.Data.MediaItems.Cast<MediaItemM>().ToArray());
+    };
+
+    Db.Folders.ItemsDeletedEvent += (_, _) =>
+      Db.FolderKeywords.Reload();
+
+    FoldersM.ItemCopiedEvent += (_, _) =>
+      Db.FolderKeywords.Reload();
+
+    FoldersM.ItemMovedEvent += (_, _) => {
+      Db.FolderKeywords.Reload();
+      MediaItemsStatusBarM.UpdateFilePath();
+    };
+  }
+
+  private static void AttachGeoLocationsEventHandlers() {
+    Db.GeoLocations.ItemUpdatedEvent += (_, e) => {
+      foreach (var kv in Db.MediaItemGeoLocation.All.Where(x => ReferenceEquals(x.Value, e.Data)))
+        Db.MediaItems.Modify(kv.Key);
+    };
+  }
+
+  private static void AttachGeoNamesEventHandlers() {
+    Db.GeoNames.ItemDeletedEvent += (_, e) =>
+      Db.GeoLocations.RemoveGeoName(e.Data);
+  }
+
+  private static void AttachKeywordsEventHandlers() {
+    Db.Keywords.ItemRenamedEvent += (_, e) =>
+      Db.MediaItems.ModifyIfContains(e.Data);
+
+    Db.Keywords.ItemDeletedEvent += (_, e) => {
+      Db.People.RemoveKeyword(e.Data);
+      Db.Segments.RemoveKeyword(e.Data);
+      Db.MediaItems.RemoveKeyword(e.Data);
+    };
+  }
+
+  private static void AttachMediaItemGeoLocationEventHandlers() {
+    Db.MediaItemGeoLocation.ItemCreatedEvent += (_, e) => Db.MediaItems.Modify(e.Data.Key);
+    Db.MediaItemGeoLocation.ItemDeletedEvent += (_, e) => Db.MediaItems.Modify(e.Data.Key);
+  }
+
+  private static void AttachMediaItemsEventHandlers() {
+    Db.MediaItems.ItemRenamedEvent += (_, _) =>
+      MediaItemsViews.Current?.SoftLoad(MediaItemsViews.Current.FilteredItems, true, false);
+
+    Db.MediaItems.MetadataChangedEvent += items => {
+      MediaItemsM.OnMetadataChanged(items);
+      MediaItemsViews.UpdateViews(items);
+      VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
+      TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+      MediaItemsStatusBarM.UpdateRating();
+    };
+
+    Db.MediaItems.ItemDeletedEvent += (_, e) =>
+      Db.Segments.ItemsDelete(e.Data.Segments?.ToArray());
+
+    Db.MediaItems.ItemsDeletedEvent += (_, e) => {
+      MediaItemsViews.RemoveMediaItems(e.Data);
+      VideoDetail.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
+
+      if (MediaViewerM.IsVisible) {
+        MediaViewerM.MediaItems.Remove(e.Data[0]);
+        if (MediaItemsM.Current != null)
+          MediaViewerM.Current = MediaItemsM.Current;
+        else
+          MainWindowM.IsInViewMode = false;
+      }
+    };
+
+    // TODO move event to DA
+    RotationDialogM.OrientationChangedEvent += items => {
+      if (MediaViewerM.IsVisible && items.Contains(MediaItemsM.Current))
+        MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
+
+      MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
+    };
+
+    MediaItemsM.PropertyChanged += (_, e) => {
+      if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
+        MediaItemsStatusBarM.Update();
+        VideoDetail.SetCurrent(MediaItemsM.Current);
+
+        if (MainWindowM.IsInViewMode)
+          TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+      }
+    };
+
+    MediaItemsViews.PropertyChanged += (_, e) => {
+      if (nameof(MediaItemsViews.Current).Equals(e.PropertyName)) {
+        TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+        MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
+      }
+    };
+  }
+
+  private static void AttachPeopleEventHandlers() {
+    Db.People.ItemRenamedEvent += (_, e) =>
+      Db.MediaItems.ModifyIfContains(e.Data);
+
+    Db.People.KeywordsChangedEvent += items => {
+      PeopleM.OnKeywordsChanged(items);
+      PeopleM.PeopleToolsTabM?.Update(items);
+      PeopleM.PeopleView?.Update(items);
+      SegmentsView?.CvPeople.Update(items);
+    };
+
+    Db.People.ItemDeletedEvent += (_, e) => {
+      Db.MediaItems.RemovePerson(e.Data);
+      Db.Segments.RemovePerson(e.Data);
+      PeopleM.PeopleView?.Remove(new[] { e.Data });
+      PeopleM.PeopleToolsTabM?.Remove(new[] { e.Data });
+      SegmentsView?.CvPeople.Remove(new[] { e.Data });
+    };
+  }
+
+  private static void AttachSegmentsEventHandlers() {
+    Db.Segments.ItemCreatedEvent += (_, e) => {
+      Db.MediaItems.AddSegment(e.Data);
+      SegmentsView?.CvSegments.Update(new[] { e.Data }, false);
+    };
+
+    // TODO move this to multi change event
+    Db.Segments.SegmentPersonChangedEvent += (_, e) => {
+      Db.People.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+      Db.MediaItems.Modify(e.Data.Item1.MediaItem);
+    };
+
+    Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
+      Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+      Db.MediaItems.TogglePerson(e.Data.Item2);
+      PeopleM.PersonDetail?.Update(e.Data.Item2);
+      PeopleM.PeopleView?.Update(e.Data.Item3);
+      SegmentsM.Selected.DeselectAll();
+
+      // TODO is this all correct?
+      if (SegmentsView != null) {
+        SegmentsView.CvSegments.Update(e.Data.Item2);
+        var pIn = e.Data.Item2.GetPeople().ToArray();
+        var pOut = e.Data.Item3.Except(pIn).ToArray();
+        SegmentsView.CvPeople.Update(pIn);
+        SegmentsView.CvPeople.Remove(pOut);
+      }
+    };
+
+    Db.Segments.KeywordsChangedEvent += items => {
+      Db.MediaItems.ModifyIfContains(items);
+      PeopleM.PersonDetail?.Update(items, true, false);
+      SegmentsView?.CvSegments.Update(items);
+    };
+
+    Db.Segments.ItemDeletedEvent += (_, e) => {
+      Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
+      PeopleM.PersonDetail?.Update(new[] { e.Data }, true, true);
+      SegmentsView?.CvSegments.Remove(new[] { e.Data });
+      SegmentsM.OnItemDeleted(e.Data);
+    };
+
+    Db.Segments.ItemsDeletedEvent += (_, e) => {
+      Db.MediaItems.RemoveSegments(e.Data);
     };
   }
 
