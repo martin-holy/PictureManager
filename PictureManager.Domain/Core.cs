@@ -326,10 +326,8 @@ public sealed class Core {
       SegmentsView?.CvSegments.Update(new[] { e.Data }, false);
     };
 
-    // TODO move this to multi change event
     Db.Segments.SegmentPersonChangedEvent += (_, e) => {
       Db.People.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
-      Db.MediaItems.Modify(e.Data.Item1.MediaItem);
     };
 
     Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
