@@ -14,20 +14,6 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
 
   public GeoLocationsDA(Db db) : base("GeoLocations", 4) {
     _db = db;
-    _db.ReadyEvent += delegate { OnDbReady(); };
-  }
-
-  private void OnDbReady() {
-    _db.GeoNames.ItemDeletedEvent += (_, e) => {
-      var all = All.Where(x => ReferenceEquals(x.GeoName, e.Data)).ToArray();
-      var toDelete = all.Where(x => x.Lat == null && x.Lng == null).ToArray();
-
-      foreach (var gl in all.Except(toDelete))
-        gl.GeoName = null;
-
-      ItemsDelete(toDelete);
-      IsModified = true;
-    };
   }
 
   public override GeoLocationM FromCsv(string[] csv) =>
@@ -89,5 +75,16 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
       lat == null ? null : Math.Round((double)lat, 5),
       lng == null ? null : Math.Round((double)lng, 5),
       gn);
+  }
+
+  public void RemoveGeoName(GeoNameM geoName) {
+    var all = All.Where(x => ReferenceEquals(x.GeoName, geoName)).ToArray();
+    var toDelete = all.Where(x => x.Lat == null && x.Lng == null).ToArray();
+
+    foreach (var gl in all.Except(toDelete))
+      gl.GeoName = null;
+
+    ItemsDelete(toDelete);
+    IsModified = true;
   }
 }
