@@ -58,9 +58,9 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
 
     foreach (var (person, csv) in AllCsv) {
       // Persons top segments
-      person.TopSegments = LinkObservableCollection(csv[2], _db.Segments.AllDict);
+      person.TopSegments = _db.Segments.Link(csv[2], this);
       if (person.TopSegments != null)
-        person.Segment = (SegmentM)person.TopSegments[0];
+        person.Segment = person.TopSegments[0];
 
       // reference to Keywords
       person.Keywords = _db.Keywords.Link(csv[3], this);
@@ -130,7 +130,7 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
 
     if (oldPerson.TopSegments?.Contains(segment) != true) return;
 
-    oldPerson.TopSegments = ObservableCollectionExtensions.Toggle(oldPerson.TopSegments, segment, true);
+    oldPerson.TopSegments = oldPerson.TopSegments.Toggle(segment, true);
     IsModified = true;
   }
 
