@@ -314,16 +314,16 @@ public sealed class Core {
     Db.People.ItemDeletedEvent += (_, e) => {
       Db.MediaItems.RemovePerson(e.Data);
       Db.Segments.RemovePerson(e.Data);
-      PeopleM.PeopleView?.Remove(new[] { e.Data });
-      PeopleM.PeopleToolsTabM?.Remove(new[] { e.Data });
-      SegmentsView?.CvPeople.Remove(new[] { e.Data });
+      PeopleM.PeopleView?.Remove(e.Data);
+      PeopleM.PeopleToolsTabM?.Remove(e.Data);
+      SegmentsView?.CvPeople.Remove(e.Data);
     };
   }
 
   private static void AttachSegmentsEventHandlers() {
     Db.Segments.ItemCreatedEvent += (_, e) => {
       Db.MediaItems.AddSegment(e.Data);
-      SegmentsView?.CvSegments.Update(new[] { e.Data }, false);
+      SegmentsView?.CvSegments.Update(e.Data, false);
     };
 
     Db.Segments.SegmentPersonChangedEvent += (_, e) => {
@@ -355,8 +355,8 @@ public sealed class Core {
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
       Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
-      PeopleM.PersonDetail?.Update(new[] { e.Data }, true, true);
-      SegmentsView?.CvSegments.Remove(new[] { e.Data });
+      PeopleM.PersonDetail?.Update(e.Data, true, true);
+      SegmentsView?.CvSegments.Remove(e.Data);
       SegmentsM.OnItemDeleted(e.Data);
     };
 

@@ -30,8 +30,8 @@ public sealed class PeopleM {
 
   private void OnItemDeleted(object sender, ObjectEventArgs<PersonM> e) {
     Selected.Set(e.Data, false);
-    PeopleView?.Remove(new[] { e.Data });
-    PeopleToolsTabM?.Remove(new[] { e.Data });
+    PeopleView?.Remove(e.Data);
+    PeopleToolsTabM?.Remove(e.Data);
 
     if (ReferenceEquals(PersonDetail?.PersonM, e.Data))
       Core.ToolsTabsM.Close(PersonDetail);
