@@ -22,17 +22,7 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
 
   public PeopleDA(Db db) : base("People", 4) {
     _db = db;
-    _db.ReadyEvent += delegate { OnDbReady(); };
     Model = new(this);
-  }
-
-  private void OnDbReady() {
-    // move all group items to root
-    _db.CategoryGroups.ItemDeletedEvent += (_, e) => {
-      if (e.Data.Category != Category.People) return;
-      foreach (var item in e.Data.Items.ToArray())
-        ItemMove(item, Model.TreeCategory, false);
-    };
   }
 
   public IEnumerable<PersonM> GetAll() {
@@ -169,5 +159,11 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
 
     IsModified = true;
     KeywordsChangedEvent(new[] { person });
+  }
+
+  public void MoveGroupItemsToRoot(CategoryGroupM group) {
+    if (group.Category != Category.People) return;
+    foreach (var item in group.Items.ToArray())
+      ItemMove(item, Model.TreeCategory, false);
   }
 }

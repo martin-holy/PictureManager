@@ -19,17 +19,7 @@ public class KeywordsDA : TreeDataAdapter<KeywordM> {
 
   public KeywordsDA(Db db) : base("Keywords", 3) {
     _db = db;
-    _db.ReadyEvent += delegate { OnDbReady(); };
     Model = new(this);
-  }
-
-  private void OnDbReady() {
-    // move all group items to root
-    _db.CategoryGroups.ItemDeletedEvent += (_, e) => {
-      if (e.Data.Category != Category.Keywords) return;
-      foreach (var item in e.Data.Items.ToArray())
-        ItemMove(item, Model.TreeCategory, false);
-    };
   }
 
   public static IEnumerable<T> GetAll<T>(ITreeItem root) {
@@ -111,5 +101,11 @@ public class KeywordsDA : TreeDataAdapter<KeywordM> {
     }
 
     return GetFirst(last) as KeywordM;
+  }
+
+  public void MoveGroupItemsToRoot(CategoryGroupM group) {
+    if (group.Category != Category.Keywords) return;
+    foreach (var item in group.Items.ToArray())
+      ItemMove(item, Model.TreeCategory, false);
   }
 }
