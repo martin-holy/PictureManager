@@ -28,7 +28,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public string Comment { get; set; }
   public List<PersonM> People { get; set; }
   public List<KeywordM> Keywords { get; set; }
-  public ObservableCollection<SegmentM> Segments { get; set; }
+  public List<SegmentM> Segments { get; set; }
 
   public abstract FolderM Folder { get; set; }
   public abstract string FileName { get; set; }

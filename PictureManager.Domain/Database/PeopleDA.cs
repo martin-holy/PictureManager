@@ -157,7 +157,7 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
         ItemDelete(ptd);
   }
 
-  public void OnKeywordDeleted(KeywordM keyword) =>
+  public void RemoveKeyword(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
   public void ToggleKeyword(PersonM[] people, KeywordM keyword) =>

@@ -206,24 +206,33 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       .Concat(_db.VideoClips.All.Where(where))
       .Concat(_db.VideoImages.All.Where(where));
 
-  public void OnPersonDeleted(PersonM person) {
-    TogglePerson(GetAll(mi => mi.People?.Contains(person) == true).ToArray(), person);
-    ChangeMetadata(GetAll(mi => mi.Segments?.GetPeople().Contains(person) == true).ToArray(), null);
-  }
+  private void Modify(IEnumerable<MediaItemM> items) =>
+    ChangeMetadata(items.ToArray(), null);
 
-  public void OnPersonRenamed(PersonM person) =>
-    ChangeMetadata(GetAll(mi => mi.GetPeople().Contains(person)).ToArray(), null);
+  public void ModifyIfContains(PersonM person) =>
+    Modify(GetAll(mi => mi.GetPeople().Contains(person)));
+
+  public void ModifyIfContains(KeywordM keyword) =>
+    Modify(GetAll(mi => mi.GetKeywords().Contains(keyword)));
+
+  public void ModifyIfContains(SegmentM[] segments) =>
+    Modify(segments.GetMediaItems());
+
+  public void ModifyAndTogglePerson(SegmentM[] segments) =>
+    ChangeMetadata(segments.GetMediaItems().ToArray(), mi => {
+      if (mi.People == null) return;
+      foreach (var p in mi.Segments.GetPeople().Intersect(mi.People).ToArray())
+        mi.People = mi.People.Toggle(p, true);
+    });
+
+  public void RemovePerson(PersonM person) =>
+    TogglePerson(GetAll(mi => mi.People?.Contains(person) == true).ToArray(), person);
 
   public void TogglePerson(MediaItemM[] items, PersonM person) =>
     ChangeMetadata(items, mi => mi.People = mi.People.Toggle(person, true));
 
-  public void OnKeywordDeleted(KeywordM keyword) {
+  public void RemoveKeyword(KeywordM keyword) =>
     ToggleKeyword(GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray(), keyword);
-    ChangeMetadata(GetAll(mi => mi.Segments?.GetKeywords().Contains(keyword) == true).ToArray(), null);
-  }
-
-  public void OnKeywordRenamed(KeywordM keyword) =>
-    ChangeMetadata(GetAll(mi => mi.GetKeywords().Contains(keyword)).ToArray(), null);
 
   public void ToggleKeyword(MediaItemM[] items, KeywordM keyword) =>
     keyword.Toggle(items, Modify, () => RaiseMetadataChanged(items));
@@ -238,32 +247,21 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     RaiseMetadataChanged(items);
   }
 
-  public void OnSegmentCreated(SegmentM segment) {
+  public void AddSegment(SegmentM segment) {
     segment.MediaItem.Segments ??= new();
     segment.MediaItem.Segments.Add(segment);
     Modify(segment.MediaItem);
     RaiseMetadataChanged(new[] { segment.MediaItem });
   }
 
-  public void OnSegmentDeleted(SegmentM segment) {
-    if (segment.MediaItem.Segments.Remove(segment) && !segment.MediaItem.Segments.Any())
-      segment.MediaItem.Segments = null;
-    Modify(segment.MediaItem);
-  }
-
-  public void OnSegmentsDeleted(IList<SegmentM> segments) {
+  public void RemoveSegments(IList<SegmentM> segments) {
+    foreach (var segment in segments) {
+      segment.MediaItem.Segments = segment.MediaItem.Segments.Toggle(segment, true);
+      Modify(segment.MediaItem);
+    }
+    
     RaiseMetadataChanged(segments.GetMediaItems().ToArray());
   }
-
-  public void OnSegmentsPersonChanged(SegmentM[] segments) =>
-    ChangeMetadata(segments.GetMediaItems().ToArray(), mi => {
-      if (mi.People == null) return;
-      foreach (var p in mi.Segments.GetPeople().Intersect(mi.People).ToArray())
-        mi.People = mi.People.Toggle(p, true);
-    });
-
-  public void OnSegmentsKeywordsChanged(SegmentM[] segments) =>
-    ChangeMetadata(segments.GetMediaItems().ToArray(), null);
 
   public void SetGeoName(MediaItemM[] items, GeoNameM geoName) =>
     ChangeMetadata(items, mi =>
