@@ -72,6 +72,7 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
       .Split(',')
       .Select(int.Parse)
       .Select(x => source.TryGetValue(x, out var rec) ? rec : resolveNotFound(x))
+      .Where(x => x != null)
       .ToList();
 
     return items.Count == 0 ? null : items;
@@ -81,6 +82,7 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
     IdToRecord(csv, AllDict, notFoundId => ResolveNotFoundRecord(notFoundId, getNotFoundRecord, seeker));
 
   public T ResolveNotFoundRecord(int notFoundId, Func<int, T> getNotFoundRecord, IDataAdapter seeker) {
+    if (getNotFoundRecord == null) return null;
     _notFoundIds ??= new();
     seeker.IsModified = true;
 
