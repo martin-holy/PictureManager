@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace PictureManager.Domain.Database;
 
 public sealed class MediaItemGeoLocationDA : OneToOneDataAdapter<MediaItemM, GeoLocationM> {
-  public MediaItemGeoLocationDA(Db db) : base("MediaItemGeoLocation", db, db.MediaItems, db.GeoLocations) {
+  public MediaItemGeoLocationDA(Db db) : base("MediaItemGeoLocation", db.MediaItems, db.GeoLocations) {
     IsDriveRelated = true;
   }
 

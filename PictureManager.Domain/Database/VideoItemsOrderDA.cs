@@ -8,7 +8,7 @@ namespace PictureManager.Domain.Database;
 public sealed class VideoItemsOrderDA : OneToManyMultiDataAdapter<VideoM, VideoItemM> {
   private readonly Db _db;
 
-  public VideoItemsOrderDA(Db db) : base("VideoItemsOrder", db, db.Videos) {
+  public VideoItemsOrderDA(Db db) : base("VideoItemsOrder", db.Videos) {
     _db = db;
     IsDriveRelated = true;
     db.ReadyEvent += delegate { OnDbReady(); };
