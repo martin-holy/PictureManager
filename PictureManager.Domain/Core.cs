@@ -159,6 +159,14 @@ public sealed class Core {
 
     #endregion
 
+    #region GeoNamesM EventHandlers
+
+    Db.GeoNames.ItemDeletedEvent += (_, e) => {
+      Db.GeoLocations.RemoveGeoName(e.Data);
+    };
+
+    #endregion
+
     #region PeopleM EventHandlers
 
     Db.People.ItemRenamedEvent += (_, e) => {
