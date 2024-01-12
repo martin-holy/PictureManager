@@ -5,7 +5,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
-using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
@@ -260,6 +259,13 @@ public sealed class Core {
       MediaItemsStatusBarM.UpdateRating();
     };
 
+    Db.MediaItems.OrientationChangedEvent += items => {
+      if (MediaViewerM.IsVisible && items.Contains(MediaItemsM.Current))
+        MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
+
+      MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
+    };
+
     Db.MediaItems.ItemDeletedEvent += (_, e) =>
       Db.Segments.ItemsDelete(e.Data.Segments?.ToArray());
 
@@ -274,14 +280,6 @@ public sealed class Core {
         else
           MainWindowM.IsInViewMode = false;
       }
-    };
-
-    // TODO move event to DA
-    RotationDialogM.OrientationChangedEvent += items => {
-      if (MediaViewerM.IsVisible && items.Contains(MediaItemsM.Current))
-        MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
-
-      MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
     };
 
     MediaItemsM.PropertyChanged += (_, e) => {
