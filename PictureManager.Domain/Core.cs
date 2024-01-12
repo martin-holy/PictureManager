@@ -129,6 +129,15 @@ public sealed class Core {
       MediaViewerM.OnPlayerRepeatEnded();
     };
 
+    #region CategoryGroupsM EventHandlers
+
+    Db.CategoryGroups.ItemDeletedEvent += (_, e) => {
+      Db.Keywords.MoveGroupItemsToRoot(e.Data);
+      Db.People.MoveGroupItemsToRoot(e.Data);
+    };
+
+    #endregion
+
     #region FoldersM EventHandlers
 
     Db.Folders.ItemCreatedEvent += (_, e) => {
