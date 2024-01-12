@@ -2,7 +2,6 @@
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Database;
