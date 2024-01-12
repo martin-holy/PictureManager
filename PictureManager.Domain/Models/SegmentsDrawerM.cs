@@ -3,16 +3,16 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.CollectionViews;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.Models; 
+namespace PictureManager.Domain.Models;
 
 public sealed class SegmentsDrawerM : CollectionViewSegments {
   private readonly SegmentsM _segmentsM;
 
-  public ObservableCollection<SegmentM> Items { get; } = new();
+  public List<SegmentM> Items { get; } = new();
   public CanDragFunc CanDragFunc { get; }
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction DoDropAction { get; }
@@ -71,10 +71,14 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
     }
   }
 
-  public void RemoveIfContains(SegmentM segment) {
-    if (!Items.Remove(segment)) return;
+  public void RemoveIfContains(SegmentM[] segments) {
+    var flag = false;
+    foreach (var segment in segments)
+      if (Items.Remove(segment)) flag = true;
+
+    if (!flag) return;
     _segmentsM.DataAdapter.AreTablePropsModified = true;
-    Remove(segment);
+    Remove(segments);
   }
 
   private void Open(ToolsTabsM tt) {

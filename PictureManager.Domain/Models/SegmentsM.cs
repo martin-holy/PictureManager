@@ -39,11 +39,6 @@ public sealed class SegmentsM : ObservableObject {
       () => Selected.Items.Count > 0);
   }
 
-  public void OnItemDeleted(SegmentM item) {
-    Selected.Set(item, false);
-    SegmentsDrawerM.RemoveIfContains(item);
-  }
-
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
     if (!isCtrlOn && !isShiftOn)
       Core.PeopleM.Selected.DeselectAll();

@@ -205,6 +205,7 @@ public sealed class Core {
     Db.Folders.ItemDeletedEvent += (_, e) => {
       Db.FavoriteFolders.ItemDeleteByFolder(e.Data);
       Db.MediaItems.ItemsDelete(e.Data.MediaItems.Cast<MediaItemM>().ToArray());
+      FoldersM.DeleteFromDisk(e.Data);
     };
 
     Db.Folders.ItemsDeletedEvent += (_, _) =>
@@ -314,9 +315,13 @@ public sealed class Core {
     Db.People.ItemDeletedEvent += (_, e) => {
       Db.MediaItems.RemovePerson(e.Data);
       Db.Segments.RemovePerson(e.Data);
+      PeopleM.Selected.Set(e.Data, false);
       PeopleM.PeopleView?.Remove(e.Data);
       PeopleM.PeopleToolsTabM?.Remove(e.Data);
       SegmentsView?.CvPeople.Remove(e.Data);
+
+      if (ReferenceEquals(PeopleM.PersonDetail?.PersonM, e.Data))
+        ToolsTabsM.Close(PeopleM.PersonDetail);
     };
   }
 
@@ -355,13 +360,14 @@ public sealed class Core {
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
       Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
-      PeopleM.PersonDetail?.Update(e.Data, true, true);
-      SegmentsView?.CvSegments.Remove(e.Data);
-      SegmentsM.OnItemDeleted(e.Data);
+      SegmentsM.Selected.Set(e.Data, false);
     };
 
     Db.Segments.ItemsDeletedEvent += (_, e) => {
       Db.MediaItems.RemoveSegments(e.Data);
+      PeopleM.PersonDetail?.Update(e.Data.ToArray(), true, true);
+      SegmentsView?.CvSegments.Remove(e.Data.ToArray());
+      SegmentsM.SegmentsDrawerM.RemoveIfContains(e.Data.ToArray());
     };
   }
 
