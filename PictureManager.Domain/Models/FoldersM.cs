@@ -26,15 +26,14 @@ public sealed class FoldersM {
   public FoldersM(FoldersDA da) {
     _da = da;
     TreeCategory = new(_da);
-    _da.ItemDeletedEvent += OnItemDeleted;
   }
 
-  private static void OnItemDeleted(object sender, ObjectEventArgs<FolderM> e) {
-    if (Directory.Exists(e.Data.FullPathCache))
-      Directory.Delete(e.Data.FullPathCache, true);
+  public static void DeleteFromDisk(FolderM item) {
+    if (Directory.Exists(item.FullPathCache))
+      Directory.Delete(item.FullPathCache, true);
 
-    if (Directory.Exists(e.Data.FullPath))
-      Core.FileOperationDelete(new() { e.Data.FullPath }, true, false);
+    if (Directory.Exists(item.FullPath))
+      Core.FileOperationDelete(new() { item.FullPath }, true, false);
   }
 
   public static string GetDriveIcon(DriveType type) =>

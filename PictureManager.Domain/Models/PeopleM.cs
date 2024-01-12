@@ -22,19 +22,9 @@ public sealed class PeopleM {
 
   public PeopleM(PeopleDA da) {
     _da = da;
-    _da.ItemDeletedEvent += OnItemDeleted;
     TreeCategory = new(this, _da);
     OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
     OpenPersonDetailCommand = new(OpenPersonDetail);
-  }
-
-  private void OnItemDeleted(object sender, ObjectEventArgs<PersonM> e) {
-    Selected.Set(e.Data, false);
-    PeopleView?.Remove(e.Data);
-    PeopleToolsTabM?.Remove(e.Data);
-
-    if (ReferenceEquals(PersonDetail?.PersonM, e.Data))
-      Core.ToolsTabsM.Close(PersonDetail);
   }
 
   private void OpenPeopleToolsTab() {
