@@ -1,5 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
@@ -98,6 +99,9 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
     // table props are not needed any more
     TableProps.Clear();
   }
+
+  public List<SegmentM> Link(string csv, IDataAdapter seeker) =>
+    LinkList(csv, null, seeker);
 
   public SegmentM ItemCreate(double x, double y, int size, MediaItemM mediaItem) =>
     ItemCreate(new(GetNextId(), x, y, size) { MediaItem = mediaItem });

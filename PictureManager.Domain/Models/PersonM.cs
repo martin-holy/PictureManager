@@ -3,7 +3,6 @@ using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace PictureManager.Domain.Models;
@@ -24,7 +23,7 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
 
   public int Id { get; }
   public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
-  public ObservableCollection<object> TopSegments { get; set; }
+  public List<SegmentM> TopSegments { get; set; }
   public List<KeywordM> Keywords { get; set; }
   public IEnumerable<KeywordM> DisplayKeywords => Keywords.GetKeywords().OrderBy(x => x.FullName).ToArray();
   public bool IsUnknown { get => Bits[BitsMasks.IsUnknown]; set { Bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }

@@ -73,7 +73,7 @@ public sealed class PersonDetail : ObservableObject {
     TopSegments.Reload(
       PersonM.TopSegments == null
         ? new()
-        : PersonM.TopSegments.Cast<SegmentM>().ToList(),
+        : PersonM.TopSegments.ToList(),
       GroupMode.GroupBy, null, true, "Top");
 
   public void Update(SegmentM[] segments) {

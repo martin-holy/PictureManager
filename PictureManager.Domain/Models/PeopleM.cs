@@ -66,13 +66,13 @@ public sealed class PeopleM {
     if (segment == null) return;
 
     var collectionIsNull = person.TopSegments == null;
-    person.TopSegments = ObservableCollectionExtensions.Toggle(person.TopSegments, segment, true);
+    person.TopSegments = person.TopSegments.Toggle(segment, true);
 
     if (collectionIsNull)
       person.OnPropertyChanged(nameof(person.TopSegments));
 
     if (person.TopSegments?.Count > 0)
-      person.Segment = (SegmentM)person.TopSegments[0];
+      person.Segment = person.TopSegments[0];
 
     _da.IsModified = true;
   }
@@ -104,8 +104,7 @@ public sealed class PeopleM {
     var topSegments = people
       .Where(x => x.TopSegments != null)
       .SelectMany(x => x.TopSegments)
-      .Distinct()
-      .Cast<SegmentM>();
+      .Distinct();
 
     foreach (var segment in topSegments)
       ToggleTopSegment(person, segment);
