@@ -305,7 +305,7 @@ public sealed class Core {
       Db.MediaItems.ModifyIfContains(e.Data);
 
     Db.People.KeywordsChangedEvent += items => {
-      PeopleM.OnKeywordsChanged(items);
+      PeopleM.PersonDetail?.UpdateDisplayKeywordsIfContains(items);
       PeopleM.PeopleToolsTabM?.Update(items);
       PeopleM.PeopleView?.Update(items);
       SegmentsView?.CvPeople.Update(items);

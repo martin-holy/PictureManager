@@ -25,17 +25,12 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
   public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
   public List<SegmentM> TopSegments { get; set; }
   public List<KeywordM> Keywords { get; set; }
-  public IEnumerable<KeywordM> DisplayKeywords => Keywords.GetKeywords().OrderBy(x => x.FullName).ToArray();
+  public KeywordM[] DisplayKeywords => Keywords?.GetKeywords().OrderBy(x => x.FullName).ToArray();
   public bool IsUnknown { get => Bits[BitsMasks.IsUnknown]; set { Bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }
 
   public PersonM() { }
 
   public PersonM(int id, string name) : base(Res.IconPeople, name) {
     Id = id;
-  }
-
-  public void UpdateDisplayKeywords() {
-    OnPropertyChanged(nameof(Keywords));
-    OnPropertyChanged(nameof(DisplayKeywords));
   }
 }

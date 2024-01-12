@@ -61,9 +61,10 @@
       <!-- Keywords -->
       <DockPanel
         Grid.Row="2"
+        x:Name="dpKeywords"
         Margin="4,0,0,0"
         VerticalAlignment="Center"
-        Visibility="{Binding PersonM.Keywords, Converter={mhConv:AllToVisibilityConverter}}">
+        Visibility="Collapsed">
         
         <Path
           Style="{StaticResource MH.Styles.Icon}"
@@ -107,5 +108,11 @@
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>
 
     </Grid>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding PersonM.DisplayKeywords, Converter={mhConv:AllToBoolConverter}}" Value="True">
+        <Setter TargetName="dpKeywords" Property="Visibility" Value="Visible"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>

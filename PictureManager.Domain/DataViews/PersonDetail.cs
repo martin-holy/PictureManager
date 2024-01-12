@@ -94,4 +94,9 @@ public sealed class PersonDetail : ObservableObject {
 
     TopSegments.ReGroupItems(items, remove, remove);
   }
+
+  public void UpdateDisplayKeywordsIfContains(PersonM[] items) {
+    if (PersonM != null && items.Contains(PersonM))
+      PersonM.OnPropertyChanged(nameof(PersonM.DisplayKeywords));
+  }
 }

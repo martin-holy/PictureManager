@@ -37,11 +37,6 @@ public sealed class PeopleM {
       Core.ToolsTabsM.Close(PersonDetail);
   }
 
-  public void OnKeywordsChanged(PersonM[] items) {
-    foreach (var person in items)
-      person.UpdateDisplayKeywords();
-  }
-
   private void OpenPeopleToolsTab() {
     PeopleToolsTabM ??= new();
     PeopleToolsTabM.ReloadFrom();
