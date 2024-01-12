@@ -120,14 +120,9 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
     ?? (create ? ItemCreate(Model.TreeCategory, name) : null);
 
   public void OnSegmentPersonChanged(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
-    if (newPerson != null)
-      newPerson.Segment ??= segment;
-
+    if (newPerson != null) newPerson.Segment ??= segment;
     if (oldPerson == null) return;
-    
-    if (oldPerson.Segment == segment)
-      oldPerson.Segment = null;
-
+    if (ReferenceEquals(oldPerson.Segment, segment)) oldPerson.Segment = null;
     if (oldPerson.TopSegments?.Contains(segment) != true) return;
 
     oldPerson.TopSegments = oldPerson.TopSegments.Toggle(segment, true);
@@ -143,7 +138,7 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
     // WARNING Segments.All contains only segments from available drives!
     // When the drive is mounted, not found people will be recreated.
     foreach (var ptd in toDelete)
-      if (ptd.IsUnknown && !Core.Db.Segments.All.Any(x => ReferenceEquals(x.Person, ptd)))
+      if (ptd.IsUnknown && !_db.Segments.All.Any(x => ReferenceEquals(x.Person, ptd)))
         ItemDelete(ptd);
   }
 
