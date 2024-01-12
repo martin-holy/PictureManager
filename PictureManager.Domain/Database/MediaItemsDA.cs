@@ -218,15 +218,15 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   public void ModifyIfContains(SegmentM[] segments) =>
     Modify(segments.GetMediaItems());
 
-  public void ModifyAndTogglePerson(SegmentM[] segments) =>
+  public void RemovePerson(PersonM person) =>
+    TogglePerson(GetAll(mi => mi.People?.Contains(person) == true).ToArray(), person);
+
+  public void TogglePerson(SegmentM[] segments) =>
     ChangeMetadata(segments.GetMediaItems().ToArray(), mi => {
       if (mi.People == null) return;
       foreach (var p in mi.Segments.GetPeople().Intersect(mi.People).ToArray())
         mi.People = mi.People.Toggle(p, true);
     });
-
-  public void RemovePerson(PersonM person) =>
-    TogglePerson(GetAll(mi => mi.People?.Contains(person) == true).ToArray(), person);
 
   public void TogglePerson(MediaItemM[] items, PersonM person) =>
     ChangeMetadata(items, mi => mi.People = mi.People.Toggle(person, true));

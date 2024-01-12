@@ -302,7 +302,7 @@ public sealed class Core {
       Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
       PeopleM.PersonDetail?.Update(e.Data.Item2);
       PeopleM.PeopleView?.Update(e.Data.Item3);
-      Db.MediaItems.ModifyAndTogglePerson(e.Data.Item2);
+      Db.MediaItems.TogglePerson(e.Data.Item2);
       SegmentsM.Selected.DeselectAll();
 
       // TODO is this all correct?
