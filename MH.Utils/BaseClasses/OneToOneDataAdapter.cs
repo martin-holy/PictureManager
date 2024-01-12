@@ -9,21 +9,18 @@ public class OneToOneDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, TB>>, IR
   public TableDataAdapter<TB> DataAdapterB { get; }
   public new Dictionary<TA, TB> All { get; set; }
 
-  public OneToOneDataAdapter(string name, SimpleDB db, TableDataAdapter<TA> daA, TableDataAdapter<TB> daB) :
+  public OneToOneDataAdapter(string name, TableDataAdapter<TA> daA, TableDataAdapter<TB> daB) :
     base(name, 2) {
     DataAdapterA = daA;
     DataAdapterB = daB;
-    db.ReadyEvent += delegate { OnDbReady(); };
-  }
 
-  private void OnDbReady() {
     DataAdapterA.ItemDeletedEvent += (_, e) => {
-      if (All.TryGetValue(e.Data, out var b))
+      if (All != null && All.TryGetValue(e.Data, out var b))
         ItemDelete(new(e.Data, b));
     };
 
     DataAdapterB.ItemDeletedEvent += (_, e) => {
-      if (All.SingleOrDefault(x => ReferenceEquals(x.Value, e.Data)) is var ab)
+      if (All != null && All.SingleOrDefault(x => ReferenceEquals(x.Value, e.Data)) is var ab)
         ItemDelete(ab);
     };
   }

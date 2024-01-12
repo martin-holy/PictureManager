@@ -11,16 +11,13 @@ public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, Li
   public TableDataAdapter<TA> KeyDataAdapter { get; set; }
   //public IDataAdapter<TB>[] ValueDataAdapters { get; set; }
 
-  public OneToManyMultiDataAdapter(string name, SimpleDB db, TableDataAdapter<TA> keyDa) :
+  public OneToManyMultiDataAdapter(string name, TableDataAdapter<TA> keyDa) :
     base(name, 2) {
     KeyDataAdapter = keyDa;
     //ValueDataAdapters = daB;
-    db.ReadyEvent += delegate { OnDbReady(); };
-  }
 
-  private void OnDbReady() {
     KeyDataAdapter.ItemDeletedEvent += (_, e) => {
-      if (All.TryGetValue(e.Data, out var b))
+      if (All != null && All.TryGetValue(e.Data, out var b))
         ItemDelete(new(e.Data, b));
     };
   }
