@@ -20,6 +20,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
 
   public event EventHandler<ObjectEventArgs<MediaItemM>> ItemRenamedEvent = delegate { };
   public event DataEventHandler<MediaItemM[]> MetadataChangedEvent = delegate { };
+  public event DataEventHandler<RealMediaItemM[]> OrientationChangedEvent = delegate { };
 
   public MediaItemsDA(Db db) : base(string.Empty, 0) {
     _db = db;
@@ -287,4 +288,15 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     GetAll(mi => mi.People?.Contains(person) == true ||
                  mi.Segments?.Any(s => s.Person == person) == true)
       .OrderBy(mi => mi.FileName);
+
+  public void SetOrientation(RealMediaItemM[] items, MediaOrientation orientation, Action<RealMediaItemM, MediaOrientation> setAction) {
+    foreach (var mi in items) {
+      setAction(mi, orientation);
+      Modify(mi);
+      mi.SetThumbSize(true);
+      File.Delete(mi.FilePathCache);
+    }
+
+    OrientationChangedEvent(items);
+  }
 }
