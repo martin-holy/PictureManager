@@ -168,6 +168,15 @@ public sealed class Core {
 
     #endregion
 
+    #region GeoLocation EventHandlers
+
+    Db.GeoLocations.ItemUpdatedEvent += (_, e) => {
+      foreach (var kv in Db.MediaItemGeoLocation.All.Where(x => ReferenceEquals(x.Value, e.Data)))
+        Db.MediaItems.Modify(kv.Key);
+    };
+
+    #endregion
+
     #region GeoNamesM EventHandlers
 
     Db.GeoNames.ItemDeletedEvent += (_, e) => {
@@ -260,6 +269,13 @@ public sealed class Core {
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       }
     };
+
+    #endregion
+
+    #region MediaItemGeoLocation EventHandlers
+
+    Db.MediaItemGeoLocation.ItemDeletedEvent += (_, e) => Db.MediaItems.Modify(e.Data.Key);
+    Db.MediaItemGeoLocation.ItemCreatedEvent += (_, e) => Db.MediaItems.Modify(e.Data.Key);
 
     #endregion
 

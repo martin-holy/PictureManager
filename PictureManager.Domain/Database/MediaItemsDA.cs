@@ -33,16 +33,6 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   private void OnDbReady() {
     MaxId = _db.Images.MaxId;
 
-    _db.Segments.ItemCreatedEvent += (_, e) => {
-      Modify(e.Data.MediaItem);
-      Model.UpdateModifiedCount();
-    };
-
-    _db.Segments.ItemDeletedEvent += (_, e) => {
-      Modify(e.Data.MediaItem);
-      Model.UpdateModifiedCount();
-    };
-
     _db.Images.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
     _db.Images.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
     _db.Images.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
@@ -55,13 +45,6 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     _db.VideoImages.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
     _db.VideoImages.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
     _db.VideoImages.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
-
-    _db.MediaItemGeoLocation.ItemDeletedEvent += (_, e) => Modify(e.Data.Key);
-    _db.MediaItemGeoLocation.ItemCreatedEvent += (_, e) => Modify(e.Data.Key);
-    _db.GeoLocations.ItemUpdatedEvent += (_, e) => {
-      foreach (var kv in _db.MediaItemGeoLocation.All.Where(x => ReferenceEquals(x.Value, e.Data)))
-        Modify(kv.Key);
-    };
   }
 
   protected override void OnItemCreated(MediaItemM item) {
