@@ -1,7 +1,6 @@
 ﻿using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
@@ -80,18 +79,6 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
 
   public List<T> LinkList(string csv, Func<int, T> getNotFoundRecord, IDataAdapter seeker) =>
     IdToRecord(csv, AllDict, notFoundId => ResolveNotFoundRecord(notFoundId, getNotFoundRecord, seeker));
-
-  public static ObservableCollection<object> LinkObservableCollection<TI>(string csv, Dictionary<int, TI> source) {
-    var records = IdToRecord(csv, source, _ => default)?.Where(x => x != null);
-    if (records == null) return null;
-
-    var collection = new ObservableCollection<object>();
-
-    foreach (var item in records)
-      collection.Add(item);
-
-    return collection;
-  }
 
   public T ResolveNotFoundRecord(int notFoundId, Func<int, T> getNotFoundRecord, IDataAdapter seeker) {
     _notFoundIds ??= new();
