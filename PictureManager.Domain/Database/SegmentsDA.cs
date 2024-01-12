@@ -115,7 +115,7 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
     item.Person = null;
   }
 
-  public void OnPersonDeleted(PersonM person) {
+  public void RemovePerson(PersonM person) {
     var segments = All.Where(x => ReferenceEquals(x.Person, person)).ToArray();
     if (segments.Length == 0) return;
     foreach (var segment in segments) {
@@ -126,7 +126,7 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
     SegmentsPersonChangedEvent(this, new((null, segments, new[] { person })));
   }
 
-  public void OnKeywordDeleted(KeywordM keyword) =>
+  public void RemoveKeyword(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
   public void ToggleKeyword(SegmentM[] segments, KeywordM keyword) =>

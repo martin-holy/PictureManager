@@ -162,12 +162,12 @@ public sealed class Core {
     #region PeopleM EventHandlers
 
     Db.People.ItemRenamedEvent += (_, e) => {
-      Db.MediaItems.OnPersonRenamed(e.Data);
+      Db.MediaItems.ModifyIfContains(e.Data);
     };
 
     Db.People.ItemDeletedEvent += (_, e) => {
-      Db.MediaItems.OnPersonDeleted(e.Data);
-      Db.Segments.OnPersonDeleted(e.Data);
+      Db.MediaItems.RemovePerson(e.Data);
+      Db.Segments.RemovePerson(e.Data);
       PeopleM.PeopleView?.Remove(new[] { e.Data });
       PeopleM.PeopleToolsTabM?.Remove(new[] { e.Data });
       SegmentsView?.CvPeople.Remove(new[] { e.Data });
@@ -185,13 +185,13 @@ public sealed class Core {
     #region KeywordsM EventHandlers
 
     Db.Keywords.ItemRenamedEvent += (_, e) => {
-      Db.MediaItems.OnKeywordRenamed(e.Data);
+      Db.MediaItems.ModifyIfContains(e.Data);
     };
 
     Db.Keywords.ItemDeletedEvent += (_, e) => {
-      Db.People.OnKeywordDeleted(e.Data);
-      Db.Segments.OnKeywordDeleted(e.Data);
-      Db.MediaItems.OnKeywordDeleted(e.Data);
+      Db.People.RemoveKeyword(e.Data);
+      Db.Segments.RemoveKeyword(e.Data);
+      Db.MediaItems.RemoveKeyword(e.Data);
     };
 
     #endregion
@@ -285,7 +285,7 @@ public sealed class Core {
       Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
       PeopleM.PersonDetail?.Update(e.Data.Item2);
       PeopleM.PeopleView?.Update(e.Data.Item3);
-      Db.MediaItems.OnSegmentsPersonChanged(e.Data.Item2);
+      Db.MediaItems.ModifyAndTogglePerson(e.Data.Item2);
       SegmentsM.Selected.DeselectAll();
 
       // TODO is this all correct?
@@ -300,12 +300,11 @@ public sealed class Core {
 
     Db.Segments.KeywordsChangedEvent += items => {
       PeopleM.PersonDetail?.Update(items, true, false);
-      Db.MediaItems.OnSegmentsKeywordsChanged(items);
+      Db.MediaItems.ModifyIfContains(items);
       SegmentsView?.CvSegments.Update(items);
     };
 
     Db.Segments.ItemDeletedEvent += (_, e) => {
-      Db.MediaItems.OnSegmentDeleted(e.Data);
       Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
       PeopleM.PersonDetail?.Update(new[] { e.Data }, true, true);
       SegmentsView?.CvSegments.Remove(new[] { e.Data });
@@ -313,11 +312,11 @@ public sealed class Core {
     };
 
     Db.Segments.ItemsDeletedEvent += (_, e) => {
-      Db.MediaItems.OnSegmentsDeleted(e.Data);
+      Db.MediaItems.RemoveSegments(e.Data);
     };
 
     Db.Segments.ItemCreatedEvent += (_, e) => {
-      Db.MediaItems.OnSegmentCreated(e.Data);
+      Db.MediaItems.AddSegment(e.Data);
       SegmentsView?.CvSegments.Update(new[] { e.Data }, false);
     };
 
