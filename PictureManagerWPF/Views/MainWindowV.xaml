@@ -56,6 +56,9 @@
 
     <mhc:SlidePanelsGrid.PanelMiddle>
       <Grid>
+        <!-- Video Frame Saver -->
+        <ContentControl Content="{Binding Path=VideoFrameSaver, Source={x:Static pm:App.Core}}"/>
+
         <!-- Main Tabs -->
         <ContentPresenter
           Content="{Binding MainTabs}"
@@ -67,16 +70,6 @@
 
         <!-- Media Viewer -->
         <ContentPresenter Content="{Binding MediaViewerM}"/>
-
-        <!-- Rebuild Video Clips Thumbs -->
-        <mhc:VideoFrameSaver
-          DataContext="{Binding Source={x:Static pm:App.Core}}"
-          Width="{Binding Settings.ThumbnailSize}"
-          Height="{Binding Settings.ThumbnailSize}"
-          Size="{Binding Settings.ThumbnailSize}"
-          Quality="{Binding Settings.JpegQualityLevel}"
-          Videos="{Binding VideoClipsM.VidThumbsToRebuild}"
-          Finished="{Binding VideoClipsM.VidThumbsRebuildFinishedAction}"/>
       </Grid>
     </mhc:SlidePanelsGrid.PanelMiddle>
 

@@ -1,5 +1,5 @@
 ﻿using MH.UI.WPF.Converters;
-using MH.UI.WPF.Utils;
+using MH.UI.WPF.Extensions;
 using MH.Utils;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -27,9 +27,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiCo
           Tasks.RunOnUiThread(() => Core.Db.MediaItems.ItemDelete(segment.MediaItem));
           return null;
         }
-
-        _taskQueue.Add(segment);
-        _taskQueue.Start(CreateThumbnail, TriggerChanged);
+        CreateThumbnail(segment);
 
         return null;
       }
@@ -59,24 +57,43 @@ public sealed class SegmentThumbnailSourceConverter : BaseMarkupExtensionMultiCo
   }
 
   private static void CreateThumbnail(SegmentM segment) {
-    var filePath = segment.MediaItem is ImageM
-      ? segment.MediaItem.FilePath
-      : segment.MediaItem.FilePathCache;
+    _ignoreCache.Add(segment);
+
+    if (segment.MediaItem is ImageM) {
+      _taskQueue.Add(segment);
+      _taskQueue.Start(CreateThumbnailFromImage, TriggerChanged);
+    }
+    else
+      CreateThumbnailFromVideo(segment);
+  }
+
+  private static void CreateThumbnailFromImage(SegmentM segment) {
+    var filePath = segment.MediaItem.FilePath;
     var rect = new Int32Rect(
       (int)segment.X,
       (int)segment.Y,
       (int)segment.Size,
       (int)segment.Size);
 
-    _ignoreCache.Add(segment);
-
     try {
-      MH.UI.WPF.Utils.Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
-        ?.SaveAsJpg(80, segment.FilePathCache);
+      BitmapSourceExtensions
+        .Create(filePath, rect)
+        .Resize(SegmentsM.SegmentSize)
+        .SaveAsJpeg(segment.FilePathCache, Core.Settings.JpegQualityLevel);
     }
     catch (Exception ex) {
       _errorCache.Add(segment);
       Log.Error(ex, $"{ex.Message} ({filePath})");
+    }
+  }
+
+  private static void CreateThumbnailFromVideo(SegmentM segment) {
+    try {
+      Core.VideoThumbsM.Create(new[] { segment.MediaItem });
+    }
+    catch (Exception ex) {
+      _errorCache.Add(segment);
+      Log.Error(ex, $"{ex.Message} ({segment.MediaItem.FilePath})");
     }
   }
 

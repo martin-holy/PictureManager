@@ -1,4 +1,5 @@
 ﻿using MH.UI.WPF.Converters;
+using MH.UI.WPF.Extensions;
 using MH.Utils;
 using PictureManager.Domain;
 using PictureManager.Domain.Models.MediaItems;
@@ -70,8 +71,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMarkupExtensionMultiConv
         _taskQueue.Start(CreateImageThumbnail, TriggerChanged);
         break;
       case VideoM:
-        CreateVideoThumbnail(mi);
-        TriggerChanged(mi);
+        Core.VideoThumbsM.Create(new[] { mi });
         break;
       case VideoItemM vi:
         CreateVideoItemThumbnail(vi);
@@ -86,25 +86,17 @@ public sealed class MediaItemThumbSourceConverter : BaseMarkupExtensionMultiConv
       Core.Settings.ThumbnailSize,
       Core.Settings.JpegQualityLevel);
 
-  private static void CreateVideoThumbnail(MediaItemM mi) =>
-    Utils.Imaging.CreateThumbnail(
-      mi.FilePath,
-      mi.FilePathCache,
-      Core.Settings.ThumbnailSize,
-      0,
-      Core.Settings.JpegQualityLevel);
-
   private static void CreateVideoItemThumbnail(VideoItemM vi) {
     if (ReferenceEquals(Core.VideoDetail.MediaPlayer.CurrentItem, vi)) {
-      MH.UI.WPF.Utils.Imaging.CreateThumbnailFromVisual(
-        AppCore.CurrentMediaPlayer(),
-        vi.FilePathCache,
-        Core.Settings.ThumbnailSize,
-        Core.Settings.JpegQualityLevel);
+      AppCore.CurrentMediaPlayer()
+        .ToBitmap()
+        .Resize(Core.Settings.ThumbnailSize)
+        .SaveAsJpeg(vi.FilePathCache, Core.Settings.JpegQualityLevel);
+
       TriggerChanged(vi);
     }
     else
-      Core.VideoClipsM.RebuildVideoClipsThumbnails(new[] { (MediaItemM)vi.Video });
+      Core.VideoThumbsM.Create(new[] { (MediaItemM)vi.Video });
   }
 
   private static void TriggerChanged(MediaItemM mi) =>

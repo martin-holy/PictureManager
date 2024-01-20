@@ -52,6 +52,9 @@ public class VideoImagesDA : TableDataAdapter<VideoImageM> {
   public VideoImageM CustomItemCreate(VideoM video) =>
     ItemCreate(new(GetNextId(), video));
 
+  protected override void OnItemCreated(VideoImageM item) =>
+    item.Video.HasVideoImages = true;
+
   protected override void OnItemDeleted(VideoImageM item) {
     _db.MediaItems.OnItemDeletedCommon(item);
     item.Video.HasVideoImages = _db.VideoImages.All.Any(x => ReferenceEquals(x.Video, item.Video));

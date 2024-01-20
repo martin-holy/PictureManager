@@ -31,7 +31,6 @@ public sealed class Core {
   public static MediaItemsM MediaItemsM => Db.MediaItems.Model;
   public static PeopleM PeopleM => Db.People.Model;
   public static SegmentsM SegmentsM => Db.Segments.Model;
-  public static VideoClipsM VideoClipsM => Db.VideoClips.Model;
   public static ViewersM ViewersM => Db.Viewers.Model;
 
   public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
@@ -46,8 +45,10 @@ public sealed class Core {
   public static ToolsTabsM ToolsTabsM { get; } = new() { CanCloseTabs = true };
   public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
   public static VideoDetail VideoDetail { get; } = new();
+  public static VideoThumbsM VideoThumbsM { get; } = new();
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
+  public static IVideoFrameSaver VideoFrameSaver { get; set; }
   public static SegmentsView SegmentsView { get; set; }
 
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
