@@ -1,43 +1,14 @@
-﻿using System;
+﻿using MH.UI.WPF.Extensions;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace MH.UI.WPF.Utils;
 
 public static class Imaging {
-  public static BitmapSource GetCroppedBitmapSource(string filePath, Int32Rect rect, int size) {
-    if (rect.Width == 0 || rect.Height == 0) return null;
-    using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-    var bmp = new BitmapImage();
-    bmp.BeginInit();
-    bmp.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-    bmp.StreamSource = fileStream;
-    bmp.SourceRect = rect;
-    bmp.EndInit();
-    bmp.Freeze();
-
-    var bmpResized = bmp.Resize(size);
-    bmpResized.Freeze();
-
-    return bmpResized;
-  }
-
-  public static WriteableBitmap Resize(this BitmapSource bitmapSource, int size) {
-    var pxW = bitmapSource.PixelWidth;
-    var pxH = bitmapSource.PixelHeight;
-    var sizeW = pxW > pxH ? size : size * (pxW / (pxH / 100.0)) / 100;
-    var sizeH = pxH > pxW ? size : size * (pxH / (pxW / 100.0)) / 100;
-    var scaleX = sizeW / pxW;
-    var scaleY = sizeH / pxH;
-
-    return new(new TransformedBitmap(bitmapSource, new ScaleTransform(scaleX, scaleY, 0, 0)));
-  }
-
   public static void ResizeJpg(string src, string dest, int px, bool withMetadata, bool withThumbnail, int quality) {
     int GreatestCommonDivisor(int a, int b) {
       while (a != 0 && b != 0) {
@@ -113,70 +84,6 @@ public static class Imaging {
       destFile.LastWriteTime = date;
   }
 
-  public static void SaveAsJpg(this BitmapSource bitmapSource, int quality, string destFilePath) {
-    var encoder = new JpegBitmapEncoder { QualityLevel = quality };
-    encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
-    using Stream destFileStream = File.Open(destFilePath, FileMode.Create, FileAccess.ReadWrite);
-    encoder.Save(destFileStream);
-  }
-
-  public static BitmapSource VisualToBitmapSource(FrameworkElement visual, int scaleTo = 0) {
-    var offset = visual.TranslatePoint(new(0, 0), (UIElement)visual.Parent);
-    var ox = Math.Round(offset.X, 0);
-    var oy = Math.Round(offset.Y, 0);
-    var aw = Math.Round(visual.ActualWidth, 0);
-    var ah = Math.Round(visual.ActualHeight, 0);
-
-    var bmp = new RenderTargetBitmap((int)(aw + ox), (int)(ah + oy), 96, 96, PixelFormats.Pbgra32);
-    bmp.Render(visual);
-
-    var crop = new CroppedBitmap(bmp, new((int)ox, (int)oy, (int)aw, (int)ah));
-
-    if (scaleTo == 0) return crop;
-
-    MH.Utils.Imaging.GetThumbSize(aw, ah, scaleTo, out var tw, out var th);
-    return new TransformedBitmap(crop, new ScaleTransform(tw / aw, th / ah, 0, 0));
-  }
-
   public static byte[] GetBitmapHashPixels(string filePath, int bytes) =>
-    GetBitmapHashPixels(GetBitmapSource(filePath), bytes);
-
-  public static byte[] GetBitmapHashPixels(BitmapSource src, int bytes) {
-    var scaled = new TransformedBitmap(src, new ScaleTransform((double)bytes / src.PixelWidth, (double)bytes / src.PixelHeight));
-    var gray = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
-    var pixels = new byte[bytes * bytes];
-    gray.CopyPixels(pixels, bytes, 0);
-
-    return pixels;
-  }
-
-  public static BitmapSource GetBitmapSource(string filePath) {
-    using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-    var src = new BitmapImage();
-    src.BeginInit();
-    src.CacheOption = BitmapCacheOption.None;
-    src.StreamSource = fileStream;
-    src.EndInit();
-    return src;
-  }
-
-  public static long GetBitmapAvgHash(BitmapSource src) =>
-    MH.Utils.Imaging.GetBitmapAvgHash(GetBitmapHashPixels(src, 8));
-
-  public static long GetBitmapPerceptualHash(BitmapSource src) =>
-    MH.Utils.Imaging.GetBitmapPerceptualHash(GetBitmapHashPixels(src, 32));
-
-  public static bool CreateThumbnailFromVisual(FrameworkElement visual, string destPath, int desiredSize, int quality) {
-    try {
-      if (Path.GetDirectoryName(destPath) is not { } dir) return false;
-      Directory.CreateDirectory(dir);
-
-      SaveAsJpg(VisualToBitmapSource(visual, desiredSize), quality, destPath);
-
-      return true;
-    }
-    catch (Exception) {
-      return false;
-    }
-  }
+    BitmapSourceExtensions.Create(filePath).GetHashPixels(bytes);
 }
