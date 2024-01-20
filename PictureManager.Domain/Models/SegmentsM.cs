@@ -21,9 +21,12 @@ public sealed class SegmentsM : ObservableObject {
   public static int SegmentUiSize { get; set; }
   public static int SegmentUiFullWidth { get; set; }
 
-  public bool CanSetAsSamePerson =>
-    Selected.Items.Count(x => x.Person == null) > 1 ||
-    Selected.Items.GetPeople().Count() > 1;
+  public bool CanSetAsSamePerson {
+    get {
+      var p = Selected.Items.Select(x => x.Person).Distinct().ToArray();
+      return Selected.Items.Count > 1 && (p.Length > 1 || p[0] == null);
+    }
+  }
 
   public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
   public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
