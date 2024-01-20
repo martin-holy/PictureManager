@@ -42,7 +42,7 @@
         <MenuItem Header="Media Items">
           <MenuItem Header="Compress" Command="{Binding ImagesM.CompressCommand}"/>
           <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsViews.RebuildThumbnailsCommand}"/>
-          <MenuItem Header="Rebuild Video Clips Thumbnails" Command="{Binding VideoClipsM.RebuildVideoClipsThumbnailsCommand, Source={x:Static pm:App.Core}}"/>
+          <MenuItem Header="Rebuild Video Thumbnails" Command="{Binding MediaItemsM.RebuildVideoThumbnailsCommand}"/>
           <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="dlg:RotationDialogM.OpenCommand"/>
           <MenuItem Header="Shuffle" Command="{Binding MediaItemsViews.ShuffleCommand}"/>
           <MenuItem Header="Resize Images" Command="{Binding ImagesM.ResizeImagesCommand}"/>

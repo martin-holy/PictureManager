@@ -1,11 +1,10 @@
 ﻿using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 
 namespace PictureManager.Domain {
-    public static class Res {
+  public static class Res {
     private const string _default = "default";
 
     public const string ColorBrushWhite = "ColorBrushWhite";
@@ -77,7 +76,6 @@ namespace PictureManager.Domain {
       { typeof(GeoNameM), "TreeContextMenuGeoName" },
       { typeof(ViewersM), "TreeContextMenuViewers" },
       { typeof(ViewerM), "TreeContextMenuViewer" },
-      { typeof(VideoClipsM), "TreeContextMenuVideoClips" },
       { typeof(CategoryGroupM), "TreeContextMenuGroup" }
     };
 

@@ -33,6 +33,7 @@ public sealed class MediaItemsM : ObservableObject {
   public RelayCommand<object> CommentCommand { get; }
   public RelayCommand<object> ReloadMetadataCommand { get; }
   public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
+  public RelayCommand<object> RebuildVideoThumbnailsCommand { get; }
 
   public MediaItemsM(MediaItemsDA da) {
     _da = da;
@@ -48,6 +49,10 @@ public sealed class MediaItemsM : ObservableObject {
     ReloadMetadataInFolderCommand = new(
       x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn()).ToList()),
       x => x != null);
+
+    RebuildVideoThumbnailsCommand = new(
+      () => Core.VideoThumbsM.Create(GetActive(), true),
+      () => GetActive().Any());
   }
 
   public void OnMetadataChanged(MediaItemM[] items) {

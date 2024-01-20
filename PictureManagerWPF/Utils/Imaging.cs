@@ -1,8 +1,7 @@
-﻿using PictureManager.Domain;
+﻿using MH.UI.WPF.Extensions;
+using PictureManager.Domain;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -29,30 +28,6 @@ public static class Imaging {
     return src;
   }
 
-  public static void CreateThumbnail(string srcPath, string destPath, int size, int rotationAngle, int quality) =>
-    CreateThumbnailAsync(srcPath, destPath, size, rotationAngle, quality).GetAwaiter().GetResult();
-
-  public static Task CreateThumbnailAsync(string srcPath, string destPath, int size, int rotationAngle, int quality) {
-    var tcs = new TaskCompletionSource<bool>();
-    var process = new Process {
-      EnableRaisingEvents = true,
-      StartInfo = new() {
-        Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{quality}\" size|\"{size}\" rotationAngle|\"{rotationAngle}\"",
-        FileName = "ThumbnailCreator.exe",
-        UseShellExecute = false,
-        CreateNoWindow = true
-      }
-    };
-
-    process.Exited += (_, _) => {
-      tcs.TrySetResult(true);
-      process.Dispose();
-    };
-
-    process.Start();
-    return tcs.Task;
-  }
-
   public static void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) {
     var dir = Path.GetDirectoryName(destPath);
     if (dir == null) throw new ArgumentException($"Invalid destination path. {destPath}");
@@ -64,7 +39,7 @@ public static class Imaging {
       throw new BadImageFormatException($"Image does not have any frames. {srcPath}");
 
     var frame = decoder.Frames[0];
-    var orientation = (MediaOrientation)((ushort?)TryGetQuery((BitmapMetadata)frame.Metadata, "System.Photo.Orientation") ?? 1);
+    var orientation = (MediaOrientation)((BitmapMetadata)frame.Metadata).GetQuery<ushort>("System.Photo.Orientation", 1);
     var rotated = orientation is MediaOrientation.Rotate90 or MediaOrientation.Rotate270;
     var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
     var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
@@ -79,14 +54,5 @@ public static class Imaging {
     var encoder = new JpegBitmapEncoder { QualityLevel = quality };
     encoder.Frames.Add(BitmapFrame.Create(output, null, metadata, null));
     encoder.Save(destFileStream);
-  }
-
-  public static object TryGetQuery(BitmapMetadata bm, string query) {
-    try {
-      return bm.GetQuery(query);
-    }
-    catch (Exception) {
-      return null;
-    }
   }
 }

@@ -29,6 +29,7 @@ public sealed class AppCore : ObservableObject {
     Core.VideoDetail.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
     Core.UiFullVideo = new MediaPlayer();
     Core.UiDetailVideo = new MediaPlayer();
+    Core.VideoFrameSaver = new VideoFrameSaver();
   }
 
   private static double GetDisplayScale() =>
