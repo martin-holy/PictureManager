@@ -66,7 +66,7 @@ namespace PictureManager.Domain {
     public static readonly Dictionary<object, object> TypeToTreeContextMenuDic = new() {
       { typeof(DriveM), "TreeContextMenuDrive" },
       { typeof(FolderM), "TreeContextMenuFolder" },
-      { typeof(FavoriteFoldersTreeCategory), "TreeContextMenuFavoriteFolder" },
+      { typeof(FavoriteFolderM), "TreeContextMenuFavoriteFolder" },
       { typeof(PeopleTreeCategory), "TreeContextMenuPeople" },
       { typeof(PersonM), "TreeContextMenuPerson" },
       { typeof(FolderKeywordsTreeCategory), "TreeContextMenuFolderKeywords" },
