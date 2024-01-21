@@ -32,7 +32,7 @@
                   Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
                   Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
                   <Image.Source>
-                    <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
+                    <MultiBinding Converter="{x:Static pmConv:SegmentThumbnailSourceConverter.Inst}">
                       <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True"/>
                       <Binding Path="(m:PersonM.Segment)"/>
                     </MultiBinding>
