@@ -322,4 +322,13 @@ public static class Tree {
 
     return list;
   }
+
+  public static IEnumerable<string> ToStrings<T>(this IEnumerable<T> items, Func<T, string> nameSelector)
+    where T : class, ITreeItem =>
+    items
+      .EmptyIfNull()
+      .SelectMany(x => x.GetThisAndParents())
+      .Distinct()
+      .OrderBy(x => x.GetFullName(".", nameSelector))
+      .Select(nameSelector);
 }
