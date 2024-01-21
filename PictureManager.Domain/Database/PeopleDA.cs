@@ -58,7 +58,8 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
 
     foreach (var (person, csv) in AllCsv) {
       // Persons top segments
-      person.TopSegments = _db.Segments.Link(csv[2], this);
+      var ts = _db.Segments.Link(csv[2], this);
+      if (ts != null) person.TopSegments = new(ts);
       if (person.TopSegments != null)
         person.Segment = person.TopSegments[0];
 
@@ -124,8 +125,7 @@ public class PeopleDA : TreeDataAdapter<PersonM> {
     if (oldPerson == null) return;
     if (ReferenceEquals(oldPerson.Segment, segment)) oldPerson.Segment = null;
     if (oldPerson.TopSegments?.Contains(segment) != true) return;
-
-    oldPerson.TopSegments = oldPerson.TopSegments.Toggle(segment, true);
+    oldPerson.ToggleTopSegment(segment);
     IsModified = true;
   }
 
