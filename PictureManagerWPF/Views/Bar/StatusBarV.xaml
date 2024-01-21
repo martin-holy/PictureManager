@@ -203,7 +203,7 @@
           <StackPanel>
             <Path Data="{StaticResource IconPeople}" Fill="{StaticResource ColorBrushPeople}"/>
 
-            <ItemsControl ItemsSource="{Binding MediaItemsM.Current.InfoBoxPeople}">
+            <ItemsControl ItemsSource="{Binding MediaItemsM.Current.DisplayPeople}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <WrapPanel Orientation="Horizontal"/>
@@ -236,7 +236,7 @@
 
           <StackPanel>
             <Path Data="{StaticResource IconTag}" Fill="{StaticResource ColorBrushTag}"/>
-            <ItemsControl ItemsSource="{Binding MediaItemsM.Current.InfoBoxKeywords}"/>
+            <ItemsControl ItemsSource="{Binding MediaItemsM.Current.DisplayKeywords}"/>
           </StackPanel>
         </Border>
 
@@ -271,14 +271,14 @@
         <Setter TargetName="boGeoName" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding MediaItemsM.Current.InfoBoxPeople, Converter={mhConv:AllToBoolConverter}}" Value="True">
+      <DataTrigger Binding="{Binding MediaItemsM.Current.DisplayPeople, Converter={mhConv:AllToBoolConverter}}" Value="True">
         <Setter TargetName="boPeople" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding MediaViewerM.IsVisible}" Value="True"/>
-          <Condition Binding="{Binding MediaItemsM.Current.InfoBoxKeywords, Converter={mhConv:AllToBoolConverter}}" Value="True"/>
+          <Condition Binding="{Binding MediaItemsM.Current.DisplayKeywords, Converter={mhConv:AllToBoolConverter}}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="boKeywords" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
