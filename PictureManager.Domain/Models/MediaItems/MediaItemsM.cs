@@ -57,8 +57,11 @@ public sealed class MediaItemsM : ObservableObject {
 
   public void OnMetadataChanged(MediaItemM[] items) {
     UpdateModifiedCount();
-    foreach (var mi in items.Where(x => x.InfoBoxThumb != null))
-      mi.SetInfoBox();
+    foreach (var mi in items) {
+      mi.OnPropertyChanged(nameof(mi.DisplayKeywords));
+      mi.OnPropertyChanged(nameof(mi.DisplayPeople));
+      if (mi.InfoBoxThumb != null) mi.SetInfoBox();
+    }
   }
 
   public void UpdateItemsCount() => OnPropertyChanged(nameof(ItemsCount));

@@ -1,10 +1,11 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataViews;
+using PictureManager.Domain.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace PictureManager.Domain.Models.MediaItems;
@@ -42,9 +43,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
 
   public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
 
-  public ObservableCollection<string> InfoBoxThumb { get; set; }
-  public ObservableCollection<PersonM> InfoBoxPeople { get; set; }
-  public ObservableCollection<string> InfoBoxKeywords { get; set; }
+  public ExtObservableCollection<string> InfoBoxThumb { get; set; }
 
   public int RotationAngle =>
     (MediaOrientation)Orientation switch {
@@ -54,16 +53,17 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
       _ => 0,
     };
 
+  public PersonM[] DisplayPeople =>
+    this.GetPeople().OrderBy(x => x.Name).ToArray().NullIfEmpty();
+
+  public string[] DisplayKeywords =>
+    Keywords?.ToStrings(x => x.Name).ToArray();
+
   protected MediaItemM(int id) {
     Id = id;
   }
 
-  // TODO update just when needed
   public void SetInfoBox() {
-    InfoBoxPeople?.Clear();
-    InfoBoxPeople = null;
-    InfoBoxKeywords?.Clear();
-    InfoBoxKeywords = null;
     InfoBoxThumb?.Clear();
     InfoBoxThumb = new();
 
@@ -77,48 +77,16 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     if (g != null)
       InfoBoxThumb.Add(g.Name);
 
-    if (People != null || Segments != null) {
-      var people = (
-          People == null
-            ? Array.Empty<PersonM>()
-            : People.ToArray())
-        .Concat(
-          Segments == null
-            ? Array.Empty<PersonM>()
-            : Segments
-              .Where(x => x.Person != null)
-              .Select(x => x.Person))
-        .ToArray();
+    if (People != null || Segments != null)
+      InfoBoxThumb.AddItems(this.GetPeople().Select(x => x.Name).OrderBy(x => x).ToArray(), null);
 
-      if (people.Any()) {
-        InfoBoxPeople = new();
-
-        foreach (var p in people.Distinct().OrderBy(x => x.Name)) {
-          InfoBoxPeople.Add(p);
-          InfoBoxThumb.Add(p.Name);
-        }
-      }
-    }
-
-    if (Keywords != null) {
-      InfoBoxKeywords = new();
-      var keywords = Keywords
-        .SelectMany(x => x.GetThisAndParents())
-        .Distinct()
-        .OrderBy(x => x.FullName);
-
-      foreach (var keyword in keywords) {
-        InfoBoxKeywords.Add(keyword.Name);
-        InfoBoxThumb.Add(keyword.Name);
-      }
-    }
+    if (Keywords != null)
+      InfoBoxThumb.AddItems(DisplayKeywords, null);
 
     if (InfoBoxThumb.Count == 0)
       InfoBoxThumb = null;
 
     OnPropertyChanged(nameof(InfoBoxThumb));
-    OnPropertyChanged(nameof(InfoBoxPeople));
-    OnPropertyChanged(nameof(InfoBoxKeywords));
   }
 
   public void SetThumbSize(bool reload = false) {
