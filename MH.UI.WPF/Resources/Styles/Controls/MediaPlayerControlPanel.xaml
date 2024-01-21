@@ -253,7 +253,7 @@
         <Setter
           TargetName="tbTimeStart"
           Property="Text"
-          Value="{Binding Path=CurrentItem.(uii:IVideoImage.TimeStart),
+          Value="{Binding Path=CurrentItem.TimeStart,
                   Converter={conv:TimeFormatConverter},
                   ConverterParameter=position}"/>
         <Setter TargetName="tbTimeStart" Property="IsEnabled" Value="True"/>
