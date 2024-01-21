@@ -36,7 +36,7 @@
       <!-- Thumbnail Image -->
       <Image Stretch="Fill">
         <Image.Source>
-          <MultiBinding Converter="{pmConv:MediaItemThumbSourceConverter}">
+          <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
             <Binding Path="FilePathCache" IsAsync="True"/>
             <Binding/>
           </MultiBinding>
