@@ -19,11 +19,7 @@ public class VideoThumbsM {
     }
 
     var vids = items.OfType<VideoM>().Concat(items.OfType<VideoItemM>().Select(x => x.Video)).Distinct().ToArray();
-    var setClips = vids.Where(x => x.HasVideoClips).ToHashSet();
-    var setImages = vids.Where(x => x.HasVideoImages).ToHashSet();
-    var vidsClips = Core.Db.VideoClips.All.Where(x => setClips.Contains(x.Video));
-    var vidsImages = Core.Db.VideoImages.All.Where(x => setImages.Contains(x.Video));
-    var vidsItems = vidsClips.Cast<VideoItemM>().Concat(vidsImages).GroupBy(x => x.Video);
+    var vidsItems = Core.Db.MediaItems.GetVideoItems(items).GroupBy(x => x.Video);
     var dic = new Dictionary<VideoM, VfsVideo>();
 
     foreach (var vid in vids) {

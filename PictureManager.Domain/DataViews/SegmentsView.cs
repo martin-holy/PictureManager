@@ -4,6 +4,8 @@ using MH.Utils.Dialogs;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
@@ -33,10 +35,14 @@ public sealed class SegmentsView {
   public static IEnumerable<SegmentM> GetSegments(int mode) {
     switch (mode) {
       case 1:
-        return (Core.MediaViewerM.IsVisible
-                 ? Core.MediaViewerM.Current?.GetSegments()
-                 : Core.MediaItemsViews.Current?.GetSelectedOrAll().GetSegments())
-               ?? Enumerable.Empty<SegmentM>();
+        var items = Core.MediaViewerM.IsVisible
+          ? Core.MediaViewerM.Current != null
+            ? new[] { Core.MediaViewerM.Current }
+            : Array.Empty<MediaItemM>()
+          : Core.MediaItemsViews.Current?.GetSelectedOrAll().ToArray()
+            ?? Array.Empty<MediaItemM>();
+
+        return items.Concat(Core.Db.MediaItems.GetVideoItems(items)).GetSegments();
       case 2:
         var people = Core.PeopleM.Selected.Items.ToHashSet();
 
