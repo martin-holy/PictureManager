@@ -2,4 +2,6 @@
 
 namespace MH.UI.Interfaces;
 
-public interface IVideoItem : ISelectable { }
+public interface IVideoItem : ISelectable {
+  public int TimeStart { get; set; }
+}

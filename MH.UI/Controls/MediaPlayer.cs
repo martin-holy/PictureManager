@@ -182,8 +182,8 @@ public sealed class MediaPlayer : ObservableObject {
 
     SetPlayTypeCommand = new(x => PlayType = x);
     SeekToPositionCommand = new(x => TimelinePosition = x);
-    SeekToCommand = new(SeekTo, start => CurrentItem is IVideoClip || (start && CurrentItem is IVideoImage));
-    SetMarkerCommand = new(SetMarker, start => CurrentItem is IVideoClip || (start && CurrentItem is IVideoImage));
+    SeekToCommand = new(SeekTo, start => CurrentItem != null && (start || CurrentItem is IVideoClip));
+    SetMarkerCommand = new(SetMarker, start => CurrentItem != null && (start || CurrentItem is IVideoClip));
     SetNewClipCommand = new(SetNewClip, () => !string.IsNullOrEmpty(Source));
     SetNewImageCommand = new(SetNewImage, () => !string.IsNullOrEmpty(Source));
     DeleteItemCommand = new(ItemDelete, () => CurrentItem != null);
@@ -294,12 +294,15 @@ public sealed class MediaPlayer : ObservableObject {
   }
 
   public void SetCurrent(IVideoItem item) {
+    CurrentItem = item;
+    if (item == null) return;
+
     switch (item) {
       case IVideoClip vc: SetCurrentVideoClip(vc); break;
       case IVideoImage: SetCurrentVideoImage(); break;
     }
 
-    CurrentItem = item;
+    SeekTo(true);
   }
 
   private void SetCurrentVideoImage() {
@@ -327,12 +330,8 @@ public sealed class MediaPlayer : ObservableObject {
       StartClipTimer();
   }
 
-  private void SeekTo(bool start) {
-    switch (CurrentItem) {
-      case IVideoClip vc: TimelinePosition = start ? vc.TimeStart : vc.TimeEnd; break;
-      case IVideoImage vi: TimelinePosition = vi.TimeStart; break;
-    }
-  }
+  private void SeekTo(bool start) =>
+    TimelinePosition = start ? CurrentItem.TimeStart : ((IVideoClip)CurrentItem).TimeEnd;
 
   private void SetMarker(bool start) {
     switch (CurrentItem) {
