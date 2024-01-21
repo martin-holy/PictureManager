@@ -152,7 +152,6 @@ public sealed class Core {
           MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
           break;
         case nameof(MediaViewerM.Current):
-          SegmentsM.SegmentsRectsM.MediaItem = MediaViewerM.Current;
           MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.FileSize));
 
           if (MediaViewerM.Current != null && MediaItemsM.Current != MediaViewerM.Current)
@@ -295,8 +294,10 @@ public sealed class Core {
         MediaItemsStatusBarM.Update();
         VideoDetail.SetCurrent(MediaItemsM.Current);
 
-        if (MainWindowM.IsInViewMode)
+        if (MainWindowM.IsInViewMode) {
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+          SegmentsM.SegmentsRectsM.MediaItem = MediaItemsM.Current;
+        }
       }
     };
 
