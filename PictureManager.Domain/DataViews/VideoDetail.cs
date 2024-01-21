@@ -60,35 +60,26 @@ public sealed class VideoDetail {
     CurrentVideoItems.Reload(items, GroupMode.ThenByRecursive, groupByItems, true);
   }
 
-  private IVideoClip GetNewClip() {
-    var item = Core.Db.VideoClips.CustomItemCreate(Current);
-    CurrentVideoItems.Selected.Select(item);
-    return item;
-  }
+  private IVideoClip GetNewClip() =>
+    Core.Db.VideoClips.CustomItemCreate(Current);
 
-  private IVideoImage GetNewImage() {
-    var item = Core.Db.VideoImages.CustomItemCreate(Current);
-    CurrentVideoItems.Selected.Select(item);
-    return item;
-  }
+  private IVideoImage GetNewImage() =>
+    Core.Db.VideoImages.CustomItemCreate(Current);
 
   private void OnItemDelete() {
     if (Core.MediaItemsM.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
       MediaPlayer.SetCurrent(null);
   }
 
+  // TODO do select of new item here
   private void OnMarkerSet(object sender, ObjectEventArgs<Tuple<IVideoItem, bool>> e) {
-    switch (e.Data.Item1) {
-      case VideoClipM:
-        Core.Db.VideoClips.IsModified = true;
-        if (!e.Data.Item2) return; // if !start
-        break;
-      case VideoImageM:
-        Core.Db.VideoImages.IsModified = true;
-        break;
-    }
-
     var item = (VideoItemM)e.Data.Item1;
+    Core.Db.MediaItems.Modify(item);
+
+    if (!ReferenceEquals(item, CurrentVideoItems.Selected.Items.FirstOrDefault()))
+      CurrentVideoItems.Selected.Select(item);
+
+    if (item is VideoClipM && !e.Data.Item2) return; // if !start
     CurrentVideoItems.ReGroupItems(new[] { item }, false);
     // TODO mi rewrite ScrollTo
     File.Delete(item.FilePathCache);

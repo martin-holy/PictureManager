@@ -27,8 +27,6 @@ public class CollectionViewVideoItems : CollectionView<VideoItemM> {
   public override int SortCompare(VideoItemM itemA, VideoItemM itemB) =>
     itemA.TimeStart - itemB.TimeStart;
 
-  public override void OnItemSelected(SelectionEventArgs<VideoItemM> e) {
+  public override void OnItemSelected(SelectionEventArgs<VideoItemM> e) =>
     Selected.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
-    Core.VideoDetail.MediaPlayer.SetCurrent(Selected.Items.FirstOrDefault());
-  }
 }

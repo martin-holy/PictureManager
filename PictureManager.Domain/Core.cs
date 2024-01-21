@@ -139,6 +139,12 @@ public sealed class Core {
       MediaViewerM.OnPlayerRepeatEnded();
     };
 
+    VideoDetail.CurrentVideoItems.Selected.ItemsChangedEventHandler += (_, e) => {
+      var vi = e.Data.FirstOrDefault();
+      MediaItemsM.Current = (MediaItemM)vi ?? VideoDetail.Current;
+      VideoDetail.MediaPlayer.SetCurrent(vi);
+    };
+
     MediaViewerM.PropertyChanged += (_, e) => {
       switch (e.PropertyName) {
         case nameof(MediaViewerM.IsVisible):
