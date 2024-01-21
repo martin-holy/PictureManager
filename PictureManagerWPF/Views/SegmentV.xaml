@@ -115,7 +115,7 @@
 
       <Image Stretch="Fill">
         <Image.Source>
-          <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
+          <MultiBinding Converter="{x:Static pmConv:SegmentThumbnailSourceConverter.Inst}">
             <Binding Path="FilePathCache" IsAsync="True"/>
             <Binding/>
           </MultiBinding>
