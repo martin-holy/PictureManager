@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Utils;
 using System;
@@ -23,7 +24,7 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
 
   public int Id { get; }
   public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
-  public List<SegmentM> TopSegments { get; set; }
+  public ExtObservableCollection<SegmentM> TopSegments { get; set; }
   public List<KeywordM> Keywords { get; set; }
   public KeywordM[] DisplayKeywords => Keywords?.GetKeywords().OrderBy(x => x.FullName).ToArray();
   public bool IsUnknown { get => Bits[BitsMasks.IsUnknown]; set { Bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }
@@ -32,5 +33,11 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
 
   public PersonM(int id, string name) : base(Res.IconPeople, name) {
     Id = id;
+  }
+
+  public void ToggleTopSegment(SegmentM segment) {
+    var flag = TopSegments == null;
+    TopSegments = TopSegments.Toggle(segment, true);
+    if (flag) OnPropertyChanged(nameof(TopSegments));
   }
 }

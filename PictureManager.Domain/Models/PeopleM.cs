@@ -50,11 +50,7 @@ public sealed class PeopleM {
   public void ToggleTopSegment(PersonM person, SegmentM segment) {
     if (segment == null) return;
 
-    var collectionIsNull = person.TopSegments == null;
-    person.TopSegments = person.TopSegments.Toggle(segment, true);
-
-    if (collectionIsNull)
-      person.OnPropertyChanged(nameof(person.TopSegments));
+    person.ToggleTopSegment(segment);
 
     if (person.TopSegments?.Count > 0)
       person.Segment = person.TopSegments[0];
