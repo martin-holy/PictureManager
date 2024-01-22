@@ -24,9 +24,9 @@
           <Path
             Style="{StaticResource MH.Styles.Icon}"
             Data="{Binding Icon,
-                   Converter={mhConv:ResourceConverter}}"
+                   Converter={x:Static mhConv:ResourceConverter.Inst}}"
             Fill="{Binding Icon,
-                   Converter={mhConv:ResourceConverter},
+                   Converter={x:Static mhConv:ResourceConverter.Inst},
                    ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
 
           <TextBlock

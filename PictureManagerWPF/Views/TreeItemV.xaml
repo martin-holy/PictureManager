@@ -26,7 +26,7 @@
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
           <b:ChangePropertyAction
             PropertyName="ContextMenu"
-            Value="{Binding Converter={mhConv:ResourceConverter},
+            Value="{Binding Converter={x:Static mhConv:ResourceConverter.Inst},
                     ConverterParameter={x:Static pmd:Res.TypeToTreeContextMenuDic}}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
@@ -35,8 +35,8 @@
         x:Name="icon"
         Grid.Column="0"
         Style="{StaticResource MH.Styles.Icon}"
-        Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
-        Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
+        Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
+        Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
                ConverterParameter={x:Static pmd:Res.IconToBrushDic}}"/>
       
       <TextBlock
@@ -55,7 +55,7 @@
     <HierarchicalDataTemplate.Triggers>
       <!-- ITreeCategory -->
       <DataTrigger
-        Binding="{Binding Converter={mhConv:DataTypeConverter},
+        Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type mhuiint:ITreeCategory}}"
         Value="True">
         <Setter TargetName="grid" Property="Height" Value="40"/>
@@ -68,7 +68,7 @@
 
       <!-- FavoriteFolderM ToolTip -->
       <DataTrigger
-        Binding="{Binding Converter={mhConv:DataTypeConverter},
+        Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type m:FavoriteFolderM}}"
         Value="True">
         <Setter
@@ -80,11 +80,11 @@
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition
-            Binding="{Binding Converter={mhConv:DataTypeConverter},
+            Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
                       ConverterParameter={x:Type m:PersonM}}"
             Value="True"/>
           <Condition
-            Binding="{Binding Path=(m:PersonM.Segment), Converter={mhConv:AllToBoolConverter}}"
+            Binding="{Binding Path=(m:PersonM.Segment), Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
             Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter Property="ToolTip">

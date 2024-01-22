@@ -88,7 +88,7 @@
                 BorderThickness="1"
                 BorderBrush="Black"
                 Background="#88000000"
-                Visibility="{Binding Person, Converter={mhConv:AllToVisibilityConverter}}">
+                Visibility="{Binding Person, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
                 <TextBlock
                   FontSize="18"
@@ -98,7 +98,7 @@
 
               <ItemsControl
                 ItemsSource="{Binding Person.TopSegments}"
-                Visibility="{Binding Person.TopSegments, Converter={mhConv:AllToVisibilityConverter}}"
+                Visibility="{Binding Person.TopSegments, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
                 ItemTemplate="{StaticResource PM.Views.SegmentLiteV}">
 
                 <ItemsControl.ItemsPanel>
@@ -194,7 +194,7 @@
           <Condition
              Binding="{Binding SegmentsM.CanSetAsSamePerson,
                        Source={x:Static pm:App.Core},
-                       Converter={mhConv:AllToBoolConverter}}"
+                       Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
              Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="samePersonBtn" Property="Visibility" Value="Visible"/>

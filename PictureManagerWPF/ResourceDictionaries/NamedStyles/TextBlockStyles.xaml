@@ -46,7 +46,7 @@
 
     <Setter Property="Text">
       <Setter.Value>
-        <MultiBinding Converter="{pmConv:MarkedTagsItemsCountConverter}">
+        <MultiBinding Converter="{x:Static pmConv:MarkedTagsItemsCountConverter.Inst}">
           <Binding
             Path="TreeViewCategoriesM.MarkedTags"
             Source="{x:Static pm:App.Core}" />
@@ -58,7 +58,7 @@
     <Style.Triggers>
       <DataTrigger
         Binding="{Binding Text,
-                  Converter={mhConv:AllToBoolConverter},
+                  Converter={x:Static mhConv:AllToBoolConverter.Inst},
                   RelativeSource={RelativeSource Self}}"
         Value="False">
         <Setter

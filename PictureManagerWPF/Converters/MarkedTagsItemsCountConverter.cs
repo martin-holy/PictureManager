@@ -3,9 +3,13 @@ using System.Collections.Generic;
 
 namespace PictureManager.Converters; 
 
-public class MarkedTagsItemsCountConverter : BaseMarkupExtensionMultiConverter {
+public class MarkedTagsItemsCountConverter : BaseMultiConverter {
+  private static readonly object _lock = new();
+  private static MarkedTagsItemsCountConverter _inst;
+  public static MarkedTagsItemsCountConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
+
   public override object Convert(object[] values, object parameter) =>
-    values?.Length == 2 && values[0] is Dictionary<object, int> tags
+    values is [Dictionary<object, int> tags, _]
       ? tags.ContainsKey(values[1])
         ? tags[values[1]].ToString()
         : string.Empty

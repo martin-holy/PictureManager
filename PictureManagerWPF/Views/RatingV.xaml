@@ -20,11 +20,11 @@
         </Style>
       </Grid.Resources>
 
-      <Path Grid.Column="0" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=0}"/>
-      <Path Grid.Column="1" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=1}"/>
-      <Path Grid.Column="2" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=2}"/>
-      <Path Grid.Column="3" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=3}"/>
-      <Path Grid.Column="4" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=4}"/>
+      <Path Grid.Column="0" Fill="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=0}"/>
+      <Path Grid.Column="1" Fill="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=1}"/>
+      <Path Grid.Column="2" Fill="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=2}"/>
+      <Path Grid.Column="3" Fill="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=3}"/>
+      <Path Grid.Column="4" Fill="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=4}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

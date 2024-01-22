@@ -86,7 +86,7 @@
         Margin="5"
         IsIndeterminate="True"
         Visibility="{Binding IsBusy,
-                     Converter={mhConv:AllToVisibilityConverter},
+                     Converter={x:Static mhConv:AllToVisibilityConverter.Inst},
                      ConverterParameter={StaticResource True}}"/>
     </Grid>
   </DataTemplate>

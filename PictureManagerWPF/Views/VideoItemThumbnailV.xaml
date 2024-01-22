@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:mim="clr-namespace:PictureManager.Domain.Models.MediaItems;assembly=PictureManager.Domain"
-  xmlns:wpfConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type mim:VideoItemM}">
     <Grid x:Name="root" Background="Transparent">
@@ -25,18 +25,18 @@
     <DataTemplate.Triggers>
       <DataTrigger
         Binding="{Binding 
-                  Converter={wpfConv:DataTypeConverter},
+                  Converter={x:Static mhConv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type mim:VideoClipM}}" Value="True">
         <Setter
           TargetName="tbDuration"
           Property="Text"
           Value="{Binding Path=(mim:VideoClipM.Duration),
-                  Converter={wpfConv:TimeFormatConverter},
+                  Converter={x:Static mhConv:TimeFormatConverter.Inst},
                   ConverterParameter=duration}"/>
         <Setter TargetName="tbDuration" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding Comment, Converter={wpfConv:AllToBoolConverter}}" Value="True">
+      <DataTrigger Binding="{Binding Comment, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
         <Setter TargetName="root" Property="ToolTip" Value="{Binding Comment}"/>
       </DataTrigger>
     </DataTemplate.Triggers>

@@ -21,7 +21,7 @@
     <DataTemplate.Triggers>
       <DataTrigger
         Binding="{Binding Path=(m:PersonM.Segment),
-                  Converter={mhConv:AllToBoolConverter}}"
+                  Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
         Value="True">
         <Setter Property="ToolTip">
           <Setter.Value>

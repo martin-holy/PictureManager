@@ -108,7 +108,7 @@
             Command="{Binding MainWindowM.OpenLogCommand}"
             Height="24"
             Margin="2 0 2 0"
-            Visibility="{Binding Path=(mhu:Log.Items).Count, Converter={mhConv:AllToVisibilityConverter}}">
+            Visibility="{Binding Path=(mhu:Log.Items).Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
             <TextBlock Text="{Binding Path=(mhu:Log.Items).Count, StringFormat='Log {0}'}"/>
           </Button>
@@ -161,7 +161,7 @@
             VerticalAlignment="Center"
             Orientation="Horizontal"
             DataContext="{Binding MediaViewerM.PresentationPanel}"
-            Visibility="{Binding MediaViewerM.IsVisible, Source={x:Static pm:App.Core}, Converter={mhConv:AllToVisibilityConverter}}">
+            Visibility="{Binding MediaViewerM.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
             <Separator/>
             
@@ -206,7 +206,7 @@
                 <Style.Triggers>
                   <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                      <Condition Binding="{Binding MediaItemsViews.Current, Converter={mhConv:AllToBoolConverter}}" Value="True"/>
+                      <Condition Binding="{Binding MediaItemsViews.Current, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
                       <Condition Binding="{Binding MainWindowM.IsInViewMode}" Value="False"/>
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Visibility" Value="Visible"/>

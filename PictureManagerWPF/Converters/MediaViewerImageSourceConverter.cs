@@ -6,7 +6,11 @@ using System;
 
 namespace PictureManager.Converters;
 
-public class MediaViewerImageSourceConverter : BaseMarkupExtensionConverter {
+public class MediaViewerImageSourceConverter : BaseConverter {
+  private static readonly object _lock = new();
+  private static MediaViewerImageSourceConverter _inst;
+  public static MediaViewerImageSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
+
   public override object Convert(object value, object parameter) {
     try {
       return value is ImageM mi

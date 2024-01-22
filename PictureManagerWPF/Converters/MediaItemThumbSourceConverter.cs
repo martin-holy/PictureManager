@@ -12,8 +12,8 @@ using System.Windows.Media.Imaging;
 namespace PictureManager.Converters;
 
 public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSourceConverter<MediaItemM> {
-  private static MediaItemThumbSourceConverter _inst;
   private static readonly object _lock = new();
+  private static MediaItemThumbSourceConverter _inst;
   public static MediaItemThumbSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   private static readonly TaskQueue<MediaItemM> _taskQueue = new();

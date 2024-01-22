@@ -21,7 +21,7 @@
       <Grid.ColumnDefinitions>
         <ColumnDefinition
           Width="{Binding Source={x:Static pmdM:SegmentsM.SegmentUiFullWidth},
-                  Converter={pmConv:SegmentsViewWidthConverter},
+                  Converter={x:Static pmConv:SegmentsViewWidthConverter.Inst},
                   ConverterParameter=3,
                   FallbackValue=280}"/>
         <ColumnDefinition Width="3"/>

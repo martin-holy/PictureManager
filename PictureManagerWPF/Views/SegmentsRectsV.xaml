@@ -14,7 +14,7 @@
     <ItemsControl
       ItemsSource="{Binding SegmentsRectsM.MediaItemSegmentsRects}"
       Visibility="{Binding SegmentsRectsM.AreVisible,
-                   Converter={mhConv:AllToVisibilityConverter}}">
+                   Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>

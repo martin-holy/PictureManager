@@ -76,7 +76,7 @@
     <DataTemplate.Triggers>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
-          <MultiBinding Converter="{mhConv:EqualityConverter}">
+          <MultiBinding Converter="{x:Static mhConv:EqualityConverter.Inst}">
             <Binding Path="ActualWidth" ElementName="border"/>
             <Binding Source="{StaticResource SignLessThan}"/>
             <Binding Source="{StaticResource ThumbnailInfoMinSize}"/>
@@ -88,7 +88,7 @@
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition
-            Binding="{Binding Converter={mhConv:DataTypeConverter},
+            Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
                       ConverterParameter={x:Type mim:VideoM}}"
             Value="True"/>
           <Condition Binding="{Binding Path=(mim:VideoM.HasVideoClips)}" Value="True"/>
@@ -97,7 +97,7 @@
       </MultiDataTrigger>
       
       <DataTrigger
-        Binding="{Binding Converter={mhConv:DataTypeConverter},
+        Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type mim:VideoM}}"
         Value="True">
         <Setter TargetName="vidOverlayer" Property="Visibility" Value="Visible"/>
