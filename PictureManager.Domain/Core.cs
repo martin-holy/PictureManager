@@ -351,12 +351,11 @@ public sealed class Core {
       PeopleM.PeopleView?.Update(e.Data.Item3);
       SegmentsM.Selected.DeselectAll();
 
-      // TODO is this all correct?
       if (SegmentsView != null) {
-        SegmentsView.CvSegments.Update(e.Data.Item2);
+        SegmentsView.CvSegments.Update(e.Data.Item2, false);
         var pIn = e.Data.Item2.GetPeople().ToArray();
         var pOut = e.Data.Item3.Except(pIn).ToArray();
-        SegmentsView.CvPeople.Update(pIn);
+        SegmentsView.CvPeople.Update(pIn, false);
         SegmentsView.CvPeople.Remove(pOut);
       }
     };
