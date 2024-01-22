@@ -117,36 +117,37 @@ public sealed class SegmentsM : ObservableObject {
   }
 
   public void ViewMediaItemsWithSegment(object source, SegmentM segment) {
-    var items = GetMediaItemsWithSegment(source, segment);
-    if (items == null) return;
+    var items = GetMediaItemsWithSegment(source, segment).ToArray();
+    var rmis = items.OfType<RealMediaItemM>()
+      .Concat(items.OfType<VideoItemM>().Select(x => x.Video))
+      .Distinct().Cast<MediaItemM>().ToList();
 
-    Core.MediaViewerM.SetMediaItems(items, segment.MediaItem);
+    if (rmis.Count == 0) return;
+    var current = segment.MediaItem is VideoItemM vi ? vi.Video : segment.MediaItem;
+    Core.MediaViewerM.SetMediaItems(rmis, current);
     Core.MainWindowM.IsInViewMode = true;
   }
 
-  private List<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM segment) {
-    if (segment == null) return null;
+  private IEnumerable<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM segment) {
+    if (segment == null) return Enumerable.Empty<MediaItemM>();
 
     if (Core.SegmentsView != null && ReferenceEquals(Core.SegmentsView.CvSegments, source))
       return ((CollectionViewGroup<SegmentM>)Core.SegmentsView.CvSegments.LastSelectedRow.Parent).Source
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
-        .ThenBy(x => x.FileName)
-        .ToList();
+        .ThenBy(x => x.FileName);
 
     if (segment.Person != null)
       return DataAdapter.All.Where(x => x.Person == segment.Person)
         .GetMediaItems()
-        .OrderBy(x => x.FileName)
-        .ToList();
+        .OrderBy(x => x.FileName);
 
     if (ReferenceEquals(SegmentsDrawerM, source))
       return SegmentsDrawerM.Items
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
-        .ThenBy(x => x.FileName)
-        .ToList();
+        .ThenBy(x => x.FileName);
 
-    return new() { segment.MediaItem };
+    return new[] { segment.MediaItem };
   }
 }
