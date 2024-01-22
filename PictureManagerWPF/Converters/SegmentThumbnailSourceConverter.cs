@@ -2,6 +2,7 @@
 using MH.UI.WPF.Extensions;
 using MH.Utils;
 using PictureManager.Domain;
+using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
@@ -12,14 +13,15 @@ using System.Windows.Media.Imaging;
 
 namespace PictureManager.Converters;
 
-public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter {
+public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImageSourceConverter<SegmentM> {
   private static SegmentThumbnailSourceConverter _inst;
   private static readonly object _lock = new();
   public static SegmentThumbnailSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   private static readonly TaskQueue<SegmentM> _taskQueue = new();
-  private static readonly HashSet<SegmentM> _ignoreCache = new();
   private static readonly HashSet<SegmentM> _errorCache = new();
+
+  public HashSet<SegmentM> IgnoreCache { get; } = new();
 
   public override object Convert(object[] values, object parameter) {
     try {
@@ -42,7 +44,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter {
       src.UriSource = new(segment.FilePathCache);
       src.Rotation = Utils.Imaging.MediaOrientation2Rotation((MediaOrientation)segment.MediaItem.Orientation);
 
-      if (_ignoreCache.Remove(segment))
+      if (IgnoreCache.Remove(segment))
         src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
 
       src.EndInit();
@@ -60,8 +62,8 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter {
     }
   }
 
-  private static void CreateThumbnail(SegmentM segment) {
-    _ignoreCache.Add(segment);
+  private void CreateThumbnail(SegmentM segment) {
+    IgnoreCache.Add(segment);
 
     if (segment.MediaItem is ImageM) {
       _taskQueue.Add(segment);
