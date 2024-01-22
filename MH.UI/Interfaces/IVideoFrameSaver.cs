@@ -4,5 +4,5 @@ using System;
 namespace MH.UI.Interfaces;
 
 public interface IVideoFrameSaver {
-  public void Save(VfsVideo[] videos, Action<VfsFrame> onSaveAction, Action onFinishedAction);
+  public void Save(VfsVideo[] videos, Action<VfsFrame> onSaveAction, Action<VfsFrame, Exception> onErrorAction, Action onFinishedAction);
 }
