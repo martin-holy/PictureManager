@@ -26,8 +26,8 @@
         <DataTemplate x:Key="BigIcon" DataType="{x:Type mhuInt:IListItem}">
           <Path
             Style="{StaticResource MH.Styles.Icon}"
-            Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
-            Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
+            Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
+            Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
                    ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
             Width="24"
             Height="24"/>

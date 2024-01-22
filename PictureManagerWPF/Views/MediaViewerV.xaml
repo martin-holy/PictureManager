@@ -20,7 +20,7 @@
       Background="Transparent"
       Focusable="True"
       FocusVisualStyle="{x:Null}"
-      Visibility="{Binding IsVisible, Converter={mhConv:AllToVisibilityConverter}}">
+      Visibility="{Binding IsVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
       <Grid.InputBindings>
         <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
@@ -32,7 +32,7 @@
         <b:EventTrigger EventName="MouseWheel">
           <b:InvokeCommandAction
             Command="{Binding NavigateCommand}"
-            EventArgsConverter="{mhConv:MouseWheelConverter}"/>
+            EventArgsConverter="{x:Static mhConv:MouseWheelConverter.Inst}"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseDown">
@@ -66,7 +66,7 @@
           <!-- Image -->
           <Image
             x:Name="image"
-            Source="{Binding Current, Converter={pmConv:MediaViewerImageSourceConverter}}"
+            Source="{Binding Current, Converter={x:Static pmConv:MediaViewerImageSourceConverter.Inst}}"
             Width="{Binding ContentWidth}"
             Height="{Binding ContentHeight}"
             Visibility="Collapsed"/>
@@ -110,13 +110,13 @@
           Value="{Binding RelativeSource={RelativeSource Self}}"/>
       </Trigger>
       <DataTrigger
-        Binding="{Binding Current, Converter={mhConv:DataTypeConverter},
+        Binding="{Binding Current, Converter={x:Static mhConv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type mim:ImageM}}"
         Value="True">
         <Setter TargetName="image" Property="Visibility" Value="Visible"/>
       </DataTrigger>
       <DataTrigger
-        Binding="{Binding Current, Converter={mhConv:DataTypeConverter},
+        Binding="{Binding Current, Converter={x:Static mhConv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type mim:VideoM}}"
         Value="True">
         <Setter TargetName="player" Property="Visibility" Value="Visible"/>

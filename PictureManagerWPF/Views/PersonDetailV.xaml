@@ -110,7 +110,7 @@
     </Grid>
 
     <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding PersonM.DisplayKeywords, Converter={mhConv:AllToBoolConverter}}" Value="True">
+      <DataTrigger Binding="{Binding PersonM.DisplayKeywords, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
         <Setter TargetName="dpKeywords" Property="Visibility" Value="Visible"/>
       </DataTrigger>
     </DataTemplate.Triggers>

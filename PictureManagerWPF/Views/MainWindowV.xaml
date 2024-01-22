@@ -65,7 +65,7 @@
           ContentTemplate="{StaticResource PM.Views.MainTabsV}"
           Visibility="{Binding MediaViewerM.IsVisible,
                        Source={x:Static pm:App.Core},
-                       Converter={mhConv:AllToVisibilityConverter}, 
+                       Converter={x:Static mhConv:AllToVisibilityConverter.Inst}, 
                        ConverterParameter={StaticResource False}}"/>
 
         <!-- Media Viewer -->
@@ -77,10 +77,10 @@
     <mhc:SlidePanelsGrid.PanelRight>
       <mhc:SlidePanel
         IsOpen="{Binding ToolsTabsM.IsOpen, Mode=TwoWay}"
-        CanOpen="{Binding ToolsTabsM.Tabs.Count, Converter={mhConv:AllToBoolConverter}}"
+        CanOpen="{Binding ToolsTabsM.Tabs.Count, Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
         Content="{Binding ToolsTabsM}"
         Width="{Binding Source={x:Static pmdM:SegmentsM.SegmentUiFullWidth},
-                Converter={pmConv:SegmentsViewWidthConverter},
+                Converter={x:Static pmConv:SegmentsViewWidthConverter.Inst},
                 ConverterParameter=4,
                 FallbackValue=362}"/>
     </mhc:SlidePanelsGrid.PanelRight>

@@ -82,7 +82,7 @@
     </StackPanel>
 
     <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding Error, Converter={mhConv:AllToBoolConverter}}" Value="True">
+      <DataTrigger Binding="{Binding Error, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
         <Setter TargetName="fileName" Property="Background" Value="#7FFF0000"/>
         <Setter TargetName="fileName" Property="ToolTip" Value="{Binding Error}"/>
       </DataTrigger>

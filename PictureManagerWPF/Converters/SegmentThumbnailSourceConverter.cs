@@ -14,8 +14,8 @@ using System.Windows.Media.Imaging;
 namespace PictureManager.Converters;
 
 public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImageSourceConverter<SegmentM> {
-  private static SegmentThumbnailSourceConverter _inst;
   private static readonly object _lock = new();
+  private static SegmentThumbnailSourceConverter _inst;
   public static SegmentThumbnailSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   private static readonly TaskQueue<SegmentM> _taskQueue = new();
