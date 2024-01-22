@@ -1,6 +1,8 @@
 ﻿using MH.UI.HelperClasses;
+using MH.Utils;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,6 +21,12 @@ public class VideoThumbsM {
       return;
     }
 
+    var videos = GetVideos(items, rebuild);
+    if (videos.Length > 0)
+      Core.VideoFrameSaver.Save(videos, OnSave, OnError, OnFinished);
+  }
+
+  private VfsVideo[] GetVideos(MediaItemM[] items, bool rebuild) {
     var vids = items.OfType<VideoM>().Concat(items.OfType<VideoItemM>().Select(x => x.Video)).Distinct().ToArray();
     var vidsItems = Core.Db.MediaItems.GetVideoItems(items).GroupBy(x => x.Video);
     var dic = new Dictionary<VideoM, VfsVideo>();
@@ -33,7 +41,7 @@ public class VideoThumbsM {
       foreach (var vi in vidItems)
         AddFrames(vi, dic[vidItems.Key].Frames, rebuild);
 
-    Core.VideoFrameSaver.Save(dic.Values.Where(x => x.Frames.Any()).ToArray(), OnSave, OnFinished);
+    return dic.Values.Where(x => x.Frames.Any()).ToArray();
   }
 
   private void AddFrames(MediaItemM mi, List<VfsFrame> frames, bool rebuild) {
@@ -76,6 +84,19 @@ public class VideoThumbsM {
       case SegmentM s:
         SegmentsVM.ThumbConverter.IgnoreCache.Add(s);
         s.OnPropertyChanged(nameof(s.FilePathCache));
+        break;
+    }
+  }
+
+  private static void OnError(VfsFrame frame, Exception ex) {
+    switch (frame.Source) {
+      case MediaItemM mi:
+        MediaItemsVM.ThumbConverter.ErrorCache.Add(mi);
+        Log.Error(ex, $"{ex.Message} ({mi.FilePath})");
+        break;
+      case SegmentM s:
+        SegmentsVM.ThumbConverter.ErrorCache.Add(s);
+        Log.Error(ex, $"{ex.Message} ({s.MediaItem.FilePath})");
         break;
     }
   }
