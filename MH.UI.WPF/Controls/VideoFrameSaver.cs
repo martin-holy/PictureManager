@@ -1,6 +1,7 @@
 ﻿using MH.UI.HelperClasses;
 using MH.UI.Interfaces;
 using MH.UI.WPF.Extensions;
+using MH.Utils;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -24,8 +25,9 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   private readonly DispatcherTimer _positionTimer;
   private readonly Stopwatch _timeOut = new();
   private readonly RotateTransform _rotateTransform = new();
-  private Action _onFinishedAction;
   private Action<VfsFrame> _onSaveAction;
+  private Action<VfsFrame, Exception> _onErrorAction;
+  private Action _onFinishedAction;
 
   static VideoFrameSaver() {
     DefaultStyleKeyProperty.OverrideMetadata(
@@ -45,9 +47,10 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     _positionTimer.Tick += delegate { OnPositionTimerTick(); };
   }
 
-  public void Save(VfsVideo[] videos, Action<VfsFrame> onSaveAction, Action onFinishedAction) {
+  public void Save(VfsVideo[] videos, Action<VfsFrame> onSaveAction, Action<VfsFrame, Exception> onErrorAction, Action onFinishedAction) {
     _videos = videos;
     _onSaveAction = onSaveAction;
+    _onErrorAction = onErrorAction;
     _onFinishedAction = onFinishedAction;
     _idxVideo = -1;
     MaxWidth = ((FrameworkElement)Parent).ActualWidth;
@@ -100,6 +103,7 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
       return;
     }
 
+    if (_hash == 0) _hash = GetHash();
     Position = new(0, 0, 0, 0, _frame.Position);
     _timeOut.Reset();
     _timeOut.Start();
@@ -107,10 +111,8 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   }
 
   private void OnPositionTimerTick() {
-    var hash = this.ToBitmap().GetAvgHash();
-    if (MH.Utils.Imaging.CompareHashes(_hash, hash) == 0 && _timeOut.ElapsedMilliseconds < 1000)
-      return;
-
+    var hash = GetHash();
+    if (Imaging.CompareHashes(_hash, hash) == 0 && _timeOut.ElapsedMilliseconds < 1000) return;
     _positionTimer.Stop();
     _hash = hash;
     SaveFrame();
@@ -118,8 +120,13 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   }
 
   private void SaveFrame() {
-    Crop(this.ToBitmap()).Resize(_frame.Size).SaveAsJpeg(_frame.FilePath, _frame.Quality);
-    _onSaveAction?.Invoke(_frame);
+    try {
+      Crop(this.ToBitmap()).Resize(_frame.Size).SaveAsJpeg(_frame.FilePath, _frame.Quality);
+      _onSaveAction?.Invoke(_frame);
+    }
+    catch (Exception ex) {
+      _onErrorAction?.Invoke(_frame, ex);
+    }
   }
 
   private BitmapSource Crop(BitmapSource bmp) {
@@ -127,5 +134,15 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     if (!rect.HasArea) return bmp;
     if (ActualWidth >= Width && ActualHeight >= Height) return bmp.Crop(rect);
     return bmp.Crop(rect.Scale(ActualWidth / Width));
+  }
+
+  private long GetHash() {
+    try {
+      return this.ToBitmap().GetAvgHash();
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+      return 0;
+    }
   }
 }
