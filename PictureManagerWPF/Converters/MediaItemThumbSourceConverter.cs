@@ -18,11 +18,13 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
 
   private static readonly TaskQueue<MediaItemM> _taskQueue = new();
 
+  public HashSet<MediaItemM> ErrorCache { get; } = new();
   public HashSet<MediaItemM> IgnoreCache { get; } = new();
 
   public override object Convert(object[] values, object parameter) {
     try {
       if (values is not [_, MediaItemM mi]) return null;
+      if (ErrorCache.Contains(mi)) return null;
 
       if (!File.Exists(mi.FilePathCache)) {
         if (!File.Exists(mi.FilePath)) {

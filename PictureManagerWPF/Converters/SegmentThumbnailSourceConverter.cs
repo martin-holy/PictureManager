@@ -19,14 +19,14 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
   public static SegmentThumbnailSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   private static readonly TaskQueue<SegmentM> _taskQueue = new();
-  private static readonly HashSet<SegmentM> _errorCache = new();
 
+  public HashSet<SegmentM> ErrorCache { get; } = new();
   public HashSet<SegmentM> IgnoreCache { get; } = new();
 
   public override object Convert(object[] values, object parameter) {
     try {
       if (values is not [_, SegmentM segment] || segment.MediaItem == null) return null;
-      if (_errorCache.Contains(segment)) return null;
+      if (ErrorCache.Contains(segment)) return null;
 
       if (!File.Exists(segment.FilePathCache)) {
         if (!File.Exists(segment.MediaItem.FilePath)) {
@@ -73,7 +73,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
       CreateThumbnailFromVideo(segment);
   }
 
-  private static void CreateThumbnailFromImage(SegmentM segment) {
+  private void CreateThumbnailFromImage(SegmentM segment) {
     var filePath = segment.MediaItem.FilePath;
     var rect = new Int32Rect(
       (int)segment.X,
@@ -88,20 +88,13 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
         .SaveAsJpeg(segment.FilePathCache, Core.Settings.JpegQualityLevel);
     }
     catch (Exception ex) {
-      _errorCache.Add(segment);
+      ErrorCache.Add(segment);
       Log.Error(ex, $"{ex.Message} ({filePath})");
     }
   }
 
-  private static void CreateThumbnailFromVideo(SegmentM segment) {
-    try {
-      Core.VideoThumbsM.Create(new[] { segment.MediaItem });
-    }
-    catch (Exception ex) {
-      _errorCache.Add(segment);
-      Log.Error(ex, $"{ex.Message} ({segment.MediaItem.FilePath})");
-    }
-  }
+  private static void CreateThumbnailFromVideo(SegmentM segment) =>
+    Core.VideoThumbsM.Create(new[] { segment.MediaItem });
 
   private static void TriggerChanged(SegmentM segment) =>
     segment.OnPropertyChanged(nameof(segment.FilePathCache));
