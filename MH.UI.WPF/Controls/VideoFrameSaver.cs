@@ -58,6 +58,9 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   private void NextVideo() {
     if (_idxVideo + 1 > _videos.Length - 1) {
       Source = null;
+      _frame = null;
+      _video = null;
+      _videos = null;
       _onFinishedAction?.Invoke();
       return;
     }
@@ -91,7 +94,7 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
 
     var oldPos = _frame?.Position ?? 0;
     _frame = _video.Frames[++_idxFrame];
-    if (_frame.Position == oldPos) {
+    if (_idxFrame > 0 && _frame.Position == oldPos) {
       SaveFrame();
       NextFrame();
       return;
