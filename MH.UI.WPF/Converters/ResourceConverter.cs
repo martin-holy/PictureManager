@@ -3,7 +3,11 @@ using System.Windows;
 
 namespace MH.UI.WPF.Converters;
 
-public class ResourceConverter : BaseMarkupExtensionConverter {
+public class ResourceConverter : BaseConverter {
+  private static readonly object _lock = new();
+  private static ResourceConverter _inst;
+  public static ResourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
+
   public override object Convert(object value, object parameter) {
     value = TryConvertValue(value, parameter);
 

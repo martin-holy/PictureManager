@@ -6,7 +6,7 @@
   xmlns:uii="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
@@ -40,7 +40,7 @@
           <b:EventTrigger EventName="ValueChanged">
             <b:InvokeCommandAction
               Command="{Binding TimelineSliderValueChangedCommand}"
-              EventArgsConverter="{conv:PropertyChangedConverter}"/>
+              EventArgsConverter="{x:Static mhConv:PropertyChangedConverter.Inst}"/>
           </b:EventTrigger>
           <b:EventTrigger EventName="PreviewMouseLeftButtonDown">
             <b:InvokeCommandAction
@@ -248,26 +248,26 @@
     <DataTemplate.Triggers>
       <DataTrigger
         Binding="{Binding CurrentItem,
-                  Converter={conv:DataTypeConverter},
+                  Converter={x:Static mhConv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type uii:IVideoImage}}" Value="True">
         <Setter
           TargetName="tbTimeStart"
           Property="Text"
           Value="{Binding Path=CurrentItem.TimeStart,
-                  Converter={conv:TimeFormatConverter},
+                  Converter={x:Static mhConv:TimeFormatConverter.Inst},
                   ConverterParameter=position}"/>
         <Setter TargetName="tbTimeStart" Property="IsEnabled" Value="True"/>
       </DataTrigger>
 
       <DataTrigger
         Binding="{Binding CurrentItem,
-                  Converter={conv:DataTypeConverter},
+                  Converter={x:Static mhConv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type uii:IVideoClip}}" Value="True">
         <Setter
           TargetName="tbTimeEnd"
           Property="Text"
           Value="{Binding Path=CurrentItem.(uii:IVideoClip.TimeEnd),
-                  Converter={conv:TimeFormatConverter},
+                  Converter={x:Static mhConv:TimeFormatConverter.Inst},
                   ConverterParameter=position,
                   StringFormat={} - {0}}"/>
         <Setter TargetName="tbTimeEnd" Property="IsEnabled" Value="True"/>

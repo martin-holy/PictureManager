@@ -29,9 +29,9 @@
             Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="4,0,6,2"
             Data="{Binding Path=Content.(mhbc:Dialog.Icon),
-                   Converter={mhConv:ResourceConverter}}"
+                   Converter={x:Static mhConv:ResourceConverter.Inst}}"
             Fill="{Binding Path=Content.(mhbc:Dialog.Icon),
-                   Converter={mhConv:ResourceConverter},
+                   Converter={x:Static mhConv:ResourceConverter.Inst},
                    ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
           <TextBlock
@@ -79,10 +79,10 @@
                       Margin="5,5,0,5"
                       Width="12"
                       Height="12"
-                      Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
-                      Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
+                      Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
+                      Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
                              ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
-                      Visibility="{Binding Icon, Converter={mhConv:AllToVisibilityConverter}}"/>
+                      Visibility="{Binding Icon, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
                     <TextBlock
                       Text="{Binding Text}"

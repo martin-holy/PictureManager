@@ -20,8 +20,8 @@
         Width="32"
         Height="32"
         Margin="10"
-        Data="{Binding Icon, Converter={mhConv:ResourceConverter}}"
-        Fill="{Binding Icon, Converter={mhConv:ResourceConverter},
+        Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
+        Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
                ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
       <TextBlock

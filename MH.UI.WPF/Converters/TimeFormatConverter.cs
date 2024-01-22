@@ -3,7 +3,11 @@ using System.Windows.Data;
 
 namespace MH.UI.WPF.Converters;
 
-public sealed class TimeFormatConverter : BaseMarkupExtensionConverter {
+public sealed class TimeFormatConverter : BaseConverter {
+  private static readonly object _lock = new();
+  private static TimeFormatConverter _inst;
+  public static TimeFormatConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
+
   private const string _position = "position";
   private const string _duration = "duration";
 

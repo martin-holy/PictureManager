@@ -2,7 +2,11 @@
 
 namespace MH.UI.WPF.Converters; 
 
-public class AllToBoolConverter : BaseMarkupExtensionConverter {
+public class AllToBoolConverter : BaseConverter {
+  private static readonly object _lock = new();
+  private static AllToBoolConverter _inst;
+  public static AllToBoolConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
+
   public override object Convert(object value, object parameter) =>
     AllToBool(value, parameter);
 

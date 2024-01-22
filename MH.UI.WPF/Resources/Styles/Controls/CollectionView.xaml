@@ -41,7 +41,7 @@
       Background="#88000000"
       Height="30">
 
-      <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
+      <Grid Margin="{Binding Converter={x:Static mhConv:TreeMarginConverter.Inst}, ConverterParameter=16}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="Auto"/>
@@ -59,10 +59,10 @@
           Grid.Column="1"
           Icon="{Binding
             Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
-            Converter={mhConv:ResourceConverter}}"
+            Converter={x:Static mhConv:ResourceConverter.Inst}}"
           Foreground="{Binding
             Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
-            Converter={mhConv:ResourceConverter},
+            Converter={x:Static mhConv:ResourceConverter.Inst},
             ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
           ToolTip="Group by"
           Command="{Binding View.OpenGroupByDialogCommand}"
@@ -91,7 +91,7 @@
       </DataTrigger>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
-          <MultiBinding Converter="{mhConv:SetPropertyConverter}" ConverterParameter="Width">
+          <MultiBinding Converter="{x:Static mhConv:SetPropertyConverter.Inst}" ConverterParameter="Width">
             <Binding Path="DataContext" ElementName="border"/>
             <Binding Path="ActualWidth" ElementName="border"/>
           </MultiBinding>
@@ -169,7 +169,7 @@
           <Setter Property="Width">
             <Setter.Value>
               <MultiBinding
-                Converter="{mhConv:CollectionViewItemSizeConverter}"
+                Converter="{x:Static mhConv:CollectionViewItemSizeConverter.Inst}"
                 ConverterParameter="{StaticResource True}">
                 <Binding/>
                 <Binding Path="DataContext" ElementName="ic"/>
@@ -179,7 +179,7 @@
           <Setter Property="Height">
             <Setter.Value>
               <MultiBinding
-                Converter="{mhConv:CollectionViewItemSizeConverter}"
+                Converter="{x:Static mhConv:CollectionViewItemSizeConverter.Inst}"
                 ConverterParameter="{StaticResource False}">
                 <Binding/>
                 <Binding Path="DataContext" ElementName="ic"/>

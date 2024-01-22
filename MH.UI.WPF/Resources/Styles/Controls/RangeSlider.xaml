@@ -114,7 +114,7 @@
     <ControlTemplate.Triggers>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
-          <MultiBinding Converter="{mhConv:EqualityConverter}">
+          <MultiBinding Converter="{x:Static mhConv:EqualityConverter.Inst}">
             <Binding Path="TemplatedParent.Minimum" ElementName="root"/>
             <Binding Source="{StaticResource SignEquals}"/>
             <Binding Path="TemplatedParent.Start" ElementName="root"/>
@@ -124,7 +124,7 @@
       </DataTrigger>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
-          <MultiBinding Converter="{mhConv:EqualityConverter}">
+          <MultiBinding Converter="{x:Static mhConv:EqualityConverter.Inst}">
             <Binding Path="TemplatedParent.End" ElementName="root"/>
             <Binding Source="{StaticResource SignEquals}"/>
             <Binding Path="TemplatedParent.Maximum" ElementName="root"/>
@@ -214,7 +214,7 @@
     <ControlTemplate.Triggers>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
-          <MultiBinding Converter="{mhConv:EqualityConverter}">
+          <MultiBinding Converter="{x:Static mhConv:EqualityConverter.Inst}">
             <Binding Path="TemplatedParent.Minimum" ElementName="root"/>
             <Binding Source="{StaticResource SignEquals}"/>
             <Binding Path="TemplatedParent.Start" ElementName="root"/>
@@ -224,7 +224,7 @@
       </DataTrigger>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
-          <MultiBinding Converter="{mhConv:EqualityConverter}">
+          <MultiBinding Converter="{x:Static mhConv:EqualityConverter.Inst}">
             <Binding Path="TemplatedParent.End" ElementName="root"/>
             <Binding Source="{StaticResource SignEquals}"/>
             <Binding Path="TemplatedParent.Maximum" ElementName="root"/>

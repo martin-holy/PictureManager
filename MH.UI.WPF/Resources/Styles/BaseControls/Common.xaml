@@ -165,7 +165,7 @@
                 </b:EventTrigger>
               </b:Interaction.Triggers>
 
-              <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
+              <Grid Margin="{Binding Converter={x:Static mhConv:TreeMarginConverter.Inst}, ConverterParameter=16}">
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="Auto"/>
                   <ColumnDefinition/>

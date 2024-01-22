@@ -1,6 +1,10 @@
 ﻿namespace MH.UI.WPF.Converters;
 
-public class EqualityConverter : BaseMarkupExtensionMultiConverter {
+public class EqualityConverter : BaseMultiConverter {
+  private static readonly object _lock = new();
+  private static EqualityConverter _inst;
+  public static EqualityConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
+
   public override object Convert(object[] values, object parameter) {
     if (values is [double a, string op, double b])
       switch (op.ToLower()) {

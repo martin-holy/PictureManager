@@ -2,7 +2,7 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:converters="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
   xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
@@ -36,11 +36,11 @@
         <ContentPresenter
           DockPanel.Dock="{Binding 
                            RelativeSource={RelativeSource AncestorType=TabControl},
-                           Converter={mhc:SlotPlacementConverter},
+                           Converter={x:Static mhc:SlotPlacementConverter.Inst},
                            ConverterParameter=TabStripSlot}"
           Content="{Binding 
                     RelativeSource={RelativeSource AncestorType=TabControl},
-                    Converter={mhc:SlotContentConverter},
+                    Converter={x:Static mhc:SlotContentConverter.Inst},
                     ConverterParameter=TabStripSlot}"/>
 
         <TabPanel
@@ -84,7 +84,7 @@
       <!--Update maximum tab size-->
       <DataTrigger Value="True">
         <DataTrigger.Binding>
-          <MultiBinding Converter="{converters:TabPanelSizeConverter}">
+          <MultiBinding Converter="{x:Static mhConv:TabPanelSizeConverter.Inst}">
             <Binding/>
             <Binding Path="(TabControl.TabStripPlacement)" RelativeSource="{RelativeSource Self}"/>
             <Binding ElementName="tabPanel" Path="ActualWidth"/>
