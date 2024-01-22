@@ -9,27 +9,33 @@ using System.Linq;
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsRectsM : ObservableObject {
     private const int _editLimit = 10;
+    private double _scale;
     private double _startX;
     private double _startY;
     private bool _isNew;
     private bool _isCurrentModified;
     private SegmentEditMode _editMode;
 
-    private double _scale;
     private bool _isEditOn;
     private bool _areVisible;
     private MediaItemM _mediaItem;
 
-    public double Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
     public bool IsEditOn { get => _isEditOn; set { _isEditOn = value; OnPropertyChanged(); } }
-    public bool AreVisible { get => _areVisible; set { _areVisible = value; OnPropertyChanged(); } }
+
+    public bool AreVisible {
+      get => _areVisible;
+      set {
+        _areVisible = value;
+        if (value) ReloadMediaItemSegmentRects();
+        OnPropertyChanged();
+      }
+    }
 
     public MediaItemM MediaItem {
       get => _mediaItem;
       set {
         _mediaItem = value;
-        OnPropertyChanged();
-        ReloadMediaItemSegmentRects();
+        if (AreVisible) ReloadMediaItemSegmentRects();
       }
     }
 
@@ -45,19 +51,19 @@ namespace PictureManager.Domain.Models {
     }
 
     public void CreateNew(double x, double y) {
-      MousePosToRawImage(ref x, ref y, Scale, MediaItem);
+      MousePosToRawImage(ref x, ref y, _scale, MediaItem);
       _isNew = true;
       _startX = x;
       _startY = y;
       _editMode = SegmentEditMode.ResizeEdge;
       _isCurrentModified = true;
-      Current = new(SegmentsM.DataAdapter.ItemCreate(x, y, 0, MediaItem), Scale);
+      Current = new(SegmentsM.DataAdapter.ItemCreate(x, y, 0, MediaItem), _scale);
       SegmentsM.Select(null, Current.Segment, false, false);
       MediaItemSegmentsRects.Add(Current);
     }
 
     public void SetCurrent(SegmentRectM current, double x, double y) {
-      MousePosToRawImage(ref x, ref y, Scale, MediaItem);
+      MousePosToRawImage(ref x, ref y, _scale, MediaItem);
       _editMode = GetEditMode(x, y, current.Segment);
       if (_editMode == SegmentEditMode.None) return;
       Current = current;
@@ -67,7 +73,7 @@ namespace PictureManager.Domain.Models {
     private SegmentEditMode GetEditMode(double x, double y, SegmentM segment) {
       var xDiff = Math.Abs(segment.X + (segment.Size / 2) - x);
       var yDiff = Math.Abs(segment.Y + (segment.Size / 2) - y);
-      var limit = _editLimit / Scale;
+      var limit = _editLimit / _scale;
 
       if (xDiff < limit && yDiff < limit && segment.Size > 20)
         return SegmentEditMode.Move;
@@ -124,7 +130,7 @@ namespace PictureManager.Domain.Models {
     public void Edit(double x, double y) {
       var segment = Current.Segment;
 
-      MousePosToRawImage(ref x, ref y, Scale, MediaItem);
+      MousePosToRawImage(ref x, ref y, _scale, MediaItem);
 
       _isCurrentModified = true;
       if (!IsEditOn) IsEditOn = true;
@@ -240,14 +246,14 @@ namespace PictureManager.Domain.Models {
       SegmentsM.Selected.DeselectAll();
 
       foreach (var segment in MediaItem.Segments.OrderBy(x => x.X))
-        MediaItemSegmentsRects.Add(new(segment, Scale));
+        MediaItemSegmentsRects.Add(new(segment, _scale));
     }
 
     public void UpdateScale(double scale) {
-      Scale = scale;
+      _scale = scale;
 
       foreach (var sr in MediaItemSegmentsRects)
-        sr.Scale = Scale;
+        sr.Scale = _scale;
     }
 
     private void SegmentToolTipReload(SegmentM segment) {

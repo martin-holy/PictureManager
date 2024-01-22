@@ -117,6 +117,7 @@ public sealed class Core {
           UiDetailVideo.UnsetModel();
           VideoDetail.MediaPlayer.IsPlayOnOpened = true;
           UiFullVideo.SetModel(VideoDetail.MediaPlayer);
+          SegmentsM.SegmentsRectsM.MediaItem = MediaItemsM.Current;
         }
         else {
           MediaItemsViews.SelectAndScrollToCurrentMediaItem();
