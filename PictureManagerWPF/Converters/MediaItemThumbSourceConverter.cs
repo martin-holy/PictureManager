@@ -2,6 +2,7 @@
 using MH.UI.WPF.Extensions;
 using MH.Utils;
 using PictureManager.Domain;
+using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,14 @@ using System.Windows.Media.Imaging;
 
 namespace PictureManager.Converters;
 
-public sealed class MediaItemThumbSourceConverter : BaseMultiConverter {
+public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSourceConverter<MediaItemM> {
   private static MediaItemThumbSourceConverter _inst;
   private static readonly object _lock = new();
   public static MediaItemThumbSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   private static readonly TaskQueue<MediaItemM> _taskQueue = new();
-  private static readonly HashSet<MediaItemM> _ignoreCache = new();
+
+  public HashSet<MediaItemM> IgnoreCache { get; } = new();
 
   public override object Convert(object[] values, object parameter) {
     try {
@@ -48,7 +50,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter {
       src.UriSource = new(mi.FilePathCache);
       src.Rotation = Utils.Imaging.MediaOrientation2Rotation((MediaOrientation)orientation);
 
-      if (_ignoreCache.Remove(mi))
+      if (IgnoreCache.Remove(mi))
         src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
 
       src.EndInit();
@@ -66,8 +68,8 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter {
     }
   }
 
-  private static void CreateThumbnail(MediaItemM mi) {
-    _ignoreCache.Add(mi);
+  private void CreateThumbnail(MediaItemM mi) {
+    IgnoreCache.Add(mi);
 
     switch (mi) {
       case ImageM:

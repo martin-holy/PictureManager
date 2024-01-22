@@ -1,5 +1,6 @@
 ﻿using MH.UI.HelperClasses;
 using PictureManager.Domain.Extensions;
+using PictureManager.Domain.ViewModels;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -68,8 +69,14 @@ public class VideoThumbsM {
 
   private static void OnSave(VfsFrame frame) {
     switch (frame.Source) {
-      case MediaItemM mi: mi.OnPropertyChanged(nameof(mi.FilePathCache)); break;
-      case SegmentM s: s.OnPropertyChanged(nameof(s.FilePathCache)); break;
+      case MediaItemM mi:
+        MediaItemsVM.ThumbConverter.IgnoreCache.Add(mi);
+        mi.OnPropertyChanged(nameof(mi.FilePathCache));
+        break;
+      case SegmentM s:
+        SegmentsVM.ThumbConverter.IgnoreCache.Add(s);
+        s.OnPropertyChanged(nameof(s.FilePathCache));
+        break;
     }
   }
 

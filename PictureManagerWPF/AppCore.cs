@@ -1,7 +1,9 @@
 ﻿using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
+using PictureManager.Converters;
 using PictureManager.Domain;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.ViewModels;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
 using System.Collections.Generic;
@@ -24,12 +26,15 @@ public sealed class AppCore : ObservableObject {
     MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
     GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
-    MediaItemsM.ReadMetadata = MediaItemsVM.ReadMetadata;
-    Core.MediaItemsM.WriteMetadata = MediaItemsVM.WriteMetadata;
+    MediaItemsM.ReadMetadata = ViewModels.MediaItemsVM.ReadMetadata;
+    Core.MediaItemsM.WriteMetadata = ViewModels.MediaItemsVM.WriteMetadata;
     Core.VideoDetail.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
     Core.UiFullVideo = new MediaPlayer();
     Core.UiDetailVideo = new MediaPlayer();
     Core.VideoFrameSaver = new VideoFrameSaver();
+
+    SegmentsVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
+    Domain.ViewModels.MediaItemsVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
   }
 
   private static double GetDisplayScale() =>
