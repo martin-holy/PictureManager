@@ -46,6 +46,7 @@
         # MH.UI.WPF
 ##
   - move icons from MH.Styles.Controls.MediaPlayerControlPanel to other MH.UI.WPF
+  - sort and move extensions
 ## IconButton
   - use button foreground and background for icon in IconButton and IconToggleButton
   - add background behind text in IconTextButton
@@ -60,6 +61,7 @@
   - Log button
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
+  - use BitmapMetadataExtensions in MediaItemsVM
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
@@ -68,6 +70,7 @@
   - use only one method to get keywords in which will be filtering by current viewer
 ## Segments
   - with segment creation create unknown person (#1234) as well so that every segment has person
+  - add button remove selected segments from drawer
 ## ToggleDialog
   - show selected items on dialog
 ## MediaItems
@@ -99,17 +102,15 @@
   - LeftMouseButtonClick on Person or Keyword opens menu with options (load, filter, set to person, set to segment, set to media item)
   - show small segment next to person icon or show just small segment
 ## Video Items (VideoImage and VideoClip)
-  - edit comment on VideoItems
   - tool tip for VideoItems with all info
   - reset sort order button of VideoItems to delete relation in DB
   - add changing sort order
-  - segments for video items
   - ignore volume and speed from selected clip ToggleButton
   - show as separate thumbs in MediaItemView
   - import/export
   - export to mp4 (FFMPEG)
 ## MediaViewer
-  - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima (pozor, delete je za selected)
+  - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima
   - func to zoom to segment
 ## ThumbnailsGrid
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
