@@ -78,22 +78,9 @@ public sealed class MediaItemsM : ObservableObject {
 
   public bool Exists(MediaItemM mi) {
     if (mi == null || File.Exists(mi.FilePath)) return true;
-
-    var items = new[] { mi };
-    SetCurrentAfterDelete(items);
     File.Delete(mi.FilePathCache);
-    _da.ItemsDelete(items);
-
+    _da.ItemsDelete(new[] { mi });
     return false;
-  }
-
-  private void SetCurrentAfterDelete(IList<MediaItemM> items) {
-    var view = Core.MediaItemsViews.Current;
-    Current = ListExtensions.GetNextOrPreviousItem(
-      view != null
-        ? view.FilteredItems
-        : Core.MediaViewerM.MediaItems,
-      items);
   }
 
   public bool Delete(MediaItemM[] items) {
@@ -104,12 +91,6 @@ public sealed class MediaItemsM : ObservableObject {
           Res.IconQuestion,
           true)) != 1) return false;
 
-    var rItems = items.OfType<RealMediaItemM>().ToArray();
-    if (rItems.Any()) {
-      SetCurrentAfterDelete(items);
-      Core.FileOperationDelete(rItems.Select(x => x.FilePath).ToList(), true, false);
-    }
-      
     _da.ItemsDelete(items);
     return true;
   }
@@ -138,7 +119,7 @@ public sealed class MediaItemsM : ObservableObject {
 
     if (mode == FileOperationMode.Move) {
       var mis = items.Cast<MediaItemM>().ToList();
-      Current = ListExtensions.GetNextOrPreviousItem(Core.MediaItemsViews.Current.FilteredItems, mis);
+      Current = Core.MediaItemsViews.Current.FilteredItems.GetNextOrPreviousItem(mis);
       // TODO add VirtualMediaItems
       Core.MediaItemsViews.Current.Remove(mis, true);
     }

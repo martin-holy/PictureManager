@@ -3,6 +3,7 @@ using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Extensions;
@@ -11,6 +12,7 @@ using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -278,6 +280,10 @@ public sealed class Core {
       Db.Segments.ItemsDelete(e.Data.Segments?.ToArray());
 
     Db.MediaItems.ItemsDeletedEvent += (_, e) => {
+      MediaItemsM.Current = MediaViewerM.IsVisible && e.Data.All(x => x is RealMediaItemM)
+        ? MediaViewerM.MediaItems.GetNextOrPreviousItem(e.Data)
+        : e.Data.OfType<VideoItemM>().FirstOrDefault()?.Video;
+
       MediaItemsViews.RemoveMediaItems(e.Data);
       VideoDetail.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
 
@@ -288,6 +294,8 @@ public sealed class Core {
         else
           MainWindowM.IsInViewMode = false;
       }
+
+      FileOperationDelete(e.Data.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
     };
 
     MediaItemsM.PropertyChanged += (_, e) => {
