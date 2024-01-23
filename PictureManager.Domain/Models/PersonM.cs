@@ -1,10 +1,10 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BitsMasks = PictureManager.Domain.Utils.BitsMasks;
 
 namespace PictureManager.Domain.Models;
 
@@ -40,4 +40,15 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
     TopSegments = TopSegments.Toggle(segment, true);
     if (flag) OnPropertyChanged(nameof(TopSegments));
   }
+}
+
+public static class PersonExtensions {
+  public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<PersonM> people) =>
+    people
+      .EmptyIfNull()
+      .Where(x => x.Keywords != null)
+      .SelectMany(x => x.Keywords)
+      .Distinct()
+      .SelectMany(Tree.GetThisAndParents)
+      .Distinct();
 }
