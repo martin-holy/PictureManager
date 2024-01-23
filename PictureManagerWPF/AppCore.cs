@@ -44,6 +44,7 @@ public sealed class AppCore : ObservableObject {
         ?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
 
   public static Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
+    if (items.Count == 0) return null;
     var fops = new PicFileOperationProgressSink();
     using var fo = new FileOperation(fops);
     fo.SetOperationFlags(
