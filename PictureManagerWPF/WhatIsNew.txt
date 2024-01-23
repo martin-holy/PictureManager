@@ -3,7 +3,17 @@
 [U] - Update
 [B] - Bug fix
 
-23.11.24.    :
+Latest:
+ - [U] DB migration of MediaItems (Images, Videos), VideoClips, VideoClipsGroups and GeoNames
+ - [N] MediaItem type VideoImage 
+ - [N] Segments for VideoClips and VideoImages
+ - [N] GeoLocation as Lat, Lng and/or GeoNameId for all MediaItems
+ - [N] Load GeoNames from web option in settings
+ - [U] Media player control panel
+ - [U] Video detail tab
+ - [N] Rebuild Thumbnails command in folder menu
+
+23.11.24.1717:
  - [N] What's new information
  - [N] VideoClips thumbnails rebuild
  - [N] Calculated UI width for PeopleView in SegmentsView and for ToolsTabs
