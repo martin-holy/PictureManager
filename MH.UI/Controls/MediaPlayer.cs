@@ -100,6 +100,7 @@ public sealed class MediaPlayer : ObservableObject {
     get => _source;
     set {
       _source = value;
+      SetCurrent(null);
 
       if (string.IsNullOrEmpty(value)) {
         if (UiMediaPlayer != null) UiMediaPlayer.Source = null;
@@ -295,7 +296,11 @@ public sealed class MediaPlayer : ObservableObject {
 
   public void SetCurrent(IVideoItem item) {
     CurrentItem = item;
-    if (item == null) return;
+    if (item == null) {
+      ClipTimeStart = 0;
+      ClipTimeEnd = 0;
+      return;
+    }
 
     switch (item) {
       case IVideoClip vc: SetCurrentVideoClip(vc); break;
