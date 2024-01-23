@@ -61,7 +61,7 @@ namespace MH.Utils.Extensions {
       return list;
     }
 
-    public static T GetNextOrPreviousItem<T>(IList<T> items, IList<T> selected) {
+    public static T GetNextOrPreviousItem<T>(this IList<T> items, IList<T> selected) {
       if (items == null) return default;
       if (selected == null) return default;
       if (selected.Count == 0) return default;
