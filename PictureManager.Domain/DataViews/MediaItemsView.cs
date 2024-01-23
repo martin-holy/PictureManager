@@ -114,7 +114,7 @@ namespace PictureManager.Domain.DataViews {
       }
 
       if (needReload) {
-        TopItem = ListExtensions.GetNextOrPreviousItem(Root.Source, items);
+        TopItem = Root.Source.GetNextOrPreviousItem(items);
         Remove(items.ToArray());
       }
 

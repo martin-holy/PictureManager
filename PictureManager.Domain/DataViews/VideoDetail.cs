@@ -71,7 +71,6 @@ public sealed class VideoDetail {
       MediaPlayer.SetCurrent(null);
   }
 
-  // TODO do select of new item here
   private void OnMarkerSet(object sender, ObjectEventArgs<Tuple<IVideoItem, bool>> e) {
     var item = (VideoItemM)e.Data.Item1;
     Core.Db.MediaItems.Modify(item);
