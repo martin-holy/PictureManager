@@ -1,3 +1,4 @@
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace PictureManager.Domain.Models;
 
@@ -95,4 +97,33 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
       Math.Round(Y / MediaItem.Height, 6).ToString(CultureInfo.InvariantCulture),
       Math.Round(Size / MediaItem.Width, 6).ToString(CultureInfo.InvariantCulture),
       Math.Round(Size / MediaItem.Height, 6).ToString(CultureInfo.InvariantCulture));
+}
+
+public static class SegmentExtensions {
+  public static IEnumerable<FolderM> GetFolders(this IEnumerable<SegmentM> segments) =>
+    segments
+      .GetMediaItems()
+      .GetFolders();
+
+  public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<SegmentM> segments) =>
+    segments
+      .EmptyIfNull()
+      .Where(x => x.Keywords != null)
+      .SelectMany(x => x.Keywords)
+      .Distinct()
+      .SelectMany(Tree.GetThisAndParents)
+      .Distinct();
+
+  public static IEnumerable<MediaItemM> GetMediaItems(this IEnumerable<SegmentM> segments) =>
+    segments
+      .EmptyIfNull()
+      .Select(x => x.MediaItem)
+      .Distinct();
+
+  public static IEnumerable<PersonM> GetPeople(this IEnumerable<SegmentM> segments) =>
+    segments
+      .EmptyIfNull()
+      .Where(x => x.Person != null)
+      .Select(x => x.Person)
+      .Distinct();
 }

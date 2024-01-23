@@ -32,6 +32,19 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
     Parent = parent;
   }
 
+  public FolderM GetByName(string name) =>
+    Items.GetByName(name, StringComparison.OrdinalIgnoreCase) as FolderM;
+
+  public IEnumerable<FolderKeywordM> GetFolderKeywords() =>
+    FolderKeyword == null
+      ? Enumerable.Empty<FolderKeywordM>()
+      : FolderKeyword.GetThisAndParents();
+
+  public IEnumerable<RealMediaItemM> GetMediaItems(bool recursive) =>
+    recursive
+      ? this.Flatten().SelectMany(x => x.MediaItems)
+      : MediaItems;
+
   protected override void OnIsExpandedChanged(bool value) {
     if (value) LoadSubFolders(false);
   }
@@ -47,7 +60,7 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
 
     foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
       var dirName = dir[fullPath.Length..];
-      var folder = this.GetByName(dirName) ?? Core.Db.Folders.ItemCreate(this, dirName);
+      var folder = GetByName(dirName) ?? Core.Db.Folders.ItemCreate(this, dirName);
       folder.IsHidden = !Core.ViewersM.CanViewerSee(folder);
       dirNames.Add(dirName);
     }
@@ -84,14 +97,4 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
 
     Items.Sort(x => ((FolderM)x).Name);
   }
-}
-
-public static class FolderExtensions {
-  public static FolderM GetByName(this FolderM item, string name) =>
-    item.Items.GetByName(name, StringComparison.OrdinalIgnoreCase) as FolderM;
-
-  public static IEnumerable<RealMediaItemM> GetMediaItems(this FolderM folder, bool recursive) =>
-    recursive
-      ? folder.Flatten().SelectMany(x => x.MediaItems)
-      : folder.MediaItems;
 }

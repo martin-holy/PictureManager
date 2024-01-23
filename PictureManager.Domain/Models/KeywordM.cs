@@ -1,7 +1,10 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models;
 
@@ -37,4 +40,12 @@ public class KeywordM : TreeItem, IEquatable<KeywordM> {
     changedAction?.Invoke();
     return true;
   }
+}
+
+public static class KeywordExtensions {
+  public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<KeywordM> keywords) =>
+    keywords
+      .EmptyIfNull()
+      .SelectMany(x => x.GetThisAndParents())
+      .Distinct();
 }

@@ -54,7 +54,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     };
 
   public PersonM[] DisplayPeople =>
-    this.GetPeople().OrderBy(x => x.Name).ToArray().NullIfEmpty();
+    GetPeople().OrderBy(x => x.Name).ToArray().NullIfEmpty();
 
   public string[] DisplayKeywords =>
     Keywords?.ToStrings(x => x.Name).ToArray();
@@ -62,6 +62,26 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   protected MediaItemM(int id) {
     Id = id;
   }
+
+  public IEnumerable<FolderM> GetFolders() =>
+    Folder.GetThisAndParents();
+
+  public IEnumerable<KeywordM> GetKeywords() =>
+    Keywords
+      .EmptyIfNull()
+      .Concat(this.GetSegments().GetKeywords())
+      .Distinct()
+      .SelectMany(x => x.GetThisAndParents())
+      .Distinct();
+
+  public IEnumerable<PersonM> GetPeople() =>
+    People
+      .EmptyIfNull()
+      .Concat(Segments.GetPeople())
+      .Distinct();
+
+  public IEnumerable<SegmentM> GetSegments() =>
+    Segments.EmptyIfNull();
 
   public void SetInfoBox() {
     InfoBoxThumb?.Clear();
@@ -78,7 +98,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
       InfoBoxThumb.Add(g.Name);
 
     if (People != null || Segments != null)
-      InfoBoxThumb.AddItems(this.GetPeople().Select(x => x.Name).OrderBy(x => x).ToArray(), null);
+      InfoBoxThumb.AddItems(GetPeople().Select(x => x.Name).OrderBy(x => x).ToArray(), null);
 
     if (Keywords != null)
       InfoBoxThumb.AddItems(DisplayKeywords, null);
@@ -118,4 +138,33 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
 public static class MediaItemExtensions {
   public static T GetByFileName<T>(this IEnumerable<T> items, string fileName) where T : MediaItemM =>
     items.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
+
+  public static IEnumerable<FolderM> GetFolders(this IEnumerable<MediaItemM> items) =>
+    items
+      .EmptyIfNull()
+      .SelectMany(x => x.GetFolders())
+      .Distinct();
+
+  public static IEnumerable<GeoNameM> GetGeoNames(this IEnumerable<MediaItemM> items) =>
+    items
+      .EmptyIfNull()
+      .SelectMany(x => x.GetGeoNames())
+      .Distinct();
+
+  public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<MediaItemM> items) =>
+    items
+      .EmptyIfNull()
+      .SelectMany(x => x.GetKeywords())
+      .Distinct();
+
+  public static IEnumerable<PersonM> GetPeople(this IEnumerable<MediaItemM> items) =>
+    items
+      .EmptyIfNull()
+      .SelectMany(x => x.GetPeople())
+      .Distinct();
+
+  public static IEnumerable<SegmentM> GetSegments(this IEnumerable<MediaItemM> items) =>
+    items
+      .EmptyIfNull()
+      .SelectMany(x => x.GetSegments());
 }
