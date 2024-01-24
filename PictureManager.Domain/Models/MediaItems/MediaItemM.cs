@@ -86,7 +86,8 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public IEnumerable<SegmentM> GetSegments() =>
     Segments.EmptyIfNull();
 
-  public void SetInfoBox() {
+  public void SetInfoBox(bool update = false) {
+    if (InfoBoxThumb != null && !update) return;
     InfoBoxThumb?.Clear();
     InfoBoxThumb = new();
 

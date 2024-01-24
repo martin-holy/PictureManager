@@ -60,7 +60,7 @@ public sealed class MediaItemsM : ObservableObject {
     foreach (var mi in items) {
       mi.OnPropertyChanged(nameof(mi.DisplayKeywords));
       mi.OnPropertyChanged(nameof(mi.DisplayPeople));
-      if (mi.InfoBoxThumb != null) mi.SetInfoBox();
+      mi.SetInfoBox(true);
     }
   }
 
@@ -272,7 +272,7 @@ public sealed class MediaItemsM : ObservableObject {
     if (Dialog.Show(inputDialog) != 1) return;
 
     item.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
-    item.SetInfoBox();
+    item.SetInfoBox(true);
     item.OnPropertyChanged();
     _da.Modify(item);
   }
