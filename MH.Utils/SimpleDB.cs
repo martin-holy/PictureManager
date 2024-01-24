@@ -86,7 +86,7 @@ public class SimpleDB : ObservableObject {
     foreach (var da in _tableDAs.Where(x => x.AreTablePropsModified))
       da.SaveProps();
 
-    foreach (var rda in _relationDAs)
+    foreach (var rda in _relationDAs.Where(x => x.IsModified))
       rda.Save();
 
     SaveIdSequences();
