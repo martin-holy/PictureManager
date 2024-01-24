@@ -12,9 +12,4 @@ public static class GetDataExtensions {
     item.Parent is CategoryGroupM cg
       ? cg.GetThisAndParents()
       : Enumerable.Empty<CategoryGroupM>();
-
-  public static IEnumerable<GeoNameM> GetGeoNames(this MediaItemM mediaItem) =>
-    Core.Db.MediaItemGeoLocation.All.TryGetValue(mediaItem, out var gl) && gl.GeoName != null
-      ? gl.GeoName.GetThisAndParents()
-      : Enumerable.Empty<GeoNameM>();
 }

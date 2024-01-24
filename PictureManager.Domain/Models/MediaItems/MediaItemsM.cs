@@ -21,7 +21,7 @@ public sealed class MediaItemsM : ObservableObject {
   private MediaItemM _current;
   
   public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
-  public GeoNameM CurrentGeoName => Core.Db.MediaItemGeoLocation.GetBy(Current)?.GeoName;
+  public GeoNameM CurrentGeoName => Current?.GeoLocation?.GeoName;
   public int ItemsCount => GetItemsCount();
   public int ModifiedItemsCount => GetModifiedCount();
 

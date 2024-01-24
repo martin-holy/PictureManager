@@ -50,7 +50,7 @@ public sealed class ImagesM {
       // action
       async mi => {
         if (Core.GeoNamesM.ApiLimitExceeded) return;
-        if (Core.Db.MediaItemGeoLocation.All.TryGetValue(mi, out var gl)) {
+        if (mi.GeoLocation is { } gl) {
           if (gl.GeoName == null && gl.Lat != null && gl.Lng != null)
             Core.Db.MediaItemGeoLocation.ItemUpdate(new(mi,
               await Core.Db.GeoLocations.GetOrCreate(gl.Lat, gl.Lng, null, null)));
@@ -112,7 +112,7 @@ public sealed class ImagesM {
 
   public bool TryWriteMetadata(ImageM img) {
     try {
-      var geoName = Core.Db.MediaItemGeoLocation.GetBy(img)?.GeoName;
+      var geoName = img.GeoLocation?.GeoName;
       if (!Core.MediaItemsM.WriteMetadata(img, geoName)) throw new("Error writing metadata");
       img.IsOnlyInDb = false;
     }

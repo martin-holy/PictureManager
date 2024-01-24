@@ -3,7 +3,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Extensions;
+using PictureManager.Domain.Models.MediaItems;
 using System.Linq;
 
 namespace PictureManager.Domain.Models;

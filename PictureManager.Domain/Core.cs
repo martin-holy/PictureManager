@@ -6,7 +6,6 @@ using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
-using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
@@ -104,7 +103,6 @@ public sealed class Core {
     AttachGeoLocationsEventHandlers();
     AttachGeoNamesEventHandlers();
     AttachKeywordsEventHandlers();
-    AttachMediaItemGeoLocationEventHandlers();
     AttachMediaItemsEventHandlers();
     AttachPeopleEventHandlers();
     AttachSegmentsEventHandlers();
@@ -230,10 +228,11 @@ public sealed class Core {
   }
 
   private static void AttachGeoLocationsEventHandlers() {
-    Db.GeoLocations.ItemUpdatedEvent += (_, e) => {
-      foreach (var kv in Db.MediaItemGeoLocation.All.Where(x => ReferenceEquals(x.Value, e.Data)))
-        Db.MediaItems.Modify(kv.Key);
-    };
+    Db.GeoLocations.ItemUpdatedEvent += (_, e) =>
+      Db.MediaItems.ModifyIfContains(e.Data);
+
+    Db.GeoLocations.ItemDeletedEvent += (_, e) =>
+      Db.MediaItems.ModifyIfContains(e.Data);
   }
 
   private static void AttachGeoNamesEventHandlers() {
@@ -250,11 +249,6 @@ public sealed class Core {
       Db.Segments.RemoveKeyword(e.Data);
       Db.MediaItems.RemoveKeyword(e.Data);
     };
-  }
-
-  private static void AttachMediaItemGeoLocationEventHandlers() {
-    Db.MediaItemGeoLocation.ItemCreatedEvent += (_, e) => Db.MediaItems.Modify(e.Data.Key);
-    Db.MediaItemGeoLocation.ItemDeletedEvent += (_, e) => Db.MediaItems.Modify(e.Data.Key);
   }
 
   private static void AttachMediaItemsEventHandlers() {
@@ -276,8 +270,11 @@ public sealed class Core {
       MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
     };
 
-    Db.MediaItems.ItemDeletedEvent += (_, e) =>
+    Db.MediaItems.ItemDeletedEvent += (_, e) => {
       Db.Segments.ItemsDelete(e.Data.Segments?.ToArray());
+      if (e.Data.GeoLocation != null)
+        Db.MediaItemGeoLocation.IsModified = true;
+    };
 
     Db.MediaItems.ItemsDeletedEvent += (_, e) => {
       MediaItemsM.Current = MediaViewerM.IsVisible && e.Data.All(x => x is RealMediaItemM)

@@ -3,7 +3,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataViews;
-using PictureManager.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +26,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public int Id { get; }
   public int Rating { get; set; }
   public string Comment { get; set; }
+  public GeoLocationM GeoLocation { get; set; }
   public List<PersonM> People { get; set; }
   public List<KeywordM> Keywords { get; set; }
   public List<SegmentM> Segments { get; set; }
@@ -66,10 +66,13 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public IEnumerable<FolderM> GetFolders() =>
     Folder.GetThisAndParents();
 
+  public IEnumerable<GeoNameM> GetGeoNames() =>
+    GeoLocation?.GeoName?.GetThisAndParents() ?? Enumerable.Empty<GeoNameM>();
+
   public IEnumerable<KeywordM> GetKeywords() =>
     Keywords
       .EmptyIfNull()
-      .Concat(this.GetSegments().GetKeywords())
+      .Concat(GetSegments().GetKeywords())
       .Distinct()
       .SelectMany(x => x.GetThisAndParents())
       .Distinct();
@@ -93,9 +96,8 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     if (!string.IsNullOrEmpty(Comment))
       InfoBoxThumb.Add(Comment);
 
-    var g = Core.Db.MediaItemGeoLocation.GetBy(this)?.GeoName;
-    if (g != null)
-      InfoBoxThumb.Add(g.Name);
+    if (GeoLocation?.GeoName != null)
+      InfoBoxThumb.Add(GeoLocation.GeoName.Name);
 
     if (People != null || Segments != null)
       InfoBoxThumb.AddItems(GetPeople().Select(x => x.Name).OrderBy(x => x).ToArray(), null);

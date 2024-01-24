@@ -81,8 +81,10 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
     var all = All.Where(x => ReferenceEquals(x.GeoName, geoName)).ToArray();
     var toDelete = all.Where(x => x.Lat == null && x.Lng == null).ToArray();
 
-    foreach (var gl in all.Except(toDelete))
+    foreach (var gl in all.Except(toDelete)) {
       gl.GeoName = null;
+      RaiseItemUpdated(gl);
+    }
 
     ItemsDelete(toDelete);
     IsModified = true;
