@@ -1,6 +1,5 @@
 ﻿using MH.UI.HelperClasses;
 using MH.Utils;
-using PictureManager.Domain.Extensions;
 using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
