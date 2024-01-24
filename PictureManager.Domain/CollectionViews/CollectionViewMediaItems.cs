@@ -35,6 +35,7 @@ public class CollectionViewMediaItems : CollectionView<MediaItemM> {
     // TODO remove trunk from folders => remove common branch starting from root
     top.AddRange(GroupByItems.GetFolders(src));
     top.Add(GroupByItems.GetDatesInGroup(src));
+    top.AddRange(GroupByItems.GetGeoNames(src));
     top.Add(GroupByItems.GetKeywordsInGroup(src));
     top.Add(GroupByItems.GetPeopleInGroup(src));
 

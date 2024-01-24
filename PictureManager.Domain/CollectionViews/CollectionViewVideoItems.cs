@@ -18,6 +18,7 @@ public class CollectionViewVideoItems : CollectionView<VideoItemM> {
     var top = new List<GroupByItem<VideoItemM>>();
     top.AddRange(GroupByItems.GetFolders(src));
     top.Add(GroupByItems.GetDatesInGroup(src));
+    top.AddRange(GroupByItems.GetGeoNames(src));
     top.Add(GroupByItems.GetKeywordsInGroup(src));
     top.Add(GroupByItems.GetPeopleInGroup(src));
 

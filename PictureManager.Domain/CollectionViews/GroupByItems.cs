@@ -54,6 +54,17 @@ public static class GroupByItems {
     where T : class =>
     items.ToGroupByItems(func).AsTree<GroupByItem<T>, FolderM, string>(x => x.FullPath);
 
+  public static IEnumerable<GroupByItem<T>> GetGeoNames<T>(IEnumerable<T> items)
+    where T : MediaItemM =>
+    items.GetGeoNames().ToGroupByItemsAsTree<T>(GroupByGeoName);
+
+  public static IEnumerable<GroupByItem<SegmentM>> GetGeoNames(IEnumerable<SegmentM> items) =>
+    items.GetGeoNames().ToGroupByItemsAsTree<SegmentM>(GroupByGeoName);
+
+  public static IEnumerable<GroupByItem<T>> ToGroupByItemsAsTree<T>(this IEnumerable<GeoNameM> items, Func<T, object, bool> func)
+    where T : class =>
+    items.ToGroupByItems(func).AsTree<GroupByItem<T>, GeoNameM, string>(x => x.FullName);
+
   public static IEnumerable<GroupByItem<SegmentM>> GetPeople(IEnumerable<SegmentM> items) =>
     items
       .GetPeople()
@@ -117,6 +128,15 @@ public static class GroupByItems {
 
   private static bool GroupByFolder(SegmentM item, object parameter) =>
     GroupByFolder(item.MediaItem.Folder, parameter);
+
+  private static bool GroupByGeoName(GeoNameM geoName, object parameter) =>
+    geoName?.GetThisAndParents()?.Contains(parameter as GeoNameM) == true;
+
+  private static bool GroupByGeoName(MediaItemM item, object parameter) =>
+    GroupByGeoName(item.GeoLocation?.GeoName, parameter);
+
+  private static bool GroupByGeoName(SegmentM item, object parameter) =>
+    GroupByGeoName(item.MediaItem.GeoLocation?.GeoName, parameter);
 
   private static bool GroupByPerson(PersonM person, object parameter) =>
     ReferenceEquals(parameter, person) ||
