@@ -105,6 +105,11 @@ public static class SegmentExtensions {
       .GetMediaItems()
       .GetFolders();
 
+  public static IEnumerable<GeoNameM> GetGeoNames(this IEnumerable<SegmentM> segments) =>
+    segments
+      .GetMediaItems()
+      .GetGeoNames();
+
   public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<SegmentM> segments) =>
     segments
       .EmptyIfNull()

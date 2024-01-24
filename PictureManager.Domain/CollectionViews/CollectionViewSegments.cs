@@ -22,6 +22,7 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
     var src = source.ToArray();
     var top = new List<GroupByItem<SegmentM>>();
     top.AddRange(GroupByItems.GetFolders(src));
+    top.AddRange(GroupByItems.GetGeoNames(src));
     top.Add(GroupByItems.GetKeywordsInGroup(src));
     top.Add(GroupByItems.GetPeopleInGroup(src));
 
