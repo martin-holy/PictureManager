@@ -5,7 +5,6 @@ using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;

@@ -3,7 +3,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
-using PictureManager.Domain.Extensions;
 using PictureManager.Domain.TreeCategories;
 using System.Linq;
 

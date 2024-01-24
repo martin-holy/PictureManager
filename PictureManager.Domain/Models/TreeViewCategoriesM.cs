@@ -2,7 +2,6 @@
 using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
