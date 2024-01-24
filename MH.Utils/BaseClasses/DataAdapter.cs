@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace MH.Utils.BaseClasses;
 
@@ -68,6 +69,9 @@ public class DataAdapter<T> : DataAdapter {
   public virtual string ToCsv(T item) => throw new NotImplementedException();
   public virtual void AddItem(T item, string[] props) => throw new NotImplementedException();
   public virtual Dictionary<string, IEnumerable<T>> GetAsDriveRelated() => throw new NotImplementedException();
+
+  public virtual IEnumerable<T> GetAll(Func<T, bool> where) =>
+    All.Where(where);
 
   public override void Load() {
     if (IsDriveRelated)
