@@ -1,7 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
@@ -145,8 +144,10 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     copy.Rating = item.Rating;
     copy.Comment = item.Comment;
 
-    if (_db.MediaItemGeoLocation.All.TryGetValue(item, out var gl))
-      _db.MediaItemGeoLocation.ItemCreate(new(copy, gl));
+    if (item.GeoLocation != null) {
+      copy.GeoLocation = item.GeoLocation;
+      _db.MediaItemGeoLocation.IsModified = true;
+    }
 
     if (item.People != null)
       copy.People = new(item.People);
@@ -184,7 +185,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     _db.VideoImages.ItemsDelete(items.OfType<VideoImageM>().ToArray());
   }
 
-  public IEnumerable<MediaItemM> GetAll(Func<MediaItemM, bool> where) =>
+  public override IEnumerable<MediaItemM> GetAll(Func<MediaItemM, bool> where) =>
     _db.Images.All.Where(where)
       .Concat(_db.Videos.All.Where(where))
       .Concat(_db.VideoClips.All.Where(where))
@@ -192,6 +193,9 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
 
   private void Modify(IEnumerable<MediaItemM> items) =>
     ChangeMetadata(items.ToArray(), null);
+
+  public void ModifyIfContains(GeoLocationM gl) =>
+    Modify(GetAll(x => ReferenceEquals(x.GeoLocation, gl)));
 
   public void ModifyIfContains(PersonM person) =>
     Modify(GetAll(mi => mi.GetPeople().Contains(person)));
@@ -274,11 +278,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
 
   public IEnumerable<MediaItemM> GetItems(GeoNameM geoName, bool recursive) {
     var set = (recursive ? geoName.Flatten() : new[] { geoName }).ToHashSet();
-
-    return _db.MediaItemGeoLocation.All
-      .Where(x => x.Value.GeoName != null && set.Contains(x.Value.GeoName))
-      .Select(x => x.Key)
-      .OrderBy(mi => mi.FileName);
+    return GetAll(x => set.Contains(x.GeoLocation?.GeoName)).OrderBy(mi => mi.FileName);
   }
 
   public IEnumerable<MediaItemM> GetItems(RatingM rating) =>
