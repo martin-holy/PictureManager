@@ -109,7 +109,7 @@ public sealed class ImagesM {
     progress.Init(items, null, mi => TryWriteMetadata(mi), mi => mi.FilePath, null);
     progress.Start();
     Dialog.Show(progress);
-    Core.MediaItemsStatusBarM.OnPropertyChanged(nameof(Core.MediaItemsStatusBarM.FileSize));
+    _ = Core.MediaItemsStatusBarM.UpdateFileSize();
     Core.MediaItemsM.UpdateModifiedCount();
   }
 
