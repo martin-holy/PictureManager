@@ -103,7 +103,7 @@ public class MediaItemMetadata {
     }
   }
 
-  public async Task FindGeoLocation() =>
+  public async Task FindGeoLocation(bool online = true) =>
     Core.Db.MediaItemGeoLocation.ItemUpdate(new(MediaItem,
-      await Core.Db.GeoLocations.GetOrCreate(Lat, Lng, GeoNameId, null)));
+      await Core.Db.GeoLocations.GetOrCreate(Lat, Lng, GeoNameId, null, online)));
 }

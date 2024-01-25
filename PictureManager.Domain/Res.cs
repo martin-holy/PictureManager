@@ -72,9 +72,9 @@ namespace PictureManager.Domain {
       { typeof(FolderKeywordsTreeCategory), "TreeContextMenuFolderKeywords" },
       { typeof(KeywordsTreeCategory), "TreeContextMenuKeywords" },
       { typeof(KeywordM), "TreeContextMenuKeyword" },
-      { typeof(GeoNamesM), "TreeContextMenuGeoNames" },
+      { typeof(GeoNamesTreeCategory), "TreeContextMenuGeoNames" },
       { typeof(GeoNameM), "TreeContextMenuGeoName" },
-      { typeof(ViewersM), "TreeContextMenuViewers" },
+      { typeof(ViewersTreeCategory), "TreeContextMenuViewers" },
       { typeof(ViewerM), "TreeContextMenuViewer" },
       { typeof(CategoryGroupM), "TreeContextMenuGroup" }
     };

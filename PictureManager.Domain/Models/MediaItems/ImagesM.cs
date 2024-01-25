@@ -15,18 +15,25 @@ namespace PictureManager.Domain.Models.MediaItems;
 public sealed class ImagesM {
   private readonly ImagesDA _da;
 
-  public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
-  public RelayCommand<object> CompressCommand { get; }
-  public RelayCommand<MediaItemsView> ImagesToVideoCommand { get; }
-  public RelayCommand<object> ResizeImagesCommand { get; }
-  public RelayCommand<object> SaveToFilesCommand { get; }
+  public RelayCommand<object> ReadGeoLocationFromFilesCommand { get; private set; }
+  public RelayCommand<object> GetGeoNamesFromWebCommand { get; private set; }
+  public RelayCommand<object> CompressCommand { get; private set; }
+  public RelayCommand<MediaItemsView> ImagesToVideoCommand { get; private set; }
+  public RelayCommand<object> ResizeImagesCommand { get; private set; }
+  public RelayCommand<object> SaveToFilesCommand { get; private set; }
 
   public ImagesM(ImagesDA da) {
     _da = da;
+  }
 
-    AddGeoNamesFromFilesCommand = new(
-      AddGeoNamesFromFiles,
-      () => Core.MediaItemsViews.Current?.Selected.Items.Count > 0);
+  public void InitCommands() {
+    ReadGeoLocationFromFilesCommand = new(
+      x => ReadGeoLocationFromFiles(Core.MediaItemsM.GetActive<ImageM>(x)),
+      Core.MediaItemsM.AnyActive<ImageM>);
+
+    GetGeoNamesFromWebCommand = new(
+      x => GetGeoNamesFromWeb(Core.MediaItemsM.GetActive<ImageM>(x)),
+      Core.MediaItemsM.AnyActive<ImageM>);
 
     CompressCommand = new(Compress, () => Core.MediaItemsM.GetActive().OfType<ImageM>().Any());
 
@@ -41,34 +48,30 @@ public sealed class ImagesM {
     SaveToFilesCommand = new(SaveToFiles);
   }
 
-  public void AddGeoNamesFromFiles() {
-    var items = Core.MediaItemsViews.Current.Selected.Items.OfType<ImageM>().ToArray();
-    var progress = new ProgressBarSyncDialog("Adding GeoNames ...", Res.IconLocationCheckin, true);
-    _ = progress.Init(
-      items,
-      null,
-      // action
-      async mi => {
-        if (Core.GeoNamesM.ApiLimitExceeded) return;
-        if (mi.GeoLocation is { } gl) {
-          if (gl.GeoName == null && gl.Lat != null && gl.Lng != null)
-            Core.Db.MediaItemGeoLocation.ItemUpdate(new(mi,
-              await Core.Db.GeoLocations.GetOrCreate(gl.Lat, gl.Lng, null, null)));
-        }
-        else {
-          var mim = new MediaItemMetadata(mi);
-          await Task.Run(() => { MediaItemsM.ReadMetadata(mim, true); });
-          if (mim.Success) await mim.FindGeoLocation();
-        }
-      },
-      mi => mi.FilePath,
-      // onCompleted
-      delegate {
-        Core.MediaItemsM.CurrentGeoName?.OnPropertyChanged(nameof(Core.MediaItemsM.CurrentGeoName.FullName));
-        Core.Db.MediaItems.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
-      });
+  private void ReadGeoLocationFromFiles(ImageM[] items, bool reload = true) {
+    GeoLocationProgressDialog(items, "Reading GeoLocations from files ...", async mi => {
+      if (!reload && mi.GeoLocation != null) return;
+      var mim = new MediaItemMetadata(mi);
+      await Task.Run(() => { MediaItemsM.ReadMetadata(mim, true); });
+      if (mim.Success) await mim.FindGeoLocation(false);
+    });
+  }
 
+  private void GetGeoNamesFromWeb(ImageM[] items) {
+    items = items.Where(x => x.GeoLocation is { } gl && gl.GeoName == null && gl.Lat != null && gl.Lng != null).ToArray();
+    if (items.Length == 0) return;
+    GeoLocationProgressDialog(items, "Getting GeoNames from web ...", async mi => {
+      if (Core.GeoNamesM.ApiLimitExceeded) return;
+      Core.Db.MediaItemGeoLocation.ItemUpdate(new(mi,
+        await Core.Db.GeoLocations.GetOrCreate(mi.GeoLocation.Lat, mi.GeoLocation.Lng, null, null)));
+    });
+  }
+
+  private void GeoLocationProgressDialog(ImageM[] items, string msg, Func<ImageM, Task> action) {
+    var progress = new ProgressBarSyncDialog(msg, Res.IconLocationCheckin, true);
+    _ = progress.Init(items, null, action, mi => mi.FilePath, null);
     progress.Start();
+    Core.Db.MediaItems.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
   }
 
   private void Compress() {

@@ -30,12 +30,20 @@
               <Path Data="{StaticResource IconSettings}"/>
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem Header="GeoNames" Command="{Binding ImagesM.AddGeoNamesFromFilesCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconLocationCheckin}"/>
-            </MenuItem.Icon>
-          </MenuItem>
           <MenuItem Header="Test Button" Command="{Binding TestButtonCommand, Source={x:Static pm:App.Ui}}"/>
+        </MenuItem>
+
+        <!-- GeoLocation -->
+        <MenuItem Header="GeoLocation">
+          <MenuItem
+            Header="New GeoName from GPS"
+            Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
+          <MenuItem
+            Header="Read GeoLocation from files"
+            Command="{Binding ImagesM.ReadGeoLocationFromFilesCommand}"/>
+          <MenuItem
+            Header="Get GeoNames from web"
+            Command="{Binding ImagesM.GetGeoNamesFromWebCommand}"/>
         </MenuItem>
 
         <!-- Media Items -->
