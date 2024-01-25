@@ -9,13 +9,16 @@ namespace PictureManager.Domain.Models.MediaItems;
 public class RealMediaItemM : MediaItemM {
   private int _thumbWidth;
   private int _thumbHeight;
+  private int _width;
+  private int _height;
 
   public sealed override FolderM Folder { get; set; }
   public sealed override string FileName { get; set; }
   public override string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
   public override string FilePathCache => GetFilePathCache();
-  public override int Width { get; set; }
-  public override int Height { get; set; }
+
+  public override int Width { get => _width; set { _width = value; OnPropertyChanged(); } }
+  public override int Height { get => _height; set { _height = value; OnPropertyChanged(); } }
   public override int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
   public override int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
   public override int Orientation { get; set; }
