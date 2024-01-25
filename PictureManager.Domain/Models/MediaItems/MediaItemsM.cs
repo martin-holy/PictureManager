@@ -57,6 +57,7 @@ public sealed class MediaItemsM : ObservableObject {
 
   public void OnMetadataChanged(MediaItemM[] items) {
     UpdateModifiedCount();
+    CurrentGeoName?.OnPropertyChanged(nameof(CurrentGeoName.FullName));
     foreach (var mi in items) {
       mi.OnPropertyChanged(nameof(mi.DisplayKeywords));
       mi.OnPropertyChanged(nameof(mi.DisplayPeople));

@@ -82,6 +82,7 @@ public sealed class Core {
     var scale = GetDisplayScale();
     MediaItemsViews.DefaultThumbScale = 1 / scale;
     SegmentsM.SetSegmentUiSize(scale);
+    ImagesM.InitCommands();
     MediaItemsM.UpdateItemsCount();
 
     KeywordsM.TreeCategory.AutoAddedGroup ??=

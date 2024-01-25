@@ -93,10 +93,16 @@
   </ContextMenu>
 
   <!-- GeoNames -->
-  <ContextMenu x:Key="TreeContextMenuGeoNames">
+  <ContextMenu x:Key="TreeContextMenuGeoNames" DataContext="{Binding Source={x:Static pm:App.Core}}">
     <MenuItem
-      Header="New"
-      Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand, Source={x:Static pm:App.Core}}"/>
+      Header="New GeoName from GPS"
+      Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
+    <MenuItem
+      Header="Read GeoLocation from files"
+      Command="{Binding ImagesM.ReadGeoLocationFromFilesCommand}"/>
+    <MenuItem
+      Header="Get GeoNames from web"
+      Command="{Binding ImagesM.GetGeoNamesFromWebCommand}"/>
   </ContextMenu>
 
   <!-- Viewers -->
@@ -182,6 +188,16 @@
     <MenuItem
       Header="Set as Folder Keyword"
       Command="tc:FolderKeywordsTreeCategory.SetAsFolderKeywordCommand"
+      CommandParameter="{Binding}"/>
+    <MenuItem
+      Header="Read GeoLocation from files"
+      Command="{Binding ImagesM.ReadGeoLocationFromFilesCommand,
+                Source={x:Static pm:App.Core}}"
+      CommandParameter="{Binding}"/>
+    <MenuItem
+      Header="Get GeoNames from web"
+      Command="{Binding ImagesM.GetGeoNamesFromWebCommand,
+                Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Reload metadata"

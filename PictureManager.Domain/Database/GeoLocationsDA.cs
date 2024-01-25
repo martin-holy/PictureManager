@@ -41,12 +41,13 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
       GeoName = g
     });
 
-  public async Task<GeoLocationM> GetOrCreate(double? lat, double? lng, int? gnId, GeoNameM gn) {
+  public async Task<GeoLocationM> GetOrCreate(double? lat, double? lng, int? gnId, GeoNameM gn, bool online = true) {
     if (lat == null && lng == null && gnId == null && gn == null) return null;
 
     if (gnId != null) {
-      gn = _db.GeoNames.All.SingleOrDefault(x => x.GetHashCode() == gnId)
-           ?? await _db.GeoNames.Model.InsertGeoNameHierarchy((int)gnId);
+      gn = _db.GeoNames.All.SingleOrDefault(x => x.GetHashCode() == gnId);
+      if (gn == null && online)
+        gn = await _db.GeoNames.Model.InsertGeoNameHierarchy((int)gnId);
     }
 
     GeoLocationM gl;
@@ -57,7 +58,9 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
         Math.Abs((double)x.Lat - (double)lat) < 0.00001 &&
         Math.Abs((double)x.Lng - (double)lng) < 0.00001);
 
-      if (gn == null)
+      if (gl?.GeoName != null) gn = gl.GeoName;
+
+      if (gn == null && online)
         gn = await _db.GeoNames.Model.InsertGeoNameHierarchy((double)lat, (double)lng);
 
       if (gl != null && gl.GeoName == null && gn != null) {
