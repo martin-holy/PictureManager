@@ -31,7 +31,7 @@
 
         <FrameworkElement.LayoutTransform>
           <TransformGroup>
-            <RotateTransform Angle="{Binding Path=DataContext.(dv:VideoDetail.Current).RotationAngle, ElementName=root}"/>
+            <RotateTransform Angle="{Binding Path=VideoDetail.Current.RotationAngle, Source={x:Static pm:App.Core}}"/>
           </TransformGroup>
         </FrameworkElement.LayoutTransform>
       </ContentControl>
