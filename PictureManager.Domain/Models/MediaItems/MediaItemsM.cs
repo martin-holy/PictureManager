@@ -222,9 +222,10 @@ public sealed class MediaItemsM : ObservableObject {
       async mi => {
         // TODO check async and maybe use the other ProgressBarDialog
         var mim = new MediaItemMetadata(mi);
-        ReadMetadata(mim, false);
+        if (mi is not VideoM) ReadMetadata(mim, false);
 
         await Tasks.RunOnUiThread(async () => {
+          if (mi is VideoM) ReadMetadata(mim, false);
           if (mim.Success) await mim.FindRefs();
           _da.Modify(mi);
           mi.IsOnlyInDb = false;
