@@ -286,6 +286,18 @@ public sealed class MediaItemsM : ObservableObject {
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.Selected.Items.ToArray();
 
+  public bool AnyActive<T>(object folder) where T : MediaItemM =>
+    folder is FolderM
+    || (Core.MainWindowM.IsInViewMode && Current is T)
+    || Core.MediaItemsViews.Current?.Selected.Items.OfType<T>().Any() == true;
+
+  public T[] GetActive<T>(object folder) where T : MediaItemM =>
+    folder is FolderM f
+      ? f.GetMediaItems(Keyboard.IsShiftOn()).OfType<T>().ToArray()
+      : Core.MainWindowM.IsInViewMode
+        ? Current is T current ? new[] { current } : Array.Empty<T>()
+        : Core.MediaItemsViews.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
+
   public static bool IsSupportedFileType(string filePath) =>
     _supportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
 }
