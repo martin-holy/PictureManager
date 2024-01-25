@@ -5,30 +5,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Models.MediaItems; 
+namespace PictureManager.Domain.Models.MediaItems;
 
 public sealed class MediaItemsStatusBarM : ObservableObject {
   private readonly Dictionary<string, string> _dateFormats = new()
     { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
+  private string _fileSize;
+
   public bool IsVisible => Core.MediaItemsViews.Current != null || Core.MediaViewerM.IsVisible;
-
-  public string FileSize {
-    get {
-      try {
-        var items = Core.MediaItemsM.GetActive();
-
-        return items.Any()
-          ? IOExtensions.FileSizeToString(
-            items.Sum(mi => new FileInfo(mi.FilePath).Length))
-          : string.Empty;
-      }
-      catch {
-        return string.Empty;
-      }
-    }
-  }
+  public string FileSize { get => _fileSize; set { _fileSize = value; OnPropertyChanged(); } }
 
   public ObservableCollection<string> FilePath {
     get {
@@ -74,10 +62,24 @@ public sealed class MediaItemsStatusBarM : ObservableObject {
   public void UpdateFilePath() =>
     OnPropertyChanged(nameof(FilePath));
 
+  public async Task UpdateFileSize() {
+    var items = Core.MediaItemsM.GetActive();
+    FileSize = await Task.Run(() => {
+      try {
+        return items.Any()
+          ? IOExtensions.FileSizeToString(items.Sum(mi => new FileInfo(mi.FilePath).Length))
+          : string.Empty;
+      }
+      catch {
+        return string.Empty;
+      }
+    });
+  }
+
   public void Update() {
     OnPropertyChanged(nameof(DateAndTime));
-    OnPropertyChanged(nameof(FileSize));
     UpdateRating();
     UpdateFilePath();
+    _ = UpdateFileSize();
   }
 }

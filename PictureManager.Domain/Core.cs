@@ -150,13 +150,11 @@ public sealed class Core {
     MediaViewerM.PropertyChanged += (_, e) => {
       switch (e.PropertyName) {
         case nameof(MediaViewerM.IsVisible):
-          MediaItemsStatusBarM.UpdateFilePath();
+          MediaItemsStatusBarM.Update();
           MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
           break;
         case nameof(MediaViewerM.Current):
-          MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.FileSize));
-
-          if (MediaViewerM.Current != null && MediaItemsM.Current != MediaViewerM.Current)
+          if (MediaViewerM.Current != null && !ReferenceEquals(MediaItemsM.Current, MediaViewerM.Current))
             MediaItemsM.Current = MediaViewerM.Current;
           else
             VideoDetail.SetCurrent(MediaViewerM.Current, true);
