@@ -17,7 +17,7 @@ public class MediaPlayer : MediaElement, IPlatformSpecificUiMediaPlayer {
 
   public MediaPlayer() {
     LoadedBehavior = MediaState.Manual;
-    UnloadedBehavior = MediaState.Stop;
+    UnloadedBehavior = MediaState.Close;
     ScrubbingEnabled = true;
     Stretch = Stretch.Uniform;
     StretchDirection = StretchDirection.Both;
