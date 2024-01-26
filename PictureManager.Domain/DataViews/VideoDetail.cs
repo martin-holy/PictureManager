@@ -9,9 +9,11 @@ using System.Linq;
 
 namespace PictureManager.Domain.DataViews;
 
-public sealed class VideoDetail {
+public sealed class VideoDetail : ObservableObject {
+  private VideoM _current;
+
   public CollectionViewVideoItems CurrentVideoItems { get; } = new();
-  public VideoM Current { get; private set; }
+  public VideoM Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
   public MediaPlayer MediaPlayer { get; } = new();
 
   public Func<string, string, object[]> GetVideoMetadataFunc { get; set; }
