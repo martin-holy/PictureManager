@@ -29,6 +29,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
 
   private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, new(item));
   public void RaiseMetadataChanged(MediaItemM[] items) => MetadataChangedEvent(items);
+  public void RaiseOrientationChanged(RealMediaItemM[] items) => OrientationChangedEvent(items);
 
   private void OnDbReady() {
     MaxId = _db.Images.MaxId;
@@ -297,7 +298,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       File.Delete(mi.FilePathCache);
     }
 
-    OrientationChangedEvent(items);
+    RaiseOrientationChanged(items);
   }
 
   public IEnumerable<VideoItemM> GetVideoItems(MediaItemM[] items) {

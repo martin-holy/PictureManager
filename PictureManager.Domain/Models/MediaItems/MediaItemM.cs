@@ -45,14 +45,6 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
 
   public ExtObservableCollection<string> InfoBoxThumb { get; set; }
 
-  public int RotationAngle =>
-    (MediaOrientation)Orientation switch {
-      MediaOrientation.Rotate90 => 90,
-      MediaOrientation.Rotate180 => 180,
-      MediaOrientation.Rotate270 => 270,
-      _ => 0,
-    };
-
   public PersonM[] DisplayPeople =>
     GetPeople().OrderBy(x => x.Name).ToArray().NullIfEmpty();
 

@@ -4,6 +4,7 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
 
@@ -31,7 +32,10 @@
 
         <FrameworkElement.LayoutTransform>
           <TransformGroup>
-            <RotateTransform Angle="{Binding Path=VideoDetail.Current.RotationAngle, Source={x:Static pm:App.Core}}"/>
+            <RotateTransform Angle="{Binding
+              Path=VideoDetail.Current.Orientation,
+              Converter={x:Static pmConv:OrientationToAngleConverter.Inst},
+              Source={x:Static pm:App.Core}}"/>
           </TransformGroup>
         </FrameworkElement.LayoutTransform>
       </ContentControl>
