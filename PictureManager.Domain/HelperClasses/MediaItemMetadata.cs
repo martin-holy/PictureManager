@@ -11,6 +11,11 @@ namespace PictureManager.Domain.HelperClasses;
 
 public class MediaItemMetadata {
   public RealMediaItemM MediaItem { get; }
+  public int Rating { get; set; }
+  public string Comment { get; set; }
+  public int Width { get; set; }
+  public int Height { get; set; }
+  public int Orientation { get; set; }
   public bool Success { get; set; }
   public string[] People { get; set; }
   public string[] Keywords { get; set; }
@@ -24,6 +29,12 @@ public class MediaItemMetadata {
   }
 
   public async Task FindRefs() {
+    MediaItem.Rating = Rating;
+    MediaItem.Comment = Comment;
+    MediaItem.Width = Width;
+    MediaItem.Height = Height;
+    MediaItem.Orientation = Orientation;
+    MediaItem.SetThumbSize(true);
     FindPeople();
     FindKeywords();
     await FindGeoLocation();

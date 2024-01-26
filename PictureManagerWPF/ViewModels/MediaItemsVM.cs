@@ -35,8 +35,8 @@ public static class MediaItemsVM {
         var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
         var frame = decoder.Frames[0];
           
-        mim.MediaItem.Width = frame.PixelWidth;
-        mim.MediaItem.Height = frame.PixelHeight;
+        mim.Width = frame.PixelWidth;
+        mim.Height = frame.PixelHeight;
 
         // true because only media item dimensions are required
         if (frame.Metadata is not BitmapMetadata bm) {
@@ -63,9 +63,9 @@ public static class MediaItemsVM {
   private static void ReadVideoMetadata(MediaItemMetadata mim) {
     try {
       var size = ShellStuff.FileInformation.GetVideoMetadata(mim.MediaItem.Folder.FullPath, mim.MediaItem.FileName);
-      mim.MediaItem.Height = (int)size[0];
-      mim.MediaItem.Width = (int)size[1];
-      mim.MediaItem.Orientation = (int)size[2] switch {
+      mim.Height = (int)size[0];
+      mim.Width = (int)size[1];
+      mim.Orientation = (int)size[2] switch {
         90 => (int)MediaOrientation.Rotate90,
         180 => (int)MediaOrientation.Rotate180,
         270 => (int)MediaOrientation.Rotate270,
@@ -89,10 +89,10 @@ public static class MediaItemsVM {
       if (gpsOnly) return;
 
       mim.PeopleSegmentsKeywords = ReadPeopleSegmentsKeywords(bm);
-      mim.MediaItem.Rating = bm.Rating;
-      mim.MediaItem.Comment = StringUtils.NormalizeComment(bm.Comment);
+      mim.Rating = bm.Rating;
+      mim.Comment = StringUtils.NormalizeComment(bm.Comment);
       // Orientation 1: 0, 3: 180, 6: 270, 8: 90
-      mim.MediaItem.Orientation = (ushort?)TryGetQuery(bm, "System.Photo.Orientation") ?? 1;
+      mim.Orientation = (ushort?)TryGetQuery(bm, "System.Photo.Orientation") ?? 1;
       mim.Keywords = bm.Keywords?.ToArray();
     }
     catch (Exception) {
