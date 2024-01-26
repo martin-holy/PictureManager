@@ -55,6 +55,9 @@ public static class BitmapSourceExtensions {
     return bmp.Resize(scaleX, scaleY);
   }
 
+  public static TransformedBitmap Rotate(this BitmapSource bmp, double angle, double centerX = 0, double centerY = 0) =>
+    new(bmp, new RotateTransform(angle, centerX, centerY));
+
   public static void SaveAsJpeg(this BitmapSource bmp, string filePath, int quality) {
     Directory.CreateDirectory(filePath[..filePath.LastIndexOf(Path.DirectorySeparatorChar)]);
     var encoder = new JpegBitmapEncoder { QualityLevel = quality };
