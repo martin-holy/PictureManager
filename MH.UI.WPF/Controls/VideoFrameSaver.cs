@@ -16,15 +16,14 @@ namespace MH.UI.WPF.Controls;
    But there is not problem with hiding VideoFrameSaver behind other controls. */
 
 public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
+  private bool _capture;
   private int _idxVideo;
   private int _idxFrame;
   private long _hash;
   private VfsVideo[] _videos;
   private VfsVideo _video;
   private VfsFrame _frame;
-  private readonly DispatcherTimer _positionTimer;
   private readonly Stopwatch _timeOut = new();
-  private readonly RotateTransform _rotateTransform = new();
   private Action<VfsFrame> _onSaveAction;
   private Action<VfsFrame, Exception> _onErrorAction;
   private Action _onFinishedAction;
@@ -37,14 +36,12 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
 
   public VideoFrameSaver() {
     LoadedBehavior = MediaState.Manual;
+    UnloadedBehavior = MediaState.Close;
     IsMuted = true;
     Stretch = Stretch.Uniform;
     StretchDirection = StretchDirection.Both;
     ScrubbingEnabled = true;
-    LayoutTransform = _rotateTransform;
     MediaOpened += delegate { OnMediaOpened(); };
-    _positionTimer = new() { Interval = TimeSpan.FromMilliseconds(1) };
-    _positionTimer.Tick += delegate { OnPositionTimerTick(); };
   }
 
   public void Save(VfsVideo[] videos, Action<VfsFrame> onSaveAction, Action<VfsFrame, Exception> onErrorAction, Action onFinishedAction) {
@@ -55,11 +52,13 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     _idxVideo = -1;
     MaxWidth = ((FrameworkElement)Parent).ActualWidth;
     MaxHeight = ((FrameworkElement)Parent).ActualHeight;
+    CompositionTarget.Rendering += CompositionTargetOnRendering;
     NextVideo();
   }
 
   private void NextVideo() {
     if (_idxVideo + 1 > _videos.Length - 1) {
+      CompositionTarget.Rendering -= CompositionTargetOnRendering;
       Source = null;
       _frame = null;
       _video = null;
@@ -69,7 +68,6 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     }
 
     _video = _videos[++_idxVideo];
-    _rotateTransform.Angle = _video.Rotation;
     Source = new(_video.FilePath);
     Play();
     Stop();
@@ -83,6 +81,7 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
 
     _hash = 0;
     _idxFrame = -1;
+    _frame = null;
     Width = NaturalVideoWidth;
     Height = NaturalVideoHeight;
     Dispatcher.BeginInvoke(DispatcherPriority.Loaded, NextFrame);
@@ -97,7 +96,7 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
 
     var oldPos = _frame?.Position ?? 0;
     _frame = _video.Frames[++_idxFrame];
-    if (_idxFrame > 0 && _frame.Position == oldPos) {
+    if (_frame.Position == oldPos) {
       SaveFrame();
       NextFrame();
       return;
@@ -107,13 +106,16 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     Position = new(0, 0, 0, 0, _frame.Position);
     _timeOut.Reset();
     _timeOut.Start();
-    _positionTimer.Start();
+    _capture = true;
   }
 
-  private void OnPositionTimerTick() {
+  private void CompositionTargetOnRendering(object sender, EventArgs e) {
+    if (!_capture) return;
     var hash = GetHash();
-    if (Imaging.CompareHashes(_hash, hash) == 0 && _timeOut.ElapsedMilliseconds < 1000) return;
-    _positionTimer.Stop();
+    if (_timeOut.ElapsedMilliseconds > 2000)
+      Log.Error("VideoFrameSaver TimeOut", _frame.FilePath);
+    else if (Imaging.CompareHashes(_hash, hash) == 0) return;
+    _capture = false;
     _hash = hash;
     SaveFrame();
     NextFrame();
