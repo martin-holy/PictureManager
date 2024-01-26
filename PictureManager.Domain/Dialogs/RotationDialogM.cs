@@ -26,7 +26,7 @@ public sealed class RotationDialogM : Dialog {
   }
 
   private static void SetOrientation(RealMediaItemM mi, MediaOrientation orientation) {
-    var newOrientation = mi.RotationAngle;
+    var newOrientation = MediaItemsM.OrientationToAngle(mi.Orientation);
 
     if (mi is ImageM)
       switch (orientation) {

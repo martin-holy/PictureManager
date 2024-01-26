@@ -33,7 +33,7 @@ public class VideoThumbsM {
     foreach (var vid in vids) {
       var frames = new List<VfsFrame>();
       AddFrames(vid, frames, rebuild);
-      dic.Add(vid, new(vid.FilePath, vid.RotationAngle, frames));
+      dic.Add(vid, new(vid.FilePath, MediaItemsM.OrientationToAngle(vid.Orientation), frames));
     }
 
     foreach (var vidItems in vidsItems)

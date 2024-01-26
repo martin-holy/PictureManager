@@ -11,6 +11,7 @@ public class RealMediaItemM : MediaItemM {
   private int _thumbHeight;
   private int _width;
   private int _height;
+  private int _orientation;
 
   public sealed override FolderM Folder { get; set; }
   public sealed override string FileName { get; set; }
@@ -21,8 +22,8 @@ public class RealMediaItemM : MediaItemM {
   public override int Height { get => _height; set { _height = value; OnPropertyChanged(); } }
   public override int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
   public override int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
-  public override int Orientation { get; set; }
-  
+  public override int Orientation { get => _orientation; set { _orientation = value; OnPropertyChanged(); } }
+
   public RealMediaItemM(int id, FolderM folder, string fileName) : base(id) {
     Folder = folder;
     FileName = fileName;

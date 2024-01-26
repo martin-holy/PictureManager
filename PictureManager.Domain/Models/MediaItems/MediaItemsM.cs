@@ -232,7 +232,10 @@ public sealed class MediaItemsM : ObservableObject {
         });
       },
       mi => mi.FilePath,
-      delegate { _da.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray()); });
+      delegate {
+        _da.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
+        _da.RaiseOrientationChanged(items);
+      });
 
     progress.Start();
     Dialog.Show(progress);
@@ -302,4 +305,12 @@ public sealed class MediaItemsM : ObservableObject {
 
   public static bool IsSupportedFileType(string filePath) =>
     _supportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
+
+  public static int OrientationToAngle(int orientation) =>
+    (MediaOrientation)orientation switch {
+      MediaOrientation.Rotate90 => 90,
+      MediaOrientation.Rotate180 => 180,
+      MediaOrientation.Rotate270 => 270,
+      _ => 0,
+    };
 }

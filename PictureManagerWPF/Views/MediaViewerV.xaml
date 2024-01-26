@@ -79,7 +79,9 @@
 
             <FrameworkElement.LayoutTransform>
               <TransformGroup>
-                <RotateTransform Angle="{Binding Current.RotationAngle}"/>
+                <RotateTransform Angle="{Binding
+                  Current.Orientation,
+                  Converter={x:Static pmConv:OrientationToAngleConverter.Inst}}"/>
               </TransformGroup>
             </FrameworkElement.LayoutTransform>
           </ContentControl>
