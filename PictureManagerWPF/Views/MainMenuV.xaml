@@ -23,49 +23,51 @@
           <Path Data="{StaticResource IconThreeBars}" Margin="2 0 0 0"/>
         </MenuItem.Icon>
 
-        <!-- Tools -->
-        <MenuItem Header="Tools">
-          <MenuItem Header="Settings" Command="{Binding MainWindowM.OpenSettingsCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconSettings}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-          <MenuItem Header="Test Button" Command="{Binding TestButtonCommand, Source={x:Static pm:App.Ui}}"/>
-        </MenuItem>
+        <!--<MenuItem Header="Test Button" Command="{Binding TestButtonCommand, Source={x:Static pm:App.Ui}}"/>-->
 
         <!-- GeoLocation -->
         <MenuItem Header="GeoLocation">
+          <MenuItem
+            Header="Get GeoNames from web"
+            Command="{Binding ImagesM.GetGeoNamesFromWebCommand}"/>
           <MenuItem
             Header="New GeoName from GPS"
             Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
           <MenuItem
             Header="Read GeoLocation from files"
             Command="{Binding ImagesM.ReadGeoLocationFromFilesCommand}"/>
-          <MenuItem
-            Header="Get GeoNames from web"
-            Command="{Binding ImagesM.GetGeoNamesFromWebCommand}"/>
         </MenuItem>
 
         <!-- Media Items -->
         <MenuItem Header="Media Items">
-          <MenuItem Header="Compress" Command="{Binding ImagesM.CompressCommand}"/>
-          <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsViews.RebuildThumbnailsCommand}"/>
-          <MenuItem Header="Rebuild Video Thumbnails" Command="{Binding MediaItemsM.RebuildVideoThumbnailsCommand}"/>
-          <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="dlg:RotationDialogM.OpenCommand"/>
-          <MenuItem Header="Shuffle" Command="{Binding MediaItemsViews.ShuffleCommand}"/>
-          <MenuItem Header="Resize Images" Command="{Binding ImagesM.ResizeImagesCommand}"/>
-          <MenuItem Header="Images to Video" Command="{Binding ImagesM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
-          <MenuItem Header="Copy Paths" Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
-          <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
-          <MenuItem Header="Segments" Command="{Binding OpenSegmentsViewCommand}">
+          <MenuItem Header="Comment" InputGestureText="Ctrl+K" Command="{Binding MediaItemsM.CommentCommand}">
             <MenuItem.Icon>
-              <Path Data="{StaticResource IconEquals}"/>
+              <Path Data="{StaticResource IconNotification}"/>
             </MenuItem.Icon>
           </MenuItem>
+          <MenuItem Header="Compress" Command="{Binding ImagesM.CompressCommand}"/>
+          <MenuItem Header="Copy Paths" Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
+          <MenuItem Header="Images to Video" Command="{Binding ImagesM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
+          <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsViews.RebuildThumbnailsCommand}"/>
+          <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
+          <MenuItem Header="Resize Images" Command="{Binding ImagesM.ResizeImagesCommand}"/>
+          <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="dlg:RotationDialogM.OpenCommand"/>
+          <MenuItem Header="Segments View" Command="{Binding OpenSegmentsViewCommand}">
+            <MenuItem.Icon>
+              <Path Data="{StaticResource IconSegment}"/>
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Shuffle" Command="{Binding MediaItemsViews.ShuffleCommand}"/>
         </MenuItem>
 
         <!-- Metadata -->
         <MenuItem Header="Metadata">
+          <MenuItem Header="Reload" Command="{Binding MediaItemsM.ReloadMetadataCommand}"/>
+          <MenuItem Header="Save to files" Command="{Binding ImagesM.SaveToFilesCommand}">
+            <MenuItem.Icon>
+              <Path Data="{StaticResource IconSave}"/>
+            </MenuItem.Icon>
+          </MenuItem>
           <MenuItem
             Header="{Binding MediaItemsM.ModifiedItemsCount}"
             HeaderStringFormat="Show {0} modified"
@@ -74,23 +76,14 @@
               <Path Data="{StaticResource IconImageMultiple}"/>
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem Header="Save to files" Command="{Binding ImagesM.SaveToFilesCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconSave}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-          <MenuItem Header="Comment" InputGestureText="Ctrl+K" Command="{Binding MediaItemsM.CommentCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconNotification}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-          <MenuItem Header="Reload" Command="{Binding MediaItemsM.ReloadMetadataCommand}"/>
         </MenuItem>
 
-        <!-- What's new -->
+        <MenuItem Header="Settings" Command="{Binding MainWindowM.OpenSettingsCommand}">
+          <MenuItem.Icon>
+            <Path Data="{StaticResource IconSettings}"/>
+          </MenuItem.Icon>
+        </MenuItem>
         <MenuItem Header="What's new" Command="{Binding Source={x:Static pmdm:WhatIsNewM.OpenCommand}}"/>
-
-        <!-- About -->
         <MenuItem Header="About" Command="{Binding MainWindowM.OpenAboutCommand}"/>
       </MenuItem>
     </Menu>
