@@ -60,7 +60,7 @@ public sealed class MainWindowM : ObservableObject {
     Dialog.Show(new AboutDialogM());
 
   private static void Closing() {
-    Core.Instance.SaveDBPrompt();
+    Core.Inst.SaveDBPrompt();
     Core.Db.BackUp();
   }
 

@@ -18,9 +18,9 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain;
 
 public sealed class Core {
-  private static Core _instance;
+  private static Core _inst;
   private static readonly object _lock = new();
-  public static Core Instance { get { lock (_lock) { return _instance ??= new(); } } }
+  public static Core Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   public static Db Db { get; } = new();
   public static Settings Settings { get; } = new();

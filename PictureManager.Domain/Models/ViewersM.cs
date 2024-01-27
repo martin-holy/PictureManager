@@ -56,12 +56,12 @@ public sealed class ViewersM : ObservableObject {
 
     var da = Core.Db.Viewers;
     da.Save();
-    Core.Instance.SaveDBPrompt();
+    Core.Inst.SaveDBPrompt();
     Drives.UpdateSerialNumbers();
     da.DB.LoadAllTables(null);
     da.DB.LinkReferences(null);
     da.DB.ClearDataAdapters();
-    Core.Instance.AfterInit();
+    Core.Inst.AfterInit();
   }
 
   public bool CanViewerSee(FolderM folder) =>
