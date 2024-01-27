@@ -1,6 +1,7 @@
 ﻿using MH.UI.WPF.Converters;
 using MH.UI.WPF.Extensions;
 using MH.Utils;
+using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
@@ -42,7 +43,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
       src.BeginInit();
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.UriSource = new(segment.FilePathCache);
-      src.Rotation = Utils.Imaging.MediaOrientation2Rotation((MediaOrientation)segment.MediaItem.Orientation);
+      src.Rotation = segment.MediaItem.Orientation.SwapRotateIf(segment.MediaItem is not ImageM).ToRotation();
 
       if (IgnoreCache.Remove(segment))
         src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;

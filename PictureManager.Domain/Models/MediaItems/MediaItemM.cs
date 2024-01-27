@@ -39,7 +39,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public abstract int Height { get; set; }
   public abstract int ThumbWidth { get; set; }
   public abstract int ThumbHeight { get; set; }
-  public abstract int Orientation { get; set; }
+  public abstract Orientation Orientation { get; set; }
 
   public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
 
@@ -110,7 +110,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
 
     // TODO: move next and last line calculation elsewhere
     var desiredSize = (int)(Core.Settings.ThumbnailSize * MediaItemsViews.DefaultThumbScale);
-    var rotated = Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
+    var rotated = Orientation is Orientation.Rotate90 or Orientation.Rotate270;
 
     // TODO move rotation check to GetThumbSize or create func for getting w & h rotated
     Imaging.GetThumbSize(
@@ -125,7 +125,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   }
 
   public bool IsPanoramic() =>
-    Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270
+    Orientation is Orientation.Rotate90 or Orientation.Rotate270
       ? Height / (double)Width > 16.0 / 9.0
       : Width / (double)Height > 16.0 / 9.0;
 }

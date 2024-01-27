@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
@@ -24,7 +25,7 @@ public sealed class VideosDA : TableDataAdapter<VideoM> {
     new(int.Parse(csv[0]), null, csv[2]) {
       Width = csv[3].IntParseOrDefault(0),
       Height = csv[4].IntParseOrDefault(0),
-      Orientation = csv[5].IntParseOrDefault(1),
+      Orientation = (Orientation)csv[5].IntParseOrDefault(1),
       Rating = csv[6].IntParseOrDefault(0),
       Comment = string.IsNullOrEmpty(csv[7]) ? null : csv[7],
       IsOnlyInDb = csv[10] == "1"
@@ -37,7 +38,7 @@ public sealed class VideosDA : TableDataAdapter<VideoM> {
       vid.FileName,
       vid.Width.ToString(),
       vid.Height.ToString(),
-      vid.Orientation.ToString(),
+      vid.Orientation.ToInt().ToString(),
       vid.Rating.ToString(),
       vid.Comment ?? string.Empty,
       vid.People.ToHashCodes().ToCsv(),

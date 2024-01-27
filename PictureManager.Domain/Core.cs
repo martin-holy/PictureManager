@@ -263,10 +263,12 @@ public sealed class Core {
     };
 
     Db.MediaItems.OrientationChangedEvent += items => {
-      if (MediaViewerM.IsVisible && items.Contains(MediaItemsM.Current))
-        MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
+      if (MediaViewerM.IsVisible && items.Contains(MediaViewerM.Current))
+        MediaViewerM.Current = MediaViewerM.Current;
 
       MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
+      if (items.Contains(VideoDetail.Current))
+        VideoDetail.CurrentVideoItems.ReWrapAll();
     };
 
     Db.MediaItems.ItemDeletedEvent += (_, e) => {

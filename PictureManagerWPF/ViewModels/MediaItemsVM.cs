@@ -66,10 +66,10 @@ public static class MediaItemsVM {
       mim.Height = (int)size[0];
       mim.Width = (int)size[1];
       mim.Orientation = (int)size[2] switch {
-        90 => (int)MediaOrientation.Rotate90,
-        180 => (int)MediaOrientation.Rotate180,
-        270 => (int)MediaOrientation.Rotate270,
-        _ => (int)MediaOrientation.Normal,
+        90 => Orientation.Rotate90,
+        180 => Orientation.Rotate180,
+        270 => Orientation.Rotate270,
+        _ => Orientation.Normal,
       };
 
       mim.Success = true;
@@ -92,7 +92,7 @@ public static class MediaItemsVM {
       mim.Rating = bm.Rating;
       mim.Comment = StringUtils.NormalizeComment(bm.Comment);
       // Orientation 1: 0, 3: 180, 6: 270, 8: 90
-      mim.Orientation = (ushort?)TryGetQuery(bm, "System.Photo.Orientation") ?? 1;
+      mim.Orientation = (Orientation)((ushort?)TryGetQuery(bm, "System.Photo.Orientation") ?? 1);
       mim.Keywords = bm.Keywords?.ToArray();
     }
     catch (Exception) {
@@ -151,7 +151,7 @@ public static class MediaItemsVM {
           metadata.Rating = img.Rating;
           metadata.Comment = img.Comment ?? string.Empty;
           metadata.Keywords = new(img.Keywords?.Select(k => k.FullName).ToList() ?? new List<string>());
-          metadata.SetQuery("System.Photo.Orientation", (ushort)img.Orientation);
+          metadata.SetQuery("System.Photo.Orientation", (ushort)img.Orientation.ToInt());
           SetOrRemoveQuery(metadata, "/xmp/GeoNames:GeoNameId", geoName?.Id.ToString());
 
           bSuccess = WriteMetadataToFile(img, newFile, decoder, metadata, true);

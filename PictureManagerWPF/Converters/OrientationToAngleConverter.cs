@@ -1,5 +1,6 @@
 ﻿using MH.UI.WPF.Converters;
-using PictureManager.Domain.Models.MediaItems;
+using MH.Utils;
+using MH.Utils.Extensions;
 
 namespace PictureManager.Converters;
 
@@ -9,5 +10,5 @@ public class OrientationToAngleConverter : BaseConverter {
   public static OrientationToAngleConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   public override object Convert(object value, object parameter) =>
-    MediaItemsM.OrientationToAngle(value is int i ? i : 0);
+    (value is Orientation o ? o : Orientation.Normal).ToAngle();
 }
