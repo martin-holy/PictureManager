@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ public sealed class MediaViewerM : ObservableObject {
       OnPropertyChanged(nameof(PositionSlashCount));
 
       if (value != null) {
-        var rotated = value.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
+        var rotated = value.Orientation is Orientation.Rotate90 or Orientation.Rotate270;
 
         ContentWidth = rotated ? value.Height : value.Width;
         ContentHeight = rotated ? value.Width : value.Height;

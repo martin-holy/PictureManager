@@ -1,5 +1,7 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.ObjectModel;
@@ -213,16 +215,16 @@ namespace PictureManager.Domain.Models {
       var mX = x / scale;
       var mY = y / scale;
 
-      switch ((MediaOrientation)mediaItem.Orientation) {
-        case MediaOrientation.Rotate180:
+      switch (mediaItem.Orientation.SwapRotateIf(mediaItem is not ImageM)) {
+        case Orientation.Rotate180:
           x = mediaItem.Width - mX;
           y = mediaItem.Height - mY;
           break;
-        case MediaOrientation.Rotate270:
+        case Orientation.Rotate270:
           x = mY;
           y = mediaItem.Height - mX;
           break;
-        case MediaOrientation.Rotate90:
+        case Orientation.Rotate90:
           x = mediaItem.Width - mY;
           y = mX;
           break;
@@ -263,7 +265,8 @@ namespace PictureManager.Domain.Models {
       segment.MediaItem.SetThumbSize();
       segment.MediaItem.SetInfoBox();
 
-      var rotated = segment.MediaItem.Orientation is 6 or 8;
+      var orientation = segment.MediaItem.Orientation.SwapRotateIf(segment.MediaItem is not ImageM);
+      var rotated = orientation is Orientation.Rotate270 or Orientation.Rotate90;
       var scale = rotated
         ? segment.MediaItem.Height / (double)segment.MediaItem.ThumbWidth
         : segment.MediaItem.Width / (double)segment.MediaItem.ThumbWidth;
@@ -272,16 +275,16 @@ namespace PictureManager.Domain.Models {
         double rX = s.X;
         double rY = s.Y;
 
-        switch ((MediaOrientation)s.MediaItem.Orientation) {
-          case MediaOrientation.Rotate180:
+        switch (orientation) {
+          case Orientation.Rotate180:
             rX = s.MediaItem.Width - s.X - s.Size;
             rY = s.MediaItem.Height - s.Y - s.Size;
             break;
-          case MediaOrientation.Rotate270:
+          case Orientation.Rotate270:
             rX = s.MediaItem.Height - s.Y - s.Size;
             rY = s.X;
             break;
-          case MediaOrientation.Rotate90:
+          case Orientation.Rotate90:
             rX = s.Y;
             rY = s.MediaItem.Width - s.X - s.Size;
             break;

@@ -1,4 +1,5 @@
-﻿using MH.Utils.Extensions;
+﻿using MH.Utils;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
@@ -15,7 +16,7 @@ public class MediaItemMetadata {
   public string Comment { get; set; }
   public int Width { get; set; }
   public int Height { get; set; }
-  public int Orientation { get; set; }
+  public Orientation Orientation { get; set; }
   public bool Success { get; set; }
   public string[] People { get; set; }
   public string[] Keywords { get; set; }

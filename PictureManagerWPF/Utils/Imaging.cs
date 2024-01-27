@@ -1,5 +1,5 @@
 ﻿using MH.UI.WPF.Extensions;
-using PictureManager.Domain;
+using MH.Utils;
 using System;
 using System.IO;
 using System.Windows.Media;
@@ -8,21 +8,13 @@ using System.Windows.Media.Imaging;
 namespace PictureManager.Utils;
 
 public static class Imaging {
-  public static Rotation MediaOrientation2Rotation(MediaOrientation mo) =>
-    mo switch {
-      MediaOrientation.Rotate90 => Rotation.Rotate270,
-      MediaOrientation.Rotate180 => Rotation.Rotate180,
-      MediaOrientation.Rotate270 => Rotation.Rotate90,
-      _ => Rotation.Rotate0
-    };
-
-  public static BitmapImage GetBitmapImage(string filePath, MediaOrientation rotation) {
+  public static BitmapImage GetBitmapImage(string filePath, Orientation orientation) {
     var src = new BitmapImage();
     src.BeginInit();
     src.UriSource = new(filePath);
     src.CacheOption = BitmapCacheOption.OnLoad;
     src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
-    src.Rotation = MediaOrientation2Rotation(rotation);
+    src.Rotation = orientation.ToRotation();
     src.EndInit();
 
     return src;
@@ -39,8 +31,8 @@ public static class Imaging {
       throw new BadImageFormatException($"Image does not have any frames. {srcPath}");
 
     var frame = decoder.Frames[0];
-    var orientation = (MediaOrientation)((BitmapMetadata)frame.Metadata).GetQuery<ushort>("System.Photo.Orientation", 1);
-    var rotated = orientation is MediaOrientation.Rotate90 or MediaOrientation.Rotate270;
+    var orientation = (Orientation)((BitmapMetadata)frame.Metadata).GetQuery<ushort>("System.Photo.Orientation", 1);
+    var rotated = orientation is Orientation.Rotate90 or Orientation.Rotate270;
     var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
     var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
 

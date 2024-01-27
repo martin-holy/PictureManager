@@ -1,6 +1,7 @@
 ﻿using MH.UI.WPF.Converters;
 using MH.UI.WPF.Extensions;
 using MH.Utils;
+using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models.MediaItems;
@@ -36,21 +37,11 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
         return null;
       }
 
-      var orientation = mi.Orientation;
-      // swap 90 and 270 degrees for video
-      // TODO test it for VideoClip and VideoImage
-      if (mi is VideoM) {
-        if (mi.Orientation == 6)
-          orientation = 8;
-        else if (mi.Orientation == 8)
-          orientation = 6;
-      }
-
       var src = new BitmapImage();
       src.BeginInit();
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.UriSource = new(mi.FilePathCache);
-      src.Rotation = Utils.Imaging.MediaOrientation2Rotation((MediaOrientation)orientation);
+      src.Rotation = mi.Orientation.SwapRotateIf(mi is not ImageM).ToRotation();
 
       if (IgnoreCache.Remove(mi))
         src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;

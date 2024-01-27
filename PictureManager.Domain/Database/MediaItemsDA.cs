@@ -290,7 +290,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
                  mi.Segments?.Any(s => s.Person == person) == true)
       .OrderBy(mi => mi.FileName);
 
-  public void SetOrientation(RealMediaItemM[] items, MediaOrientation orientation, Action<RealMediaItemM, MediaOrientation> setAction) {
+  public void SetOrientation(RealMediaItemM[] items, Orientation orientation, Action<RealMediaItemM, Orientation> setAction) {
     foreach (var mi in items) {
       setAction(mi, orientation);
       Modify(mi);

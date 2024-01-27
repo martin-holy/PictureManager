@@ -1,5 +1,6 @@
 ﻿using MH.UI.HelperClasses;
 using MH.Utils;
+using MH.Utils.Extensions;
 using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ public class VideoThumbsM {
     foreach (var vid in vids) {
       var frames = new List<VfsFrame>();
       AddFrames(vid, frames, rebuild);
-      dic.Add(vid, new(vid.FilePath, MediaItemsM.OrientationToAngle(vid.Orientation), frames));
+      dic.Add(vid, new(vid.FilePath, vid.Orientation.ToAngle(), frames));
     }
 
     foreach (var vidItems in vidsItems)

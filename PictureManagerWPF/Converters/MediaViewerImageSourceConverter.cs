@@ -1,6 +1,5 @@
 ﻿using MH.UI.WPF.Converters;
 using MH.Utils;
-using PictureManager.Domain;
 using PictureManager.Domain.Models.MediaItems;
 using System;
 
@@ -14,7 +13,7 @@ public class MediaViewerImageSourceConverter : BaseConverter {
   public override object Convert(object value, object parameter) {
     try {
       return value is ImageM mi
-        ? Utils.Imaging.GetBitmapImage(mi.FilePath, (MediaOrientation)mi.Orientation)
+        ? Utils.Imaging.GetBitmapImage(mi.FilePath, mi.Orientation)
         : null;
     }
     catch (Exception ex) {

@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+  xmlns:mhu="clr-namespace:MH.Utils;assembly=MH.Utils"
+  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type md:RotationDialogM}">
     <DataTemplate.Resources>
@@ -22,19 +22,19 @@
 
       <Button
         Command="{Binding RotationCommand}"
-        CommandParameter="{x:Static pmd:MediaOrientation.Rotate90}">
+        CommandParameter="{x:Static mhu:Orientation.Rotate90}">
         <Path Data="{StaticResource IconRotateLeft}"/>
       </Button>
 
       <Button
         Command="{Binding RotationCommand}"
-        CommandParameter="{x:Static pmd:MediaOrientation.Rotate180}">
+        CommandParameter="{x:Static mhu:Orientation.Rotate180}">
         <Path Data="{StaticResource IconRotateClockwise}"/>
       </Button>
 
       <Button
         Command="{Binding RotationCommand}"
-        CommandParameter="{x:Static pmd:MediaOrientation.Rotate270}">
+        CommandParameter="{x:Static mhu:Orientation.Rotate270}">
         <Path Data="{StaticResource IconRotateRight}"/>
       </Button>
     </StackPanel>

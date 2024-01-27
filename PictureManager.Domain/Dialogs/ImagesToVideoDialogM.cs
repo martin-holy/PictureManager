@@ -74,17 +74,17 @@ namespace PictureManager.Domain.Dialogs {
 
       // Scale
       var height = (double)Core.Settings.ImagesToVideoHeight;
-      var width = mi.Orientation is (int)MediaOrientation.Rotate270 or (int)MediaOrientation.Rotate90
+      var width = mi.Orientation is Orientation.Rotate270 or Orientation.Rotate90
         ? Math.Round(mi.Height / (mi.Width / height), 0)
         : Math.Round(mi.Width / (mi.Height / height), 0);
       if (width % 2 != 0) width++;
       var scale = $"{width}x{height}";
 
       // Rotate
-      var rotation = (MediaOrientation)mi.Orientation switch {
-        MediaOrientation.Rotate180 => "transpose=clock,transpose=clock,",
-        MediaOrientation.Rotate270 => "transpose=clock:passthrough=portrait,",
-        MediaOrientation.Rotate90 => "transpose=cclock:passthrough=portrait,",
+      var rotation = mi.Orientation switch {
+        Orientation.Rotate180 => "transpose=clock,transpose=clock,",
+        Orientation.Rotate270 => "transpose=clock:passthrough=portrait,",
+        Orientation.Rotate90 => "transpose=cclock:passthrough=portrait,",
         _ => string.Empty
       };
 

@@ -1,4 +1,5 @@
 ﻿using MH.UI.Interfaces;
+using MH.Utils;
 
 namespace PictureManager.Domain.Models.MediaItems;
 
@@ -13,7 +14,7 @@ public class VideoItemM : MediaItemM, IVideoItem {
   public override string FilePath => Video.FilePath;
   public override int Width { get => Video.Width; set => Video.Width = value; }
   public override int Height { get => Video.Height; set => Video.Height = value; }
-  public override int Orientation { get => Video.Orientation; set => Video.Orientation = value; }
+  public override Orientation Orientation { get => Video.Orientation; set => Video.Orientation = value; }
   public override int ThumbWidth { get => Video.ThumbWidth; set => Video.ThumbWidth = value; }
   public override int ThumbHeight { get => Video.ThumbHeight; set => Video.ThumbHeight = value; }
 

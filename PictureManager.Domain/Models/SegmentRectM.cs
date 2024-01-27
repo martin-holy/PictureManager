@@ -1,4 +1,7 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
+using PictureManager.Domain.Models.MediaItems;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentRectM : ObservableObject {
@@ -25,18 +28,18 @@ namespace PictureManager.Domain.Models {
     }
 
     private static double GetX(SegmentM s) =>
-      (MediaOrientation)s.MediaItem.Orientation switch {
-        MediaOrientation.Rotate90 => s.Y,
-        MediaOrientation.Rotate180 => s.MediaItem.Width - s.X - s.Size,
-        MediaOrientation.Rotate270 => s.MediaItem.Height - s.Y - s.Size,
+      s.MediaItem.Orientation.SwapRotateIf(s.MediaItem is not ImageM) switch {
+        Orientation.Rotate90 => s.Y,
+        Orientation.Rotate180 => s.MediaItem.Width - s.X - s.Size,
+        Orientation.Rotate270 => s.MediaItem.Height - s.Y - s.Size,
         _ => s.X
       };
 
     private static double GetY(SegmentM s) =>
-      (MediaOrientation)s.MediaItem.Orientation switch {
-        MediaOrientation.Rotate90 => s.MediaItem.Width - s.X - s.Size,
-        MediaOrientation.Rotate180 => s.MediaItem.Height - s.Y - s.Size,
-        MediaOrientation.Rotate270 => s.X,
+      s.MediaItem.Orientation.SwapRotateIf(s.MediaItem is not ImageM) switch {
+        Orientation.Rotate90 => s.MediaItem.Width - s.X - s.Size,
+        Orientation.Rotate180 => s.MediaItem.Height - s.Y - s.Size,
+        Orientation.Rotate270 => s.X,
         _ => s.Y
       };
   }
