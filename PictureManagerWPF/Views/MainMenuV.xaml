@@ -29,13 +29,13 @@
         <MenuItem Header="GeoLocation">
           <MenuItem
             Header="Get GeoNames from web"
-            Command="{Binding ImagesM.GetGeoNamesFromWebCommand}"/>
+            Command="{Binding VM.GetGeoNamesFromWebCommand}"/>
           <MenuItem
             Header="New GeoName from GPS"
             Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
           <MenuItem
             Header="Read GeoLocation from files"
-            Command="{Binding ImagesM.ReadGeoLocationFromFilesCommand}"/>
+            Command="{Binding VM.ReadGeoLocationFromFilesCommand}"/>
         </MenuItem>
 
         <!-- Media Items -->
@@ -45,12 +45,12 @@
               <Path Data="{StaticResource IconNotification}"/>
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem Header="Compress" Command="{Binding ImagesM.CompressCommand}"/>
+          <MenuItem Header="Compress Images" Command="{Binding VM.CompressImagesCommand}"/>
           <MenuItem Header="Copy Paths" Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
-          <MenuItem Header="Images to Video" Command="{Binding ImagesM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
+          <MenuItem Header="Images to Video" Command="{Binding VM.ImagesToVideoCommand}"/>
           <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsViews.RebuildThumbnailsCommand}"/>
           <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
-          <MenuItem Header="Resize Images" Command="{Binding ImagesM.ResizeImagesCommand}"/>
+          <MenuItem Header="Resize Images" Command="{Binding VM.ResizeImagesCommand}"/>
           <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="dlg:RotationDialogM.OpenCommand"/>
           <MenuItem Header="Segments View" Command="{Binding OpenSegmentsViewCommand}">
             <MenuItem.Icon>
@@ -63,7 +63,7 @@
         <!-- Metadata -->
         <MenuItem Header="Metadata">
           <MenuItem Header="Reload" Command="{Binding MediaItemsM.ReloadMetadataCommand}"/>
-          <MenuItem Header="Save to files" Command="{Binding ImagesM.SaveToFilesCommand}">
+          <MenuItem Header="Save Image metadata to files" Command="{Binding VM.SaveImageMetadataToFilesCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconSave}"/>
             </MenuItem.Icon>

@@ -13,12 +13,9 @@ namespace PictureManager.Domain.Database;
 public sealed class ImagesDA : TableDataAdapter<ImageM> {
   private readonly Db _db;
 
-  public ImagesM Model { get; }
-
   public ImagesDA(Db db) : base("Images", 11) {
     _db = db;
     IsDriveRelated = true;
-    Model = new(this);
   }
 
   public override Dictionary<string, IEnumerable<ImageM>> GetAsDriveRelated() =>

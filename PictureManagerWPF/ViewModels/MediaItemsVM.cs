@@ -133,7 +133,7 @@ public static class MediaItemsVM {
     return output;
   }
 
-  public static bool WriteMetadata(ImageM img, GeoNameM geoName) {
+  public static bool WriteMetadata(ImageM img) {
     var original = new FileInfo(img.FilePath);
     var newFile = new FileInfo(img.FilePath + "_newFile");
     var bSuccess = false;
@@ -152,7 +152,7 @@ public static class MediaItemsVM {
           metadata.Comment = img.Comment ?? string.Empty;
           metadata.Keywords = new(img.Keywords?.Select(k => k.FullName).ToList() ?? new List<string>());
           metadata.SetQuery("System.Photo.Orientation", (ushort)img.Orientation.ToInt());
-          SetOrRemoveQuery(metadata, "/xmp/GeoNames:GeoNameId", geoName?.Id.ToString());
+          SetOrRemoveQuery(metadata, "/xmp/GeoNames:GeoNameId", img.GeoLocation?.GeoName?.Id.ToString());
 
           bSuccess = WriteMetadataToFile(img, newFile, decoder, metadata, true);
         }
