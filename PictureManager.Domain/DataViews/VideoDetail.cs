@@ -39,6 +39,7 @@ public sealed class VideoDetail : ObservableObject {
 
     if (ReferenceEquals(Current, vid) && !setSource) return;
 
+    CurrentVideoItems.Selected.DeselectAll();
     Current = vid;
     SetVideoSource(Current);
     ReloadCurrentVideoItems();
