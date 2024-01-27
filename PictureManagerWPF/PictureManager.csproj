@@ -18,7 +18,7 @@
 
   <PropertyGroup>
     <Authors>Martin Holý</Authors>
-    <Copyright>Martin Holý (2015 - 2023)</Copyright>
+    <Copyright>Martin Holý (2015 - 2024)</Copyright>
     <ApplicationIcon>modryhory.ico</ApplicationIcon>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
