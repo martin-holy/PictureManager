@@ -9,6 +9,7 @@ using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
+using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +28,6 @@ public sealed class Core {
 
   public static FoldersM FoldersM => Db.Folders.Model;
   public static GeoNamesM GeoNamesM => Db.GeoNames.Model;
-  public static ImagesM ImagesM => Db.Images.Model;
   public static KeywordsM KeywordsM => Db.Keywords.Model;
   public static MediaItemsM MediaItemsM => Db.MediaItems.Model;
   public static PeopleM PeopleM => Db.People.Model;
@@ -51,6 +51,9 @@ public sealed class Core {
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
   public static SegmentsView SegmentsView { get; set; }
+
+  public static CoreM M { get; private set; }
+  public static CoreVM VM { get; private set; }
 
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
@@ -79,10 +82,11 @@ public sealed class Core {
   }
 
   public void AfterInit() {
+    M = new();
+    VM = new(M, Db);
     var scale = GetDisplayScale();
     MediaItemsViews.DefaultThumbScale = 1 / scale;
     SegmentsM.SetSegmentUiSize(scale);
-    ImagesM.InitCommands();
     MediaItemsM.UpdateItemsCount();
 
     KeywordsM.TreeCategory.AutoAddedGroup ??=

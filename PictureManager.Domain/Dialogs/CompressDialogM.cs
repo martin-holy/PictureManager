@@ -25,12 +25,12 @@ namespace PictureManager.Domain.Dialogs {
     public string TotalCompressedSize => IOExtensions.FileSizeToString(_totalCompressedSize);
     public double ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
     public bool IsWorkInProgress { get => _isWorkInProgress; set { _isWorkInProgress = value; OnPropertyChanged(); } }
-    public List<ImageM> Items { get; set; }
+    public ImageM[] Items { get; set; }
 
-    public CompressDialogM(List<ImageM> items, int jpegQualityLevel) : base("Compress Pictures to JPG", Res.IconImage) {
+    public CompressDialogM(ImageM[] items, int jpegQualityLevel) : base("Compress Pictures to JPG", Res.IconImage) {
       Items = items;
       JpegQualityLevel = jpegQualityLevel;
-      ProgressValue = Items.Count;
+      ProgressValue = Items.Length;
 
       var compressCommand = new RelayCommand<object>(
         async () => { await Compress(); },
@@ -82,13 +82,13 @@ namespace PictureManager.Domain.Dialogs {
       RelayCommand.InvokeCanExecuteChanged(null, EventArgs.Empty);
     }
 
-    private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(List<ImageM> items, [EnumeratorCancellation] CancellationToken token = default) {
+    private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(ImageM[] items, [EnumeratorCancellation] CancellationToken token = default) {
       foreach (var mi in items) {
         if (token.IsCancellationRequested) yield break;
 
         yield return await Task.Run(() => {
           var originalSize = new FileInfo(mi.FilePath).Length;
-          var bSuccess = Core.ImagesM.TryWriteMetadata(mi);
+          var bSuccess = Core.VM.TryWriteMetadata(mi);
           var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
           return new[] { originalSize, newSize };
         });
