@@ -2,7 +2,6 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:dlg="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   xmlns:pmdm="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="Views.MainMenu">
@@ -51,7 +50,7 @@
           <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsViews.RebuildThumbnailsCommand}"/>
           <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
           <MenuItem Header="Resize Images" Command="{Binding VM.ResizeImagesCommand}"/>
-          <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="dlg:RotationDialogM.OpenCommand"/>
+          <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="{Binding VM.RotateMediaItemsCommand}"/>
           <MenuItem Header="Segments View" Command="{Binding OpenSegmentsViewCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconSegment}"/>
