@@ -104,8 +104,10 @@ public class TreeViewBase : TreeView {
   }
 
   private bool IsDiffInView(int idxItem, ITreeItem root) {
+    var bottomY = ActualHeight - 10;
+    if (_sv.ComputedHorizontalScrollBarVisibility == Visibility.Visible) bottomY -= 14;
     var idxTopItem = GetHitTestItem(10, 10)?.GetIndex(root);
-    var idxBottomItem = GetHitTestItem(10, ActualHeight - 10)?.GetIndex(root);
+    var idxBottomItem = GetHitTestItem(10, bottomY)?.GetIndex(root);
     return idxTopItem is not (null or < 0) && idxBottomItem is not (null or < 0) &&
            idxTopItem <= idxItem && idxItem <= idxBottomItem;
   }
