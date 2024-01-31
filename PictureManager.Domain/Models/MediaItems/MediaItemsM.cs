@@ -99,15 +99,15 @@ public sealed class MediaItemsM : ObservableObject {
   /// <param name="destFolder"></param>
   public void CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder) {
     var fop = new FileOperationDialogM(mode, false);
-    fop.RunTask = Task.Run(() => {
+    fop.RunTask = Task.Run(async () => {
       fop.LoadCts = new();
       var token = fop.LoadCts.Token;
 
       try {
-        CopyMove(mode, items, destFolder, fop.Progress, token);
+        await CopyMove(mode, items, destFolder, fop.Progress, token);
       }
       catch (Exception ex) {
-        Tasks.RunOnUiThread(() => Dialog.Show(new ErrorDialogM(ex)));
+        await Tasks.RunOnUiThread(() => Dialog.Show(new ErrorDialogM(ex)));
       }
     }).ContinueWith(_ => Tasks.RunOnUiThread(() => fop.Result = 1));
 
@@ -121,7 +121,7 @@ public sealed class MediaItemsM : ObservableObject {
     }
   }
 
-  private void CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder,
+  private async Task CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder,
     IProgress<object[]> progress, CancellationToken token) {
     var count = items.Count;
     var done = 0;
@@ -143,7 +143,7 @@ public sealed class MediaItemsM : ObservableObject {
         var result = FileOperationCollisionDialogM.Open(mi.FilePath, destFilePath, ref miNewFileName);
 
         if (result == CollisionResult.Skip) {
-          Tasks.RunOnUiThread(() => Core.MediaItemsViews.Current.Selected.Set(mi, false));
+          _ = Tasks.RunOnUiThread(() => Core.MediaItemsViews.Current.Selected.Set(mi, false));
           continue;
         }
 
@@ -154,7 +154,7 @@ public sealed class MediaItemsM : ObservableObject {
       switch (mode) {
         case FileOperationMode.Copy:
           // create object copy
-          var miCopy = _da.ItemCopy(mi, destFolder, miNewFileName);
+          var miCopy = await Tasks.RunOnUiThread(() => _da.ItemCopy(mi, destFolder, miNewFileName));
           // copy MediaItem and cache on file system
           Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
           File.Copy(mi.FilePath, miCopy.FilePath, true);
@@ -172,7 +172,7 @@ public sealed class MediaItemsM : ObservableObject {
           var srcDirPathCache = Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException();
 
           // DB
-          _da.ItemMove(mi, destFolder, miNewFileName); // TODO mi rewrite
+          await Tasks.RunOnUiThread(() => _da.ItemMove(mi, destFolder, miNewFileName));
 
           // File System
           File.Delete(mi.FilePath);
@@ -198,7 +198,7 @@ public sealed class MediaItemsM : ObservableObject {
       done++;
     }
 
-    _da.ItemsDelete(replaced);
+    await Tasks.RunOnUiThread(() => _da.ItemsDelete(replaced));
   }
 
   private void ReloadMetadata(List<RealMediaItemM> mediaItems) {
