@@ -186,41 +186,47 @@
       Command="tc:FavoriteFoldersTreeCategory.AddToFavoritesCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
-      Header="Compress Images"
-      Command="{Binding VM.CompressImagesCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Get GeoNames from web"
-      Command="{Binding VM.GetGeoNamesFromWebCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Read GeoLocation from files"
-      Command="{Binding VM.ReadGeoLocationFromFilesCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Rebuild Thumbnails"
-      Command="{Binding MediaItemsViews.RebuildThumbnailsCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Reload metadata"
-      Command="{Binding MediaItemsM.ReloadMetadataInFolderCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Resize Images"
-      Command="{Binding VM.ResizeImagesCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Save Image metadata to files"
-      Command="{Binding VM.SaveImageMetadataToFilesCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}">
-      <MenuItem.Icon>
-        <Path Data="{StaticResource IconSave}"/>
-      </MenuItem.Icon>
-    </MenuItem>
-    <MenuItem
       Header="Set as Folder Keyword"
       Command="tc:FolderKeywordsTreeCategory.SetAsFolderKeywordCommand"
       CommandParameter="{Binding}"/>
+
+    <MenuItem Header="GeoLocation">
+      <MenuItem
+        Header="Get GeoNames from web"
+        Command="{Binding VM.GetGeoNamesFromWebCommand, Source={x:Static pm:App.Core}}"
+        CommandParameter="{Binding}"/>
+      <MenuItem
+        Header="Read GeoLocation from files"
+        Command="{Binding VM.ReadGeoLocationFromFilesCommand, Source={x:Static pm:App.Core}}"
+        CommandParameter="{Binding}"/>
+    </MenuItem>
+
+    <MenuItem Header="Media Items">
+      <MenuItem
+        Header="Compress Images"
+        Command="{Binding VM.CompressImagesCommand, Source={x:Static pm:App.Core}}"
+        CommandParameter="{Binding}"/>
+      <MenuItem
+        Header="Rebuild Thumbnails"
+        Command="{Binding MediaItemsViews.RebuildThumbnailsCommand, Source={x:Static pm:App.Core}}"
+        CommandParameter="{Binding}"/>
+      <MenuItem
+        Header="Reload metadata"
+        Command="{Binding MediaItemsM.ReloadMetadataInFolderCommand, Source={x:Static pm:App.Core}}"
+        CommandParameter="{Binding}"/>
+      <MenuItem
+        Header="Resize Images"
+        Command="{Binding VM.ResizeImagesCommand, Source={x:Static pm:App.Core}}"
+        CommandParameter="{Binding}"/>
+      <MenuItem
+        Header="Save Image metadata to files"
+        Command="{Binding VM.SaveImageMetadataToFilesCommand, Source={x:Static pm:App.Core}}"
+        CommandParameter="{Binding}">
+        <MenuItem.Icon>
+          <Path Data="{StaticResource IconSave}"/>
+        </MenuItem.Icon>
+      </MenuItem>
+    </MenuItem>
   </ContextMenu>
   
   <!-- Favorite Folder -->
