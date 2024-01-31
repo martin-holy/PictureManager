@@ -290,12 +290,10 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
                  mi.Segments?.Any(s => s.Person == person) == true)
       .OrderBy(mi => mi.FileName);
 
-  public void SetOrientation(RealMediaItemM[] items, Orientation orientation, Action<RealMediaItemM, Orientation> setAction) {
+  public void Rotate(RealMediaItemM[] items, Orientation rotation) {
     foreach (var mi in items) {
-      setAction(mi, orientation);
+      mi.Orientation = rotation.SwapRotateIf(mi is not ImageM).Rotate(mi.Orientation);
       Modify(mi);
-      mi.SetThumbSize(true);
-      File.Delete(mi.FilePathCache);
     }
 
     RaiseOrientationChanged(items);

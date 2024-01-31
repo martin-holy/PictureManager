@@ -8,7 +8,6 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:pmdM="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:dlg="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   DataContext="{Binding Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
   IsFullScreen="{Binding MainWindowM.IsFullScreen, Mode=TwoWay}"
@@ -21,7 +20,7 @@
   FontSize="14">
 
   <Window.InputBindings>
-    <KeyBinding Modifiers="Control" Key="R" Command="dlg:RotationDialogM.OpenCommand"/>
+    <KeyBinding Modifiers="Control" Key="R" Command="{Binding VM.RotateMediaItemsCommand}"/>
     <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsM.CommentCommand}"/>
     <KeyBinding Key="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
     <KeyBinding Key="Delete" Command="{Binding MediaItemsM.DeleteCommand}"/>

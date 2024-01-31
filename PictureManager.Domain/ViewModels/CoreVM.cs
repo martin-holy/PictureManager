@@ -25,6 +25,7 @@ public class CoreVM {
   public RelayCommand<object> ImagesToVideoCommand { get; }
   public RelayCommand<object> ReadGeoLocationFromFilesCommand { get; }
   public RelayCommand<object> ResizeImagesCommand { get; }
+  public RelayCommand<object> RotateMediaItemsCommand { get; }
   public RelayCommand<object> SaveImageMetadataToFilesCommand { get; }
 
   public CoreVM(CoreM coreM, Db db) {
@@ -37,6 +38,7 @@ public class CoreVM {
     ImagesToVideoCommand = new(x => ImagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>);
     ReadGeoLocationFromFilesCommand = new(x => ReadGeoLocationFromFiles(GetActive<ImageM>(x)), AnyActive<ImageM>);
     ResizeImagesCommand = new(x => ResizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>);
+    RotateMediaItemsCommand = new(x => RotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>);
     SaveImageMetadataToFilesCommand = new(x => SaveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>);
   }
 
@@ -114,6 +116,11 @@ public class CoreVM {
 
   private void ResizeImages(ImageM[] items) =>
     Dialog.Show(new ResizeImagesDialogM(items));
+
+  private void RotateMediaItems(RealMediaItemM[] items) {
+    if (RotationDialogM.Open(out var rotation))
+      _db.MediaItems.Rotate(items, rotation);
+  }
 
   private void SaveImageMetadataToFiles(ImageM[] items) {
     if (Dialog.Show(new MessageDialog(

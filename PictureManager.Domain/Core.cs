@@ -267,6 +267,11 @@ public sealed class Core {
     };
 
     Db.MediaItems.OrientationChangedEvent += items => {
+      foreach (var rmi in items) {
+        rmi.SetThumbSize(true);
+        File.Delete(rmi.FilePathCache);
+      }
+
       if (MediaViewerM.IsVisible && items.Contains(MediaViewerM.Current))
         MediaViewerM.Current = MediaViewerM.Current;
 
