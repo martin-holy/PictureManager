@@ -3,62 +3,79 @@ using System.Windows.Input;
 
 namespace MH.Utils.BaseClasses;
 
-public static class RelayCommand {
-  public static event EventHandler CanExecuteChangedEventHandler = delegate { };
+public class RelayCommand : ICommand {
+  protected Action CommandAction;
+  protected Func<bool> CanExecuteFunc;
+
+  public string Icon { get; set; }
+  public string Text { get; set; }
+
+  public static event EventHandler CanExecuteChangedEvent = delegate { };
+
+  public event EventHandler CanExecuteChanged {
+    add => CanExecuteChangedEvent += value;
+    remove => CanExecuteChangedEvent -= value;
+  }
+
+  public RelayCommand() { }
+
+  public RelayCommand(Action command, string icon = null, string text = null) : this(icon, text) {
+    CommandAction = command;
+  }
+
+  public RelayCommand(Action command, Func<bool> canExecute, string icon = null, string text = null) : this(icon, text) {
+    CommandAction = command;
+    CanExecuteFunc = canExecute;
+  }
+
+  protected RelayCommand(string icon, string text) {
+    Icon = icon;
+    Text = text;
+  }
 
   public static void InvokeCanExecuteChanged(object o, EventArgs e) =>
-    CanExecuteChangedEventHandler(o, e);
+    CanExecuteChangedEvent(o, e);
+
+  public virtual bool CanExecute(object parameter) =>
+    CanExecuteFunc == null || CanExecuteFunc();
+
+  public virtual void Execute(object parameter) =>
+    CommandAction?.Invoke();
 }
 
-public class RelayCommand<T> : ICommand {
-  private readonly Action _command;
-  private readonly Action<T> _commandWithParameter;
-  private readonly Func<bool> _canExecute;
-  private readonly Func<T, bool> _canExecuteWithParameter;
+public class RelayCommand<T> : RelayCommand {
+  protected Action<T> CommandParamAction;
+  protected Func<T, bool> CanExecuteParamFunc;
 
-  public RelayCommand(Action command) {
-    _command = command;
+  public RelayCommand(Action command, Func<T, bool> canExecute, string icon = null, string text = null) : base(icon, text) {
+    CommandAction = command;
+    CanExecuteParamFunc = canExecute;
   }
 
-  public RelayCommand(Action command, Func<bool> canExecute) {
-    _command = command;
-    _canExecute = canExecute;
+  public RelayCommand(Action<T> command, string icon = null, string text = null) : base(icon, text) {
+    CommandParamAction = command;
   }
 
-  public RelayCommand(Action command, Func<T, bool> canExecute) {
-    _command = command;
-    _canExecuteWithParameter = canExecute;
+  public RelayCommand(Action<T> command, Func<bool> canExecute, string icon = null, string text = null) : base(icon, text) {
+    CommandParamAction = command;
+    CanExecuteFunc = canExecute;
   }
 
-  public RelayCommand(Action<T> command) {
-    _commandWithParameter = command;
+  public RelayCommand(Action<T> command, Func<T, bool> canExecute, string icon = null, string text = null) : base(icon, text) {
+    CommandParamAction = command;
+    CanExecuteParamFunc = canExecute;
   }
 
-  public RelayCommand(Action<T> command, Func<bool> canExecute) {
-    _commandWithParameter = command;
-    _canExecute = canExecute;
-  }
-
-  public RelayCommand(Action<T> command, Func<T, bool> canExecute) {
-    _commandWithParameter = command;
-    _canExecuteWithParameter = canExecute;
-  }
-
-  public bool CanExecute(object parameter) {
-    if (_canExecute != null) return _canExecute();
-    if (_canExecuteWithParameter != null) return _canExecuteWithParameter(Cast(parameter));
+  public override bool CanExecute(object parameter) {
+    if (CanExecuteFunc != null) return CanExecuteFunc();
+    if (CanExecuteParamFunc != null) return CanExecuteParamFunc(Cast(parameter));
 
     return true;
   }
 
-  public void Execute(object parameter) {
-    _command?.Invoke();
-    _commandWithParameter?.Invoke(Cast(parameter));
-  }
-
-  public event EventHandler CanExecuteChanged {
-    add => RelayCommand.CanExecuteChangedEventHandler += value;
-    remove => RelayCommand.CanExecuteChangedEventHandler -= value;
+  public override void Execute(object parameter) {
+    CommandAction?.Invoke();
+    CommandParamAction?.Invoke(Cast(parameter));
   }
 
   private static T Cast(object parameter) =>
