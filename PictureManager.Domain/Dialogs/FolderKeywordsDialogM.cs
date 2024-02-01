@@ -12,12 +12,12 @@ namespace PictureManager.Domain.Dialogs {
     public ObservableCollection<FolderM> Items { get; } = new();
     public RelayCommand<FolderM> SelectCommand { get; }
 
-    public static RelayCommand<object> OpenCommand { get; } = new(
-      () => Show(new FolderKeywordsDialogM()));
+    public static RelayCommand OpenCommand { get; } = new(
+      () => Show(new FolderKeywordsDialogM()), null, "Folder Keywords list");
 
     public FolderKeywordsDialogM() : base("Folder Keywords", Res.IconFolderPuzzle) {
       SelectCommand = new(x => SelectedFolder = x);
-      var removeCommand = new RelayCommand<object>(
+      var removeCommand = new RelayCommand(
         () => Remove(SelectedFolder),
         () => SelectedFolder != null);
 

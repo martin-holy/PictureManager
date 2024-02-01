@@ -24,13 +24,13 @@ public sealed class MediaItemsFilterM : ObservableObject {
   public RelayCommand<object> SetAndCommand { get; }
   public RelayCommand<object> SetOrCommand { get; }
   public RelayCommand<object> SetNotCommand { get; }
-  public RelayCommand<object> ClearCommand { get; }
-  public RelayCommand<object> SizeChangedCommand { get; }
+  public RelayCommand ClearCommand { get; }
+  public RelayCommand SizeChangedCommand { get; }
 
   public MediaItemsFilterM() {
-    SetAndCommand = new(item => Set(item, DisplayFilter.And));
-    SetOrCommand = new(item => Set(item, DisplayFilter.Or));
-    SetNotCommand = new(item => Set(item, DisplayFilter.Not));
+    SetAndCommand = new(item => Set(item, DisplayFilter.And), null, "Filter And");
+    SetOrCommand = new(item => Set(item, DisplayFilter.Or), null, "Filter Or");
+    SetNotCommand = new(item => Set(item, DisplayFilter.Not), null, "Filter Not");
     ClearCommand = new(Clear);
     SizeChangedCommand = new(OnFilterChanged);
   }

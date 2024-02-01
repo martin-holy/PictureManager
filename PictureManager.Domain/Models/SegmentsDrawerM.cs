@@ -17,8 +17,8 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction DoDropAction { get; }
 
-  public RelayCommand<object> AddSelectedCommand { get; }
-  public RelayCommand<object> OpenCommand { get; }
+  public RelayCommand AddSelectedCommand { get; }
+  public RelayCommand OpenCommand { get; }
 
   public SegmentsDrawerM(SegmentsM segmentsM) {
     _segmentsM = segmentsM;

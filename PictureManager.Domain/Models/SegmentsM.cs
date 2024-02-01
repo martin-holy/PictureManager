@@ -27,8 +27,8 @@ public sealed class SegmentsM : ObservableObject {
     }
   }
 
-  public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
-  public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
+  public RelayCommand SetSelectedAsSamePersonCommand { get; }
+  public RelayCommand SetSelectedAsUnknownCommand { get; }
 
   public SegmentsM(SegmentsDA da) {
     DataAdapter = da;

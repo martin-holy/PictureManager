@@ -9,7 +9,7 @@ namespace PictureManager.ViewModels {
   public static class MediaItemVideoPreviewVM {
     public static MediaElement VideoPreview { get; }
     public static RelayCommand<Grid> ShowVideoPreviewCommand { get; }
-    public static RelayCommand<object> HideVideoPreviewCommand { get; }
+    public static RelayCommand HideVideoPreviewCommand { get; }
 
     static MediaItemVideoPreviewVM() {
       ShowVideoPreviewCommand = new(ShowVideoPreview);

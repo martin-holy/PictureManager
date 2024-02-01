@@ -16,8 +16,8 @@ namespace PictureManager.Domain.Models {
     public TreeViewSearchItemM Selected { get => _selected; set { _selected = value; OnPropertyChanged(); NavigateTo(value); } }
     public ObservableCollection<TreeViewSearchItemM> SearchResult { get; } = new();
 
-    public RelayCommand<object> OpenCommand { get; }
-    public RelayCommand<object> CloseCommand { get; }
+    public RelayCommand OpenCommand { get; }
+    public RelayCommand CloseCommand { get; }
 
     public TreeViewSearchM() {
       OpenCommand = new(Open);

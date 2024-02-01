@@ -16,14 +16,14 @@ public sealed class PeopleM {
   public PeopleToolsTabM PeopleToolsTabM { get; private set; }
   public PersonDetail PersonDetail { get; private set; }
   public Selecting<PersonM> Selected { get; } = new();
-  public RelayCommand<object> OpenPeopleToolsTabCommand { get; }
+  public RelayCommand OpenPeopleToolsTabCommand { get; }
   public RelayCommand<PersonM> OpenPersonDetailCommand { get; }
 
   public PeopleM(PeopleDA da) {
     _da = da;
     TreeCategory = new(this, _da);
     OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
-    OpenPersonDetailCommand = new(OpenPersonDetail);
+    OpenPersonDetailCommand = new(OpenPersonDetail, null, "Detail");
   }
 
   private void OpenPeopleToolsTab() {

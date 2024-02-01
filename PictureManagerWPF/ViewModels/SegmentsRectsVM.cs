@@ -13,7 +13,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<MouseEventArgs> SetCurrentCommand { get; }
     public RelayCommand<MouseButtonEventArgs> CreateCommand { get; }
     public RelayCommand<MouseEventArgs> EditCommand { get; }
-    public RelayCommand<object> EndEditCommand { get; }
+    public RelayCommand EndEditCommand { get; }
     public RelayCommand<SegmentRectM> DeleteCommand { get; }
 
     public SegmentsRectsVM(SegmentsRectsM segmentsRectsM) {

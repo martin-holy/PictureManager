@@ -18,12 +18,12 @@ public sealed class GeoNamesM {
   
   public bool ApiLimitExceeded { get; set; }
   public GeoNamesTreeCategory TreeCategory { get; }
-  public RelayCommand<object> NewGeoNameFromGpsCommand { get; }
+  public RelayCommand NewGeoNameFromGpsCommand { get; }
 
   public GeoNamesM(GeoNamesDA da) {
     _da = da;
     TreeCategory = new(da);
-    NewGeoNameFromGpsCommand = new(NewGeoNameFromGps);
+    NewGeoNameFromGpsCommand = new(NewGeoNameFromGps, Res.IconLocationCheckin, "New GeoName from GPS");
   }
   
   public Task<GeoNameM> InsertGeoNameHierarchy(double lat, double lng) =>

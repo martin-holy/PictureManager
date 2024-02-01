@@ -10,7 +10,7 @@ public class WhatIsNewM {
 
   public static string Content { get; set; }
 
-  public static RelayCommand<object> OpenCommand { get; } = new(Open);
+  public static RelayCommand OpenCommand { get; } = new(Open, null, "What's new");
 
   private static void Open() {
     try {

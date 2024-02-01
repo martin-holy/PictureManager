@@ -9,7 +9,7 @@ namespace PictureManager.Domain.Dialogs {
     public FileVersionInfo Version { get => _version; set { _version = value; OnPropertyChanged(); } }
     public string HomePageUrl { get; } = "https://github.com/martin-holy/PictureManager";
 
-    public RelayCommand<object> OpenHomePageCommand { get; }
+    public RelayCommand OpenHomePageCommand { get; }
     
     public AboutDialogM() : base("About", Res.IconImage) {
       Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);

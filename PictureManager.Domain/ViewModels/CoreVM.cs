@@ -20,36 +20,38 @@ public class CoreVM {
 
   public MediaItemsViews MediaItemsViews { get; }
 
-  public RelayCommand<object> CompressImagesCommand { get; }
-  public RelayCommand<object> GetGeoNamesFromWebCommand { get; }
-  public RelayCommand<object> ImagesToVideoCommand { get; }
-  public RelayCommand<object> ReadGeoLocationFromFilesCommand { get; }
-  public RelayCommand<object> ResizeImagesCommand { get; }
-  public RelayCommand<object> RotateMediaItemsCommand { get; }
-  public RelayCommand<object> SaveImageMetadataToFilesCommand { get; }
+  public RelayCommand<FolderM> CompressImagesCommand { get; }
+  public RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; }
+  public RelayCommand<FolderM> ImagesToVideoCommand { get; }
+  public RelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; }
+  public RelayCommand<FolderM> ReloadMetadataCommand { get; }
+  public RelayCommand<FolderM> ResizeImagesCommand { get; }
+  public RelayCommand<FolderM> RotateMediaItemsCommand { get; }
+  public RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; }
 
   public CoreVM(CoreM coreM, Db db) {
     _m = coreM;
     _db = db;
     MediaItemsViews = Core.MediaItemsViews;
 
-    CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>);
-    GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>);
-    ImagesToVideoCommand = new(x => ImagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>);
-    ReadGeoLocationFromFilesCommand = new(x => ReadGeoLocationFromFiles(GetActive<ImageM>(x)), AnyActive<ImageM>);
-    ResizeImagesCommand = new(x => ResizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>);
-    RotateMediaItemsCommand = new(x => RotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>);
-    SaveImageMetadataToFilesCommand = new(x => SaveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>);
+    CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
+    GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
+    ImagesToVideoCommand = new(x => ImagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");
+    ReadGeoLocationFromFilesCommand = new(x => ReadGeoLocationFromFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
+    ReloadMetadataCommand = new(x => _m.MediaItems.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
+    ResizeImagesCommand = new(x => ResizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
+    RotateMediaItemsCommand = new(x => RotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
+    SaveImageMetadataToFilesCommand = new(x => SaveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
   }
 
-  public bool AnyActive<T>(object folder) where T : MediaItemM =>
-    folder is FolderM
+  public bool AnyActive<T>(FolderM folder) where T : MediaItemM =>
+    folder != null
     || (_m.MainWindow.IsInViewMode && _m.MediaItems.Current is T)
     || MediaItemsViews.Current?.Selected.Items.OfType<T>().Any() == true;
 
-  public T[] GetActive<T>(object folder) where T : MediaItemM =>
-    folder is FolderM f
-      ? f.GetMediaItems(Keyboard.IsShiftOn()).OfType<T>().ToArray()
+  public T[] GetActive<T>(FolderM folder) where T : MediaItemM =>
+    folder != null
+      ? folder.GetMediaItems(Keyboard.IsShiftOn()).OfType<T>().ToArray()
       : _m.MainWindow.IsInViewMode
         ? _m.MediaItems.Current is T current ? new[] { current } : Array.Empty<T>()
         : MediaItemsViews.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();

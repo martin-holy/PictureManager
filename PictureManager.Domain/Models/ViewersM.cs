@@ -24,7 +24,7 @@ public sealed class ViewersM : ObservableObject {
   }
 
   public RelayCommand<ViewerM> SetCurrentCommand { get; }
-  public RelayCommand<ViewerM> UpdateExcludedCategoryGroupsCommand { get; }
+  public RelayCommand UpdateExcludedCategoryGroupsCommand { get; }
 
   public ViewersM(ViewersDA da) {
     _da = da;

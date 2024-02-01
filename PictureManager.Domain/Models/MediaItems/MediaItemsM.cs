@@ -28,26 +28,16 @@ public sealed class MediaItemsM : ObservableObject {
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
   public Func<ImageM, bool> WriteMetadata { get; set; }
 
-  public RelayCommand<object> DeleteCommand { get; }
-  public RelayCommand<object> RenameCommand { get; }
-  public RelayCommand<object> CommentCommand { get; }
-  public RelayCommand<object> ReloadMetadataCommand { get; }
-  public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
+  public RelayCommand DeleteCommand { get; }
+  public RelayCommand RenameCommand { get; }
+  public RelayCommand CommentCommand { get; }
 
   public MediaItemsM(MediaItemsDA da) {
     _da = da;
 
     DeleteCommand = new(() => Delete(GetActive().ToArray()), () => GetActive().Any());
-    RenameCommand = new(Rename, () => Current is RealMediaItemM);
-    CommentCommand = new(() => Comment(Current), () => Current != null);
-
-    ReloadMetadataCommand = new(
-      () => ReloadMetadata(Core.MediaItemsViews.Current.Selected.Items.OfType<RealMediaItemM>().ToList()),
-      () => Core.MediaItemsViews.Current?.Selected.Items.OfType<RealMediaItemM>().Any() == true);
-
-    ReloadMetadataInFolderCommand = new(
-      x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn()).ToList()),
-      x => x != null);
+    RenameCommand = new(Rename, () => Current is RealMediaItemM, null, "Rename");
+    CommentCommand = new(() => Comment(Current), () => Current != null, Res.IconNotification, "Comment");
   }
 
   public void OnMetadataChanged(MediaItemM[] items) {
@@ -201,15 +191,14 @@ public sealed class MediaItemsM : ObservableObject {
     await Tasks.RunOnUiThread(() => _da.ItemsDelete(replaced));
   }
 
-  private void ReloadMetadata(List<RealMediaItemM> mediaItems) {
-    if (mediaItems.Count == 0 ||
+  public void ReloadMetadata(RealMediaItemM[] items) {
+    if (items.Length == 0 ||
         Dialog.Show(new MessageDialog(
           "Reload metadata from files",
-          "Do you really want to reload image metadata for {0} file{1}?".Plural(mediaItems.Count),
+          "Do you really want to reload image metadata for {0} file{1}?".Plural(items.Length),
           Res.IconQuestion,
           true)) != 1) return;
 
-    var items = mediaItems.ToArray();
     var progress = new ProgressBarAsyncDialog("Reloading metadata...", Res.IconImage, true, Environment.ProcessorCount);
     progress.Init(
       items,

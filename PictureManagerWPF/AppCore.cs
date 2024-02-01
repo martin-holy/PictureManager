@@ -14,7 +14,7 @@ namespace PictureManager;
 public sealed class AppCore : ObservableObject {
   public SegmentsRectsVM SegmentsRectsVM { get; }
 
-  public static RelayCommand<object> TestButtonCommand { get; } = new(Tests.Run);
+  public static RelayCommand TestButtonCommand { get; } = new(Tests.Run, Res.IconBug, "Test Button");
 
   public AppCore() {
     SegmentsRectsVM = new(Core.SegmentsM.SegmentsRectsM);

@@ -32,7 +32,7 @@ namespace PictureManager.Domain.Dialogs {
       JpegQualityLevel = jpegQualityLevel;
       ProgressValue = Items.Length;
 
-      var compressCommand = new RelayCommand<object>(
+      var compressCommand = new RelayCommand(
         async () => { await Compress(); },
         () => !IsWorkInProgress);
 

@@ -30,7 +30,7 @@ namespace PictureManager.Domain.Dialogs {
       CloseCommand = new(Cancel);
 
       Buttons = new DialogButton[] {
-        new("Create Video", Res.IconMovieClapper, new(CreateVideo, () => !IsBusy), true),
+        new("Create Video", Res.IconMovieClapper, new RelayCommand(CreateVideo, () => !IsBusy), true),
         new("Cancel", Res.IconXCross, CloseCommand, false, true) };
 
       _items = items;
