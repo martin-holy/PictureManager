@@ -5,6 +5,7 @@
 
   <ResourceDictionary.MergedDictionaries>
     <u:CachedResourceDictionary Source="../Brushes.xaml"/>
+    <u:CachedResourceDictionary Source="../Effects.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
   <Style x:Key="MH.Styles.Icon" TargetType="{x:Type Path}">
@@ -12,5 +13,9 @@
     <Setter Property="Height" Value="18"/>
     <Setter Property="Stretch" Value="Uniform"/>
     <Setter Property="Fill" Value="{StaticResource MH.Brushes.Foreground}"/>
+  </Style>
+
+  <Style x:Key="MH.Styles.IconWithShadow" TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
+    <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
   </Style>
 </ResourceDictionary>
