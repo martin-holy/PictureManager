@@ -24,6 +24,7 @@ public class RealMediaItemM : MediaItemM {
   public override int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
   public override int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
   public override Orientation Orientation { get => _orientation; set { _orientation = value; OnPropertyChanged(); } }
+  public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
 
   public RealMediaItemM(int id, FolderM folder, string fileName) : base(id) {
     Folder = folder;

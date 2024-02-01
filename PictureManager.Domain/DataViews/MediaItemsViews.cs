@@ -164,6 +164,6 @@ public sealed class MediaItemsViews : ObservableObject {
 
   private async void ViewModified() {
     AddView("Modified");
-    await Current.LoadByTag(Core.Db.MediaItems.GetAll(x => x.IsOnlyInDb).ToArray());
+    await Current.LoadByTag(Core.Db.MediaItems.GetModified().ToArray());
   }
 }

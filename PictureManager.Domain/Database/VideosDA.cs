@@ -54,11 +54,6 @@ public sealed class VideosDA : TableDataAdapter<VideoM> {
     }
   }
 
-  public override void Modify(VideoM item) {
-    base.Modify(item);
-    item.IsOnlyInDb = true;
-  }
-
   public override int GetNextId() =>
     _db.MediaItems.GetNextId();
 

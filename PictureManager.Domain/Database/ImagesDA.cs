@@ -54,11 +54,6 @@ public sealed class ImagesDA : TableDataAdapter<ImageM> {
     }
   }
 
-  public override void Modify(ImageM item) {
-    base.Modify(item);
-    item.IsOnlyInDb = true;
-  }
-
   public override int GetNextId() =>
     _db.MediaItems.GetNextId();
 
