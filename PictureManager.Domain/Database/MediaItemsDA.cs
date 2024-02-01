@@ -118,7 +118,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       Log.Error(ex);
     }
     
-    Modify(item);
+    ModifyOnlyDA(item);
     Model.OnPropertyChanged(nameof(Model.Current));
     RaiseItemRenamed(item);
   }
@@ -128,7 +128,7 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     item.Folder.MediaItems.Remove(item);
     item.Folder = folder;
     item.Folder.MediaItems.Add(item);
-    Modify(item);
+    ModifyOnlyDA(item);
   }
 
   public RealMediaItemM ItemCopy(RealMediaItemM item, FolderM folder, string fileName) =>
@@ -138,12 +138,13 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       _ => null
     };
 
-  public void ItemCopyCommon(MediaItemM item, MediaItemM copy) {
+  public void ItemCopyCommon(RealMediaItemM item, RealMediaItemM copy) {
     copy.Width = item.Width;
     copy.Height = item.Height;
     copy.Orientation = item.Orientation;
     copy.Rating = item.Rating;
     copy.Comment = item.Comment;
+    copy.IsOnlyInDb = item.IsOnlyInDb;
 
     if (item.GeoLocation != null) {
       copy.GeoLocation = item.GeoLocation;
@@ -161,10 +162,23 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
         _db.Segments.ItemCopy(segment, copy);
   }
 
-  public override void Modify(MediaItemM mi) {
+  private void ModifyOnlyDA(RealMediaItemM mi) {
     switch (mi) {
       case ImageM img: _db.Images.Modify(img); break;
       case VideoM vid: _db.Videos.Modify(vid); break;
+    }
+  }
+
+  public override void Modify(MediaItemM mi) {
+    switch (mi) {
+      case ImageM img:
+        _db.Images.Modify(img);
+        img.IsOnlyInDb = true;
+        break;
+      case VideoM vid:
+        _db.Videos.Modify(vid);
+        vid.IsOnlyInDb = true;
+        break;
       case VideoClipM vc: _db.VideoClips.Modify(vc); break;
       case VideoImageM vi: _db.VideoImages.Modify(vi); break;
     }
@@ -191,6 +205,10 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
       .Concat(_db.Videos.All.Where(where))
       .Concat(_db.VideoClips.All.Where(where))
       .Concat(_db.VideoImages.All.Where(where));
+
+  public IEnumerable<MediaItemM> GetModified() =>
+    _db.Images.All.Where(x => x.IsOnlyInDb).Cast<MediaItemM>()
+      .Concat(_db.Videos.All.Where(x => x.IsOnlyInDb));
 
   private void Modify(IEnumerable<MediaItemM> items) =>
     ChangeMetadata(items.ToArray(), null);

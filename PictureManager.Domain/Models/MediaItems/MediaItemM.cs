@@ -41,8 +41,6 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public abstract int ThumbHeight { get; set; }
   public abstract Orientation Orientation { get; set; }
 
-  public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
-
   public ExtObservableCollection<string> InfoBoxThumb { get; set; }
 
   public PersonM[] DisplayPeople =>
