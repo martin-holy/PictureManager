@@ -53,7 +53,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public bool IsPaused { get; private set; }
-    public RelayCommand<object> PresentationCommand { get; set; }
+    public RelayCommand PresentationCommand { get; set; }
 
     public PresentationPanelM(MediaViewerM mediaViewerM) {
       _mediaViewerM = mediaViewerM;

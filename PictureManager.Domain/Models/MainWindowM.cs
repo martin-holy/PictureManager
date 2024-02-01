@@ -36,15 +36,15 @@ public sealed class MainWindowM : ObservableObject {
     }
   }
 
-  public RelayCommand<object> OpenAboutCommand { get; }
-  public RelayCommand<object> ClosingCommand { get; }
-  public RelayCommand<object> SwitchToBrowserCommand { get; }
-  public RelayCommand<object> SaveDbCommand { get; }
-  public RelayCommand<object> OpenLogCommand { get; }
-  public RelayCommand<object> OpenSettingsCommand { get; }
+  public RelayCommand OpenAboutCommand { get; }
+  public RelayCommand ClosingCommand { get; }
+  public RelayCommand SwitchToBrowserCommand { get; }
+  public RelayCommand SaveDbCommand { get; }
+  public RelayCommand OpenLogCommand { get; }
+  public RelayCommand OpenSettingsCommand { get; }
 
   public MainWindowM() {
-    OpenAboutCommand = new(OpenAbout);
+    OpenAboutCommand = new(OpenAbout, null, "About");
     ClosingCommand = new(Closing);
     SwitchToBrowserCommand = new(
       () => IsInViewMode = false,
@@ -53,7 +53,7 @@ public sealed class MainWindowM : ObservableObject {
       () => Core.Db.SaveAllTables(),
       () => Core.Db.Changes > 0);
     OpenLogCommand = new(OpenLog);
-    OpenSettingsCommand = new(OpenSettings);
+    OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
   }
 
   private static void OpenAbout() =>

@@ -9,59 +9,25 @@
 
   <!-- Tag Items Load and Filters -->
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu">
-    <MenuItem
-      Header="Load"
-      Command="{Binding MediaItemsViews.LoadByTagCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Filter And"
-      Command="{Binding MediaItemsViews.Current.Filter.SetAndCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Filter Or"
-      Command="{Binding MediaItemsViews.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Filter Not"
-      Command="{Binding MediaItemsViews.Current.Filter.SetNotCommand, Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}"/>
+    <MenuItem Command="{Binding MediaItemsViews.LoadByTagCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetAndCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetNotCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
   </x:Array>
 
   <!-- People -->
-  <ContextMenu
-    x:Key="TreeContextMenuPeople"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="mhuibc:TreeCategory.ItemCreateCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="New Group"
-      Command="mhuibc:TreeCategory.GroupCreateCommand"
-      CommandParameter="{Binding}"/>
-
-    <!--TODO: Sort-->
+  <ContextMenu x:Key="TreeContextMenuPeople" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.GroupCreateCommand" CommandParameter="{Binding}"/>
   </ContextMenu>
   
-  <ContextMenu
-    x:Key="TreeContextMenuPerson"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
+  <!-- Person -->
+  <ContextMenu x:Key="TreeContextMenuPerson" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
     <ContextMenu.ItemsSource>
       <CompositeCollection>
-        <MenuItem
-          Header="Detail"
-          Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}"
-          CommandParameter="{Binding}"/>
-        <MenuItem
-          Header="Rename"
-          Command="mhuibc:TreeCategory.ItemRenameCommand"
-          CommandParameter="{Binding}"/>
-        <MenuItem
-          Header="Delete"
-          Command="mhuibc:TreeCategory.ItemDeleteCommand"
-          CommandParameter="{Binding}"/>
+        <MenuItem Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+        <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
         <Separator/>
         <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}"/>
       </CompositeCollection>
@@ -70,206 +36,87 @@
 
   <!-- Folder Keywords -->
   <ContextMenu x:Key="TreeContextMenuFolderKeywords">
-    <MenuItem
-      Header="Folder Keywords list"
-      Command="md:FolderKeywordsDialogM.OpenCommand"/>
+    <MenuItem Command="md:FolderKeywordsDialogM.OpenCommand"/>
   </ContextMenu>
 
   <!-- Keywords -->
-  <ContextMenu
-    x:Key="TreeContextMenuKeywords"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="mhuibc:TreeCategory.ItemCreateCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="New Group"
-      Command="mhuibc:TreeCategory.GroupCreateCommand"
-      CommandParameter="{Binding}"/>
-
-    <!--TODO: Sort-->
+  <ContextMenu x:Key="TreeContextMenuKeywords" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.GroupCreateCommand" CommandParameter="{Binding}"/>
   </ContextMenu>
 
   <!-- GeoNames -->
   <ContextMenu x:Key="TreeContextMenuGeoNames" DataContext="{Binding Source={x:Static pm:App.Core}}">
-    <MenuItem
-      Header="Get GeoNames from web"
-      Command="{Binding VM.GetGeoNamesFromWebCommand}"/>
-    <MenuItem
-      Header="New GeoName from GPS"
-      Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
-    <MenuItem
-      Header="Read GeoLocation from files"
-      Command="{Binding VM.ReadGeoLocationFromFilesCommand}"/>
+    <MenuItem Command="{Binding VM.GetGeoNamesFromWebCommand}"/>
+    <MenuItem Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
+    <MenuItem Command="{Binding VM.ReadGeoLocationFromFilesCommand}"/>
   </ContextMenu>
 
   <!-- Viewers -->
-  <ContextMenu
-    x:Key="TreeContextMenuViewers"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="mhuibc:TreeCategory.ItemCreateCommand"
-      CommandParameter="{Binding}"/>
-  </ContextMenu>
-
-  <!-- Video Clips -->
-  <ContextMenu
-    x:Key="TreeContextMenuVideoClips"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="mhuibc:TreeCategory.ItemCreateCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="New Group"
-      Command="mhuibc:TreeCategory.GroupCreateCommand"
-      CommandParameter="{Binding}"/>
+  <ContextMenu x:Key="TreeContextMenuViewers" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
   </ContextMenu>
   
    <!-- Tree Category Group -->
-  <ContextMenu
-    x:Key="TreeContextMenuGroup"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="mhuibc:TreeCategory.ItemCreateCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Rename Group"
-      Command="mhuibc:TreeCategory.GroupRenameCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Delete Group"
-      Command="mhuibc:TreeCategory.GroupDeleteCommand"
-      CommandParameter="{Binding}"/>
-
-    <!--TODO: Sort-->
+  <ContextMenu x:Key="TreeContextMenuGroup" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.GroupRenameCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.GroupDeleteCommand" CommandParameter="{Binding}"/>
   </ContextMenu>
   
   <!-- Drive -->
-  <ContextMenu
-    x:Key="TreeContextMenuDrive"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="mhuibc:TreeCategory.ItemCreateCommand"
-      CommandParameter="{Binding}"/>
+  <ContextMenu x:Key="TreeContextMenuDrive" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
   </ContextMenu>
   
   <!-- Folder -->
-  <ContextMenu
-    x:Key="TreeContextMenuFolder"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="mhuibc:TreeCategory.ItemCreateCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Rename"
-      Command="mhuibc:TreeCategory.ItemRenameCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Delete"
-      Command="mhuibc:TreeCategory.ItemDeleteCommand"
-      CommandParameter="{Binding}"/>
+  <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
     <Separator/>
-    <MenuItem
-      Header="Add to Favorites"
-      Command="tc:FavoriteFoldersTreeCategory.AddToFavoritesCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Set as Folder Keyword"
-      Command="tc:FolderKeywordsTreeCategory.SetAsFolderKeywordCommand"
-      CommandParameter="{Binding}"/>
+    <MenuItem Command="tc:FavoriteFoldersTreeCategory.AddToFavoritesCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="tc:FolderKeywordsTreeCategory.SetAsFolderKeywordCommand" CommandParameter="{Binding}"/>
 
     <MenuItem Header="GeoLocation">
-      <MenuItem
-        Header="Get GeoNames from web"
-        Command="{Binding VM.GetGeoNamesFromWebCommand, Source={x:Static pm:App.Core}}"
-        CommandParameter="{Binding}"/>
-      <MenuItem
-        Header="Read GeoLocation from files"
-        Command="{Binding VM.ReadGeoLocationFromFilesCommand, Source={x:Static pm:App.Core}}"
-        CommandParameter="{Binding}"/>
+      <MenuItem.Icon>
+        <Path Data="{StaticResource IconLocationCheckin}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+      </MenuItem.Icon>
+      <MenuItem Command="{Binding VM.GetGeoNamesFromWebCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{Binding VM.ReadGeoLocationFromFilesCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
     </MenuItem>
 
     <MenuItem Header="Media Items">
-      <MenuItem
-        Header="Compress Images"
-        Command="{Binding VM.CompressImagesCommand, Source={x:Static pm:App.Core}}"
-        CommandParameter="{Binding}"/>
-      <MenuItem
-        Header="Rebuild Thumbnails"
-        Command="{Binding MediaItemsViews.RebuildThumbnailsCommand, Source={x:Static pm:App.Core}}"
-        CommandParameter="{Binding}"/>
-      <MenuItem
-        Header="Reload metadata"
-        Command="{Binding MediaItemsM.ReloadMetadataInFolderCommand, Source={x:Static pm:App.Core}}"
-        CommandParameter="{Binding}"/>
-      <MenuItem
-        Header="Resize Images"
-        Command="{Binding VM.ResizeImagesCommand, Source={x:Static pm:App.Core}}"
-        CommandParameter="{Binding}"/>
-      <MenuItem
-        Header="Save Image metadata to files"
-        Command="{Binding VM.SaveImageMetadataToFilesCommand, Source={x:Static pm:App.Core}}"
-        CommandParameter="{Binding}">
-        <MenuItem.Icon>
-          <Path Data="{StaticResource IconSave}"/>
-        </MenuItem.Icon>
-      </MenuItem>
+      <MenuItem.Icon>
+        <Path Data="{StaticResource IconImageMultiple}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+      </MenuItem.Icon>
+      <MenuItem Command="{Binding VM.CompressImagesCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{Binding MediaItemsViews.RebuildThumbnailsCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{Binding VM.ReloadMetadataCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{Binding VM.ResizeImagesCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{Binding VM.SaveImageMetadataToFilesCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
     </MenuItem>
   </ContextMenu>
   
   <!-- Favorite Folder -->
-  <ContextMenu
-    x:Key="TreeContextMenuFavoriteFolder"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="Rename"
-      Command="mhuibc:TreeCategory.ItemRenameCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Delete"
-      Command="mhuibc:TreeCategory.ItemDeleteCommand"
-      CommandParameter="{Binding}"/>
+  <ContextMenu x:Key="TreeContextMenuFavoriteFolder" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
   </ContextMenu>
   
   <!-- GeoName -->
   <ContextMenu
     x:Key="TreeContextMenuGeoName"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                RelativeSource={RelativeSource Self}}"
+    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}"
     ItemsSource="{StaticResource TagItemTreeContextMenu}"/>
   
   <!-- Keyword -->
-  <ContextMenu
-    x:Key="TreeContextMenuKeyword"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                RelativeSource={RelativeSource Self}}">
+  <ContextMenu x:Key="TreeContextMenuKeyword" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
     <ContextMenu.ItemsSource>
       <CompositeCollection>
-        <MenuItem
-          Header="New"
-          Command="mhuibc:TreeCategory.ItemCreateCommand"
-          CommandParameter="{Binding}"/>
-        <MenuItem
-          Header="Rename"
-          Command="mhuibc:TreeCategory.ItemRenameCommand"
-          CommandParameter="{Binding}"/>
-        <MenuItem
-          Header="Delete"
-          Command="mhuibc:TreeCategory.ItemDeleteCommand"
-          CommandParameter="{Binding}"/>
+        <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
         <Separator/>
         <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}"/>
       </CompositeCollection>
@@ -277,18 +124,9 @@
   </ContextMenu>
   
   <!-- Viewer -->
-  <ContextMenu
-    x:Key="TreeContextMenuViewer"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="Rename"
-      Command="mhuibc:TreeCategory.ItemRenameCommand"
-      CommandParameter="{Binding}"/>
-    <MenuItem
-      Header="Delete"
-      Command="mhuibc:TreeCategory.ItemDeleteCommand"
-      CommandParameter="{Binding}"/>
+  <ContextMenu x:Key="TreeContextMenuViewer" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
   </ContextMenu>
     
 </ResourceDictionary>

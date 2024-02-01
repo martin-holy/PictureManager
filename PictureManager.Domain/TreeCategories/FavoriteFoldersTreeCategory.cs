@@ -7,7 +7,7 @@ namespace PictureManager.Domain.TreeCategories;
 
 public sealed class FavoriteFoldersTreeCategory : TreeCategory<FavoriteFolderM> {
   public static RelayCommand<FolderM> AddToFavoritesCommand =>
-    new(Core.Db.FavoriteFolders.ItemCreate);
+    new(Core.Db.FavoriteFolders.ItemCreate, null, "Add to Favorites");
 
   public FavoriteFoldersTreeCategory(FavoriteFoldersDA da) :
     base(Res.IconFolderStar, "Favorites", (int)Category.FavoriteFolders) {

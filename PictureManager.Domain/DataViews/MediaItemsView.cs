@@ -37,8 +37,8 @@ namespace PictureManager.Domain.DataViews {
         ? FilteredItems.Count.ToString()
         : $"{FilteredItems.IndexOf(Selected.Items[0]) + 1}/{FilteredItems.Count}";
 
-    public RelayCommand<object> CancelImportCommand { get; }
-    public RelayCommand<object> SelectAllCommand { get; }
+    public RelayCommand CancelImportCommand { get; }
+    public RelayCommand SelectAllCommand { get; }
 
     public MediaItemsView(double thumbScale) : base(thumbScale) {
       CanDragFunc = CanDrag;

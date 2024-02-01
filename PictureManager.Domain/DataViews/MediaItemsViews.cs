@@ -18,26 +18,26 @@ public sealed class MediaItemsViews : ObservableObject {
   public MediaItemsView Current { get => _current; set { _current = value; OnPropertyChanged(); } }
   public static double DefaultThumbScale { get; set; } = 1.0;
 
-  public RelayCommand<object> AddViewCommand { get; }
-  public RelayCommand<object> CopyPathsCommand { get; }
+  public RelayCommand AddViewCommand { get; }
+  public RelayCommand CopyPathsCommand { get; }
   public RelayCommand<object> LoadByTagCommand { get; }
-  public RelayCommand<object> ShuffleCommand { get; }
+  public RelayCommand ShuffleCommand { get; }
   public RelayCommand<FolderM> RebuildThumbnailsCommand { get; }
-  public RelayCommand<object> ViewModifiedCommand { get; }
+  public RelayCommand ViewModifiedCommand { get; }
 
   public MediaItemsViews() {
     AddViewCommand = new(() => AddView(string.Empty));
     CopyPathsCommand = new(
       () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),
-      () => Current?.Selected.Items.Any() == true);
-    LoadByTagCommand = new(LoadByTag);
+      () => Current?.Selected.Items.Any() == true, null, "Copy Paths");
+    LoadByTagCommand = new(LoadByTag, null, "Load");
     ShuffleCommand = new(
       () => Current.Shuffle(),
-      () => Current?.FilteredItems.Count > 0);
+      () => Current?.FilteredItems.Count > 0, null, "Shuffle");
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
-      x => x != null || Current?.FilteredItems.Count > 0);
-    ViewModifiedCommand = new(ViewModified);
+      x => x != null || Current?.FilteredItems.Count > 0, null, "Rebuild Thumbnails");
+    ViewModifiedCommand = new(ViewModified, Res.IconImageMultiple);
   }
 
   public void RemoveMediaItems(IList<MediaItemM> items) {

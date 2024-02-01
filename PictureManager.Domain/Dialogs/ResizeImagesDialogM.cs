@@ -32,14 +32,14 @@ namespace PictureManager.Domain.Dialogs {
     public int ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
     public ObservableCollection<string> DirPaths { get => _dirPaths; set { _dirPaths = value; OnPropertyChanged(); } }
 
-    public RelayCommand<object> OpenFolderBrowserCommand { get; }
+    public RelayCommand OpenFolderBrowserCommand { get; }
 
     public ResizeImagesDialogM(ImageM[] items) : base("Resize Images", Res.IconImageMultiple) {
       OpenFolderBrowserCommand = new(OpenFolderBrowser);
       CloseCommand = new(Cancel);
 
       Buttons = new DialogButton[] {
-        new("Resize", null, new(Resize), true),
+        new("Resize", null, new RelayCommand(Resize), true),
         new("Cancel", Res.IconXCross, CloseCommand, false, true) }; 
 
       _items = items;

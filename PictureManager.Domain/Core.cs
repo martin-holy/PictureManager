@@ -59,7 +59,7 @@ public sealed class Core {
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public static Func<double> GetDisplayScale { get; set; }
 
-  public RelayCommand<object> OpenSegmentsViewCommand { get; set; }
+  public RelayCommand OpenSegmentsViewCommand { get; set; }
 
   private Core() {
     Tasks.SetUiTaskScheduler();
@@ -99,7 +99,7 @@ public sealed class Core {
     Db.CategoryGroups.AddCategory(KeywordsM.TreeCategory);
     UiDetailVideo.SetModel(VideoDetail.MediaPlayer);
 
-    OpenSegmentsViewCommand = new(OpenSegmentsView);
+    OpenSegmentsViewCommand = new(OpenSegmentsView, Res.IconSegment, "Segments View");
   }
 
   private void AttachEvents() {

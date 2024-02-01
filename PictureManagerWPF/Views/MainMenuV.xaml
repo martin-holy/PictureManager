@@ -5,12 +5,6 @@
   xmlns:pmdm="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="Views.MainMenu">
-    <DataTemplate.Resources>
-      <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
-        <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
-      </Style>
-    </DataTemplate.Resources>
-
     <Menu Background="Transparent" DataContext="{Binding Source={x:Static pm:App.Core}}">
       <MenuItem
         Padding="0"
@@ -19,71 +13,48 @@
         Width="30">
         
         <MenuItem.Icon>
-          <Path Data="{StaticResource IconThreeBars}" Margin="2 0 0 0"/>
+          <Path
+            Data="{StaticResource IconThreeBars}"
+            Style="{StaticResource MH.Styles.IconWithShadow}"
+            Margin="2 0 0 0"/>
         </MenuItem.Icon>
 
-        <!--<MenuItem Header="Test Button" Command="{Binding TestButtonCommand, Source={x:Static pm:App.Ui}}"/>-->
+        <!--<MenuItem Command="{Binding TestButtonCommand, Source={x:Static pm:App.Ui}}"/>-->
 
-        <!-- GeoLocation -->
         <MenuItem Header="GeoLocation">
-          <MenuItem
-            Header="Get GeoNames from web"
-            Command="{Binding VM.GetGeoNamesFromWebCommand}"/>
-          <MenuItem
-            Header="New GeoName from GPS"
-            Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
-          <MenuItem
-            Header="Read GeoLocation from files"
-            Command="{Binding VM.ReadGeoLocationFromFilesCommand}"/>
-        </MenuItem>
-
-        <!-- Media Items -->
-        <MenuItem Header="Media Items">
-          <MenuItem Header="Comment" InputGestureText="Ctrl+K" Command="{Binding MediaItemsM.CommentCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconNotification}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-          <MenuItem Header="Compress Images" Command="{Binding VM.CompressImagesCommand}"/>
-          <MenuItem Header="Copy Paths" Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
-          <MenuItem Header="Images to Video" Command="{Binding VM.ImagesToVideoCommand}"/>
-          <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsViews.RebuildThumbnailsCommand}"/>
-          <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
-          <MenuItem Header="Resize Images" Command="{Binding VM.ResizeImagesCommand}"/>
-          <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="{Binding VM.RotateMediaItemsCommand}"/>
-          <MenuItem Header="Segments View" Command="{Binding OpenSegmentsViewCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconSegment}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-          <MenuItem Header="Shuffle" Command="{Binding MediaItemsViews.ShuffleCommand}"/>
-        </MenuItem>
-
-        <!-- Metadata -->
-        <MenuItem Header="Metadata">
-          <MenuItem Header="Reload" Command="{Binding MediaItemsM.ReloadMetadataCommand}"/>
-          <MenuItem Header="Save Image metadata to files" Command="{Binding VM.SaveImageMetadataToFilesCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconSave}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-          <MenuItem
-            Header="{Binding MediaItemsM.ModifiedItemsCount}"
-            HeaderStringFormat="Show {0} modified"
-            Command="{Binding MediaItemsViews.ViewModifiedCommand}">
-            <MenuItem.Icon>
-              <Path Data="{StaticResource IconImageMultiple}"/>
-            </MenuItem.Icon>
-          </MenuItem>
-        </MenuItem>
-
-        <MenuItem Header="Settings" Command="{Binding MainWindowM.OpenSettingsCommand}">
           <MenuItem.Icon>
-            <Path Data="{StaticResource IconSettings}"/>
+            <Path Data="{StaticResource IconLocationCheckin}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
           </MenuItem.Icon>
+          <MenuItem Command="{Binding VM.GetGeoNamesFromWebCommand}"/>
+          <MenuItem Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
+          <MenuItem Command="{Binding VM.ReadGeoLocationFromFilesCommand}"/>
         </MenuItem>
-        <MenuItem Header="What's new" Command="{Binding Source={x:Static pmdm:WhatIsNewM.OpenCommand}}"/>
-        <MenuItem Header="About" Command="{Binding MainWindowM.OpenAboutCommand}"/>
+
+        <MenuItem Header="Media Items">
+          <MenuItem.Icon>
+            <Path Data="{StaticResource IconImageMultiple}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+          </MenuItem.Icon>
+          <MenuItem Command="{Binding MediaItemsM.CommentCommand}" InputGestureText="Ctrl+K"/>
+          <MenuItem Command="{Binding VM.CompressImagesCommand}"/>
+          <MenuItem Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
+          <MenuItem Command="{Binding VM.ImagesToVideoCommand}"/>
+          <MenuItem Command="{Binding MediaItemsViews.RebuildThumbnailsCommand}"/>
+          <MenuItem Command="{Binding MediaItemsM.RenameCommand}" InputGestureText="F2"/>
+          <MenuItem Command="{Binding VM.ResizeImagesCommand}"/>
+          <MenuItem Command="{Binding VM.ReloadMetadataCommand}"/>
+          <MenuItem Command="{Binding VM.RotateMediaItemsCommand}" InputGestureText="Ctrl+R"/>
+          <MenuItem Command="{Binding VM.SaveImageMetadataToFilesCommand}"/>
+          <MenuItem Command="{Binding OpenSegmentsViewCommand}"/>
+          <MenuItem
+            Command="{Binding MediaItemsViews.ViewModifiedCommand}"
+            Header="{Binding MediaItemsM.ModifiedItemsCount}"
+            HeaderStringFormat="Show {0} modified"/>
+          <MenuItem Command="{Binding MediaItemsViews.ShuffleCommand}"/>
+        </MenuItem>
+
+        <MenuItem Command="{Binding MainWindowM.OpenSettingsCommand}"/>
+        <MenuItem Command="{Binding Source={x:Static pmdm:WhatIsNewM.OpenCommand}}"/>
+        <MenuItem Command="{Binding MainWindowM.OpenAboutCommand}"/>
       </MenuItem>
     </Menu>
   </DataTemplate>

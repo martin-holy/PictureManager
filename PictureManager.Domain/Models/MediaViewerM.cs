@@ -50,8 +50,8 @@ public sealed class MediaViewerM : ObservableObject {
   public List<MediaItemM> MediaItems { get; private set; }
   public PresentationPanelM PresentationPanel { get; }
 
-  public RelayCommand<object> NextCommand { get; }
-  public RelayCommand<object> PreviousCommand { get; }
+  public RelayCommand NextCommand { get; }
+  public RelayCommand PreviousCommand { get; }
   public RelayCommand<MouseWheelEventArgs> NavigateCommand { get; }
 
   public MediaViewerM() {
