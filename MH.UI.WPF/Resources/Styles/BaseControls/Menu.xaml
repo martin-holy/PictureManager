@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
 
   <MenuScrollingVisibilityConverter x:Key="MenuScrollingVisibilityConverter"/>
   <Geometry x:Key="DownArrow">M 0,0 3.5,4 7,0 Z</Geometry>
@@ -310,7 +311,7 @@
         </Grid.ColumnDefinitions>
         
         <ContentPresenter x:Name="Icon" ContentSource="Icon" Style="{StaticResource MenuIcon}"/>
-        
+
         <Border
           x:Name="GlyphPanel"
           Background="{StaticResource MenuItem.Selected.Background}"
@@ -368,6 +369,7 @@
       <Trigger Property="IsEnabled" Value="False">
         <Setter TargetName="templateRoot" Property="TextElement.Foreground" Value="{StaticResource Menu.Disabled.Foreground}"/>
         <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Menu.Disabled.Foreground}"/>
+        <Setter TargetName="Icon" Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
       </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
@@ -576,6 +578,11 @@
       <Trigger Property="Role" Value="SubmenuHeader">
         <Setter Property="Template" Value="{DynamicResource Templates.SubmenuHeader}"/>
       </Trigger>
+      <DataTrigger Binding="{Binding
+          RelativeSource={RelativeSource Self},
+          Converter={x:Static mhConv:RelayCommandConverter.Inst}}" Value="True">
+        <Setter Property="Tag" Value="{x:Null}"/>
+      </DataTrigger>
     </Style.Triggers>
   </Style>
 
