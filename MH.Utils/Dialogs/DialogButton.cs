@@ -1,4 +1,4 @@
-﻿using MH.Utils.BaseClasses;
+﻿using System.Windows.Input;
 
 namespace MH.Utils.Dialogs {
   public class DialogButton {
@@ -6,9 +6,9 @@ namespace MH.Utils.Dialogs {
     public string Icon { get; }
     public bool IsDefault { get; }
     public bool IsCancel { get; }
-    public RelayCommand<object> Command { get; }
+    public ICommand Command { get; }
 
-    public DialogButton(string text, string icon, RelayCommand<object> command, bool isDefault = false, bool isCancel = false) {
+    public DialogButton(string text, string icon, ICommand command, bool isDefault = false, bool isCancel = false) {
       Text = text;
       Command = command;
       Icon = icon;

@@ -20,8 +20,9 @@ namespace MH.Utils.Dialogs {
       _validator = validator;
 
       Buttons = new DialogButton[] {
-        new("Ok", "IconCheckMark", new(Validate), true),
-        new("Cancel", "IconXCross", CloseCommand, false, true) };
+        new("Ok", "IconCheckMark", new RelayCommand(Validate), true),
+        new("Cancel", "IconXCross", CloseCommand, false, true)
+      };
     }
 
     private void Validate() {
