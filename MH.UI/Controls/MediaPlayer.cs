@@ -158,14 +158,14 @@ public sealed class MediaPlayer : ObservableObject {
   public RelayCommand<int> SeekToPositionCommand { get; }
   public RelayCommand<bool> SeekToCommand { get; }
   public RelayCommand<bool> SetMarkerCommand { get; }
-  public RelayCommand<object> SetNewClipCommand { get; }
-  public RelayCommand<object> SetNewImageCommand { get; }
-  public RelayCommand<object> DeleteItemCommand { get; }
+  public RelayCommand SetNewClipCommand { get; }
+  public RelayCommand SetNewImageCommand { get; }
+  public RelayCommand DeleteItemCommand { get; }
   public RelayCommand<TimelineShift> TimelineShiftCommand { get; }
-  public RelayCommand<object> PlayPauseToggleCommand { get; }
+  public RelayCommand PlayPauseToggleCommand { get; }
   public RelayCommand<PropertyChangedEventArgs<double>> TimelineSliderValueChangedCommand { get; }
-  public RelayCommand<object> TimelineSliderChangeStartedCommand { get; }
-  public RelayCommand<object> TimelineSliderChangeEndedCommand { get; }
+  public RelayCommand TimelineSliderChangeStartedCommand { get; }
+  public RelayCommand TimelineSliderChangeEndedCommand { get; }
 
   public Func<IVideoClip> GetNewClipFunc { get; set; }
   public Func<IVideoImage> GetNewImageFunc { get; set; }

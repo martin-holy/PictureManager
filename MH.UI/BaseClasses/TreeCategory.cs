@@ -17,22 +17,22 @@ public class TreeCategory : TreeItem, ITreeCategory {
   public TreeView<ITreeItem> TreeView { get; } = new();
 
   public static RelayCommand<ITreeItem> ItemCreateCommand { get; } = new(
-    item => GetCategory(item)?.ItemCreate(item));
+    item => GetCategory(item)?.ItemCreate(item), null, "New");
 
   public static RelayCommand<ITreeItem> ItemRenameCommand { get; } = new(
-    item => GetCategory(item)?.ItemRename(item));
+    item => GetCategory(item)?.ItemRename(item), null, "Rename");
 
   public static RelayCommand<ITreeItem> ItemDeleteCommand { get; } = new(
-    item => GetCategory(item)?.ItemDelete(item));
+    item => GetCategory(item)?.ItemDelete(item), null, "Delete");
 
   public static RelayCommand<ITreeCategory> GroupCreateCommand { get; } = new(
-    item => GetCategory(item)?.GroupCreate(item));
+    item => GetCategory(item)?.GroupCreate(item), null, "New Group");
 
   public static RelayCommand<ITreeGroup> GroupRenameCommand { get; } = new(
-    item => GetCategory(item)?.GroupRename(item));
+    item => GetCategory(item)?.GroupRename(item), null, "Rename Group");
 
   public static RelayCommand<ITreeGroup> GroupDeleteCommand { get; } = new(
-    item => GetCategory(item)?.GroupDelete(item));
+    item => GetCategory(item)?.GroupDelete(item), null, "Delete Group");
 
   public TreeCategory(string icon, string name, int id) : base(icon, name) {
     Id = id;
