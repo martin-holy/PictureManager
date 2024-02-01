@@ -41,7 +41,7 @@ namespace MH.UI.WPF.Controls {
     public event EventHandler IsPinnedChangedEventHandler = delegate { };
     public Storyboard SbOpen { get; set; }
     public Storyboard SbClose { get; set; }
-    public RelayCommand<object> PinCommand { get; set; }
+    public RelayCommand PinCommand { get; set; }
 
     private ThicknessAnimation _openAnimation;
     private ThicknessAnimation _closeAnimation;
