@@ -45,7 +45,8 @@
           Content="&#xE106;"
           Style="{StaticResource MH.Styles.Controls.WindowButtonClose}"
           HorizontalAlignment="Right"
-          Command="{Binding Content.CloseCommand}"/>
+          Command="mhbc:Dialog.CloseCommand"
+          CommandParameter="{Binding Path=DataContext.(mhc:DialogHost.Content), ElementName=root}"/>
       </Grid>
 
       <DockPanel>
@@ -77,15 +78,15 @@
                       Style="{StaticResource MH.Styles.Icon}"
                       Effect="{StaticResource MH.Effects.DropShadow}"
                       Margin="5,5,0,5"
-                      Width="12"
-                      Height="12"
-                      Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
-                      Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
+                      Width="16"
+                      Height="16"
+                      Data="{Binding Command.Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
+                      Fill="{Binding Command.Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
                              ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
-                      Visibility="{Binding Icon, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
+                      Visibility="{Binding Command.Icon, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
                     <TextBlock
-                      Text="{Binding Text}"
+                      Text="{Binding Command.Text}"
                       VerticalAlignment="Center"
                       Margin="10,0,10,0"
                       FontSize="13"/>
