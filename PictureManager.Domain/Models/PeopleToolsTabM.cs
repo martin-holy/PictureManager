@@ -17,9 +17,9 @@ public sealed class PeopleToolsTabM : CollectionViewPeople {
       true);
 
     md.Buttons = new DialogButton[] {
-      new("Thumbnails", null, md.SetResult(1), true),
-      new("Media Viewer", null, md.SetResult(2)),
-      new("All people", null, md.SetResult(3))
+      new(md.SetResult(1, null, "Thumbnails"), true),
+      new(md.SetResult(2, null, "Media Viewer")),
+      new(md.SetResult(3, null, "All people"))
     };
 
     var result = Dialog.Show(md);

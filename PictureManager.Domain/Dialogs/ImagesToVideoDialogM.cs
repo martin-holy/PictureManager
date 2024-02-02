@@ -27,11 +27,9 @@ namespace PictureManager.Domain.Dialogs {
     public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
 
     public ImagesToVideoDialogM(ImageM[] items, OnSuccess onSuccess) : base("Images to Video", Res.IconMovieClapper) {
-      CloseCommand = new(Cancel);
-
       Buttons = new DialogButton[] {
-        new("Create Video", Res.IconMovieClapper, new RelayCommand(CreateVideo, () => !IsBusy), true),
-        new("Cancel", Res.IconXCross, CloseCommand, false, true) };
+        new(new(CreateVideo, () => !IsBusy, Res.IconMovieClapper, "Create Video"), true),
+        new(CloseCommand, false, true) };
 
       _items = items;
       var firstMi = _items.First();
@@ -42,6 +40,16 @@ namespace PictureManager.Domain.Dialogs {
       _outputFileName = fileName;
       _outputFolder = firstMi.Folder;
       _onSuccess = onSuccess;
+    }
+
+    public override Task OnResultChanged(int result) {
+      if (result == 0 && _process != null) {
+        _process.Kill();
+        DeleteFile(_inputListPath);
+        DeleteFile(_outputFilePath);
+      }
+
+      return Task.CompletedTask;
     }
 
     // create input list of items for FFMPEG
@@ -109,16 +117,6 @@ namespace PictureManager.Domain.Dialogs {
 
       _process.Start();
       return tcs.Task;
-    }
-
-    private void Cancel() {
-      if (_process != null) {
-        _process.Kill();
-        DeleteFile(_inputListPath);
-        DeleteFile(_outputFilePath);
-      }
-
-      Result = 0;
     }
 
     private async void CreateVideo() {

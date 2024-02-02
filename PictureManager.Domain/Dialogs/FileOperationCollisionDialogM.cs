@@ -31,9 +31,9 @@ namespace PictureManager.Domain.Dialogs {
       FileName = SrcFileInfo.Name;
 
       Buttons = new DialogButton[] {
-        new("Rename", null, new RelayCommand(Rename)),
-        new("Replace", null, new RelayCommand(() => Result = (int)CollisionResult.Replace)),
-        new("Skip", null, new RelayCommand(() => Result = (int)CollisionResult.Skip)) }; 
+        new(new (Rename, null, "Rename")),
+        new(new (() => Result = (int)CollisionResult.Replace, null, "Replace")),
+        new(new (() => Result = (int)CollisionResult.Skip, null, "Skip")) }; 
     }
 
     public static CollisionResult Open(string srcFilePath, string destFilePath, ref string fileName) {

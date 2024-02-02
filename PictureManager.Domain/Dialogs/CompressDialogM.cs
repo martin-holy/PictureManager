@@ -31,27 +31,18 @@ namespace PictureManager.Domain.Dialogs {
       Items = items;
       JpegQualityLevel = jpegQualityLevel;
       ProgressValue = Items.Length;
-
-      var compressCommand = new RelayCommand(
-        async () => { await Compress(); },
-        () => !IsWorkInProgress);
-
-      CloseCommand = new(async () => { await Cancel(); });
-
       Buttons = new DialogButton[] {
-        new("Compress", Res.IconImage, compressCommand, true, false),
-        new("Close", Res.IconXCross, CloseCommand, false, true) };
+        new(new(Compress, () => !IsWorkInProgress, Res.IconImage, "Compress"), true),
+        new(CloseCommand, false, true) };
     }
 
-    public async Task Cancel() {
+    public override Task OnResultChanged(int result) {
+      if (result != 0) return Task.CompletedTask;
       _cts?.Cancel();
-      if (_workTask != null)
-        await _workTask;
-
-      Result = 0;
+      return _workTask ?? Task.CompletedTask;
     }
 
-    public async Task Compress() {
+    public async void Compress() {
       IsWorkInProgress = true;
       
       _workTask = Task.Run(async () => {
