@@ -155,11 +155,9 @@ public sealed class MediaItemsViews : ObservableObject {
     if (mediaItems == null) return;
 
     foreach (var mi in mediaItems) {
-      mi.SetThumbSize(true);
       File.Delete(mi.FilePathCache);
+      mi.OnPropertyChanged(nameof(mi.FilePathCache));
     }
-
-    ReWrapViews(mediaItems);
   }
 
   private async void ViewModified() {
