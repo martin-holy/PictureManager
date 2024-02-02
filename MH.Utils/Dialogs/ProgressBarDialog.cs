@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace MH.Utils.Dialogs;
 
 public abstract class ProgressBarDialog : Dialog {
-  private readonly bool _canCancel;
   private string _message;
   private string _stringProgress;
   private int _intProgress;
@@ -17,24 +16,24 @@ public abstract class ProgressBarDialog : Dialog {
   public string StringProgress { get => _stringProgress; set { _stringProgress = value; OnPropertyChanged(); } }
   public int IntProgress { get => _intProgress; set { _intProgress = value; OnPropertyChanged(); } }
 
-  protected ProgressBarDialog(string title, string icon, bool canCancel) : base(title, icon) {
-    _canCancel = canCancel;
-    CloseCommand = new(Cancel, () => _canCancel);
-    Buttons = new DialogButton[] { new("Cancel", "IconXCross", CloseCommand, false, true) };
+  protected ProgressBarDialog(string title, string icon) : base(title, icon) {
+    Buttons = new DialogButton[] { new(CancelCommand, false, true) };
   }
 
-  private void Cancel() {
-    if (!_canCancel) return;
-    IsCanceled = true;
-    OnCancel();
-    Result = 0;
+  public override Task OnResultChanged(int result) {
+    if (result != 0) {
+      IsCanceled = true;
+      OnCancel();
+    }
+    
+    return Task.CompletedTask;
   }
 
   protected virtual void OnCancel() { }
 }
 
 public class ProgressBarSyncDialog : ProgressBarDialog {
-  public ProgressBarSyncDialog(string title, string icon, bool canCancel) : base(title, icon, canCancel) { }
+  public ProgressBarSyncDialog(string title, string icon) : base(title, icon) { }
 
   public async Task Init<T>(T[] items, Func<bool> doBeforeLoop, Func<T, Task> action, Func<T, string> customMessage, Action onCompleted) {
     if (doBeforeLoop != null && !doBeforeLoop()) return;
@@ -65,7 +64,7 @@ public class ProgressBarAsyncDialog : ProgressBarDialog {
   private readonly CancellationTokenSource _cts;
   private readonly ParallelOptions _po;
 
-  public ProgressBarAsyncDialog(string title, string icon, bool canCancel, int maxDegreeOfParallelism) : base(title, icon, canCancel) {
+  public ProgressBarAsyncDialog(string title, string icon, bool canCancel, int maxDegreeOfParallelism) : base(title, icon) {
     _worker = new() {
       WorkerReportsProgress = true,
       WorkerSupportsCancellation = canCancel
