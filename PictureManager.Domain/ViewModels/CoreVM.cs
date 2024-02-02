@@ -86,7 +86,7 @@ public class CoreVM {
   }
 
   private void GeoLocationProgressDialog(ImageM[] items, string msg, Func<ImageM, Task> action) {
-    var progress = new ProgressBarSyncDialog(msg, Res.IconLocationCheckin, true);
+    var progress = new ProgressBarSyncDialog(msg, Res.IconLocationCheckin);
     _ = progress.Init(items, null, action, mi => mi.FilePath, null);
     progress.Start();
     _db.MediaItems.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());

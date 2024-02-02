@@ -24,9 +24,9 @@ public sealed class SegmentsView {
     var md = new MessageDialog("Segments", "Load segments from ...", Res.IconSegment, true);
 
     md.Buttons = new DialogButton[] {
-      new("Media items", Res.IconImage, md.SetResult(1), true),
-      new("People", Res.IconPeople, md.SetResult(2)),
-      new("Segments", Res.IconSegment, md.SetResult(3)) };
+      new(md.SetResult(1, Res.IconImage, "Media items"), true),
+      new(md.SetResult(2, Res.IconPeople, "People")),
+      new(md.SetResult(3, Res.IconSegment, "Segments")) };
 
     return Dialog.Show(md);
   }

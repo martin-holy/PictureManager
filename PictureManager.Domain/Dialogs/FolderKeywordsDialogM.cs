@@ -17,13 +17,9 @@ namespace PictureManager.Domain.Dialogs {
 
     public FolderKeywordsDialogM() : base("Folder Keywords", Res.IconFolderPuzzle) {
       SelectCommand = new(x => SelectedFolder = x);
-      var removeCommand = new RelayCommand(
-        () => Remove(SelectedFolder),
-        () => SelectedFolder != null);
-
       Buttons = new DialogButton[] {
-        new("Remove", Res.IconXCross, removeCommand),
-        new("Close", Res.IconXCross, CloseCommand, false, true) };
+        new(new(() => Remove(SelectedFolder), () => SelectedFolder != null, Res.IconXCross, "Remove")),
+        new(CloseCommand, false, true) };
 
       foreach (var folder in Core.Db.FolderKeywords.All.OrderBy(x => x.FullPath))
         Items.Add(folder);

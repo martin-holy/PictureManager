@@ -24,8 +24,8 @@ public sealed class MergePeopleDialogM : Dialog {
     PeopleView = new() { CanOpen = false, IsMultiSelect = false };
     SegmentsView = new() { CanSelect = false, CanOpen = false };
     Buttons = new DialogButton[] {
-      new("Ok", Res.IconCheckMark, YesOkCommand, true),
-      new("Cancel", Res.IconXCross, CloseCommand, false, true) };
+      new(OkCommand, true),
+      new(CloseCommand, false, true) };
   }
 
   public void SetPerson(PersonM person) {

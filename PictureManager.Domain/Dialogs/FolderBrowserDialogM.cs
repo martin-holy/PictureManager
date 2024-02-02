@@ -18,8 +18,8 @@ namespace PictureManager.Domain.Dialogs {
     public FolderBrowserDialogM() : base("Browse For Folder", Res.IconFolder) {
       SelectCommand = new(x => SelectedFolder = x);
       Buttons = new DialogButton[] {
-        new("Ok", Res.IconCheckMark, YesOkCommand, true),
-        new("Cancel", Res.IconXCross, CloseCommand, false, true) };
+        new(OkCommand, true),
+        new(CloseCommand, false, true) };
 
       AddDrives();
     }

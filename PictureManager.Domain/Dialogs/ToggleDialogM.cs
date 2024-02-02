@@ -54,13 +54,13 @@ public sealed class ToggleDialogM : Dialog {
 
   private IEnumerable<DialogButton> GetButtons() {
     if (Segments.Length > 0)
-      yield return new("{0} Segment{1}".Plural(Segments.Length), Res.IconSegment, SetResult(1));
+      yield return new(SetResult(1, Res.IconSegment, "{0} Segment{1}".Plural(Segments.Length)));
     if (People.Length > 0)
-      yield return new("{0} Person{1}".Plural(People.Length), Res.IconPeople, SetResult(2));
+      yield return new(SetResult(2, Res.IconPeople, "{0} Person{1}".Plural(People.Length)));
     if (MediaItems.Length > 0)
-      yield return new("{0} Media Item{1}".Plural(MediaItems.Length), Res.IconImage, SetResult(3));
+      yield return new(SetResult(3, Res.IconImage, "{0} Media Item{1}".Plural(MediaItems.Length)));
     if (VideoItems.Length > 0)
-      yield return new("{0} Video Item{1}".Plural(VideoItems.Length), Res.IconMovieClapper, SetResult(4));
+      yield return new(SetResult(4, Res.IconMovieClapper, "{0} Video Item{1}".Plural(VideoItems.Length)));
   }
 
   public static void Clear() {

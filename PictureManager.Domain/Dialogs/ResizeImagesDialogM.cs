@@ -36,18 +36,18 @@ namespace PictureManager.Domain.Dialogs {
 
     public ResizeImagesDialogM(ImageM[] items) : base("Resize Images", Res.IconImageMultiple) {
       OpenFolderBrowserCommand = new(OpenFolderBrowser);
-      CloseCommand = new(Cancel);
-
       Buttons = new DialogButton[] {
-        new("Resize", null, new RelayCommand(Resize), true),
-        new("Cancel", Res.IconXCross, CloseCommand, false, true) }; 
-
+        new(new(Resize, null, "Resize"), true),
+        new(CloseCommand, false, true) }; 
       _items = items;
       ProgressMax = _items.Length;
-
       DirPaths = new(Core.Settings.DirectorySelectFolders.Split(','));
-
       SetMaxMpx();
+    }
+
+    public override Task OnResultChanged(int result) {
+      if (result == 0 && _cts != null) _cts.Cancel();
+      return Task.CompletedTask;
     }
 
     private void SetMaxMpx() {
@@ -106,13 +106,6 @@ namespace PictureManager.Domain.Dialogs {
           Tasks.RunOnUiThread(() => { Result = 1; });
         }
       });
-    }
-
-    private void Cancel() {
-      if (_cts != null)
-        _cts.Cancel();
-
-      Result = 0;
     }
 
     private void OpenFolderBrowser() {
