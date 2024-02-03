@@ -148,22 +148,14 @@
             <Separator/>
             
             <!-- Play/Stop -->
-            <mhc:IconButton Command="{Binding PresentationCommand}">
-              <mhc:IconButton.Style>
-                <Style
-                  TargetType="{x:Type mhc:IconButton}"
-                  BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
-                  <Setter Property="ap:Icon.Data" Value="{StaticResource IconPlay}"/>
-                  <Setter Property="ToolTip" Value="Stop presentation"/>
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsRunning}" Value="False">
-                      <Setter Property="ap:Icon.Data" Value="{StaticResource IconStop}"/>
-                      <Setter Property="ToolTip" Value="Start presentation"/>
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </mhc:IconButton.Style>
-            </mhc:IconButton>
+            <Grid>
+              <mhc:IconButton
+                Command="{Binding StartPresentationCommand}"
+                Visibility="{Binding IsRunning, Converter={x:Static mhConv:VisibilityConverter.AllToCollapsed}}"/>
+              <mhc:IconButton
+                Command="{Binding StopPresentationCommand}"
+                Visibility="{Binding IsRunning, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
+            </Grid>
 
             <!-- Interval -->
             <Slider

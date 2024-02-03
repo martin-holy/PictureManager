@@ -53,11 +53,13 @@ namespace PictureManager.Domain.Models {
     }
 
     public bool IsPaused { get; private set; }
-    public RelayCommand PresentationCommand { get; set; }
+    public RelayCommand StartPresentationCommand { get; }
+    public RelayCommand StopPresentationCommand { get; }
 
     public PresentationPanelM(MediaViewerM mediaViewerM) {
       _mediaViewerM = mediaViewerM;
-      PresentationCommand = new(Presentation);
+      StartPresentationCommand = new(Presentation, MH.Utils.Res.IconPlay, "Start presentation");
+      StopPresentationCommand = new(Presentation, MH.Utils.Res.IconStop, "Stop presentation");
 
       _timer.Interval = Interval * 1000;
       _timer.Elapsed += (_, _) => Next();
