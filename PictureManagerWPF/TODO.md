@@ -12,10 +12,11 @@
 
         # Picture Manager
   - read only drives and creating thumbnails
+  - ContextMenu Filter commands not visible until MediaItemsView is created
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata or crop doesn't work (re-save without metadata in XnView fixed the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
-  - Reload metadata on video
+  - Skipped items while moving are removed from MediaItemsView
 ## Video Items (VideoImage and VideoClip)
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
@@ -23,6 +24,10 @@
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 ## MainTabs
   - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
+## CollectionView
+  - wrong sort (it is by text and not number) on update when grouped by date
+## Presentation
+  - test play panoramic images
 
 
                                   *** UPDATE ***
@@ -41,11 +46,10 @@
   - use constant strings for icons
 ## Dialog
   - add CanExecute for buttons like Yes/OK
-  - make icons on buttons larger
+  - open next to mouse cursor
 
         # MH.UI.WPF
 ##
-  - move icons from MH.Styles.Controls.MediaPlayerControlPanel to other MH.UI.WPF
   - sort and move extensions
 ## IconButton
   - use button foreground and background for icon in IconButton and IconToggleButton
@@ -62,6 +66,7 @@
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
   - use BitmapMetadataExtensions in MediaItemsVM
+  - CoreUI with interfaces for CoreM and CoreVM
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
@@ -75,11 +80,12 @@
   - show selected items on dialog
 ## MediaItems
   - save to file only metadata visible for viewer
-  - merge ReloadMetadataInFolderCommand and ReloadMetadataCommand
 ## MediaItemsView
   - change SelectAndScrollToCurrentMediaItem to scroll to exactly to media item
     only if is not in the view otherwise scroll to top item
   - use Filter on MediaItem type in LoadByTag GetItems
+## ProgressBarAsyncDialog
+  - do Init and Start in constructor
 
 
                                     *** NEW ***
