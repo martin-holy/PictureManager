@@ -29,8 +29,8 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
 
     AddSelectedCommand = new(
       () => AddOrRemove(_segmentsM.Selected.Items.ToArray(), true),
-      () => _segmentsM.Selected.Items.Count > 0);
-    OpenCommand = new(() => Open(Core.ToolsTabsM));
+      () => _segmentsM.Selected.Items.Count > 0, Res.IconDrawerAdd, "Add selected to Segments drawer");
+    OpenCommand = new(() => Open(Core.ToolsTabsM), Res.IconDrawer, "Open Segments drawer");
   }
 
   private DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {

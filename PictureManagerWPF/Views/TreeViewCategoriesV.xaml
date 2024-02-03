@@ -55,11 +55,9 @@
                 </Grid.ColumnDefinitions>
 
                 <mhc:IconButton
+                  Command="{Binding TreeViewSearchM.OpenCommand}"
                   Width="28"
-                  Height="28"
-                  Icon="{StaticResource IconMagnify}"
-                  ToolTip="Search"
-                  Command="{Binding TreeViewSearchM.OpenCommand}"/>
+                  Height="28"/>
 
                 <ContentPresenter
                   Grid.Column="1"

@@ -26,13 +26,11 @@
         <mhc:Slot Name="TabStripSlot" Placement="Top">
           <mhc:Slot.Content>
             <mhc:IconButton
-              Icon="{StaticResource IconPlus}"
+              Command="{Binding MediaItemsViews.AddViewCommand, Source={x:Static pm:App.Core}}"
               Width="24"
               Height="24"
               Padding="6"
-              ToolTip="Add Media Items View Tab"
-              HorizontalAlignment="Center"
-              Command="{Binding MediaItemsViews.AddViewCommand, Source={x:Static pm:App.Core}}"/>
+              HorizontalAlignment="Center"/>
           </mhc:Slot.Content>
         </mhc:Slot>
       </mhc:Slots.List>

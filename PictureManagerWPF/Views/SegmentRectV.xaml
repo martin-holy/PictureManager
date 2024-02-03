@@ -44,16 +44,14 @@
 
         <!-- Delete Segment -->
         <mhc:IconButton
-          Icon="{StaticResource IconXCross}"
+          Command="{Binding SegmentsRectsVM.DeleteCommand, Source={x:Static pm:App.Ui}}"
+          CommandParameter="{Binding}"
           Width="16"
           Height="16"
           VerticalAlignment="Top"
           HorizontalAlignment="Right"
-          ToolTip="Delete"
           Margin="2"
-          Cursor="Arrow"
-          Command="{Binding SegmentsRectsVM.DeleteCommand, Source={x:Static pm:App.Ui}}"
-          CommandParameter="{Binding}"/>
+          Cursor="Arrow"/>
       </Grid>
     </Border>
 

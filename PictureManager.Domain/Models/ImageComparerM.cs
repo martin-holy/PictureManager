@@ -17,8 +17,8 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<MediaItemsView> PHashCommand { get; }
 
     public ImageComparerM() {
-      AverageHashCommand = new(x => Compare(x, _avgHashes, Imaging.GetBitmapAvgHash));
-      PHashCommand = new(x => Compare(x, _pHashes, Imaging.GetBitmapPerceptualHash));
+      AverageHashCommand = new(x => Compare(x, _avgHashes, Imaging.GetBitmapAvgHash), Res.IconCompare, "Compare images using average hash");
+      PHashCommand = new(x => Compare(x, _pHashes, Imaging.GetBitmapPerceptualHash), Res.IconCompare, "Compare images using perceptual hash");
     }
 
     public void Compare(MediaItemsView view, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {

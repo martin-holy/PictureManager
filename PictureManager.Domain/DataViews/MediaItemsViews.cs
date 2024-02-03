@@ -26,7 +26,7 @@ public sealed class MediaItemsViews : ObservableObject {
   public RelayCommand ViewModifiedCommand { get; }
 
   public MediaItemsViews() {
-    AddViewCommand = new(() => AddView(string.Empty));
+    AddViewCommand = new(() => AddView(string.Empty), Res.IconPlus, "Add Media Items View Tab");
     CopyPathsCommand = new(
       () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),
       () => Current?.Selected.Items.Any() == true, null, "Copy Paths");
