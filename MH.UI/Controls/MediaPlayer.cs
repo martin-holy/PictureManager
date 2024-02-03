@@ -156,16 +156,25 @@ public sealed class MediaPlayer : ObservableObject {
 
   public RelayCommand<PlayType> SetPlayTypeCommand { get; }
   public RelayCommand<int> SeekToPositionCommand { get; }
-  public RelayCommand<bool> SeekToCommand { get; }
-  public RelayCommand<bool> SetMarkerCommand { get; }
+  public RelayCommand SeekToStartCommand { get; }
+  public RelayCommand SeekToEndCommand { get; }
+  public RelayCommand SetStartMarkerCommand { get; }
+  public RelayCommand SetEndMarkerCommand { get; }
   public RelayCommand SetNewClipCommand { get; }
   public RelayCommand SetNewImageCommand { get; }
   public RelayCommand DeleteItemCommand { get; }
-  public RelayCommand<TimelineShift> TimelineShiftCommand { get; }
+  public RelayCommand PlayCommand { get; }
+  public RelayCommand PauseCommand { get; }
   public RelayCommand PlayPauseToggleCommand { get; }
   public RelayCommand<PropertyChangedEventArgs<double>> TimelineSliderValueChangedCommand { get; }
   public RelayCommand TimelineSliderChangeStartedCommand { get; }
   public RelayCommand TimelineSliderChangeEndedCommand { get; }
+  public RelayCommand TimelineShiftBeginningCommand { get; }
+  public RelayCommand TimelineShiftLargeBackCommand { get; }
+  public RelayCommand TimelineShiftSmallBackCommand { get; }
+  public RelayCommand TimelineShiftSmallForwardCommand { get; }
+  public RelayCommand TimelineShiftLargeForwardCommand { get; }
+  public RelayCommand TimelineShiftEndCommand { get; }
 
   public Func<IVideoClip> GetNewClipFunc { get; set; }
   public Func<IVideoImage> GetNewImageFunc { get; set; }
@@ -183,16 +192,25 @@ public sealed class MediaPlayer : ObservableObject {
 
     SetPlayTypeCommand = new(x => PlayType = x);
     SeekToPositionCommand = new(x => TimelinePosition = x);
-    SeekToCommand = new(SeekTo, start => CurrentItem != null && (start || CurrentItem is IVideoClip));
-    SetMarkerCommand = new(SetMarker, start => CurrentItem != null && (start || CurrentItem is IVideoClip));
+    SeekToStartCommand = new(() => SeekTo(true), () => CurrentItem != null, Res.IconChevronRight, "Seek to start");
+    SeekToEndCommand = new(() => SeekTo(false), () => CurrentItem is IVideoClip, Res.IconChevronLeft, "Seek to end");
+    SetStartMarkerCommand = new(() => SetMarker(true), () => CurrentItem != null, Res.IconChevronDown, "Set start");
+    SetEndMarkerCommand = new(() => SetMarker(false), () => CurrentItem is IVideoClip, Res.IconChevronDown, "Set end");
     SetNewClipCommand = new(SetNewClip, () => !string.IsNullOrEmpty(Source), Res.IconMovieClapper, "Create new or close video clip");
     SetNewImageCommand = new(SetNewImage, () => !string.IsNullOrEmpty(Source), Res.IconImage, "Create new video image");
     DeleteItemCommand = new(ItemDelete, () => CurrentItem != null, Res.IconXCross, "Delete");
-    TimelineShiftCommand = new(ShiftTimeline);
+    PlayCommand = new(() => IsPlaying = true, Res.IconPlay, "Play");
+    PauseCommand = new(() => IsPlaying = false, Res.IconPause, "Pause");
     PlayPauseToggleCommand = new(PlayPauseToggle);
     TimelineSliderValueChangedCommand = new(TimelineSliderValueChanged);
     TimelineSliderChangeStartedCommand = new(TimelineSliderChangeStarted);
     TimelineSliderChangeEndedCommand = new(TimelineSliderChangeEnded);
+    TimelineShiftBeginningCommand = new(() => ShiftTimeline(TimelineShift.Beginning), Res.IconTimelineShiftBeginning);
+    TimelineShiftLargeBackCommand = new(() => ShiftTimeline(TimelineShift.LargeBack), Res.IconTimelineShiftLargeBack);
+    TimelineShiftSmallBackCommand = new(() => ShiftTimeline(TimelineShift.SmallBack), Res.IconTimelineShiftSmallBack);
+    TimelineShiftSmallForwardCommand = new(() => ShiftTimeline(TimelineShift.SmallForward), Res.IconTimelineShiftSmallForward);
+    TimelineShiftLargeForwardCommand = new(() => ShiftTimeline(TimelineShift.LargeForward), Res.IconTimelineShiftLargeForward);
+    TimelineShiftEndCommand = new(() => ShiftTimeline(TimelineShift.End), Res.IconTimelineShiftEnd);
   }
 
   ~MediaPlayer() {
