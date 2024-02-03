@@ -41,8 +41,8 @@ public class RelayCommandConverter : BaseMultiConverter {
     if (string.IsNullOrEmpty(rc.Text)) return;
 
     switch (fe) {
-      case IconButton ib: ib.ToolTip = rc.Text; break;
-      case MenuItem mi: mi.Header = rc.Text; break;
+      case IconButton ib: ib.ToolTip ??= rc.Text; break;
+      case MenuItem mi: mi.Header ??= rc.Text; break;
     }
   }
 
