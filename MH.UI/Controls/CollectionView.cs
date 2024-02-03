@@ -32,7 +32,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   public event EventHandler<SelectionEventArgs<T>> ItemSelectedEvent = delegate { };
 
   protected CollectionView() {
-    OpenGroupByDialogCommand = new(OpenGroupByDialog);
+    OpenGroupByDialogCommand = new(OpenGroupByDialog, null, "Group by");
   }
 
   protected void RaiseItemOpened(T item) => ItemOpenedEvent(this, new(item));

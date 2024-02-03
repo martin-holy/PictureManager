@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.ObjectModel;
@@ -20,7 +21,7 @@ namespace MH.UI.Controls {
     public event EventHandler<ObjectEventArgs<IListItem>> TabClosedEvent = delegate { };
 
     public TabControl() {
-      CloseTabCommand = new(Close);
+      CloseTabCommand = new(Close, Res.IconXCross, "Close");
 
       Tabs.CollectionChanged += (_, _) =>
         OnPropertyChanged(nameof(TabMaxSize));

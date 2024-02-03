@@ -185,9 +185,9 @@ public sealed class MediaPlayer : ObservableObject {
     SeekToPositionCommand = new(x => TimelinePosition = x);
     SeekToCommand = new(SeekTo, start => CurrentItem != null && (start || CurrentItem is IVideoClip));
     SetMarkerCommand = new(SetMarker, start => CurrentItem != null && (start || CurrentItem is IVideoClip));
-    SetNewClipCommand = new(SetNewClip, () => !string.IsNullOrEmpty(Source));
-    SetNewImageCommand = new(SetNewImage, () => !string.IsNullOrEmpty(Source));
-    DeleteItemCommand = new(ItemDelete, () => CurrentItem != null);
+    SetNewClipCommand = new(SetNewClip, () => !string.IsNullOrEmpty(Source), Res.IconMovieClapper, "Create new or close video clip");
+    SetNewImageCommand = new(SetNewImage, () => !string.IsNullOrEmpty(Source), Res.IconImage, "Create new video image");
+    DeleteItemCommand = new(ItemDelete, () => CurrentItem != null, Res.IconXCross, "Delete");
     TimelineShiftCommand = new(ShiftTimeline);
     PlayPauseToggleCommand = new(PlayPauseToggle);
     TimelineSliderValueChangedCommand = new(TimelineSliderValueChanged);
