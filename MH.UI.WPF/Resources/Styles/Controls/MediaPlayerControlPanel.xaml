@@ -6,7 +6,7 @@
   xmlns:uii="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
@@ -40,7 +40,7 @@
           <b:EventTrigger EventName="ValueChanged">
             <b:InvokeCommandAction
               Command="{Binding TimelineSliderValueChangedCommand}"
-              EventArgsConverter="{x:Static mhConv:PropertyChangedConverter.Inst}"/>
+              EventArgsConverter="{x:Static conv:PropertyChangedConverter.Inst}"/>
           </b:EventTrigger>
           <b:EventTrigger EventName="PreviewMouseLeftButtonDown">
             <b:InvokeCommandAction
@@ -53,67 +53,26 @@
         </b:Interaction.Triggers>
       </Slider>
 
-      <WrapPanel
-        Grid.Row="1"
-        Orientation="Horizontal">
-
+      <WrapPanel Grid.Row="1" Orientation="Horizontal">
         <!-- Time -->
-        <TextBlock
-          Margin="5"
-          VerticalAlignment="Center"
-          Text="{Binding PositionSlashDuration}"/>
+        <TextBlock Margin="5" Text="{Binding PositionSlashDuration}"/>
 
         <!-- Navigation buttons -->
-        <StackPanel
-          x:Name="navPanel"
-          Orientation="Horizontal"
-          Margin="4,0"
-          VerticalAlignment="Center">
-
-          <c:IconButton
-            ap:Icon.Data="{StaticResource IconTimelineShift.Beginning}"
-            Command="{Binding TimelineShiftCommand}"
-            CommandParameter="{x:Static uic:TimelineShift.Beginning}"/>
-
-          <c:IconButton
-            ap:Icon.Data="{StaticResource IconTimelineShift.LargeBack}"
-            Command="{Binding TimelineShiftCommand}"
-            CommandParameter="{x:Static uic:TimelineShift.LargeBack}"/>
-
-          <c:IconButton
-            ap:Icon.Data="{StaticResource IconTimelineShift.SmallBack}"
-            Command="{Binding TimelineShiftCommand}"
-            CommandParameter="{x:Static uic:TimelineShift.SmallBack}"/>
-
-          <!-- Play/Pause -->
-          <c:IconButton Command="{Binding PlayPauseToggleCommand}">
-            <c:IconButton.Style>
-              <Style TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
-                <Setter Property="ap:Icon.Data" Value="{StaticResource IconPlay}"/>
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                    <Setter Property="ap:Icon.Data" Value="{StaticResource IconPause}"/>
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </c:IconButton.Style>
-          </c:IconButton>
-
-          <c:IconButton
-            ap:Icon.Data="{StaticResource IconTimelineShift.SmallForward}"
-            Command="{Binding TimelineShiftCommand}"
-            CommandParameter="{x:Static uic:TimelineShift.SmallForward}"/>
-
-          <c:IconButton
-            ap:Icon.Data="{StaticResource IconTimelineShift.LargeForward}"
-            Command="{Binding TimelineShiftCommand}"
-            CommandParameter="{x:Static uic:TimelineShift.LargeForward}"/>
-
-          <c:IconButton
-            ap:Icon.Data="{StaticResource IconTimelineShift.End}"
-            Command="{Binding TimelineShiftCommand}"
-            CommandParameter="{x:Static uic:TimelineShift.End}"/>
-
+        <StackPanel x:Name="navPanel" Orientation="Horizontal" Margin="4,0">
+          <c:IconButton Command="{Binding TimelineShiftBeginningCommand}"/>
+          <c:IconButton Command="{Binding TimelineShiftLargeBackCommand}"/>
+          <c:IconButton Command="{Binding TimelineShiftSmallBackCommand}"/>
+          <Grid>
+            <c:IconButton
+              Command="{Binding PlayCommand}"
+              Visibility="{Binding IsPlaying, Converter={x:Static conv:VisibilityConverter.AllToCollapsed}}"/>
+            <c:IconButton
+              Command="{Binding PauseCommand}"
+              Visibility="{Binding IsPlaying, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
+          </Grid>
+          <c:IconButton Command="{Binding TimelineShiftSmallForwardCommand}"/>
+          <c:IconButton Command="{Binding TimelineShiftLargeForwardCommand}"/>
+          <c:IconButton Command="{Binding TimelineShiftEndCommand}"/>
         </StackPanel>
 
         <!-- Speed -->
@@ -125,7 +84,6 @@
           Maximum="3"
           TickFrequency="0.01"
           IsTabStop="False"
-          VerticalAlignment="Center"
           Value="{Binding Speed}"/>
 
         <!-- Repeat for seconds -->
@@ -146,7 +104,6 @@
           Maximum="1"
           TickFrequency="0.01"
           IsTabStop="False"
-          VerticalAlignment="Center"
           Value="{Binding Volume}"/>
 
         <!-- Mute -->
@@ -185,19 +142,8 @@
             <ColumnDefinition Width="Auto"/>
           </Grid.ColumnDefinitions>
 
-          <c:IconButton
-            Grid.Column="0"
-            ToolTip="Set start"
-            ap:Icon.Data="{StaticResource IconChevronDown}"
-            Command="{Binding SetMarkerCommand}"
-            CommandParameter="{StaticResource True}"/>
-
-          <c:IconButton
-            Grid.Column="1"
-            ToolTip="Seek to start"
-            ap:Icon.Data="{StaticResource IconChevronRight}"
-            Command="{Binding SeekToCommand}"
-            CommandParameter="{StaticResource True}"/>
+          <c:IconButton Command="{Binding SetStartMarkerCommand}" Grid.Column="0"/>
+          <c:IconButton Command="{Binding SeekToStartCommand}" Grid.Column="1"/>
 
           <TextBlock
             Grid.Column="2"
@@ -213,19 +159,8 @@
             VerticalAlignment="Center"
             Text=" - 0:00.000"/>
 
-          <c:IconButton
-            Grid.Column="4"
-            ToolTip="Seek to end"
-            ap:Icon.Data="{StaticResource IconChevronLeft}"
-            Command="{Binding SeekToCommand}"
-            CommandParameter="{StaticResource False}"/>
-
-          <c:IconButton
-            Grid.Column="5"
-            ToolTip="Set end"
-            ap:Icon.Data="{StaticResource IconChevronDown}"
-            Command="{Binding SetMarkerCommand}"
-            CommandParameter="{StaticResource False}"/>
+          <c:IconButton Command="{Binding SeekToEndCommand}" Grid.Column="4"/>
+          <c:IconButton Command="{Binding SetEndMarkerCommand}" Grid.Column="5"/>
         </Grid>
       </WrapPanel>
 
@@ -234,26 +169,26 @@
     <DataTemplate.Triggers>
       <DataTrigger
         Binding="{Binding CurrentItem,
-                  Converter={x:Static mhConv:DataTypeConverter.Inst},
+                  Converter={x:Static conv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type uii:IVideoImage}}" Value="True">
         <Setter
           TargetName="tbTimeStart"
           Property="Text"
           Value="{Binding Path=CurrentItem.TimeStart,
-                  Converter={x:Static mhConv:TimeFormatConverter.Inst},
+                  Converter={x:Static conv:TimeFormatConverter.Inst},
                   ConverterParameter=position}"/>
         <Setter TargetName="tbTimeStart" Property="IsEnabled" Value="True"/>
       </DataTrigger>
 
       <DataTrigger
         Binding="{Binding CurrentItem,
-                  Converter={x:Static mhConv:DataTypeConverter.Inst},
+                  Converter={x:Static conv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type uii:IVideoClip}}" Value="True">
         <Setter
           TargetName="tbTimeEnd"
           Property="Text"
           Value="{Binding Path=CurrentItem.(uii:IVideoClip.TimeEnd),
-                  Converter={x:Static mhConv:TimeFormatConverter.Inst},
+                  Converter={x:Static conv:TimeFormatConverter.Inst},
                   ConverterParameter=position,
                   StringFormat={} - {0}}"/>
         <Setter TargetName="tbTimeEnd" Property="IsEnabled" Value="True"/>
