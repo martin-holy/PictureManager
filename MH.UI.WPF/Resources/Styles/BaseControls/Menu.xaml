@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
   <MenuScrollingVisibilityConverter x:Key="MenuScrollingVisibilityConverter"/>
   <Geometry x:Key="DownArrow">M 0,0 3.5,4 7,0 Z</Geometry>
@@ -578,9 +578,13 @@
       <Trigger Property="Role" Value="SubmenuHeader">
         <Setter Property="Template" Value="{DynamicResource Templates.SubmenuHeader}"/>
       </Trigger>
-      <DataTrigger Binding="{Binding
-          RelativeSource={RelativeSource Self},
-          Converter={x:Static mhConv:RelayCommandConverter.Inst}}" Value="True">
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{x:Static conv:RelayCommandConverter.Inst}">
+            <Binding RelativeSource="{RelativeSource Self}" />
+            <Binding Path="Command" RelativeSource="{RelativeSource Self}"/>
+          </MultiBinding>
+        </DataTrigger.Binding>
         <Setter Property="Tag" Value="{x:Null}"/>
       </DataTrigger>
     </Style.Triggers>

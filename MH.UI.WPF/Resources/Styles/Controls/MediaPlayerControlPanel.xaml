@@ -71,17 +71,17 @@
           VerticalAlignment="Center">
 
           <c:IconButton
-            Icon="{StaticResource IconTimelineShift.Beginning}"
+            ap:Icon.Data="{StaticResource IconTimelineShift.Beginning}"
             Command="{Binding TimelineShiftCommand}"
             CommandParameter="{x:Static uic:TimelineShift.Beginning}"/>
 
           <c:IconButton
-            Icon="{StaticResource IconTimelineShift.LargeBack}"
+            ap:Icon.Data="{StaticResource IconTimelineShift.LargeBack}"
             Command="{Binding TimelineShiftCommand}"
             CommandParameter="{x:Static uic:TimelineShift.LargeBack}"/>
 
           <c:IconButton
-            Icon="{StaticResource IconTimelineShift.SmallBack}"
+            ap:Icon.Data="{StaticResource IconTimelineShift.SmallBack}"
             Command="{Binding TimelineShiftCommand}"
             CommandParameter="{x:Static uic:TimelineShift.SmallBack}"/>
 
@@ -89,10 +89,10 @@
           <c:IconButton Command="{Binding PlayPauseToggleCommand}">
             <c:IconButton.Style>
               <Style TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
-                <Setter Property="Icon" Value="{StaticResource IconPlay}"/>
+                <Setter Property="ap:Icon.Data" Value="{StaticResource IconPlay}"/>
                 <Style.Triggers>
                   <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                    <Setter Property="Icon" Value="{StaticResource IconPause}"/>
+                    <Setter Property="ap:Icon.Data" Value="{StaticResource IconPause}"/>
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
@@ -100,17 +100,17 @@
           </c:IconButton>
 
           <c:IconButton
-            Icon="{StaticResource IconTimelineShift.SmallForward}"
+            ap:Icon.Data="{StaticResource IconTimelineShift.SmallForward}"
             Command="{Binding TimelineShiftCommand}"
             CommandParameter="{x:Static uic:TimelineShift.SmallForward}"/>
 
           <c:IconButton
-            Icon="{StaticResource IconTimelineShift.LargeForward}"
+            ap:Icon.Data="{StaticResource IconTimelineShift.LargeForward}"
             Command="{Binding TimelineShiftCommand}"
             CommandParameter="{x:Static uic:TimelineShift.LargeForward}"/>
 
           <c:IconButton
-            Icon="{StaticResource IconTimelineShift.End}"
+            ap:Icon.Data="{StaticResource IconTimelineShift.End}"
             Command="{Binding TimelineShiftCommand}"
             CommandParameter="{x:Static uic:TimelineShift.End}"/>
 
@@ -151,7 +151,7 @@
 
         <!-- Mute -->
         <c:IconToggleButton
-          Icon="{StaticResource IconSoundMute}"
+          ap:Icon.Data="{StaticResource IconSoundMute}"
           IsChecked="{Binding IsMuted}"
           Width="22"
           Height="22"
@@ -170,23 +170,9 @@
             Margin="0,0,2,0"/>
         </StackPanel>
 
-        <!-- New Clip -->
-        <c:IconButton
-          ToolTip="Create new or close video clip"
-          Icon="{StaticResource IconMovieClapper}"
-          Command="{Binding SetNewClipCommand}"/>
-
-        <!-- New Image -->
-        <c:IconButton
-          ToolTip="Create new video image"
-          Icon="{StaticResource IconImage}"
-          Command="{Binding SetNewImageCommand}"/>
-
-        <!-- Delete item -->
-        <c:IconButton
-          ToolTip="Delete"
-          Icon="{StaticResource IconXCross}"
-          Command="{Binding DeleteItemCommand}"/>
+        <c:IconButton Command="{Binding SetNewClipCommand}"/>
+        <c:IconButton Command="{Binding SetNewImageCommand}"/>
+        <c:IconButton Command="{Binding DeleteItemCommand}"/>
 
         <!-- Markers -->
         <Grid x:Name="markersPanel">
@@ -202,14 +188,14 @@
           <c:IconButton
             Grid.Column="0"
             ToolTip="Set start"
-            Icon="{StaticResource IconChevronDown}"
+            ap:Icon.Data="{StaticResource IconChevronDown}"
             Command="{Binding SetMarkerCommand}"
             CommandParameter="{StaticResource True}"/>
 
           <c:IconButton
             Grid.Column="1"
             ToolTip="Seek to start"
-            Icon="{StaticResource IconChevronRight}"
+            ap:Icon.Data="{StaticResource IconChevronRight}"
             Command="{Binding SeekToCommand}"
             CommandParameter="{StaticResource True}"/>
 
@@ -230,14 +216,14 @@
           <c:IconButton
             Grid.Column="4"
             ToolTip="Seek to end"
-            Icon="{StaticResource IconChevronLeft}"
+            ap:Icon.Data="{StaticResource IconChevronLeft}"
             Command="{Binding SeekToCommand}"
             CommandParameter="{StaticResource False}"/>
 
           <c:IconButton
             Grid.Column="5"
             ToolTip="Set end"
-            Icon="{StaticResource IconChevronDown}"
+            ap:Icon.Data="{StaticResource IconChevronDown}"
             Command="{Binding SetMarkerCommand}"
             CommandParameter="{StaticResource False}"/>
         </Grid>

@@ -3,6 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:uii="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:wpfc="clr-namespace:MH.UI.WPF.Controls"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
@@ -56,17 +57,16 @@
           IsChecked="{Binding IsExpanded, Mode=TwoWay}"/>
 
         <wpfc:IconButton
+          Command="{Binding View.OpenGroupByDialogCommand}"
+          CommandParameter="{Binding}"
           Grid.Column="1"
-          Icon="{Binding
+          ap:Icon.Data="{Binding
             Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
             Converter={x:Static mhConv:ResourceConverter.Inst}}"
-          Foreground="{Binding
+          ap:Icon.Fill="{Binding
             Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
             Converter={x:Static mhConv:ResourceConverter.Inst},
-            ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
-          ToolTip="Group by"
-          Command="{Binding View.OpenGroupByDialogCommand}"
-          CommandParameter="{Binding}"/>
+            ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
         <TextBlock
           Grid.Column="2"

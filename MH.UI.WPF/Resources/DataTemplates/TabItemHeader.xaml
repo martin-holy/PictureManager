@@ -29,18 +29,16 @@
         VerticalAlignment="Center">
 
         <mhc:IconButton
-          Icon="{StaticResource IconXCross}"
+          Command="{Binding
+                    Path=DataContext.(mhuic:TabControl.CloseTabCommand),
+                    RelativeSource={RelativeSource AncestorType=TabControl}}"
+          CommandParameter="{Binding}"
           Width="18"
           Height="18"
           Margin="0"
           Padding="4"
           HorizontalAlignment="Center"
-          VerticalAlignment="Center"
-          ToolTip="Close"
-          Command="{Binding
-                    Path=DataContext.(mhuic:TabControl.CloseTabCommand),
-                    RelativeSource={RelativeSource AncestorType=TabControl}}"
-          CommandParameter="{Binding}"/>
+          VerticalAlignment="Center"/>
       </Border>
     </Grid>
 

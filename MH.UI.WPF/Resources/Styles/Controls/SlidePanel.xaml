@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
   <Style x:Key="MH.Styles.Controls.SlidePanel" TargetType="{x:Type c:SlidePanel}">
@@ -16,7 +17,7 @@
   <c:IconToggleButton
     x:Key="SlidePanel-PinButton"
     x:Shared="False"
-    Icon="{StaticResource IconPin}"
+    ap:Icon.Data="{StaticResource IconPin}"
     Width="20"
     Height="20"
     IsThreeState="False"
