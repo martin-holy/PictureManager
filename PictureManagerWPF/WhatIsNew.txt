@@ -11,7 +11,16 @@ Latest:
  - [N] Load GeoNames from web option in settings
  - [U] Media player control panel
  - [U] Video detail tab
- - [N] Rebuild Thumbnails command in folder menu
+ - [N] Group MediaItems and Segments by GeoName
+ - [N] ReadGeoLocationFromFiles and GetGeoNamesFromWeb commands in MainMenu, FolderMenu and GeoNamesMenu
+ - [U] MediaItemsStatusBar FileSize async update
+ - [B] Reload video metadata
+ - [U] Main menu
+ - [U] Folder context menu
+ - [B] CopyMove MediaItems
+ - [B] TreeView ScrollTo not exactly
+ - [U] RebuildThumbnails without re-wrap
+ - [U] Larger icons on dialog buttons
 
 23.11.24.1717:
  - [N] What's new information
