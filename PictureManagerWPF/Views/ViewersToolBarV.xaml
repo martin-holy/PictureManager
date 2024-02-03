@@ -4,26 +4,21 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
-  <Path
-    x:Key="EyeIcon"
-    x:Shared="False"
-    Style="{StaticResource MH.Styles.Icon}"
-    Data="{StaticResource IconEye}"
-    Effect="{StaticResource MH.Effects.DropShadow}"/>
-
   <DataTemplate x:Key="Views.ViewersToolBarV">
     <Menu Background="Transparent">
       <MenuItem
         x:Name="root"
-        Icon="{StaticResource EyeIcon}"
         Height="30"
         Background="Transparent"
         Header="{Binding ViewersM.Current.Name, Source={x:Static pm:App.Core}}">
 
+        <MenuItem.Icon>
+          <Path Data="{StaticResource IconEye}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+        </MenuItem.Icon>
+
         <MenuItem.ItemsSource>
           <CompositeCollection>
             <MenuItem
-              Icon="{StaticResource EyeIcon}"
               Header="All"
               DataContext="{x:Null}"
               Command="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
@@ -38,7 +33,6 @@
             <Setter Property="Header" Value="{Binding Path=(m:ViewerM.Name)}"/>
             <Setter Property="Command" Value="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
             <Setter Property="CommandParameter" Value="{Binding}"/>
-            <Setter Property="Icon" Value="{StaticResource EyeIcon}"/>
           </Style>
         </MenuItem.ItemContainerStyle>
       </MenuItem>
