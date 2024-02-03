@@ -9,6 +9,7 @@ public static class Res {
   public const string IconMovieClapper = "IconMovieClapper";
   public const string IconPause = "IconPause";
   public const string IconPlay = "IconPlay";
+  public const string IconStop = "IconStop";
   public const string IconTimelineShiftBeginning = "IconTimelineShift.Beginning";
   public const string IconTimelineShiftEnd = "IconTimelineShift.End";
   public const string IconTimelineShiftLargeBack = "IconTimelineShift.LargeBack";
