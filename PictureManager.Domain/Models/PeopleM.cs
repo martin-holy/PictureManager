@@ -22,8 +22,8 @@ public sealed class PeopleM {
   public PeopleM(PeopleDA da) {
     _da = da;
     TreeCategory = new(this, _da);
-    OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
-    OpenPersonDetailCommand = new(OpenPersonDetail, null, "Detail");
+    OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab, Res.IconPeopleMultiple, "People");
+    OpenPersonDetailCommand = new(OpenPersonDetail, Res.IconInformation, "Detail");
   }
 
   private void OpenPeopleToolsTab() {

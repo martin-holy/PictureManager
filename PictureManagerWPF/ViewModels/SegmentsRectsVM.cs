@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System.Windows;
 using System.Windows.Input;
@@ -24,7 +25,7 @@ namespace PictureManager.ViewModels {
       CreateCommand = new(Create, () => SegmentsRectsM.AreVisible);
       EditCommand = new(Edit);
       EndEditCommand = new(SegmentsRectsM.EndEdit);
-      DeleteCommand = new(SegmentsRectsM.Delete);
+      DeleteCommand = new(SegmentsRectsM.Delete, Res.IconXCross, "Delete");
     }
 
     private void SetCurrent(MouseEventArgs e) {

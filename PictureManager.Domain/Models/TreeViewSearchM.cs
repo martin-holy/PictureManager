@@ -20,8 +20,8 @@ namespace PictureManager.Domain.Models {
     public RelayCommand CloseCommand { get; }
 
     public TreeViewSearchM() {
-      OpenCommand = new(Open);
-      CloseCommand = new(() => IsOpen = false);
+      OpenCommand = new(Open, Res.IconMagnify, "Search");
+      CloseCommand = new(() => IsOpen = false, Res.IconXCross, "Close");
     }
 
     private void NavigateTo(TreeViewSearchItemM item) {

@@ -20,11 +20,14 @@ public sealed class PersonDetail : ObservableObject {
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction TopSegmentsDropAction { get; }
 
+  public RelayCommand LoadMediaItemsCommand { get; }
+
   public PersonDetail(PeopleM peopleM, SegmentsM segmentsM) {
     _peopleM = peopleM;
     _segmentsM = segmentsM;
     CanDropFunc = CanDrop;
     TopSegmentsDropAction = TopSegmentsDrop;
+    LoadMediaItemsCommand = new(() => Core.MediaItemsViews.LoadByTag(PersonM), Res.IconImageMultiple, "Load Media items in new tab");
   }
 
   private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {

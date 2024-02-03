@@ -46,16 +46,8 @@
       </Grid>
 
       <StackPanel Grid.Row="1" Orientation="Horizontal">
-        <mhc:IconButton
-          ToolTip="Load Media items in new tab"
-          Icon="{StaticResource IconImageMultiple}"
-          Command="{Binding MediaItemsViews.LoadByTagCommand, Source={x:Static pm:App.Core}}"
-          CommandParameter="{Binding PersonM}"/>
-
-        <mhc:IconButton
-          ToolTip="Set selected as Unknown"
-          Icon="{StaticResource IconUnknownSegment}"
-          Command="{Binding SegmentsM.SetSelectedAsUnknownCommand, Source={x:Static pm:App.Core}}"/>
+        <mhc:IconButton Command="{Binding LoadMediaItemsCommand}"/>
+        <mhc:IconButton Command="{Binding SegmentsM.SetSelectedAsUnknownCommand, Source={x:Static pm:App.Core}}"/>
       </StackPanel>
 
       <!-- Keywords -->

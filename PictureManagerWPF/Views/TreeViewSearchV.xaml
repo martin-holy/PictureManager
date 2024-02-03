@@ -23,14 +23,13 @@
         FontSize="16"/>
 
       <mhc:IconButton
+        Command="{Binding CloseCommand}"
         Grid.Row="0"
-        Icon="{StaticResource IconXCross}"
         Width="18"
         Height="18"
         HorizontalAlignment="Right"
         VerticalAlignment="Center"
-        Margin="0,0,4,0"
-        Command="{Binding CloseCommand}"/>
+        Margin="0,0,4,0"/>
 
       <ListBox
         x:Name="result"

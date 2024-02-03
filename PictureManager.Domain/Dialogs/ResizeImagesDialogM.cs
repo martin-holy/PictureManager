@@ -35,7 +35,7 @@ namespace PictureManager.Domain.Dialogs {
     public RelayCommand OpenFolderBrowserCommand { get; }
 
     public ResizeImagesDialogM(ImageM[] items) : base("Resize Images", Res.IconImageMultiple) {
-      OpenFolderBrowserCommand = new(OpenFolderBrowser);
+      OpenFolderBrowserCommand = new(OpenFolderBrowser, Res.IconFolder, "Select folder");
       Buttons = new DialogButton[] {
         new(new(Resize, null, "Resize"), true),
         new(CloseCommand, false, true) }; 

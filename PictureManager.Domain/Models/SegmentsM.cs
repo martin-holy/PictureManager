@@ -35,10 +35,10 @@ public sealed class SegmentsM : ObservableObject {
     SegmentsRectsM = new(this);
     SegmentsDrawerM = new(this);
 
-    SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
+    SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson, Res.IconEquals, "Set selected as same person");
     SetSelectedAsUnknownCommand = new(
       () => SetAsUnknown(Selected.Items.ToArray()),
-      () => Selected.Items.Count > 0);
+      () => Selected.Items.Count > 0, Res.IconUnknownSegment, "Set selected as Unknown");
   }
 
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {

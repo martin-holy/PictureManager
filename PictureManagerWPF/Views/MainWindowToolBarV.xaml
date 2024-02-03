@@ -125,36 +125,18 @@
               ToolTip="Segments edit"
               IsThreeState="False"
               VerticalAlignment="Center"
-              Icon="{StaticResource IconPeople}"
+              ap:Icon.Data="{StaticResource IconPeople}"
               IsChecked="{Binding SegmentsRectsM.AreVisible}"/>
 
-            <mhc:IconButton
-              ToolTip="Open Segments drawer"
-              Icon="{StaticResource IconDrawer}"
-              Command="{Binding SegmentsDrawerM.OpenCommand}"/>
-
-            <mhc:IconButton
-              ToolTip="Add selected to Segments drawer"
-              Icon="{StaticResource IconDrawerAdd}"
-              Command="{Binding SegmentsDrawerM.AddSelectedCommand}"/>
-
-            <mhc:IconButton
-              ToolTip="Segments View"
-              Icon="{StaticResource IconSegment}"
-              Command="{Binding OpenSegmentsViewCommand, Source={x:Static pm:App.Core}}"/>
-            
-            <mhc:IconButton
-              ToolTip="Set selected as Unknown"
-              Icon="{StaticResource IconUnknownSegment}"
-              Command="{Binding SetSelectedAsUnknownCommand}"/>
+            <mhc:IconButton Command="{Binding SegmentsDrawerM.OpenCommand}"/>
+            <mhc:IconButton Command="{Binding SegmentsDrawerM.AddSelectedCommand}"/>
+            <mhc:IconButton Command="{Binding OpenSegmentsViewCommand, Source={x:Static pm:App.Core}}"/>
+            <mhc:IconButton Command="{Binding SetSelectedAsUnknownCommand}"/>
           </StackPanel>
 
           <Separator/>
 
-          <mhc:IconButton
-            ToolTip="People"
-            Icon="{StaticResource IconPeopleMultiple}"
-            Command="{Binding PeopleM.OpenPeopleToolsTabCommand}"/>
+          <mhc:IconButton Command="{Binding PeopleM.OpenPeopleToolsTabCommand}"/>
           
           <!-- Presentation ToolBar -->
           <StackPanel
@@ -171,11 +153,11 @@
                 <Style
                   TargetType="{x:Type mhc:IconButton}"
                   BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
-                  <Setter Property="Icon" Value="{StaticResource IconPlay}"/>
+                  <Setter Property="ap:Icon.Data" Value="{StaticResource IconPlay}"/>
                   <Setter Property="ToolTip" Value="Stop presentation"/>
                   <Style.Triggers>
                     <DataTrigger Binding="{Binding IsRunning}" Value="False">
-                      <Setter Property="Icon" Value="{StaticResource IconStop}"/>
+                      <Setter Property="ap:Icon.Data" Value="{StaticResource IconStop}"/>
                       <Setter Property="ToolTip" Value="Start presentation"/>
                     </DataTrigger>
                   </Style.Triggers>
@@ -231,14 +213,10 @@
 
             <!-- Image Comparer -->
             <mhc:IconButton
-              ToolTip="Compare images using average hash"
-              Icon="{StaticResource IconCompare}"
               Command="{Binding ImageComparerM.AverageHashCommand}"
               CommandParameter="{Binding MediaItemsViews.Current}"/>
 
             <mhc:IconButton
-              ToolTip="Compare images using p hash"
-              Icon="{StaticResource IconCompare}"
               Command="{Binding ImageComparerM.PHashCommand}"
               CommandParameter="{Binding MediaItemsViews.Current}"/>
 

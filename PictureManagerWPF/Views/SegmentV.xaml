@@ -143,12 +143,11 @@
         <!-- Open Person Detail Control -->
         <mhc:IconButton
           x:Name="personDetailBtn"
-          DockPanel.Dock="Right"
-          Icon="{StaticResource IconInformation}"
-          Width="20"
-          Height="20"
           Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}"
-          CommandParameter="{Binding Person}"/>
+          CommandParameter="{Binding Person}"
+          DockPanel.Dock="Right"
+          Width="20"
+          Height="20"/>
 
         <!-- Same Person Button -->
         <StackPanel
@@ -169,12 +168,10 @@
           </Border>
 
           <mhc:IconButton
-            Icon="{StaticResource IconEquals}"
-            Width="20"
-            Height="20"
-            ToolTip="Set selected as same person"
             Command="{Binding SegmentsM.SetSelectedAsSamePersonCommand,
-                      Source={x:Static pm:App.Core}}"/>
+                      Source={x:Static pm:App.Core}}"
+            Width="20"
+            Height="20"/>
         </StackPanel>
       </DockPanel>
     </Grid>
