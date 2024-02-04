@@ -1,6 +1,7 @@
 ﻿namespace MH.Utils;
 
 public static class Res {
+  public const string IconAutoPlay = "IconAutoPlay";
   public const string IconCheckMark = "IconCheckMark";
   public const string IconChevronDown = "IconChevronDown";
   public const string IconChevronLeft = "IconChevronLeft";
