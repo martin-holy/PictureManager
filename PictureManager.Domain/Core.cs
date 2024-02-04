@@ -97,8 +97,8 @@ public sealed class Core {
     TreeViewCategoriesM.AddCategories();
     Db.CategoryGroups.AddCategory(PeopleM.TreeCategory);
     Db.CategoryGroups.AddCategory(KeywordsM.TreeCategory);
-    UiDetailVideo.SetModel(VideoDetail.MediaPlayer);
-
+    VideoDetail.MediaPlayer.SetView(UiFullVideo);
+    VideoDetail.MediaPlayer.SetView(UiDetailVideo);
     OpenSegmentsViewCommand = new(OpenSegmentsView, Res.IconSegment, "Segments View");
   }
 
@@ -119,17 +119,13 @@ public sealed class Core {
         MediaViewerM.IsVisible = isInViewMode;
 
         if (isInViewMode) {
-          UiDetailVideo.UnsetModel();
-          VideoDetail.MediaPlayer.IsPlayOnOpened = true;
-          UiFullVideo.SetModel(VideoDetail.MediaPlayer);
+          VideoDetail.MediaPlayer.SetView(UiFullVideo);
           SegmentsM.SegmentsRectsM.MediaItem = MediaItemsM.Current;
         }
         else {
           MediaItemsViews.SelectAndScrollToCurrentMediaItem();
           MediaViewerM.Deactivate();
-          UiFullVideo.UnsetModel();
-          VideoDetail.MediaPlayer.IsPlayOnOpened = false;
-          UiDetailVideo.SetModel(VideoDetail.MediaPlayer);
+          VideoDetail.MediaPlayer.SetView(UiDetailVideo);
         }
 
         TreeViewCategoriesM.MarkUsedKeywordsAndPeople();

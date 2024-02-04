@@ -90,7 +90,6 @@ public sealed class VideoDetail : ObservableObject {
 
   private void SetVideoSource(VideoM vid) {
     if (vid == null) {
-      MediaPlayer.IsPlaying = false;
       MediaPlayer.Source = string.Empty;
       return;
     }
