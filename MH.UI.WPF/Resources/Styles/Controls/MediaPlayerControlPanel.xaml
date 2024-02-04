@@ -114,6 +114,12 @@
           Height="22"
           ToolTip="Mute"/>
 
+        <!-- Auto play -->
+        <c:IconToggleButton
+          ap:Icon.Data="{StaticResource IconAutoPlay}"
+          IsChecked="{Binding AutoPlay}"
+          ToolTip="Auto play"/>
+
         <!-- Play type -->
         <StackPanel x:Name="playTypePanel" Orientation="Horizontal">
           <Label Target="{Binding ElementName=cmbPlayTypes}" Content="Play:"/>
