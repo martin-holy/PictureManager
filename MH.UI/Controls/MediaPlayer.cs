@@ -33,6 +33,7 @@ public sealed class MediaPlayer : ObservableObject {
   private double _timelineSmallChange = 33;
   private double _timelineLargeChange = 1000;
   private string _source;
+  private bool _autoPlay = true;
 
   public static KeyValuePair<PlayType, string>[] PlayTypes { get; } = {
     new(PlayType.Video, "Video"),
@@ -43,7 +44,7 @@ public sealed class MediaPlayer : ObservableObject {
   
   public IPlatformSpecificUiMediaPlayer UiMediaPlayer { get; set; }
   public IVideoItem CurrentItem { get => _currentItem; private set { _currentItem = value; OnPropertyChanged(); } }
-  public bool IsPlayOnOpened { get; set; }
+  public bool AutoPlay { get => _autoPlay; set { _autoPlay = value; OnPropertyChanged(); } }
   public int ClipTimeStart { get; set; }
   public int ClipTimeEnd { get; set; }
   public int RepeatForSeconds { get => _repeatForSeconds; set { _repeatForSeconds = value; OnPropertyChanged(); } }
@@ -107,10 +108,8 @@ public sealed class MediaPlayer : ObservableObject {
         IsPlaying = false;
         TimelineMaximum = 0;
       }
-      else {
-        if (UiMediaPlayer != null) UiMediaPlayer.Source = new(Source);
-        IsPlaying = true;
-      }
+      else if (UiMediaPlayer != null)
+        UiMediaPlayer.Source = new(Source);
 
       OnPropertyChanged();
     }
@@ -165,7 +164,6 @@ public sealed class MediaPlayer : ObservableObject {
   public RelayCommand DeleteItemCommand { get; }
   public RelayCommand PlayCommand { get; }
   public RelayCommand PauseCommand { get; }
-  public RelayCommand PlayPauseToggleCommand { get; }
   public RelayCommand<PropertyChangedEventArgs<double>> TimelineSliderValueChangedCommand { get; }
   public RelayCommand TimelineSliderChangeStartedCommand { get; }
   public RelayCommand TimelineSliderChangeEndedCommand { get; }
@@ -201,7 +199,6 @@ public sealed class MediaPlayer : ObservableObject {
     DeleteItemCommand = new(ItemDelete, () => CurrentItem != null, Res.IconXCross, "Delete");
     PlayCommand = new(() => IsPlaying = true, Res.IconPlay, "Play");
     PauseCommand = new(() => IsPlaying = false, Res.IconPause, "Pause");
-    PlayPauseToggleCommand = new(PlayPauseToggle);
     TimelineSliderValueChangedCommand = new(TimelineSliderValueChanged);
     TimelineSliderChangeStartedCommand = new(TimelineSliderChangeStarted);
     TimelineSliderChangeEndedCommand = new(TimelineSliderChangeEnded);
@@ -239,9 +236,9 @@ public sealed class MediaPlayer : ObservableObject {
 
   public void OnMediaOpened(int duration) {
     TimelineMaximum = duration > 1000 ? duration : 1000;
-    IsPlaying = IsPlayOnOpened;
+    IsPlaying = AutoPlay;
 
-    if (!IsPlayOnOpened)
+    if (!AutoPlay)
       ShiftTimeline(TimelineShift.Beginning);
 
     if (PlayType != PlayType.Video)
@@ -421,9 +418,6 @@ public sealed class MediaPlayer : ObservableObject {
     };
   }
 
-  private void PlayPauseToggle() =>
-    IsPlaying = !IsPlaying;
-
   public static string FormatPosition(int ms) =>
     TimeSpan.FromMilliseconds(ms).ToString(
       ms >= 60 * 60 * 1000
@@ -439,4 +433,21 @@ public sealed class MediaPlayer : ObservableObject {
           : ms >= 60 * 1000
             ? @"m\:ss\.f"
             : @"s\.f\s");
+
+  public void SetView(IPlatformSpecificUiMediaPlayer view) {
+    if (UiMediaPlayer != null) {
+      UiMediaPlayer.Pause();
+      UiMediaPlayer.Source = null;
+      UiMediaPlayer.ViewModel = null;
+    }
+
+    UiMediaPlayer = view;
+    if (view == null) return;
+    view.ViewModel = this;
+    view.SpeedRatio = Speed;
+    view.Volume = Volume;
+    view.IsMuted = IsMuted;
+    if (!string.IsNullOrEmpty(Source))
+      view.Source = new(Source);
+  }
 }
