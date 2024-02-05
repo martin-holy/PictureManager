@@ -2,7 +2,6 @@
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PictureManager.Domain.Database;
 
@@ -49,7 +48,8 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
   public override void LinkReferences() {
     foreach (var (vc, csv) in AllCsv) {
       vc.Video = _db.Videos.GetById(csv[1]);
-      vc.Video.HasVideoClips = true;
+      vc.Video.VideoClips ??= new();
+      vc.Video.VideoClips.Add(vc);
       vc.People = _db.People.Link(csv[8], this);
       vc.Keywords = _db.Keywords.Link(csv[9], this);
     }
@@ -62,12 +62,12 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
     ItemCreate(new(GetNextId(), video));
 
   protected override void OnItemCreated(VideoClipM item) {
-    item.Video.HasVideoClips = true;
+    item.Video.Toggle(item);
   }
 
   protected override void OnItemDeleted(VideoClipM item) {
     _db.MediaItems.OnItemDeletedCommon(item);
-    item.Video.HasVideoClips = _db.VideoClips.All.Any(x => ReferenceEquals(x.Video, item.Video));
+    item.Video.Toggle(item);
     item.Video = null;
   }
 }

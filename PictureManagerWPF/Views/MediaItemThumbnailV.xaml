@@ -91,7 +91,7 @@
             Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
                       ConverterParameter={x:Type mim:VideoM}}"
             Value="True"/>
-          <Condition Binding="{Binding Path=(mim:VideoM.HasVideoClips)}" Value="True"/>
+          <Condition Binding="{Binding Path=(mim:VideoM.HasVideoItems)}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="vidClipsOverlayer" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
