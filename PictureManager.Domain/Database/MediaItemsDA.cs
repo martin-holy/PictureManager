@@ -316,13 +316,4 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
 
     RaiseOrientationChanged(items);
   }
-
-  public IEnumerable<VideoItemM> GetVideoItems(MediaItemM[] items) {
-    var vids = items.OfType<VideoM>().Concat(items.OfType<VideoItemM>().Select(x => x.Video)).Distinct().ToArray();
-    var setClips = vids.Where(x => x.HasVideoClips).ToHashSet();
-    var setImages = vids.Where(x => x.HasVideoImages).ToHashSet();
-    var vidsClips = _db.VideoClips.All.Where(x => setClips.Contains(x.Video));
-    var vidsImages = _db.VideoImages.All.Where(x => setImages.Contains(x.Video));
-    return vidsClips.Cast<VideoItemM>().Concat(vidsImages);
-  }
 }

@@ -41,7 +41,7 @@ public sealed class SegmentsView {
           : Core.MediaItemsViews.Current?.GetSelectedOrAll().ToArray()
             ?? Array.Empty<MediaItemM>();
 
-        return items.Concat(Core.Db.MediaItems.GetVideoItems(items)).GetSegments();
+        return items.Concat(items.GetVideoItems()).GetSegments();
       case 2:
         var people = Core.PeopleM.Selected.Items.ToHashSet();
 

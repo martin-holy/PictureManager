@@ -28,7 +28,7 @@ public class VideoThumbsM {
 
   private VfsVideo[] GetVideos(MediaItemM[] items, bool rebuild) {
     var vids = items.OfType<VideoM>().Concat(items.OfType<VideoItemM>().Select(x => x.Video)).Distinct().ToArray();
-    var vidsItems = Core.Db.MediaItems.GetVideoItems(items).GroupBy(x => x.Video);
+    var vidsItems = items.GetVideoItems().GroupBy(x => x.Video);
     var dic = new Dictionary<VideoM, VfsVideo>();
 
     foreach (var vid in vids) {

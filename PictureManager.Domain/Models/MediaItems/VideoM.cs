@@ -1,11 +1,31 @@
-﻿namespace PictureManager.Domain.Models.MediaItems;
+﻿using MH.Utils.Extensions;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace PictureManager.Domain.Models.MediaItems;
 
 public sealed class VideoM : RealMediaItemM {
-  private bool _hasVideoClips;
-  private bool _hasVideoImages;
-
-  public bool HasVideoClips { get => _hasVideoClips; set { _hasVideoClips = value; OnPropertyChanged(); } }
-  public bool HasVideoImages { get => _hasVideoImages; set { _hasVideoImages = value; OnPropertyChanged(); } }
+  public bool HasVideoItems => GetVideoItems().Any();
+  public List<VideoClipM> VideoClips { get; set; }
+  public List<VideoImageM> VideoImages { get; set; }
 
   public VideoM(int id, FolderM folder, string fileName) : base(id, folder, fileName) { }
+
+  public override void SetInfoBox(bool update = false) {
+    base.SetInfoBox(update);
+    OnPropertyChanged(nameof(HasVideoItems));
+  }
+
+  public IEnumerable<VideoItemM> GetVideoItems() =>
+    VideoClips.EmptyIfNull().Cast<VideoItemM>().Concat(VideoImages.EmptyIfNull());
+
+  public void Toggle(VideoClipM item) {
+    VideoClips = VideoClips.Toggle(item, true);
+    OnPropertyChanged(nameof(HasVideoItems));
+  }
+
+  public void Toggle(VideoImageM item) {
+    VideoImages = VideoImages.Toggle(item, true);
+    OnPropertyChanged(nameof(HasVideoItems));
+  }
 }

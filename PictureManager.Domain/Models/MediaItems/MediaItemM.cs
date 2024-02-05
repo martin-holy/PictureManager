@@ -76,7 +76,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public IEnumerable<SegmentM> GetSegments() =>
     Segments.EmptyIfNull();
 
-  public void SetInfoBox(bool update = false) {
+  public virtual void SetInfoBox(bool update = false) {
     if (InfoBoxThumb != null && !update) return;
     InfoBoxThumb?.Clear();
     InfoBoxThumb = new();
@@ -160,4 +160,11 @@ public static class MediaItemExtensions {
     items
       .EmptyIfNull()
       .SelectMany(x => x.GetSegments());
+
+  public static IEnumerable<VideoItemM> GetVideoItems(this MediaItemM[] items) =>
+    items
+      .OfType<VideoM>()
+      .SelectMany(x => x.GetVideoItems())
+      .Concat(items.OfType<VideoItemM>())
+      .Distinct();
 }
