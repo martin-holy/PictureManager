@@ -16,6 +16,7 @@ public class ExtObservableCollection<T> : ObservableCollection<T> {
   }
 
   public void AddItems(IList<T> items, Action<T> itemAction) {
+    if (items == null) return;
     foreach (var item in items) {
       itemAction?.Invoke(item);
       Items.Add(item);
