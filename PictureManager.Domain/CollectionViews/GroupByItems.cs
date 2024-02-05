@@ -147,8 +147,7 @@ public static class GroupByItems {
     items?.Any(x => GroupByPerson(x, parameter)) == true;
 
   private static bool GroupByPerson(this MediaItemM item, object parameter) =>
-    GroupByPerson(item.People, parameter) ||
-    GroupByPerson(item.Segments?.GetPeople(), parameter);
+    GroupByPerson(item.GetPeople(), parameter);
 
   private static bool GroupByPerson(this SegmentM item, object parameter) =>
     ReferenceEquals(parameter, Core.PeopleM.TreeCategory) || 

@@ -255,8 +255,9 @@ public sealed class Core {
       MediaItemsViews.Current?.SoftLoad(MediaItemsViews.Current.FilteredItems, true, false);
 
     Db.MediaItems.MetadataChangedEvent += items => {
-      MediaItemsM.OnMetadataChanged(items);
-      MediaItemsViews.UpdateViews(items);
+      var all = items.OfType<VideoItemM>().Select(x => x.Video).Concat(items).Distinct().ToArray();
+      MediaItemsM.OnMetadataChanged(all);
+      MediaItemsViews.UpdateViews(all);
       VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       MediaItemsStatusBarM.UpdateRating();

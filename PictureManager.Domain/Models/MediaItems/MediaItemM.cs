@@ -67,7 +67,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
       .SelectMany(x => x.GetThisAndParents())
       .Distinct();
 
-  public IEnumerable<PersonM> GetPeople() =>
+  public virtual IEnumerable<PersonM> GetPeople() =>
     People
       .EmptyIfNull()
       .Concat(Segments.GetPeople())
@@ -90,8 +90,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     if (GeoLocation?.GeoName != null)
       InfoBoxThumb.Add(GeoLocation.GeoName.Name);
 
-    if (People != null || Segments != null)
-      InfoBoxThumb.AddItems(GetPeople().Select(x => x.Name).OrderBy(x => x).ToArray(), null);
+    InfoBoxThumb.AddItems(GetPeople().Select(x => x.Name).OrderBy(x => x).ToArray(), null);
 
     if (Keywords != null)
       InfoBoxThumb.AddItems(DisplayKeywords, null);
