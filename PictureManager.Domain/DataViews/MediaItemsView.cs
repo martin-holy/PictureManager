@@ -187,13 +187,6 @@ namespace PictureManager.Domain.DataViews {
       IsLoading = false;
     }
 
-    // TODO mi rewrite move this fce
-    private static IEnumerable<MediaItemM> GetVideoItems(IEnumerable<MediaItemM> items) {
-      var videos = items.OfType<VideoM>().ToHashSet();
-      return Core.Db.VideoClips.All.Where(x => videos.Contains(x.Video)).Cast<MediaItemM>()
-        .Concat(Core.Db.VideoImages.All.Where(x => videos.Contains(x.Video)));
-    }
-
     private async void CancelImport() =>
       await _importTask.Cancel();
 
