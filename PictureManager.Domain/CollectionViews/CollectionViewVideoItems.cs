@@ -10,6 +10,11 @@ namespace PictureManager.Domain.CollectionViews;
 public class CollectionViewVideoItems : CollectionView<VideoItemM> {
   public Selecting<VideoItemM> Selected { get; } = new();
 
+  public CollectionViewVideoItems() {
+    Icon = Res.IconImageMultiple;
+    Name = "Video Items";
+  }
+
   public override int GetItemSize(VideoItemM item, bool getWidth) =>
     (getWidth ? item.ThumbWidth : item.ThumbHeight) / 3;
 
