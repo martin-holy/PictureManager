@@ -44,20 +44,20 @@
       </Image>
 
       <!-- Video over layer -->
-      <ContentControl
+      <Path
         x:Name="vidOverlayer"
-        Content="&#xE29E;"
-        FontFamily="Segoe UI Symbol"
-        FontSize="20" 
-        VerticalAlignment="Center"
+        Style="{StaticResource MH.Styles.IconWithShadow}"
+        Data="{StaticResource IconPlayCircle}"
+        Width="40"
+        Height="40"
         HorizontalAlignment="Center"
-        Opacity="0.77"
+        VerticalAlignment="Center"
         Visibility="Collapsed"/>
 
       <!-- Video Clips over layer -->
       <Path
         x:Name="vidClipsOverlayer"
-        Style="{StaticResource MH.Styles.Icon}"
+        Style="{StaticResource MH.Styles.IconWithShadow}"
         Data="{StaticResource IconImageMultiple}"
         Width="20"
         Height="20"
