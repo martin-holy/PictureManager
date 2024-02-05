@@ -11,11 +11,11 @@ public sealed class VideoM : RealMediaItemM {
 
   public VideoM(int id, FolderM folder, string fileName) : base(id, folder, fileName) { }
 
+  public override IEnumerable<KeywordM> GetKeywords() =>
+    GetVideoItems().GetKeywords().Concat(base.GetKeywords()).Distinct();
+
   public override IEnumerable<PersonM> GetPeople() =>
-    GetVideoItems()
-      .GetPeople()
-      .Concat(People.EmptyIfNull().Concat(Segments.GetPeople()))
-      .Distinct();
+    GetVideoItems().GetPeople().Concat(base.GetPeople()).Distinct();
 
   public override void SetInfoBox(bool update = false) {
     base.SetInfoBox(update);

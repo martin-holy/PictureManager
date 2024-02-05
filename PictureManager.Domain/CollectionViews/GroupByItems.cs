@@ -158,8 +158,7 @@ public static class GroupByItems {
     items?.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter) == true;
 
   private static bool GroupByKeyword(this MediaItemM item, object parameter) =>
-    GroupByKeyword(item.Keywords, parameter) ||
-    GroupByKeyword(item.Segments?.GetKeywords(), parameter);
+    GroupByKeyword(item.GetKeywords(), parameter);
 
   private static bool GroupByKeyword(this PersonM item, object parameter) =>
     GroupByKeyword(item.Keywords, parameter);

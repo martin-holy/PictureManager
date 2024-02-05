@@ -47,7 +47,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     GetPeople().OrderBy(x => x.Name).ToArray().NullIfEmpty();
 
   public string[] DisplayKeywords =>
-    Keywords?.ToStrings(x => x.Name).ToArray();
+    GetKeywords().ToStrings(x => x.Name).ToArray().NullIfEmpty();
 
   protected MediaItemM(int id) {
     Id = id;
@@ -59,10 +59,10 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public IEnumerable<GeoNameM> GetGeoNames() =>
     GeoLocation?.GeoName?.GetThisAndParents() ?? Enumerable.Empty<GeoNameM>();
 
-  public IEnumerable<KeywordM> GetKeywords() =>
+  public virtual IEnumerable<KeywordM> GetKeywords() =>
     Keywords
       .EmptyIfNull()
-      .Concat(GetSegments().GetKeywords())
+      //.Concat(GetSegments().GetKeywords()) // add func to decide by user
       .Distinct()
       .SelectMany(x => x.GetThisAndParents())
       .Distinct();
@@ -90,14 +90,14 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     if (GeoLocation?.GeoName != null)
       InfoBoxThumb.Add(GeoLocation.GeoName.Name);
 
-    InfoBoxThumb.AddItems(GetPeople().Select(x => x.Name).OrderBy(x => x).ToArray(), null);
-
-    if (Keywords != null)
-      InfoBoxThumb.AddItems(DisplayKeywords, null);
+    InfoBoxThumb.AddItems(DisplayPeople.EmptyIfNull().Select(x => x.Name).ToArray(), null);
+    InfoBoxThumb.AddItems(DisplayKeywords, null);
 
     if (InfoBoxThumb.Count == 0)
       InfoBoxThumb = null;
 
+    OnPropertyChanged(nameof(DisplayKeywords));
+    OnPropertyChanged(nameof(DisplayPeople));
     OnPropertyChanged(nameof(InfoBoxThumb));
   }
 
