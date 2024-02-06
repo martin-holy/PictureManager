@@ -5,14 +5,19 @@
   xmlns:mhuibc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
-  xmlns:tc="clr-namespace:PictureManager.Domain.TreeCategories;assembly=PictureManager.Domain">
+  xmlns:tc="clr-namespace:PictureManager.Domain.TreeCategories;assembly=PictureManager.Domain"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+
+  <Style x:Key="PM.MiFilter" TargetType="MenuItem" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}">
+    <Setter Property="Visibility" Value="{Binding MediaItemsViews.Current, Source={x:Static pm:App.Core}, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
+  </Style>
 
   <!-- Tag Items Load and Filters -->
-  <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu">
+  <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu" x:Shared="False">
     <MenuItem Command="{Binding MediaItemsViews.LoadByTagCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
-    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetAndCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
-    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
-    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetNotCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetAndCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}" Style="{StaticResource PM.MiFilter}"/>
+    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}" Style="{StaticResource PM.MiFilter}"/>
+    <MenuItem Command="{Binding MediaItemsViews.Current.Filter.SetNotCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}" Style="{StaticResource PM.MiFilter}"/>
   </x:Array>
 
   <!-- People -->
