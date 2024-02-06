@@ -71,14 +71,8 @@ public static class GroupByItems {
       .OrderBy(x => x.Name)
       .ToGroupByItems<SegmentM, PersonM>(GroupByPerson);
 
-  public static GroupByItem<T> GetKeywordsInGroup<T>(IEnumerable<T> items) where T : MediaItemM =>
+  public static GroupByItem<T> GetKeywordsInGroup<T>(IEnumerable<T> items) where T : class, IHaveKeywords =>
     items.GetKeywords().ToGroupedGroupByItemsInGroup<T>(GroupByKeyword);
-
-  public static GroupByItem<PersonM> GetKeywordsInGroup(IEnumerable<PersonM> items) =>
-    items.GetKeywords().ToGroupedGroupByItemsInGroup<PersonM>(GroupByKeyword);
-
-  public static GroupByItem<SegmentM> GetKeywordsInGroup(IEnumerable<SegmentM> items) =>
-    items.GetKeywords().ToGroupedGroupByItemsInGroup<SegmentM>(GroupByKeyword);
 
   private static GroupByItem<T> ToGroupedGroupByItemsInGroup<T>(this IEnumerable<KeywordM> items, Func<T, object, bool> func)
     where T : class =>
@@ -157,12 +151,6 @@ public static class GroupByItems {
     ReferenceEquals(parameter, Core.KeywordsM.TreeCategory) ||
     items?.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter) == true;
 
-  private static bool GroupByKeyword(this MediaItemM item, object parameter) =>
+  private static bool GroupByKeyword(this IHaveKeywords item, object parameter) =>
     GroupByKeyword(item.GetKeywords(), parameter);
-
-  private static bool GroupByKeyword(this PersonM item, object parameter) =>
-    GroupByKeyword(item.Keywords, parameter);
-
-  private static bool GroupByKeyword(this SegmentM item, object parameter) =>
-    GroupByKeyword(item.Keywords, parameter);
 }

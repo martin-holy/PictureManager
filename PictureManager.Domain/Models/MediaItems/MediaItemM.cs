@@ -60,12 +60,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
     GeoLocation?.GeoName?.GetThisAndParents() ?? Enumerable.Empty<GeoNameM>();
 
   public virtual IEnumerable<KeywordM> GetKeywords() =>
-    Keywords
-      .EmptyIfNull()
-      //.Concat(GetSegments().GetKeywords()) // add func to decide by user
-      .Distinct()
-      .SelectMany(x => x.GetThisAndParents())
-      .Distinct();
+    Keywords.GetKeywords();
 
   public virtual IEnumerable<PersonM> GetPeople() =>
     People
@@ -141,12 +136,6 @@ public static class MediaItemExtensions {
     items
       .EmptyIfNull()
       .SelectMany(x => x.GetGeoNames())
-      .Distinct();
-
-  public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<MediaItemM> items) =>
-    items
-      .EmptyIfNull()
-      .SelectMany(x => x.GetKeywords())
       .Distinct();
 
   public static IEnumerable<PersonM> GetPeople(this IEnumerable<MediaItemM> items) =>
