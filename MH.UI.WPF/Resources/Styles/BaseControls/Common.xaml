@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
     <Setter Property="Control.Template">
@@ -215,6 +216,16 @@
               </MultiDataTrigger.Conditions>
               <Setter TargetName="Border" Property="Background" Value="{StaticResource MH.Item.SelectedHover.Background}"/>
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource MH.Item.SelectedHover.Border}"/>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+              <MultiDataTrigger.Conditions>
+                <Condition
+                  Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
+                            ConverterParameter={x:Type mhubc:TreeItem}}"
+                  Value="True"/>
+                <Condition Binding="{Binding Path=(mhubc:TreeItem.IsHidden)}" Value="True"/>
+              </MultiDataTrigger.Conditions>
+              <Setter Property="Visibility" Value="Collapsed"/>
             </MultiDataTrigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
