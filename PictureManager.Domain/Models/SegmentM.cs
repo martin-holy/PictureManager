@@ -1,4 +1,3 @@
-using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -109,15 +108,6 @@ public static class SegmentExtensions {
     segments
       .GetMediaItems()
       .GetGeoNames();
-
-  public static IEnumerable<KeywordM> GetKeywords(this IEnumerable<SegmentM> segments) =>
-    segments
-      .EmptyIfNull()
-      .Where(x => x.Keywords != null)
-      .SelectMany(x => x.Keywords)
-      .Distinct()
-      .SelectMany(Tree.GetThisAndParents)
-      .Distinct();
 
   public static IEnumerable<MediaItemM> GetMediaItems(this IEnumerable<SegmentM> segments) =>
     segments
