@@ -93,7 +93,7 @@ public sealed class Core {
       Db.CategoryGroups.ItemCreate(KeywordsM.TreeCategory, "Auto Added");
 
     FoldersM.TreeCategory.AddDrives();
-    Db.FolderKeywords.Reload();
+    ViewersM.SetCurrent(ViewersM.Current);
     TreeViewCategoriesM.AddCategories();
     Db.CategoryGroups.AddCategory(PeopleM.TreeCategory);
     Db.CategoryGroups.AddCategory(KeywordsM.TreeCategory);
