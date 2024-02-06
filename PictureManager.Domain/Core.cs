@@ -94,6 +94,7 @@ public sealed class Core {
 
     FoldersM.TreeCategory.AddDrives();
     ViewersM.SetCurrent(ViewersM.Current);
+    ViewersM.Current.UpdateHashSets();
     TreeViewCategoriesM.AddCategories();
     Db.CategoryGroups.AddCategory(PeopleM.TreeCategory);
     Db.CategoryGroups.AddCategory(KeywordsM.TreeCategory);
