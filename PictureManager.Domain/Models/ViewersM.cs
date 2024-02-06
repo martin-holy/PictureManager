@@ -1,8 +1,8 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.TreeCategories;
+using System.Linq;
 
 namespace PictureManager.Domain.Models;
 
@@ -46,22 +46,26 @@ public sealed class ViewersM : ObservableObject {
   }
 
   public void SetCurrent(ViewerM viewer) {
-    if (Current != null)
-      Current.IsDefault = false;
+    if (ReferenceEquals(Current, viewer)) return;
+    if (Current != null) Current.IsDefault = false;
+    if (viewer != null) viewer.IsDefault = true;
+    _da.IsModified = true;
+    Current = viewer;
 
-    if (viewer != null)
-      viewer.IsDefault = true;
-    else
-      Current = null;
+    foreach (var f in Core.Db.Folders.All.Where(x => x.IsHidden)) f.IsHidden = false;
+    foreach (var cg in Core.Db.CategoryGroups.All.Where(x => x.IsHidden)) cg.IsHidden = false;
+    if (Current == null) return;
 
-    var da = Core.Db.Viewers;
-    da.Save();
-    Core.Inst.SaveDBPrompt();
-    Drives.UpdateSerialNumbers();
-    da.DB.LoadAllTables(null);
-    da.DB.LinkReferences(null);
-    da.DB.ClearDataAdapters();
-    Core.Inst.AfterInit();
+    Current.UpdateHashSets();
+    Core.Db.FolderKeywords.Reload();
+
+    foreach (var f in Core.FoldersM.TreeCategory.Items.Cast<FolderM>()) {
+      f.IsExpanded = false;
+      f.IsHidden = !CanViewerSee(f);
+    }
+
+    foreach (var cg in Core.Db.CategoryGroups.All)
+      cg.IsHidden = Current?.ExcludedCategoryGroups.Contains(cg) == true;
   }
 
   public bool CanViewerSee(FolderM folder) =>

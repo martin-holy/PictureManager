@@ -126,9 +126,6 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
       if (di.IsReady && item.Items.Count == 0)
         item.Items.Add(FoldersM.FolderPlaceHolder);
     }
-
-    foreach (var item in Items.Cast<FolderM>())
-      item.IsHidden = !Core.ViewersM.CanViewerSee(item);
   }
 
   public void ScrollTo(FolderM folder) {

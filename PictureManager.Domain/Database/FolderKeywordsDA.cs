@@ -55,17 +55,11 @@ public class FolderKeywordsDA : TreeDataAdapter<FolderM> {
     Model.Items.Clear();
     All2.Clear();
 
-    if (AllDict == null)
-      foreach (var folder in All)
-        LoadRecursive(folder, Model);
-    else
-      foreach (var folder in AllDict.Values)
-        LoadRecursive(folder, Model);
+    foreach (var folder in All)
+      LoadRecursive(folder, Model);
 
-    foreach (var fk in All2) {
-      if (fk.Folders.All(x => !_db.Viewers.Model.CanViewerSee(x)))
-        fk.IsHidden = true;
-    }
+    foreach (var fk in All2.Where(fk => fk.Folders.All(x => !_db.Viewers.Model.CanViewerSee(x))))
+      fk.IsHidden = true;
   }
 
   private void LoadRecursive(ITreeItem folder, ITreeItem fkRoot) {

@@ -77,11 +77,6 @@ public class ViewersDA : TreeDataAdapter<ViewerM> {
       // adding Viewer to Viewers
       Model.TreeCategory.Items.Add(viewer);
     }
-
-    Model.Current?.UpdateHashSets();
-
-    foreach (var group in _db.CategoryGroups.AllDict.Values)
-      group.IsHidden = Model.Current?.ExcludedCategoryGroups.Contains(group) == true;
   }
 
   public override ViewerM ItemCreate(ITreeItem parent, string name) =>
