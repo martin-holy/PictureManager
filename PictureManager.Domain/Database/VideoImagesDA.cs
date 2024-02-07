@@ -20,8 +20,7 @@ public class VideoImagesDA : TableDataAdapter<VideoImageM> {
     Db.GetAsDriveRelated(All, x => x.Folder);
 
   public override VideoImageM FromCsv(string[] csv) =>
-    new(int.Parse(csv[0]), null) {
-      TimeStart = csv[2].IntParseOrDefault(0),
+    new(int.Parse(csv[0]), null, csv[2].IntParseOrDefault(0)) {
       Rating = csv[3].IntParseOrDefault(0),
       Comment = string.IsNullOrEmpty(csv[4]) ? null : csv[4]
     };
@@ -49,8 +48,8 @@ public class VideoImagesDA : TableDataAdapter<VideoImageM> {
   public override int GetNextId() =>
     _db.MediaItems.GetNextId();
 
-  public VideoImageM CustomItemCreate(VideoM video) =>
-    ItemCreate(new(GetNextId(), video));
+  public VideoImageM CustomItemCreate(VideoM video, int timeStart) =>
+    ItemCreate(new(GetNextId(), video, timeStart));
 
   protected override void OnItemCreated(VideoImageM item) =>
     item.Video.Toggle(item);

@@ -20,8 +20,7 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
     Db.GetAsDriveRelated(All, x => x.Folder);
 
   public override VideoClipM FromCsv(string[] csv) {
-    var vc = new VideoClipM(int.Parse(csv[0]), null) {
-      TimeStart = csv[2].IntParseOrDefault(0),
+    var vc = new VideoClipM(int.Parse(csv[0]), null, csv[2].IntParseOrDefault(0)) {
       TimeEnd = csv[3].IntParseOrDefault(0),
       Volume = csv[4].IntParseOrDefault(50) / 100.0,
       Speed = csv[5].IntParseOrDefault(10) / 10.0,
@@ -58,8 +57,8 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
   public override int GetNextId() =>
     _db.MediaItems.GetNextId();
 
-  public VideoClipM CustomItemCreate(VideoM video) =>
-    ItemCreate(new(GetNextId(), video));
+  public VideoClipM CustomItemCreate(VideoM video, int timeStart) =>
+    ItemCreate(new(GetNextId(), video, timeStart));
 
   protected override void OnItemCreated(VideoClipM item) {
     item.Video.Toggle(item);
