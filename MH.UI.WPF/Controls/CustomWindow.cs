@@ -41,7 +41,7 @@ namespace MH.UI.WPF.Controls {
 
     private const int _resizeCornerSize = 10;
     private const int _resizeBorderSize = 4;
-    private const int WM_SYSCOMMAND = 0x112;
+    private const int _wmSysCommand = 0x112;
 
     private enum ResizeDirection {
       None = 0,
@@ -56,7 +56,7 @@ namespace MH.UI.WPF.Controls {
     }
 
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+    private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
     public static RelayCommand<Window> MinimizeWindowCommand { get; } = new(
       window => window.WindowState = WindowState.Minimized);
@@ -85,24 +85,20 @@ namespace MH.UI.WPF.Controls {
     public CustomWindow() {
       StateChanged += delegate { OnStateChanged(); };
       Loaded += delegate {
-        if (WindowState == WindowState.Maximized) {
-          var isFullScreen = IsFullScreen;
-          WindowState = WindowState.Normal;
-          if (isFullScreen)
-            IsFullScreen = isFullScreen;
-          WindowState = WindowState.Maximized;
-        }
+        if (WindowState != WindowState.Maximized) return;
+        var isFullScreen = IsFullScreen;
+        WindowState = WindowState.Normal;
+        if (isFullScreen) IsFullScreen = true;
+        WindowState = WindowState.Maximized;
       };
     }
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
-
-      if (Template.FindName("PART_ResizeBorder", this) is Border border) {
-        border.MouseEnter += delegate { SetCursor(); };
-        border.MouseLeave += delegate { ResetCursor(); };
-        border.PreviewMouseLeftButtonDown += delegate { Resize(); };
-      }
+      if (Template.FindName("PART_ResizeBorder", this) is not Border border) return;
+      border.MouseEnter += delegate { SetCursor(); };
+      border.MouseLeave += delegate { ResetCursor(); };
+      border.PreviewMouseLeftButtonDown += delegate { Resize(); };
     }
 
     private void OnStateChanged() {
@@ -113,7 +109,7 @@ namespace MH.UI.WPF.Controls {
         MaxHeight = SystemParameters.WorkArea.Height;
     }
 
-    public void OnIsFullScreenChanged() {
+    private void OnIsFullScreenChanged() {
       MaxHeight = IsFullScreen
         ? double.PositiveInfinity
         : SystemParameters.WorkArea.Height;
@@ -136,10 +132,10 @@ namespace MH.UI.WPF.Controls {
     }
 
     private void Resize() {
-      var hwndSource = (HwndSource)PresentationSource.FromVisual(this);
+      if ((HwndSource)PresentationSource.FromVisual(this) is not { } hwndSource) return;
       var direction = GetResizeDirection();
       Cursor = ResizeDirectionToCursor(direction);
-      SendMessage(hwndSource.Handle, WM_SYSCOMMAND, (IntPtr)direction, IntPtr.Zero);
+      SendMessage(hwndSource.Handle, _wmSysCommand, (IntPtr)direction, IntPtr.Zero);
     }
 
     private ResizeDirection GetResizeDirection() {
