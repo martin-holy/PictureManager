@@ -22,7 +22,7 @@ public interface ITableDataAdapter : IDataAdapter {
   public void Clear();
 }
 
-public interface IRelationDataAdapter : IDataAdapter { }
+public interface IRelationDataAdapter : IDataAdapter;
 
 public interface ITreeDataAdapter<T> : ITableDataAdapter where T : class, ITreeItem {
   public event EventHandler<ObjectEventArgs<T>> ItemCreatedEvent;
