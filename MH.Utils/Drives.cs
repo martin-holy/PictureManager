@@ -14,17 +14,13 @@ public static class Drives {
   }
 
   public static List<Tuple<string, string, string>> GetLogicalDrivesInfo() {
-    static string Extract(string s) =>
-      s[(s.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1)..];
-
     var output = new List<Tuple<string, string, string>>();
 
-    using var process = new Process {
-      StartInfo = new("cmd") {
-        CreateNoWindow = true,
-        RedirectStandardOutput = true,
-        UseShellExecute = false
-      }
+    using var process = new Process();
+    process.StartInfo = new("cmd") {
+      CreateNoWindow = true,
+      RedirectStandardOutput = true,
+      UseShellExecute = false
     };
 
     foreach (var drv in Environment.GetLogicalDrives()) {
@@ -39,5 +35,8 @@ public static class Drives {
     }
 
     return output;
+
+    static string Extract(string s) =>
+      s[(s.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1)..];
   }
 }
