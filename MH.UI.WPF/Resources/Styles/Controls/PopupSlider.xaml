@@ -14,6 +14,15 @@
       <Setter.Value>
         <ControlTemplate TargetType="Slider">
           <Grid>
+            <b:Interaction.Triggers>
+              <b:EventTrigger EventName="PreviewMouseUp">
+                <b:ChangePropertyAction
+                  PropertyName="IsOpen"
+                  TargetObject="{Binding ElementName=popup}"
+                  Value="False"/>
+              </b:EventTrigger>
+            </b:Interaction.Triggers>
+
             <c:IconTextButton
               ap:Icon.Data="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
               ap:Text.Text="{Binding Value, StringFormat={}{0:G2}, RelativeSource={RelativeSource TemplatedParent}}">
