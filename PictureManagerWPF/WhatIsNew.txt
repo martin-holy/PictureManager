@@ -5,10 +5,10 @@
 
 Latest:
  - [U] DB migration of MediaItems (Images, Videos), VideoClips, VideoClipsGroups and GeoNames
- - [N] MediaItem type VideoImage 
+ - [N] New MediaItem type VideoImage 
  - [N] Segments for VideoClips and VideoImages
  - [N] GeoLocation as Lat, Lng and/or GeoNameId for all MediaItems
- - [N] Load GeoNames from web option in settings
+ - [N] Load GeoNames from web option in the settings
  - [U] Media player control panel
  - [U] Video detail tab
  - [N] Group MediaItems and Segments by GeoName
@@ -21,6 +21,11 @@ Latest:
  - [B] TreeView ScrollTo not exactly
  - [U] RebuildThumbnails without re-wrap
  - [U] Larger icons on dialog buttons
+ - [N] MediaPlayer AutoPlay button
+ - [U] Video icon on thumbnail
+ - [B] Viewer tree items visibility
+ - [B] TreeContextMenus Load and Filter commands visibility
+ - [N] Close Popup Slider on MouseUp
 
 23.11.24.1717:
  - [N] What's new information
