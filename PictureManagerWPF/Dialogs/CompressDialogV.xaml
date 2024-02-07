@@ -48,7 +48,7 @@
         Grid.ColumnSpan="2"
         Height="20"
         Margin="10"
-        Maximum="{Binding Items.Count}"
+        Maximum="{Binding Items.Length}"
         Value="{Binding ProgressValue}"/>
 
       <DockPanel
