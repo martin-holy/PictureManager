@@ -30,6 +30,7 @@ public sealed class VideoItemsOrderDA : OneToManyMultiDataAdapter<VideoM, VideoI
   private void OnValueItemCreated(VideoItemM item) {
     if (!All.TryGetValue(item.Video, out var value)) return;
     value.AddInOrder(item, (a, b) => a.TimeStart - b.TimeStart);
+    IsModified = true;
   }
 
   public override Dictionary<string, IEnumerable<KeyValuePair<VideoM, List<VideoItemM>>>> GetAsDriveRelated() =>
