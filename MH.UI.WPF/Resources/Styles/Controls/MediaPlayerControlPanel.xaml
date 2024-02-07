@@ -176,7 +176,7 @@
       <DataTrigger
         Binding="{Binding CurrentItem,
                   Converter={x:Static conv:DataTypeConverter.Inst},
-                  ConverterParameter={x:Type uii:IVideoImage}}" Value="True">
+                  ConverterParameter={x:Type uii:IVideoItem}}" Value="True">
         <Setter
           TargetName="tbTimeStart"
           Property="Text"
