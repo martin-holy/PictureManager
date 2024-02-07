@@ -12,7 +12,6 @@
 
         # Picture Manager
   - read only drives and creating thumbnails
-  - ContextMenu Filter commands not visible until MediaItemsView is created
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata or crop doesn't work (re-save without metadata in XnView fixed the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
@@ -26,8 +25,6 @@
   - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
 ## CollectionView
   - wrong sort (it is by text and not number) on update when grouped by date
-## Presentation
-  - test play panoramic images
 
 
                                   *** UPDATE ***
@@ -38,12 +35,8 @@
   - GroupedBy instance for empty group with icon from View
 ## CollectionView
   - don't show expanded root if source is empty
-## PopupSlider
-  - close on mouse up
 
         # MH.Utils
-## Resources
-  - use constant strings for icons
 ## Dialog
   - add CanExecute for buttons like Yes/OK
   - open next to mouse cursor
