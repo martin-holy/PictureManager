@@ -14,7 +14,7 @@ public sealed class VideoClipM : VideoItemM, IVideoClip {
   public int Duration => TimeEnd - TimeStart;
   public int VolumePercent => (int)(Volume * 100);
 
-  public VideoClipM(int id, VideoM video) : base(id, video) {
+  public VideoClipM(int id, VideoM video, int timeStart) : base(id, video, timeStart) {
     PropertyChanged += (_, e) => {
       if (nameof(TimeStart).Equals(e.PropertyName))
         OnPropertyChanged(nameof(Duration));

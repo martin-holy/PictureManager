@@ -18,7 +18,8 @@ public class VideoItemM : MediaItemM, IVideoItem {
   public override int ThumbWidth { get => Video.ThumbWidth; set => Video.ThumbWidth = value; }
   public override int ThumbHeight { get => Video.ThumbHeight; set => Video.ThumbHeight = value; }
 
-  public VideoItemM(int id, VideoM video) : base(id) {
+  public VideoItemM(int id, VideoM video, int timeStart) : base(id) {
     Video = video;
+    TimeStart = timeStart;
   }
 }

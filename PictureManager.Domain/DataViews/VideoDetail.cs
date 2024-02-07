@@ -51,23 +51,16 @@ public sealed class VideoDetail : ObservableObject {
       ? new()
       : Core.Db.VideoItemsOrder.All.TryGetValue(Current, out var list)
         ? list.ToList()
-        : Core.Db.VideoClips.All
-          .Where(x => ReferenceEquals(x.Video, Current))
-          .Cast<VideoItemM>()
-          .Concat(Core.Db.VideoImages.All
-            .Where(x => ReferenceEquals(x.Video, Current)))
-          .OrderBy(x => x.TimeStart)
-          .ToList();
+        : Current.GetVideoItems().OrderBy(x => x.TimeStart).ToList();
     var groupByItems = new[] { GroupByItems.GetKeywordsInGroup(items) };
-
     CurrentVideoItems.Reload(items, GroupMode.ThenByRecursive, groupByItems, true);
   }
 
-  private IVideoClip GetNewClip() =>
-    Core.Db.VideoClips.CustomItemCreate(Current);
+  private IVideoClip GetNewClip(int timeStart) =>
+    Core.Db.VideoClips.CustomItemCreate(Current, timeStart);
 
-  private IVideoImage GetNewImage() =>
-    Core.Db.VideoImages.CustomItemCreate(Current);
+  private IVideoImage GetNewImage(int timeStart) =>
+    Core.Db.VideoImages.CustomItemCreate(Current, timeStart);
 
   private void OnItemDelete() {
     if (Core.MediaItemsM.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
