@@ -1,3 +1,3 @@
 ﻿namespace MH.UI.Interfaces;
 
-public interface IVideoImage : IVideoItem { }
+public interface IVideoImage : IVideoItem;
