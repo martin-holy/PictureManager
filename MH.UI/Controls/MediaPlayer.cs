@@ -174,8 +174,8 @@ public sealed class MediaPlayer : ObservableObject {
   public RelayCommand TimelineShiftLargeForwardCommand { get; }
   public RelayCommand TimelineShiftEndCommand { get; }
 
-  public Func<IVideoClip> GetNewClipFunc { get; set; }
-  public Func<IVideoImage> GetNewImageFunc { get; set; }
+  public Func<int, IVideoClip> GetNewClipFunc { get; set; }
+  public Func<int, IVideoImage> GetNewImageFunc { get; set; }
   public Action<bool, bool> SelectNextItemAction { get; set; }
   public Action OnItemDeleteAction { get; set; }
 
@@ -326,8 +326,9 @@ public sealed class MediaPlayer : ObservableObject {
   }
 
   private void SetCurrentVideoImage() {
-    if (!IsPlaying) return;
+    if (!IsPlaying || PlayType == PlayType.Video) return;
     IsPlaying = false;
+    if (PlayType == PlayType.Clip) return;
     Task.Run(() => {
       Thread.Sleep(RepeatForSeconds * 1000);
       Tasks.RunOnUiThread(() => {
@@ -354,15 +355,14 @@ public sealed class MediaPlayer : ObservableObject {
     TimelinePosition = start ? CurrentItem.TimeStart : ((IVideoClip)CurrentItem).TimeEnd;
 
   private void SetMarker(bool start) {
+    var ms = GetPosition();
     switch (CurrentItem) {
-      case IVideoClip vc: SetClipMarker(vc, start); break;
-      case IVideoImage vi: SetImageMarker(vi); break;
+      case IVideoClip vc: SetClipMarker(vc, ms, start); break;
+      case IVideoImage vi: SetImageMarker(vi, ms); break;
     }
   }
 
-  private void SetClipMarker(IVideoClip vc, bool start) {
-    var ms = (int)Math.Round(TimelinePosition);
-
+  private void SetClipMarker(IVideoClip vc, int ms, bool start) {
     if (start) {
       vc.TimeStart = ms;
       if (ms > vc.TimeEnd)
@@ -384,27 +384,32 @@ public sealed class MediaPlayer : ObservableObject {
     MarkerSetEvent(this, new(new(vc, start)));
   }
 
-  private void SetImageMarker(IVideoImage vi) {
-    vi.TimeStart = (int)Math.Round(TimelinePosition);
+  private void SetImageMarker(IVideoImage vi, int ms) {
+    vi.TimeStart = GetPosition();
     MarkerSetEvent(this, new(new(vi, false)));
   }
 
   private void SetNewClip() {
+    var ms = GetPosition();
     var vc = CurrentItem as IVideoClip;
     if (vc?.TimeEnd == 0)
-      SetClipMarker(vc, false);
+      SetClipMarker(vc, ms, false);
     else {
-      vc = GetNewClipFunc();
+      vc = GetNewClipFunc(ms);
       CurrentItem = vc;
-      SetClipMarker(vc, true);
+      SetClipMarker(vc, ms, true);
     }
   }
 
   private void SetNewImage() {
-    var vi = GetNewImageFunc();
+    var ms = GetPosition();
+    var vi = GetNewImageFunc(ms);
     CurrentItem = vi;
-    SetImageMarker(vi);
+    SetImageMarker(vi, ms);
   }
+
+  private int GetPosition() =>
+    (int)Math.Round(TimelinePosition);
 
   private void ShiftTimeline(TimelineShift mode) {
     TimelinePosition = mode switch {
