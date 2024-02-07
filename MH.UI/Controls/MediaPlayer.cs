@@ -16,24 +16,27 @@ public enum PlayType { Video, Clip, Clips, Group }
 public sealed class MediaPlayer : ObservableObject {
   private const string _zeroTime = "00:00:00";
 
-  private bool _isTimelineTimerExecuting;
-  private bool _wasPlaying;
+  private IPlatformSpecificUiMediaPlayer _uiPlayer;
   private readonly Timer _clipTimer;
   private readonly Timer _timelineTimer;
   private IVideoItem _currentItem;
   private PlayType _playType = PlayType.Video;
-  private bool _isPlaying;
+  private bool _autoPlay = true;
   private bool _isMuted;
+  private bool _isPlaying;
+  private bool _isTimelineTimerExecuting;
+  private bool _wasPlaying;
+  private int _clipTimeStart;
+  private int _clipTimeEnd;
   private int _repeatCount;
   private int _repeatForSeconds = 3; // 0 => infinity
-  private double _volume = 0.5;
   private double _speed = 1;
   private double _timelinePosition;
   private double _timelineMaximum;
   private double _timelineSmallChange = 33;
   private double _timelineLargeChange = 1000;
+  private double _volume = 0.5;
   private string _source;
-  private bool _autoPlay = true;
 
   public static KeyValuePair<PlayType, string>[] PlayTypes { get; } = {
     new(PlayType.Video, "Video"),
@@ -41,12 +44,9 @@ public sealed class MediaPlayer : ObservableObject {
     new(PlayType.Clips, "Clips"),
     new(PlayType.Group, "Group")
   };
-  
-  public IPlatformSpecificUiMediaPlayer UiMediaPlayer { get; set; }
+
   public IVideoItem CurrentItem { get => _currentItem; private set { _currentItem = value; OnPropertyChanged(); } }
   public bool AutoPlay { get => _autoPlay; set { _autoPlay = value; OnPropertyChanged(); } }
-  public int ClipTimeStart { get; set; }
-  public int ClipTimeEnd { get; set; }
   public int RepeatForSeconds { get => _repeatForSeconds; set { _repeatForSeconds = value; OnPropertyChanged(); } }
   public double TimelineSmallChange { get => _timelineSmallChange; set { _timelineSmallChange = value; OnPropertyChanged(); } }
   public double TimelineLargeChange { get => _timelineLargeChange; set { _timelineLargeChange = value; OnPropertyChanged(); } }
@@ -55,7 +55,7 @@ public sealed class MediaPlayer : ObservableObject {
     get => _volume;
     set {
       _volume = value;
-      if (UiMediaPlayer != null) UiMediaPlayer.Volume = value;
+      if (_uiPlayer != null) _uiPlayer.Volume = value;
       OnPropertyChanged();
     }
   }
@@ -64,7 +64,7 @@ public sealed class MediaPlayer : ObservableObject {
     get => _isMuted;
     set {
       _isMuted = value;
-      if (UiMediaPlayer != null) UiMediaPlayer.IsMuted = value;
+      if (_uiPlayer != null) _uiPlayer.IsMuted = value;
       OnPropertyChanged();
     }
   }
@@ -79,8 +79,8 @@ public sealed class MediaPlayer : ObservableObject {
     set {
       _timelinePosition = value;
 
-      if (!_isTimelineTimerExecuting && UiMediaPlayer != null)
-        UiMediaPlayer.Position = TimeSpan.FromMilliseconds((int)value);
+      if (!_isTimelineTimerExecuting && _uiPlayer != null)
+        _uiPlayer.Position = TimeSpan.FromMilliseconds((int)value);
 
       OnPropertyChanged();
       OnPropertyChanged(nameof(PositionSlashDuration));
@@ -89,7 +89,7 @@ public sealed class MediaPlayer : ObservableObject {
 
   public double TimelineMaximum {
     get => _timelineMaximum;
-    set {
+    private set {
       _timelineMaximum = value;
       _repeatCount = (int)Math.Round(RepeatForSeconds / (value / 1000), 0);
       OnPropertyChanged();
@@ -104,12 +104,12 @@ public sealed class MediaPlayer : ObservableObject {
       SetCurrent(null);
 
       if (string.IsNullOrEmpty(value)) {
-        if (UiMediaPlayer != null) UiMediaPlayer.Source = null;
+        if (_uiPlayer != null) _uiPlayer.Source = null;
         IsPlaying = false;
         TimelineMaximum = 0;
       }
-      else if (UiMediaPlayer != null)
-        UiMediaPlayer.Source = new(Source);
+      else if (_uiPlayer != null)
+        _uiPlayer.Source = new(Source);
 
       OnPropertyChanged();
     }
@@ -120,7 +120,7 @@ public sealed class MediaPlayer : ObservableObject {
     set {
       _speed = Math.Round(value, 1);
       if (IsPlaying) StartClipTimer();
-      if (UiMediaPlayer != null) UiMediaPlayer.SpeedRatio = _speed;
+      if (_uiPlayer != null) _uiPlayer.SpeedRatio = _speed;
       OnPropertyChanged();
     }
   }
@@ -129,12 +129,12 @@ public sealed class MediaPlayer : ObservableObject {
     get => _isPlaying;
     set {
       if (value) {
-        UiMediaPlayer?.Play();
+        _uiPlayer?.Play();
         StartClipTimer();
         _timelineTimer.Start();
       }
       else {
-        UiMediaPlayer?.Pause();
+        _uiPlayer?.Pause();
         _clipTimer.Stop();
         _timelineTimer.Stop();
       }
@@ -153,26 +153,24 @@ public sealed class MediaPlayer : ObservableObject {
     }
   }
 
-  public RelayCommand<PlayType> SetPlayTypeCommand { get; }
-  public RelayCommand<int> SeekToPositionCommand { get; }
-  public RelayCommand SeekToStartCommand { get; }
+  public RelayCommand DeleteItemCommand { get; }
+  public RelayCommand PauseCommand { get; }
+  public RelayCommand PlayCommand { get; }
   public RelayCommand SeekToEndCommand { get; }
-  public RelayCommand SetStartMarkerCommand { get; }
+  public RelayCommand SeekToStartCommand { get; }
   public RelayCommand SetEndMarkerCommand { get; }
   public RelayCommand SetNewClipCommand { get; }
   public RelayCommand SetNewImageCommand { get; }
-  public RelayCommand DeleteItemCommand { get; }
-  public RelayCommand PlayCommand { get; }
-  public RelayCommand PauseCommand { get; }
-  public RelayCommand<PropertyChangedEventArgs<double>> TimelineSliderValueChangedCommand { get; }
-  public RelayCommand TimelineSliderChangeStartedCommand { get; }
-  public RelayCommand TimelineSliderChangeEndedCommand { get; }
+  public RelayCommand SetStartMarkerCommand { get; }
   public RelayCommand TimelineShiftBeginningCommand { get; }
+  public RelayCommand TimelineShiftEndCommand { get; }
   public RelayCommand TimelineShiftLargeBackCommand { get; }
+  public RelayCommand TimelineShiftLargeForwardCommand { get; }
   public RelayCommand TimelineShiftSmallBackCommand { get; }
   public RelayCommand TimelineShiftSmallForwardCommand { get; }
-  public RelayCommand TimelineShiftLargeForwardCommand { get; }
-  public RelayCommand TimelineShiftEndCommand { get; }
+  public RelayCommand TimelineSliderChangeEndedCommand { get; }
+  public RelayCommand TimelineSliderChangeStartedCommand { get; }
+  public RelayCommand<PropertyChangedEventArgs<double>> TimelineSliderValueChangedCommand { get; }
 
   public Func<int, IVideoClip> GetNewClipFunc { get; set; }
   public Func<int, IVideoImage> GetNewImageFunc { get; set; }
@@ -188,26 +186,24 @@ public sealed class MediaPlayer : ObservableObject {
     _timelineTimer = new() { Interval = 250 };
     _timelineTimer.Elapsed += delegate { OnTimelineTimer(); };
 
-    SetPlayTypeCommand = new(x => PlayType = x);
-    SeekToPositionCommand = new(x => TimelinePosition = x);
-    SeekToStartCommand = new(() => SeekTo(true), () => CurrentItem != null, Res.IconChevronRight, "Seek to start");
+    DeleteItemCommand = new(ItemDelete, () => CurrentItem != null, Res.IconXCross, "Delete");
+    PauseCommand = new(() => IsPlaying = false, Res.IconPause, "Pause");
+    PlayCommand = new(() => IsPlaying = true, Res.IconPlay, "Play");
     SeekToEndCommand = new(() => SeekTo(false), () => CurrentItem is IVideoClip, Res.IconChevronLeft, "Seek to end");
-    SetStartMarkerCommand = new(() => SetMarker(true), () => CurrentItem != null, Res.IconChevronDown, "Set start");
+    SeekToStartCommand = new(() => SeekTo(true), () => CurrentItem != null, Res.IconChevronRight, "Seek to start");
     SetEndMarkerCommand = new(() => SetMarker(false), () => CurrentItem is IVideoClip, Res.IconChevronDown, "Set end");
     SetNewClipCommand = new(SetNewClip, () => !string.IsNullOrEmpty(Source), Res.IconMovieClapper, "Create new or close video clip");
     SetNewImageCommand = new(SetNewImage, () => !string.IsNullOrEmpty(Source), Res.IconImage, "Create new video image");
-    DeleteItemCommand = new(ItemDelete, () => CurrentItem != null, Res.IconXCross, "Delete");
-    PlayCommand = new(() => IsPlaying = true, Res.IconPlay, "Play");
-    PauseCommand = new(() => IsPlaying = false, Res.IconPause, "Pause");
-    TimelineSliderValueChangedCommand = new(TimelineSliderValueChanged);
-    TimelineSliderChangeStartedCommand = new(TimelineSliderChangeStarted);
-    TimelineSliderChangeEndedCommand = new(TimelineSliderChangeEnded);
+    SetStartMarkerCommand = new(() => SetMarker(true), () => CurrentItem != null, Res.IconChevronDown, "Set start");
     TimelineShiftBeginningCommand = new(() => ShiftTimeline(TimelineShift.Beginning), Res.IconTimelineShiftBeginning);
+    TimelineShiftEndCommand = new(() => ShiftTimeline(TimelineShift.End), Res.IconTimelineShiftEnd);
     TimelineShiftLargeBackCommand = new(() => ShiftTimeline(TimelineShift.LargeBack), Res.IconTimelineShiftLargeBack);
+    TimelineShiftLargeForwardCommand = new(() => ShiftTimeline(TimelineShift.LargeForward), Res.IconTimelineShiftLargeForward);
     TimelineShiftSmallBackCommand = new(() => ShiftTimeline(TimelineShift.SmallBack), Res.IconTimelineShiftSmallBack);
     TimelineShiftSmallForwardCommand = new(() => ShiftTimeline(TimelineShift.SmallForward), Res.IconTimelineShiftSmallForward);
-    TimelineShiftLargeForwardCommand = new(() => ShiftTimeline(TimelineShift.LargeForward), Res.IconTimelineShiftLargeForward);
-    TimelineShiftEndCommand = new(() => ShiftTimeline(TimelineShift.End), Res.IconTimelineShiftEnd);
+    TimelineSliderChangeEndedCommand = new(TimelineSliderChangeEnded);
+    TimelineSliderChangeStartedCommand = new(TimelineSliderChangeStarted);
+    TimelineSliderValueChangedCommand = new(TimelineSliderValueChanged);
   }
 
   ~MediaPlayer() {
@@ -248,7 +244,7 @@ public sealed class MediaPlayer : ObservableObject {
   public void OnMediaEnded() {
     // if video doesn't have TimeSpan than is probably less than 1s long
     // and can't be repeated with WPF MediaElement.Stop()/MediaElement.Play()
-    if (UiMediaPlayer != null) UiMediaPlayer.Position = TimeSpan.FromMilliseconds(1);
+    if (_uiPlayer != null) _uiPlayer.Position = TimeSpan.FromMilliseconds(1);
 
     if (_repeatCount > 0)
       _repeatCount--;
@@ -258,18 +254,18 @@ public sealed class MediaPlayer : ObservableObject {
 
   private void OnClipTimer() {
     Tasks.RunOnUiThread(() => {
-      if (PlayType == PlayType.Video || ClipTimeEnd <= ClipTimeStart) return;
+      if (PlayType == PlayType.Video || _clipTimeEnd <= _clipTimeStart) return;
 
       switch (PlayType) {
         case PlayType.Clip:
-          TimelinePosition = ClipTimeStart;
+          TimelinePosition = _clipTimeStart;
           break;
 
         case PlayType.Clips:
         case PlayType.Group:
           if (_repeatCount > 0) {
             _repeatCount--;
-            TimelinePosition = ClipTimeStart;
+            TimelinePosition = _clipTimeStart;
           }
           else
             SelectNextItemAction?.Invoke(PlayType == PlayType.Group, false);
@@ -282,7 +278,7 @@ public sealed class MediaPlayer : ObservableObject {
   private void OnTimelineTimer() {
     Tasks.RunOnUiThread(() => {
       _isTimelineTimerExecuting = true;
-      TimelinePosition = Math.Round(UiMediaPlayer?.Position.TotalMilliseconds ?? 0);
+      TimelinePosition = Math.Round(_uiPlayer?.Position.TotalMilliseconds ?? 0);
 
       // in case when UiMediaPlayer reports wrong video duration OnMediaOpened
       // TODO make it more precise. The true duration is still unknown
@@ -293,18 +289,18 @@ public sealed class MediaPlayer : ObservableObject {
     });
   }
 
-  public void StartClipTimer() {
+  private void StartClipTimer() {
     _clipTimer.Stop();
 
-    if (PlayType == PlayType.Video || ClipTimeEnd <= ClipTimeStart) return;
+    if (PlayType == PlayType.Video || _clipTimeEnd <= _clipTimeStart) return;
 
-    var duration = (ClipTimeEnd - ClipTimeStart) / Speed;
+    var duration = (_clipTimeEnd - _clipTimeStart) / Speed;
     if (duration <= 0) return;
 
     _repeatCount = PlayType is PlayType.Clips or PlayType.Group
       ? (int)Math.Round(RepeatForSeconds / (duration / 1000.0), 0)
       : 0;
-    TimelinePosition = ClipTimeStart;
+    TimelinePosition = _clipTimeStart;
     _clipTimer.Interval = duration;
     _clipTimer.Start();
   }
@@ -312,8 +308,8 @@ public sealed class MediaPlayer : ObservableObject {
   public void SetCurrent(IVideoItem item) {
     CurrentItem = item;
     if (item == null) {
-      ClipTimeStart = 0;
-      ClipTimeEnd = 0;
+      _clipTimeStart = 0;
+      _clipTimeEnd = 0;
       return;
     }
 
@@ -339,8 +335,8 @@ public sealed class MediaPlayer : ObservableObject {
   }
 
   private void SetCurrentVideoClip(IVideoClip vc) {
-    ClipTimeStart = vc.TimeStart;
-    ClipTimeEnd = vc.TimeEnd;
+    _clipTimeStart = vc.TimeStart;
+    _clipTimeEnd = vc.TimeEnd;
 
     if (PlayType != PlayType.Video) {
       Volume = vc.Volume;
@@ -378,14 +374,14 @@ public sealed class MediaPlayer : ObservableObject {
     vc.Volume = Volume;
     vc.Speed = Speed;
 
-    ClipTimeStart = vc.TimeStart;
-    ClipTimeEnd = vc.TimeEnd;
+    _clipTimeStart = vc.TimeStart;
+    _clipTimeEnd = vc.TimeEnd;
 
     MarkerSetEvent(this, new(new(vc, start)));
   }
 
-  private void SetImageMarker(IVideoImage vi, int ms) {
-    vi.TimeStart = GetPosition();
+  private void SetImageMarker(IVideoItem vi, int ms) {
+    vi.TimeStart = ms;
     MarkerSetEvent(this, new(new(vi, false)));
   }
 
@@ -411,7 +407,7 @@ public sealed class MediaPlayer : ObservableObject {
   private int GetPosition() =>
     (int)Math.Round(TimelinePosition);
 
-  private void ShiftTimeline(TimelineShift mode) {
+  private void ShiftTimeline(TimelineShift mode) =>
     TimelinePosition = mode switch {
       TimelineShift.Beginning => 0,
       TimelineShift.LargeBack => Math.Max(TimelinePosition - TimelineLargeChange, 0),
@@ -421,7 +417,6 @@ public sealed class MediaPlayer : ObservableObject {
       TimelineShift.End => TimelineMaximum,
       _ => throw new NotImplementedException()
     };
-  }
 
   public static string FormatPosition(int ms) =>
     TimeSpan.FromMilliseconds(ms).ToString(
@@ -440,13 +435,13 @@ public sealed class MediaPlayer : ObservableObject {
             : @"s\.f\s");
 
   public void SetView(IPlatformSpecificUiMediaPlayer view) {
-    if (UiMediaPlayer != null) {
-      UiMediaPlayer.Pause();
-      UiMediaPlayer.Source = null;
-      UiMediaPlayer.ViewModel = null;
+    if (_uiPlayer != null) {
+      _uiPlayer.Pause();
+      _uiPlayer.Source = null;
+      _uiPlayer.ViewModel = null;
     }
 
-    UiMediaPlayer = view;
+    _uiPlayer = view;
     if (view == null) return;
     view.ViewModel = this;
     view.SpeedRatio = Speed;
