@@ -53,7 +53,7 @@ public static class Imaging {
     long hash = 0;
     for (var i = 0; i < 64; i++)
       if (pixels[i] > avg)
-        hash |= 1 << i;
+        hash |= (uint)(1 << i);
 
     return hash;
   }
@@ -88,7 +88,7 @@ public static class Imaging {
     for (var x = 0; x < 8; x++) {
       for (var y = 0; y < 8; y++) {
         if (pixelsDct[x, y] > avg)
-          hash |= 1 << bi;
+          hash |= (uint)(1 << bi);
         bi++;
       }
     }
@@ -96,7 +96,7 @@ public static class Imaging {
     return hash;
   }
 
-  public static double[,] ApplyDiscreteCosineTransform(byte[,] input, int size) {
+  private static double[,] ApplyDiscreteCosineTransform(byte[,] input, int size) {
     var m = size;
     var n = size;
     const double pi = 3.142857;
