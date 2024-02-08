@@ -7,78 +7,79 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 
-namespace PictureManager.Domain.Dialogs {
-  public sealed class FolderBrowserDialogM : Dialog {
-    private FolderTreeViewItem _selectedFolder;
+namespace PictureManager.Domain.Dialogs;
 
-    public FolderTreeViewItem SelectedFolder { get => _selectedFolder; set { _selectedFolder = value; OnPropertyChanged(); } }
-    public ObservableCollection<FolderTreeViewItem> Drives { get; } = new();
-    public RelayCommand<FolderTreeViewItem> SelectCommand { get; }
+public sealed class FolderBrowserDialogM : Dialog {
+  private FolderTreeViewItem _selectedFolder;
 
-    public FolderBrowserDialogM() : base("Browse For Folder", Res.IconFolder) {
-      SelectCommand = new(x => SelectedFolder = x);
-      Buttons = new DialogButton[] {
-        new(OkCommand, true),
-        new(CloseCommand, false, true) };
+  public FolderTreeViewItem SelectedFolder { get => _selectedFolder; private set { _selectedFolder = value; OnPropertyChanged(); } }
+  public ObservableCollection<FolderTreeViewItem> Drives { get; } = [];
+  public RelayCommand<FolderTreeViewItem> SelectCommand { get; }
 
-      AddDrives();
-    }
+  public FolderBrowserDialogM() : base("Browse For Folder", Res.IconFolder) {
+    SelectCommand = new(x => SelectedFolder = x);
+    Buttons = new DialogButton[] {
+      new(OkCommand, true),
+      new(CloseCommand, false, true) };
 
-    private void AddDrives() {
-      var drives = Environment.GetLogicalDrives();
-
-      foreach (var drive in drives) {
-        var di = new DriveInfo(drive);
-        if (!di.IsReady) continue;
-
-        var item = new FolderTreeViewItem(null, di.Name.TrimEnd(Path.DirectorySeparatorChar)) {
-          Icon = FoldersM.GetDriveIcon(di.DriveType)
-        };
-
-        // add placeholder so the Drive can be expanded
-        item.Items.Add(new FolderTreeViewItem(null, null));
-
-        Drives.Add(item);
-      }
-    }
+    AddDrives();
   }
 
-  public class FolderTreeViewItem : TreeItem {
-    public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
+  private void AddDrives() {
+    var drives = Environment.GetLogicalDrives();
 
-    public FolderTreeViewItem(ITreeItem parent, string name) : base(Res.IconFolder, name) {
-      Parent = parent;
+    foreach (var drive in drives) {
+      var di = new DriveInfo(drive);
+      if (!di.IsReady) continue;
+
+      var item = new FolderTreeViewItem(null, di.Name.TrimEnd(Path.DirectorySeparatorChar)) {
+        Icon = FoldersM.GetDriveIcon(di.DriveType)
+      };
+
+      // add placeholder so the Drive can be expanded
+      item.Items.Add(new FolderTreeViewItem(null, null));
+
+      Drives.Add(item);
     }
+  }
+}
 
-    protected override void OnIsExpandedChanged(bool value) {
-      if (value) LoadSubFolders();
-      UpdateIcon();
-    }
+public class FolderTreeViewItem : TreeItem {
+  public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
 
-    private void UpdateIcon() {
-      if (Parent != null) // not Drive Folder
-        Icon = IsExpanded
-          ? Res.IconFolderOpen
-          : Res.IconFolder;
-    }
+  public FolderTreeViewItem(ITreeItem parent, string name) : base(Res.IconFolder, name) {
+    Parent = parent;
+  }
 
-    private void LoadSubFolders() {
-      var fullPath = FullPath + Path.DirectorySeparatorChar;
-      Items.Clear();
+  protected override void OnIsExpandedChanged(bool value) {
+    if (value) LoadSubFolders();
+    UpdateIcon();
+  }
 
-      foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
-        var folder = new FolderTreeViewItem(this, dir[fullPath.Length..]);
+  private void UpdateIcon() {
+    if (Parent != null) // not Drive Folder
+      Icon = IsExpanded
+        ? Res.IconFolderOpen
+        : Res.IconFolder;
+  }
 
-        try {
-          // add placeholder so the folder can be expanded
-          if (Directory.EnumerateDirectories(folder.FullPath).GetEnumerator().MoveNext())
-            folder.Items.Add(new FolderTreeViewItem(null, null));
+  private void LoadSubFolders() {
+    var fullPath = FullPath + Path.DirectorySeparatorChar;
+    Items.Clear();
 
-          // add new Folder to the tree if is Accessible
-          Items.Add(folder);
-        }
-        catch (UnauthorizedAccessException) { }
+    foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
+      var folder = new FolderTreeViewItem(this, dir[fullPath.Length..]);
+
+      try {
+        // add placeholder so the folder can be expanded
+        using var enumerator = Directory.EnumerateDirectories(folder.FullPath).GetEnumerator();
+        if (enumerator.MoveNext())
+          folder.Items.Add(new FolderTreeViewItem(null, null));
+
+        // add new Folder to the tree if is Accessible
+        Items.Add(folder);
       }
+      catch (UnauthorizedAccessException) { }
     }
   }
 }
