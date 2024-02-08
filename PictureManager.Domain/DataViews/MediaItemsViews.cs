@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain.DataViews;
 
 public sealed class MediaItemsViews : ObservableObject {
-  private readonly List<MediaItemsView> _all = new();
+  private readonly List<MediaItemsView> _all = [];
   private MediaItemsView _current;
     
   public MediaItemsView Current { get => _current; set { _current = value; OnPropertyChanged(); } }
@@ -50,11 +50,9 @@ public sealed class MediaItemsViews : ObservableObject {
     view.SelectionChangedEventHandler -= OnViewSelectionChanged;
     view.FilteredChangedEventHandler -= OnViewFilteredChanged;
     _all.Remove(view);
-
-    if (view.Equals(Current)) {
-      Current = null;
-      Core.MediaItemsM.Current = null;
-    }
+    if (!ReferenceEquals(view, Current)) return;
+    Current = null;
+    Core.MediaItemsM.Current = null;
   }
 
   public void SetCurrentView(MediaItemsView view) {
@@ -65,7 +63,7 @@ public sealed class MediaItemsViews : ObservableObject {
       : null;
   }
 
-  public void AddViewIfNotActive(string tabName) {
+  private void AddViewIfNotActive(string tabName) {
     if (Core.MainTabs.Selected?.Data is MediaItemsView) {
       if (tabName != null)
         Core.MainTabs.Selected.Name = tabName;
@@ -76,7 +74,7 @@ public sealed class MediaItemsViews : ObservableObject {
     AddView(tabName);
   }
 
-  public void AddView(string tabName) {
+  private void AddView(string tabName) {
     var view = new MediaItemsView(DefaultThumbScale);
     _all.Add(view);
     Current = view;
@@ -100,15 +98,15 @@ public sealed class MediaItemsViews : ObservableObject {
   public void UpdateViews(MediaItemM[] mediaItems) =>
     _all.ForEach(x => x.Update(mediaItems));
 
-  public async Task LoadByFolder(ITreeItem item) {
-    if (item is FolderM { IsAccessible: false }) return;
+  public Task LoadByFolder(ITreeItem item) {
+    if (item is FolderM { IsAccessible: false }) return Task.CompletedTask;
     var and = Keyboard.IsCtrlOn();
     var hide = Keyboard.IsAltOn();
     var recursive = Keyboard.IsShiftOn();
 
     item.IsSelected = true;
     AddViewIfNotActive(and || hide ? null : item.Name);
-    await Current.LoadByFolder(item, and, hide, recursive);
+    return Current.LoadByFolder(item, and, hide, recursive);
   }
 
   public async void LoadByTag(object item) {
@@ -132,7 +130,7 @@ public sealed class MediaItemsViews : ObservableObject {
       };
 
     if (and || hide)
-      AddViewIfNotActive(tabTitle);
+      AddViewIfNotActive(null);
     else
       AddView(tabTitle);
 
