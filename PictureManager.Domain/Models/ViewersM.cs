@@ -29,7 +29,7 @@ public sealed class ViewersM : ObservableObject {
   public ViewersM(ViewersDA da) {
     _da = da;
     TreeCategory = new(_da);
-    ViewerDetailM = new(this);
+    ViewerDetailM = new(_da);
     SetCurrentCommand = new(SetCurrent, Res.IconEye);
     UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
   }
