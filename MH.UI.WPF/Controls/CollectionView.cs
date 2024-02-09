@@ -1,5 +1,5 @@
 ﻿using MH.UI.Interfaces;
-using MH.UI.WPF.Utils;
+using MH.UI.WPF.Extensions;
 using MH.Utils.BaseClasses;
 using System;
 using System.Windows;

@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.Interfaces;
 using System.Windows;
 using System.Windows.Controls;
+using MH.UI.WPF.Extensions;
 using static MH.Utils.DragDropHelper;
 
 namespace MH.UI.WPF.Controls;
@@ -48,7 +49,7 @@ public class CatTreeView : TreeViewBase {
 
   private static void DoDrop(object data, bool haveSameOrigin) {
     var e = Utils.DragDropHelper.DragEventArgs;
-    var tvi = Utils.Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
+    var tvi = ((FrameworkElement)e.OriginalSource).FindTemplatedParent<TreeViewItem>();
     if (tvi?.DataContext is not ITreeItem dest ||
         Tree.GetParentOf<ITreeCategory>(dest) is not { } cat) return;
 
