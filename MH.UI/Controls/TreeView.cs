@@ -1,13 +1,12 @@
 ﻿using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MH.UI.Controls; 
+namespace MH.UI.Controls;
 
 public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeItem {
   private ITreeItem _topTreeItem;
