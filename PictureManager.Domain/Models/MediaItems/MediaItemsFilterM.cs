@@ -12,9 +12,9 @@ public sealed class MediaItemsFilterM : ObservableObject {
 
   public bool ShowImages { get => _showImages; set { _showImages = value; OnFilterChanged(); OnPropertyChanged(); } }
   public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnFilterChanged(); OnPropertyChanged(); } }
-  public ObservableCollection<object> FilterAnd { get; } = new();
-  public ObservableCollection<object> FilterOr { get; } = new();
-  public ObservableCollection<object> FilterNot { get; } = new();
+  public ObservableCollection<object> FilterAnd { get; } = [];
+  public ObservableCollection<object> FilterOr { get; } = [];
+  public ObservableCollection<object> FilterNot { get; } = [];
   public SelectionRange Height { get; } = new();
   public SelectionRange Width { get; } = new();
   public SelectionRange Size { get; } = new();
@@ -25,14 +25,15 @@ public sealed class MediaItemsFilterM : ObservableObject {
   public RelayCommand<object> SetOrCommand { get; }
   public RelayCommand<object> SetNotCommand { get; }
   public RelayCommand ClearCommand { get; }
-  public RelayCommand SizeChangedCommand { get; }
 
   public MediaItemsFilterM() {
+    Height.ChangedEvent += delegate { OnFilterChanged(); };
+    Width.ChangedEvent += delegate { OnFilterChanged(); };
+    Size.ChangedEvent += delegate { OnFilterChanged(); };
     SetAndCommand = new(item => Set(item, DisplayFilter.And), null, "Filter And");
     SetOrCommand = new(item => Set(item, DisplayFilter.Or), null, "Filter Or");
     SetNotCommand = new(item => Set(item, DisplayFilter.Not), null, "Filter Not");
     ClearCommand = new(Clear);
-    SizeChangedCommand = new(OnFilterChanged);
   }
 
   private void OnFilterChanged() {
@@ -90,9 +91,9 @@ public sealed class MediaItemsFilterM : ObservableObject {
     if (chosenRatings.Any() && !chosenRatings.Contains(mi.Rating)) return false;
 
     // MediaItemSizes
-    if (!Width.MaxSelection() && !Width.Fits(mi.Width)
-        || !Height.MaxSelection() && !Height.Fits(mi.Height)
-        || !Size.MaxSelection() && !Size.Fits(mi.Width * mi.Height / 1000000.0))
+    if (!Width.IsFullRange && !Width.Fits(mi.Width)
+        || !Height.IsFullRange && !Height.Fits(mi.Height)
+        || !Size.IsFullRange && !Size.Fits(mi.Width * mi.Height / 1000000.0))
       return false;
 
     // People
