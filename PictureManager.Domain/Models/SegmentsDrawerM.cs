@@ -90,6 +90,5 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
 
     Reload(source, GroupMode.GroupByRecursive, groupByItems, true);
     tt.Activate(Res.IconSegment, "Segments", this);
-    tt.Open();
   }
 }
