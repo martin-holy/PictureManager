@@ -12,5 +12,8 @@ public class BaseConverter : IValueConverter {
     throw new NotImplementedException();
 
   public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+    ConvertBack(value, parameter);
+
+  public virtual object ConvertBack(object value, object parameter) =>
     throw new NotSupportedException();
 }
