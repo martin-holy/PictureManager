@@ -61,7 +61,7 @@
 
                 <ContentPresenter
                   Grid.Column="1"
-                  Content="{StaticResource SlidePanel-PinButton}"/>
+                  Content="{StaticResource MH.Res.SlidePanel-PinButton}"/>
               </Grid>
             </mhc:Slot.Content>
           </mhc:Slot>

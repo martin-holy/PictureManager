@@ -2,7 +2,6 @@ using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
@@ -38,7 +37,6 @@ public sealed class Core {
 
   public ImageComparerM ImageComparerM { get; } = new();
   public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
-  public static MainWindowM MainWindowM { get; } = new();
   public static MediaItemsViews MediaItemsViews { get; } = new();
   public static MediaViewerM MediaViewerM { get; } = new();
   public static MediaItemsStatusBarM MediaItemsStatusBarM { get; } = new();
@@ -82,11 +80,12 @@ public sealed class Core {
   }
 
   public void AfterInit() {
-    M = new();
-    VM = new(M, Db);
     var scale = GetDisplayScale();
     MediaItemsViews.DefaultThumbScale = 1 / scale;
     SegmentsM.SetSegmentUiSize(scale);
+    M = new();
+    VM = new(M, Db);
+    AttachVMEvents();
     MediaItemsM.UpdateItemsCount();
 
     KeywordsM.TreeCategory.AutoAddedGroup ??=
@@ -103,19 +102,10 @@ public sealed class Core {
     OpenSegmentsViewCommand = new(OpenSegmentsView, Res.IconSegment, "Segments View");
   }
 
-  private void AttachEvents() {
-    AttachCategoryGroupsEventHandlers();
-    AttachFoldersEventHandlers();
-    AttachGeoLocationsEventHandlers();
-    AttachGeoNamesEventHandlers();
-    AttachKeywordsEventHandlers();
-    AttachMediaItemsEventHandlers();
-    AttachPeopleEventHandlers();
-    AttachSegmentsEventHandlers();
-
-    MainWindowM.PropertyChanged += (_, e) => {
-      if (nameof(MainWindowM.IsInViewMode).Equals(e.PropertyName)) {
-        var isInViewMode = MainWindowM.IsInViewMode;
+  private void AttachVMEvents() {
+    VM.MainWindow.PropertyChanged += (_, e) => {
+      if (nameof(VM.MainWindow.IsInViewMode).Equals(e.PropertyName)) {
+        var isInViewMode = VM.MainWindow.IsInViewMode;
 
         MediaViewerM.IsVisible = isInViewMode;
 
@@ -132,6 +122,23 @@ public sealed class Core {
         TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       }
     };
+
+    ToolsTabsM.Tabs.CollectionChanged += (_, e) => {
+      VM.MainWindow.SlidePanelsGrid.PanelRight.CanOpen = ToolsTabsM.Tabs.Count > 0;
+      if (e.NewItems != null)
+        VM.MainWindow.SlidePanelsGrid.PanelRight.IsOpen = true;
+    };
+  }
+
+  private void AttachEvents() {
+    AttachCategoryGroupsEventHandlers();
+    AttachFoldersEventHandlers();
+    AttachGeoLocationsEventHandlers();
+    AttachGeoNamesEventHandlers();
+    AttachKeywordsEventHandlers();
+    AttachMediaItemsEventHandlers();
+    AttachPeopleEventHandlers();
+    AttachSegmentsEventHandlers();
 
     Settings.PropertyChanged += (_, e) => {
       if (nameof(Settings.GeoNamesUserName).Equals(e.PropertyName))
@@ -297,7 +304,7 @@ public sealed class Core {
         if (MediaItemsM.Current != null)
           MediaViewerM.Current = MediaItemsM.Current;
         else
-          MainWindowM.IsInViewMode = false;
+          VM.MainWindow.IsInViewMode = false;
       }
 
       FileOperationDelete(e.Data.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
@@ -308,7 +315,7 @@ public sealed class Core {
         MediaItemsStatusBarM.Update();
         VideoDetail.SetCurrent(MediaItemsM.Current);
 
-        if (MainWindowM.IsInViewMode) {
+        if (VM.MainWindow.IsInViewMode) {
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
           SegmentsM.SegmentsRectsM.MediaItem = MediaItemsM.Current;
         }
@@ -392,23 +399,13 @@ public sealed class Core {
     };
   }
 
-  public void SaveDBPrompt() {
-    if (Db.Changes > 0 &&
-        Dialog.Show(new MessageDialog(
-          "Database changes",
-          "There are some changes in database. Do you want to save them?",
-          Res.IconQuestion,
-          true)) == 1)
-      Db.SaveAllTables();
-  }
-
   private static void OpenSegmentsView() {
     var result = SegmentsView.GetSegmentsToLoadUserInput();
     if (result < 1) return;
     var segments = SegmentsView.GetSegments(result).ToArray();
     SegmentsView ??= new(SegmentsM);
     MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
-    if (MediaViewerM.IsVisible) MainWindowM.IsInViewMode = false;
+    if (MediaViewerM.IsVisible) VM.MainWindow.IsInViewMode = false;
     SegmentsView.Reload(segments);
   }
 }

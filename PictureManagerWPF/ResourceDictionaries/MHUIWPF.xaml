@@ -39,8 +39,8 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ProgressBarDialog.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanel.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelsGrid.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelHost.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelsGridHost.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/WindowButtons.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ZoomAndPan.xaml"/>
   </ResourceDictionary.MergedDictionaries>
@@ -75,8 +75,8 @@
   <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.Styles.Controls.IconTextButton}"/>
   <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.Styles.Controls.IconToggleButton}"/>
   <Style TargetType="{x:Type mhc:RangeSlider}" BasedOn="{StaticResource MH.Styles.Controls.RangeSlider}"/>
-  <Style TargetType="{x:Type mhc:SlidePanel}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanel}"/>
-  <Style TargetType="{x:Type mhc:SlidePanelsGrid}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGrid}"/>
+  <Style TargetType="{x:Type mhc:SlidePanelHost}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelHost}"/>
+  <Style TargetType="{x:Type mhc:SlidePanelsGridHost}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGridHost}"/>
   <Style TargetType="{x:Type mhc:ZoomAndPan}" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPan}"/>
 
   <wpfu:KeyDataTemplateSelector x:Key="MH.Styles.Controls.DialogHost.DialogTemplateSelector">

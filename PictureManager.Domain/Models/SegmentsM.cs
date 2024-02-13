@@ -124,7 +124,7 @@ public sealed class SegmentsM : ObservableObject {
     if (rmis.Count == 0) return;
     var current = segment.MediaItem is VideoItemM vi ? vi.Video : segment.MediaItem;
     Core.MediaViewerM.SetMediaItems(rmis, current);
-    Core.MainWindowM.IsInViewMode = true;
+    Core.VM.MainWindow.IsInViewMode = true;
   }
 
   private IEnumerable<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM segment) {

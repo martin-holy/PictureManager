@@ -22,7 +22,7 @@
         <mhc:Slot
           Name="TabStripSlot"
           Placement="Right"
-          Content="{StaticResource SlidePanel-PinButton}"/>
+          Content="{StaticResource MH.Res.SlidePanel-PinButton}"/>
       </mhc:Slots.List>
     </TabControl>
   </DataTemplate>

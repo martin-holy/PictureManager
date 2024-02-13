@@ -32,7 +32,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
     // MBL => show, MBL+ctrl => and, MBL+alt => hide
     if (o is not ITreeItem item) return;
     if (Core.MediaViewerM.IsVisible)
-      Core.MainWindowM.IsInViewMode = false;
+      Core.VM.MainWindow.IsInViewMode = false;
 
     _ = Core.MediaItemsViews.LoadByFolder(item);
   }

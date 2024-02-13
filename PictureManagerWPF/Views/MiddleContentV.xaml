@@ -1,0 +1,26 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager">
+
+  <DataTemplate DataType="{x:Type vm:MiddleContentVM}">
+    <Grid DataContext="{Binding Source={x:Static pm:App.Core}}">
+      <!-- Video Frame Saver -->
+      <ContentControl Content="{Binding Path=VideoFrameSaver, Source={x:Static pm:App.Core}}"/>
+
+      <!-- Main Tabs -->
+      <ContentPresenter
+        Content="{Binding MainTabs}"
+        ContentTemplate="{StaticResource PM.Views.MainTabsV}"
+        Visibility="{Binding MediaViewerM.IsVisible,
+                 Source={x:Static pm:App.Core},
+                 Converter={x:Static mhConv:AllToVisibilityConverter.Inst}, 
+                 ConverterParameter={StaticResource False}}"/>
+
+      <!-- Media Viewer -->
+      <ContentPresenter Content="{Binding MediaViewerM}"/>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

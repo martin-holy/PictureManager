@@ -53,7 +53,7 @@
 
     <DataTemplate.Triggers>
       <DataTrigger
-        Binding="{Binding Path=MainWindowM.IsInViewMode, Source={x:Static pm:App.Core}}"
+        Binding="{Binding Path=VM.MainWindow.IsInViewMode, Source={x:Static pm:App.Core}}"
         Value="True">
         <Setter TargetName="rowPlayer" Property="Height" Value="0"/>
         <Setter TargetName="rowPlayer" Property="MaxHeight" Value="0"/>
