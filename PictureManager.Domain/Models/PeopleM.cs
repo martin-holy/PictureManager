@@ -29,7 +29,7 @@ public sealed class PeopleM {
   private void OpenPeopleToolsTab() {
     PeopleToolsTabM ??= new();
     PeopleToolsTabM.ReloadFrom();
-    Core.ToolsTabsM.Activate(Res.IconPeopleMultiple, "People", PeopleToolsTabM);
+    Core.VM.MainWindow.ToolsTabs.Activate(Res.IconPeopleMultiple, "People", PeopleToolsTabM);
   }
 
   public void OpenPeopleView() {
@@ -41,7 +41,7 @@ public sealed class PeopleM {
   public void OpenPersonDetail(PersonM person) {
     PersonDetail ??= new(this, Core.SegmentsM);
     PersonDetail.Reload(person);
-    Core.ToolsTabsM.Activate(Res.IconPeople, "Person", PersonDetail);
+    Core.VM.MainWindow.ToolsTabs.Activate(Res.IconPeople, "Person", PersonDetail);
   }
 
   public void ToggleTopSegment(PersonM person, SegmentM segment) {
