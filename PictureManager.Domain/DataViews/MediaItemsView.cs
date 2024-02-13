@@ -56,7 +56,7 @@ namespace PictureManager.Domain.DataViews {
       if (item == null) return;
 
       Selected.DeselectAll();
-      Core.MainWindowM.IsInViewMode = true;
+      Core.VM.MainWindow.IsInViewMode = true;
       // TODO open group or all with default sort or all sorted by groups or ...?
       Core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), item);
     }

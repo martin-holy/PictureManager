@@ -4,13 +4,10 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:pmConv="clr-namespace:PictureManager.Converters"
-  xmlns:pmdM="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   DataContext="{Binding Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
-  IsFullScreen="{Binding MainWindowM.IsFullScreen, Mode=TwoWay}"
+  IsFullScreen="{Binding VM.MainWindow.IsFullScreen, Mode=TwoWay}"
   Title="Picture Manager"
   WindowState="Maximized"
   CanResize="True"
@@ -24,72 +21,15 @@
     <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsM.CommentCommand}"/>
     <KeyBinding Key="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
     <KeyBinding Key="Delete" Command="{Binding MediaItemsM.DeleteCommand}"/>
-    <KeyBinding Key="Esc" Command="{Binding MainWindowM.SwitchToBrowserCommand}"/>
-    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding MainWindowM.SwitchToBrowserCommand}"/>
+    <KeyBinding Key="Esc" Command="{Binding VM.MainWindow.SwitchToBrowserCommand}"/>
+    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding VM.MainWindow.SwitchToBrowserCommand}"/>
   </Window.InputBindings>
 
   <b:Interaction.Triggers>
     <b:EventTrigger EventName="Closing">
-      <b:InvokeCommandAction Command="{Binding MainWindowM.ClosingCommand}"/>
+      <b:InvokeCommandAction Command="{Binding VM.AppClosingCommand}"/>
     </b:EventTrigger>
   </b:Interaction.Triggers>
 
-  <mhc:SlidePanelsGrid
-    ActiveLayout="{Binding MainWindowM.ActiveLayout}"
-    PinLayouts="{Binding MainWindowM.PinLayouts}">
-
-    <!-- Main Window Tool Bar -->
-    <mhc:SlidePanelsGrid.PanelTop>
-      <mhc:SlidePanel
-        Content="{Binding}"
-        ContentTemplate="{StaticResource MainWindowToolBarV}"
-        Height="30"/>
-    </mhc:SlidePanelsGrid.PanelTop>
-
-    <!-- Tree View Categories -->
-    <mhc:SlidePanelsGrid.PanelLeft>
-      <mhc:SlidePanel
-        Content="{Binding TreeViewCategoriesM}"
-        Width="380"/>
-    </mhc:SlidePanelsGrid.PanelLeft>
-
-    <mhc:SlidePanelsGrid.PanelMiddle>
-      <Grid>
-        <!-- Video Frame Saver -->
-        <ContentControl Content="{Binding Path=VideoFrameSaver, Source={x:Static pm:App.Core}}"/>
-
-        <!-- Main Tabs -->
-        <ContentPresenter
-          Content="{Binding MainTabs}"
-          ContentTemplate="{StaticResource PM.Views.MainTabsV}"
-          Visibility="{Binding MediaViewerM.IsVisible,
-                       Source={x:Static pm:App.Core},
-                       Converter={x:Static mhConv:AllToVisibilityConverter.Inst}, 
-                       ConverterParameter={StaticResource False}}"/>
-
-        <!-- Media Viewer -->
-        <ContentPresenter Content="{Binding MediaViewerM}"/>
-      </Grid>
-    </mhc:SlidePanelsGrid.PanelMiddle>
-
-    <!-- Tools Tabs -->
-    <mhc:SlidePanelsGrid.PanelRight>
-      <mhc:SlidePanel
-        IsOpen="{Binding ToolsTabsM.IsOpen, Mode=TwoWay}"
-        CanOpen="{Binding ToolsTabsM.Tabs.Count, Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
-        Content="{Binding ToolsTabsM}"
-        Width="{Binding Source={x:Static pmdM:SegmentsM.SegmentUiFullWidth},
-                Converter={x:Static pmConv:SegmentsViewWidthConverter.Inst},
-                ConverterParameter=4,
-                FallbackValue=362}"/>
-    </mhc:SlidePanelsGrid.PanelRight>
-
-    <!-- Status Bar -->
-    <mhc:SlidePanelsGrid.PanelBottom>
-      <mhc:SlidePanel
-        Content="{Binding}"
-        ContentTemplate="{StaticResource PM.Views.StatusBarV}"
-        MinHeight="32"/>
-    </mhc:SlidePanelsGrid.PanelBottom>
-  </mhc:SlidePanelsGrid>
+  <mhc:SlidePanelsGridHost SlidePanelsGrid="{Binding VM.MainWindow.SlidePanelsGrid}"/>
 </mhc:CustomWindow>

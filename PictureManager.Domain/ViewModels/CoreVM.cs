@@ -18,8 +18,14 @@ public class CoreVM {
   private readonly CoreM _m;
   private readonly Db _db;
 
+  public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViews MediaItemsViews { get; }
 
+  public RelayCommand AppClosingCommand { get; }
+  public RelayCommand OpenAboutCommand { get; }
+  public RelayCommand OpenLogCommand { get; }
+  public RelayCommand OpenSettingsCommand { get; }
+  public RelayCommand SaveDbCommand { get; }
   public RelayCommand<FolderM> CompressImagesCommand { get; }
   public RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; }
   public RelayCommand<FolderM> ImagesToVideoCommand { get; }
@@ -34,6 +40,11 @@ public class CoreVM {
     _db = db;
     MediaItemsViews = Core.MediaItemsViews;
 
+    AppClosingCommand = new(AppClosing);
+    OpenAboutCommand = new(() => Dialog.Show(new AboutDialogM()), null, "About");
+    OpenLogCommand = new(() => Dialog.Show(new LogDialogM()));
+    OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
+    SaveDbCommand = new(() => _db.SaveAllTables(), () => _db.Changes > 0);
     CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
     GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
     ImagesToVideoCommand = new(x => ImagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");
@@ -46,13 +57,13 @@ public class CoreVM {
 
   public bool AnyActive<T>(FolderM folder) where T : MediaItemM =>
     folder != null
-    || (_m.MainWindow.IsInViewMode && _m.MediaItems.Current is T)
+    || (MainWindow.IsInViewMode && _m.MediaItems.Current is T)
     || MediaItemsViews.Current?.Selected.Items.OfType<T>().Any() == true;
 
   public T[] GetActive<T>(FolderM folder) where T : MediaItemM =>
     folder != null
       ? folder.GetMediaItems(Keyboard.IsShiftOn()).OfType<T>().ToArray()
-      : _m.MainWindow.IsInViewMode
+      : MainWindow.IsInViewMode
         ? _m.MediaItems.Current is T current ? new[] { current } : Array.Empty<T>()
         : MediaItemsViews.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
 
@@ -69,6 +80,21 @@ public class CoreVM {
     _db.Images.IsModified = true;
     return !img.IsOnlyInDb;
   }
+
+  private void AppClosing() {
+    if (_db.Changes > 0 &&
+        Dialog.Show(new MessageDialog(
+          "Database changes",
+          "There are some changes in database. Do you want to save them?",
+          Res.IconQuestion,
+          true)) == 1)
+      _db.SaveAllTables();
+
+    _db.BackUp();
+  }
+
+  private static void OpenSettings() =>
+    Core.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
 
   private void CompressImages(ImageM[] items) {
     Dialog.Show(new CompressDialogM(items, Core.Settings.JpegQualityLevel));

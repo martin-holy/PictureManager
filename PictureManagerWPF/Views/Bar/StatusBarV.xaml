@@ -2,12 +2,11 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
-  <DataTemplate x:Key="PM.Views.StatusBarV" DataType="{x:Type pmd:Core}">
+  <DataTemplate DataType="{x:Type vm:StatusBarVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -54,13 +53,14 @@
       <Grid.InputBindings>
         <MouseBinding
           MouseAction="LeftClick"
-          Command="{Binding PinCommand, RelativeSource=
-                   {RelativeSource AncestorType=mhc:SlidePanel}}"/>
+          Command="{Binding Core.VM.MainWindow.SlidePanelsGrid.PanelBottom.PinCommand}"/>
       </Grid.InputBindings>
 
       <WrapPanel Margin="1,0,0,0" VerticalAlignment="Center">
         <!-- Selected items -->
         <ContentPresenter
+          Height="32"
+          Content="{Binding Core}"
           ContentTemplate="{StaticResource PM.Views.SelectedItemsStatusBarV}"/>
 
         <!-- PositionSlashCount -->
@@ -76,7 +76,7 @@
               <TextBlock
                 x:Name="tbPositionSlashCount"
                 Style="{StaticResource STextBlock}"
-                Text="{Binding MediaItemsViews.Current.PositionSlashCount}"/>
+                Text="{Binding Core.MediaItemsViews.Current.PositionSlashCount}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -84,7 +84,7 @@
         <!-- Dimension -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding MediaItemsM.Current, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding Core.MediaItemsM.Current, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <StackPanel>
             <Path Data="{StaticResource IconRuler}"/>
 
@@ -92,8 +92,8 @@
               <TextBlock>
                 <TextBlock.Text>
                   <MultiBinding StringFormat="{}{0}x{1}">
-                    <Binding Path="MediaItemsM.Current.Width"/>
-                    <Binding Path="MediaItemsM.Current.Height"/>
+                    <Binding Path="Core.MediaItemsM.Current.Width"/>
+                    <Binding Path="Core.MediaItemsM.Current.Height"/>
                   </MultiBinding>
                 </TextBlock.Text>
               </TextBlock>
@@ -104,12 +104,12 @@
         <!-- File Size -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding MediaItemsStatusBarM.FileSize, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding Core.MediaItemsStatusBarM.FileSize, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <StackPanel>
             <Path Data="{StaticResource IconPageUpload}"/>
 
             <Border>
-              <TextBlock Text="{Binding MediaItemsStatusBarM.FileSize}"/>
+              <TextBlock Text="{Binding Core.MediaItemsStatusBarM.FileSize}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -117,12 +117,12 @@
         <!-- ImageActualZoom -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding MediaViewerM.IsVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding Core.MediaViewerM.IsVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <StackPanel>
             <Path Data="{StaticResource IconMagnify}"/>
 
             <Border>
-              <TextBlock Text="{Binding MediaViewerM.ActualZoom, StringFormat={}{0:####}%}"/>
+              <TextBlock Text="{Binding Core.MediaViewerM.ActualZoom, StringFormat={}{0:####}%}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -132,9 +132,9 @@
           Style="{StaticResource SBorderGroup}"
           Margin="2,0,2,0"
           VerticalAlignment="Center"
-          Visibility="{Binding MediaItemsStatusBarM.Rating.Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding Core.MediaItemsStatusBarM.Rating.Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <Border Margin="0">
-            <ItemsControl ItemsSource="{Binding MediaItemsStatusBarM.Rating}">
+            <ItemsControl ItemsSource="{Binding Core.MediaItemsStatusBarM.Rating}">
 
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -157,7 +157,7 @@
         <!-- GeoName -->
         <Border
           x:Name="boGeoName"
-          ToolTip="{Binding MediaItemsM.CurrentGeoName.FullName}"
+          ToolTip="{Binding Core.MediaItemsM.CurrentGeoName.FullName}"
           Style="{StaticResource SBorderGroup}"
           Margin="1,2,1,0"
           Padding="4"
@@ -171,25 +171,25 @@
         <!-- FilePath -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding MediaItemsStatusBarM.FilePath, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
-          ToolTip="{Binding MediaItemsM.Current.FilePath}">
+          Visibility="{Binding Core.MediaItemsStatusBarM.FilePath, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
+          ToolTip="{Binding Core.MediaItemsM.Current.FilePath}">
 
           <StackPanel>
             <Path Data="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}"/>
-            <ItemsControl ItemsSource="{Binding MediaItemsStatusBarM.FilePath}"/>
+            <ItemsControl ItemsSource="{Binding Core.MediaItemsStatusBarM.FilePath}"/>
           </StackPanel>
         </Border>
 
         <!-- DateAndTime -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding MediaItemsStatusBarM.DateAndTime, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding Core.MediaItemsStatusBarM.DateAndTime, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
           <StackPanel>
             <Path Data="{StaticResource IconCalendar}"/>
 
             <Border>
-              <TextBlock Text="{Binding MediaItemsStatusBarM.DateAndTime}"/>
+              <TextBlock Text="{Binding Core.MediaItemsStatusBarM.DateAndTime}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -203,7 +203,7 @@
           <StackPanel>
             <Path Data="{StaticResource IconPeople}" Fill="{StaticResource ColorBrushPeople}"/>
 
-            <ItemsControl ItemsSource="{Binding MediaItemsM.Current.DisplayPeople}">
+            <ItemsControl ItemsSource="{Binding Core.MediaItemsM.Current.DisplayPeople}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <WrapPanel Orientation="Horizontal"/>
@@ -236,7 +236,7 @@
 
           <StackPanel>
             <Path Data="{StaticResource IconTag}" Fill="{StaticResource ColorBrushTag}"/>
-            <ItemsControl ItemsSource="{Binding MediaItemsM.Current.DisplayKeywords}"/>
+            <ItemsControl ItemsSource="{Binding Core.MediaItemsM.Current.DisplayKeywords}"/>
           </StackPanel>
         </Border>
 
@@ -250,7 +250,7 @@
             <Path Data="{StaticResource IconNotification}"/>
 
             <Border>
-              <TextBlock Text="{Binding MediaItemsM.Current.Comment}"/>
+              <TextBlock Text="{Binding Core.MediaItemsM.Current.Comment}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -260,33 +260,33 @@
 
     <DataTemplate.Triggers>
       <!--TODO store PositionSlashCount just in one location-->
-      <DataTrigger Binding="{Binding MediaViewerM.IsVisible}" Value="True">
+      <DataTrigger Binding="{Binding Core.MediaViewerM.IsVisible}" Value="True">
         <Setter
           TargetName="tbPositionSlashCount"
           Property="Text"
-          Value="{Binding MediaViewerM.PositionSlashCount}"/>
+          Value="{Binding Core.MediaViewerM.PositionSlashCount}"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding MediaItemsM.CurrentGeoName, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
+      <DataTrigger Binding="{Binding Core.MediaItemsM.CurrentGeoName, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
         <Setter TargetName="boGeoName" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding MediaItemsM.Current.DisplayPeople, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
+      <DataTrigger Binding="{Binding Core.MediaItemsM.Current.DisplayPeople, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
         <Setter TargetName="boPeople" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
-          <Condition Binding="{Binding MediaViewerM.IsVisible}" Value="True"/>
-          <Condition Binding="{Binding MediaItemsM.Current.DisplayKeywords, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
+          <Condition Binding="{Binding Core.MediaViewerM.IsVisible}" Value="True"/>
+          <Condition Binding="{Binding Core.MediaItemsM.Current.DisplayKeywords, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="boKeywords" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
 
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
-          <Condition Binding="{Binding MediaViewerM.IsVisible}" Value="True"/>
-          <Condition Binding="{Binding MediaItemsM.Current.Comment, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
+          <Condition Binding="{Binding Core.MediaViewerM.IsVisible}" Value="True"/>
+          <Condition Binding="{Binding Core.MediaItemsM.Current.Comment, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="boComment" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>

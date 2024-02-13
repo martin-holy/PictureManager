@@ -52,9 +52,9 @@
           <MenuItem Command="{Binding MediaItemsViews.ShuffleCommand}"/>
         </MenuItem>
 
-        <MenuItem Command="{Binding MainWindowM.OpenSettingsCommand}"/>
+        <MenuItem Command="{Binding VM.OpenSettingsCommand}"/>
         <MenuItem Command="{Binding Source={x:Static pmdm:WhatIsNewM.OpenCommand}}"/>
-        <MenuItem Command="{Binding MainWindowM.OpenAboutCommand}"/>
+        <MenuItem Command="{Binding VM.OpenAboutCommand}"/>
       </MenuItem>
     </Menu>
   </DataTemplate>

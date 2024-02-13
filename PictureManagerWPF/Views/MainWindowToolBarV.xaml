@@ -4,12 +4,12 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.Utils;assembly=MH.Utils"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
-  <DataTemplate x:Key="MainWindowToolBarV" DataType="{x:Type pmd:Core}">
+  <DataTemplate DataType="{x:Type vm:MainWindowToolBarVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -19,7 +19,7 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Grid Height="30" Background="Transparent">
+    <Grid Height="30" Background="Transparent" DataContext="{x:Static pm:App.Core}">
       <StackPanel
         Orientation="Horizontal"
         HorizontalAlignment="Stretch"
@@ -100,12 +100,12 @@
           <mhc:IconTextButton
             ap:Icon.Data="{StaticResource IconDatabase}"
             ap:Text.Text="{Binding Db.Changes}"
-            Command="{Binding MainWindowM.SaveDbCommand}"/>
+            Command="{Binding VM.SaveDbCommand}"/>
 
           <!-- Log Button -->
           <Button
             Background="Red"
-            Command="{Binding MainWindowM.OpenLogCommand}"
+            Command="{Binding VM.OpenLogCommand}"
             Height="24"
             Margin="2 0 2 0"
             Visibility="{Binding Path=(mhu:Log.Items).Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
@@ -181,7 +181,7 @@
                   <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
                       <Condition Binding="{Binding MediaItemsViews.Current, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
-                      <Condition Binding="{Binding MainWindowM.IsInViewMode}" Value="False"/>
+                      <Condition Binding="{Binding VM.MainWindow.IsInViewMode}" Value="False"/>
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Visibility" Value="Visible"/>
                   </MultiDataTrigger>
@@ -229,7 +229,7 @@
           <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ContentPresenter Content="{StaticResource SlidePanel-PinButton}"/>
+        <ContentPresenter Content="{StaticResource MH.Res.SlidePanel-PinButton}"/>
 
         <ContentPresenter
           Grid.Column="1"

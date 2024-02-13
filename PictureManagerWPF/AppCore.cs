@@ -62,5 +62,5 @@ public sealed class AppCore : ObservableObject {
   }
 
   public static MediaPlayer CurrentMediaPlayer() =>
-    (MediaPlayer)(Core.MainWindowM.IsInViewMode ? Core.UiFullVideo : Core.UiDetailVideo);
+    (MediaPlayer)(Core.VM.MainWindow.IsInViewMode ? Core.UiFullVideo : Core.UiDetailVideo);
 }

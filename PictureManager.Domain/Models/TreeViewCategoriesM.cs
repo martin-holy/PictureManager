@@ -35,7 +35,7 @@ public sealed class TreeViewCategoriesM : TabControl {
   public void MarkUsedKeywordsAndPeople() {
     MarkedTags.Clear();
 
-    var mediaItems = Core.MainWindowM.IsInViewMode
+    var mediaItems = Core.VM.MainWindow.IsInViewMode
       ? Core.MediaItemsM.Current == null
         ? Array.Empty<MediaItemM>()
         : new[] { Core.MediaItemsM.Current }
