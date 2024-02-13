@@ -4,23 +4,23 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
-  <Style x:Key="MH.Styles.Controls.SlidePanel" TargetType="{x:Type c:SlidePanel}">
+  <Style x:Key="MH.Styles.Controls.SlidePanelHost" TargetType="{x:Type c:SlidePanelHost}">
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type c:SlidePanel}">
-          <ContentPresenter/>
+        <ControlTemplate TargetType="{x:Type c:SlidePanelHost}">
+          <ContentPresenter Content="{Binding SlidePanel.Content, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
   </Style>
 
   <c:IconToggleButton
-    x:Key="SlidePanel-PinButton"
+    x:Key="MH.Res.SlidePanel-PinButton"
     x:Shared="False"
     ap:Icon.Data="{StaticResource IconPin}"
     Width="20"
     Height="20"
     IsThreeState="False"
-    IsChecked="{Binding IsPinned, RelativeSource={RelativeSource AncestorType=c:SlidePanel}, FallbackValue=False}"
+    IsChecked="{Binding SlidePanel.IsPinned, RelativeSource={RelativeSource AncestorType=c:SlidePanelHost}, FallbackValue=False}"
     ToolTip="Pin panel"/>
 </ResourceDictionary>
