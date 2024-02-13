@@ -12,7 +12,7 @@ namespace PictureManager.Domain.Models;
 public sealed class SegmentsDrawerM : CollectionViewSegments {
   private readonly SegmentsM _segmentsM;
 
-  public List<SegmentM> Items { get; } = new();
+  public List<SegmentM> Items { get; } = [];
   public CanDragFunc CanDragFunc { get; }
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction DoDropAction { get; }
@@ -30,7 +30,7 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
     AddSelectedCommand = new(
       () => AddOrRemove(_segmentsM.Selected.Items.ToArray(), true),
       () => _segmentsM.Selected.Items.Count > 0, Res.IconDrawerAdd, "Add selected to Segments drawer");
-    OpenCommand = new(() => Open(Core.ToolsTabsM), Res.IconDrawer, "Open Segments drawer");
+    OpenCommand = new(() => Open(Core.VM.MainWindow.ToolsTabs), Res.IconDrawer, "Open Segments drawer");
   }
 
   private DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
@@ -81,7 +81,7 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
     Remove(segments);
   }
 
-  private void Open(ToolsTabsM tt) {
+  private void Open(TabControl tt) {
     var source = Items
       .OrderBy(x => x.MediaItem.Folder.FullPath)
       .ThenBy(x => x.MediaItem.FileName)

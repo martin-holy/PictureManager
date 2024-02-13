@@ -41,7 +41,6 @@ public sealed class Core {
   public static MediaViewerM MediaViewerM { get; } = new();
   public static MediaItemsStatusBarM MediaItemsStatusBarM { get; } = new();
   public TitleProgressBarM TitleProgressBarM { get; } = new();
-  public static ToolsTabsM ToolsTabsM { get; } = new() { CanCloseTabs = true };
   public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
   public static VideoDetail VideoDetail { get; } = new();
   public static VideoThumbsM VideoThumbsM { get; } = new();
@@ -122,12 +121,6 @@ public sealed class Core {
         TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       }
     };
-
-    ToolsTabsM.Tabs.CollectionChanged += (_, e) => {
-      VM.MainWindow.SlidePanelsGrid.PanelRight.CanOpen = ToolsTabsM.Tabs.Count > 0;
-      if (e.NewItems != null)
-        VM.MainWindow.SlidePanelsGrid.PanelRight.IsOpen = true;
-    };
   }
 
   private void AttachEvents() {
@@ -190,14 +183,6 @@ public sealed class Core {
     MainTabs.PropertyChanged += (_, e) => {
       if (nameof(MainTabs.Selected).Equals(e.PropertyName))
         MediaItemsViews.SetCurrentView(MainTabs.Selected?.Data as MediaItemsView);
-    };
-
-    ToolsTabsM.TabClosedEvent += (_, e) => {
-      switch (e.Data.Data) {
-        case PersonDetail personDetail:
-          personDetail.Reload(null);
-          break;
-      }
     };
   }
 
@@ -350,7 +335,7 @@ public sealed class Core {
       SegmentsView?.CvPeople.Remove(e.Data);
 
       if (ReferenceEquals(PeopleM.PersonDetail?.PersonM, e.Data))
-        ToolsTabsM.Close(PeopleM.PersonDetail);
+        VM.MainWindow.ToolsTabs.Close(PeopleM.PersonDetail);
     };
   }
 
