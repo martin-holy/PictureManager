@@ -1,3 +1,3 @@
 ﻿namespace PictureManager.Domain.ViewModels;
 
-public class MainWindowToolBarVM;
+public class ToolBarVM;

@@ -8,7 +8,7 @@ public class MainWindowVM : ObservableObject {
   private bool _isFullScreen;
   private bool _isInViewMode;
 
-  public MainWindowToolBarVM MainWindowToolBar { get; } = new();
+  public ToolBarVM ToolBar { get; } = new();
   public MiddleContentVM MiddleContent { get; } = new();
   public StatusBarVM StatusBar { get; }
   public SlidePanelsGrid SlidePanelsGrid { get; }
@@ -39,7 +39,7 @@ public class MainWindowVM : ObservableObject {
     StatusBar = new(Core.Inst);
     SlidePanelsGrid = new(
       new(Position.Left, Core.TreeViewCategoriesM, 380),
-      new(Position.Top, MainWindowToolBar, 30),
+      new(Position.Top, ToolBar, 30),
       new(Position.Right, Core.ToolsTabsM, GetToolsTabsWidth()) { CanOpen = false },
       new(Position.Bottom, StatusBar, 0),
       MiddleContent,

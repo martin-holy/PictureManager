@@ -9,12 +9,12 @@
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
-  <DataTemplate DataType="{x:Type vm:MainWindowToolBarVM}">
+  <DataTemplate DataType="{x:Type vm:ToolBarVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="MediaItemsFilterV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="ViewersToolBarV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="../MediaItemsFilterV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="../ViewersToolBarV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
