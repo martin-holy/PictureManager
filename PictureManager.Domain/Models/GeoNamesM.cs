@@ -18,7 +18,7 @@ public sealed class GeoNamesM {
   
   public bool ApiLimitExceeded { get; set; }
   public GeoNamesTreeCategory TreeCategory { get; }
-  public RelayCommand NewGeoNameFromGpsCommand { get; }
+  public static RelayCommand NewGeoNameFromGpsCommand { get; set; }
 
   public GeoNamesM(GeoNamesDA da) {
     _da = da;

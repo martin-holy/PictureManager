@@ -56,7 +56,7 @@ public sealed class Core {
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public static Func<double> GetDisplayScale { get; set; }
 
-  public RelayCommand OpenSegmentsViewCommand { get; set; }
+  public static RelayCommand OpenSegmentsViewCommand { get; set; }
 
   private Core() {
     Tasks.SetUiTaskScheduler();

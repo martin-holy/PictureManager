@@ -8,7 +8,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:vmWin="clr-namespace:PictureManager.ViewModels">
 
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="SegmentsRectsV.xaml"/>
@@ -25,7 +26,7 @@
       <Grid.InputBindings>
         <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
         <KeyBinding Key="Left" Command="{Binding PreviousCommand}"/>
-        <KeyBinding Modifiers="Control" Key="P" Command="{Binding PresentationPanel.StartPresentationCommand}"/>
+        <KeyBinding Modifiers="Control" Key="P" Command="m:PresentationPanelM.StartPresentationCommand"/>
       </Grid.InputBindings>
 
       <b:Interaction.Triggers>
@@ -34,22 +35,14 @@
             Command="{Binding NavigateCommand}"
             EventArgsConverter="{x:Static mhConv:MouseWheelConverter.Inst}"/>
         </b:EventTrigger>
-
         <b:EventTrigger EventName="PreviewMouseDown">
-          <b:InvokeCommandAction
-            Command="{Binding SegmentsRectsVM.CreateCommand, Source={x:Static pm:App.Ui}}"
-            PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentsRectsVM.CreateCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
-
         <b:EventTrigger EventName="PreviewMouseMove">
-          <b:InvokeCommandAction
-            Command="{Binding SegmentsRectsVM.EditCommand, Source={x:Static pm:App.Ui}}"
-            PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentsRectsVM.EditCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
-
         <b:EventTrigger EventName="PreviewMouseUp">
-          <b:InvokeCommandAction
-            Command="{Binding SegmentsRectsVM.EndEditCommand, Source={x:Static pm:App.Ui}}"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentsRectsVM.EndEditCommand"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 

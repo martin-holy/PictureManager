@@ -4,7 +4,6 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:dataViews="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
@@ -47,7 +46,7 @@
 
       <StackPanel Grid.Row="1" Orientation="Horizontal">
         <mhc:IconButton Command="{Binding LoadMediaItemsCommand}"/>
-        <mhc:IconButton Command="{Binding SegmentsM.SetSelectedAsUnknownCommand, Source={x:Static pm:App.Core}}"/>
+        <mhc:IconButton Command="m:SegmentsM.SetSelectedAsUnknownCommand"/>
       </StackPanel>
 
       <!-- Keywords -->

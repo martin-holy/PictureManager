@@ -23,7 +23,7 @@ public sealed class ViewersM : ObservableObject {
     }
   }
 
-  public RelayCommand<ViewerM> SetCurrentCommand { get; }
+  public static RelayCommand<ViewerM> SetCurrentCommand { get; set; }
   public RelayCommand UpdateExcludedCategoryGroupsCommand { get; }
 
   public ViewersM(ViewersDA da) {

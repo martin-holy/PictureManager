@@ -7,7 +7,9 @@
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:domain="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type vm:ToolBarVM}">
     <DataTemplate.Resources>
@@ -96,16 +98,12 @@
             Content="{Binding MediaItemsViews.Current.Filter}"
             ContentTemplate="{StaticResource MediaItemsFilterV}"/>
 
-          <!-- DB Button -->
-          <mhc:IconTextButton
-            ap:Icon.Data="{StaticResource IconDatabase}"
-            ap:Text.Text="{Binding Db.Changes}"
-            Command="{Binding VM.SaveDbCommand}"/>
+          <mhc:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding Db.Changes}"/>
 
           <!-- Log Button -->
           <Button
             Background="Red"
-            Command="{Binding VM.OpenLogCommand}"
+            Command="vm:CoreVM.OpenLogCommand"
             Height="24"
             Margin="2 0 2 0"
             Visibility="{Binding Path=(mhu:Log.Items).Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
@@ -116,22 +114,18 @@
           <Separator/>
 
           <!-- Segments ToolBar -->
-          <StackPanel
-            VerticalAlignment="Center"
-            Orientation="Horizontal"
-            DataContext="{Binding SegmentsM}">
-
+          <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
             <mhc:IconToggleButton
               ToolTip="Segments edit"
               IsThreeState="False"
               VerticalAlignment="Center"
               ap:Icon.Data="{StaticResource IconPeople}"
-              IsChecked="{Binding SegmentsRectsM.AreVisible}"/>
+              IsChecked="{Binding SegmentsM.SegmentsRectsM.AreVisible}"/>
 
-            <mhc:IconButton Command="{Binding SegmentsDrawerM.OpenCommand}"/>
-            <mhc:IconButton Command="{Binding SegmentsDrawerM.AddSelectedCommand}"/>
-            <mhc:IconButton Command="{Binding OpenSegmentsViewCommand, Source={x:Static pm:App.Core}}"/>
-            <mhc:IconButton Command="{Binding SetSelectedAsUnknownCommand}"/>
+            <mhc:IconButton Command="m:SegmentsDrawerM.OpenCommand"/>
+            <mhc:IconButton Command="m:SegmentsDrawerM.AddSelectedCommand"/>
+            <mhc:IconButton Command="domain:Core.OpenSegmentsViewCommand"/>
+            <mhc:IconButton Command="m:SegmentsM.SetSelectedAsUnknownCommand"/>
           </StackPanel>
 
           <Separator/>
@@ -150,10 +144,10 @@
             <!-- Play/Stop -->
             <Grid>
               <mhc:IconButton
-                Command="{Binding StartPresentationCommand}"
+                Command="m:PresentationPanelM.StartPresentationCommand"
                 Visibility="{Binding IsRunning, Converter={x:Static mhConv:VisibilityConverter.AllToCollapsed}}"/>
               <mhc:IconButton
-                Command="{Binding StopPresentationCommand}"
+                Command="m:PresentationPanelM.StopPresentationCommand"
                 Visibility="{Binding IsRunning, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
             </Grid>
 
@@ -205,11 +199,11 @@
 
             <!-- Image Comparer -->
             <mhc:IconButton
-              Command="{Binding ImageComparerM.AverageHashCommand}"
+              Command="m:ImageComparerM.AverageHashCommand"
               CommandParameter="{Binding MediaItemsViews.Current}"/>
 
             <mhc:IconButton
-              Command="{Binding ImageComparerM.PHashCommand}"
+              Command="m:ImageComparerM.PHashCommand"
               CommandParameter="{Binding MediaItemsViews.Current}"/>
 
             <Slider
