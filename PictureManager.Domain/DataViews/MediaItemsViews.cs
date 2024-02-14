@@ -18,14 +18,21 @@ public sealed class MediaItemsViews : ObservableObject {
   public MediaItemsView Current { get => _current; set { _current = value; OnPropertyChanged(); } }
   public static double DefaultThumbScale { get; set; } = 1.0;
 
+  public static RelayCommand<object> FilterSetAndCommand { get; set; }
+  public static RelayCommand<object> FilterSetOrCommand { get; set; }
+  public static RelayCommand<object> FilterSetNotCommand { get; set; }
   public RelayCommand AddViewCommand { get; }
   public RelayCommand CopyPathsCommand { get; }
-  public RelayCommand<object> LoadByTagCommand { get; }
+  public static RelayCommand<object> LoadByTagCommand { get; set; }
   public RelayCommand ShuffleCommand { get; }
   public RelayCommand<FolderM> RebuildThumbnailsCommand { get; }
   public RelayCommand ViewModifiedCommand { get; }
 
   public MediaItemsViews() {
+    FilterSetAndCommand = new(item => Current.Filter.Set(item, DisplayFilter.And), _ => Current != null, Res.IconFilter, "Filter And");
+    FilterSetOrCommand = new(item => Current.Filter.Set(item, DisplayFilter.Or), _ => Current != null, Res.IconFilter, "Filter Or");
+    FilterSetNotCommand = new(item => Current.Filter.Set(item, DisplayFilter.Not), _ => Current != null, Res.IconFilter, "Filter Not");
+
     AddViewCommand = new(() => AddView(string.Empty), Res.IconPlus, "Add Media Items View Tab");
     CopyPathsCommand = new(
       () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),

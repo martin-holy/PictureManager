@@ -2,34 +2,21 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:pm="clr-namespace:PictureManager"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
 
   <HierarchicalDataTemplate DataType="{x:Type m:RatingTreeM}">
     <HierarchicalDataTemplate.Resources>
-      <ContextMenu
-        x:Key="TreeContextMenuRating"
-        DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                      RelativeSource={RelativeSource Self}}">
-
-        <MenuItem
-          Header="Load"
-          Command="{Binding MediaItemsViews.LoadByTagCommand, Source={x:Static pm:App.Core}}"
-          CommandParameter="{Binding}"/>
-        <MenuItem
-          Header="Filter Or"
-          Command="{Binding MediaItemsViews.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}"
-          CommandParameter="{Binding Path=(m:RatingTreeM.Rating)}"/>
+      <ContextMenu x:Key="TreeContextMenuRating" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+        <MenuItem Command="dv:MediaItemsViews.LoadByTagCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="dv:MediaItemsViews.FilterSetOrCommand" CommandParameter="{Binding Path=(m:RatingTreeM.Rating)}"/>
       </ContextMenu>
     </HierarchicalDataTemplate.Resources>
 
     <Grid Background="Transparent">
       <b:Interaction.Triggers>
-        <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
-          <b:ChangePropertyAction
-            PropertyName="ContextMenu"
-            Value="{StaticResource TreeContextMenuRating}"/>
+          <b:ChangePropertyAction PropertyName="ContextMenu" Value="{StaticResource TreeContextMenuRating}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 

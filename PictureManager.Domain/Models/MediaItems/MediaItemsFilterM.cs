@@ -21,18 +21,12 @@ public sealed class MediaItemsFilterM : ObservableObject {
 
   public event EventHandler FilterChangedEventHandler = delegate { };
 
-  public RelayCommand<object> SetAndCommand { get; }
-  public RelayCommand<object> SetOrCommand { get; }
-  public RelayCommand<object> SetNotCommand { get; }
   public RelayCommand ClearCommand { get; }
 
   public MediaItemsFilterM() {
     Height.ChangedEvent += delegate { OnFilterChanged(); };
     Width.ChangedEvent += delegate { OnFilterChanged(); };
     Size.ChangedEvent += delegate { OnFilterChanged(); };
-    SetAndCommand = new(item => Set(item, DisplayFilter.And), null, "Filter And");
-    SetOrCommand = new(item => Set(item, DisplayFilter.Or), null, "Filter Or");
-    SetNotCommand = new(item => Set(item, DisplayFilter.Not), null, "Filter Not");
     ClearCommand = new(Clear);
   }
 
