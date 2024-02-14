@@ -6,7 +6,8 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   xmlns:tc="clr-namespace:PictureManager.Domain.TreeCategories;assembly=PictureManager.Domain"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
   <Style x:Key="PM.MiFilter" TargetType="MenuItem" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}">
     <Setter Property="Visibility" Value="{Binding MediaItemsViews.Current, Source={x:Static pm:App.Core}, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
@@ -30,7 +31,7 @@
   <ContextMenu x:Key="TreeContextMenuPerson" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
     <ContextMenu.ItemsSource>
       <CompositeCollection>
-        <MenuItem Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+        <MenuItem Command="vm:ToolsTabsVM.OpenPersonDetailTabCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
         <Separator/>

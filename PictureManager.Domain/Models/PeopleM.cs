@@ -13,35 +13,17 @@ public sealed class PeopleM {
 
   public PeopleTreeCategory TreeCategory { get; }
   public PeopleView PeopleView { get; private set; }
-  public PeopleToolsTabM PeopleToolsTabM { get; private set; }
-  public PersonDetail PersonDetail { get; private set; }
   public Selecting<PersonM> Selected { get; } = new();
-  public RelayCommand OpenPeopleToolsTabCommand { get; }
-  public RelayCommand<PersonM> OpenPersonDetailCommand { get; }
 
   public PeopleM(PeopleDA da) {
     _da = da;
     TreeCategory = new(this, _da);
-    OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab, Res.IconPeopleMultiple, "People");
-    OpenPersonDetailCommand = new(OpenPersonDetail, Res.IconInformation, "Detail");
-  }
-
-  private void OpenPeopleToolsTab() {
-    PeopleToolsTabM ??= new();
-    PeopleToolsTabM.ReloadFrom();
-    Core.VM.MainWindow.ToolsTabs.Activate(Res.IconPeopleMultiple, "People", PeopleToolsTabM);
   }
 
   public void OpenPeopleView() {
     PeopleView ??= new();
     PeopleView.Reload();
     Core.MainTabs.Activate(Res.IconPeopleMultiple, "People", PeopleView);
-  }
-
-  public void OpenPersonDetail(PersonM person) {
-    PersonDetail ??= new(this, Core.SegmentsM);
-    PersonDetail.Reload(person);
-    Core.VM.MainWindow.ToolsTabs.Activate(Res.IconPeople, "Person", PersonDetail);
   }
 
   public void ToggleTopSegment(PersonM person, SegmentM segment) {

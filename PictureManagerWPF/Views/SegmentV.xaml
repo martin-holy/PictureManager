@@ -7,7 +7,8 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type m:SegmentM}">
     <DataTemplate.Resources>
@@ -143,7 +144,7 @@
         <!-- Open Person Detail Control -->
         <mhc:IconButton
           x:Name="personDetailBtn"
-          Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}"
+          Command="vm:ToolsTabsVM.OpenPersonDetailTabCommand"
           CommandParameter="{Binding Person}"
           DockPanel.Dock="Right"
           Width="20"
