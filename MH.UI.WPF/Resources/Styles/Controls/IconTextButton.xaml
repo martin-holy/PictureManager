@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:u="clr-namespace:MH.UI.WPF.Utils">
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
   <ResourceDictionary.MergedDictionaries>
     <u:CachedResourceDictionary Source="../../Brushes.xaml"/>
@@ -42,5 +43,16 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+    <Style.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{x:Static conv:RelayCommandConverter.Inst}">
+            <Binding RelativeSource="{RelativeSource Self}" />
+            <Binding Path="Command" RelativeSource="{RelativeSource Self}"/>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter Property="Tag" Value="{x:Null}"/>
+      </DataTrigger>
+    </Style.Triggers>
   </Style>
 </ResourceDictionary>

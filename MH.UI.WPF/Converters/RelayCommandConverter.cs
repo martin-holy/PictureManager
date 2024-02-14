@@ -1,5 +1,4 @@
 ﻿using MH.UI.WPF.AttachedProperties;
-using MH.UI.WPF.Controls;
 using MH.UI.WPF.Extensions;
 using MH.Utils.BaseClasses;
 using System.Windows;
@@ -27,7 +26,7 @@ public class RelayCommandConverter : BaseMultiConverter {
     if (string.IsNullOrEmpty(rc.Icon)) return;
 
     switch (fe) {
-      case IconButton:
+      case Button:
         if (!fe.HasAttachedProperty(Icon.DataProperty) || fe.GetValue(Icon.DataProperty) == null)
           fe.SetValue(Icon.DataProperty, ResourceConverter.Inst.Convert(rc.Icon, null));
         break;
@@ -41,7 +40,7 @@ public class RelayCommandConverter : BaseMultiConverter {
     if (string.IsNullOrEmpty(rc.Text)) return;
 
     switch (fe) {
-      case IconButton ib: ib.ToolTip ??= rc.Text; break;
+      case Button ib: ib.ToolTip ??= rc.Text; break;
       case MenuItem mi: mi.Header ??= rc.Text; break;
     }
   }
