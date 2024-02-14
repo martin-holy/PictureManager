@@ -16,13 +16,10 @@ public class SlidePanel : ObservableObject {
   public bool IsPinned { get => _isPinned; set { _isPinned = value; OnIsPinnedChanged(); } }
   public double Size { get => _size; private set { _size = value; OnPropertyChanged(); } }
 
-  public RelayCommand PinCommand { get; }
-
   public SlidePanel(Position position, object content, double size) {
     Position = position;
     Content = content;
     Size = size;
-    PinCommand = new(() => IsPinned = !IsPinned);
   }
 
   private void OnCanOpenChanged() =>

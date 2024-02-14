@@ -37,6 +37,8 @@ public class SlidePanelsGrid : ObservableObject {
     }
   }
 
+  public static RelayCommand<SlidePanel> PinCommand { get; } = new(x => x.IsPinned = !x.IsPinned);
+
   public SlidePanelsGrid(SlidePanel left, SlidePanel top, SlidePanel right, SlidePanel bottom, object middle, bool[][] pinLayouts) {
     PanelLeft = left;
     PanelTop = top;
