@@ -56,6 +56,8 @@ public class RangeSlider : Control {
     var size = _sliderContainer?.ActualWidth ?? bounds.Width;
     var start = Range == null || Range.Start == 0 ? 0 : (Range.Start - Range.Min) / (Range.Max - Range.Min) * size;
     var end = Range == null || Range.End == 0 ? size : (Range.End - Range.Min) / (Range.Max - Range.Min) * size;
+    if (double.IsNaN(start)) start = 0;
+    if (double.IsNaN(end)) end = size;
     var rectStart = new Rect(0, 0, start, bounds.Height);
     var rectSelected = new Rect(start, 0, end - start, bounds.Height);
     var rectEnd = new Rect(end, 0, size - end, bounds.Height);
