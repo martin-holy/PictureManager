@@ -24,6 +24,7 @@ namespace PictureManager.Domain {
     public const string IconEmpty = null;
     public const string IconEquals = "IconEquals";
     public const string IconEye = "IconEye";
+    public const string IconFilter = "IconFilter";
     public const string IconFolder = "IconFolder";
     public const string IconFolderLock = "IconFolderLock";
     public const string IconFolderOpen = "IconFolderOpen";
