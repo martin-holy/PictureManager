@@ -3,12 +3,13 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.CollectionViews;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System.Linq;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.ViewModels;
 
-public sealed class PeopleToolsTabM : CollectionViewPeople {
+public sealed class PeopleToolsTabVM : CollectionViewPeople {
   public void ReloadFrom() {
     var md = new MessageDialog(
       "Reload People",
@@ -29,7 +30,8 @@ public sealed class PeopleToolsTabM : CollectionViewPeople {
       1 => Core.MediaItemsViews.Current?.GetSelectedOrAll().GetPeople(),
       2 => Core.MediaViewerM.MediaItems.GetPeople(),
       3 => PeopleM.GetAll(),
-      _ => Enumerable.Empty<PersonM>() };
+      _ => Enumerable.Empty<PersonM>()
+    };
 
     Reload(items.EmptyIfNull().OrderBy(x => x.Name).ToList(), GroupMode.GroupBy, null, true);
   }

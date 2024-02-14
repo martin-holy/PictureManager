@@ -55,8 +55,12 @@ public class MainWindowVM : ObservableObject {
   }
 
   private void AttachEvents() {
-    ToolsTabs.TabClosedEvent += (_, e) => {
-      switch (e.Data.Data) {
+    ToolsTabs.TabActivatedEvent += _ => {
+      SlidePanelsGrid.PanelRight.IsOpen = true;
+    };
+
+    ToolsTabs.TabClosedEvent += tab => {
+      switch (tab.Data) {
         case PersonDetail pd: pd.Reload(null); break;
       }
     };

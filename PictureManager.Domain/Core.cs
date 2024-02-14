@@ -166,8 +166,8 @@ public sealed class Core {
       }
     };
 
-    MainTabs.TabClosedEvent += (_, e) => {
-      switch (e.Data.Data) {
+    MainTabs.TabClosedEvent += tab => {
+      switch (tab.Data) {
         case MediaItemsView miView:
           MediaItemsViews.CloseView(miView);
           break;
@@ -320,8 +320,8 @@ public sealed class Core {
       Db.MediaItems.ModifyIfContains(e.Data);
 
     Db.People.KeywordsChangedEvent += items => {
-      PeopleM.PersonDetail?.UpdateDisplayKeywordsIfContains(items);
-      PeopleM.PeopleToolsTabM?.Update(items);
+      VM.MainWindow.ToolsTabs.PersonDetailTab?.UpdateDisplayKeywordsIfContains(items);
+      VM.MainWindow.ToolsTabs.PeopleTab?.Update(items);
       PeopleM.PeopleView?.Update(items);
       SegmentsView?.CvPeople.Update(items);
     };
@@ -331,11 +331,11 @@ public sealed class Core {
       Db.Segments.RemovePerson(e.Data);
       PeopleM.Selected.Set(e.Data, false);
       PeopleM.PeopleView?.Remove(e.Data);
-      PeopleM.PeopleToolsTabM?.Remove(e.Data);
+      VM.MainWindow.ToolsTabs.PeopleTab?.Remove(e.Data);
       SegmentsView?.CvPeople.Remove(e.Data);
 
-      if (ReferenceEquals(PeopleM.PersonDetail?.PersonM, e.Data))
-        VM.MainWindow.ToolsTabs.Close(PeopleM.PersonDetail);
+      if (ReferenceEquals(VM.MainWindow.ToolsTabs.PersonDetailTab?.PersonM, e.Data))
+        VM.MainWindow.ToolsTabs.Close(VM.MainWindow.ToolsTabs.PersonDetailTab);
     };
   }
 
@@ -352,7 +352,7 @@ public sealed class Core {
     Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
       Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
       Db.MediaItems.TogglePerson(e.Data.Item2);
-      PeopleM.PersonDetail?.Update(e.Data.Item2);
+      VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.Item2);
       PeopleM.PeopleView?.Update(e.Data.Item3);
       SegmentsM.Selected.DeselectAll();
 
@@ -367,7 +367,7 @@ public sealed class Core {
 
     Db.Segments.KeywordsChangedEvent += items => {
       Db.MediaItems.ModifyIfContains(items);
-      PeopleM.PersonDetail?.Update(items, true, false);
+      VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(items, true, false);
       SegmentsView?.CvSegments.Update(items);
     };
 
@@ -378,7 +378,7 @@ public sealed class Core {
 
     Db.Segments.ItemsDeletedEvent += (_, e) => {
       Db.MediaItems.RemoveSegments(e.Data);
-      PeopleM.PersonDetail?.Update(e.Data.ToArray(), true, true);
+      VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.ToArray(), true, true);
       SegmentsView?.CvSegments.Remove(e.Data.ToArray());
       SegmentsM.SegmentsDrawerM.RemoveIfContains(e.Data.ToArray());
     };

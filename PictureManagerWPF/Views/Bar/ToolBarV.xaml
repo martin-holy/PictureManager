@@ -136,7 +136,7 @@
 
           <Separator/>
 
-          <mhc:IconButton Command="{Binding PeopleM.OpenPeopleToolsTabCommand}"/>
+          <mhc:IconButton Command="vm:ToolsTabsVM.OpenPeopleTabCommand"/>
           
           <!-- Presentation ToolBar -->
           <StackPanel
