@@ -35,7 +35,7 @@ public class MainWindowVM : ObservableObject {
     }
   }
 
-  public RelayCommand SwitchToBrowserCommand { get; }
+  public static RelayCommand SwitchToBrowserCommand { get; set; }
 
   public MainWindowVM() {
     StatusBar = new(Core.Inst);

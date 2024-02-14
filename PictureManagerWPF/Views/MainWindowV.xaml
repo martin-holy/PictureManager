@@ -5,9 +5,11 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  DataContext="{Binding Source={x:Static pm:App.Core}}"
+  xmlns:mim="clr-namespace:PictureManager.Domain.Models.MediaItems;assembly=PictureManager.Domain"
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
+  DataContext="{Binding VM.MainWindow, Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
-  IsFullScreen="{Binding VM.MainWindow.IsFullScreen, Mode=TwoWay}"
+  IsFullScreen="{Binding IsFullScreen, Mode=TwoWay}"
   Title="Picture Manager"
   WindowState="Maximized"
   CanResize="True"
@@ -17,19 +19,19 @@
   FontSize="14">
 
   <Window.InputBindings>
-    <KeyBinding Modifiers="Control" Key="R" Command="{Binding VM.RotateMediaItemsCommand}"/>
-    <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsM.CommentCommand}"/>
-    <KeyBinding Key="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
-    <KeyBinding Key="Delete" Command="{Binding MediaItemsM.DeleteCommand}"/>
-    <KeyBinding Key="Esc" Command="{Binding VM.MainWindow.SwitchToBrowserCommand}"/>
-    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding VM.MainWindow.SwitchToBrowserCommand}"/>
+    <KeyBinding Modifiers="Control" Key="R" Command="vm:CoreVM.RotateMediaItemsCommand"/>
+    <KeyBinding Modifiers="Control" Key="K" Command="mim:MediaItemsM.CommentCommand"/>
+    <KeyBinding Key="F2" Command="mim:MediaItemsM.RenameCommand"/>
+    <KeyBinding Key="Delete" Command="mim:MediaItemsM.DeleteCommand"/>
+    <KeyBinding Key="Esc" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
+    <MouseBinding MouseAction="LeftDoubleClick" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
   </Window.InputBindings>
 
   <b:Interaction.Triggers>
     <b:EventTrigger EventName="Closing">
-      <b:InvokeCommandAction Command="{Binding VM.AppClosingCommand}"/>
+      <b:InvokeCommandAction Command="vm:CoreVM.AppClosingCommand"/>
     </b:EventTrigger>
   </b:Interaction.Triggers>
 
-  <mhc:SlidePanelsGridHost SlidePanelsGrid="{Binding VM.MainWindow.SlidePanelsGrid}"/>
+  <mhc:SlidePanelsGridHost SlidePanelsGrid="{Binding SlidePanelsGrid}"/>
 </mhc:CustomWindow>

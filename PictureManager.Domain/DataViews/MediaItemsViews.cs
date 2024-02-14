@@ -21,12 +21,12 @@ public sealed class MediaItemsViews : ObservableObject {
   public static RelayCommand<object> FilterSetAndCommand { get; set; }
   public static RelayCommand<object> FilterSetOrCommand { get; set; }
   public static RelayCommand<object> FilterSetNotCommand { get; set; }
-  public RelayCommand AddViewCommand { get; }
-  public RelayCommand CopyPathsCommand { get; }
+  public static RelayCommand AddViewCommand { get; set; }
+  public static RelayCommand CopyPathsCommand { get; set; }
   public static RelayCommand<object> LoadByTagCommand { get; set; }
-  public RelayCommand ShuffleCommand { get; }
-  public RelayCommand<FolderM> RebuildThumbnailsCommand { get; }
-  public RelayCommand ViewModifiedCommand { get; }
+  public static RelayCommand ShuffleCommand { get; set; }
+  public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; }
+  public static RelayCommand ViewModifiedCommand { get; set; }
 
   public MediaItemsViews() {
     FilterSetAndCommand = new(item => Current.Filter.Set(item, DisplayFilter.And), _ => Current != null, Res.IconFilter, "Filter And");

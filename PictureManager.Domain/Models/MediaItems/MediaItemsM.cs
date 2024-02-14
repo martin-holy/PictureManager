@@ -28,9 +28,9 @@ public sealed class MediaItemsM : ObservableObject {
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
   public Func<ImageM, bool> WriteMetadata { get; set; }
 
-  public RelayCommand DeleteCommand { get; }
-  public RelayCommand RenameCommand { get; }
-  public RelayCommand CommentCommand { get; }
+  public static RelayCommand DeleteCommand { get; set; }
+  public static RelayCommand RenameCommand { get; set; }
+  public static RelayCommand CommentCommand { get; set; }
 
   public MediaItemsM(MediaItemsDA da) {
     _da = da;

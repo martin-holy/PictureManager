@@ -11,11 +11,11 @@ namespace PictureManager.ViewModels {
     public SegmentsRectsM SegmentsRectsM { get; }
     
     public RelayCommand<RoutedEventArgs> SetViewCommand { get; }
-    public RelayCommand<MouseEventArgs> SetCurrentCommand { get; }
-    public RelayCommand<MouseButtonEventArgs> CreateCommand { get; }
-    public RelayCommand<MouseEventArgs> EditCommand { get; }
-    public RelayCommand EndEditCommand { get; }
-    public RelayCommand<SegmentRectM> DeleteCommand { get; }
+    public static RelayCommand<MouseEventArgs> SetCurrentCommand { get; set; }
+    public static RelayCommand<MouseButtonEventArgs> CreateCommand { get; set; }
+    public static RelayCommand<MouseEventArgs> EditCommand { get; set; }
+    public static RelayCommand EndEditCommand { get; set; }
+    public static RelayCommand<SegmentRectM> DeleteCommand { get; set; }
 
     public SegmentsRectsVM(SegmentsRectsM segmentsRectsM) {
       SegmentsRectsM = segmentsRectsM;

@@ -3,11 +3,11 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:mhuibc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   xmlns:tc="clr-namespace:PictureManager.Domain.TreeCategories;assembly=PictureManager.Domain"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
-  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
+  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <!-- Tag Items Load and Filters -->
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu" x:Shared="False">
@@ -48,10 +48,10 @@
   </ContextMenu>
 
   <!-- GeoNames -->
-  <ContextMenu x:Key="TreeContextMenuGeoNames" DataContext="{Binding Source={x:Static pm:App.Core}}">
-    <MenuItem Command="{Binding VM.GetGeoNamesFromWebCommand}"/>
-    <MenuItem Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand}"/>
-    <MenuItem Command="{Binding VM.ReadGeoLocationFromFilesCommand}"/>
+  <ContextMenu x:Key="TreeContextMenuGeoNames">
+    <MenuItem Command="vm:CoreVM.GetGeoNamesFromWebCommand"/>
+    <MenuItem Command="m:GeoNamesM.NewGeoNameFromGpsCommand"/>
+    <MenuItem Command="vm:CoreVM.ReadGeoLocationFromFilesCommand"/>
   </ContextMenu>
 
   <!-- Viewers -->
@@ -84,19 +84,19 @@
       <MenuItem.Icon>
         <Path Data="{StaticResource IconLocationCheckin}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
       </MenuItem.Icon>
-      <MenuItem Command="{Binding VM.GetGeoNamesFromWebCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
-      <MenuItem Command="{Binding VM.ReadGeoLocationFromFilesCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+      <MenuItem Command="vm:CoreVM.GetGeoNamesFromWebCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="vm:CoreVM.ReadGeoLocationFromFilesCommand" CommandParameter="{Binding}"/>
     </MenuItem>
 
     <MenuItem Header="Media Items">
       <MenuItem.Icon>
         <Path Data="{StaticResource IconImageMultiple}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
       </MenuItem.Icon>
-      <MenuItem Command="{Binding VM.CompressImagesCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
-      <MenuItem Command="{Binding MediaItemsViews.RebuildThumbnailsCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
-      <MenuItem Command="{Binding VM.ReloadMetadataCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
-      <MenuItem Command="{Binding VM.ResizeImagesCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
-      <MenuItem Command="{Binding VM.SaveImageMetadataToFilesCommand, Source={x:Static pm:App.Core}}" CommandParameter="{Binding}"/>
+      <MenuItem Command="vm:CoreVM.CompressImagesCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="dv:MediaItemsViews.RebuildThumbnailsCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="vm:CoreVM.ReloadMetadataCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="vm:CoreVM.ResizeImagesCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="vm:CoreVM.SaveImageMetadataToFilesCommand" CommandParameter="{Binding}"/>
     </MenuItem>
   </ContextMenu>
   

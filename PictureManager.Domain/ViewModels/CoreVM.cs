@@ -21,19 +21,19 @@ public class CoreVM {
   public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViews MediaItemsViews { get; }
 
-  public RelayCommand AppClosingCommand { get; }
-  public RelayCommand OpenAboutCommand { get; }
-  public RelayCommand OpenLogCommand { get; }
-  public RelayCommand OpenSettingsCommand { get; }
-  public RelayCommand SaveDbCommand { get; }
-  public RelayCommand<FolderM> CompressImagesCommand { get; }
-  public RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; }
-  public RelayCommand<FolderM> ImagesToVideoCommand { get; }
-  public RelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; }
-  public RelayCommand<FolderM> ReloadMetadataCommand { get; }
-  public RelayCommand<FolderM> ResizeImagesCommand { get; }
-  public RelayCommand<FolderM> RotateMediaItemsCommand { get; }
-  public RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; }
+  public static RelayCommand AppClosingCommand { get; set; }
+  public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");
+  public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialogM()), null, "Open log");
+  public static RelayCommand OpenSettingsCommand { get; set; }
+  public static RelayCommand SaveDbCommand { get; set; }
+  public static RelayCommand<FolderM> CompressImagesCommand { get; set; }
+  public static RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; set; }
+  public static RelayCommand<FolderM> ImagesToVideoCommand { get; set; }
+  public static RelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; set; }
+  public static RelayCommand<FolderM> ReloadMetadataCommand { get; set; }
+  public static RelayCommand<FolderM> ResizeImagesCommand { get; set; }
+  public static RelayCommand<FolderM> RotateMediaItemsCommand { get; set; }
+  public static RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; set; }
 
   public CoreVM(CoreM coreM, Db db) {
     _m = coreM;
@@ -41,10 +41,8 @@ public class CoreVM {
     MediaItemsViews = Core.MediaItemsViews;
 
     AppClosingCommand = new(AppClosing);
-    OpenAboutCommand = new(() => Dialog.Show(new AboutDialogM()), null, "About");
-    OpenLogCommand = new(() => Dialog.Show(new LogDialogM()));
     OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
-    SaveDbCommand = new(() => _db.SaveAllTables(), () => _db.Changes > 0);
+    SaveDbCommand = new(() => _db.SaveAllTables(), () => _db.Changes > 0, Res.IconDatabase, "Save changes");
     CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
     GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
     ImagesToVideoCommand = new(x => ImagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");

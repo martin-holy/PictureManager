@@ -18,20 +18,15 @@
 
         <MenuItem.ItemsSource>
           <CompositeCollection>
-            <MenuItem
-              Header="All"
-              DataContext="{x:Null}"
-              Command="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
-
-            <CollectionContainer
-              Collection="{Binding ViewersM.TreeCategory.Items, Source={x:Static pm:App.Core}}"/>
+            <MenuItem Header="All" Command="m:ViewersM.SetCurrentCommand" DataContext="{x:Null}"/>
+            <CollectionContainer Collection="{Binding ViewersM.TreeCategory.Items, Source={x:Static pm:App.Core}}"/>
           </CompositeCollection>
         </MenuItem.ItemsSource>
 
         <MenuItem.ItemContainerStyle>
           <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
             <Setter Property="Header" Value="{Binding Path=(m:ViewerM.Name)}"/>
-            <Setter Property="Command" Value="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
+            <Setter Property="Command" Value="m:ViewersM.SetCurrentCommand"/>
             <Setter Property="CommandParameter" Value="{Binding}"/>
           </Style>
         </MenuItem.ItemContainerStyle>

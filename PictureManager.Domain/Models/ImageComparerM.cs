@@ -13,8 +13,8 @@ namespace PictureManager.Domain.Models {
     private int _diff;
 
     public int Diff { get => _diff; set { _diff = value; OnPropertyChanged(); } }
-    public RelayCommand<MediaItemsView> AverageHashCommand { get; }
-    public RelayCommand<MediaItemsView> PHashCommand { get; }
+    public static RelayCommand<MediaItemsView> AverageHashCommand { get; set; }
+    public static RelayCommand<MediaItemsView> PHashCommand { get; set; }
 
     public ImageComparerM() {
       AverageHashCommand = new(x => Compare(x, _avgHashes, Imaging.GetBitmapAvgHash), Res.IconCompare, "Compare images using average hash");

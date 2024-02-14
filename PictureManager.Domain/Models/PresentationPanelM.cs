@@ -53,8 +53,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public bool IsPaused { get; private set; }
-    public RelayCommand StartPresentationCommand { get; }
-    public RelayCommand StopPresentationCommand { get; }
+    public static RelayCommand StartPresentationCommand { get; set; }
+    public static RelayCommand StopPresentationCommand { get; set; }
 
     public PresentationPanelM(MediaViewerM mediaViewerM) {
       _mediaViewerM = mediaViewerM;

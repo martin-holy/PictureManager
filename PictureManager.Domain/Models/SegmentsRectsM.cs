@@ -43,9 +43,9 @@ namespace PictureManager.Domain.Models {
 
     public SegmentsM SegmentsM { get; }
     public SegmentRectM Current { get; set; }
-    public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = new();
-    public ObservableCollection<Tuple<int, int, int, bool>> SegmentToolTipRects { get; } = new();
-    public RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; }
+    public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = [];
+    public ObservableCollection<Tuple<int, int, int, bool>> SegmentToolTipRects { get; } = [];
+    public static RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; set; }
 
     public SegmentsRectsM(SegmentsM segmentsM) {
       SegmentsM = segmentsM;
