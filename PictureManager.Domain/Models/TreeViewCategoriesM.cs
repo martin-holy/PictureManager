@@ -19,7 +19,7 @@ public sealed class TreeViewCategoriesM : TabControl {
     AddCategory(Core.RatingsTreeCategory);
     AddCategory(Core.PeopleM.TreeCategory);
     AddCategory(Core.Db.FolderKeywords.Model);
-    AddCategory(Core.KeywordsM.TreeCategory);
+    AddCategory(Core.Db.Keywords.Tree);
     AddCategory(Core.Db.GeoNames.Tree);
     AddCategory(Core.ViewersM.TreeCategory);
 
