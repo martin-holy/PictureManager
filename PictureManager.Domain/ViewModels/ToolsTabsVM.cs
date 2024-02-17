@@ -24,7 +24,7 @@ public sealed class ToolsTabsVM : TabControl {
   }
 
   private void OpenPersonDetailTab(PersonM person) {
-    PersonDetailTab ??= new(Core.PeopleM, Core.SegmentsM);
+    PersonDetailTab ??= new(Core.PeopleM, Core.M.Segments);
     PersonDetailTab.Reload(person);
     Activate(Res.IconPeople, "Person", PersonDetailTab);
   }

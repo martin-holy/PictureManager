@@ -39,7 +39,7 @@ public sealed class PeopleM {
 
   public void Select(SelectionEventArgs<PersonM> e) {
     if (!e.IsCtrlOn && !e.IsShiftOn)
-      Core.SegmentsM.Selected.DeselectAll();
+      Core.M.Segments.Selected.DeselectAll();
 
     var segmentsBefore = Selected.Items
       .Where(x => x.Segment != null)
@@ -53,9 +53,9 @@ public sealed class PeopleM {
       .Select(x => x.Segment)
       .ToArray();
 
-    Core.SegmentsM.Selected.Set(segmentsBefore.Except(segmentsAfter), false);
-    Core.SegmentsM.Selected.Add(segmentsAfter);
-    Core.SegmentsM.OnPropertyChanged(nameof(Core.SegmentsM.CanSetAsSamePerson));
+    Core.M.Segments.Selected.Set(segmentsBefore.Except(segmentsAfter), false);
+    Core.M.Segments.Selected.Add(segmentsAfter);
+    Core.M.Segments.OnPropertyChanged(nameof(Core.M.Segments.CanSetAsSamePerson));
   }
 
   public void MergePeople(PersonM person, PersonM[] people) {

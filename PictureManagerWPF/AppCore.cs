@@ -12,13 +12,11 @@ using System.Windows;
 namespace PictureManager;
 
 public sealed class AppCore : ObservableObject {
-  public SegmentsRectsVM SegmentsRectsVM { get; }
+  public SegmentsRectsVM SegmentsRectsVM { get; private set; }
 
   public static RelayCommand TestButtonCommand { get; } = new(Tests.Run, Res.IconBug, "Test Button");
 
   public AppCore() {
-    SegmentsRectsVM = new(Core.SegmentsM.SegmentsRectsM);
-
     Core.FileOperationDelete = FileOperationDelete;
     Core.GetDisplayScale = GetDisplayScale;
 
@@ -35,6 +33,10 @@ public sealed class AppCore : ObservableObject {
 
     SegmentsVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
     Domain.ViewModels.MediaItemsVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
+  }
+
+  public void AfterInit() {
+    SegmentsRectsVM = new(Core.M.Segments.SegmentsRectsM);
   }
 
   private static double GetDisplayScale() =>

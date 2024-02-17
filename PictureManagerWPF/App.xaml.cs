@@ -29,7 +29,8 @@ namespace PictureManager {
       Current.Properties[nameof(AppProperty.Core)] = Core.Inst;
       Current.Properties[nameof(AppProperty.Ui)] = new AppCore();
 
-      Core.Inst.AfterInit();
+      Core.AfterInit();
+      Ui.AfterInit();
 
       ShutdownMode = ShutdownMode.OnMainWindowClose;
       MainWindow = new MainWindowV();

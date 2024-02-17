@@ -39,7 +39,7 @@ public sealed class ToggleDialogM : Dialog {
 
   private bool GetItems(object item) {
     var person = item as PersonM;
-    Segments = Core.SegmentsM.Selected.Items.ToArray();
+    Segments = Core.M.Segments.Selected.Items.ToArray();
     People = person == null ? Core.PeopleM.Selected.Items.ToArray() : Array.Empty<PersonM>();
     MediaItems = Core.VM.GetActive<MediaItemM>();
     VideoItems = Core.VideoDetail.CurrentVideoItems.Selected.Items.ToArray();
@@ -88,7 +88,7 @@ public sealed class ToggleDialogM : Dialog {
     if (GetInstance(Res.IconPeople, "Add/Remove Person", "Add or Remove on:", person) is not { } dlg) return;
 
     switch (Show(dlg)) {
-      case 1: Core.SegmentsM.SetSelectedAsPerson(dlg.Segments, person); break;
+      case 1: Core.M.Segments.SetSelectedAsPerson(dlg.Segments, person); break;
       case 3: Core.Db.MediaItems.TogglePerson(dlg.MediaItems, person); break;
       case 4: Core.Db.MediaItems.TogglePerson(dlg.VideoItems.Cast<MediaItemM>().ToArray(), person); break;
     }

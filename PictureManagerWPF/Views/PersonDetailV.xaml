@@ -5,7 +5,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:dataViews="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type dataViews:PersonDetail}">
     <DataTemplate.Resources>
@@ -46,7 +47,7 @@
 
       <StackPanel Grid.Row="1" Orientation="Horizontal">
         <mhc:IconButton Command="{Binding LoadMediaItemsCommand}"/>
-        <mhc:IconButton Command="m:SegmentsM.SetSelectedAsUnknownCommand"/>
+        <mhc:IconButton Command="vm:SegmentsVM.SetSelectedAsUnknownCommand"/>
       </StackPanel>
 
       <!-- Keywords -->
