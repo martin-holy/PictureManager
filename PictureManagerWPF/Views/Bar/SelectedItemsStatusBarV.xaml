@@ -38,7 +38,7 @@
           ap:Icon.Data="{StaticResource IconPeople}"/>
         <mhc:IconTextBlock
           Grid.Column="2"
-          ap:Text.Text="{Binding SegmentsM.Selected.Items.Count}"
+          ap:Text.Text="{Binding M.Segments.Selected.Items.Count}"
           ap:Icon.Data="{StaticResource IconSegment}"/>
       </Grid>
     </Border>

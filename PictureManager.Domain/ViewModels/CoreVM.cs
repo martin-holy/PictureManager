@@ -20,6 +20,7 @@ public class CoreVM {
 
   public GeoNamesVM GeoNames { get; }
   public MediaItemsVM MediaItems { get; }
+  public SegmentsVM Segments { get; }
 
   public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViews MediaItemsViews { get; }
@@ -44,6 +45,7 @@ public class CoreVM {
 
     GeoNames = new(_db.GeoNames);
     MediaItems = new(this, _m.MediaItems);
+    Segments = new(_m.Segments, _db.Segments);
 
     MediaItemsViews = Core.MediaItemsViews;
 

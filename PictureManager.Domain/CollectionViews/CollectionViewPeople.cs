@@ -32,5 +32,5 @@ public class CollectionViewPeople : CollectionView<PersonM> {
     Core.PeopleM.Select(e);
 
   public override void OnItemOpened(PersonM item) =>
-    Core.SegmentsM.ViewMediaItemsWithSegment(this, item.Segment);
+    Core.M.Segments.ViewMediaItemsWithSegment(this, item.Segment);
 }

@@ -120,12 +120,12 @@
               IsThreeState="False"
               VerticalAlignment="Center"
               ap:Icon.Data="{StaticResource IconPeople}"
-              IsChecked="{Binding SegmentsM.SegmentsRectsM.AreVisible}"/>
+              IsChecked="{Binding M.Segments.SegmentsRectsM.AreVisible}"/>
 
             <mhc:IconButton Command="m:SegmentsDrawerM.OpenCommand"/>
             <mhc:IconButton Command="m:SegmentsDrawerM.AddSelectedCommand"/>
             <mhc:IconButton Command="domain:Core.OpenSegmentsViewCommand"/>
-            <mhc:IconButton Command="m:SegmentsM.SetSelectedAsUnknownCommand"/>
+            <mhc:IconButton Command="vm:SegmentsVM.SetSelectedAsUnknownCommand"/>
           </StackPanel>
 
           <Separator/>

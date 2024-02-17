@@ -1,8 +1,6 @@
 using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
-using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models.MediaItems;
@@ -27,18 +25,10 @@ public sealed class SegmentsM : ObservableObject {
     }
   }
 
-  public static RelayCommand SetSelectedAsSamePersonCommand { get; set; }
-  public static RelayCommand SetSelectedAsUnknownCommand { get; set; }
-
   public SegmentsM(SegmentsDA da) {
     DataAdapter = da;
     SegmentsRectsM = new(this);
     SegmentsDrawerM = new(this);
-
-    SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson, Res.IconEquals, "Set selected as same person");
-    SetSelectedAsUnknownCommand = new(
-      () => SetAsUnknown(Selected.Items.ToArray()),
-      () => Selected.Items.Count > 0, Res.IconUnknownSegment, "Set selected as Unknown");
   }
 
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
@@ -83,20 +73,20 @@ public sealed class SegmentsM : ObservableObject {
     DataAdapter.ChangePerson(person, segments, people);
   }
 
-  private void SetSelectedAsSamePerson() {
+  public void SetSelectedAsSamePerson(SegmentM[] items) {
     if (!CanSetAsSamePerson) return;
 
     PersonM newPerson;
     SegmentM[] toUpdate;
-    var people = Selected.Items.GetPeople().OrderBy(x => x.Name).ToArray();
+    var people = items.GetPeople().OrderBy(x => x.Name).ToArray();
 
     if (people.Length == 0) {
       newPerson = Core.Db.People.ItemCreateUnknown();
-      toUpdate = Selected.Items.ToArray();
+      toUpdate = items;
     }
     else if (people.Length == 1) {
       newPerson = people[0];
-      toUpdate = Selected.Items.Where(x => x.Person == null).ToArray();
+      toUpdate = items.Where(x => x.Person == null).ToArray();
     }
     else {
       if (!MergePeopleDialogM.Open(Core.PeopleM, this, people)) return;
@@ -107,12 +97,6 @@ public sealed class SegmentsM : ObservableObject {
     Core.PeopleM.Selected.DeselectAll();
     var affectedPeople = people.Concat(new[] { newPerson }).Distinct().ToArray();
     DataAdapter.ChangePerson(newPerson, toUpdate, affectedPeople);
-  }
-
-  private void SetAsUnknown(SegmentM[] segments) {
-    var msg = "Do you want to set {0} segment{1} as unknown?".Plural(segments.Length);
-    if (Dialog.Show(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1) return;
-    DataAdapter.ChangePerson(null, segments, segments.GetPeople().ToArray());
   }
 
   public void ViewMediaItemsWithSegment(object source, SegmentM segment) {

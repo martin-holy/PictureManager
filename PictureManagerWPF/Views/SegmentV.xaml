@@ -38,7 +38,7 @@
 
               <!-- Segments Rects -->
               <ItemsControl
-                ItemsSource="{Binding SegmentsM.SegmentsRectsM.SegmentToolTipRects, Source={x:Static pm:App.Core}}">
+                ItemsSource="{Binding M.Segments.SegmentsRectsM.SegmentToolTipRects, Source={x:Static pm:App.Core}}">
 
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
@@ -163,12 +163,12 @@
 
             <TextBlock
               Style="{StaticResource STextBlock}"
-              Text="{Binding SegmentsM.Selected.Items.Count,
+              Text="{Binding M.Segments.Selected.Items.Count,
                      Source={x:Static pm:App.Core}}"/>
           </Border>
 
           <mhc:IconButton
-            Command="m:SegmentsM.SetSelectedAsSamePersonCommand"
+            Command="vm:SegmentsVM.SetSelectedAsSamePersonCommand"
             Width="20"
             Height="20"/>
         </StackPanel>
@@ -188,7 +188,7 @@
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding IsSelected}" Value="True"/>
           <Condition
-             Binding="{Binding SegmentsM.CanSetAsSamePerson,
+             Binding="{Binding M.Segments.CanSetAsSamePerson,
                        Source={x:Static pm:App.Core},
                        Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
              Value="True"/>

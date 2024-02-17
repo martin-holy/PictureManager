@@ -49,7 +49,7 @@ public sealed class SegmentsView {
           .Where(x => x.Person != null && people.Contains(x.Person))
           .OrderBy(x => x.MediaItem.FileName);
       case 3:
-        return Core.SegmentsM.Selected.Items;
+        return Core.M.Segments.Selected.Items;
       default:
         return Enumerable.Empty<SegmentM>();
     }
