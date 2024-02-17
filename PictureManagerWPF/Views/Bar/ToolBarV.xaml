@@ -89,7 +89,7 @@
             Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="3 0 0 0"/>
           <TextBlock
-            Text="{Binding MediaItemsM.ItemsCount}"
+            Text="{Binding VM.MediaItems.ItemsCount}"
             VerticalAlignment="Center"
             Margin="5 0"/>
 

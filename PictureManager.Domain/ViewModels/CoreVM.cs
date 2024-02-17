@@ -18,6 +18,8 @@ public class CoreVM {
   private readonly CoreM _m;
   private readonly Db _db;
 
+  public MediaItemsVM MediaItems { get; }
+
   public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViews MediaItemsViews { get; }
 
@@ -38,7 +40,12 @@ public class CoreVM {
   public CoreVM(CoreM coreM, Db db) {
     _m = coreM;
     _db = db;
+
+    MediaItems = new(this, _m.MediaItems);
+
     MediaItemsViews = Core.MediaItemsViews;
+
+    UpdateMediaItemsCount();
 
     AppClosingCommand = new(AppClosing);
     OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
@@ -47,37 +54,23 @@ public class CoreVM {
     GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
     ImagesToVideoCommand = new(x => ImagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");
     ReadGeoLocationFromFilesCommand = new(x => ReadGeoLocationFromFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
-    ReloadMetadataCommand = new(x => _m.MediaItems.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
+    ReloadMetadataCommand = new(x => MediaItems.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
     ResizeImagesCommand = new(x => ResizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
     RotateMediaItemsCommand = new(x => RotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
     SaveImageMetadataToFilesCommand = new(x => SaveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
   }
 
-  public bool AnyActive<T>(FolderM folder) where T : MediaItemM =>
+  public bool AnyActive<T>(FolderM folder = null) where T : MediaItemM =>
     folder != null
-    || (MainWindow.IsInViewMode && _m.MediaItems.Current is T)
+    || (MainWindow.IsInViewMode && MediaItems.Current is T)
     || MediaItemsViews.Current?.Selected.Items.OfType<T>().Any() == true;
 
-  public T[] GetActive<T>(FolderM folder) where T : MediaItemM =>
+  public T[] GetActive<T>(FolderM folder = null) where T : MediaItemM =>
     folder != null
       ? folder.GetMediaItems(Keyboard.IsShiftOn()).OfType<T>().ToArray()
       : MainWindow.IsInViewMode
-        ? _m.MediaItems.Current is T current ? new[] { current } : Array.Empty<T>()
+        ? MediaItems.Current is T current ? new[] { current } : Array.Empty<T>()
         : MediaItemsViews.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
-
-  public bool TryWriteMetadata(ImageM img) {
-    try {
-      if (!_m.MediaItems.WriteMetadata(img)) throw new("Error writing metadata");
-      img.IsOnlyInDb = false;
-    }
-    catch (Exception ex) {
-      Log.Error(ex, $"Metadata will be saved just in database. {img.FilePath}");
-      img.IsOnlyInDb = true;
-    }
-
-    _db.Images.IsModified = true;
-    return !img.IsOnlyInDb;
-  }
 
   private void AppClosing() {
     if (_db.Changes > 0 &&
@@ -96,7 +89,7 @@ public class CoreVM {
 
   private void CompressImages(ImageM[] items) {
     Dialog.Show(new CompressDialogM(items, Core.Settings.JpegQualityLevel));
-    _m.MediaItems.UpdateModifiedCount();
+    UpdateModifiedMediaItemsCount();
   }
 
   private void GetGeoNamesFromWeb(ImageM[] items) {
@@ -156,10 +149,18 @@ public class CoreVM {
           true)) != 1) return;
 
     var progress = new ProgressBarAsyncDialog("Saving metadata to files...", Res.IconImage, true, Environment.ProcessorCount);
-    progress.Init(items, null, mi => TryWriteMetadata(mi), mi => mi.FilePath, null);
+    progress.Init(items, null, mi => _m.Images.TryWriteMetadata(mi), mi => mi.FilePath, null);
     progress.Start();
     Dialog.Show(progress);
     _ = _m.MediaItemsStatusBar.UpdateFileSize();
-    _m.MediaItems.UpdateModifiedCount();
+    UpdateModifiedMediaItemsCount();
   }
+
+  public void UpdateMediaItemsCount() =>
+    MediaItems.ItemsCount = _db.Images.All.Count + _db.Videos.All.Count;
+
+  public void UpdateModifiedMediaItemsCount() =>
+    MediaItems.ModifiedItemsCount =
+      _db.Images.All.Count(x => x.IsOnlyInDb) +
+      _db.Videos.All.Count(x => x.IsOnlyInDb);
 }

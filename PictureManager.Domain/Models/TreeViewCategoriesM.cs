@@ -36,9 +36,9 @@ public sealed class TreeViewCategoriesM : TabControl {
     MarkedTags.Clear();
 
     var mediaItems = Core.VM.MainWindow.IsInViewMode
-      ? Core.MediaItemsM.Current == null
+      ? Core.VM.MediaItems.Current == null
         ? Array.Empty<MediaItemM>()
-        : new[] { Core.MediaItemsM.Current }
+        : new[] { Core.VM.MediaItems.Current }
       : Core.MediaItemsViews.Current == null
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.GetSelectedOrAll().ToArray();

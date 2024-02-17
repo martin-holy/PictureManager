@@ -15,8 +15,6 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   private static readonly string[] _supportedImageExts = { ".jpg", ".jpeg" };
   private static readonly string[] _supportedVideoExts = { ".mp4" };
 
-  public MediaItemsM Model { get; }
-
   public event EventHandler<ObjectEventArgs<MediaItemM>> ItemRenamedEvent = delegate { };
   public event DataEventHandler<MediaItemM[]> MetadataChangedEvent = delegate { };
   public event DataEventHandler<RealMediaItemM[]> OrientationChangedEvent = delegate { };
@@ -24,7 +22,6 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
   public MediaItemsDA(Db db) : base(string.Empty, 0) {
     _db = db;
     _db.ReadyEvent += delegate { OnDbReady(); };
-    Model = new(this);
   }
 
   private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, new(item));
@@ -52,15 +49,11 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     if (item is RealMediaItemM rmi)
       rmi.Folder.MediaItems.Add(rmi);
 
-    Model.UpdateItemsCount();
     RaiseItemCreated(item);
   }
 
-  protected override void OnItemDeleted(MediaItemM item) {
-    Model.UpdateItemsCount();
-    Model.UpdateModifiedCount();
+  protected override void OnItemDeleted(MediaItemM item) =>
     RaiseItemDeleted(item);
-  }
 
   public void OnItemDeletedCommon(MediaItemM item) {
     File.Delete(item.FilePathCache);
@@ -119,7 +112,6 @@ public sealed class MediaItemsDA : TableDataAdapter<MediaItemM> {
     }
     
     ModifyOnlyDA(item);
-    Model.OnPropertyChanged(nameof(Model.Current));
     RaiseItemRenamed(item);
   }
 

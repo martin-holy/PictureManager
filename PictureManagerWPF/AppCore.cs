@@ -27,7 +27,7 @@ public sealed class AppCore : ObservableObject {
     GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
     MediaItemsM.ReadMetadata = ViewModels.MediaItemsVM.ReadMetadata;
-    Core.MediaItemsM.WriteMetadata = ViewModels.MediaItemsVM.WriteMetadata;
+    ImagesM.WriteMetadata = ViewModels.MediaItemsVM.WriteMetadata;
     Core.VideoDetail.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
     Core.UiFullVideo = new MediaPlayer();
     Core.UiDetailVideo = new MediaPlayer();

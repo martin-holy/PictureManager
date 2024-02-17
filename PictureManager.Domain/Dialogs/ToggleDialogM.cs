@@ -41,7 +41,7 @@ public sealed class ToggleDialogM : Dialog {
     var person = item as PersonM;
     Segments = Core.SegmentsM.Selected.Items.ToArray();
     People = person == null ? Core.PeopleM.Selected.Items.ToArray() : Array.Empty<PersonM>();
-    MediaItems = Core.MediaItemsM.GetActive();
+    MediaItems = Core.VM.GetActive<MediaItemM>();
     VideoItems = Core.VideoDetail.CurrentVideoItems.Selected.Items.ToArray();
 
     if (person != null) {

@@ -28,7 +28,6 @@ public sealed class Core {
   public static FoldersM FoldersM => Db.Folders.Model;
   public static GeoNamesM GeoNamesM => Db.GeoNames.Model;
   public static KeywordsM KeywordsM => Db.Keywords.Model;
-  public static MediaItemsM MediaItemsM => Db.MediaItems.Model;
   public static PeopleM PeopleM => Db.People.Model;
   public static SegmentsM SegmentsM => Db.Segments.Model;
   public static ViewersM ViewersM => Db.Viewers.Model;
@@ -82,10 +81,9 @@ public sealed class Core {
     var scale = GetDisplayScale();
     MediaItemsViews.DefaultThumbScale = 1 / scale;
     SegmentsM.SetSegmentUiSize(scale);
-    M = new();
+    M = new(Db);
     VM = new(M, Db);
     AttachVMEvents();
-    MediaItemsM.UpdateItemsCount();
 
     KeywordsM.TreeCategory.AutoAddedGroup ??=
       Db.CategoryGroups.ItemCreate(KeywordsM.TreeCategory, "Auto Added");
@@ -102,6 +100,8 @@ public sealed class Core {
   }
 
   private void AttachVMEvents() {
+    AttachVMMediaItemsEventHandlers();
+
     VM.MainWindow.PropertyChanged += (_, e) => {
       if (nameof(VM.MainWindow.IsInViewMode).Equals(e.PropertyName)) {
         var isInViewMode = VM.MainWindow.IsInViewMode;
@@ -110,7 +110,7 @@ public sealed class Core {
 
         if (isInViewMode) {
           VideoDetail.MediaPlayer.SetView(UiFullVideo);
-          SegmentsM.SegmentsRectsM.MediaItem = MediaItemsM.Current;
+          SegmentsM.SegmentsRectsM.MediaItem = VM.MediaItems.Current;
         }
         else {
           MediaItemsViews.SelectAndScrollToCurrentMediaItem();
@@ -119,6 +119,20 @@ public sealed class Core {
         }
 
         TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+      }
+    };
+  }
+
+  private void AttachVMMediaItemsEventHandlers() {
+    VM.MediaItems.PropertyChanged += (_, e) => {
+      if (nameof(VM.MediaItems.Current).Equals(e.PropertyName)) {
+        MediaItemsStatusBarM.Update();
+        VideoDetail.SetCurrent(VM.MediaItems.Current);
+
+        if (VM.MainWindow.IsInViewMode) {
+          TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+          SegmentsM.SegmentsRectsM.MediaItem = VM.MediaItems.Current;
+        }
       }
     };
   }
@@ -144,7 +158,7 @@ public sealed class Core {
 
     VideoDetail.CurrentVideoItems.Selected.ItemsChangedEventHandler += (_, e) => {
       var vi = e.Data.FirstOrDefault();
-      MediaItemsM.Current = (MediaItemM)vi ?? VideoDetail.Current;
+      VM.MediaItems.Current = (MediaItemM)vi ?? VideoDetail.Current;
       VideoDetail.MediaPlayer.SetCurrent(vi);
     };
 
@@ -155,8 +169,8 @@ public sealed class Core {
           MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
           break;
         case nameof(MediaViewerM.Current):
-          if (MediaViewerM.Current != null && !ReferenceEquals(MediaItemsM.Current, MediaViewerM.Current))
-            MediaItemsM.Current = MediaViewerM.Current;
+          if (MediaViewerM.Current != null && !ReferenceEquals(VM.MediaItems.Current, MediaViewerM.Current))
+            VM.MediaItems.Current = MediaViewerM.Current;
           else
             VideoDetail.SetCurrent(MediaViewerM.Current, true);
           break;
@@ -244,16 +258,22 @@ public sealed class Core {
   }
 
   private static void AttachMediaItemsEventHandlers() {
-    Db.MediaItems.ItemRenamedEvent += (_, _) =>
+    Db.MediaItems.ItemCreatedEvent += (_, _) =>
+      VM.UpdateMediaItemsCount();
+
+    Db.MediaItems.ItemRenamedEvent += (_, _) => {
+      VM.MediaItems.OnPropertyChanged(nameof(VM.MediaItems.Current));
       MediaItemsViews.Current?.SoftLoad(MediaItemsViews.Current.FilteredItems, true, false);
+    };
 
     Db.MediaItems.MetadataChangedEvent += items => {
       var all = items.OfType<VideoItemM>().Select(x => x.Video).Concat(items).Distinct().ToArray();
-      MediaItemsM.OnMetadataChanged(all);
+      VM.MediaItems.OnMetadataChanged(all);
       MediaItemsViews.UpdateViews(all);
       VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       MediaItemsStatusBarM.UpdateRating();
+      VM.UpdateModifiedMediaItemsCount();
     };
 
     Db.MediaItems.OrientationChangedEvent += items => {
@@ -277,34 +297,24 @@ public sealed class Core {
     };
 
     Db.MediaItems.ItemsDeletedEvent += (_, e) => {
-      MediaItemsM.Current = MediaViewerM.IsVisible && e.Data.All(x => x is RealMediaItemM)
+      VM.MediaItems.Current = MediaViewerM.IsVisible && e.Data.All(x => x is RealMediaItemM)
         ? MediaViewerM.MediaItems.GetNextOrPreviousItem(e.Data)
         : e.Data.OfType<VideoItemM>().FirstOrDefault()?.Video;
 
+      VM.UpdateMediaItemsCount();
+      VM.UpdateModifiedMediaItemsCount();
       MediaItemsViews.RemoveMediaItems(e.Data);
       VideoDetail.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
 
       if (MediaViewerM.IsVisible) {
         MediaViewerM.MediaItems.Remove(e.Data[0]);
-        if (MediaItemsM.Current != null)
-          MediaViewerM.Current = MediaItemsM.Current;
+        if (VM.MediaItems.Current != null)
+          MediaViewerM.Current = VM.MediaItems.Current;
         else
           VM.MainWindow.IsInViewMode = false;
       }
-
+      
       FileOperationDelete(e.Data.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
-    };
-
-    MediaItemsM.PropertyChanged += (_, e) => {
-      if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
-        MediaItemsStatusBarM.Update();
-        VideoDetail.SetCurrent(MediaItemsM.Current);
-
-        if (VM.MainWindow.IsInViewMode) {
-          TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-          SegmentsM.SegmentsRectsM.MediaItem = MediaItemsM.Current;
-        }
-      }
     };
 
     MediaItemsViews.PropertyChanged += (_, e) => {

@@ -99,7 +99,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
               true)) != 1)
           return;
 
-        Core.MediaItemsM.CopyMove(foMode, items, destFolder);
+        Core.VM.MediaItems.CopyMove(foMode, items, destFolder);
 
         break;
     }
