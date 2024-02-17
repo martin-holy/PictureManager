@@ -24,7 +24,7 @@
             <Path Data="{StaticResource IconLocationCheckin}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
           </MenuItem.Icon>
           <MenuItem Command="vm:CoreVM.GetGeoNamesFromWebCommand"/>
-          <MenuItem Command="m:GeoNamesM.NewGeoNameFromGpsCommand"/>
+          <MenuItem Command="vm:GeoNamesVM.NewGeoNameFromGpsCommand"/>
           <MenuItem Command="vm:CoreVM.ReadGeoLocationFromFilesCommand"/>
         </MenuItem>
 

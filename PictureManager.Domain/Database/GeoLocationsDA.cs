@@ -47,7 +47,7 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
     if (gnId != null) {
       gn = _db.GeoNames.All.SingleOrDefault(x => x.GetHashCode() == gnId);
       if (gn == null && online)
-        gn = await _db.GeoNames.Model.InsertGeoNameHierarchy((int)gnId);
+        gn = await _db.GeoNames.CreateGeoNameHierarchy((int)gnId);
     }
 
     GeoLocationM gl;
@@ -61,7 +61,7 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
       if (gl?.GeoName != null) gn = gl.GeoName;
 
       if (gn == null && online)
-        gn = await _db.GeoNames.Model.InsertGeoNameHierarchy((double)lat, (double)lng);
+        gn = await _db.GeoNames.CreateGeoNameHierarchy((double)lat, (double)lng);
 
       if (gl != null && gl.GeoName == null && gn != null) {
         gl.GeoName = gn;

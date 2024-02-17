@@ -26,7 +26,6 @@ public sealed class Core {
   public static Settings Settings { get; } = new();
 
   public static FoldersM FoldersM => Db.Folders.Model;
-  public static GeoNamesM GeoNamesM => Db.GeoNames.Model;
   public static KeywordsM KeywordsM => Db.Keywords.Model;
   public static PeopleM PeopleM => Db.People.Model;
   public static SegmentsM SegmentsM => Db.Segments.Model;
@@ -149,7 +148,7 @@ public sealed class Core {
 
     Settings.PropertyChanged += (_, e) => {
       if (nameof(Settings.GeoNamesUserName).Equals(e.PropertyName))
-        GeoNamesM.ApiLimitExceeded = false;
+        Db.GeoNames.ApiLimitExceeded = false;
     };
 
     VideoDetail.MediaPlayer.RepeatEndedEvent += delegate {

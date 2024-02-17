@@ -58,7 +58,7 @@ namespace PictureManager.Domain.Models {
       // GeoNames
       AddToSearchResult(Core.Db.GeoNames.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
-        .Select(x => new TreeViewSearchItemM(Res.IconLocationCheckin, x.Name, x, x.FullName, Core.GeoNamesM.TreeCategory)));
+        .Select(x => new TreeViewSearchItemM(Res.IconLocationCheckin, x.Name, x, x.FullName, Core.Db.GeoNames.Tree)));
 
       // Folders
       var result = Core.Db.Folders.All

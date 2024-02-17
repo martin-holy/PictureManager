@@ -20,7 +20,7 @@ public sealed class TreeViewCategoriesM : TabControl {
     AddCategory(Core.PeopleM.TreeCategory);
     AddCategory(Core.Db.FolderKeywords.Model);
     AddCategory(Core.KeywordsM.TreeCategory);
-    AddCategory(Core.GeoNamesM.TreeCategory);
+    AddCategory(Core.Db.GeoNames.Tree);
     AddCategory(Core.ViewersM.TreeCategory);
 
     Selected = Tabs[0];
