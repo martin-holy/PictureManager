@@ -1,11 +1,9 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.HelperClasses;
-using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,100 +13,12 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models.MediaItems;
 
-public sealed class MediaItemsM : ObservableObject {
+public sealed class MediaItemsM(MediaItemsDA da) : ObservableObject {
   private static readonly string[] _supportedExts = { ".jpg", ".jpeg", ".mp4" };
-  private readonly MediaItemsDA _da;
-  private MediaItemM _current;
-  
-  public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
-  public GeoNameM CurrentGeoName => Current?.GeoLocation?.GeoName;
-  public int ItemsCount => GetItemsCount();
-  public int ModifiedItemsCount => GetModifiedCount();
 
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
-  public Func<ImageM, bool> WriteMetadata { get; set; }
 
-  public static RelayCommand DeleteCommand { get; set; }
-  public static RelayCommand RenameCommand { get; set; }
-  public static RelayCommand CommentCommand { get; set; }
-
-  public MediaItemsM(MediaItemsDA da) {
-    _da = da;
-
-    DeleteCommand = new(() => Delete(GetActive().ToArray()), () => GetActive().Any());
-    RenameCommand = new(Rename, () => Current is RealMediaItemM, null, "Rename");
-    CommentCommand = new(() => Comment(Current), () => Current != null, Res.IconNotification, "Comment");
-  }
-
-  public void OnMetadataChanged(MediaItemM[] items) {
-    UpdateModifiedCount();
-    CurrentGeoName?.OnPropertyChanged(nameof(CurrentGeoName.FullName));
-    foreach (var mi in items)
-      mi.SetInfoBox(true);
-  }
-
-  public void UpdateItemsCount() => OnPropertyChanged(nameof(ItemsCount));
-
-  public void UpdateModifiedCount() => OnPropertyChanged(nameof(ModifiedItemsCount));
-
-  private int GetModifiedCount() =>
-    Core.Db.Images.All.Count(x => x.IsOnlyInDb) +
-    Core.Db.Videos.All.Count(x => x.IsOnlyInDb);
-
-  private int GetItemsCount() =>
-    Core.Db.Images.All.Count +
-    Core.Db.Videos.All.Count;
-
-  public bool Exists(MediaItemM mi) {
-    if (mi == null || File.Exists(mi.FilePath)) return true;
-    File.Delete(mi.FilePathCache);
-    _da.ItemsDelete(new[] { mi });
-    return false;
-  }
-
-  public bool Delete(MediaItemM[] items) {
-    if (items.Length == 0) return false;
-    if (Dialog.Show(new MessageDialog(
-          "Delete Confirmation",
-          "Do you really want to delete {0} item{1}?".Plural(items.Length),
-          Res.IconQuestion,
-          true)) != 1) return false;
-
-    _da.ItemsDelete(items);
-    return true;
-  }
-
-  /// <summary>
-  /// Copy or Move MediaItems (Files, Cache and DB)
-  /// </summary>
-  /// <param name="mode"></param>
-  /// <param name="items"></param>
-  /// <param name="destFolder"></param>
-  public void CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder) {
-    var fop = new FileOperationDialogM(mode, false);
-    fop.RunTask = Task.Run(async () => {
-      fop.LoadCts = new();
-      var token = fop.LoadCts.Token;
-
-      try {
-        await CopyMove(mode, items, destFolder, fop.Progress, token);
-      }
-      catch (Exception ex) {
-        await Tasks.RunOnUiThread(() => Dialog.Show(new ErrorDialogM(ex)));
-      }
-    }).ContinueWith(_ => Tasks.RunOnUiThread(() => fop.Result = 1));
-
-    _ = Dialog.Show(fop);
-
-    if (mode == FileOperationMode.Move) {
-      var mis = items.Cast<MediaItemM>().ToList();
-      Current = Core.MediaItemsViews.Current.FilteredItems.GetNextOrPreviousItem(mis);
-      // TODO add VirtualMediaItems
-      Core.MediaItemsViews.Current.Remove(mis, true);
-    }
-  }
-
-  private async Task CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder,
+  public async Task CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder,
     IProgress<object[]> progress, CancellationToken token) {
     var count = items.Count;
     var done = 0;
@@ -141,7 +51,7 @@ public sealed class MediaItemsM : ObservableObject {
       switch (mode) {
         case FileOperationMode.Copy:
           // create object copy
-          var miCopy = await Tasks.RunOnUiThread(() => _da.ItemCopy(mi, destFolder, miNewFileName));
+          var miCopy = await Tasks.RunOnUiThread(() => da.ItemCopy(mi, destFolder, miNewFileName));
           // copy MediaItem and cache on file system
           Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
           File.Copy(mi.FilePath, miCopy.FilePath, true);
@@ -159,7 +69,7 @@ public sealed class MediaItemsM : ObservableObject {
           var srcDirPathCache = Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException();
 
           // DB
-          await Tasks.RunOnUiThread(() => _da.ItemMove(mi, destFolder, miNewFileName));
+          await Tasks.RunOnUiThread(() => da.ItemMove(mi, destFolder, miNewFileName));
 
           // File System
           File.Delete(mi.FilePath);
@@ -185,93 +95,46 @@ public sealed class MediaItemsM : ObservableObject {
       done++;
     }
 
-    await Tasks.RunOnUiThread(() => _da.ItemsDelete(replaced));
+    await Tasks.RunOnUiThread(() => da.ItemsDelete(replaced));
   }
 
-  public void ReloadMetadata(RealMediaItemM[] items) {
-    if (items.Length == 0 ||
-        Dialog.Show(new MessageDialog(
-          "Reload metadata from files",
-          "Do you really want to reload image metadata for {0} file{1}?".Plural(items.Length),
-          Res.IconQuestion,
-          true)) != 1) return;
+  public void Delete(MediaItemM[] items) =>
+    da.ItemsDelete(items);
 
-    var progress = new ProgressBarAsyncDialog("Reloading metadata...", Res.IconImage, true, Environment.ProcessorCount);
-    progress.Init(
-      items,
-      null,
-      async mi => {
-        // TODO check async and maybe use the other ProgressBarDialog
-        var mim = new MediaItemMetadata(mi);
-        if (mi is not VideoM) ReadMetadata(mim, false);
-
-        await Tasks.RunOnUiThread(async () => {
-          if (mi is VideoM) ReadMetadata(mim, false);
-          if (mim.Success) await mim.FindRefs();
-          _da.Modify(mi);
-          mi.IsOnlyInDb = false;
-        });
-      },
-      mi => mi.FilePath,
-      delegate {
-        _da.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
-        _da.RaiseOrientationChanged(items);
-      });
-
-    progress.Start();
-    Dialog.Show(progress);
+  public bool Exists(MediaItemM mi) {
+    if (mi == null || File.Exists(mi.FilePath)) return true;
+    File.Delete(mi.FilePathCache);
+    da.ItemsDelete(new[] { mi });
+    return false;
   }
-
-  public void Rename() {
-    var ext = Path.GetExtension(Current.FileName);
-    var dlg = new InputDialog(
-      "Rename",
-      "Add a new name.",
-      Res.IconNotification,
-      Path.GetFileNameWithoutExtension(Current.FileName),
-      answer => {
-        var newFileName = answer + ext;
-
-        if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) != -1))
-          return "New file name contains invalid character!";
-
-        if (File.Exists(IOExtensions.PathCombine(Current.Folder.FullPath, newFileName)))
-          return "New file name already exists!";
-
-        return string.Empty;
-      });
-
-    if (Dialog.Show(dlg) != 1) return;
-    _da.ItemRename((RealMediaItemM)Current, dlg.Answer + ext);
-  }
-
-  private void Comment(MediaItemM item) {
-    var inputDialog = new InputDialog(
-      "Comment",
-      "Add a comment.",
-      Res.IconNotification,
-      item.Comment,
-      answer => answer.Length > 256
-        ? "Comment is too long!"
-        : string.Empty);
-
-    if (Dialog.Show(inputDialog) != 1) return;
-
-    item.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
-    item.SetInfoBox(true);
-    item.OnPropertyChanged();
-    _da.Modify(item);
-  }
-
-  public MediaItemM[] GetActive() =>
-    Core.VM.MainWindow.IsInViewMode
-      ? Current == null
-        ? Array.Empty<MediaItemM>()
-        : new[] { Current }
-      : Core.MediaItemsViews.Current == null
-        ? Array.Empty<MediaItemM>()
-        : Core.MediaItemsViews.Current.Selected.Items.ToArray();
 
   public static bool IsSupportedFileType(string filePath) =>
     _supportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
+
+  public void OnMetadataReloaded(RealMediaItemM[] items) {
+    da.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
+    da.RaiseOrientationChanged(items);
+  }
+
+  public Task ReloadMetadata(RealMediaItemM mi) {
+    var mim = new MediaItemMetadata(mi);
+    if (mi is not VideoM) ReadMetadata(mim, false);
+
+    return Tasks.RunOnUiThread(async () => {
+      if (mi is VideoM) ReadMetadata(mim, false);
+      if (mim.Success) await mim.FindRefs();
+      da.Modify(mi);
+      mi.IsOnlyInDb = false;
+    });
+  }
+
+  public void Rename(RealMediaItemM mi, string newFileName) =>
+    da.ItemRename(mi, newFileName);
+
+  public void SetComment(MediaItemM mi, string comment) {
+    mi.Comment = comment;
+    mi.SetInfoBox(true);
+    mi.OnPropertyChanged(nameof(mi.Comment));
+    da.Modify(mi);
+  }
 }

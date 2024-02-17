@@ -63,7 +63,7 @@ public sealed class VideoDetail : ObservableObject {
     Core.Db.VideoImages.CustomItemCreate(Current, timeStart);
 
   private void OnItemDelete() {
-    if (Core.MediaItemsM.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
+    if (Core.VM.MediaItems.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
       MediaPlayer.SetCurrent(null);
   }
 

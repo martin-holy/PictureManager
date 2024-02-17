@@ -5,7 +5,6 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:mim="clr-namespace:PictureManager.Domain.Models.MediaItems;assembly=PictureManager.Domain"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
   DataContext="{Binding VM.MainWindow, Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
@@ -20,9 +19,9 @@
 
   <Window.InputBindings>
     <KeyBinding Modifiers="Control" Key="R" Command="vm:CoreVM.RotateMediaItemsCommand"/>
-    <KeyBinding Modifiers="Control" Key="K" Command="mim:MediaItemsM.CommentCommand"/>
-    <KeyBinding Key="F2" Command="mim:MediaItemsM.RenameCommand"/>
-    <KeyBinding Key="Delete" Command="mim:MediaItemsM.DeleteCommand"/>
+    <KeyBinding Modifiers="Control" Key="K" Command="vm:MediaItemsVM.CommentCommand"/>
+    <KeyBinding Key="F2" Command="vm:MediaItemsVM.RenameCommand"/>
+    <KeyBinding Key="Delete" Command="vm:MediaItemsVM.DeleteCommand"/>
     <KeyBinding Key="Esc" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
     <MouseBinding MouseAction="LeftDoubleClick" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
   </Window.InputBindings>

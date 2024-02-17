@@ -63,7 +63,7 @@ namespace PictureManager.Domain.DataViews {
 
     public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) {
       base.OnItemSelected(e);
-      Core.MediaItemsM.Current = Selected.Items.Contains(e.Item) ? e.Item : null;
+      Core.VM.MediaItems.Current = Selected.Items.Contains(e.Item) ? e.Item : null;
     }
 
     private object CanDrag(object source) {
@@ -134,14 +134,14 @@ namespace PictureManager.Domain.DataViews {
       items.OrderBy(x => x.FileName);
 
     private MediaItemM GetItemToScrollTo() =>
-      FilteredItems.Contains(Core.MediaItemsM.Current)
-        ? Core.MediaItemsM.Current
+      FilteredItems.Contains(Core.VM.MediaItems.Current)
+        ? Core.VM.MediaItems.Current
         : Selected.Items.FirstOrDefault();
 
     public void SelectAndScrollToCurrentMediaItem() {
       var mi = GetItemToScrollTo();
       Selected.DeselectAll();
-      Core.MediaItemsM.Current = mi;
+      Core.VM.MediaItems.Current = mi;
       if (mi == null) return;
       Selected.Set(mi, true);
       ScrollTo(Root, mi);
@@ -301,10 +301,10 @@ namespace PictureManager.Domain.DataViews {
       FilteredChangedEventHandler(this, EventArgs.Empty);
       //Filter.UpdateSizeRanges(LoadedItems, maxSizeSelection);
 
-      if (FilteredItems.Contains(Core.MediaItemsM.Current))
-        ScrollTo(Root, Core.MediaItemsM.Current);
+      if (FilteredItems.Contains(Core.VM.MediaItems.Current))
+        ScrollTo(Root, Core.VM.MediaItems.Current);
       else {
-        Core.MediaItemsM.Current = null;
+        Core.VM.MediaItems.Current = null;
         if (Selected.Items.Count != 0)
           ScrollTo(Root, Selected.Items[0]);
       }

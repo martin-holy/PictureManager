@@ -21,14 +21,14 @@ public sealed class MediaItemsStatusBarM : ObservableObject {
   public ObservableCollection<string> FilePath {
     get {
       var paths = new ObservableCollection<string>();
-      if (Core.MediaItemsM.Current == null) return paths;
+      if (Core.VM.MediaItems.Current == null) return paths;
 
-      if (Core.MediaItemsM.Current.Folder.FolderKeyword == null) {
-        paths.Add(Core.MediaItemsM.Current.FilePath);
+      if (Core.VM.MediaItems.Current.Folder.FolderKeyword == null) {
+        paths.Add(Core.VM.MediaItems.Current.FilePath);
         return paths;
       }
 
-      var fks = Core.MediaItemsM.Current.Folder.FolderKeyword.GetThisAndParents().ToList();
+      var fks = Core.VM.MediaItems.Current.Folder.FolderKeyword.GetThisAndParents().ToList();
       fks.Reverse();
       foreach (var fk in fks)
         if (fk.Parent != null) {
@@ -40,8 +40,8 @@ public sealed class MediaItemsStatusBarM : ObservableObject {
         }
 
       var fileName = string.IsNullOrEmpty(DateAndTime)
-        ? Core.MediaItemsM.Current.FileName
-        : Core.MediaItemsM.Current.FileName[15..];
+        ? Core.VM.MediaItems.Current.FileName
+        : Core.VM.MediaItems.Current.FileName[15..];
       paths.Add(fileName);
 
       return paths;
@@ -49,13 +49,13 @@ public sealed class MediaItemsStatusBarM : ObservableObject {
   }
 
   public string DateAndTime =>
-    DateTimeExtensions.DateTimeFromString(Core.MediaItemsM.Current?.FileName, _dateFormats, "H:mm:ss");
+    DateTimeExtensions.DateTimeFromString(Core.VM.MediaItems.Current?.FileName, _dateFormats, "H:mm:ss");
 
   public ObservableCollection<int> Rating { get; } = new();
 
   public void UpdateRating() {
     Rating.Clear();
-    for (var i = 0; i < Core.MediaItemsM.Current?.Rating; i++)
+    for (var i = 0; i < Core.VM.MediaItems.Current?.Rating; i++)
       Rating.Add(0);
   }
 
@@ -63,7 +63,7 @@ public sealed class MediaItemsStatusBarM : ObservableObject {
     OnPropertyChanged(nameof(FilePath));
 
   public async Task UpdateFileSize() {
-    var items = Core.MediaItemsM.GetActive();
+    var items = Core.VM.GetActive<MediaItemM>();
     FileSize = await Task.Run(() => {
       try {
         return items.Any()

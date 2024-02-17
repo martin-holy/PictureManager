@@ -59,13 +59,13 @@ public sealed class MediaItemsViews : ObservableObject {
     _all.Remove(view);
     if (!ReferenceEquals(view, Current)) return;
     Current = null;
-    Core.MediaItemsM.Current = null;
+    Core.VM.MediaItems.Current = null;
   }
 
   public void SetCurrentView(MediaItemsView view) {
     Current = view;
     Current?.UpdateSelected();
-    Core.MediaItemsM.Current = Current?.Selected.Items.Count > 0
+    Core.VM.MediaItems.Current = Current?.Selected.Items.Count > 0
       ? Current.Selected.Items[0]
       : null;
   }
@@ -148,7 +148,7 @@ public sealed class MediaItemsViews : ObservableObject {
     if (Current != null)
       Current.SelectAndScrollToCurrentMediaItem();
     else
-      Core.MediaItemsM.Current = null;
+      Core.VM.MediaItems.Current = null;
   }
 
   private void RebuildThumbnails(FolderM folder, bool recursive) {
