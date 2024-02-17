@@ -18,6 +18,7 @@ public class CoreVM {
   private readonly CoreM _m;
   private readonly Db _db;
 
+  public GeoNamesVM GeoNames { get; }
   public MediaItemsVM MediaItems { get; }
 
   public MainWindowVM MainWindow { get; } = new();
@@ -41,6 +42,7 @@ public class CoreVM {
     _m = coreM;
     _db = db;
 
+    GeoNames = new(_db.GeoNames);
     MediaItems = new(this, _m.MediaItems);
 
     MediaItemsViews = Core.MediaItemsViews;
@@ -96,7 +98,7 @@ public class CoreVM {
     items = items.Where(x => x.GeoLocation is { } gl && gl.GeoName == null && gl.Lat != null && gl.Lng != null).ToArray();
     if (items.Length == 0) return;
     GeoLocationProgressDialog(items, "Getting GeoNames from web ...", async mi => {
-      if (_m.GeoNames.ApiLimitExceeded) return;
+      if (_db.GeoNames.ApiLimitExceeded) return;
       _db.MediaItemGeoLocation.ItemUpdate(new(mi,
         await _db.GeoLocations.GetOrCreate(mi.GeoLocation.Lat, mi.GeoLocation.Lng, null, null)));
     });
