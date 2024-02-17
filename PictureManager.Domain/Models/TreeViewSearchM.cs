@@ -53,7 +53,7 @@ namespace PictureManager.Domain.Models {
       // Keywords
       AddToSearchResult(Core.Db.Keywords.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
-        .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x, x.FullName, Core.KeywordsM.TreeCategory)));
+        .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x, x.FullName, Core.Db.Keywords.Tree)));
 
       // GeoNames
       AddToSearchResult(Core.Db.GeoNames.All

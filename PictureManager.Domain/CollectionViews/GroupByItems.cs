@@ -79,7 +79,7 @@ public static class GroupByItems {
       .ToGroupByItems(func)
       .AsTree<GroupByItem<T>, KeywordM, string>(x => x.FullName)
       .GroupByParent<T, CategoryGroupM>(func)
-      .InGroup(Core.KeywordsM.TreeCategory, func);
+      .InGroup(Core.Db.Keywords.Tree, func);
 
   public static GroupByItem<T> GetPeopleInGroup<T>(IEnumerable<T> items) where T : MediaItemM =>
     items.GetPeople().ToGroupedGroupByItemsInGroup<T>(GroupByPerson);
@@ -147,7 +147,7 @@ public static class GroupByItems {
     GroupByPerson(item.Person, parameter);
 
   private static bool GroupByKeyword(IEnumerable<KeywordM> items, object parameter) =>
-    ReferenceEquals(parameter, Core.KeywordsM.TreeCategory) ||
+    ReferenceEquals(parameter, Core.Db.Keywords.Tree) ||
     items?.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter) == true;
 
   private static bool GroupByKeyword(this IHaveKeywords item, object parameter) =>

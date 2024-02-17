@@ -26,7 +26,6 @@ public sealed class Core {
   public static Settings Settings { get; } = new();
 
   public static FoldersM FoldersM => Db.Folders.Model;
-  public static KeywordsM KeywordsM => Db.Keywords.Model;
   public static PeopleM PeopleM => Db.People.Model;
   public static SegmentsM SegmentsM => Db.Segments.Model;
   public static ViewersM ViewersM => Db.Viewers.Model;
@@ -84,15 +83,15 @@ public sealed class Core {
     VM = new(M, Db);
     AttachVMEvents();
 
-    KeywordsM.TreeCategory.AutoAddedGroup ??=
-      Db.CategoryGroups.ItemCreate(KeywordsM.TreeCategory, "Auto Added");
+    Db.Keywords.Tree.AutoAddedGroup ??=
+      Db.CategoryGroups.ItemCreate(Db.Keywords.Tree, "Auto Added");
 
     FoldersM.TreeCategory.AddDrives();
     ViewersM.SetCurrent(ViewersM.Current);
     ViewersM.Current?.UpdateHashSets();
     TreeViewCategoriesM.AddCategories();
     Db.CategoryGroups.AddCategory(PeopleM.TreeCategory);
-    Db.CategoryGroups.AddCategory(KeywordsM.TreeCategory);
+    Db.CategoryGroups.AddCategory(Db.Keywords.Tree);
     VideoDetail.MediaPlayer.SetView(UiFullVideo);
     VideoDetail.MediaPlayer.SetView(UiDetailVideo);
     OpenSegmentsViewCommand = new(OpenSegmentsView, Res.IconSegment, "Segments View");
