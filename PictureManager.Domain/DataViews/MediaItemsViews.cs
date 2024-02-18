@@ -92,7 +92,7 @@ public sealed class MediaItemsViews : ObservableObject {
 
   private void OnViewSelectionChanged(object o, EventArgs e) {
     Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-    _ = Core.MediaItemsStatusBarM.UpdateFileSize();
+    _ = Core.VM.MainWindow.StatusBar.UpdateFileSize();
   }
 
   private void OnViewFilteredChanged(object o, EventArgs e) {

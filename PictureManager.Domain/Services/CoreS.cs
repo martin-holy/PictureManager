@@ -1,24 +1,12 @@
-﻿using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Repositories;
+﻿using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain.Services;
 
-public class CoreS {
-  public FolderS Folder { get; }
-  public ImageS Image { get; }
-  public MediaItemS MediaItem { get; }
-  public MediaItemsStatusBarM MediaItemsStatusBar { get; }
-  public PersonS Person { get; }
-  public SegmentS Segment { get; }
-  public ViewerS Viewer { get; }
-
-  public CoreS(CoreR coreR) {
-    Folder = new(coreR.Folder);
-    Image = new(coreR.Image);
-    MediaItem = new(coreR.MediaItem);
-    MediaItemsStatusBar = Core.MediaItemsStatusBarM;
-    Person = new(coreR.Person);
-    Segment = new(coreR.Segment);
-    Viewer = new(coreR.Viewer);
-  }
+public class CoreS(CoreR coreR) {
+  public FolderS Folder { get; } = new(coreR.Folder);
+  public ImageS Image { get; } = new(coreR.Image);
+  public MediaItemS MediaItem { get; } = new(coreR.MediaItem);
+  public PersonS Person { get; } = new(coreR.Person);
+  public SegmentS Segment { get; } = new(coreR.Segment);
+  public ViewerS Viewer { get; } = new(coreR.Viewer);
 }
