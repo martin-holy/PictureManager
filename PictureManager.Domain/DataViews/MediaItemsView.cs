@@ -60,7 +60,7 @@ namespace PictureManager.Domain.DataViews {
       Selected.DeselectAll();
       Core.VM.MainWindow.IsInViewMode = true;
       // TODO open group or all with default sort or all sorted by groups or ...?
-      Core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), item);
+      Core.VM.MediaViewer.SetMediaItems(FilteredItems.ToList(), item);
     }
 
     public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) {
@@ -84,7 +84,7 @@ namespace PictureManager.Domain.DataViews {
     }
 
     private void SelectionChanged() {
-      if (!ReferenceEquals(this, Core.MediaItemsViews.Current) || Core.MediaViewerM.IsVisible) return;
+      if (!ReferenceEquals(this, Core.MediaItemsViews.Current) || Core.VM.MediaViewer.IsVisible) return;
 
       SelectionChangedEventHandler(this, EventArgs.Empty);
       OnPropertyChanged(nameof(PositionSlashCount));
@@ -291,7 +291,7 @@ namespace PictureManager.Domain.DataViews {
       AfterLoad();
       IsLoading = false;
 
-      if (Core.MediaViewerM.IsVisible && FilteredItems.Count > 0)
+      if (Core.VM.MediaViewer.IsVisible && FilteredItems.Count > 0)
         OpenItem(FilteredItems[0]);
     }
 

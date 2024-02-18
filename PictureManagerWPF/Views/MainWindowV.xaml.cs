@@ -6,6 +6,6 @@ namespace PictureManager.Views;
 public partial class MainWindowV {
   public MainWindowV() {
     InitializeComponent();
-    HideMouseTimer.Init(this, Core.MediaViewerM.PresentationPanel);
+    HideMouseTimer.Init(this, Core.VM.MediaViewer.PresentationPanel);
   }
 }

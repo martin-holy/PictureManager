@@ -7,12 +7,12 @@ using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
+using PictureManager.Domain.ViewModels.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using PictureManager.Domain.Repositories;
-using PictureManager.Domain.ViewModels.Entities;
 
 namespace PictureManager.Domain.ViewModels;
 
@@ -27,6 +27,7 @@ public class CoreVM {
   public ImageComparerVM ImageComparer { get; } = new();
   public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViews MediaItemsViews { get; }
+  public MediaViewerVM MediaViewer { get; } = new();
   public SegmentsDrawerVM SegmentsDrawer { get; }
 
   public static RelayCommand AppClosingCommand { get; set; }

@@ -29,7 +29,7 @@ public sealed class PeopleToolsTabVM : CollectionViewPeople {
 
     var items = result switch {
       1 => Core.MediaItemsViews.Current?.GetSelectedOrAll().GetPeople(),
-      2 => Core.MediaViewerM.MediaItems.GetPeople(),
+      2 => Core.VM.MediaViewer.MediaItems.GetPeople(),
       3 => PersonS.GetAll(),
       _ => Enumerable.Empty<PersonM>()
     };

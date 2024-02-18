@@ -137,8 +137,8 @@
           <StackPanel
             VerticalAlignment="Center"
             Orientation="Horizontal"
-            DataContext="{Binding MediaViewerM.PresentationPanel}"
-            Visibility="{Binding MediaViewerM.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+            DataContext="{Binding VM.MediaViewer.PresentationPanel}"
+            Visibility="{Binding VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
             <Separator/>
             

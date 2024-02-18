@@ -50,7 +50,7 @@ public class MainWindowVM : ObservableObject {
         new[] { false, false, false, true, false } // view mode
       });
     
-    SwitchToBrowserCommand = new(() => IsInViewMode = false, () => Core.MediaViewerM.IsVisible);
+    SwitchToBrowserCommand = new(() => IsInViewMode = false, () => Core.VM.MediaViewer.IsVisible);
     AttachEvents();
   }
 
