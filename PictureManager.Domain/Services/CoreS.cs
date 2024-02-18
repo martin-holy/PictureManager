@@ -12,13 +12,13 @@ public class CoreS {
   public SegmentS Segment { get; }
   public ViewerS Viewer { get; }
 
-  public CoreS(CoreR r) {
-    Folder = new(r.Folder);
-    Image = new(r.Image);
-    MediaItem = new(r.MediaItem);
+  public CoreS(CoreR coreR) {
+    Folder = new(coreR.Folder);
+    Image = new(coreR.Image);
+    MediaItem = new(coreR.MediaItem);
     MediaItemsStatusBar = Core.MediaItemsStatusBarM;
-    Person = new(r.Person);
-    Segment = r.Segment.Service;
-    Viewer = new(r.Viewer);
+    Person = new(coreR.Person);
+    Segment = new(coreR.Segment);
+    Viewer = new(coreR.Viewer);
   }
 }

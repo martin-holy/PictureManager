@@ -123,8 +123,8 @@
               ap:Icon.Data="{StaticResource IconPeople}"
               IsChecked="{Binding S.Segment.SegmentsRectsM.AreVisible}"/>
 
-            <mhc:IconButton Command="m:SegmentsDrawerM.OpenCommand"/>
-            <mhc:IconButton Command="m:SegmentsDrawerM.AddSelectedCommand"/>
+            <mhc:IconButton Command="vm:SegmentsDrawerVM.OpenCommand"/>
+            <mhc:IconButton Command="vm:SegmentsDrawerVM.AddSelectedCommand"/>
             <mhc:IconButton Command="domain:Core.OpenSegmentsViewCommand"/>
             <mhc:IconButton Command="vme:SegmentVM.SetSelectedAsUnknownCommand"/>
           </StackPanel>

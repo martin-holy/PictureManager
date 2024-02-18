@@ -383,7 +383,7 @@ public sealed class Core {
       R.MediaItem.RemoveSegments(e.Data);
       VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.ToArray(), true, true);
       SegmentsView?.CvSegments.Remove(e.Data.ToArray());
-      S.Segment.SegmentsDrawerM.RemoveIfContains(e.Data.ToArray());
+      VM.SegmentsDrawer.RemoveIfContains(e.Data.ToArray());
     };
   }
 
