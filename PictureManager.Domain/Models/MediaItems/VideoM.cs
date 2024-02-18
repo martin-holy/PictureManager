@@ -4,12 +4,10 @@ using System.Linq;
 
 namespace PictureManager.Domain.Models.MediaItems;
 
-public sealed class VideoM : RealMediaItemM {
+public sealed class VideoM(int id, FolderM folder, string fileName) : RealMediaItemM(id, folder, fileName) {
   public bool HasVideoItems => GetVideoItems().Any();
   public List<VideoClipM> VideoClips { get; set; }
   public List<VideoImageM> VideoImages { get; set; }
-
-  public VideoM(int id, FolderM folder, string fileName) : base(id, folder, fileName) { }
 
   public override IEnumerable<KeywordM> GetKeywords() =>
     GetVideoItems().GetKeywords().Concat(base.GetKeywords()).Distinct();

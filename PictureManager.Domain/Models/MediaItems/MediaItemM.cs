@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace PictureManager.Domain.Models.MediaItems;
 
-public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords {
+public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords {
   #region IEquatable implementation
   public bool Equals(MediaItemM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as MediaItemM);
@@ -23,7 +23,7 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
   public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
   #endregion
 
-  public int Id { get; }
+  public int Id { get; } = id;
   public int Rating { get; set; }
   public string Comment { get; set; }
   public GeoLocationM GeoLocation { get; set; }
@@ -48,10 +48,6 @@ public abstract class MediaItemM : ObservableObject, ISelectable, IEquatable<Med
 
   public string[] DisplayKeywords =>
     GetKeywords().ToStrings(x => x.Name).ToArray().NullIfEmpty();
-
-  protected MediaItemM(int id) {
-    Id = id;
-  }
 
   public IEnumerable<FolderM> GetFolders() =>
     Folder.GetThisAndParents();

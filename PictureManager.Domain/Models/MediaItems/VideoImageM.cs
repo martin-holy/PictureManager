@@ -2,10 +2,8 @@
 
 namespace PictureManager.Domain.Models.MediaItems;
 
-public sealed class VideoImageM : VideoItemM, IVideoImage {
+public sealed class VideoImageM(int id, VideoM video, int timeStart) : VideoItemM(id, video, timeStart), IVideoImage {
   public override string FilePathCache => GetFilePathCache();
-
-  public VideoImageM(int id, VideoM video, int timeStart) : base(id, video, timeStart) { }
 
   private string GetFilePathCache() {
     var fpc = Video.FilePathCache;
