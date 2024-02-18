@@ -11,5 +11,5 @@ public sealed class ViewersTreeCategory : TreeCategory<ViewerM> {
   }
 
   public override void OnItemSelected(object o) =>
-    Core.S.Viewer.OpenDetail(o as ViewerM);
+    Core.VM.Viewer.OpenDetail(o as ViewerM);
 }

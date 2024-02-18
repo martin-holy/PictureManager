@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:s="clr-namespace:PictureManager.Domain.Services;assembly=PictureManager.Domain">
+  xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="Views.ViewersToolBarV">
     <Menu Background="Transparent">
@@ -19,7 +19,7 @@
 
         <MenuItem.ItemsSource>
           <CompositeCollection>
-            <MenuItem Header="All" Command="s:ViewerS.SetCurrentCommand" DataContext="{x:Null}"/>
+            <MenuItem Header="All" Command="vme:ViewerVM.SetCurrentCommand" DataContext="{x:Null}"/>
             <CollectionContainer Collection="{Binding R.Viewer.Tree.Items, Source={x:Static pm:App.Core}}"/>
           </CompositeCollection>
         </MenuItem.ItemsSource>
@@ -27,7 +27,7 @@
         <MenuItem.ItemContainerStyle>
           <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
             <Setter Property="Header" Value="{Binding Path=(m:ViewerM.Name)}"/>
-            <Setter Property="Command" Value="s:ViewerS.SetCurrentCommand"/>
+            <Setter Property="Command" Value="vme:ViewerVM.SetCurrentCommand"/>
             <Setter Property="CommandParameter" Value="{Binding}"/>
           </Style>
         </MenuItem.ItemContainerStyle>

@@ -23,6 +23,7 @@ public class CoreVM {
   public GeoNameVM GeoName { get; }
   public MediaItemVM MediaItem { get; }
   public SegmentVM Segment { get; }
+  public ViewerVM Viewer { get; }
 
   public ImageComparerVM ImageComparer { get; } = new();
   public MainWindowVM MainWindow { get; } = new();
@@ -52,6 +53,7 @@ public class CoreVM {
     GeoName = new(_coreR.GeoName);
     MediaItem = new(this, _coreS.MediaItem);
     Segment = new(_coreS.Segment, _coreR.Segment);
+    Viewer = new(_coreR.Viewer, _coreS.Viewer);
 
     MediaItemsViews = Core.MediaItemsViews;
     SegmentsDrawer = new(_coreS.Segment, _coreR.Segment.Drawer);

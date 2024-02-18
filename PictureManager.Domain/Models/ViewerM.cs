@@ -22,11 +22,10 @@ namespace PictureManager.Domain.Models {
 
     public int Id { get; }
     public bool IsDefault { get; set; }
-    public ObservableCollection<FolderM> IncludedFolders { get; } = new();
-    public ObservableCollection<FolderM> ExcludedFolders { get; } = new();
-    public ObservableCollection<KeywordM> ExcludedKeywords { get; } = new();
-    public HashSet<CategoryGroupM> ExcludedCategoryGroups { get; } = new();
-    public ObservableCollection<ListItem<CategoryGroupM>> CategoryGroups { get; } = new();
+    public ObservableCollection<FolderM> IncludedFolders { get; } = [];
+    public ObservableCollection<FolderM> ExcludedFolders { get; } = [];
+    public ObservableCollection<KeywordM> ExcludedKeywords { get; } = [];
+    public HashSet<CategoryGroupM> ExcludedCategoryGroups { get; } = [];
 
     private HashSet<FolderM> _incFolders;
     private HashSet<FolderM> _incFoldersTree;
@@ -38,35 +37,11 @@ namespace PictureManager.Domain.Models {
       Parent = parent;
     }
 
-    public void UpdateExcludedCategoryGroups() {
-      ExcludedCategoryGroups.Clear();
-      foreach (var cg in CategoryGroups.Where(x => !x.IsSelected))
-        ExcludedCategoryGroups.Add(cg.Content);
-    }
-
-    public void Reload(IEnumerable<CategoryGroupM> categoryGroups) {
-      ReloadCategoryGroups(categoryGroups);
-
-      foreach (var licg in CategoryGroups)
-        licg.IsSelected = !ExcludedCategoryGroups.Contains(licg.Content);
-    }
-
-    private void ReloadCategoryGroups(IEnumerable<CategoryGroupM> categoryGroups) {
-      var groups = categoryGroups
-        .OrderBy(x => x.Category)
-        .ThenBy(x => x.Name);
-
-      CategoryGroups.Clear();
-
-      foreach (var cg in groups)
-        CategoryGroups.Add(new(cg));
-    }
-
     public void UpdateHashSets() {
       _incFolders = IncludedFolders.ToHashSet();
       _excFolders = ExcludedFolders.ToHashSet();
       _excKeywords = ExcludedKeywords.ToHashSet();
-      _incFoldersTree = new();
+      _incFoldersTree = [];
 
       foreach (var fo in IncludedFolders.SelectMany(x => x.GetThisAndParents()))
         _incFoldersTree.Add(fo);
