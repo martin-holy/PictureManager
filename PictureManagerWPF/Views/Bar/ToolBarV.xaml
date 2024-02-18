@@ -8,7 +8,6 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:domain="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
@@ -145,10 +144,10 @@
             <!-- Play/Stop -->
             <Grid>
               <mhc:IconButton
-                Command="m:PresentationPanelM.StartPresentationCommand"
+                Command="vm:PresentationPanelVM.StartPresentationCommand"
                 Visibility="{Binding IsRunning, Converter={x:Static mhConv:VisibilityConverter.AllToCollapsed}}"/>
               <mhc:IconButton
-                Command="m:PresentationPanelM.StopPresentationCommand"
+                Command="vm:PresentationPanelVM.StopPresentationCommand"
                 Visibility="{Binding IsRunning, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
             </Grid>
 

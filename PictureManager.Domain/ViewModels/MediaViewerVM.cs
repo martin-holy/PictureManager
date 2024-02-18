@@ -1,7 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
-using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 
@@ -51,7 +50,7 @@ public sealed class MediaViewerVM : ObservableObject {
   public bool ReScaleToFit { get => _reScaleToFit; set { _reScaleToFit = value; OnPropertyChanged(); } }
   public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems?.Count}";
   public List<MediaItemM> MediaItems { get; private set; }
-  public PresentationPanelM PresentationPanel { get; }
+  public PresentationPanelVM PresentationPanel { get; }
 
   public RelayCommand NextCommand { get; }
   public RelayCommand PreviousCommand { get; }
