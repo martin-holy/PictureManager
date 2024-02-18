@@ -24,6 +24,7 @@ public class CoreVM {
   public MediaItemVM MediaItem { get; }
   public SegmentVM Segment { get; }
 
+  public ImageComparerVM ImageComparer { get; } = new();
   public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViews MediaItemsViews { get; }
   public SegmentsDrawerVM SegmentsDrawer { get; }

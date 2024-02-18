@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;

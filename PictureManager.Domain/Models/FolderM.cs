@@ -3,12 +3,12 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain.Models;
 
@@ -22,7 +22,7 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
   #endregion
 
   public int Id { get; }
-  public List<RealMediaItemM> MediaItems { get; } = new();
+  public List<RealMediaItemM> MediaItems { get; } = [];
   public FolderKeywordM FolderKeyword { get; set; }
   public bool IsAccessible { get; set; }
   public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);

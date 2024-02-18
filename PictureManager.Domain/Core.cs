@@ -30,7 +30,6 @@ public sealed class Core {
 
   public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
 
-  public ImageComparerM ImageComparerM { get; } = new();
   public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public static MediaItemsViews MediaItemsViews { get; } = new();
   public static MediaViewerM MediaViewerM { get; } = new();

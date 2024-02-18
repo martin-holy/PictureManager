@@ -200,11 +200,11 @@
 
             <!-- Image Comparer -->
             <mhc:IconButton
-              Command="m:ImageComparerM.AverageHashCommand"
+              Command="vm:ImageComparerVM.AverageHashCommand"
               CommandParameter="{Binding MediaItemsViews.Current}"/>
 
             <mhc:IconButton
-              Command="m:ImageComparerM.PHashCommand"
+              Command="vm:ImageComparerVM.PHashCommand"
               CommandParameter="{Binding MediaItemsViews.Current}"/>
 
             <Slider
@@ -213,7 +213,7 @@
               ap:Icon.Data="{StaticResource IconCompare}"
               Minimum="0"
               Maximum="25"
-              Value="{Binding ImageComparerM.Diff, Mode=TwoWay}"/>
+              Value="{Binding VM.ImageComparer.Diff, Mode=TwoWay}"/>
           </StackPanel>
         </StackPanel>
       </StackPanel>
