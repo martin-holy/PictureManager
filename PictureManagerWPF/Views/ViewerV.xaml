@@ -5,9 +5,10 @@
   xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
-  <DataTemplate DataType="{x:Type m:ViewerDetailM}">
+  <DataTemplate DataType="{x:Type vme:ViewerVM}">
     <DataTemplate.Resources>
       <Style TargetType="{x:Type Border}">
         <Setter Property="BorderThickness" Value="1"/>
@@ -107,7 +108,7 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding ViewerS.Selected.IncludedFolders}"
+            ItemsSource="{Binding Selected.IncludedFolders}"
             BorderThickness="0"
             mhu:DragDropHelper.IsDragEnabled="True"
             mhu:DragDropHelper.IsDropEnabled="True"
@@ -145,7 +146,7 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding ViewerS.Selected.ExcludedFolders}"
+            ItemsSource="{Binding Selected.ExcludedFolders}"
             BorderThickness="0"
             mhu:DragDropHelper.IsDragEnabled="True"
             mhu:DragDropHelper.IsDropEnabled="True"
@@ -183,13 +184,13 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding ViewerS.Selected.CategoryGroups}"
+            ItemsSource="{Binding CategoryGroups}"
             SelectionMode="Multiple"
             BorderThickness="0">
 
             <b:Interaction.Triggers>
               <b:EventTrigger EventName="PreviewMouseUp">
-                <b:InvokeCommandAction Command="{Binding ViewerS.UpdateExcludedCategoryGroupsCommand}"/>
+                <b:InvokeCommandAction Command="{Binding UpdateExcludedCategoryGroupsCommand}"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
 
@@ -227,7 +228,7 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding ViewerS.Selected.ExcludedKeywords}"
+            ItemsSource="{Binding Selected.ExcludedKeywords}"
             BorderThickness="0"
             mhu:DragDropHelper.IsDragEnabled="True"
             mhu:DragDropHelper.IsDropEnabled="True"

@@ -1,15 +1,20 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
+using System.Collections.ObjectModel;
+using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.ViewModels.Entities;
 
-public sealed class ViewerDetailM : ObservableObject {
+public sealed class ViewerVM : ObservableObject {
   private readonly ViewerR _r;
+  private ViewerM _selected;
 
-  public ViewerS ViewerS { get; }
+  public ViewerM Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
+  public ObservableCollection<ListItem<CategoryGroupM>> CategoryGroups { get; } = [];
 
   public CanDragFunc CanDragFolder { get; set; }
   public CanDropFunc CanDropFolderIncluded { get; }
@@ -19,8 +24,10 @@ public sealed class ViewerDetailM : ObservableObject {
   public CanDropFunc CanDropKeyword { get; }
   public DoDropAction DoDropKeyword { get; }
 
-  public ViewerDetailM(ViewerR r, ViewerS s) {
-    ViewerS = s;
+  public RelayCommand UpdateExcludedCategoryGroupsCommand { get; }
+  public static RelayCommand<ViewerM> SetCurrentCommand { get; set; }
+
+  public ViewerVM(ViewerR r, ViewerS s) {
     _r = r;
     CanDragFolder = source => source is FolderM ? source : null;
     CanDropFolderIncluded = (a, b, c) => CanDropFolder(a, b, c, true);
@@ -29,6 +36,36 @@ public sealed class ViewerDetailM : ObservableObject {
     DoDropFolderExcluded = (a, b) => DoDropFolder(a, b, false);
     CanDropKeyword = CanDropKeywordMethod;
     DoDropKeyword = DoDropKeywordMethod;
+
+    UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
+    SetCurrentCommand = new(s.SetCurrent, Res.IconEye);
+  }
+
+  private void UpdateExcludedCategoryGroups() {
+    Selected.ExcludedCategoryGroups.Clear();
+    foreach (var cg in CategoryGroups.Where(x => !x.IsSelected))
+      Selected.ExcludedCategoryGroups.Add(cg.Content);
+
+    _r.IsModified = true;
+  }
+
+  public void OpenDetail(ViewerM viewer) {
+    if (viewer == null) return;
+    Core.MainTabs.Activate(Res.IconEye, "Viewer", this);
+    Selected = viewer;
+
+    var groups = Core.R.CategoryGroup.All
+      .OrderBy(x => x.Category)
+      .ThenBy(x => x.Name)
+      .Select(x => new ListItem<CategoryGroupM>(x))
+      .ToArray();
+
+    CategoryGroups.Clear();
+    foreach (var cg in groups)
+      CategoryGroups.Add(cg);
+
+    foreach (var licg in CategoryGroups)
+      licg.IsSelected = !Selected.ExcludedCategoryGroups.Contains(licg.Content);
   }
 
   private DragDropEffects CanDropFolder(object target, object data, bool haveSameOrigin, bool included) {
@@ -37,8 +74,8 @@ public sealed class ViewerDetailM : ObservableObject {
 
     if (!haveSameOrigin)
       return (included
-          ? ViewerS.Selected.IncludedFolders
-          : ViewerS.Selected.ExcludedFolders)
+          ? Selected.IncludedFolders
+          : Selected.ExcludedFolders)
         .Contains(folder)
           ? DragDropEffects.None
           : DragDropEffects.Copy;
@@ -50,9 +87,9 @@ public sealed class ViewerDetailM : ObservableObject {
 
   private void DoDropFolder(object data, bool haveSameOrigin, bool included) {
     if (haveSameOrigin)
-      _r.RemoveFolder(ViewerS.Selected, (FolderM)data, included);
+      _r.RemoveFolder(Selected, (FolderM)data, included);
     else
-      _r.AddFolder(ViewerS.Selected, (FolderM)data, included);
+      _r.AddFolder(Selected, (FolderM)data, included);
   }
 
   private DragDropEffects CanDropKeywordMethod(object target, object data, bool haveSameOrigin) {
@@ -64,15 +101,15 @@ public sealed class ViewerDetailM : ObservableObject {
         ? DragDropEffects.None
         : DragDropEffects.Move;
 
-    return ViewerS.Selected.ExcludedKeywords.Contains(keyword)
+    return Selected.ExcludedKeywords.Contains(keyword)
       ? DragDropEffects.None
       : DragDropEffects.Copy;
   }
 
   private void DoDropKeywordMethod(object data, bool haveSameOrigin) {
     if (haveSameOrigin)
-      _r.RemoveKeyword(ViewerS.Selected, (KeywordM)data);
+      _r.RemoveKeyword(Selected, (KeywordM)data);
     else
-      _r.AddKeyword(ViewerS.Selected, (KeywordM)data);
+      _r.AddKeyword(Selected, (KeywordM)data);
   }
 }

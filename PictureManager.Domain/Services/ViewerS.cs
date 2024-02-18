@@ -6,57 +6,17 @@ using System.Linq;
 
 namespace PictureManager.Domain.Services;
 
-public sealed class ViewerS : ObservableObject {
-  private readonly ViewerR _r;
+public sealed class ViewerS(ViewerR r) : ObservableObject {
   private ViewerM _current;
-  private ViewerM _selected;
 
-  public ViewerDetailM ViewerDetailM { get; }
-
-  public ViewerM Current {
-    get => _current;
-    set {
-      _current = value;
-      OnPropertyChanged();
-    }
-  }
-
-  public ViewerM Selected {
-    get => _selected;
-    set {
-      _selected = value;
-      OnPropertyChanged();
-      value.Reload(Core.R.CategoryGroup.All);
-    }
-  }
-
-  public static RelayCommand<ViewerM> SetCurrentCommand { get; set; }
-  public RelayCommand UpdateExcludedCategoryGroupsCommand { get; }
-
-  public ViewerS(ViewerR r) {
-    _r = r;
-    ViewerDetailM = new(_r, this);
-    SetCurrentCommand = new(SetCurrent, Res.IconEye);
-    UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
-  }
-
-  private void UpdateExcludedCategoryGroups() {
-    Selected.UpdateExcludedCategoryGroups();
-    _r.IsModified = true;
-  }
-
-  public void OpenDetail(ViewerM viewer) {
-    if (viewer == null) return;
-    Core.MainTabs.Activate(Res.IconEye, "Viewer", ViewerDetailM);
-    Selected = viewer;
-  }
+  public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
   public void SetCurrent(ViewerM viewer) {
     if (ReferenceEquals(Current, viewer)) return;
     if (Current != null) Current.IsDefault = false;
     if (viewer != null && !viewer.IsDefault) {
       viewer.IsDefault = true;
-      _r.IsModified = true;
+      r.IsModified = true;
     }
     
     Current = viewer;
