@@ -35,9 +35,9 @@ public sealed class SegmentsView {
   public static IEnumerable<SegmentM> GetSegments(int mode) {
     switch (mode) {
       case 1:
-        var items = Core.MediaViewerM.IsVisible
-          ? Core.MediaViewerM.Current != null
-            ? new[] { Core.MediaViewerM.Current }
+        var items = Core.VM.MediaViewer.IsVisible
+          ? Core.VM.MediaViewer.Current != null
+            ? new[] { Core.VM.MediaViewer.Current }
             : Array.Empty<MediaItemM>()
           : Core.MediaItemsViews.Current?.GetSelectedOrAll().ToArray()
             ?? Array.Empty<MediaItemM>();

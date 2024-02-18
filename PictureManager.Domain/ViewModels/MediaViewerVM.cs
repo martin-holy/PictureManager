@@ -1,12 +1,13 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.ViewModels;
 
-public sealed class MediaViewerM : ObservableObject {
+public sealed class MediaViewerVM : ObservableObject {
   private double _scale;
   private int _contentWidth;
   private int _contentHeight;
@@ -23,8 +24,10 @@ public sealed class MediaViewerM : ObservableObject {
       OnPropertyChanged(nameof(ActualZoom));
     }
   }
+
   public int ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
   public int ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
+  
   public MediaItemM Current {
     get => _current;
     set {
@@ -54,7 +57,7 @@ public sealed class MediaViewerM : ObservableObject {
   public RelayCommand PreviousCommand { get; }
   public RelayCommand<MouseWheelEventArgs> NavigateCommand { get; }
 
-  public MediaViewerM() {
+  public MediaViewerVM() {
     PresentationPanel = new(this);
     NextCommand = new(Next, CanNext);
     PreviousCommand = new(Previous, CanPrevious);

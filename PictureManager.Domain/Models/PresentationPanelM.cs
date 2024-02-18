@@ -2,17 +2,18 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.ViewModels;
 using System.Timers;
 
 namespace PictureManager.Domain.Models {
-  public sealed class PresentationPanelM : ObservableObject {
+    public sealed class PresentationPanelM : ObservableObject {
     private bool _isRunning;
     private bool _playPanoramicImages = true;
     private bool _isAnimationOn;
     private int _minAnimationDuration;
     private int _interval = 3;
     private readonly Timer _timer = new();
-    private readonly MediaViewerM _mediaViewerM;
+    private readonly MediaViewerVM _mediaViewerVM;
 
     public bool IsRunning {
       get => _isRunning;
@@ -36,7 +37,7 @@ namespace PictureManager.Domain.Models {
       set {
         _isAnimationOn = value;
         if (!value)
-          Start(_mediaViewerM.Current, false);
+          Start(_mediaViewerVM.Current, false);
         OnPropertyChanged();
       }
     }
@@ -56,8 +57,8 @@ namespace PictureManager.Domain.Models {
     public static RelayCommand StartPresentationCommand { get; set; }
     public static RelayCommand StopPresentationCommand { get; set; }
 
-    public PresentationPanelM(MediaViewerM mediaViewerM) {
-      _mediaViewerM = mediaViewerM;
+    public PresentationPanelM(MediaViewerVM mediaViewerVM) {
+      _mediaViewerVM = mediaViewerVM;
       StartPresentationCommand = new(Presentation, MH.Utils.Res.IconPlay, "Start presentation");
       StopPresentationCommand = new(Presentation, MH.Utils.Res.IconStop, "Stop presentation");
 
@@ -106,14 +107,14 @@ namespace PictureManager.Domain.Models {
       if (IsAnimationOn || IsRunning || IsPaused)
         Stop();
       else
-        Start(_mediaViewerM.Current, true);
+        Start(_mediaViewerVM.Current, true);
     }
 
     private void Next() {
       Tasks.RunOnUiThread(() => {
         if (IsPaused) return;
-        if (_mediaViewerM.CanNext())
-          _mediaViewerM.Next();
+        if (_mediaViewerVM.CanNext())
+          _mediaViewerVM.Next();
         else
           Stop();
       });

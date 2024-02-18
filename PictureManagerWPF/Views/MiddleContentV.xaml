@@ -14,13 +14,13 @@
       <ContentPresenter
         Content="{Binding MainTabs}"
         ContentTemplate="{StaticResource PM.Views.MainTabsV}"
-        Visibility="{Binding MediaViewerM.IsVisible,
+        Visibility="{Binding VM.MediaViewer.IsVisible,
                  Source={x:Static pm:App.Core},
                  Converter={x:Static mhConv:AllToVisibilityConverter.Inst}, 
                  ConverterParameter={StaticResource False}}"/>
 
       <!-- Media Viewer -->
-      <ContentPresenter Content="{Binding MediaViewerM}"/>
+      <ContentPresenter Content="{Binding VM.MediaViewer}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

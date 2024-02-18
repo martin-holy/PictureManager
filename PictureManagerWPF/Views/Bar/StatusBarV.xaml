@@ -116,12 +116,12 @@
         <!-- ImageActualZoom -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding Core.MediaViewerM.IsVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding Core.VM.MediaViewer.IsVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <StackPanel>
             <Path Data="{StaticResource IconMagnify}"/>
 
             <Border>
-              <TextBlock Text="{Binding Core.MediaViewerM.ActualZoom, StringFormat={}{0:####}%}"/>
+              <TextBlock Text="{Binding Core.VM.MediaViewer.ActualZoom, StringFormat={}{0:####}%}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -259,11 +259,11 @@
 
     <DataTemplate.Triggers>
       <!--TODO store PositionSlashCount just in one location-->
-      <DataTrigger Binding="{Binding Core.MediaViewerM.IsVisible}" Value="True">
+      <DataTrigger Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="True">
         <Setter
           TargetName="tbPositionSlashCount"
           Property="Text"
-          Value="{Binding Core.MediaViewerM.PositionSlashCount}"/>
+          Value="{Binding Core.VM.MediaViewer.PositionSlashCount}"/>
       </DataTrigger>
 
       <DataTrigger Binding="{Binding Core.VM.MediaItem.CurrentGeoName, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
@@ -276,7 +276,7 @@
 
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
-          <Condition Binding="{Binding Core.MediaViewerM.IsVisible}" Value="True"/>
+          <Condition Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="True"/>
           <Condition Binding="{Binding Core.VM.MediaItem.Current.DisplayKeywords, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="boKeywords" Property="Visibility" Value="Visible"/>
@@ -284,7 +284,7 @@
 
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
-          <Condition Binding="{Binding Core.MediaViewerM.IsVisible}" Value="True"/>
+          <Condition Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="True"/>
           <Condition Binding="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="boComment" Property="Visibility" Value="Visible"/>

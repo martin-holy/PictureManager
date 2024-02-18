@@ -32,7 +32,6 @@ public sealed class Core {
 
   public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public static MediaItemsViews MediaItemsViews { get; } = new();
-  public static MediaViewerM MediaViewerM { get; } = new();
   public TitleProgressBarM TitleProgressBarM { get; } = new();
   public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
   public static VideoDetail VideoDetail { get; } = new();
@@ -96,7 +95,7 @@ public sealed class Core {
       if (nameof(VM.MainWindow.IsInViewMode).Equals(e.PropertyName)) {
         var isInViewMode = VM.MainWindow.IsInViewMode;
 
-        MediaViewerM.IsVisible = isInViewMode;
+        VM.MediaViewer.IsVisible = isInViewMode;
 
         if (isInViewMode) {
           VideoDetail.MediaPlayer.SetView(UiFullVideo);
@@ -104,7 +103,7 @@ public sealed class Core {
         }
         else {
           MediaItemsViews.SelectAndScrollToCurrentMediaItem();
-          MediaViewerM.Deactivate();
+          VM.MediaViewer.Deactivate();
           VideoDetail.MediaPlayer.SetView(UiDetailVideo);
         }
 
@@ -143,7 +142,7 @@ public sealed class Core {
     };
 
     VideoDetail.MediaPlayer.RepeatEndedEvent += delegate {
-      MediaViewerM.OnPlayerRepeatEnded();
+      VM.MediaViewer.OnPlayerRepeatEnded();
     };
 
     VideoDetail.CurrentVideoItems.Selected.ItemsChangedEventHandler += (_, e) => {
@@ -152,20 +151,20 @@ public sealed class Core {
       VideoDetail.MediaPlayer.SetCurrent(vi);
     };
 
-    MediaViewerM.PropertyChanged += (_, e) => {
+    VM.MediaViewer.PropertyChanged += (_, e) => {
       switch (e.PropertyName) {
-        case nameof(MediaViewerM.IsVisible):
+        case nameof(VM.MediaViewer.IsVisible):
           VM.MainWindow.StatusBar.Update();
           VM.MainWindow.StatusBar.OnPropertyChanged(nameof(VM.MainWindow.StatusBar.IsCountVisible));
           break;
-        case nameof(MediaViewerM.Current):
-          if (MediaViewerM.Current != null && !ReferenceEquals(VM.MediaItem.Current, MediaViewerM.Current))
-            VM.MediaItem.Current = MediaViewerM.Current;
+        case nameof(VM.MediaViewer.Current):
+          if (VM.MediaViewer.Current != null && !ReferenceEquals(VM.MediaItem.Current, VM.MediaViewer.Current))
+            VM.MediaItem.Current = VM.MediaViewer.Current;
           else
-            VideoDetail.SetCurrent(MediaViewerM.Current, true);
+            VideoDetail.SetCurrent(VM.MediaViewer.Current, true);
           break;
-        case nameof(MediaViewerM.Scale):
-          S.Segment.SegmentsRectsM.UpdateScale(MediaViewerM.Scale);
+        case nameof(VM.MediaViewer.Scale):
+          S.Segment.SegmentsRectsM.UpdateScale(VM.MediaViewer.Scale);
           break;
       }
     };
@@ -272,8 +271,8 @@ public sealed class Core {
         File.Delete(rmi.FilePathCache);
       }
 
-      if (MediaViewerM.IsVisible && items.Contains(MediaViewerM.Current))
-        MediaViewerM.Current = MediaViewerM.Current;
+      if (VM.MediaViewer.IsVisible && items.Contains(VM.MediaViewer.Current))
+        VM.MediaViewer.Current = VM.MediaViewer.Current;
 
       MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
       if (items.Contains(VideoDetail.Current))
@@ -287,8 +286,8 @@ public sealed class Core {
     };
 
     R.MediaItem.ItemsDeletedEvent += (_, e) => {
-      VM.MediaItem.Current = MediaViewerM.IsVisible && e.Data.All(x => x is RealMediaItemM)
-        ? MediaViewerM.MediaItems.GetNextOrPreviousItem(e.Data)
+      VM.MediaItem.Current = VM.MediaViewer.IsVisible && e.Data.All(x => x is RealMediaItemM)
+        ? VM.MediaViewer.MediaItems.GetNextOrPreviousItem(e.Data)
         : e.Data.OfType<VideoItemM>().FirstOrDefault()?.Video;
 
       VM.UpdateMediaItemsCount();
@@ -296,10 +295,10 @@ public sealed class Core {
       MediaItemsViews.RemoveMediaItems(e.Data);
       VideoDetail.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
 
-      if (MediaViewerM.IsVisible) {
-        MediaViewerM.MediaItems.Remove(e.Data[0]);
+      if (VM.MediaViewer.IsVisible) {
+        VM.MediaViewer.MediaItems.Remove(e.Data[0]);
         if (VM.MediaItem.Current != null)
-          MediaViewerM.Current = VM.MediaItem.Current;
+          VM.MediaViewer.Current = VM.MediaItem.Current;
         else
           VM.MainWindow.IsInViewMode = false;
       }
@@ -390,7 +389,7 @@ public sealed class Core {
     var segments = SegmentsView.GetSegments(result).ToArray();
     SegmentsView ??= new(S.Segment);
     MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
-    if (MediaViewerM.IsVisible) VM.MainWindow.IsInViewMode = false;
+    if (VM.MediaViewer.IsVisible) VM.MainWindow.IsInViewMode = false;
     SegmentsView.Reload(segments);
   }
 }

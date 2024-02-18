@@ -9,13 +9,14 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vmWin="clr-namespace:PictureManager.ViewModels">
+  xmlns:vmWin="clr-namespace:PictureManager.ViewModels"
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="SegmentsRectsV.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <DataTemplate DataType="{x:Type m:MediaViewerM}">
+  <DataTemplate DataType="{x:Type vm:MediaViewerVM}">
     <Grid
       x:Name="Root"
       Background="Transparent"
