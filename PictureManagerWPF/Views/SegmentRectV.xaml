@@ -28,7 +28,7 @@
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseDown">
-          <b:InvokeCommandAction Command="vmWin:SegmentsRectsVM.SetCurrentCommand" PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentRectVM.SetCurrentCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -43,7 +43,7 @@
 
         <!-- Delete Segment -->
         <mhc:IconButton
-          Command="vmWin:SegmentsRectsVM.DeleteCommand"
+          Command="vmWin:SegmentRectVM.DeleteCommand"
           CommandParameter="{Binding}"
           Width="16"
           Height="16"
@@ -67,7 +67,7 @@
       </Trigger>
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
-          <Condition Binding="{Binding S.Segment.SegmentsRectsM.IsEditOn, Source={x:Static pm:App.Core}}" Value="False"/>
+          <Condition Binding="{Binding S.Segment.Rect.IsEditOn, Source={x:Static pm:App.Core}}" Value="False"/>
           <Condition Binding="{Binding IsMouseOver, ElementName=PART_ResizeBorder}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="buttons" Property="Visibility" Value="Visible"/>

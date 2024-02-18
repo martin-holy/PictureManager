@@ -10,10 +10,10 @@
     <wpfu:CachedResourceDictionary Source="SegmentRectV.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <DataTemplate DataType="{x:Type vm:SegmentsRectsVM}">
+  <DataTemplate DataType="{x:Type vm:SegmentRectVM}">
     <ItemsControl
-      ItemsSource="{Binding SegmentsRectsM.MediaItemSegmentsRects}"
-      Visibility="{Binding SegmentsRectsM.AreVisible,
+      ItemsSource="{Binding SegmentRectS.MediaItemSegmentsRects}"
+      Visibility="{Binding SegmentRectS.AreVisible,
                    Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
       <ItemsControl.ItemsPanel>

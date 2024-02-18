@@ -2,6 +2,7 @@
 
 namespace PictureManager.Domain.Services;
 
+// TODO add Image inside MediaItem
 public class CoreS(CoreR coreR) {
   public FolderS Folder { get; } = new(coreR.Folder);
   public ImageS Image { get; } = new(coreR.Image);

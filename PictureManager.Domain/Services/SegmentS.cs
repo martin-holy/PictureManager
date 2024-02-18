@@ -12,7 +12,7 @@ namespace PictureManager.Domain.Services;
 
 public sealed class SegmentS : ObservableObject {
   public SegmentR DataAdapter { get; set; }
-  public SegmentsRectsM SegmentsRectsM { get; }
+  public SegmentRectS Rect { get; }
   public Selecting<SegmentM> Selected { get; } = new();
   public static int SegmentSize { get; set; } = 100;
   public static int SegmentUiSize { get; set; }
@@ -27,7 +27,7 @@ public sealed class SegmentS : ObservableObject {
 
   public SegmentS(SegmentR r) {
     DataAdapter = r;
-    SegmentsRectsM = new(this);
+    Rect = new(this);
   }
 
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {

@@ -99,7 +99,7 @@ public sealed class Core {
 
         if (isInViewMode) {
           VideoDetail.MediaPlayer.SetView(UiFullVideo);
-          S.Segment.SegmentsRectsM.MediaItem = VM.MediaItem.Current;
+          S.Segment.Rect.MediaItem = VM.MediaItem.Current;
         }
         else {
           MediaItemsViews.SelectAndScrollToCurrentMediaItem();
@@ -120,7 +120,7 @@ public sealed class Core {
 
         if (VM.MainWindow.IsInViewMode) {
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-          S.Segment.SegmentsRectsM.MediaItem = VM.MediaItem.Current;
+          S.Segment.Rect.MediaItem = VM.MediaItem.Current;
         }
       }
     };
@@ -164,7 +164,7 @@ public sealed class Core {
             VideoDetail.SetCurrent(VM.MediaViewer.Current, true);
           break;
         case nameof(VM.MediaViewer.Scale):
-          S.Segment.SegmentsRectsM.UpdateScale(VM.MediaViewer.Scale);
+          S.Segment.Rect.UpdateScale(VM.MediaViewer.Scale);
           break;
       }
     };
