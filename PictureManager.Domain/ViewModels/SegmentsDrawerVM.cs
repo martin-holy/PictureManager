@@ -3,17 +3,18 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.CollectionViews;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Services;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.ViewModels;
 
-public sealed class SegmentsDrawerM : CollectionViewSegments {
+public sealed class SegmentsDrawerVM : CollectionViewSegments {
   private readonly SegmentS _segmentS;
 
-  public List<SegmentM> Items { get; } = [];
+  public List<SegmentM> Items { get; }
   public CanDragFunc CanDragFunc { get; }
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction DoDropAction { get; }
@@ -21,8 +22,9 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
   public static RelayCommand AddSelectedCommand { get; set; }
   public static RelayCommand OpenCommand { get; set; }
 
-  public SegmentsDrawerM(SegmentS segmentS) {
+  public SegmentsDrawerVM(SegmentS segmentS, List<SegmentM> items) {
     _segmentS = segmentS;
+    Items = items;
 
     CanDragFunc = one => _segmentS.GetOneOrSelected(one as SegmentM);
     CanDropFunc = CanDrop;
@@ -75,7 +77,8 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
   public void RemoveIfContains(SegmentM[] segments) {
     var flag = false;
     foreach (var segment in segments)
-      if (Items.Remove(segment)) flag = true;
+      if (Items.Remove(segment))
+        flag = true;
 
     if (!flag) return;
     _segmentS.DataAdapter.AreTablePropsModified = true;

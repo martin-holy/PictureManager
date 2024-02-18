@@ -4,16 +4,15 @@ using MH.Utils.BaseClasses;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain.Services;
 
 public sealed class SegmentS : ObservableObject {
   public SegmentR DataAdapter { get; set; }
   public SegmentsRectsM SegmentsRectsM { get; }
-  public SegmentsDrawerM SegmentsDrawerM { get; }
   public Selecting<SegmentM> Selected { get; } = new();
   public static int SegmentSize { get; set; } = 100;
   public static int SegmentUiSize { get; set; }
@@ -29,7 +28,6 @@ public sealed class SegmentS : ObservableObject {
   public SegmentS(SegmentR r) {
     DataAdapter = r;
     SegmentsRectsM = new(this);
-    SegmentsDrawerM = new(this);
   }
 
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
@@ -126,8 +124,8 @@ public sealed class SegmentS : ObservableObject {
         .GetMediaItems()
         .OrderBy(x => x.FileName);
 
-    if (ReferenceEquals(SegmentsDrawerM, source))
-      return SegmentsDrawerM.Items
+    if (ReferenceEquals(Core.VM.SegmentsDrawer, source))
+      return Core.VM.SegmentsDrawer.Items
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
         .ThenBy(x => x.FileName);

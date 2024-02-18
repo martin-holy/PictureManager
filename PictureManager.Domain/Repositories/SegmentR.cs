@@ -17,7 +17,7 @@ namespace PictureManager.Domain.Repositories;
 public class SegmentR : TableDataAdapter<SegmentM> {
   private readonly CoreR _coreR;
 
-  public SegmentS Service { get; }
+  public List<SegmentM> Drawer { get; } = [];
   public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<(PersonM, SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
   public event DataEventHandler<SegmentM[]> KeywordsChangedEvent = delegate { };
@@ -25,7 +25,6 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   public SegmentR(CoreR coreR) : base("Segments", 5) {
     _coreR = coreR;
     IsDriveRelated = true;
-    Service = new(this);
   }
 
   public override Dictionary<string, IEnumerable<SegmentM>> GetAsDriveRelated() =>
@@ -49,7 +48,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   public override void PropsToCsv() {
     TableProps.Clear();
     TableProps.Add(nameof(SegmentS.SegmentSize), SegmentS.SegmentSize.ToString());
-    TableProps.Add("SegmentsDrawer", string.Join(",", Service.SegmentsDrawerM.Items.Select(x => x.GetHashCode().ToString())));
+    TableProps.Add("SegmentsDrawer", string.Join(",", Drawer.Select(x => x.GetHashCode().ToString())));
   }
 
   public override void LinkReferences() {
@@ -59,7 +58,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       var mi = _coreR.MediaItem.GetById(csv[1]);
       if (mi != null) {
         segment.MediaItem = mi;
-        mi.Segments ??= new();
+        mi.Segments ??= [];
         mi.Segments.Add(segment);
 
         var personId = int.Parse(csv[2]);
@@ -85,7 +84,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
     if (TableProps.TryGetValue(nameof(SegmentS.SegmentSize), out var segmentSize))
       SegmentS.SegmentSize = int.Parse(segmentSize);
     if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
-      Service.SegmentsDrawerM.Items.Clear();
+      Drawer.Clear();
 
       var drawer = segmentsDrawer
         .Split(',')
@@ -94,7 +93,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
         .ThenBy(x => x.MediaItem.FileName);
 
       foreach (var segment in drawer)
-        Service.SegmentsDrawerM.Items.Add(segment);
+        Drawer.Add(segment);
     }
 
     // table props are not needed any more

@@ -17,7 +17,7 @@ using PictureManager.Domain.ViewModels.Entities;
 namespace PictureManager.Domain.ViewModels;
 
 public class CoreVM {
-  private readonly CoreS _s;
+  private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
   public GeoNameVM GeoName { get; }
@@ -26,6 +26,7 @@ public class CoreVM {
 
   public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViews MediaItemsViews { get; }
+  public SegmentsDrawerVM SegmentsDrawer { get; }
 
   public static RelayCommand AppClosingCommand { get; set; }
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");
@@ -42,14 +43,15 @@ public class CoreVM {
   public static RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; set; }
 
   public CoreVM(CoreS coreS, CoreR coreR) {
-    _s = coreS;
+    _coreS = coreS;
     _coreR = coreR;
 
     GeoName = new(_coreR.GeoName);
-    MediaItem = new(this, _s.MediaItem);
-    Segment = new(_s.Segment, _coreR.Segment);
+    MediaItem = new(this, _coreS.MediaItem);
+    Segment = new(_coreS.Segment, _coreR.Segment);
 
     MediaItemsViews = Core.MediaItemsViews;
+    SegmentsDrawer = new(_coreS.Segment, _coreR.Segment.Drawer);
 
     UpdateMediaItemsCount();
 
@@ -155,10 +157,10 @@ public class CoreVM {
           true)) != 1) return;
 
     var progress = new ProgressBarAsyncDialog("Saving metadata to files...", Res.IconImage, true, Environment.ProcessorCount);
-    progress.Init(items, null, mi => _s.Image.TryWriteMetadata(mi), mi => mi.FilePath, null);
+    progress.Init(items, null, mi => _coreS.Image.TryWriteMetadata(mi), mi => mi.FilePath, null);
     progress.Start();
     Dialog.Show(progress);
-    _ = _s.MediaItemsStatusBar.UpdateFileSize();
+    _ = _coreS.MediaItemsStatusBar.UpdateFileSize();
     UpdateModifiedMediaItemsCount();
   }
 
