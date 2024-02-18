@@ -7,15 +7,15 @@ namespace PictureManager.Domain.Models.MediaItems;
 /// <summary>
 /// DB fields: ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
 /// </summary>
-public class RealMediaItemM : MediaItemM {
+public class RealMediaItemM(int id, FolderM folder, string fileName) : MediaItemM(id) {
   private int _thumbWidth;
   private int _thumbHeight;
   private int _width;
   private int _height;
   private Orientation _orientation;
 
-  public sealed override FolderM Folder { get; set; }
-  public sealed override string FileName { get; set; }
+  public sealed override FolderM Folder { get; set; } = folder;
+  public sealed override string FileName { get; set; } = fileName;
   public override string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
   public override string FilePathCache => GetFilePathCache();
 
@@ -25,11 +25,6 @@ public class RealMediaItemM : MediaItemM {
   public override int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
   public override Orientation Orientation { get => _orientation; set { _orientation = value; OnPropertyChanged(); } }
   public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
-
-  public RealMediaItemM(int id, FolderM folder, string fileName) : base(id) {
-    Folder = folder;
-    FileName = fileName;
-  }
 
   private string GetFilePathCache() =>
     FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath) +
