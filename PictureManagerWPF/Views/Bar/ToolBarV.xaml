@@ -9,7 +9,8 @@
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:domain="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+  xmlns:domain="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+  xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type vm:ToolBarVM}">
     <DataTemplate.Resources>
@@ -125,7 +126,7 @@
             <mhc:IconButton Command="m:SegmentsDrawerM.OpenCommand"/>
             <mhc:IconButton Command="m:SegmentsDrawerM.AddSelectedCommand"/>
             <mhc:IconButton Command="domain:Core.OpenSegmentsViewCommand"/>
-            <mhc:IconButton Command="vm:SegmentVM.SetSelectedAsUnknownCommand"/>
+            <mhc:IconButton Command="vme:SegmentVM.SetSelectedAsUnknownCommand"/>
           </StackPanel>
 
           <Separator/>

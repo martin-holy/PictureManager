@@ -2,7 +2,7 @@
 using MH.Utils.Dialogs;
 using PictureManager.Domain.Repositories;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Domain.ViewModels.Entities;
 
 public sealed class GeoNameVM {
   private readonly GeoNameR _r;

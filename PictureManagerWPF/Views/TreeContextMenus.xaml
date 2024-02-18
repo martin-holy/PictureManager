@@ -6,7 +6,8 @@
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   xmlns:tc="clr-namespace:PictureManager.Domain.TreeCategories;assembly=PictureManager.Domain"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
-  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
+  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
+  xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
   <!-- Tag Items Load and Filters -->
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu" x:Shared="False">
@@ -49,7 +50,7 @@
   <!-- GeoNames -->
   <ContextMenu x:Key="TreeContextMenuGeoNames">
     <MenuItem Command="vm:CoreVM.GetGeoNamesFromWebCommand"/>
-    <MenuItem Command="vm:GeoNameVM.NewGeoNameFromGpsCommand"/>
+    <MenuItem Command="vme:GeoNameVM.NewGeoNameFromGpsCommand"/>
     <MenuItem Command="vm:CoreVM.ReadGeoLocationFromFilesCommand"/>
   </ContextMenu>
 

@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PictureManager.Domain.Repositories;
+using PictureManager.Domain.ViewModels.Entities;
 
 namespace PictureManager.Domain.ViewModels;
 

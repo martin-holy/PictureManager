@@ -3,7 +3,7 @@ using MH.Utils.BaseClasses;
 using PictureManager.Converters;
 using PictureManager.Domain;
 using PictureManager.Domain.Services;
-using PictureManager.Domain.ViewModels;
+using PictureManager.Domain.ViewModels.Entities;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ public sealed class AppCore : ObservableObject {
     Core.VideoFrameSaver = new VideoFrameSaver();
 
     SegmentVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
-    Domain.ViewModels.MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
+    Domain.ViewModels.Entities.MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
   }
 
   public void AfterInit() {

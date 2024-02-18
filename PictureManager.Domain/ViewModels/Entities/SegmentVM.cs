@@ -3,11 +3,11 @@ using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
 using System.Linq;
-using PictureManager.Domain.Repositories;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Domain.ViewModels.Entities;
 
 public sealed class SegmentVM {
   public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; }

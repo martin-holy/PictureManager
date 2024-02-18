@@ -8,7 +8,8 @@
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
+  xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type m:SegmentM}">
     <DataTemplate.Resources>
@@ -168,7 +169,7 @@
           </Border>
 
           <mhc:IconButton
-            Command="vm:SegmentVM.SetSelectedAsSamePersonCommand"
+            Command="vme:SegmentVM.SetSelectedAsSamePersonCommand"
             Width="20"
             Height="20"/>
         </StackPanel>

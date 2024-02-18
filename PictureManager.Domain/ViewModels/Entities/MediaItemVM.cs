@@ -14,7 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Domain.ViewModels.Entities;
 
 public sealed class MediaItemVM : ObservableObject {
   private readonly MediaItemS _s;
@@ -98,7 +98,8 @@ public sealed class MediaItemVM : ObservableObject {
 
     // TODO check async and maybe use the other ProgressBarDialog
     var progress = new ProgressBarAsyncDialog("Reloading metadata...", Res.IconImage, true, Environment.ProcessorCount);
-    progress.Init(items, null, async mi => await _s.ReloadMetadata(mi), mi => mi.FilePath, delegate { _s.OnMetadataReloaded(items); });
+    progress.Init(items, null, async mi => await _s.ReloadMetadata(mi), mi => mi.FilePath,
+      delegate { _s.OnMetadataReloaded(items); });
     progress.Start();
     Dialog.Show(progress);
   }
