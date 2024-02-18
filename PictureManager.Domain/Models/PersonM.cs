@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using PictureManager.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

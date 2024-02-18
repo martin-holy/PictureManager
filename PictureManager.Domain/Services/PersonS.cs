@@ -2,6 +2,7 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Domain.DataViews;
+using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Repositories;
 using System.Linq;
