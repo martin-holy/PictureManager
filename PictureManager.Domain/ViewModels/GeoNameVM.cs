@@ -1,16 +1,16 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.Database;
+using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain.ViewModels;
 
-public sealed class GeoNamesVM {
-  private readonly GeoNamesDA _da;
+public sealed class GeoNameVM {
+  private readonly GeoNameR _r;
 
   public static RelayCommand NewGeoNameFromGpsCommand { get; set; }
 
-  public GeoNamesVM(GeoNamesDA da) {
-    _da = da;
+  public GeoNameVM(GeoNameR r) {
+    _r = r;
     NewGeoNameFromGpsCommand = new(NewGeoNameFromGps, Res.IconLocationCheckin, "New GeoName from GPS");
   }
 
@@ -21,7 +21,7 @@ public sealed class GeoNamesVM {
       Res.IconLocationCheckin,
       string.Empty,
       answer => {
-        var (a, b) = GeoNamesDA.ParseLatLng(answer);
+        var (a, b) = GeoNameR.ParseLatLng(answer);
         return a == 0 && b == 0
           ? "Incorrect format"
           : string.Empty;
@@ -29,7 +29,7 @@ public sealed class GeoNamesVM {
 
     if (Dialog.Show(inputDialog) != 1) return;
 
-    var (lat, lng) = GeoNamesDA.ParseLatLng(inputDialog.Answer);
-    await _da.CreateGeoNameHierarchy(lat, lng);
+    var (lat, lng) = GeoNameR.ParseLatLng(inputDialog.Answer);
+    await _r.CreateGeoNameHierarchy(lat, lng);
   }
 }

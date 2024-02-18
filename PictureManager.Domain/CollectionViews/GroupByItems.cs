@@ -79,7 +79,7 @@ public static class GroupByItems {
       .ToGroupByItems(func)
       .AsTree<GroupByItem<T>, KeywordM, string>(x => x.FullName)
       .GroupByParent<T, CategoryGroupM>(func)
-      .InGroup(Core.Db.Keywords.Tree, func);
+      .InGroup(Core.R.Keyword.Tree, func);
 
   public static GroupByItem<T> GetPeopleInGroup<T>(IEnumerable<T> items) where T : MediaItemM =>
     items.GetPeople().ToGroupedGroupByItemsInGroup<T>(GroupByPerson);
@@ -93,7 +93,7 @@ public static class GroupByItems {
       .OrderBy(x => x.Name)
       .ToGroupByItems(func)
       .GroupByParent<T, CategoryGroupM>(func)
-      .InGroup(Core.PeopleM.TreeCategory, func);
+      .InGroup(Core.R.Person.Tree, func);
 
   public static GroupByItem<PersonM> GetPeopleGroupsInGroup(IEnumerable<PersonM> people) =>
     people
@@ -136,18 +136,18 @@ public static class GroupByItems {
     ReferenceEquals(parameter, person?.Parent);
 
   private static bool GroupByPerson(IEnumerable<PersonM> items, object parameter) =>
-    ReferenceEquals(parameter, Core.PeopleM.TreeCategory) ||
+    ReferenceEquals(parameter, Core.R.Person.Tree) ||
     items?.Any(x => GroupByPerson(x, parameter)) == true;
 
   private static bool GroupByPerson(this MediaItemM item, object parameter) =>
     GroupByPerson(item.GetPeople(), parameter);
 
   private static bool GroupByPerson(this SegmentM item, object parameter) =>
-    ReferenceEquals(parameter, Core.PeopleM.TreeCategory) || 
+    ReferenceEquals(parameter, Core.R.Person.Tree) || 
     GroupByPerson(item.Person, parameter);
 
   private static bool GroupByKeyword(IEnumerable<KeywordM> items, object parameter) =>
-    ReferenceEquals(parameter, Core.Db.Keywords.Tree) ||
+    ReferenceEquals(parameter, Core.R.Keyword.Tree) ||
     items?.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter) == true;
 
   private static bool GroupByKeyword(this IHaveKeywords item, object parameter) =>

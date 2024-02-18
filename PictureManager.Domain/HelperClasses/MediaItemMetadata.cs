@@ -46,13 +46,13 @@ public class MediaItemMetadata {
     MediaItem.People = null;
     MediaItem.Segments = null;
     if (PeopleSegmentsKeywords == null) {
-      Core.Db.Segments.ItemsDelete(oldSegments);
+      Core.R.Segment.ItemsDelete(oldSegments);
       return;
     }
 
     MediaItem.People = new(PeopleSegmentsKeywords.Count);
     foreach (var psk in PeopleSegmentsKeywords) {
-      var person = Core.Db.People.GetPerson(psk.Item1, true);
+      var person = Core.R.Person.GetPerson(psk.Item1, true);
 
       // segments
       if (!psk.Item2.Any()) {
@@ -74,7 +74,7 @@ public class MediaItemMetadata {
         else {
           segment.Keywords = new();
           foreach (var k in c.Item2) {
-            var keyword = Core.Db.Keywords.GetByFullPath(k);
+            var keyword = Core.R.Keyword.GetByFullPath(k);
             if (keyword != null)
               segment.Keywords.Add(keyword);
           }
@@ -82,7 +82,7 @@ public class MediaItemMetadata {
       }
     }
 
-    Core.Db.Segments.ItemsDelete(oldSegments?.Except(MediaItem.Segments.EmptyIfNull()).ToList());
+    Core.R.Segment.ItemsDelete(oldSegments?.Except(MediaItem.Segments.EmptyIfNull()).ToList());
   }
 
   private static SegmentM RecycleSegment(int x, int y, int s, MediaItemM mi, PersonM person, ref List<SegmentM> bin) {
@@ -94,10 +94,10 @@ public class MediaItemMetadata {
       segment.Y = y;
       segment.Size = s;
       mi.Segments.Add(segment);
-      Core.Db.Segments.IsModified = true;
+      Core.R.Segment.IsModified = true;
     }
     else
-      segment = Core.Db.Segments.ItemCreate(x, y, s, mi);
+      segment = Core.R.Segment.ItemCreate(x, y, s, mi);
 
     segment.Person = person;
 
@@ -109,13 +109,13 @@ public class MediaItemMetadata {
     if (Keywords == null) return;
     MediaItem.Keywords = new();
     foreach (var k in Keywords.OrderByDescending(x => x).Distinct()) {
-      var keyword = Core.Db.Keywords.GetByFullPath(k.Replace('|', ' '));
+      var keyword = Core.R.Keyword.GetByFullPath(k.Replace('|', ' '));
       if (keyword != null)
         MediaItem.Keywords.Add(keyword);
     }
   }
 
   public async Task FindGeoLocation(bool online = true) =>
-    Core.Db.MediaItemGeoLocation.ItemUpdate(new(MediaItem,
-      await Core.Db.GeoLocations.GetOrCreate(Lat, Lng, GeoNameId, null, online)));
+    Core.R.MediaItemGeoLocation.ItemUpdate(new(MediaItem,
+      await Core.R.GeoLocation.GetOrCreate(Lat, Lng, GeoNameId, null, online)));
 }

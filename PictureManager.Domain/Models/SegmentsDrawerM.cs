@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.CollectionViews;
+using PictureManager.Domain.Services;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
@@ -10,7 +11,7 @@ using static MH.Utils.DragDropHelper;
 namespace PictureManager.Domain.Models;
 
 public sealed class SegmentsDrawerM : CollectionViewSegments {
-  private readonly SegmentsM _segmentsM;
+  private readonly SegmentS _segmentS;
 
   public List<SegmentM> Items { get; } = [];
   public CanDragFunc CanDragFunc { get; }
@@ -20,16 +21,16 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
   public static RelayCommand AddSelectedCommand { get; set; }
   public static RelayCommand OpenCommand { get; set; }
 
-  public SegmentsDrawerM(SegmentsM segmentsM) {
-    _segmentsM = segmentsM;
+  public SegmentsDrawerM(SegmentS segmentS) {
+    _segmentS = segmentS;
 
-    CanDragFunc = one => _segmentsM.GetOneOrSelected(one as SegmentM);
+    CanDragFunc = one => _segmentS.GetOneOrSelected(one as SegmentM);
     CanDropFunc = CanDrop;
     DoDropAction = DoDrop;
 
     AddSelectedCommand = new(
-      () => AddOrRemove(_segmentsM.Selected.Items.ToArray(), true),
-      () => _segmentsM.Selected.Items.Count > 0, Res.IconDrawerAdd, "Add selected to Segments drawer");
+      () => AddOrRemove(_segmentS.Selected.Items.ToArray(), true),
+      () => _segmentS.Selected.Items.Count > 0, Res.IconDrawerAdd, "Add selected to Segments drawer");
     OpenCommand = new(() => Open(Core.VM.MainWindow.ToolsTabs), Res.IconDrawer, "Open Segments drawer");
   }
 
@@ -66,7 +67,7 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
         Items.Remove(segment);
 
     if (count != Items.Count) {
-      _segmentsM.DataAdapter.AreTablePropsModified = true;
+      _segmentS.DataAdapter.AreTablePropsModified = true;
       ReGroupItems(segments, !add);
     }
   }
@@ -77,7 +78,7 @@ public sealed class SegmentsDrawerM : CollectionViewSegments {
       if (Items.Remove(segment)) flag = true;
 
     if (!flag) return;
-    _segmentsM.DataAdapter.AreTablePropsModified = true;
+    _segmentS.DataAdapter.AreTablePropsModified = true;
     Remove(segments);
   }
 

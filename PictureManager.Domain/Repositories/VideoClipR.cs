@@ -3,21 +3,21 @@ using MH.Utils.Extensions;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|MediaItem|TimeStart|TimeEnd|Volume|Speed|Rating|Comment|People|Keywords
 /// </summary>
-public class VideoClipsDA : TableDataAdapter<VideoClipM> {
-  private readonly Db _db;
+public class VideoClipR : TableDataAdapter<VideoClipM> {
+  private readonly CoreR _coreR;
 
-  public VideoClipsDA(Db db) : base("VideoClips", 10) {
-    _db = db;
+  public VideoClipR(CoreR coreR) : base("VideoClips", 10) {
+    _coreR = coreR;
     IsDriveRelated = true;
   }
 
   public override Dictionary<string, IEnumerable<VideoClipM>> GetAsDriveRelated() =>
-    Db.GetAsDriveRelated(All, x => x.Folder);
+    CoreR.GetAsDriveRelated(All, x => x.Folder);
 
   public override VideoClipM FromCsv(string[] csv) {
     var vc = new VideoClipM(int.Parse(csv[0]), null, csv[2].IntParseOrDefault(0)) {
@@ -46,16 +46,16 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
 
   public override void LinkReferences() {
     foreach (var (vc, csv) in AllCsv) {
-      vc.Video = _db.Videos.GetById(csv[1]);
+      vc.Video = _coreR.Video.GetById(csv[1]);
       vc.Video.VideoClips ??= new();
       vc.Video.VideoClips.Add(vc);
-      vc.People = _db.People.Link(csv[8], this);
-      vc.Keywords = _db.Keywords.Link(csv[9], this);
+      vc.People = _coreR.Person.Link(csv[8], this);
+      vc.Keywords = _coreR.Keyword.Link(csv[9], this);
     }
   }
 
   public override int GetNextId() =>
-    _db.MediaItems.GetNextId();
+    _coreR.MediaItem.GetNextId();
 
   public VideoClipM CustomItemCreate(VideoM video, int timeStart) =>
     ItemCreate(new(GetNextId(), video, timeStart));
@@ -65,7 +65,7 @@ public class VideoClipsDA : TableDataAdapter<VideoClipM> {
   }
 
   protected override void OnItemDeleted(VideoClipM item) {
-    _db.MediaItems.OnItemDeletedCommon(item);
+    _coreR.MediaItem.OnItemDeletedCommon(item);
     item.Video.Toggle(item);
     item.Video = null;
   }

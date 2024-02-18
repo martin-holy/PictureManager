@@ -2,38 +2,30 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PictureManager.Domain.Repositories;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.Services;
 
-public sealed class FoldersM {
-  private readonly FoldersDA _da;
-
+public sealed class FolderS(FolderR r) {
   public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
-  public FoldersTreeCategory TreeCategory { get; }
   public event EventHandler<ObjectEventArgs<FolderM>> ItemCopiedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<FolderM>> ItemMovedEvent = delegate { };
-
-  public FoldersM(FoldersDA da) {
-    _da = da;
-    TreeCategory = new(_da);
-  }
 
   public static void DeleteFromDisk(FolderM item) {
     if (Directory.Exists(item.FullPathCache))
       Directory.Delete(item.FullPathCache, true);
 
     if (Directory.Exists(item.FullPath))
-      Core.FileOperationDelete(new() { item.FullPath }, true, false);
+      Core.FileOperationDelete([item.FullPath], true, false);
   }
 
   public static string GetDriveIcon(DriveType type) =>
@@ -70,7 +62,8 @@ public sealed class FoldersM {
     }
   }
 
-  private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
+  private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress,
+    CancellationToken token) {
     var skippedFiles = new HashSet<string>();
     var renamedFiles = new Dictionary<string, string>();
 
@@ -102,16 +95,16 @@ public sealed class FoldersM {
   }
 
   private static void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath,
-    ref HashSet<string> skippedFiles, ref Dictionary<string, string> renamedFiles, IProgress<object[]> progress, CancellationToken token) {
+    ref HashSet<string> skippedFiles, ref Dictionary<string, string> renamedFiles, IProgress<object[]> progress,
+    CancellationToken token) {
 
     Directory.CreateDirectory(destDirPath);
     var srcDirPathLength = srcDirPath.Length + 1;
 
     // run this function for each sub directory
-    foreach (var dir in Directory.EnumerateDirectories(srcDirPath)) {
+    foreach (var dir in Directory.EnumerateDirectories(srcDirPath))
       CopyMoveFilesAndCache(mode, dir, IOExtensions.PathCombine(destDirPath, dir[srcDirPathLength..]),
         ref skippedFiles, ref renamedFiles, progress, token);
-    }
 
     // get source and destination paths to Cache
     var srcDirPathCache = srcDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
@@ -192,16 +185,16 @@ public sealed class FoldersM {
     }
 
     // Delete empty directory
-    if (mode == FileOperationMode.Move) {
-      // if this is done on worker thread => directory is not deleted until worker is finished
+    if (mode == FileOperationMode
+          .Move) // if this is done on worker thread => directory is not deleted until worker is finished
       Tasks.RunOnUiThread(() => {
         IOExtensions.DeleteDirectoryIfEmpty(srcDirPath);
         IOExtensions.DeleteDirectoryIfEmpty(srcDirPathCache);
       });
-    }
   }
 
-  private void CopyFolder(FolderM src, FolderM dest, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {
+  private void CopyFolder(FolderM src, FolderM dest, ref HashSet<string> skipped,
+    ref Dictionary<string, string> renamed) {
     // reload destFolder so that new folder is added
     dest.LoadSubFolders(false);
 
@@ -223,7 +216,7 @@ public sealed class FoldersM {
         renamed.Remove(filePath);
       }
 
-      Core.Db.MediaItems.ItemCopy(mi, targetFolder, fileName);
+      Core.R.MediaItem.ItemCopy(mi, targetFolder, fileName);
     }
 
     // Copy all subFolders
@@ -245,7 +238,7 @@ public sealed class FoldersM {
     if (!srcExists && targetFolder == null) {
       src.Parent.Items.Remove(src);
       src.Parent = dest;
-      _da.IsModified = true;
+      r.IsModified = true;
 
       // add folder to the tree if destination is empty
       if (dest.Items.Count == 1 && FolderPlaceHolder.Equals(dest.Items[0])) {
@@ -265,6 +258,7 @@ public sealed class FoldersM {
       dest.LoadSubFolders(false);
       targetFolder = Tree.GetByPath(dest, src.Name, Path.DirectorySeparatorChar) as FolderM;
     }
+
     if (targetFolder == null) throw new DirectoryNotFoundException();
 
     // Move all MediaItems to target folder
@@ -272,7 +266,7 @@ public sealed class FoldersM {
       // skip if this file was skipped
       if (skipped.Remove(mi.FilePath)) continue;
 
-      Core.Db.MediaItems.ItemMove(mi, targetFolder, mi.FileName);
+      Core.R.MediaItem.ItemMove(mi, targetFolder, mi.FileName);
     }
 
     // Move all subFolders
@@ -285,7 +279,7 @@ public sealed class FoldersM {
 
     // delete if src folder was moved completely and the target folder was already in DB
     if (deleteSrc)
-      _da.TreeItemDelete(src);
+      r.TreeItemDelete(src);
   }
 
   public FolderM[] GetFolders(ITreeItem item, bool recursive) {
@@ -296,6 +290,6 @@ public sealed class FoldersM {
     foreach (var root in roots)
       root.LoadSubFolders(true);
 
-    return roots.SelectMany(x => x.Flatten()).Where(Core.ViewersM.CanViewerSee).ToArray();
+    return roots.SelectMany(x => x.Flatten()).Where(Core.S.Viewer.CanViewerSee).ToArray();
   }
 }

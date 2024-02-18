@@ -1,19 +1,21 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.HelperClasses;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PictureManager.Domain.Repositories;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Domain.Services;
 
-public sealed class MediaItemsM(MediaItemsDA da) : ObservableObject {
+public sealed class MediaItemS(MediaItemR r) : ObservableObject {
   private static readonly string[] _supportedExts = { ".jpg", ".jpeg", ".mp4" };
 
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
@@ -25,11 +27,8 @@ public sealed class MediaItemsM(MediaItemsDA da) : ObservableObject {
     var replaced = new List<MediaItemM>();
 
     foreach (var mi in items) {
-      if (token.IsCancellationRequested)
-        break;
-
-      progress.Report(new object[]
-        { Convert.ToInt32((double)done / count * 100), mi.Folder.FullPath, destFolder.FullPath, mi.FileName });
+      if (token.IsCancellationRequested) break;
+      progress.Report(new object[] { Convert.ToInt32((double)done / count * 100), mi.Folder.FullPath, destFolder.FullPath, mi.FileName });
 
       var miNewFileName = mi.FileName;
       var destFilePath = IOExtensions.PathCombine(destFolder.FullPath, mi.FileName);
@@ -51,7 +50,7 @@ public sealed class MediaItemsM(MediaItemsDA da) : ObservableObject {
       switch (mode) {
         case FileOperationMode.Copy:
           // create object copy
-          var miCopy = await Tasks.RunOnUiThread(() => da.ItemCopy(mi, destFolder, miNewFileName));
+          var miCopy = await Tasks.RunOnUiThread(() => r.ItemCopy(mi, destFolder, miNewFileName));
           // copy MediaItem and cache on file system
           Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
           File.Copy(mi.FilePath, miCopy.FilePath, true);
@@ -69,7 +68,7 @@ public sealed class MediaItemsM(MediaItemsDA da) : ObservableObject {
           var srcDirPathCache = Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException();
 
           // DB
-          await Tasks.RunOnUiThread(() => da.ItemMove(mi, destFolder, miNewFileName));
+          await Tasks.RunOnUiThread(() => r.ItemMove(mi, destFolder, miNewFileName));
 
           // File System
           File.Delete(mi.FilePath);
@@ -95,16 +94,16 @@ public sealed class MediaItemsM(MediaItemsDA da) : ObservableObject {
       done++;
     }
 
-    await Tasks.RunOnUiThread(() => da.ItemsDelete(replaced));
+    await Tasks.RunOnUiThread(() => r.ItemsDelete(replaced));
   }
 
   public void Delete(MediaItemM[] items) =>
-    da.ItemsDelete(items);
+    r.ItemsDelete(items);
 
   public bool Exists(MediaItemM mi) {
     if (mi == null || File.Exists(mi.FilePath)) return true;
     File.Delete(mi.FilePathCache);
-    da.ItemsDelete(new[] { mi });
+    r.ItemsDelete(new[] { mi });
     return false;
   }
 
@@ -112,8 +111,8 @@ public sealed class MediaItemsM(MediaItemsDA da) : ObservableObject {
     _supportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
 
   public void OnMetadataReloaded(RealMediaItemM[] items) {
-    da.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
-    da.RaiseOrientationChanged(items);
+    r.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
+    r.RaiseOrientationChanged(items);
   }
 
   public Task ReloadMetadata(RealMediaItemM mi) {
@@ -123,18 +122,18 @@ public sealed class MediaItemsM(MediaItemsDA da) : ObservableObject {
     return Tasks.RunOnUiThread(async () => {
       if (mi is VideoM) ReadMetadata(mim, false);
       if (mim.Success) await mim.FindRefs();
-      da.Modify(mi);
+      r.Modify(mi);
       mi.IsOnlyInDb = false;
     });
   }
 
   public void Rename(RealMediaItemM mi, string newFileName) =>
-    da.ItemRename(mi, newFileName);
+    r.ItemRename(mi, newFileName);
 
   public void SetComment(MediaItemM mi, string comment) {
     mi.Comment = comment;
     mi.SetInfoBox(true);
     mi.OnPropertyChanged(nameof(mi.Comment));
-    da.Modify(mi);
+    r.Modify(mi);
   }
 }

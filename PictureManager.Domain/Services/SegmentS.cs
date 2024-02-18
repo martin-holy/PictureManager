@@ -1,16 +1,17 @@
 using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;
+using PictureManager.Domain.Repositories;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.Services;
 
-public sealed class SegmentsM : ObservableObject {
-  public SegmentsDA DataAdapter { get; set; }
+public sealed class SegmentS : ObservableObject {
+  public SegmentR DataAdapter { get; set; }
   public SegmentsRectsM SegmentsRectsM { get; }
   public SegmentsDrawerM SegmentsDrawerM { get; }
   public Selecting<SegmentM> Selected { get; } = new();
@@ -25,18 +26,18 @@ public sealed class SegmentsM : ObservableObject {
     }
   }
 
-  public SegmentsM(SegmentsDA da) {
-    DataAdapter = da;
+  public SegmentS(SegmentR r) {
+    DataAdapter = r;
     SegmentsRectsM = new(this);
     SegmentsDrawerM = new(this);
   }
 
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
     if (!isCtrlOn && !isShiftOn)
-      Core.PeopleM.Selected.DeselectAll();
+      Core.S.Person.Selected.DeselectAll();
 
     Selected.Select(segments, segment, isCtrlOn, isShiftOn);
-    Core.PeopleM.Selected.Add(Selected.Items.GetPeople());
+    Core.S.Person.Selected.Add(Selected.Items.GetPeople());
     OnPropertyChanged(nameof(CanSetAsSamePerson));
   }
 
@@ -69,7 +70,7 @@ public sealed class SegmentsM : ObservableObject {
       .Distinct()
       .ToArray();
 
-    Core.PeopleM.MergePeople(person, unknownPeople.ToArray());
+    Core.S.Person.MergePeople(person, unknownPeople.ToArray());
     DataAdapter.ChangePerson(person, segments, people);
   }
 
@@ -81,7 +82,7 @@ public sealed class SegmentsM : ObservableObject {
     var people = items.GetPeople().OrderBy(x => x.Name).ToArray();
 
     if (people.Length == 0) {
-      newPerson = Core.Db.People.ItemCreateUnknown();
+      newPerson = Core.R.Person.ItemCreateUnknown();
       toUpdate = items;
     }
     else if (people.Length == 1) {
@@ -89,12 +90,12 @@ public sealed class SegmentsM : ObservableObject {
       toUpdate = items.Where(x => x.Person == null).ToArray();
     }
     else {
-      if (!MergePeopleDialogM.Open(Core.PeopleM, this, people)) return;
+      if (!MergePeopleDialogM.Open(Core.S.Person, this, people)) return;
       newPerson = MergePeopleDialogM.Person;
       toUpdate = MergePeopleDialogM.SegmentsToUpdate;
     }
 
-    Core.PeopleM.Selected.DeselectAll();
+    Core.S.Person.Selected.DeselectAll();
     var affectedPeople = people.Concat(new[] { newPerson }).Distinct().ToArray();
     DataAdapter.ChangePerson(newPerson, toUpdate, affectedPeople);
   }

@@ -10,18 +10,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|Name|Category|GroupItems
 /// </summary>
-public class CategoryGroupsDA : TreeDataAdapter<CategoryGroupM> {
-  private readonly Db _db;
-  private readonly List<ITreeCategory> _categories = new();
-
-  public CategoryGroupsDA(Db db) : base("CategoryGroups", 4) {
-    _db = db;
-  }
+public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>("CategoryGroups", 4) {
+  private readonly List<ITreeCategory> _categories = [];
 
   public override void Save() =>
     SaveToSingleFile(_categories.SelectMany(x => x.Items.OfType<CategoryGroupM>()));
@@ -80,7 +75,7 @@ public class CategoryGroupsDA : TreeDataAdapter<CategoryGroupM> {
   }
 
   private void GroupItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-    if (_db.IsReady) IsModified = true;
+    if (coreR.IsReady) IsModified = true;
   }
 
   public void AddCategory(ITreeCategory<CategoryGroupM> cat) {

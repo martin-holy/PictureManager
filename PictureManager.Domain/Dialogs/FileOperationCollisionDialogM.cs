@@ -4,11 +4,12 @@ using MH.Utils.Dialogs;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class FileOperationCollisionDialogM : Dialog {
+    public sealed class FileOperationCollisionDialogM : Dialog {
     private string _error;
     private string _fileName;
     private FileInfo _srcFileInfo;
@@ -62,14 +63,14 @@ namespace PictureManager.Domain.Dialogs {
       var lioSep = path.LastIndexOf(Path.DirectorySeparatorChar);
       var folderPath = path[..lioSep];
       var fileName = path[(lioSep + 1)..];
-      var folder = Tree.GetByPath(Core.FoldersM.TreeCategory, folderPath, Path.DirectorySeparatorChar) as FolderM;
+      var folder = Tree.GetByPath(Core.R.Folder.Tree, folderPath, Path.DirectorySeparatorChar) as FolderM;
       var mi = folder?.MediaItems.GetByFileName(fileName);
 
       if (mi != null) return mi;
 
-      mi = Core.Db.MediaItems.ItemCreate(folder, fileName);
+      mi = Core.R.MediaItem.ItemCreate(folder, fileName);
       var mim = new MediaItemMetadata(mi);
-      MediaItemsM.ReadMetadata(mim, false);
+      MediaItemS.ReadMetadata(mim, false);
       if (mim.Success) mim.FindRefs().Wait();
 
       return mi;

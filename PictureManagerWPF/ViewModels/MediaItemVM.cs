@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 
 namespace PictureManager.ViewModels;
 
-public static class MediaItemsVM {
+public static class MediaItemVM {
   private const string _msRegionInfo = "/xmp/MP:RegionInfo";
   private const string _msRegions = "/xmp/MP:RegionInfo/MPRI:Regions";
   private const string _msPersonName = "/MPReg:PersonDisplayName";

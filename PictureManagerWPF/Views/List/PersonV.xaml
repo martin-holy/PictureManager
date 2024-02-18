@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:s="clr-namespace:PictureManager.Domain.Services;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="PM.Views.List.PersonV" DataType="{x:Type m:PersonM}">
     <DockPanel>
@@ -29,8 +30,8 @@
               <Border BorderThickness="1" BorderBrush="Black">
                 <Image
                   Stretch="Fill"
-                  Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
-                  Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
+                  Width="{Binding Source={x:Static s:SegmentS.SegmentUiSize}}"
+                  Height="{Binding Source={x:Static s:SegmentS.SegmentUiSize}}">
                   <Image.Source>
                     <MultiBinding Converter="{x:Static pmConv:SegmentThumbnailSourceConverter.Inst}">
                       <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True"/>

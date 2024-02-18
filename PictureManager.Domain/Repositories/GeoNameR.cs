@@ -9,18 +9,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|Name|ToponymName|FCode|Parent
 /// </summary>
-public class GeoNamesDA : TreeDataAdapter<GeoNameM> {
+public class GeoNameR : TreeDataAdapter<GeoNameM> {
   private bool _webLoadDisabled;
 
   public GeoNamesTreeCategory Tree { get; }
   public bool ApiLimitExceeded { get; set; }
 
-  public GeoNamesDA() : base("GeoNames", 5) {
+  public GeoNameR() : base("GeoNames", 5) {
     Tree = new(this);
   }
 

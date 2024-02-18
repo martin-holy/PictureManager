@@ -2,7 +2,7 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -33,7 +33,7 @@ public sealed class FolderBrowserDialogM : Dialog {
       if (!di.IsReady) continue;
 
       var item = new FolderTreeViewItem(null, di.Name.TrimEnd(Path.DirectorySeparatorChar)) {
-        Icon = FoldersM.GetDriveIcon(di.DriveType)
+        Icon = FolderS.GetDriveIcon(di.DriveType)
       };
 
       // add placeholder so the Drive can be expanded

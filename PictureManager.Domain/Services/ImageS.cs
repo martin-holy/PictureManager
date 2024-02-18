@@ -1,10 +1,11 @@
 ﻿using MH.Utils;
-using PictureManager.Domain.Database;
+using PictureManager.Domain.Models.MediaItems;
 using System;
+using PictureManager.Domain.Repositories;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Domain.Services;
 
-public sealed class ImagesM(ImagesDA da) {
+public sealed class ImageS(ImageR r) {
   public static Func<ImageM, bool> WriteMetadata { get; set; }
 
   public bool TryWriteMetadata(ImageM img) {
@@ -17,7 +18,7 @@ public sealed class ImagesM(ImagesDA da) {
       img.IsOnlyInDb = true;
     }
 
-    da.IsModified = true;
+    r.IsModified = true;
     return !img.IsOnlyInDb;
   }
 }

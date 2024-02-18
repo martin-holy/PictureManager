@@ -21,7 +21,7 @@ namespace PictureManager.Domain.Dialogs {
         new(new(() => Remove(SelectedFolder), () => SelectedFolder != null, Res.IconXCross, "Remove")),
         new(CloseCommand, false, true) };
 
-      foreach (var folder in Core.Db.FolderKeywords.All.OrderBy(x => x.FullPath))
+      foreach (var folder in Core.R.FolderKeyword.All.OrderBy(x => x.FullPath))
         Items.Add(folder);
     }
 
@@ -29,7 +29,7 @@ namespace PictureManager.Domain.Dialogs {
       if (folder == null) return;
       if (Show(new MessageDialog("Remove Confirmation", "Are you sure?", Res.IconQuestion, true)) != 1) return;
 
-      Core.Db.FolderKeywords.ItemDelete(folder);
+      Core.R.FolderKeyword.ItemDelete(folder);
       Items.Remove(folder);
     }
   }

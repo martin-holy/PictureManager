@@ -28,7 +28,7 @@ public sealed class MediaViewerM : ObservableObject {
   public MediaItemM Current {
     get => _current;
     set {
-      if (!Core.M.MediaItems.Exists(value)) return;
+      if (!Core.S.MediaItem.Exists(value)) return;
       _current = value;
       OnPropertyChanged();
       OnPropertyChanged(nameof(PositionSlashCount));

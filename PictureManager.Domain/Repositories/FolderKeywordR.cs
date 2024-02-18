@@ -7,28 +7,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 // TODO why is TreeDataAdapter param of type FolderM?
 /// <summary>
 /// DB fields: ID
 /// </summary>
-public class FolderKeywordsDA : TreeDataAdapter<FolderM> {
-  private readonly Db _db;
+public class FolderKeywordR : TreeDataAdapter<FolderM> {
+  private readonly CoreR _coreR;
 
-  public FolderKeywordsTreeCategory Model { get; }
+  public FolderKeywordsTreeCategory Tree { get; }
 
   public static readonly FolderKeywordM FolderKeywordPlaceHolder = new(string.Empty, null);
-  public List<FolderKeywordM> All2 { get; } = new();
+  public List<FolderKeywordM> All2 { get; } = [];
 
-  public FolderKeywordsDA(Db db) : base("FolderKeywords", 1) {
-    _db = db;
+  public FolderKeywordR(CoreR coreR) : base("FolderKeywords", 1) {
+    _coreR = coreR;
     IsDriveRelated = true;
-    Model = new(this);
+    Tree = new(this);
   }
 
   public override Dictionary<string, IEnumerable<FolderM>> GetAsDriveRelated() =>
-    Db.GetAsDriveRelated(All, x => x);
+    CoreR.GetAsDriveRelated(All, x => x);
 
   public override FolderM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), string.Empty, null);
@@ -38,7 +38,7 @@ public class FolderKeywordsDA : TreeDataAdapter<FolderM> {
 
   public override void LinkReferences() {
     foreach (var id in AllDict.Keys)
-      AllDict[id] = _db.Folders.AllDict[id];
+      AllDict[id] = _coreR.Folder.AllDict[id];
   }
 
   public void LoadIfContains(FolderM folder) {
@@ -52,13 +52,13 @@ public class FolderKeywordsDA : TreeDataAdapter<FolderM> {
       fk.Items.Clear();
     }
 
-    Model.Items.Clear();
+    Tree.Items.Clear();
     All2.Clear();
 
     foreach (var folder in All)
-      LoadRecursive(folder, Model);
+      LoadRecursive(folder, Tree);
 
-    foreach (var fk in All2.Where(fk => fk.Folders.All(x => !_db.Viewers.Model.CanViewerSee(x))))
+    foreach (var fk in All2.Where(fk => fk.Folders.All(x => !Core.S.Viewer.CanViewerSee(x))))
       fk.IsHidden = true;
   }
 
@@ -76,8 +76,8 @@ public class FolderKeywordsDA : TreeDataAdapter<FolderM> {
 
     if (fk == null) {
       // remove placeholder
-      if (Model.Items.Count == 1 && FolderKeywordPlaceHolder.Equals(Model.Items[0]))
-        Model.Items.Clear();
+      if (Tree.Items.Count == 1 && FolderKeywordPlaceHolder.Equals(Tree.Items[0]))
+        Tree.Items.Clear();
 
       fk = new(folder.Name, fkRoot);
       fkRoot.Items.SetInOrder(fk, x => ((FolderKeywordM)x).Name);

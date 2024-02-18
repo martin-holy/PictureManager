@@ -6,6 +6,7 @@ using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,7 +32,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
 
       if (!File.Exists(segment.FilePathCache)) {
         if (!File.Exists(segment.MediaItem.FilePath)) {
-          Tasks.RunOnUiThread(() => Core.Db.MediaItems.ItemDelete(segment.MediaItem));
+          Tasks.RunOnUiThread(() => Core.R.MediaItem.ItemDelete(segment.MediaItem));
           return null;
         }
         CreateThumbnail(segment);
@@ -85,7 +86,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
     try {
       BitmapSourceExtensions
         .Create(filePath, rect)
-        .Resize(SegmentsM.SegmentSize)
+        .Resize(SegmentS.SegmentSize)
         .SaveAsJpeg(segment.FilePathCache, Core.Settings.JpegQualityLevel);
     }
     catch (Exception ex) {

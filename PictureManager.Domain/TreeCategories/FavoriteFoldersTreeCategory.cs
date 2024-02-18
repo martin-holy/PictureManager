@@ -1,20 +1,20 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class FavoriteFoldersTreeCategory : TreeCategory<FavoriteFolderM> {
   public static RelayCommand<FolderM> AddToFavoritesCommand { get; set; }
 
-  public FavoriteFoldersTreeCategory(FavoriteFoldersDA da) :
+  public FavoriteFoldersTreeCategory(FavoriteFolderR r) :
     base(Res.IconFolderStar, "Favorites", (int)Category.FavoriteFolders) {
-    DataAdapter = da;
+    DataAdapter = r;
     CanMoveItem = true;
-    AddToFavoritesCommand = new(da.ItemCreate, null, "Add to Favorites");
+    AddToFavoritesCommand = new(r.ItemCreate, null, "Add to Favorites");
   }
 
   public override void OnItemSelected(object o) =>
-    Core.FoldersM.TreeCategory.ScrollTo((o as FavoriteFolderM)?.Folder);
+    Core.R.Folder.Tree.ScrollTo((o as FavoriteFolderM)?.Folder);
 }

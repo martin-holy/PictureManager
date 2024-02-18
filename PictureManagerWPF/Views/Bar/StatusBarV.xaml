@@ -86,7 +86,7 @@
         <!-- Dimension -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding Core.VM.MediaItems.Current, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding Core.VM.MediaItem.Current, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <StackPanel>
             <Path Data="{StaticResource IconRuler}"/>
 
@@ -94,8 +94,8 @@
               <TextBlock>
                 <TextBlock.Text>
                   <MultiBinding StringFormat="{}{0}x{1}">
-                    <Binding Path="Core.VM.MediaItems.Current.Width"/>
-                    <Binding Path="Core.VM.MediaItems.Current.Height"/>
+                    <Binding Path="Core.VM.MediaItem.Current.Width"/>
+                    <Binding Path="Core.VM.MediaItem.Current.Height"/>
                   </MultiBinding>
                 </TextBlock.Text>
               </TextBlock>
@@ -159,7 +159,7 @@
         <!-- GeoName -->
         <Border
           x:Name="boGeoName"
-          ToolTip="{Binding Core.VM.MediaItems.CurrentGeoName.FullName}"
+          ToolTip="{Binding Core.VM.MediaItem.CurrentGeoName.FullName}"
           Style="{StaticResource SBorderGroup}"
           Margin="1,2,1,0"
           Padding="4"
@@ -174,7 +174,7 @@
         <Border
           Style="{StaticResource _infoGroup}"
           Visibility="{Binding Core.MediaItemsStatusBarM.FilePath, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
-          ToolTip="{Binding Core.VM.MediaItems.Current.FilePath}">
+          ToolTip="{Binding Core.VM.MediaItem.Current.FilePath}">
 
           <StackPanel>
             <Path Data="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}"/>
@@ -205,7 +205,7 @@
           <StackPanel>
             <Path Data="{StaticResource IconPeople}" Fill="{StaticResource ColorBrushPeople}"/>
 
-            <ItemsControl ItemsSource="{Binding Core.VM.MediaItems.Current.DisplayPeople}">
+            <ItemsControl ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayPeople}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <WrapPanel Orientation="Horizontal"/>
@@ -238,7 +238,7 @@
 
           <StackPanel>
             <Path Data="{StaticResource IconTag}" Fill="{StaticResource ColorBrushTag}"/>
-            <ItemsControl ItemsSource="{Binding Core.VM.MediaItems.Current.DisplayKeywords}"/>
+            <ItemsControl ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayKeywords}"/>
           </StackPanel>
         </Border>
 
@@ -252,7 +252,7 @@
             <Path Data="{StaticResource IconNotification}"/>
 
             <Border>
-              <TextBlock Text="{Binding Core.VM.MediaItems.Current.Comment}"/>
+              <TextBlock Text="{Binding Core.VM.MediaItem.Current.Comment}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -269,18 +269,18 @@
           Value="{Binding Core.MediaViewerM.PositionSlashCount}"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding Core.VM.MediaItems.CurrentGeoName, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
+      <DataTrigger Binding="{Binding Core.VM.MediaItem.CurrentGeoName, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
         <Setter TargetName="boGeoName" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding Core.VM.MediaItems.Current.DisplayPeople, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
+      <DataTrigger Binding="{Binding Core.VM.MediaItem.Current.DisplayPeople, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
         <Setter TargetName="boPeople" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding Core.MediaViewerM.IsVisible}" Value="True"/>
-          <Condition Binding="{Binding Core.VM.MediaItems.Current.DisplayKeywords, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
+          <Condition Binding="{Binding Core.VM.MediaItem.Current.DisplayKeywords, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="boKeywords" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
@@ -288,7 +288,7 @@
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding Core.MediaViewerM.IsVisible}" Value="True"/>
-          <Condition Binding="{Binding Core.VM.MediaItems.Current.Comment, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
+          <Condition Binding="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="boComment" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>

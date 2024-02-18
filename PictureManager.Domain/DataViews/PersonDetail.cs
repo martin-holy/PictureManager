@@ -2,6 +2,7 @@
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,8 @@ using static MH.Utils.DragDropHelper;
 namespace PictureManager.Domain.DataViews;
 
 public sealed class PersonDetail : ObservableObject {
-  private readonly PeopleM _peopleM;
-  private readonly SegmentsM _segmentsM;
+  private readonly PersonS _personS;
+  private readonly SegmentS _segmentS;
   private PersonM _personM;
 
   public CollectionViewSegments AllSegments { get; } = new();
@@ -22,9 +23,9 @@ public sealed class PersonDetail : ObservableObject {
 
   public RelayCommand LoadMediaItemsCommand { get; }
 
-  public PersonDetail(PeopleM peopleM, SegmentsM segmentsM) {
-    _peopleM = peopleM;
-    _segmentsM = segmentsM;
+  public PersonDetail(PersonS personS, SegmentS segmentS) {
+    _personS = personS;
+    _segmentS = segmentS;
     CanDropFunc = CanDrop;
     TopSegmentsDropAction = TopSegmentsDrop;
     LoadMediaItemsCommand = new(() => Core.MediaItemsViews.LoadByTag(PersonM), Res.IconImageMultiple, "Load Media items in new tab");
@@ -41,7 +42,7 @@ public sealed class PersonDetail : ObservableObject {
 
   private void TopSegmentsDrop(object data, bool haveSameOrigin) {
     var segment = data as SegmentM;
-    _peopleM.ToggleTopSegment(PersonM, segment);
+    _personS.ToggleTopSegment(PersonM, segment);
     TopSegments.ReGroupItems(new[] { segment }, haveSameOrigin);
   }
 
@@ -54,7 +55,7 @@ public sealed class PersonDetail : ObservableObject {
       return;
     }
 
-    ReloadAllSegments(_segmentsM.DataAdapter.All
+    ReloadAllSegments(_segmentS.DataAdapter.All
       .Where(x => ReferenceEquals(x.Person, PersonM))
       .ToList());
 

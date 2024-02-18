@@ -2,21 +2,23 @@
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Services;
+using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class FoldersDA : TreeDataAdapter<FolderM> {
-  public FoldersM Model { get; }
+public class FolderR : TreeDataAdapter<FolderM> {
+  public FoldersTreeCategory Tree { get; }
 
-  public FoldersDA() : base("Folders", 3) {
+  public FolderR() : base("Folders", 3) {
     IsDriveRelated = true;
-    Model = new(this);
+    Tree = new(this);
   }
 
   public static IEnumerable<T> GetAll<T>(ITreeItem root) {
@@ -24,12 +26,12 @@ public class FoldersDA : TreeDataAdapter<FolderM> {
 
     foreach (var item in root.Items)
     foreach (var subItem in GetAll<T>(item))
-      if (!FoldersM.FolderPlaceHolder.Equals(subItem))
+      if (!FolderS.FolderPlaceHolder.Equals(subItem))
         yield return subItem;
   }
 
   public override Dictionary<string, IEnumerable<FolderM>> GetAsDriveRelated() =>
-    Model.TreeCategory.Items.ToDictionary(x => x.Name, GetAll<FolderM>);
+    Tree.Items.ToDictionary(x => x.Name, GetAll<FolderM>);
 
   public override FolderM FromCsv(string[] csv) =>
     string.IsNullOrEmpty(csv[2])
@@ -43,8 +45,8 @@ public class FoldersDA : TreeDataAdapter<FolderM> {
       (folder.Parent as FolderM)?.GetHashCode().ToString() ?? string.Empty);
 
   public override void LinkReferences() {
-    Model.TreeCategory.Items.Clear();
-    LinkTree(Model.TreeCategory, 2);
+    Tree.Items.Clear();
+    LinkTree(Tree, 2);
   }
 
   public override FolderM ItemCreate(ITreeItem parent, string name) {
