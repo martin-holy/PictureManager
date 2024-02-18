@@ -34,7 +34,6 @@ public sealed class Core {
   public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public static MediaItemsViews MediaItemsViews { get; } = new();
   public static MediaViewerM MediaViewerM { get; } = new();
-  public static MediaItemsStatusBarM MediaItemsStatusBarM { get; } = new();
   public TitleProgressBarM TitleProgressBarM { get; } = new();
   public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
   public static VideoDetail VideoDetail { get; } = new();
@@ -119,7 +118,7 @@ public sealed class Core {
   private void AttachVMMediaItemsEventHandlers() {
     VM.MediaItem.PropertyChanged += (_, e) => {
       if (nameof(VM.MediaItem.Current).Equals(e.PropertyName)) {
-        MediaItemsStatusBarM.Update();
+        VM.MainWindow.StatusBar.Update();
         VideoDetail.SetCurrent(VM.MediaItem.Current);
 
         if (VM.MainWindow.IsInViewMode) {
@@ -158,8 +157,8 @@ public sealed class Core {
     MediaViewerM.PropertyChanged += (_, e) => {
       switch (e.PropertyName) {
         case nameof(MediaViewerM.IsVisible):
-          MediaItemsStatusBarM.Update();
-          MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
+          VM.MainWindow.StatusBar.Update();
+          VM.MainWindow.StatusBar.OnPropertyChanged(nameof(VM.MainWindow.StatusBar.IsCountVisible));
           break;
         case nameof(MediaViewerM.Current):
           if (MediaViewerM.Current != null && !ReferenceEquals(VM.MediaItem.Current, MediaViewerM.Current))
@@ -205,7 +204,7 @@ public sealed class Core {
 
     R.Folder.ItemRenamedEvent += (_, e) => {
       R.FolderKeyword.LoadIfContains(e.Data);
-      MediaItemsStatusBarM.UpdateFilePath();
+      VM.MainWindow.StatusBar.UpdateFilePath();
     };
 
     R.Folder.ItemDeletedEvent += (_, e) => {
@@ -222,7 +221,7 @@ public sealed class Core {
 
     S.Folder.ItemMovedEvent += (_, _) => {
       R.FolderKeyword.Reload();
-      MediaItemsStatusBarM.UpdateFilePath();
+      VM.MainWindow.StatusBar.UpdateFilePath();
     };
   }
 
@@ -265,7 +264,7 @@ public sealed class Core {
       MediaItemsViews.UpdateViews(all);
       VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-      MediaItemsStatusBarM.UpdateRating();
+      VM.MainWindow.StatusBar.UpdateRating();
       VM.UpdateModifiedMediaItemsCount();
     };
 
@@ -313,7 +312,7 @@ public sealed class Core {
     MediaItemsViews.PropertyChanged += (_, e) => {
       if (nameof(MediaItemsViews.Current).Equals(e.PropertyName)) {
         TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-        MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
+        VM.MainWindow.StatusBar.OnPropertyChanged(nameof(VM.MainWindow.StatusBar.IsCountVisible));
       }
     };
   }

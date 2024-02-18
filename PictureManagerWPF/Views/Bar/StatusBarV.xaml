@@ -4,7 +4,6 @@
   xmlns:mhc="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type vm:StatusBarVM}">
@@ -68,9 +67,7 @@
         <!-- PositionSlashCount -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding MediaItemsStatusBarM.IsVisible,
-                       Source={x:Static pm:App.Core},
-                       Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding IsCountVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <StackPanel Orientation="Horizontal">
             <Path Data="{StaticResource IconImageMultiple}"/>
 
@@ -106,12 +103,12 @@
         <!-- File Size -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding Core.MediaItemsStatusBarM.FileSize, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding FileSize, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <StackPanel>
             <Path Data="{StaticResource IconPageUpload}"/>
 
             <Border>
-              <TextBlock Text="{Binding Core.MediaItemsStatusBarM.FileSize}"/>
+              <TextBlock Text="{Binding FileSize}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -134,9 +131,9 @@
           Style="{StaticResource SBorderGroup}"
           Margin="2,0,2,0"
           VerticalAlignment="Center"
-          Visibility="{Binding Core.MediaItemsStatusBarM.Rating.Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding Rating.Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
           <Border Margin="0">
-            <ItemsControl ItemsSource="{Binding Core.MediaItemsStatusBarM.Rating}">
+            <ItemsControl ItemsSource="{Binding Rating}">
 
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -173,25 +170,25 @@
         <!-- FilePath -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding Core.MediaItemsStatusBarM.FilePath, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
+          Visibility="{Binding FilePath, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
           ToolTip="{Binding Core.VM.MediaItem.Current.FilePath}">
 
           <StackPanel>
             <Path Data="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}"/>
-            <ItemsControl ItemsSource="{Binding Core.MediaItemsStatusBarM.FilePath}"/>
+            <ItemsControl ItemsSource="{Binding FilePath}"/>
           </StackPanel>
         </Border>
 
         <!-- DateAndTime -->
         <Border
           Style="{StaticResource _infoGroup}"
-          Visibility="{Binding Core.MediaItemsStatusBarM.DateAndTime, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+          Visibility="{Binding DateAndTime, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
 
           <StackPanel>
             <Path Data="{StaticResource IconCalendar}"/>
 
             <Border>
-              <TextBlock Text="{Binding Core.MediaItemsStatusBarM.DateAndTime}"/>
+              <TextBlock Text="{Binding DateAndTime}"/>
             </Border>
           </StackPanel>
         </Border>

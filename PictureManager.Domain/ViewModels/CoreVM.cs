@@ -160,7 +160,7 @@ public class CoreVM {
     progress.Init(items, null, mi => _coreS.Image.TryWriteMetadata(mi), mi => mi.FilePath, null);
     progress.Start();
     Dialog.Show(progress);
-    _ = _coreS.MediaItemsStatusBar.UpdateFileSize();
+    _ = MainWindow.StatusBar.UpdateFileSize();
     UpdateModifiedMediaItemsCount();
   }
 
