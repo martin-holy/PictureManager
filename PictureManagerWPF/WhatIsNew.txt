@@ -4,6 +4,9 @@
 [B] - Bug fix
 
 Latest:
+ - [B] RangeSlider
+
+24.02.07.1702:
  - [U] DB migration of MediaItems (Images, Videos), VideoClips, VideoClipsGroups and GeoNames
  - [N] New MediaItem type VideoImage 
  - [N] Segments for VideoClips and VideoImages
