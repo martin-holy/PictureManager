@@ -32,7 +32,6 @@ public sealed class Core {
 
   public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public static MediaItemsViews MediaItemsViews { get; } = new();
-  public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
   public static VideoDetail VideoDetail { get; } = new();
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
@@ -79,7 +78,7 @@ public sealed class Core {
     R.Folder.Tree.AddDrives();
     S.Viewer.SetCurrent(R.Viewer.All.SingleOrDefault(x => x.IsDefault));
     S.Viewer.Current?.UpdateHashSets();
-    TreeViewCategoriesM.AddCategories();
+    VM.MainWindow.TreeViewCategories.AddCategories();
     R.CategoryGroup.AddCategory(R.Person.Tree);
     R.CategoryGroup.AddCategory(R.Keyword.Tree);
     VideoDetail.MediaPlayer.SetView(UiFullVideo);
@@ -106,7 +105,7 @@ public sealed class Core {
           VideoDetail.MediaPlayer.SetView(UiDetailVideo);
         }
 
-        TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+        VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
       }
     };
   }
@@ -118,7 +117,7 @@ public sealed class Core {
         VideoDetail.SetCurrent(VM.MediaItem.Current);
 
         if (VM.MainWindow.IsInViewMode) {
-          TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+          VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
           S.Segment.Rect.MediaItem = VM.MediaItem.Current;
         }
       }
@@ -259,7 +258,7 @@ public sealed class Core {
       VM.MediaItem.OnMetadataChanged(all);
       MediaItemsViews.UpdateViews(all);
       VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
-      TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+      VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
       VM.MainWindow.StatusBar.UpdateRating();
       VM.UpdateModifiedMediaItemsCount();
     };
@@ -307,7 +306,7 @@ public sealed class Core {
 
     MediaItemsViews.PropertyChanged += (_, e) => {
       if (nameof(MediaItemsViews.Current).Equals(e.PropertyName)) {
-        TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+        VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
         VM.MainWindow.StatusBar.OnPropertyChanged(nameof(VM.MainWindow.StatusBar.IsCountVisible));
       }
     };

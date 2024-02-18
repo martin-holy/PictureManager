@@ -91,12 +91,12 @@ public sealed class MediaItemsViews : ObservableObject {
   }
 
   private void OnViewSelectionChanged(object o, EventArgs e) {
-    Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+    Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
     _ = Core.VM.MainWindow.StatusBar.UpdateFileSize();
   }
 
   private void OnViewFilteredChanged(object o, EventArgs e) {
-    Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+    Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
   }
 
   public void ReWrapViews(MediaItemM[] mediaItems) =>

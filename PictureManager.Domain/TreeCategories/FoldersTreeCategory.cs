@@ -105,7 +105,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         break;
     }
 
-    Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+    Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
   }
 
   public void AddDrives() {
@@ -132,7 +132,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
   public void ScrollTo(FolderM folder) {
     if (folder == null || !Core.S.Viewer.CanViewerSee(folder)) return;
     folder.IsExpanded = true;
-    Core.TreeViewCategoriesM.Select(TreeView);
+    Core.VM.MainWindow.TreeViewCategories.Select(TreeView);
     TreeView.ScrollTo(folder);
   }
 }
