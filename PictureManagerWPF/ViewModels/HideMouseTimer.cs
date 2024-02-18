@@ -1,10 +1,10 @@
-﻿using PictureManager.Domain.Models;
+﻿using PictureManager.Domain.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace PictureManager.ViewModels; 
+namespace PictureManager.ViewModels;
 
 public static class HideMouseTimer {
   private static bool _isHidden;
@@ -12,7 +12,7 @@ public static class HideMouseTimer {
   private static readonly TimeSpan _interval = TimeSpan.FromMilliseconds(3000);
   private static DateTime _lastMove;
 
-  public static void Init(Window window, PresentationPanelM panel) {
+  public static void Init(Window window, PresentationPanelVM panel) {
     _timer = new() { Interval = _interval };
     _timer.Tick += delegate {
       if (_isHidden || !window.IsActive || DateTime.Now - _lastMove < _interval)

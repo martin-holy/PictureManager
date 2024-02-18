@@ -27,7 +27,7 @@
       <Grid.InputBindings>
         <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
         <KeyBinding Key="Left" Command="{Binding PreviousCommand}"/>
-        <KeyBinding Modifiers="Control" Key="P" Command="m:PresentationPanelM.StartPresentationCommand"/>
+        <KeyBinding Modifiers="Control" Key="P" Command="vm:PresentationPanelVM.StartPresentationCommand"/>
       </Grid.InputBindings>
 
       <b:Interaction.Triggers>
