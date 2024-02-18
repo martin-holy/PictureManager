@@ -29,6 +29,7 @@ public class CoreVM {
   public MediaItemsViews MediaItemsViews { get; }
   public MediaViewerVM MediaViewer { get; } = new();
   public SegmentsDrawerVM SegmentsDrawer { get; }
+  public TitleProgressBarVM TitleProgressBar { get; } = new();
 
   public static RelayCommand AppClosingCommand { get; set; }
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");

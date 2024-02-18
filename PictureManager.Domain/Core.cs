@@ -32,7 +32,6 @@ public sealed class Core {
 
   public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public static MediaItemsViews MediaItemsViews { get; } = new();
-  public TitleProgressBarM TitleProgressBarM { get; } = new();
   public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
   public static VideoDetail VideoDetail { get; } = new();
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
