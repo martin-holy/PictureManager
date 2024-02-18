@@ -37,7 +37,7 @@
           </Grid.Background>
           
           <!-- Progress bar -->
-          <ContentPresenter Content="{Binding TitleProgressBarM}"/>
+          <ContentPresenter Content="{Binding VM.TitleProgressBar}"/>
 
           <Grid
             Background="Transparent"
