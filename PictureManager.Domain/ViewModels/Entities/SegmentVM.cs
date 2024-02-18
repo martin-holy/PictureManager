@@ -12,6 +12,8 @@ namespace PictureManager.Domain.ViewModels.Entities;
 public sealed class SegmentVM {
   public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; }
 
+  public SegmentRectVM Rect { get; } = new();
+
   public static RelayCommand SetSelectedAsSamePersonCommand { get; set; }
   public static RelayCommand SetSelectedAsUnknownCommand { get; set; }
 

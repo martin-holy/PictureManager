@@ -120,7 +120,7 @@
               IsThreeState="False"
               VerticalAlignment="Center"
               ap:Icon.Data="{StaticResource IconPeople}"
-              IsChecked="{Binding S.Segment.SegmentsRectsM.AreVisible}"/>
+              IsChecked="{Binding S.Segment.Rect.AreVisible}"/>
 
             <mhc:IconButton Command="vm:SegmentsDrawerVM.OpenCommand"/>
             <mhc:IconButton Command="vm:SegmentsDrawerVM.AddSelectedCommand"/>

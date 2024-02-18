@@ -2,7 +2,6 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mim="clr-namespace:PictureManager.Domain.Models.MediaItems;assembly=PictureManager.Domain"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
@@ -37,13 +36,13 @@
             EventArgsConverter="{x:Static mhConv:MouseWheelConverter.Inst}"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseDown">
-          <b:InvokeCommandAction Command="vmWin:SegmentsRectsVM.CreateCommand" PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentRectVM.CreateCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseMove">
-          <b:InvokeCommandAction Command="vmWin:SegmentsRectsVM.EditCommand" PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentRectVM.EditCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseUp">
-          <b:InvokeCommandAction Command="vmWin:SegmentsRectsVM.EndEditCommand"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentRectVM.EndEditCommand"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -87,7 +86,7 @@
         <ContentPresenter
           HorizontalAlignment="Left"
           VerticalAlignment="Top"
-          Content="{Binding SegmentsRectsVM, Source={x:Static pm:App.Ui}}">
+          Content="{Binding SegmentRectVM, Source={x:Static pm:App.Ui}}">
 
           <ContentPresenter.RenderTransform>
             <TranslateTransform

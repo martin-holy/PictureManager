@@ -25,7 +25,7 @@
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="ToolTipOpening">
           <b:InvokeCommandAction
-            Command="m:SegmentsRectsM.SegmentToolTipReloadCommand"
+            Command="vme:SegmentRectVM.SegmentToolTipReloadCommand"
             CommandParameter="{Binding}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
@@ -39,7 +39,7 @@
 
               <!-- Segments Rects -->
               <ItemsControl
-                ItemsSource="{Binding S.Segment.SegmentsRectsM.SegmentToolTipRects, Source={x:Static pm:App.Core}}">
+                ItemsSource="{Binding VM.Segment.Rect.SegmentToolTipRects, Source={x:Static pm:App.Core}}">
 
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
