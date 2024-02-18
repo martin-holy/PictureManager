@@ -1,9 +1,5 @@
-﻿namespace PictureManager.Domain.Models {
-  public sealed class RatingM {
-    public int Value { get; }
+﻿namespace PictureManager.Domain.Models;
 
-    public RatingM(int value) {
-      Value = value;
-    }
-  }
+public sealed class RatingM(int value) {
+  public int Value { get; } = value;
 }
