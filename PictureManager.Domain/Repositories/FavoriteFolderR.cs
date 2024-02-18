@@ -4,24 +4,24 @@ using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|Folder|Title
 /// </summary>
-public class FavoriteFoldersDA : TreeDataAdapter<FavoriteFolderM> {
-  private readonly Db _db;
+public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
+  private readonly CoreR _coreR;
 
-  public FavoriteFoldersTreeCategory Model { get; }
+  public FavoriteFoldersTreeCategory Tree { get; }
 
-  public FavoriteFoldersDA(Db db) : base("FavoriteFolders", 3) {
-    _db = db;
+  public FavoriteFolderR(CoreR coreR) : base("FavoriteFolders", 3) {
+    _coreR = coreR;
     IsDriveRelated = true;
-    Model = new(this);
+    Tree = new(this);
   }
 
   public override Dictionary<string, IEnumerable<FavoriteFolderM>> GetAsDriveRelated() =>
-    Db.GetAsDriveRelated(Model.Items.Cast<FavoriteFolderM>(), x => x.Folder);
+    CoreR.GetAsDriveRelated(Tree.Items.Cast<FavoriteFolderM>(), x => x.Folder);
 
   public override FavoriteFolderM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[2]);
@@ -33,18 +33,18 @@ public class FavoriteFoldersDA : TreeDataAdapter<FavoriteFolderM> {
       ff.Name);
 
   public override void LinkReferences() {
-    Model.Items.Clear();
+    Tree.Items.Clear();
 
     foreach (var (ff, csv) in AllCsv) {
-      ff.Folder = _db.Folders.AllDict[int.Parse(csv[1])];
-      ff.Parent = Model;
-      Model.Items.Add(ff);
+      ff.Folder = _coreR.Folder.AllDict[int.Parse(csv[1])];
+      ff.Parent = Tree;
+      Tree.Items.Add(ff);
     }
   }
 
   public void ItemCreate(FolderM folder) =>
     TreeItemCreate(new(GetNextId(), folder.Name) {
-      Parent = Model,
+      Parent = Tree,
       Folder = folder
     });
 

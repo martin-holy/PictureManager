@@ -1,42 +1,48 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Database;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.TreeCategories;
+using PictureManager.Domain.Repositories;
 using System.Linq;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.Services;
 
-public sealed class ViewersM : ObservableObject {
-  private readonly ViewersDA _da;
+public sealed class ViewerS : ObservableObject {
+  private readonly ViewerR _r;
   private ViewerM _current;
   private ViewerM _selected;
 
-  public ViewersTreeCategory TreeCategory { get; }
   public ViewerDetailM ViewerDetailM { get; }
-  public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
+
+  public ViewerM Current {
+    get => _current;
+    set {
+      _current = value;
+      OnPropertyChanged();
+    }
+  }
+
   public ViewerM Selected {
     get => _selected;
     set {
       _selected = value;
       OnPropertyChanged();
-      value.Reload(Core.Db.CategoryGroups.All);
+      value.Reload(Core.R.CategoryGroup.All);
     }
   }
 
   public static RelayCommand<ViewerM> SetCurrentCommand { get; set; }
   public RelayCommand UpdateExcludedCategoryGroupsCommand { get; }
 
-  public ViewersM(ViewersDA da) {
-    _da = da;
-    TreeCategory = new(_da);
-    ViewerDetailM = new(_da);
+  public ViewerS(ViewerR r) {
+    _r = r;
+    ViewerDetailM = new(_r, this);
     SetCurrentCommand = new(SetCurrent, Res.IconEye);
     UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
   }
 
   private void UpdateExcludedCategoryGroups() {
     Selected.UpdateExcludedCategoryGroups();
-    _da.IsModified = true;
+    _r.IsModified = true;
   }
 
   public void OpenDetail(ViewerM viewer) {
@@ -48,23 +54,25 @@ public sealed class ViewersM : ObservableObject {
   public void SetCurrent(ViewerM viewer) {
     if (ReferenceEquals(Current, viewer)) return;
     if (Current != null) Current.IsDefault = false;
-    if (viewer != null) viewer.IsDefault = true;
-    _da.IsModified = true;
+    if (viewer != null && !viewer.IsDefault) {
+      viewer.IsDefault = true;
+      _r.IsModified = true;
+    }
+    
     Current = viewer;
-
-    foreach (var f in Core.Db.Folders.All.Where(x => x.IsHidden)) f.IsHidden = false;
-    foreach (var cg in Core.Db.CategoryGroups.All.Where(x => x.IsHidden)) cg.IsHidden = false;
+    foreach (var f in Core.R.Folder.All.Where(x => x.IsHidden)) f.IsHidden = false;
+    foreach (var cg in Core.R.CategoryGroup.All.Where(x => x.IsHidden)) cg.IsHidden = false;
     if (Current == null) return;
 
     Current.UpdateHashSets();
-    Core.Db.FolderKeywords.Reload();
+    Core.R.FolderKeyword.Reload();
 
-    foreach (var f in Core.FoldersM.TreeCategory.Items.Cast<FolderM>()) {
+    foreach (var f in Core.R.Folder.Tree.Items.Cast<FolderM>()) {
       f.IsExpanded = false;
       f.IsHidden = !CanViewerSee(f);
     }
 
-    foreach (var cg in Core.Db.CategoryGroups.All)
+    foreach (var cg in Core.R.CategoryGroup.All)
       cg.IsHidden = Current?.ExcludedCategoryGroups.Contains(cg) == true;
   }
 

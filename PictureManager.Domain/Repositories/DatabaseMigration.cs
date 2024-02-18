@@ -1,11 +1,11 @@
-﻿using MH.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MH.Utils;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 public static class DatabaseMigration {
   public static void Resolver(int oldVersion, int newVersion) {
@@ -34,19 +34,19 @@ public static class DatabaseMigration {
   /// </summary>
   private static void From0To1() {
     SimpleDB.MigrateFile(
-      Core.Db.FavoriteFolders.FilePath,
+      Core.R.FavoriteFolder.FilePath,
       record => $"{record}|Favorite folder name");
 
     SimpleDB.MigrateFile(
-      Core.Db.Keywords.FilePath,
+      Core.R.Keyword.FilePath,
       record => record[..record.LastIndexOf('|')]);
 
     SimpleDB.MigrateFile(
-      Core.Db.People.FilePath,
+      Core.R.Person.FilePath,
       record => $"{record}||");
 
     SimpleDB.MigrateFile(
-      Core.Db.Viewers.FilePath,
+      Core.R.Viewer.FilePath,
       record => {
         var lio = record.LastIndexOf('|');
         return $"{record[..lio]}||{record[lio..]}";
@@ -58,11 +58,11 @@ public static class DatabaseMigration {
   /// are stored in separate files for each drive
   /// </summary>
   private static void From1To2() {
-    Core.Db.FavoriteFolders.IsModified = true;
-    Core.Db.Folders.IsModified = true;
+    Core.R.FavoriteFolder.IsModified = true;
+    Core.R.Folder.IsModified = true;
     //Core.Db.MediaItems.IsModified = true;
-    Core.Db.Segments.IsModified = true;
-    Core.Db.VideoClips.IsModified = true;
+    Core.R.Segment.IsModified = true;
+    Core.R.VideoClip.IsModified = true;
   }
 
   /// <summary>
@@ -131,13 +131,13 @@ public static class DatabaseMigration {
   /// Add unknown people to UnknownGroup
   /// </summary>
   private static void From4To5() {
-    Core.Db.ReadyEvent += (_, _) => {
-      var p = Core.Db.People.All
+    Core.R.ReadyEvent += (_, _) => {
+      var p = Core.R.Person.All
         .Where(x => x.IsUnknown && x.Parent == null)
         .OrderBy(x => x.Name)
         .ToArray();
       if (p.Length > 0)
-        Core.PeopleM.TreeCategory.UnknownGroup.AddItems(p);
+        Core.R.Person.Tree.UnknownGroup.AddItems(p);
     };
   }
 
@@ -150,14 +150,14 @@ public static class DatabaseMigration {
 
     if (!SimpleDB.LoadFromFile(x => {
           pIds.Add(int.Parse(x.Split("|")[0]));
-        }, Core.Db.People.FilePath)) return;
+        }, Core.R.Person.FilePath)) return;
 
     var pIdsNeg = pIds.Where(x => x < 0).ToHashSet();
     var pIdsPos = pIds.Where(x => x > 0).ToHashSet();
     var pIdsDic = new Dictionary<int, int>();
 
     foreach (var pIdNeg in pIdsNeg) {
-      var pIdPos = SimpleDB.GetNextRecycledId(pIdsPos) ?? ++Core.Db.People.MaxId;
+      var pIdPos = SimpleDB.GetNextRecycledId(pIdsPos) ?? ++Core.R.Person.MaxId;
       pIdsPos.Add(pIdPos);
       pIdsDic.Add(pIdNeg, pIdPos);
     }
@@ -174,7 +174,7 @@ public static class DatabaseMigration {
       for (int i = 0; i < ids.Length; i++)
         if (ids[i] < 0) {
           if (!pIdsDic.TryGetValue(ids[i], out var id)) {
-            id = ++Core.Db.People.MaxId;
+            id = ++Core.R.Person.MaxId;
             pIdsDic.Add(ids[i], id);
           }
 
@@ -187,19 +187,19 @@ public static class DatabaseMigration {
     }
 
     SimpleDB.MigrateFile(
-      Core.Db.CategoryGroups.FilePath,
+      Core.R.CategoryGroup.FilePath,
       x => UpdateIds(x, 3, vars => int.Parse(vars[2]) != (int)Category.People));
 
     foreach (var filePath in GetDriveRelatedTableFilePaths("MediaItems"))
       SimpleDB.MigrateFile(filePath, x => UpdateIds(x, 9, null));
 
-    SimpleDB.MigrateFile(Core.Db.People.FilePath, x => UpdateIds(x, 0, null));
+    SimpleDB.MigrateFile(Core.R.Person.FilePath, x => UpdateIds(x, 0, null));
 
-    foreach (var filePath in GetDriveRelatedTableFilePaths(Core.Db.Segments.Name))
+    foreach (var filePath in GetDriveRelatedTableFilePaths(Core.R.Segment.Name))
       SimpleDB.MigrateFile(filePath, x => UpdateIds(x, 2, null));
 
-    Core.Db.People.IsModified = true;
-    Core.Db.SaveIdSequences();
+    Core.R.Person.IsModified = true;
+    Core.R.SaveIdSequences();
   }
 
   private static IEnumerable<string> GetDriveRelatedTableFilePaths(string tableName) =>
@@ -231,7 +231,7 @@ public static class DatabaseMigration {
         geoNameGeoLocDic.Add(geoNameId, geoLocId);
         geoLocSw.WriteLine(string.Join("|", geoLocId, null, null, geoNameId));
       }
-      Core.Db.GeoLocations.MaxId = geoLocId;
+      Core.R.GeoLocation.MaxId = geoLocId;
     }
 
     // Split MediaItems to Images and Videos
@@ -299,7 +299,7 @@ public static class DatabaseMigration {
         if (nameIdClips.TryGetValue(vars[1], out var kc))
           kc.Item2.AddRange(clips);
         else
-          nameIdClips.Add(vars[1], new(++Core.Db.Keywords.MaxId, new(clips)));
+          nameIdClips.Add(vars[1], new(++Core.R.Keyword.MaxId, new(clips)));
       }
 
       vcgSr.Close();
@@ -315,7 +315,7 @@ public static class DatabaseMigration {
       // Create CategoryGroup for VideoClipsGroups Keywords
       using var cgSw = new StreamWriter(Path.Combine("db", "CategoryGroups.csv"), true, Encoding.UTF8, 65536);
       cgSw.WriteLine(string.Join('|',
-        ++Core.Db.CategoryGroups.MaxId,
+        ++Core.R.CategoryGroup.MaxId,
         "VideoClipsGroups",
         (int)Category.Keywords,
         string.Join(',', nameIdClips.Select(x => x.Value.Item1))));
@@ -323,7 +323,7 @@ public static class DatabaseMigration {
 
     // Update VideoClips ids to use one id sequence for all MediaItems and add Keywords
     // get max id from MediaItems
-    int maxId = Core.Db.IdSequences.GetValueOrDefault("MediaItems", 0);
+    int maxId = Core.R.IdSequences.GetValueOrDefault("MediaItems", 0);
     var vcOldNewId = new Dictionary<int, int>();
     var vidVcDic = new Dictionary<int, List<int>>();
 
@@ -385,10 +385,10 @@ public static class DatabaseMigration {
     }
 
     // all MediaItems have one id sequence
-    Core.Db.Images.MaxId = maxId;
-    Core.Db.Videos.MaxId = maxId;
-    Core.Db.VideoClips.MaxId = maxId;
-    Core.Db.VideoImages.MaxId = maxId;
-    Core.Db.SaveIdSequences();
+    Core.R.Image.MaxId = maxId;
+    Core.R.Video.MaxId = maxId;
+    Core.R.VideoClip.MaxId = maxId;
+    Core.R.VideoImage.MaxId = maxId;
+    Core.R.SaveIdSequences();
   }
 }

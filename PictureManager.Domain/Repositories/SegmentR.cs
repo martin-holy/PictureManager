@@ -3,32 +3,33 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|MediaItemId|PersonId|SegmentBox|Keywords
 /// </summary>
-public class SegmentsDA : TableDataAdapter<SegmentM> {
-  private readonly Db _db;
+public class SegmentR : TableDataAdapter<SegmentM> {
+  private readonly CoreR _coreR;
 
-  public SegmentsM Model { get; }
+  public SegmentS Service { get; }
   public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<(PersonM, SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
   public event DataEventHandler<SegmentM[]> KeywordsChangedEvent = delegate { };
 
-  public SegmentsDA(Db db) : base("Segments", 5) {
-    _db = db;
+  public SegmentR(CoreR coreR) : base("Segments", 5) {
+    _coreR = coreR;
     IsDriveRelated = true;
-    Model = new(this);
+    Service = new(this);
   }
 
   public override Dictionary<string, IEnumerable<SegmentM>> GetAsDriveRelated() =>
-    Db.GetAsDriveRelated(All, x => x.MediaItem.Folder);
+    CoreR.GetAsDriveRelated(All, x => x.MediaItem.Folder);
 
   public override SegmentM FromCsv(string[] csv) {
     var rect = csv[3].Split(',');
@@ -47,15 +48,15 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
 
   public override void PropsToCsv() {
     TableProps.Clear();
-    TableProps.Add(nameof(SegmentsM.SegmentSize), SegmentsM.SegmentSize.ToString());
-    TableProps.Add("SegmentsDrawer", string.Join(",", Model.SegmentsDrawerM.Items.Select(x => x.GetHashCode().ToString())));
+    TableProps.Add(nameof(SegmentS.SegmentSize), SegmentS.SegmentSize.ToString());
+    TableProps.Add("SegmentsDrawer", string.Join(",", Service.SegmentsDrawerM.Items.Select(x => x.GetHashCode().ToString())));
   }
 
   public override void LinkReferences() {
     var withoutMediaItem = new List<SegmentM>();
 
     foreach (var (segment, csv) in AllCsv) {
-      var mi = _db.MediaItems.GetById(csv[1]);
+      var mi = _coreR.MediaItem.GetById(csv[1]);
       if (mi != null) {
         segment.MediaItem = mi;
         mi.Segments ??= new();
@@ -64,7 +65,7 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
         var personId = int.Parse(csv[2]);
 
         if (personId != 0) {
-          segment.Person = _db.People.GetPerson(personId, this);
+          segment.Person = _coreR.Person.GetPerson(personId, this);
           segment.Person.Segment ??= segment;
         }
       }
@@ -72,7 +73,7 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
         withoutMediaItem.Add(segment);
 
       // reference to Keywords
-      segment.Keywords = _db.Keywords.Link(csv[4], this);
+      segment.Keywords = _coreR.Keyword.Link(csv[4], this);
     }
 
     // in case MediaItem was deleted
@@ -81,10 +82,10 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
 
     // Table Properties
     if (TableProps == null) return;
-    if (TableProps.TryGetValue(nameof(SegmentsM.SegmentSize), out var segmentSize))
-      SegmentsM.SegmentSize = int.Parse(segmentSize);
+    if (TableProps.TryGetValue(nameof(SegmentS.SegmentSize), out var segmentSize))
+      SegmentS.SegmentSize = int.Parse(segmentSize);
     if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
-      Model.SegmentsDrawerM.Items.Clear();
+      Service.SegmentsDrawerM.Items.Clear();
 
       var drawer = segmentsDrawer
         .Split(',')
@@ -93,7 +94,7 @@ public class SegmentsDA : TableDataAdapter<SegmentM> {
         .ThenBy(x => x.MediaItem.FileName);
 
       foreach (var segment in drawer)
-        Model.SegmentsDrawerM.Items.Add(segment);
+        Service.SegmentsDrawerM.Items.Add(segment);
     }
 
     // table props are not needed any more

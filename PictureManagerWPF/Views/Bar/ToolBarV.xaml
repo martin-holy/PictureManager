@@ -89,7 +89,7 @@
             Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="3 0 0 0"/>
           <TextBlock
-            Text="{Binding VM.MediaItems.ItemsCount}"
+            Text="{Binding VM.MediaItem.ItemsCount}"
             VerticalAlignment="Center"
             Margin="5 0"/>
 
@@ -98,7 +98,7 @@
             Content="{Binding MediaItemsViews.Current.Filter}"
             ContentTemplate="{StaticResource MediaItemsFilterV}"/>
 
-          <mhc:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding Db.Changes}"/>
+          <mhc:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
 
           <!-- Log Button -->
           <Button
@@ -120,12 +120,12 @@
               IsThreeState="False"
               VerticalAlignment="Center"
               ap:Icon.Data="{StaticResource IconPeople}"
-              IsChecked="{Binding M.Segments.SegmentsRectsM.AreVisible}"/>
+              IsChecked="{Binding S.Segment.SegmentsRectsM.AreVisible}"/>
 
             <mhc:IconButton Command="m:SegmentsDrawerM.OpenCommand"/>
             <mhc:IconButton Command="m:SegmentsDrawerM.AddSelectedCommand"/>
             <mhc:IconButton Command="domain:Core.OpenSegmentsViewCommand"/>
-            <mhc:IconButton Command="vm:SegmentsVM.SetSelectedAsUnknownCommand"/>
+            <mhc:IconButton Command="vm:SegmentVM.SetSelectedAsUnknownCommand"/>
           </StackPanel>
 
           <Separator/>

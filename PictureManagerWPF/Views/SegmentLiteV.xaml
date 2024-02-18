@@ -2,6 +2,7 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:s="clr-namespace:PictureManager.Domain.Services;assembly=PictureManager.Domain"
   xmlns:pmConv="clr-namespace:PictureManager.Converters">
 
   <DataTemplate x:Key="PM.Views.SegmentLiteV" DataType="{x:Type m:SegmentM}">
@@ -12,8 +13,8 @@
 
       <Image
         Stretch="Fill"
-        Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
-        Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
+        Width="{Binding Source={x:Static s:SegmentS.SegmentUiSize}}"
+        Height="{Binding Source={x:Static s:SegmentS.SegmentUiSize}}">
 
         <Image.Source>
           <MultiBinding Converter="{x:Static pmConv:SegmentThumbnailSourceConverter.Inst}">

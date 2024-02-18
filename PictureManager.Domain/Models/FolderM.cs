@@ -2,12 +2,13 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain.Models;
 
@@ -51,7 +52,7 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
 
   public void LoadSubFolders(bool recursive) {
     // remove placeholder
-    if (Items.Count == 1 && ReferenceEquals(FoldersM.FolderPlaceHolder, Items[0])) Items.Clear();
+    if (Items.Count == 1 && ReferenceEquals(FolderS.FolderPlaceHolder, Items[0])) Items.Clear();
 
     if (!Directory.Exists(FullPath)) return;
 
@@ -60,14 +61,14 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
 
     foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
       var dirName = dir[fullPath.Length..];
-      var folder = GetByName(dirName) ?? Core.Db.Folders.ItemCreate(this, dirName);
-      folder.IsHidden = !Core.ViewersM.CanViewerSee(folder);
+      var folder = GetByName(dirName) ?? Core.R.Folder.ItemCreate(this, dirName);
+      folder.IsHidden = !Core.S.Viewer.CanViewerSee(folder);
       dirNames.Add(dirName);
     }
 
     // remove Folders deleted outside of this application
     foreach (var item in Items.Where(x => !dirNames.Contains(x.Name)).Cast<FolderM>().ToArray())
-      Core.Db.Folders.TreeItemDelete(item);
+      Core.R.Folder.TreeItemDelete(item);
 
     // add placeholder so the folder can be expanded or keep loading if recursive
     foreach (var item in Items.Cast<FolderM>()) {
@@ -83,8 +84,8 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
         }
         else {
           if (Directory.EnumerateDirectories(item.FullPath).Any()) {
-            item.Items.Add(FoldersM.FolderPlaceHolder);
-            item.FolderKeyword?.Items.Add(FolderKeywordsDA.FolderKeywordPlaceHolder);
+            item.Items.Add(FolderS.FolderPlaceHolder);
+            item.FolderKeyword?.Items.Add(FolderKeywordR.FolderKeywordPlaceHolder);
           }
           item.IsAccessible = true;
         }

@@ -14,14 +14,14 @@ public sealed class TreeViewCategoriesM : TabControl {
 
   public void AddCategories() {
     Tabs.Clear();
-    AddCategory(Core.Db.FavoriteFolders.Model);
-    AddCategory(Core.FoldersM.TreeCategory);
+    AddCategory(Core.R.FavoriteFolder.Tree);
+    AddCategory(Core.R.Folder.Tree);
     AddCategory(Core.RatingsTreeCategory);
-    AddCategory(Core.PeopleM.TreeCategory);
-    AddCategory(Core.Db.FolderKeywords.Model);
-    AddCategory(Core.Db.Keywords.Tree);
-    AddCategory(Core.Db.GeoNames.Tree);
-    AddCategory(Core.ViewersM.TreeCategory);
+    AddCategory(Core.R.Person.Tree);
+    AddCategory(Core.R.FolderKeyword.Tree);
+    AddCategory(Core.R.Keyword.Tree);
+    AddCategory(Core.R.GeoName.Tree);
+    AddCategory(Core.R.Viewer.Tree);
 
     Selected = Tabs[0];
   }
@@ -36,9 +36,9 @@ public sealed class TreeViewCategoriesM : TabControl {
     MarkedTags.Clear();
 
     var mediaItems = Core.VM.MainWindow.IsInViewMode
-      ? Core.VM.MediaItems.Current == null
+      ? Core.VM.MediaItem.Current == null
         ? Array.Empty<MediaItemM>()
-        : new[] { Core.VM.MediaItems.Current }
+        : new[] { Core.VM.MediaItem.Current }
       : Core.MediaItemsViews.Current == null
         ? Array.Empty<MediaItemM>()
         : Core.MediaItemsViews.Current.GetSelectedOrAll().ToArray();

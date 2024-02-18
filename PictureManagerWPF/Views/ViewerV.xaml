@@ -31,7 +31,6 @@
         <Setter Property="Padding" Value="8"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
       </Style>
 
       <!-- FolderM DataTemplate -->
@@ -108,7 +107,7 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding ViewersM.Selected.IncludedFolders}"
+            ItemsSource="{Binding ViewerS.Selected.IncludedFolders}"
             BorderThickness="0"
             mhu:DragDropHelper.IsDragEnabled="True"
             mhu:DragDropHelper.IsDropEnabled="True"
@@ -146,7 +145,7 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding ViewersM.Selected.ExcludedFolders}"
+            ItemsSource="{Binding ViewerS.Selected.ExcludedFolders}"
             BorderThickness="0"
             mhu:DragDropHelper.IsDragEnabled="True"
             mhu:DragDropHelper.IsDropEnabled="True"
@@ -184,13 +183,13 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding ViewersM.Selected.CategoryGroups}"
+            ItemsSource="{Binding ViewerS.Selected.CategoryGroups}"
             SelectionMode="Multiple"
             BorderThickness="0">
 
             <b:Interaction.Triggers>
               <b:EventTrigger EventName="PreviewMouseUp">
-                <b:InvokeCommandAction Command="{Binding ViewersM.UpdateExcludedCategoryGroupsCommand}"/>
+                <b:InvokeCommandAction Command="{Binding ViewerS.UpdateExcludedCategoryGroupsCommand}"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
 
@@ -228,7 +227,7 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding ViewersM.Selected.ExcludedKeywords}"
+            ItemsSource="{Binding ViewerS.Selected.ExcludedKeywords}"
             BorderThickness="0"
             mhu:DragDropHelper.IsDragEnabled="True"
             mhu:DragDropHelper.IsDropEnabled="True"

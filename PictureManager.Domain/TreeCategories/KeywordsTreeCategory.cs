@@ -1,20 +1,20 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 using System;
 using System.Linq;
+using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM> {
   public CategoryGroupM AutoAddedGroup { get; set; }
 
-  public KeywordsTreeCategory(KeywordsDA da) :
+  public KeywordsTreeCategory(KeywordR r) :
     base(Res.IconTagLabel, "Keywords", (int)Category.Keywords) {
-    DataAdapter = da;
+    DataAdapter = r;
     DataAdapter.ItemCreatedEvent += OnItemCreated;
     CanMoveItem = true;
     UseTreeDelete = true;

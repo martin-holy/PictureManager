@@ -7,19 +7,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordsDA : TreeDataAdapter<KeywordM> {
-  private readonly Db _db;
+public class KeywordR : TreeDataAdapter<KeywordM> {
+  private readonly CoreR _coreR;
   private const string _notFoundRecordNamePrefix = "Not found ";
 
   public KeywordsTreeCategory Tree { get; }
 
-  public KeywordsDA(Db db) : base("Keywords", 3) {
-    _db = db;
+  public KeywordR(CoreR coreR) : base("Keywords", 3) {
+    _coreR = coreR;
     Tree = new(this);
   }
 
@@ -45,7 +45,7 @@ public class KeywordsDA : TreeDataAdapter<KeywordM> {
       (keyword.Parent as KeywordM)?.GetHashCode().ToString());
 
   public override void LinkReferences() {
-    _db.CategoryGroups.LinkGroups(Tree, AllDict);
+    _coreR.CategoryGroup.LinkGroups(Tree, AllDict);
     LinkTree(Tree, 2);
 
     // group for keywords automatically added from MediaItems metadata

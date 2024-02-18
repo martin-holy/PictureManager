@@ -3,13 +3,14 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class SegmentsRectsM : ObservableObject {
+    public sealed class SegmentsRectsM : ObservableObject {
     private const int _editLimit = 10;
     private double _scale;
     private double _startX;
@@ -41,14 +42,14 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public SegmentsM SegmentsM { get; }
+    public SegmentS SegmentS { get; }
     public SegmentRectM Current { get; set; }
     public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = [];
     public ObservableCollection<Tuple<int, int, int, bool>> SegmentToolTipRects { get; } = [];
     public static RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; set; }
 
-    public SegmentsRectsM(SegmentsM segmentsM) {
-      SegmentsM = segmentsM;
+    public SegmentsRectsM(SegmentS segmentS) {
+      SegmentS = segmentS;
       SegmentToolTipReloadCommand = new(SegmentToolTipReload);
     }
 
@@ -59,8 +60,8 @@ namespace PictureManager.Domain.Models {
       _startY = y;
       _editMode = SegmentEditMode.ResizeEdge;
       _isCurrentModified = true;
-      Current = new(SegmentsM.DataAdapter.ItemCreate(x, y, 0, MediaItem), _scale);
-      SegmentsM.Select(null, Current.Segment, false, false);
+      Current = new(SegmentS.DataAdapter.ItemCreate(x, y, 0, MediaItem), _scale);
+      SegmentS.Select(null, Current.Segment, false, false);
       MediaItemSegmentsRects.Add(Current);
     }
 
@@ -69,7 +70,7 @@ namespace PictureManager.Domain.Models {
       _editMode = GetEditMode(x, y, current.Segment);
       if (_editMode == SegmentEditMode.None) return;
       Current = current;
-      SegmentsM.Select(null, current.Segment, false, false);
+      SegmentS.Select(null, current.Segment, false, false);
     }
 
     private SegmentEditMode GetEditMode(double x, double y, SegmentM segment) {
@@ -189,7 +190,7 @@ namespace PictureManager.Domain.Models {
       if (Current == null) return;
 
       if (_isCurrentModified) {
-        SegmentsM.DataAdapter.IsModified = true;
+        SegmentS.DataAdapter.IsModified = true;
         File.Delete(Current.Segment.FilePathCache);
         Current.Segment.OnPropertyChanged(nameof(Current.Segment.FilePathCache));
         _isCurrentModified = false;
@@ -207,7 +208,7 @@ namespace PictureManager.Domain.Models {
         Res.IconQuestion,
         true)) != 1) return;
 
-      SegmentsM.DataAdapter.ItemDelete(item.Segment);
+      SegmentS.DataAdapter.ItemDelete(item.Segment);
       MediaItemSegmentsRects.Remove(item);
     }
 
@@ -245,7 +246,7 @@ namespace PictureManager.Domain.Models {
       MediaItemSegmentsRects.Clear();
       if (MediaItem?.Segments == null) return;
 
-      SegmentsM.Selected.DeselectAll();
+      SegmentS.Selected.DeselectAll();
 
       foreach (var segment in MediaItem.Segments.OrderBy(x => x.X))
         MediaItemSegmentsRects.Add(new(segment, _scale));

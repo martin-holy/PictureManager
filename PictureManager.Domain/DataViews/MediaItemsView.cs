@@ -6,6 +6,7 @@ using MH.Utils.Interfaces;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.DataViews {
-  public class MediaItemsView : CollectionViewMediaItems {
+    public class MediaItemsView : CollectionViewMediaItems {
     private bool _isLoading;
     private bool _isImporting;
     private int _importCount;
@@ -63,7 +64,7 @@ namespace PictureManager.Domain.DataViews {
 
     public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) {
       base.OnItemSelected(e);
-      Core.VM.MediaItems.Current = Selected.Items.Contains(e.Item) ? e.Item : null;
+      Core.VM.MediaItem.Current = Selected.Items.Contains(e.Item) ? e.Item : null;
     }
 
     private object CanDrag(object source) {
@@ -134,14 +135,14 @@ namespace PictureManager.Domain.DataViews {
       items.OrderBy(x => x.FileName);
 
     private MediaItemM GetItemToScrollTo() =>
-      FilteredItems.Contains(Core.VM.MediaItems.Current)
-        ? Core.VM.MediaItems.Current
+      FilteredItems.Contains(Core.VM.MediaItem.Current)
+        ? Core.VM.MediaItem.Current
         : Selected.Items.FirstOrDefault();
 
     public void SelectAndScrollToCurrentMediaItem() {
       var mi = GetItemToScrollTo();
       Selected.DeselectAll();
-      Core.VM.MediaItems.Current = mi;
+      Core.VM.MediaItem.Current = mi;
       if (mi == null) return;
       Selected.Set(mi, true);
       ScrollTo(Root, mi);
@@ -153,27 +154,27 @@ namespace PictureManager.Domain.DataViews {
       if (!and && !hide)
         Clear();
 
-      var folders = Core.FoldersM.GetFolders(item, recursive);
+      var folders = Core.S.Folder.GetFolders(item, recursive);
       var newItems = new List<MediaItemMetadata>();
       var toLoad = new List<MediaItemM>();
 
       foreach (var folder in folders) {
         if (!Directory.Exists(folder.FullPath)
-          || !Core.ViewersM.CanViewerSeeContentOf(folder)) continue;
+          || !Core.S.Viewer.CanViewerSeeContentOf(folder)) continue;
 
         // add MediaItems from current Folder to dictionary for faster search
         var mediaItems = folder.MediaItems.ToDictionary(x => x.FileName);
 
         // get new items from folder
         newItems.AddRange(from file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)
-          where MediaItemsM.IsSupportedFileType(file)
+          where MediaItemS.IsSupportedFileType(file)
           select Path.GetFileName(file)
           into fileName
           where !mediaItems.Remove(fileName)
-          select new MediaItemMetadata(Core.Db.MediaItems.ItemCreate(folder, fileName)));
+          select new MediaItemMetadata(Core.R.MediaItem.ItemCreate(folder, fileName)));
 
         // remove MediaItems deleted outside of this application
-        Core.Db.MediaItems.ItemsDelete(mediaItems.Values.Cast<MediaItemM>().ToArray());
+        Core.R.MediaItem.ItemsDelete(mediaItems.Values.Cast<MediaItemM>().ToArray());
 
         toLoad.AddRange(folder.MediaItems);
       }
@@ -203,7 +204,7 @@ namespace PictureManager.Domain.DataViews {
             items.Where(x => x.MediaItem is ImageM),
             new() { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _importTask.Token },
             mim => {
-              MediaItemsM.ReadMetadata(mim, false);
+              MediaItemS.ReadMetadata(mim, false);
               _importProgress.Report(1);
             });
         }
@@ -211,7 +212,7 @@ namespace PictureManager.Domain.DataViews {
       }));
 
       foreach (var mim in items.Where(x => x.MediaItem is VideoM)) {
-        MediaItemsM.ReadMetadata(mim, false);
+        MediaItemS.ReadMetadata(mim, false);
         _importProgress.Report(1);
       }
 
@@ -220,7 +221,7 @@ namespace PictureManager.Domain.DataViews {
         if (mim.Success)
           await mim.FindRefs();
         else
-          Core.Db.MediaItems.ItemDelete(mim.MediaItem);
+          Core.R.MediaItem.ItemDelete(mim.MediaItem);
 
         _importProgress.Report(1);
       }
@@ -241,7 +242,7 @@ namespace PictureManager.Domain.DataViews {
         }
 
         if (and && LoadedItems.Contains(mi)) continue;
-        if (!Core.ViewersM.CanViewerSee(mi)) continue;
+        if (!Core.S.Viewer.CanViewerSee(mi)) continue;
 
         mi.SetThumbSize();
         mi.SetInfoBox();
@@ -278,7 +279,7 @@ namespace PictureManager.Domain.DataViews {
       var foldersSet = await Task.Run(() => items
         .Select(x => x.Folder)
         .Distinct()
-        .Where(x => Core.ViewersM.CanViewerSeeContentOf(x))
+        .Where(x => Core.S.Viewer.CanViewerSeeContentOf(x))
         .ToHashSet());
 
       var skip = items
@@ -301,10 +302,10 @@ namespace PictureManager.Domain.DataViews {
       FilteredChangedEventHandler(this, EventArgs.Empty);
       //Filter.UpdateSizeRanges(LoadedItems, maxSizeSelection);
 
-      if (FilteredItems.Contains(Core.VM.MediaItems.Current))
-        ScrollTo(Root, Core.VM.MediaItems.Current);
+      if (FilteredItems.Contains(Core.VM.MediaItem.Current))
+        ScrollTo(Root, Core.VM.MediaItem.Current);
       else {
-        Core.VM.MediaItems.Current = null;
+        Core.VM.MediaItem.Current = null;
         if (Selected.Items.Count != 0)
           ScrollTo(Root, Selected.Items[0]);
       }

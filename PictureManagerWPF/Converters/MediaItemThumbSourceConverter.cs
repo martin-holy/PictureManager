@@ -29,7 +29,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
 
       if (!File.Exists(mi.FilePathCache)) {
         if (!File.Exists(mi.FilePath)) {
-          Core.Db.MediaItems.ItemDelete(mi is VideoItemM vmi ? vmi.Video : mi);
+          Core.R.MediaItem.ItemDelete(mi is VideoItemM vmi ? vmi.Video : mi);
           return null;
         }
 

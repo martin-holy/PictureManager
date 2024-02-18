@@ -4,9 +4,10 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Repositories;
+using PictureManager.Domain.Services;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,9 +15,9 @@ using System.Linq;
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
-  public FoldersTreeCategory(FoldersDA da) :
+  public FoldersTreeCategory(FolderR r) :
     base(Res.IconFolder, "Folders", (int)Category.Folders) {
-    DataAdapter = da;
+    DataAdapter = r;
     DataAdapter.ItemCreatedEvent += OnItemCreated;
 
     CanMoveItem = true;
@@ -85,7 +86,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
               true)) != 1)
           return;
 
-        Core.FoldersM.CopyMove(foMode, srcData, destFolder);
+        Core.S.Folder.CopyMove(foMode, srcData, destFolder);
 
         break;
 
@@ -99,7 +100,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
               true)) != 1)
           return;
 
-        Core.VM.MediaItems.CopyMove(foMode, items, destFolder);
+        Core.VM.MediaItem.CopyMove(foMode, items, destFolder);
 
         break;
     }
@@ -114,22 +115,22 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
       // add Drive to the database and to the tree if not already there
       if (Items.Cast<DriveM>().SingleOrDefault(x => x.SerialNumber.Equals(drive.Value, StringComparison.OrdinalIgnoreCase)) is
           not { } item) {
-        item = Core.Db.Folders.AddDrive(this, drive.Key, drive.Value);
+        item = Core.R.Folder.AddDrive(this, drive.Key, drive.Value);
         Items.Add(item);
       }
 
       item.IsAccessible = di.IsReady;
-      item.Icon = FoldersM.GetDriveIcon(di.DriveType);
+      item.Icon = FolderS.GetDriveIcon(di.DriveType);
       item.Name = drive.Key;
 
       // add placeholder so the Drive can be expanded
       if (di.IsReady && item.Items.Count == 0)
-        item.Items.Add(FoldersM.FolderPlaceHolder);
+        item.Items.Add(FolderS.FolderPlaceHolder);
     }
   }
 
   public void ScrollTo(FolderM folder) {
-    if (folder == null || !Core.ViewersM.CanViewerSee(folder)) return;
+    if (folder == null || !Core.S.Viewer.CanViewerSee(folder)) return;
     folder.IsExpanded = true;
     Core.TreeViewCategoriesM.Select(TreeView);
     TreeView.ScrollTo(folder);

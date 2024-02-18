@@ -4,18 +4,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|Lat|Lng|GeoName
 /// </summary>
-public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
-  private readonly Db _db;
-
-  public GeoLocationsDA(Db db) : base("GeoLocations", 4) {
-    _db = db;
-  }
-
+public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>("GeoLocations", 4) {
   public override GeoLocationM FromCsv(string[] csv) =>
     new(int.Parse(csv[0])) {
       Lat = ToDouble(csv[1]),
@@ -31,7 +25,7 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
 
   public override void LinkReferences() {
     foreach (var (gl, csv) in AllCsv)
-      gl.GeoName = _db.GeoNames.GetById(csv[3], true);
+      gl.GeoName = coreR.GeoName.GetById(csv[3], true);
   }
 
   public GeoLocationM ItemCreate(double? lat, double? lng, GeoNameM g) =>
@@ -45,9 +39,9 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
     if (lat == null && lng == null && gnId == null && gn == null) return null;
 
     if (gnId != null) {
-      gn = _db.GeoNames.All.SingleOrDefault(x => x.GetHashCode() == gnId);
+      gn = coreR.GeoName.All.SingleOrDefault(x => x.GetHashCode() == gnId);
       if (gn == null && online)
-        gn = await _db.GeoNames.CreateGeoNameHierarchy((int)gnId);
+        gn = await coreR.GeoName.CreateGeoNameHierarchy((int)gnId);
     }
 
     GeoLocationM gl;
@@ -61,7 +55,7 @@ public sealed class GeoLocationsDA : TableDataAdapter<GeoLocationM> {
       if (gl?.GeoName != null) gn = gl.GeoName;
 
       if (gn == null && online)
-        gn = await _db.GeoNames.CreateGeoNameHierarchy((double)lat, (double)lng);
+        gn = await coreR.GeoName.CreateGeoNameHierarchy((double)lat, (double)lng);
 
       if (gl != null && gl.GeoName == null && gn != null) {
         gl.GeoName = gn;

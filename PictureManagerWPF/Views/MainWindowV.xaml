@@ -19,9 +19,9 @@
 
   <Window.InputBindings>
     <KeyBinding Modifiers="Control" Key="R" Command="vm:CoreVM.RotateMediaItemsCommand"/>
-    <KeyBinding Modifiers="Control" Key="K" Command="vm:MediaItemsVM.CommentCommand"/>
-    <KeyBinding Key="F2" Command="vm:MediaItemsVM.RenameCommand"/>
-    <KeyBinding Key="Delete" Command="vm:MediaItemsVM.DeleteCommand"/>
+    <KeyBinding Modifiers="Control" Key="K" Command="vm:MediaItemVM.CommentCommand"/>
+    <KeyBinding Key="F2" Command="vm:MediaItemVM.RenameCommand"/>
+    <KeyBinding Key="Delete" Command="vm:MediaItemVM.DeleteCommand"/>
     <KeyBinding Key="Esc" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
     <MouseBinding MouseAction="LeftDoubleClick" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
   </Window.InputBindings>

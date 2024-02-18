@@ -34,11 +34,11 @@
         <mhc:IconTextBlock
           Grid.Column="1"
           Margin="0,1,0,1"
-          ap:Text.Text="{Binding PeopleM.Selected.Items.Count}"
+          ap:Text.Text="{Binding S.Person.Selected.Items.Count}"
           ap:Icon.Data="{StaticResource IconPeople}"/>
         <mhc:IconTextBlock
           Grid.Column="2"
-          ap:Text.Text="{Binding M.Segments.Selected.Items.Count}"
+          ap:Text.Text="{Binding S.Segment.Selected.Items.Count}"
           ap:Icon.Data="{StaticResource IconSegment}"/>
       </Grid>
     </Border>

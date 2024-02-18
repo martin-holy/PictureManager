@@ -1,6 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,14 +24,14 @@ public class CollectionViewPeople : CollectionView<PersonM> {
   }
 
   public override int GetItemSize(PersonM item, bool getWidth) =>
-    SegmentsM.SegmentUiFullWidth;
+    SegmentS.SegmentUiFullWidth;
 
   public override int SortCompare(PersonM itemA, PersonM itemB) =>
     string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);
 
   public override void OnItemSelected(SelectionEventArgs<PersonM> e) =>
-    Core.PeopleM.Select(e);
+    Core.S.Person.Select(e);
 
   public override void OnItemOpened(PersonM item) =>
-    Core.M.Segments.ViewMediaItemsWithSegment(this, item.Segment);
+    Core.S.Segment.ViewMediaItemsWithSegment(this, item.Segment);
 }

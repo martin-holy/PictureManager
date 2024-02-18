@@ -1,24 +1,16 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
-using PictureManager.Domain.TreeCategories;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Repositories;
 using System.Linq;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.Services;
 
-public sealed class PeopleM {
-  private readonly PeopleDA _da;
-
-  public PeopleTreeCategory TreeCategory { get; }
+public sealed class PersonS(PersonR r) {
   public PeopleView PeopleView { get; private set; }
   public Selecting<PersonM> Selected { get; } = new();
-
-  public PeopleM(PeopleDA da) {
-    _da = da;
-    TreeCategory = new(this, _da);
-  }
 
   public void OpenPeopleView() {
     PeopleView ??= new();
@@ -34,12 +26,12 @@ public sealed class PeopleM {
     if (person.TopSegments?.Count > 0)
       person.Segment = person.TopSegments[0];
 
-    _da.IsModified = true;
+    r.IsModified = true;
   }
 
   public void Select(SelectionEventArgs<PersonM> e) {
     if (!e.IsCtrlOn && !e.IsShiftOn)
-      Core.M.Segments.Selected.DeselectAll();
+      Core.S.Segment.Selected.DeselectAll();
 
     var segmentsBefore = Selected.Items
       .Where(x => x.Segment != null)
@@ -53,9 +45,9 @@ public sealed class PeopleM {
       .Select(x => x.Segment)
       .ToArray();
 
-    Core.M.Segments.Selected.Set(segmentsBefore.Except(segmentsAfter), false);
-    Core.M.Segments.Selected.Add(segmentsAfter);
-    Core.M.Segments.OnPropertyChanged(nameof(Core.M.Segments.CanSetAsSamePerson));
+    Core.S.Segment.Selected.Set(segmentsBefore.Except(segmentsAfter), false);
+    Core.S.Segment.Selected.Add(segmentsAfter);
+    Core.S.Segment.OnPropertyChanged(nameof(Core.S.Segment.CanSetAsSamePerson));
   }
 
   public void MergePeople(PersonM person, PersonM[] people) {
@@ -74,11 +66,11 @@ public sealed class PeopleM {
       .Except(person.Keywords.EmptyIfNull())
       .ToArray();
 
-    _da.ToggleKeywords(person, keywords);
+    r.ToggleKeywords(person, keywords);
   }
 
   public static PersonM[] GetAll() =>
-    Core.Db.People.All
+    Core.R.Person.All
       .Where(x => x.Parent is not CategoryGroupM { IsHidden: true })
       .OrderBy(x => x.Name)
       .ToArray();

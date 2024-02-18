@@ -49,7 +49,7 @@
   <!-- GeoNames -->
   <ContextMenu x:Key="TreeContextMenuGeoNames">
     <MenuItem Command="vm:CoreVM.GetGeoNamesFromWebCommand"/>
-    <MenuItem Command="vm:GeoNamesVM.NewGeoNameFromGpsCommand"/>
+    <MenuItem Command="vm:GeoNameVM.NewGeoNameFromGpsCommand"/>
     <MenuItem Command="vm:CoreVM.ReadGeoLocationFromFilesCommand"/>
   </ContextMenu>
 

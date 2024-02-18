@@ -79,7 +79,7 @@ namespace PictureManager.Domain.Dialogs {
 
         yield return await Task.Run(() => {
           var originalSize = new FileInfo(mi.FilePath).Length;
-          var bSuccess = Core.M.Images.TryWriteMetadata(mi);
+          var bSuccess = Core.S.Image.TryWriteMetadata(mi);
           var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
           return new[] { originalSize, newSize };
         });

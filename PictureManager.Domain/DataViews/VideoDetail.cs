@@ -49,7 +49,7 @@ public sealed class VideoDetail : ObservableObject {
   private void ReloadCurrentVideoItems() {
     var items = Current == null
       ? new()
-      : Core.Db.VideoItemsOrder.All.TryGetValue(Current, out var list)
+      : Core.R.VideoItemsOrder.All.TryGetValue(Current, out var list)
         ? list.ToList()
         : Current.GetVideoItems().OrderBy(x => x.TimeStart).ToList();
     var groupByItems = new[] { GroupByItems.GetKeywordsInGroup(items) };
@@ -57,19 +57,19 @@ public sealed class VideoDetail : ObservableObject {
   }
 
   private IVideoClip GetNewClip(int timeStart) =>
-    Core.Db.VideoClips.CustomItemCreate(Current, timeStart);
+    Core.R.VideoClip.CustomItemCreate(Current, timeStart);
 
   private IVideoImage GetNewImage(int timeStart) =>
-    Core.Db.VideoImages.CustomItemCreate(Current, timeStart);
+    Core.R.VideoImage.CustomItemCreate(Current, timeStart);
 
   private void OnItemDelete() {
-    if (Core.VM.MediaItems.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
+    if (Core.VM.MediaItem.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
       MediaPlayer.SetCurrent(null);
   }
 
   private void OnMarkerSet(object sender, ObjectEventArgs<Tuple<IVideoItem, bool>> e) {
     var item = (VideoItemM)e.Data.Item1;
-    Core.Db.MediaItems.Modify(item);
+    Core.R.MediaItem.Modify(item);
 
     if (!ReferenceEquals(item, CurrentVideoItems.Selected.Items.FirstOrDefault()))
       CurrentVideoItems.Selected.Select(item);

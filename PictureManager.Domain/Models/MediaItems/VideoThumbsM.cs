@@ -1,6 +1,7 @@
 ﻿using MH.UI.HelperClasses;
 using MH.Utils;
 using MH.Utils.Extensions;
+using PictureManager.Domain.Services;
 using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -71,18 +72,18 @@ public class VideoThumbsM {
     s,
     s.MediaItem is VideoItemM vi ? vi.TimeStart : 0,
     s.FilePathCache,
-    SegmentsM.SegmentSize,
+    SegmentS.SegmentSize,
     Core.Settings.JpegQualityLevel,
     (int)s.X, (int)s.Y, (int)s.Size, (int)s.Size);
 
   private static void OnSave(VfsFrame frame) {
     switch (frame.Source) {
       case MediaItemM mi:
-        MediaItemsVM.ThumbConverter.IgnoreCache.Add(mi);
+        MediaItemVM.ThumbConverter.IgnoreCache.Add(mi);
         mi.OnPropertyChanged(nameof(mi.FilePathCache));
         break;
       case SegmentM s:
-        SegmentsVM.ThumbConverter.IgnoreCache.Add(s);
+        SegmentVM.ThumbConverter.IgnoreCache.Add(s);
         s.OnPropertyChanged(nameof(s.FilePathCache));
         break;
     }
@@ -91,11 +92,11 @@ public class VideoThumbsM {
   private static void OnError(VfsFrame frame, Exception ex) {
     switch (frame.Source) {
       case MediaItemM mi:
-        MediaItemsVM.ThumbConverter.ErrorCache.Add(mi);
+        MediaItemVM.ThumbConverter.ErrorCache.Add(mi);
         Log.Error(ex, $"{ex.Message} ({mi.FilePath})");
         break;
       case SegmentM s:
-        SegmentsVM.ThumbConverter.ErrorCache.Add(s);
+        SegmentVM.ThumbConverter.ErrorCache.Add(s);
         Log.Error(ex, $"{ex.Message} ({s.MediaItem.FilePath})");
         break;
     }

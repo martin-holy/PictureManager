@@ -3,10 +3,10 @@ using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using PictureManager.Domain.TreeCategories;
 using PictureManager.Domain.ViewModels;
 using System;
@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain;
 
@@ -22,12 +23,10 @@ public sealed class Core {
   private static readonly object _lock = new();
   public static Core Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  public static Db Db { get; } = new();
+  public static CoreR R { get; } = new();
+  public static CoreS S { get; private set; }
+  public static CoreVM VM { get; private set; }
   public static Settings Settings { get; } = new();
-
-  public static FoldersM FoldersM => Db.Folders.Model;
-  public static PeopleM PeopleM => Db.People.Model;
-  public static ViewersM ViewersM => Db.Viewers.Model;
 
   public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
 
@@ -45,9 +44,6 @@ public sealed class Core {
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
   public static SegmentsView SegmentsView { get; set; }
 
-  public static CoreM M { get; private set; }
-  public static CoreVM VM { get; private set; }
-
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public static Func<double> GetDisplayScale { get; set; }
@@ -61,15 +57,14 @@ public sealed class Core {
 
   public Task InitAsync(IProgress<string> progress) {
     return Task.Run(() => {
-      Db.AddDataAdapters();
+      R.AddDataAdapters();
       Drives.UpdateSerialNumbers();
       progress.Report("Migrating Database");
       SimpleDB.Migrate(7, DatabaseMigration.Resolver);
-      Db.LoadAllTables(progress);
-      Db.LinkReferences(progress);
-      Db.ClearDataAdapters();
-      Db.SetIsReady();
-      AttachEvents();
+      R.LoadAllTables(progress);
+      R.LinkReferences(progress);
+      R.ClearDataAdapters();
+      R.SetIsReady();
       progress.Report("Loading UI");
     });
   }
@@ -77,20 +72,21 @@ public sealed class Core {
   public void AfterInit() {
     var scale = GetDisplayScale();
     MediaItemsViews.DefaultThumbScale = 1 / scale;
-    SegmentsM.SetSegmentUiSize(scale);
-    M = new(Db);
-    VM = new(M, Db);
+    SegmentS.SetSegmentUiSize(scale);
+    S = new(R);
+    VM = new(S, R);
+    AttachEvents();
     AttachVMEvents();
 
-    Db.Keywords.Tree.AutoAddedGroup ??=
-      Db.CategoryGroups.ItemCreate(Db.Keywords.Tree, "Auto Added");
+    R.Keyword.Tree.AutoAddedGroup ??=
+      R.CategoryGroup.ItemCreate(R.Keyword.Tree, "Auto Added");
 
-    FoldersM.TreeCategory.AddDrives();
-    ViewersM.SetCurrent(ViewersM.Current);
-    ViewersM.Current?.UpdateHashSets();
+    R.Folder.Tree.AddDrives();
+    S.Viewer.SetCurrent(R.Viewer.All.SingleOrDefault(x => x.IsDefault));
+    S.Viewer.Current?.UpdateHashSets();
     TreeViewCategoriesM.AddCategories();
-    Db.CategoryGroups.AddCategory(PeopleM.TreeCategory);
-    Db.CategoryGroups.AddCategory(Db.Keywords.Tree);
+    R.CategoryGroup.AddCategory(R.Person.Tree);
+    R.CategoryGroup.AddCategory(R.Keyword.Tree);
     VideoDetail.MediaPlayer.SetView(UiFullVideo);
     VideoDetail.MediaPlayer.SetView(UiDetailVideo);
     OpenSegmentsViewCommand = new(OpenSegmentsView, Res.IconSegment, "Segments View");
@@ -107,7 +103,7 @@ public sealed class Core {
 
         if (isInViewMode) {
           VideoDetail.MediaPlayer.SetView(UiFullVideo);
-          M.Segments.SegmentsRectsM.MediaItem = VM.MediaItems.Current;
+          S.Segment.SegmentsRectsM.MediaItem = VM.MediaItem.Current;
         }
         else {
           MediaItemsViews.SelectAndScrollToCurrentMediaItem();
@@ -121,14 +117,14 @@ public sealed class Core {
   }
 
   private void AttachVMMediaItemsEventHandlers() {
-    VM.MediaItems.PropertyChanged += (_, e) => {
-      if (nameof(VM.MediaItems.Current).Equals(e.PropertyName)) {
+    VM.MediaItem.PropertyChanged += (_, e) => {
+      if (nameof(VM.MediaItem.Current).Equals(e.PropertyName)) {
         MediaItemsStatusBarM.Update();
-        VideoDetail.SetCurrent(VM.MediaItems.Current);
+        VideoDetail.SetCurrent(VM.MediaItem.Current);
 
         if (VM.MainWindow.IsInViewMode) {
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-          M.Segments.SegmentsRectsM.MediaItem = VM.MediaItems.Current;
+          S.Segment.SegmentsRectsM.MediaItem = VM.MediaItem.Current;
         }
       }
     };
@@ -146,7 +142,7 @@ public sealed class Core {
 
     Settings.PropertyChanged += (_, e) => {
       if (nameof(Settings.GeoNamesUserName).Equals(e.PropertyName))
-        Db.GeoNames.ApiLimitExceeded = false;
+        R.GeoName.ApiLimitExceeded = false;
     };
 
     VideoDetail.MediaPlayer.RepeatEndedEvent += delegate {
@@ -155,7 +151,7 @@ public sealed class Core {
 
     VideoDetail.CurrentVideoItems.Selected.ItemsChangedEventHandler += (_, e) => {
       var vi = e.Data.FirstOrDefault();
-      VM.MediaItems.Current = (MediaItemM)vi ?? VideoDetail.Current;
+      VM.MediaItem.Current = (MediaItemM)vi ?? VideoDetail.Current;
       VideoDetail.MediaPlayer.SetCurrent(vi);
     };
 
@@ -166,13 +162,13 @@ public sealed class Core {
           MediaItemsStatusBarM.OnPropertyChanged(nameof(MediaItemsStatusBarM.IsVisible));
           break;
         case nameof(MediaViewerM.Current):
-          if (MediaViewerM.Current != null && !ReferenceEquals(VM.MediaItems.Current, MediaViewerM.Current))
-            VM.MediaItems.Current = MediaViewerM.Current;
+          if (MediaViewerM.Current != null && !ReferenceEquals(VM.MediaItem.Current, MediaViewerM.Current))
+            VM.MediaItem.Current = MediaViewerM.Current;
           else
             VideoDetail.SetCurrent(MediaViewerM.Current, true);
           break;
         case nameof(MediaViewerM.Scale):
-          M.Segments.SegmentsRectsM.UpdateScale(MediaViewerM.Scale);
+          S.Segment.SegmentsRectsM.UpdateScale(MediaViewerM.Scale);
           break;
       }
     };
@@ -182,7 +178,7 @@ public sealed class Core {
         case MediaItemsView miView:
           MediaItemsViews.CloseView(miView);
           break;
-        case PeopleM people:
+        case PersonS people:
           people.Selected.DeselectAll();
           break;
         case Settings settings:
@@ -198,74 +194,74 @@ public sealed class Core {
   }
 
   private static void AttachCategoryGroupsEventHandlers() =>
-    Db.CategoryGroups.ItemDeletedEvent += (_, e) => {
-      Db.Keywords.MoveGroupItemsToRoot(e.Data);
-      Db.People.MoveGroupItemsToRoot(e.Data);
+    R.CategoryGroup.ItemDeletedEvent += (_, e) => {
+      R.Keyword.MoveGroupItemsToRoot(e.Data);
+      R.Person.MoveGroupItemsToRoot(e.Data);
     };
 
   private static void AttachFoldersEventHandlers() {
-    Db.Folders.ItemCreatedEvent += (_, e) =>
-      Db.FolderKeywords.LoadIfContains((FolderM)e.Data.Parent);
+    R.Folder.ItemCreatedEvent += (_, e) =>
+      R.FolderKeyword.LoadIfContains((FolderM)e.Data.Parent);
 
-    Db.Folders.ItemRenamedEvent += (_, e) => {
-      Db.FolderKeywords.LoadIfContains(e.Data);
+    R.Folder.ItemRenamedEvent += (_, e) => {
+      R.FolderKeyword.LoadIfContains(e.Data);
       MediaItemsStatusBarM.UpdateFilePath();
     };
 
-    Db.Folders.ItemDeletedEvent += (_, e) => {
-      Db.FavoriteFolders.ItemDeleteByFolder(e.Data);
-      Db.MediaItems.ItemsDelete(e.Data.MediaItems.Cast<MediaItemM>().ToArray());
-      FoldersM.DeleteFromDisk(e.Data);
+    R.Folder.ItemDeletedEvent += (_, e) => {
+      R.FavoriteFolder.ItemDeleteByFolder(e.Data);
+      R.MediaItem.ItemsDelete(e.Data.MediaItems.Cast<MediaItemM>().ToArray());
+      FolderS.DeleteFromDisk(e.Data);
     };
 
-    Db.Folders.ItemsDeletedEvent += (_, _) =>
-      Db.FolderKeywords.Reload();
+    R.Folder.ItemsDeletedEvent += (_, _) =>
+      R.FolderKeyword.Reload();
 
-    FoldersM.ItemCopiedEvent += (_, _) =>
-      Db.FolderKeywords.Reload();
+    S.Folder.ItemCopiedEvent += (_, _) =>
+      R.FolderKeyword.Reload();
 
-    FoldersM.ItemMovedEvent += (_, _) => {
-      Db.FolderKeywords.Reload();
+    S.Folder.ItemMovedEvent += (_, _) => {
+      R.FolderKeyword.Reload();
       MediaItemsStatusBarM.UpdateFilePath();
     };
   }
 
   private static void AttachGeoLocationsEventHandlers() {
-    Db.GeoLocations.ItemUpdatedEvent += (_, e) =>
-      Db.MediaItems.ModifyIfContains(e.Data);
+    R.GeoLocation.ItemUpdatedEvent += (_, e) =>
+      R.MediaItem.ModifyIfContains(e.Data);
 
-    Db.GeoLocations.ItemDeletedEvent += (_, e) =>
-      Db.MediaItems.ModifyIfContains(e.Data);
+    R.GeoLocation.ItemDeletedEvent += (_, e) =>
+      R.MediaItem.ModifyIfContains(e.Data);
   }
 
   private static void AttachGeoNamesEventHandlers() {
-    Db.GeoNames.ItemDeletedEvent += (_, e) =>
-      Db.GeoLocations.RemoveGeoName(e.Data);
+    R.GeoName.ItemDeletedEvent += (_, e) =>
+      R.GeoLocation.RemoveGeoName(e.Data);
   }
 
   private static void AttachKeywordsEventHandlers() {
-    Db.Keywords.ItemRenamedEvent += (_, e) =>
-      Db.MediaItems.ModifyIfContains(e.Data);
+    R.Keyword.ItemRenamedEvent += (_, e) =>
+      R.MediaItem.ModifyIfContains(e.Data);
 
-    Db.Keywords.ItemDeletedEvent += (_, e) => {
-      Db.People.RemoveKeyword(e.Data);
-      Db.Segments.RemoveKeyword(e.Data);
-      Db.MediaItems.RemoveKeyword(e.Data);
+    R.Keyword.ItemDeletedEvent += (_, e) => {
+      R.Person.RemoveKeyword(e.Data);
+      R.Segment.RemoveKeyword(e.Data);
+      R.MediaItem.RemoveKeyword(e.Data);
     };
   }
 
   private static void AttachMediaItemsEventHandlers() {
-    Db.MediaItems.ItemCreatedEvent += (_, _) =>
+    R.MediaItem.ItemCreatedEvent += (_, _) =>
       VM.UpdateMediaItemsCount();
 
-    Db.MediaItems.ItemRenamedEvent += (_, _) => {
-      VM.MediaItems.OnPropertyChanged(nameof(VM.MediaItems.Current));
+    R.MediaItem.ItemRenamedEvent += (_, _) => {
+      VM.MediaItem.OnPropertyChanged(nameof(VM.MediaItem.Current));
       MediaItemsViews.Current?.SoftLoad(MediaItemsViews.Current.FilteredItems, true, false);
     };
 
-    Db.MediaItems.MetadataChangedEvent += items => {
+    R.MediaItem.MetadataChangedEvent += items => {
       var all = items.OfType<VideoItemM>().Select(x => x.Video).Concat(items).Distinct().ToArray();
-      VM.MediaItems.OnMetadataChanged(all);
+      VM.MediaItem.OnMetadataChanged(all);
       MediaItemsViews.UpdateViews(all);
       VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
       TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
@@ -273,7 +269,7 @@ public sealed class Core {
       VM.UpdateModifiedMediaItemsCount();
     };
 
-    Db.MediaItems.OrientationChangedEvent += items => {
+    R.MediaItem.OrientationChangedEvent += items => {
       foreach (var rmi in items) {
         rmi.SetThumbSize(true);
         File.Delete(rmi.FilePathCache);
@@ -287,14 +283,14 @@ public sealed class Core {
         VideoDetail.CurrentVideoItems.ReWrapAll();
     };
 
-    Db.MediaItems.ItemDeletedEvent += (_, e) => {
-      Db.Segments.ItemsDelete(e.Data.Segments?.ToArray());
+    R.MediaItem.ItemDeletedEvent += (_, e) => {
+      R.Segment.ItemsDelete(e.Data.Segments?.ToArray());
       if (e.Data.GeoLocation != null)
-        Db.MediaItemGeoLocation.IsModified = true;
+        R.MediaItemGeoLocation.IsModified = true;
     };
 
-    Db.MediaItems.ItemsDeletedEvent += (_, e) => {
-      VM.MediaItems.Current = MediaViewerM.IsVisible && e.Data.All(x => x is RealMediaItemM)
+    R.MediaItem.ItemsDeletedEvent += (_, e) => {
+      VM.MediaItem.Current = MediaViewerM.IsVisible && e.Data.All(x => x is RealMediaItemM)
         ? MediaViewerM.MediaItems.GetNextOrPreviousItem(e.Data)
         : e.Data.OfType<VideoItemM>().FirstOrDefault()?.Video;
 
@@ -305,8 +301,8 @@ public sealed class Core {
 
       if (MediaViewerM.IsVisible) {
         MediaViewerM.MediaItems.Remove(e.Data[0]);
-        if (VM.MediaItems.Current != null)
-          MediaViewerM.Current = VM.MediaItems.Current;
+        if (VM.MediaItem.Current != null)
+          MediaViewerM.Current = VM.MediaItem.Current;
         else
           VM.MainWindow.IsInViewMode = false;
       }
@@ -323,21 +319,21 @@ public sealed class Core {
   }
 
   private static void AttachPeopleEventHandlers() {
-    Db.People.ItemRenamedEvent += (_, e) =>
-      Db.MediaItems.ModifyIfContains(e.Data);
+    R.Person.ItemRenamedEvent += (_, e) =>
+      R.MediaItem.ModifyIfContains(e.Data);
 
-    Db.People.KeywordsChangedEvent += items => {
+    R.Person.KeywordsChangedEvent += items => {
       VM.MainWindow.ToolsTabs.PersonDetailTab?.UpdateDisplayKeywordsIfContains(items);
       VM.MainWindow.ToolsTabs.PeopleTab?.Update(items);
-      PeopleM.PeopleView?.Update(items);
+      S.Person.PeopleView?.Update(items);
       SegmentsView?.CvPeople.Update(items);
     };
 
-    Db.People.ItemDeletedEvent += (_, e) => {
-      Db.MediaItems.RemovePerson(e.Data);
-      Db.Segments.RemovePerson(e.Data);
-      PeopleM.Selected.Set(e.Data, false);
-      PeopleM.PeopleView?.Remove(e.Data);
+    R.Person.ItemDeletedEvent += (_, e) => {
+      R.MediaItem.RemovePerson(e.Data);
+      R.Segment.RemovePerson(e.Data);
+      S.Person.Selected.Set(e.Data, false);
+      S.Person.PeopleView?.Remove(e.Data);
       VM.MainWindow.ToolsTabs.PeopleTab?.Remove(e.Data);
       SegmentsView?.CvPeople.Remove(e.Data);
 
@@ -347,21 +343,21 @@ public sealed class Core {
   }
 
   private static void AttachSegmentsEventHandlers() {
-    Db.Segments.ItemCreatedEvent += (_, e) => {
-      Db.MediaItems.AddSegment(e.Data);
+    R.Segment.ItemCreatedEvent += (_, e) => {
+      R.MediaItem.AddSegment(e.Data);
       SegmentsView?.CvSegments.Update(e.Data, false);
     };
 
-    Db.Segments.SegmentPersonChangedEvent += (_, e) => {
-      Db.People.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+    R.Segment.SegmentPersonChangedEvent += (_, e) => {
+      R.Person.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
     };
 
-    Db.Segments.SegmentsPersonChangedEvent += (_, e) => {
-      Db.People.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
-      Db.MediaItems.TogglePerson(e.Data.Item2);
+    R.Segment.SegmentsPersonChangedEvent += (_, e) => {
+      R.Person.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+      R.MediaItem.TogglePerson(e.Data.Item2);
       VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.Item2);
-      PeopleM.PeopleView?.Update(e.Data.Item3);
-      M.Segments.Selected.DeselectAll();
+      S.Person.PeopleView?.Update(e.Data.Item3);
+      S.Segment.Selected.DeselectAll();
 
       if (SegmentsView != null) {
         SegmentsView.CvSegments.Update(e.Data.Item2, false);
@@ -372,22 +368,22 @@ public sealed class Core {
       }
     };
 
-    Db.Segments.KeywordsChangedEvent += items => {
-      Db.MediaItems.ModifyIfContains(items);
+    R.Segment.KeywordsChangedEvent += items => {
+      R.MediaItem.ModifyIfContains(items);
       VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(items, true, false);
       SegmentsView?.CvSegments.Update(items);
     };
 
-    Db.Segments.ItemDeletedEvent += (_, e) => {
-      Db.People.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
-      M.Segments.Selected.Set(e.Data, false);
+    R.Segment.ItemDeletedEvent += (_, e) => {
+      R.Person.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
+      S.Segment.Selected.Set(e.Data, false);
     };
 
-    Db.Segments.ItemsDeletedEvent += (_, e) => {
-      Db.MediaItems.RemoveSegments(e.Data);
+    R.Segment.ItemsDeletedEvent += (_, e) => {
+      R.MediaItem.RemoveSegments(e.Data);
       VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.ToArray(), true, true);
       SegmentsView?.CvSegments.Remove(e.Data.ToArray());
-      M.Segments.SegmentsDrawerM.RemoveIfContains(e.Data.ToArray());
+      S.Segment.SegmentsDrawerM.RemoveIfContains(e.Data.ToArray());
     };
   }
 
@@ -395,7 +391,7 @@ public sealed class Core {
     var result = SegmentsView.GetSegmentsToLoadUserInput();
     if (result < 1) return;
     var segments = SegmentsView.GetSegments(result).ToArray();
-    SegmentsView ??= new(M.Segments);
+    SegmentsView ??= new(S.Segment);
     MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
     if (MediaViewerM.IsVisible) VM.MainWindow.IsInViewMode = false;
     SegmentsView.Reload(segments);

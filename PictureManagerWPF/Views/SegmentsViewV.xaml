@@ -5,7 +5,7 @@
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:pmdDv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
-  xmlns:pmdM="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:s="clr-namespace:PictureManager.Domain.Services;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type pmdDv:SegmentsView}">
     <DataTemplate.Resources>
@@ -20,7 +20,7 @@
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition
-          Width="{Binding Source={x:Static pmdM:SegmentsM.SegmentUiFullWidth},
+          Width="{Binding Source={x:Static s:SegmentS.SegmentUiFullWidth},
                   Converter={x:Static pmConv:SegmentsViewWidthConverter.Inst},
                   ConverterParameter=3,
                   FallbackValue=280}"/>

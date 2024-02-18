@@ -5,21 +5,21 @@ using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|People|Keywords|IsOnlyInDb
 /// </summary>
-public sealed class ImagesDA : TableDataAdapter<ImageM> {
-  private readonly Db _db;
+public sealed class ImageR : TableDataAdapter<ImageM> {
+  private readonly CoreR _coreR;
 
-  public ImagesDA(Db db) : base("Images", 11) {
-    _db = db;
+  public ImageR(CoreR coreR) : base("Images", 11) {
+    _coreR = coreR;
     IsDriveRelated = true;
   }
 
   public override Dictionary<string, IEnumerable<ImageM>> GetAsDriveRelated() =>
-    Db.GetAsDriveRelated(All, x => x.Folder);
+    CoreR.GetAsDriveRelated(All, x => x.Folder);
 
   public override ImageM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), null, csv[2]) {
@@ -47,26 +47,26 @@ public sealed class ImagesDA : TableDataAdapter<ImageM> {
 
   public override void LinkReferences() {
     foreach (var (mi, csv) in AllCsv) {
-      mi.Folder = _db.Folders.GetById(csv[1]);
+      mi.Folder = _coreR.Folder.GetById(csv[1]);
       mi.Folder.MediaItems.Add(mi);
-      mi.People = _db.People.Link(csv[8], this);
-      mi.Keywords = _db.Keywords.Link(csv[9], this);
+      mi.People = _coreR.Person.Link(csv[8], this);
+      mi.Keywords = _coreR.Keyword.Link(csv[9], this);
     }
   }
 
   public override int GetNextId() =>
-    _db.MediaItems.GetNextId();
+    _coreR.MediaItem.GetNextId();
 
   public ImageM ItemCreate(FolderM folder, string fileName) =>
     ItemCreate(new(GetNextId(), folder, fileName));
 
   public ImageM ItemCopy(ImageM item, FolderM folder, string fileName) {
     var copy = ItemCreate(folder, fileName);
-    _db.MediaItems.ItemCopyCommon(item, copy);
+    _coreR.MediaItem.ItemCopyCommon(item, copy);
     return copy;
   }
 
   protected override void OnItemDeleted(ImageM item) {
-    _db.MediaItems.OnItemDeletedCommon(item);
+    _coreR.MediaItem.OnItemDeletedCommon(item);
   }
 }

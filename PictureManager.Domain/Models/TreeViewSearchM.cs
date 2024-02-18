@@ -46,31 +46,31 @@ namespace PictureManager.Domain.Models {
       }
 
       // People
-      AddToSearchResult(Core.Db.People.All
+      AddToSearchResult(Core.R.Person.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
-        .Select(x => new TreeViewSearchItemM(Res.IconPeople, x.Name, x, (x.Parent as CategoryGroupM)?.Name, Core.PeopleM.TreeCategory)));
+        .Select(x => new TreeViewSearchItemM(Res.IconPeople, x.Name, x, (x.Parent as CategoryGroupM)?.Name, Core.R.Person.Tree)));
 
       // Keywords
-      AddToSearchResult(Core.Db.Keywords.All
+      AddToSearchResult(Core.R.Keyword.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
-        .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x, x.FullName, Core.Db.Keywords.Tree)));
+        .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x, x.FullName, Core.R.Keyword.Tree)));
 
       // GeoNames
-      AddToSearchResult(Core.Db.GeoNames.All
+      AddToSearchResult(Core.R.GeoName.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
-        .Select(x => new TreeViewSearchItemM(Res.IconLocationCheckin, x.Name, x, x.FullName, Core.Db.GeoNames.Tree)));
+        .Select(x => new TreeViewSearchItemM(Res.IconLocationCheckin, x.Name, x, x.FullName, Core.R.GeoName.Tree)));
 
       // Folders
-      var result = Core.Db.Folders.All
+      var result = Core.R.Folder.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
-                && Core.ViewersM.CanViewerSee(x))
-        .Select(x => new TreeViewSearchItemM(Res.IconFolder, x.Name, x, x.FullPath, Core.FoldersM.TreeCategory)).ToList();
+                && Core.S.Viewer.CanViewerSee(x))
+        .Select(x => new TreeViewSearchItemM(Res.IconFolder, x.Name, x, x.FullPath, Core.R.Folder.Tree)).ToList();
 
       // Folder Keywords
-      result.AddRange(Core.Db.FolderKeywords.All2
+      result.AddRange(Core.R.FolderKeyword.All2
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
-                && x.Folders.All(f => Core.ViewersM.CanViewerSee(f)))
-        .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, Core.Db.FolderKeywords.Model)));
+                && x.Folders.All(f => Core.S.Viewer.CanViewerSee(f)))
+        .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, Core.R.FolderKeyword.Tree)));
       AddToSearchResult(result);
     }
   }

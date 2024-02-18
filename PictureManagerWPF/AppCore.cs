@@ -2,7 +2,7 @@
 using MH.Utils.BaseClasses;
 using PictureManager.Converters;
 using PictureManager.Domain;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using PictureManager.Domain.ViewModels;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
@@ -24,19 +24,19 @@ public sealed class AppCore : ObservableObject {
     MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
     GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
-    MediaItemsM.ReadMetadata = ViewModels.MediaItemsVM.ReadMetadata;
-    ImagesM.WriteMetadata = ViewModels.MediaItemsVM.WriteMetadata;
+    MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
+    ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
     Core.VideoDetail.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
     Core.UiFullVideo = new MediaPlayer();
     Core.UiDetailVideo = new MediaPlayer();
     Core.VideoFrameSaver = new VideoFrameSaver();
 
-    SegmentsVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
-    Domain.ViewModels.MediaItemsVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
+    SegmentVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
+    Domain.ViewModels.MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
   }
 
   public void AfterInit() {
-    SegmentsRectsVM = new(Core.M.Segments.SegmentsRectsM);
+    SegmentsRectsVM = new(Core.S.Segment.SegmentsRectsM);
   }
 
   private static double GetDisplayScale() =>

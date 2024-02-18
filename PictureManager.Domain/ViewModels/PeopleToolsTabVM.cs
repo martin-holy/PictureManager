@@ -5,6 +5,7 @@ using MH.Utils.Extensions;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using System.Linq;
 
 namespace PictureManager.Domain.ViewModels;
@@ -29,7 +30,7 @@ public sealed class PeopleToolsTabVM : CollectionViewPeople {
     var items = result switch {
       1 => Core.MediaItemsViews.Current?.GetSelectedOrAll().GetPeople(),
       2 => Core.MediaViewerM.MediaItems.GetPeople(),
-      3 => PeopleM.GetAll(),
+      3 => PersonS.GetAll(),
       _ => Enumerable.Empty<PersonM>()
     };
 

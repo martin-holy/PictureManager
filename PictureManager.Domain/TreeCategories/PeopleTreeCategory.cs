@@ -1,14 +1,13 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Repositories;
 using System.Linq;
 
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
-  private readonly PeopleM _peopleM;
   private CategoryGroupM _unknownGroup;
   private const string _unknownGroupName = "Unknown";
 
@@ -18,14 +17,13 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
         Items
           .OfType<CategoryGroupM>()
           .SingleOrDefault(x => x.Name.Equals(_unknownGroupName))
-        ?? Core.Db.CategoryGroups.ItemCreate(this, _unknownGroupName);
+        ?? Core.R.CategoryGroup.ItemCreate(this, _unknownGroupName);
     set => _unknownGroup = value;
   }
 
-  public PeopleTreeCategory(PeopleM peopleM, PeopleDA da) :
+  public PeopleTreeCategory(PersonR r) :
     base(Res.IconPeopleMultiple, "People", (int)Category.People) {
-    _peopleM = peopleM;
-    DataAdapter = da;
+    DataAdapter = r;
     DataAdapter.ItemCreatedEvent += OnItemCreated;
     CanMoveItem = true;
   }
@@ -41,7 +39,7 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
         ToggleDialogM.TogglePerson(p);
         break;
       case PeopleTreeCategory:
-        _peopleM.OpenPeopleView();
+        Core.S.Person.OpenPeopleView();
         break;
     }
   }

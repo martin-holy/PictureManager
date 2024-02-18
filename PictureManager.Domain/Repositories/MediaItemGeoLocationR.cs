@@ -4,15 +4,15 @@ using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
-public sealed class MediaItemGeoLocationDA : OneToOneDataAdapter<MediaItemM, GeoLocationM> {
-  public MediaItemGeoLocationDA(Db db) : base("MediaItemGeoLocation", db.MediaItems, db.GeoLocations) {
+public sealed class MediaItemGeoLocationR : OneToOneDataAdapter<MediaItemM, GeoLocationM> {
+  public MediaItemGeoLocationR(CoreR coreR) : base("MediaItemGeoLocation", coreR.MediaItem, coreR.GeoLocation) {
     IsDriveRelated = true;
   }
 
   public override Dictionary<string, IEnumerable<KeyValuePair<MediaItemM, GeoLocationM>>> GetAsDriveRelated() =>
-    Db.GetAsDriveRelated(
+    CoreR.GetAsDriveRelated(
       DataAdapterA
         .GetAll(x => x.GeoLocation != null)
         .Select(x => new KeyValuePair<MediaItemM, GeoLocationM>(x, x.GeoLocation)),

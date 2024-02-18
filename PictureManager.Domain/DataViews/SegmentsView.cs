@@ -4,6 +4,7 @@ using MH.Utils.Dialogs;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,8 @@ public sealed class SegmentsView {
   public CollectionViewPeople CvPeople { get; } = new();
   public CollectionViewSegments CvSegments { get; } = new();
 
-  public SegmentsView(SegmentsM segmentsM) {
-    CanDragFunc = one => segmentsM.GetOneOrSelected(one as SegmentM);
+  public SegmentsView(SegmentS segmentS) {
+    CanDragFunc = one => segmentS.GetOneOrSelected(one as SegmentM);
   }
 
   public static int GetSegmentsToLoadUserInput() {
@@ -43,13 +44,13 @@ public sealed class SegmentsView {
 
         return items.Concat(items.GetVideoItems()).GetSegments();
       case 2:
-        var people = Core.PeopleM.Selected.Items.ToHashSet();
+        var people = Core.S.Person.Selected.Items.ToHashSet();
 
-        return Core.Db.Segments.All
+        return Core.R.Segment.All
           .Where(x => x.Person != null && people.Contains(x.Person))
           .OrderBy(x => x.MediaItem.FileName);
       case 3:
-        return Core.M.Segments.Selected.Items;
+        return Core.S.Segment.Selected.Items;
       default:
         return Enumerable.Empty<SegmentM>();
     }

@@ -6,6 +6,7 @@ using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Services;
 using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.ViewModels;
 
-public sealed class MediaItemsVM : ObservableObject {
-  private readonly MediaItemsM _m;
+public sealed class MediaItemVM : ObservableObject {
+  private readonly MediaItemS _s;
   private MediaItemM _current;
   private int _modifiedItemsCount;
   private int _itemsCount;
@@ -32,8 +33,8 @@ public sealed class MediaItemsVM : ObservableObject {
   public static RelayCommand DeleteCommand { get; set; }
   public static RelayCommand RenameCommand { get; set; }
 
-  public MediaItemsVM(CoreVM coreVM, MediaItemsM model) {
-    _m = model;
+  public MediaItemVM(CoreVM coreVM, MediaItemS model) {
+    _s = model;
     CommentCommand = new(() => Comment(Current), () => Current != null, Res.IconNotification, "Comment");
     DeleteCommand = new(() => Delete(coreVM.GetActive<MediaItemM>()), () => coreVM.AnyActive<MediaItemM>());
     RenameCommand = new(Rename, () => Current is RealMediaItemM, null, "Rename");
@@ -50,7 +51,7 @@ public sealed class MediaItemsVM : ObservableObject {
         : string.Empty);
 
     if (Dialog.Show(inputDialog) == 1)
-      _m.SetComment(mi, StringUtils.NormalizeComment(inputDialog.Answer));
+      _s.SetComment(mi, StringUtils.NormalizeComment(inputDialog.Answer));
   }
 
   public void CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder) {
@@ -60,7 +61,7 @@ public sealed class MediaItemsVM : ObservableObject {
       var token = fop.LoadCts.Token;
 
       try {
-        await _m.CopyMove(mode, items, destFolder, fop.Progress, token);
+        await _s.CopyMove(mode, items, destFolder, fop.Progress, token);
       }
       catch (Exception ex) {
         await Tasks.RunOnUiThread(() => Dialog.Show(new ErrorDialogM(ex)));
@@ -84,7 +85,7 @@ public sealed class MediaItemsVM : ObservableObject {
           Res.IconQuestion,
           true)) != 1) return false;
 
-    _m.Delete(items);
+    _s.Delete(items);
     return true;
   }
 
@@ -97,7 +98,7 @@ public sealed class MediaItemsVM : ObservableObject {
 
     // TODO check async and maybe use the other ProgressBarDialog
     var progress = new ProgressBarAsyncDialog("Reloading metadata...", Res.IconImage, true, Environment.ProcessorCount);
-    progress.Init(items, null, async mi => await _m.ReloadMetadata(mi), mi => mi.FilePath, delegate { _m.OnMetadataReloaded(items); });
+    progress.Init(items, null, async mi => await _s.ReloadMetadata(mi), mi => mi.FilePath, delegate { _s.OnMetadataReloaded(items); });
     progress.Start();
     Dialog.Show(progress);
   }
@@ -122,7 +123,7 @@ public sealed class MediaItemsVM : ObservableObject {
       });
 
     if (Dialog.Show(dlg) != 1) return;
-    _m.Rename((RealMediaItemM)Current, dlg.Answer + ext);
+    _s.Rename((RealMediaItemM)Current, dlg.Answer + ext);
   }
 
   public void OnMetadataChanged(MediaItemM[] items) {

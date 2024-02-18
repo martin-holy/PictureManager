@@ -21,14 +21,14 @@ public sealed class MediaItemsStatusBarM : ObservableObject {
   public ObservableCollection<string> FilePath {
     get {
       var paths = new ObservableCollection<string>();
-      if (Core.VM.MediaItems.Current == null) return paths;
+      if (Core.VM.MediaItem.Current == null) return paths;
 
-      if (Core.VM.MediaItems.Current.Folder.FolderKeyword == null) {
-        paths.Add(Core.VM.MediaItems.Current.FilePath);
+      if (Core.VM.MediaItem.Current.Folder.FolderKeyword == null) {
+        paths.Add(Core.VM.MediaItem.Current.FilePath);
         return paths;
       }
 
-      var fks = Core.VM.MediaItems.Current.Folder.FolderKeyword.GetThisAndParents().ToList();
+      var fks = Core.VM.MediaItem.Current.Folder.FolderKeyword.GetThisAndParents().ToList();
       fks.Reverse();
       foreach (var fk in fks)
         if (fk.Parent != null) {
@@ -40,8 +40,8 @@ public sealed class MediaItemsStatusBarM : ObservableObject {
         }
 
       var fileName = string.IsNullOrEmpty(DateAndTime)
-        ? Core.VM.MediaItems.Current.FileName
-        : Core.VM.MediaItems.Current.FileName[15..];
+        ? Core.VM.MediaItem.Current.FileName
+        : Core.VM.MediaItem.Current.FileName[15..];
       paths.Add(fileName);
 
       return paths;
@@ -49,13 +49,13 @@ public sealed class MediaItemsStatusBarM : ObservableObject {
   }
 
   public string DateAndTime =>
-    DateTimeExtensions.DateTimeFromString(Core.VM.MediaItems.Current?.FileName, _dateFormats, "H:mm:ss");
+    DateTimeExtensions.DateTimeFromString(Core.VM.MediaItem.Current?.FileName, _dateFormats, "H:mm:ss");
 
   public ObservableCollection<int> Rating { get; } = new();
 
   public void UpdateRating() {
     Rating.Clear();
-    for (var i = 0; i < Core.VM.MediaItems.Current?.Rating; i++)
+    for (var i = 0; i < Core.VM.MediaItem.Current?.Rating; i++)
       Rating.Add(0);
   }
 

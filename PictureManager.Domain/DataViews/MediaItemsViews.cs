@@ -59,13 +59,13 @@ public sealed class MediaItemsViews : ObservableObject {
     _all.Remove(view);
     if (!ReferenceEquals(view, Current)) return;
     Current = null;
-    Core.VM.MediaItems.Current = null;
+    Core.VM.MediaItem.Current = null;
   }
 
   public void SetCurrentView(MediaItemsView view) {
     Current = view;
     Current?.UpdateSelected();
-    Core.VM.MediaItems.Current = Current?.Selected.Items.Count > 0
+    Core.VM.MediaItem.Current = Current?.Selected.Items.Count > 0
       ? Current.Selected.Items[0]
       : null;
   }
@@ -119,7 +119,7 @@ public sealed class MediaItemsViews : ObservableObject {
   public async void LoadByTag(object item) {
     var and = Keyboard.IsCtrlOn();
     var hide = Keyboard.IsAltOn();
-    var items = Core.Db.MediaItems.GetItems(item, Keyboard.IsShiftOn());
+    var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn());
 
     // if CTRL is pressed, add new items to already loaded items
     if (and) items = Current.LoadedItems.Union(items);
@@ -148,7 +148,7 @@ public sealed class MediaItemsViews : ObservableObject {
     if (Current != null)
       Current.SelectAndScrollToCurrentMediaItem();
     else
-      Core.VM.MediaItems.Current = null;
+      Core.VM.MediaItem.Current = null;
   }
 
   private void RebuildThumbnails(FolderM folder, bool recursive) {
@@ -167,6 +167,6 @@ public sealed class MediaItemsViews : ObservableObject {
 
   private async void ViewModified() {
     AddView("Modified");
-    await Current.LoadByTag(Core.Db.MediaItems.GetModified().ToArray());
+    await Current.LoadByTag(Core.R.MediaItem.GetModified().ToArray());
   }
 }

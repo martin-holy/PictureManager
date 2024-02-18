@@ -1,15 +1,15 @@
 ﻿using MH.UI.BaseClasses;
-using PictureManager.Domain.Database;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class ViewersTreeCategory : TreeCategory<ViewerM> {
-  public ViewersTreeCategory(ViewersDA da) :
+  public ViewersTreeCategory(ViewerR r) :
     base(Res.IconEye, "Viewers", (int)Category.Viewers) {
-    DataAdapter = da;
+    DataAdapter = r;
   }
 
   public override void OnItemSelected(object o) =>
-    Core.ViewersM.OpenDetail(o as ViewerM);
+    Core.S.Viewer.OpenDetail(o as ViewerM);
 }

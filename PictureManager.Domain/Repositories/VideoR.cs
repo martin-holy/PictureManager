@@ -5,21 +5,21 @@ using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.Database;
+namespace PictureManager.Domain.Repositories;
 
 /// <summary>
 /// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|People|Keywords|IsOnlyInDb
 /// </summary>
-public sealed class VideosDA : TableDataAdapter<VideoM> {
-  private readonly Db _db;
+public sealed class VideoR : TableDataAdapter<VideoM> {
+  private readonly CoreR _coreR;
 
-  public VideosDA(Db db) : base("Videos", 11) {
-    _db = db;
+  public VideoR(CoreR coreR) : base("Videos", 11) {
+    _coreR = coreR;
     IsDriveRelated = true;
   }
 
   public override Dictionary<string, IEnumerable<VideoM>> GetAsDriveRelated() =>
-    Db.GetAsDriveRelated(All, x => x.Folder);
+    CoreR.GetAsDriveRelated(All, x => x.Folder);
 
   public override VideoM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), null, csv[2]) {
@@ -47,26 +47,26 @@ public sealed class VideosDA : TableDataAdapter<VideoM> {
 
   public override void LinkReferences() {
     foreach (var (mi, csv) in AllCsv) {
-      mi.Folder = _db.Folders.AllDict[int.Parse(csv[1])];
+      mi.Folder = _coreR.Folder.AllDict[int.Parse(csv[1])];
       mi.Folder.MediaItems.Add(mi);
-      mi.People = _db.People.Link(csv[8], this);
-      mi.Keywords = _db.Keywords.Link(csv[9], this);
+      mi.People = _coreR.Person.Link(csv[8], this);
+      mi.Keywords = _coreR.Keyword.Link(csv[9], this);
     }
   }
 
   public override int GetNextId() =>
-    _db.MediaItems.GetNextId();
+    _coreR.MediaItem.GetNextId();
 
   public VideoM ItemCreate(FolderM folder, string fileName) =>
     ItemCreate(new(GetNextId(), folder, fileName));
 
   public VideoM ItemCopy(VideoM item, FolderM folder, string fileName) {
     var copy = ItemCreate(folder, fileName);
-    _db.MediaItems.ItemCopyCommon(item, copy);
+    _coreR.MediaItem.ItemCopyCommon(item, copy);
     return copy;
   }
 
   protected override void OnItemDeleted(VideoM item) {
-    _db.MediaItems.OnItemDeletedCommon(item);
+    _coreR.MediaItem.OnItemDeletedCommon(item);
   }
 }

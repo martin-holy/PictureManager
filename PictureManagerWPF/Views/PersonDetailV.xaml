@@ -47,7 +47,7 @@
 
       <StackPanel Grid.Row="1" Orientation="Horizontal">
         <mhc:IconButton Command="{Binding LoadMediaItemsCommand}"/>
-        <mhc:IconButton Command="vm:SegmentsVM.SetSelectedAsUnknownCommand"/>
+        <mhc:IconButton Command="vm:SegmentVM.SetSelectedAsUnknownCommand"/>
       </StackPanel>
 
       <!-- Keywords -->
