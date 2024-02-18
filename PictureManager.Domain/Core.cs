@@ -6,6 +6,7 @@ using MH.Utils.Extensions;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
 using PictureManager.Domain.TreeCategories;
 using PictureManager.Domain.ViewModels;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using PictureManager.Domain.Repositories;
 
 namespace PictureManager.Domain;
 
@@ -37,7 +37,6 @@ public sealed class Core {
   public TitleProgressBarM TitleProgressBarM { get; } = new();
   public static TreeViewCategoriesM TreeViewCategoriesM { get; } = new();
   public static VideoDetail VideoDetail { get; } = new();
-  public static VideoThumbsM VideoThumbsM { get; } = new();
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }

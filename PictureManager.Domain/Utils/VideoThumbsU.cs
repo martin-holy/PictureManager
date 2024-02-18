@@ -1,6 +1,8 @@
 ﻿using MH.UI.HelperClasses;
 using MH.Utils;
 using MH.Utils.Extensions;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Services;
 using PictureManager.Domain.ViewModels.Entities;
 using System;
@@ -8,15 +10,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Domain.Utils;
 
-public class VideoThumbsM {
-  private HashSet<MediaItemM> _workingOn;
-  private HashSet<MediaItemM> _todo;
+public static class VideoThumbsU {
+  private static HashSet<MediaItemM> _workingOn;
+  private static HashSet<MediaItemM> _todo;
 
-  public void Create(MediaItemM[] items, bool rebuild = false) {
-    _todo ??= new();
-    _workingOn ??= new();
+  public static void Create(MediaItemM[] items, bool rebuild = false) {
+    _todo ??= [];
+    _workingOn ??= [];
     if (_workingOn.Count > 0) {
       foreach (var mi in items) _todo.Add(mi);
       return;
@@ -27,7 +29,7 @@ public class VideoThumbsM {
       Core.VideoFrameSaver.Save(videos, OnSave, OnError, OnFinished);
   }
 
-  private VfsVideo[] GetVideos(MediaItemM[] items, bool rebuild) {
+  private static VfsVideo[] GetVideos(MediaItemM[] items, bool rebuild) {
     var vids = items.OfType<VideoM>().Concat(items.OfType<VideoItemM>().Select(x => x.Video)).Distinct().ToArray();
     var vidsItems = items.GetVideoItems().GroupBy(x => x.Video);
     var dic = new Dictionary<VideoM, VfsVideo>();
@@ -45,7 +47,7 @@ public class VideoThumbsM {
     return dic.Values.Where(x => x.Frames.Any()).ToArray();
   }
 
-  private void AddFrames(MediaItemM mi, List<VfsFrame> frames, bool rebuild) {
+  private static void AddFrames(MediaItemM mi, List<VfsFrame> frames, bool rebuild) {
     if (rebuild || !File.Exists(mi.FilePathCache)) {
       _workingOn.Add(mi);
       frames.Add(ToVfsFrame(mi));
@@ -54,7 +56,7 @@ public class VideoThumbsM {
     frames.AddRange(ToVfsFrames(mi.GetSegments(), rebuild));
   }
 
-  private IEnumerable<VfsFrame> ToVfsFrames(IEnumerable<SegmentM> segments, bool rebuild) {
+  private static IEnumerable<VfsFrame> ToVfsFrames(IEnumerable<SegmentM> segments, bool rebuild) {
     foreach (var s in segments.Where(s => rebuild || !File.Exists(s.FilePathCache))) {
       _workingOn.Add(s.MediaItem);
       yield return ToVfsFrame(s);
@@ -102,7 +104,7 @@ public class VideoThumbsM {
     }
   }
 
-  private void OnFinished() {
+  private static void OnFinished() {
     _workingOn.Clear();
     if (_todo.Count == 0) return;
     var todo = _todo.ToArray();

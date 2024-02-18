@@ -5,6 +5,7 @@ using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -70,7 +71,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
         _taskQueue.Start(CreateImageThumbnail, TriggerChanged);
         break;
       case VideoM:
-        Core.VideoThumbsM.Create(new[] { mi });
+        VideoThumbsU.Create(new[] { mi });
         break;
       case VideoItemM vi:
         CreateVideoItemThumbnail(vi);
@@ -95,7 +96,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
       TriggerChanged(vi);
     }
     else
-      Core.VideoThumbsM.Create(new[] { (MediaItemM)vi.Video });
+      VideoThumbsU.Create(new[] { (MediaItemM)vi.Video });
   }
 
   private static void TriggerChanged(MediaItemM mi) =>

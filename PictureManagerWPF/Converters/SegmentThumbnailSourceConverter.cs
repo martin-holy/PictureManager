@@ -7,6 +7,7 @@ using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Services;
+using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -96,7 +97,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
   }
 
   private static void CreateThumbnailFromVideo(SegmentM segment) =>
-    Core.VideoThumbsM.Create(new[] { segment.MediaItem });
+    VideoThumbsU.Create(new[] { segment.MediaItem });
 
   private static void TriggerChanged(SegmentM segment) =>
     segment.OnPropertyChanged(nameof(segment.FilePathCache));
