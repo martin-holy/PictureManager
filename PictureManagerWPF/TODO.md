@@ -2,6 +2,8 @@
         # MH.UI.WPF
 ## Custom Window
   - minimize window will break full screen mode
+## ErrorDialog
+  - resize stretch
 
         # Picture Manager - Need Help
 ## VideoPlayer
@@ -43,7 +45,7 @@
 
         # MH.UI.WPF
 ##
-  - sort and move extensions
+  - remove DefaultStyleKeyProperty.OverrideMetadata, it works without it
 ## IconButton
   - use button foreground and background for icon in IconButton and IconToggleButton
   - add background behind text in IconTextButton
