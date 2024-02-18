@@ -3,10 +3,10 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.ViewModels;
 
-public class WhatIsNewM {
-  private static WhatIsNewM _inst;
+public class WhatIsNewVM {
+  private static WhatIsNewVM _inst;
 
   public static string Content { get; set; }
 

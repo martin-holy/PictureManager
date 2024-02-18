@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pmdm="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
     
-  <DataTemplate DataType="{x:Type pmdm:WhatIsNewM}">
+  <DataTemplate DataType="{x:Type vm:WhatIsNewVM}">
     <ScrollViewer>
       <TextBox
         Text="{Binding Content}"
