@@ -26,7 +26,7 @@ namespace PictureManager.Domain.Models {
 
     private void NavigateTo(TreeViewSearchItemM item) {
       if (item == null) return;
-      Core.TreeViewCategoriesM.Select(item.Category.TreeView);
+      Core.VM.MainWindow.TreeViewCategories.Select(item.Category.TreeView);
       item.Category.TreeView.ScrollTo((ITreeItem)item.Data);
       IsOpen = false;
     }

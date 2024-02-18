@@ -2,13 +2,14 @@
 using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Domain.ViewModels;
 
-public sealed class TreeViewCategoriesM : TabControl {
+public sealed class TreeViewCategoriesVM : TabControl {
   public TreeViewSearchM TreeViewSearchM { get; } = new();
   public Dictionary<object, int> MarkedTags { get; } = new();
 

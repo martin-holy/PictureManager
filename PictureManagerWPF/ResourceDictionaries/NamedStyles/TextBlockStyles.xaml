@@ -48,7 +48,7 @@
       <Setter.Value>
         <MultiBinding Converter="{x:Static pmConv:MarkedTagsItemsCountConverter.Inst}">
           <Binding
-            Path="TreeViewCategoriesM.MarkedTags"
+            Path="VM.MainWindow.TreeViewCategories.MarkedTags"
             Source="{x:Static pm:App.Core}" />
           <Binding />
         </MultiBinding>

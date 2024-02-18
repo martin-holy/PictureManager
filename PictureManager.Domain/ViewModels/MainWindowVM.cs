@@ -9,11 +9,12 @@ public class MainWindowVM : ObservableObject {
   private bool _isFullScreen;
   private bool _isInViewMode;
 
-  public ToolBarVM ToolBar { get; } = new();
   public MiddleContentVM MiddleContent { get; } = new();
-  public StatusBarVM StatusBar { get; }
-  public ToolsTabsVM ToolsTabs { get; } = new() { CanCloseTabs = true };
   public SlidePanelsGrid SlidePanelsGrid { get; }
+  public StatusBarVM StatusBar { get; }
+  public ToolBarVM ToolBar { get; } = new();
+  public ToolsTabsVM ToolsTabs { get; } = new() { CanCloseTabs = true };
+  public TreeViewCategoriesVM TreeViewCategories { get; } = new();
 
   public bool IsFullScreen {
     get => _isFullScreen;
@@ -40,7 +41,7 @@ public class MainWindowVM : ObservableObject {
   public MainWindowVM() {
     StatusBar = new(Core.Inst);
     SlidePanelsGrid = new(
-      new(Position.Left, Core.TreeViewCategoriesM, 380),
+      new(Position.Left, TreeViewCategories, 380),
       new(Position.Top, ToolBar, 30),
       new(Position.Right, ToolsTabs, GetToolsTabsWidth()) { CanOpen = false },
       new(Position.Bottom, StatusBar, 0),
