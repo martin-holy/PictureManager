@@ -55,7 +55,7 @@
                 </Grid.ColumnDefinitions>
 
                 <mhc:IconButton
-                  Command="{Binding TreeViewSearchM.OpenCommand}"
+                  Command="{Binding TreeViewSearch.OpenCommand}"
                   Width="28"
                   Height="28"/>
 
@@ -70,12 +70,12 @@
 
       <ContentPresenter
         x:Name="Search"
-        Content="{Binding TreeViewSearchM}"
+        Content="{Binding TreeViewSearch}"
         Visibility="Collapsed"/>
     </Grid>
 
     <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding TreeViewSearchM.IsOpen}" Value="True">
+      <DataTrigger Binding="{Binding TreeViewSearch.IsOpen}" Value="True">
         <Setter TargetName="Tabs" Property="Effect">
           <Setter.Value>
             <BlurEffect Radius="4" KernelType="Gaussian"/>
