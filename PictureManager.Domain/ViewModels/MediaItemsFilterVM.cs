@@ -1,17 +1,20 @@
 ﻿using MH.Utils.BaseClasses;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Domain.ViewModels;
 
-public sealed class MediaItemsFilterM : ObservableObject {
+public sealed class MediaItemsFilterVM : ObservableObject {
   private bool _showImages = true;
   private bool _showVideos = true;
 
   public bool ShowImages { get => _showImages; set { _showImages = value; OnFilterChanged(); OnPropertyChanged(); } }
   public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnFilterChanged(); OnPropertyChanged(); } }
+
   public ObservableCollection<object> FilterAnd { get; } = [];
   public ObservableCollection<object> FilterOr { get; } = [];
   public ObservableCollection<object> FilterNot { get; } = [];
@@ -23,7 +26,7 @@ public sealed class MediaItemsFilterM : ObservableObject {
 
   public RelayCommand ClearCommand { get; }
 
-  public MediaItemsFilterM() {
+  public MediaItemsFilterVM() {
     Height.ChangedEvent += delegate { OnFilterChanged(); };
     Width.ChangedEvent += delegate { OnFilterChanged(); };
     Size.ChangedEvent += delegate { OnFilterChanged(); };

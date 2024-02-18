@@ -7,6 +7,7 @@ using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Services;
+using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +28,7 @@ namespace PictureManager.Domain.DataViews {
 
     public List<MediaItemM> LoadedItems { get; } = new();
     public List<MediaItemM> FilteredItems { get; } = new();
-    public MediaItemsFilterM Filter { get; } = new();
+    public MediaItemsFilterVM Filter { get; } = new();
     public DragDropHelper.CanDragFunc CanDragFunc { get; }
     public bool IsLoading { get => _isLoading; set { _isLoading = value; OnPropertyChanged(); } }
     public bool IsImporting { get => _isImporting; set { _isImporting = value; OnPropertyChanged(); } }
