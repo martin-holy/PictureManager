@@ -10,8 +10,12 @@ using System.Collections.Generic;
 namespace PictureManager.Domain.ViewModels;
 
 public sealed class TreeViewCategoriesVM : TabControl {
-  public TreeViewSearchM TreeViewSearchM { get; } = new();
+  public TreeViewSearchVM TreeViewSearch { get; }
   public Dictionary<object, int> MarkedTags { get; } = new();
+
+  public TreeViewCategoriesVM() {
+    TreeViewSearch = new(this);
+  }
 
   public void AddCategories() {
     Tabs.Clear();
@@ -72,9 +76,7 @@ public sealed class TreeViewCategoriesVM : TabControl {
   private void Mark(object tag) {
     if (tag == null) return;
 
-    if (MarkedTags.ContainsKey(tag))
+    if (!MarkedTags.TryAdd(tag, 1))
       MarkedTags[tag]++;
-    else
-      MarkedTags.Add(tag, 1);
   }
 }
