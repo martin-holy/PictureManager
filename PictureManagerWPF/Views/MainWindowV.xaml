@@ -6,6 +6,7 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
+  xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain"
   DataContext="{Binding VM.MainWindow, Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
   IsFullScreen="{Binding IsFullScreen, Mode=TwoWay}"
@@ -19,9 +20,9 @@
 
   <Window.InputBindings>
     <KeyBinding Modifiers="Control" Key="R" Command="vm:CoreVM.RotateMediaItemsCommand"/>
-    <KeyBinding Modifiers="Control" Key="K" Command="vm:MediaItemVM.CommentCommand"/>
-    <KeyBinding Key="F2" Command="vm:MediaItemVM.RenameCommand"/>
-    <KeyBinding Key="Delete" Command="vm:MediaItemVM.DeleteCommand"/>
+    <KeyBinding Modifiers="Control" Key="K" Command="vme:MediaItemVM.CommentCommand"/>
+    <KeyBinding Key="F2" Command="vme:MediaItemVM.RenameCommand"/>
+    <KeyBinding Key="Delete" Command="vme:MediaItemVM.DeleteCommand"/>
     <KeyBinding Key="Esc" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
     <MouseBinding MouseAction="LeftDoubleClick" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
   </Window.InputBindings>

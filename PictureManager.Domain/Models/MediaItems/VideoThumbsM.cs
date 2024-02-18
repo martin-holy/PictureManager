@@ -2,7 +2,7 @@
 using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Services;
-using PictureManager.Domain.ViewModels;
+using PictureManager.Domain.ViewModels.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
