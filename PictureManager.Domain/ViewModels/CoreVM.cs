@@ -1,4 +1,5 @@
-﻿using MH.Utils;
+﻿using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
@@ -26,6 +27,7 @@ public class CoreVM {
   public ViewerVM Viewer { get; }
 
   public ImageComparerVM ImageComparer { get; } = new();
+  public TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViewsVM MediaItemsViews { get; } = new();
   public MediaViewerVM MediaViewer { get; } = new();
@@ -102,12 +104,12 @@ public class CoreVM {
   }
 
   private static void OpenSettings() =>
-    Core.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
+    Core.VM.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
 
   public void OpenPeopleView() {
     People ??= new();
     People.Reload();
-    Core.MainTabs.Activate(Res.IconPeopleMultiple, "People", People);
+    Core.VM.MainTabs.Activate(Res.IconPeopleMultiple, "People", People);
   }
 
   private void OpenSegmentsMatching() {
@@ -115,7 +117,7 @@ public class CoreVM {
     if (result < 1) return;
     var segments = SegmentsMatchingVM.GetSegments(result).ToArray();
     SegmentsMatching ??= new(_coreS.Segment);
-    Core.MainTabs.Activate(Res.IconSegment, "Segments", SegmentsMatching);
+    Core.VM.MainTabs.Activate(Res.IconSegment, "Segments", SegmentsMatching);
     if (MediaViewer.IsVisible) MainWindow.IsInViewMode = false;
     SegmentsMatching.Reload(segments);
   }

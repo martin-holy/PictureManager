@@ -1,4 +1,3 @@
-using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.Extensions;
@@ -27,7 +26,6 @@ public sealed class Core {
   public static Settings Settings { get; } = new();
 
   public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
-  public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
@@ -158,7 +156,7 @@ public sealed class Core {
       }
     };
 
-    MainTabs.TabClosedEvent += tab => {
+    VM.MainTabs.TabClosedEvent += tab => {
       switch (tab.Data) {
         case MediaItemsViewVM miView:
           VM.MediaItemsViews.CloseView(miView);
@@ -172,9 +170,9 @@ public sealed class Core {
       }
     };
 
-    MainTabs.PropertyChanged += (_, e) => {
-      if (nameof(MainTabs.Selected).Equals(e.PropertyName))
-        VM.MediaItemsViews.SetCurrentView(MainTabs.Selected?.Data as MediaItemsViewVM);
+    VM.MainTabs.PropertyChanged += (_, e) => {
+      if (nameof(VM.MainTabs.Selected).Equals(e.PropertyName))
+        VM.MediaItemsViews.SetCurrentView(VM.MainTabs.Selected?.Data as MediaItemsViewVM);
     };
   }
 

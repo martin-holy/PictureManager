@@ -17,7 +17,7 @@ public class WhatIsNewVM {
       _inst ??= new();
       using var sr = new StreamReader("WhatIsNew.txt", Encoding.UTF8);
       Content = sr.ReadToEnd();
-      Core.MainTabs.Activate(Res.IconInformation, "What's new", _inst);
+      Core.VM.MainTabs.Activate(Res.IconInformation, "What's new", _inst);
     }
     catch (Exception) {
       // ignored

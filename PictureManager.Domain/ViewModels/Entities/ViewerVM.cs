@@ -51,7 +51,7 @@ public sealed class ViewerVM : ObservableObject {
 
   public void OpenDetail(ViewerM viewer) {
     if (viewer == null) return;
-    Core.MainTabs.Activate(Res.IconEye, "Viewer", this);
+    Core.VM.MainTabs.Activate(Res.IconEye, "Viewer", this);
     Selected = viewer;
 
     var groups = Core.R.CategoryGroup.All
