@@ -11,7 +11,7 @@
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <wpfu:CachedResourceDictionary Source="MediaItemsViewV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="PeopleViewV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="PeopleV.xaml"/>
           <wpfu:CachedResourceDictionary Source="SegmentsMatchingV.xaml"/>
           <wpfu:CachedResourceDictionary Source="ViewerV.xaml"/>
         </ResourceDictionary.MergedDictionaries>

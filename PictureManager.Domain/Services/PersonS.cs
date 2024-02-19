@@ -1,7 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Repositories;
@@ -10,14 +9,7 @@ using System.Linq;
 namespace PictureManager.Domain.Services;
 
 public sealed class PersonS(PersonR r) {
-  public PeopleView PeopleView { get; private set; }
   public Selecting<PersonM> Selected { get; } = new();
-
-  public void OpenPeopleView() {
-    PeopleView ??= new();
-    PeopleView.Reload();
-    Core.MainTabs.Activate(Res.IconPeopleMultiple, "People", PeopleView);
-  }
 
   public void ToggleTopSegment(PersonM person, SegmentM segment) {
     if (segment == null) return;

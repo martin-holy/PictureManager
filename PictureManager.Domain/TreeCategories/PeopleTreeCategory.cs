@@ -39,7 +39,7 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
         ToggleDialogM.TogglePerson(p);
         break;
       case PeopleTreeCategory:
-        Core.S.Person.OpenPeopleView();
+        Core.VM.OpenPeopleView();
         break;
     }
   }

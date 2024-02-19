@@ -30,6 +30,7 @@ public class CoreVM {
   public MainWindowVM MainWindow { get; } = new();
   public MediaItemsViews MediaItemsViews { get; }
   public MediaViewerVM MediaViewer { get; } = new();
+  public PeopleVM People { get; set; }
   public SegmentsDrawerVM SegmentsDrawer { get; }
   public SegmentsMatchingVM SegmentsMatching { get; set; }
   public TitleProgressBarVM TitleProgressBar { get; } = new();
@@ -104,6 +105,12 @@ public class CoreVM {
 
   private static void OpenSettings() =>
     Core.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
+
+  public void OpenPeopleView() {
+    People ??= new();
+    People.Reload();
+    Core.MainTabs.Activate(Res.IconPeopleMultiple, "People", People);
+  }
 
   private void OpenSegmentsMatching() {
     var result = SegmentsMatchingVM.GetSegmentsToLoadUserInput();
