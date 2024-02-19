@@ -215,7 +215,7 @@
                     <Border.InputBindings>
                       <MouseBinding
                         MouseAction="LeftClick"
-                        Command="vm:ToolsTabsVM.OpenPersonDetailTabCommand"
+                        Command="vm:ToolsTabsVM.OpenPersonTabCommand"
                         CommandParameter="{Binding}"/>
                     </Border.InputBindings>
 

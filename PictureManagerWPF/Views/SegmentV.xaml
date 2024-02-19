@@ -144,7 +144,7 @@
         <!-- Open Person Detail Control -->
         <mhc:IconButton
           x:Name="personDetailBtn"
-          Command="vm:ToolsTabsVM.OpenPersonDetailTabCommand"
+          Command="vm:ToolsTabsVM.OpenPersonTabCommand"
           CommandParameter="{Binding Person}"
           DockPanel.Dock="Right"
           Width="20"

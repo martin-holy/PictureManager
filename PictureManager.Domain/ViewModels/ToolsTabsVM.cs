@@ -1,19 +1,19 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.ViewModels.Entities;
 
 namespace PictureManager.Domain.ViewModels;
 
 public sealed class ToolsTabsVM : TabControl {
   public PeopleToolsTabVM PeopleTab { get; private set; }
-  public PersonDetail PersonDetailTab { get; private set; }
+  public PersonVM PersonTab { get; private set; }
 
-  public static RelayCommand<PersonM> OpenPersonDetailTabCommand { get; set; }
+  public static RelayCommand<PersonM> OpenPersonTabCommand { get; set; }
   public static RelayCommand OpenPeopleTabCommand { get; set; }
 
   public ToolsTabsVM() {
-    OpenPersonDetailTabCommand = new(OpenPersonDetailTab, Res.IconInformation, "Detail");
+    OpenPersonTabCommand = new(OpenPersonTab, Res.IconInformation, "Detail");
     OpenPeopleTabCommand = new(OpenPeopleTab, Res.IconPeopleMultiple, "People");
   }
 
@@ -23,9 +23,9 @@ public sealed class ToolsTabsVM : TabControl {
     Activate(Res.IconPeopleMultiple, "People", PeopleTab);
   }
 
-  private void OpenPersonDetailTab(PersonM person) {
-    PersonDetailTab ??= new(Core.S.Person, Core.S.Segment);
-    PersonDetailTab.Reload(person);
-    Activate(Res.IconPeople, "Person", PersonDetailTab);
+  private void OpenPersonTab(PersonM person) {
+    PersonTab ??= new(Core.S.Person, Core.S.Segment);
+    PersonTab.Reload(person);
+    Activate(Res.IconPeople, "Person", PersonTab);
   }
 }
