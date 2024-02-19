@@ -71,9 +71,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private void AddViewIfNotActive(string tabName) {
-    if (Core.MainTabs.Selected?.Data is MediaItemsViewVM) {
+    if (Core.VM.MainTabs.Selected?.Data is MediaItemsViewVM) {
       if (tabName != null)
-        Core.MainTabs.Selected.Name = tabName;
+        Core.VM.MainTabs.Selected.Name = tabName;
 
       return;
     }
@@ -87,7 +87,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     Current = view;
     view.SelectionChangedEventHandler += OnViewSelectionChanged;
     view.FilteredChangedEventHandler += OnViewFilteredChanged;
-    Core.MainTabs.Add(Res.IconImageMultiple, tabName, view);
+    Core.VM.MainTabs.Add(Res.IconImageMultiple, tabName, view);
   }
 
   private void OnViewSelectionChanged(object o, EventArgs e) {
