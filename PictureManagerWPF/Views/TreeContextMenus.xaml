@@ -27,7 +27,7 @@
   <ContextMenu x:Key="TreeContextMenuPerson" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
     <ContextMenu.ItemsSource>
       <CompositeCollection>
-        <MenuItem Command="vm:ToolsTabsVM.OpenPersonDetailTabCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="vm:ToolsTabsVM.OpenPersonTabCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
         <Separator/>

@@ -1,7 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Services;
+using PictureManager.Domain.ViewModels.Entities;
 
 namespace PictureManager.Domain.ViewModels;
 
@@ -62,7 +62,7 @@ public class MainWindowVM : ObservableObject {
 
     ToolsTabs.TabClosedEvent += tab => {
       switch (tab.Data) {
-        case PersonDetail pd: pd.Reload(null); break;
+        case PersonVM pd: pd.Reload(null); break;
       }
     };
 
