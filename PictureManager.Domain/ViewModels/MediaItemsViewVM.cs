@@ -150,7 +150,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     SelectionChanged();
   }
 
-  public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
+  public Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
     IsLoading = true;
     if (!and && !hide)
       Clear();
@@ -180,13 +180,16 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       toLoad.AddRange(folder.MediaItems);
     }
 
-    await ReadMetadata(newItems);
-    var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
-    //toLoad.AddRange(GetVideoItems(toLoad));
-    AddMediaItems(Sort(toLoad.Except(notImported)).ToList(), and, hide);
-    Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
-    AfterLoad();
-    IsLoading = false;
+    return ReadMetadata(newItems).ContinueWith(_ => {
+      Tasks.RunOnUiThread(() => {
+        var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
+        //toLoad.AddRange(GetVideoItems(toLoad));
+        AddMediaItems(Sort(toLoad.Except(notImported)).ToList(), and, hide);
+        Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
+        AfterLoad();
+        IsLoading = false;
+      });
+    });
   }
 
   private async void CancelImport() =>
