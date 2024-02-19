@@ -30,11 +30,13 @@ public class CoreVM {
   public MediaItemsViews MediaItemsViews { get; }
   public MediaViewerVM MediaViewer { get; } = new();
   public SegmentsDrawerVM SegmentsDrawer { get; }
+  public SegmentsMatchingVM SegmentsMatching { get; set; }
   public TitleProgressBarVM TitleProgressBar { get; } = new();
 
   public static RelayCommand AppClosingCommand { get; set; }
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");
   public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialogM()), null, "Open log");
+  public static RelayCommand OpenSegmentsMatchingCommand { get; set; }
   public static RelayCommand OpenSettingsCommand { get; set; }
   public static RelayCommand SaveDbCommand { get; set; }
   public static RelayCommand<FolderM> CompressImagesCommand { get; set; }
@@ -62,6 +64,7 @@ public class CoreVM {
 
     AppClosingCommand = new(AppClosing);
     OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
+    OpenSegmentsMatchingCommand = new(OpenSegmentsMatching, Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
     CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
     GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
@@ -99,6 +102,16 @@ public class CoreVM {
 
   private static void OpenSettings() =>
     Core.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
+
+  private void OpenSegmentsMatching() {
+    var result = SegmentsMatchingVM.GetSegmentsToLoadUserInput();
+    if (result < 1) return;
+    var segments = SegmentsMatchingVM.GetSegments(result).ToArray();
+    SegmentsMatching ??= new(_coreS.Segment);
+    Core.MainTabs.Activate(Res.IconSegment, "Segments", SegmentsMatching);
+    if (MediaViewer.IsVisible) MainWindow.IsInViewMode = false;
+    SegmentsMatching.Reload(segments);
+  }
 
   private void CompressImages(ImageM[] items) {
     Dialog.Show(new CompressDialogM(items, Core.Settings.JpegQualityLevel));

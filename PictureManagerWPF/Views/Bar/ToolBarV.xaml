@@ -124,7 +124,7 @@
 
             <mhc:IconButton Command="vm:SegmentsDrawerVM.OpenCommand"/>
             <mhc:IconButton Command="vm:SegmentsDrawerVM.AddSelectedCommand"/>
-            <mhc:IconButton Command="domain:Core.OpenSegmentsViewCommand"/>
+            <mhc:IconButton Command="vm:CoreVM.OpenSegmentsMatchingCommand"/>
             <mhc:IconButton Command="vme:SegmentVM.SetSelectedAsUnknownCommand"/>
           </StackPanel>
 
