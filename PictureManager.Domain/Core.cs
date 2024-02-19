@@ -313,7 +313,7 @@ public sealed class Core {
     R.Person.KeywordsChangedEvent += items => {
       VM.MainWindow.ToolsTabs.PersonTab?.UpdateDisplayKeywordsIfContains(items);
       VM.MainWindow.ToolsTabs.PeopleTab?.Update(items);
-      S.Person.PeopleView?.Update(items);
+      VM.People?.Update(items);
       VM.SegmentsMatching?.CvPeople.Update(items);
     };
 
@@ -321,7 +321,7 @@ public sealed class Core {
       R.MediaItem.RemovePerson(e.Data);
       R.Segment.RemovePerson(e.Data);
       S.Person.Selected.Set(e.Data, false);
-      S.Person.PeopleView?.Remove(e.Data);
+      VM.People?.Remove(e.Data);
       VM.MainWindow.ToolsTabs.PeopleTab?.Remove(e.Data);
       VM.SegmentsMatching?.CvPeople.Remove(e.Data);
 
@@ -344,7 +344,7 @@ public sealed class Core {
       R.Person.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
       R.MediaItem.TogglePerson(e.Data.Item2);
       VM.MainWindow.ToolsTabs.PersonTab?.Update(e.Data.Item2);
-      S.Person.PeopleView?.Update(e.Data.Item3);
+      VM.People?.Update(e.Data.Item3);
       S.Segment.Selected.DeselectAll();
       VM.SegmentsMatching?.OnSegmentsPersonChanged(e.Data.Item2);
     };
