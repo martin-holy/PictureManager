@@ -6,9 +6,9 @@
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
+  xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
-  <DataTemplate DataType="{x:Type dv:VideoDetail}">
+  <DataTemplate DataType="{x:Type vme:VideoVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -33,7 +33,7 @@
         <FrameworkElement.LayoutTransform>
           <TransformGroup>
             <RotateTransform Angle="{Binding
-              Path=VideoDetail.Current.Orientation,
+              Path=VM.Video.Current.Orientation,
               Converter={x:Static pmConv:OrientationToAngleConverter.Inst},
               Source={x:Static pm:App.Core}}"/>
           </TransformGroup>

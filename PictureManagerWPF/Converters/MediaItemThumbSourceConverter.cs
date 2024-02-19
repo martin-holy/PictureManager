@@ -87,7 +87,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
       Core.Settings.JpegQualityLevel);
 
   private static void CreateVideoItemThumbnail(VideoItemM vi) {
-    if (ReferenceEquals(Core.VideoDetail.MediaPlayer.CurrentItem, vi)) {
+    if (ReferenceEquals(Core.VM.Video.MediaPlayer.CurrentItem, vi)) {
       AppCore.CurrentMediaPlayer()
         .ToBitmap()
         .Resize(Core.Settings.ThumbnailSize)

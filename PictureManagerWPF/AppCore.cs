@@ -25,7 +25,7 @@ public sealed class AppCore : ObservableObject {
 
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
-    Core.VideoDetail.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
+    VideoVM.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
     Core.UiFullVideo = new MediaPlayer();
     Core.UiDetailVideo = new MediaPlayer();
     Core.VideoFrameSaver = new VideoFrameSaver();
