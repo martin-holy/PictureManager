@@ -31,7 +31,6 @@ public sealed class Core {
 
   public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public static MediaItemsViews MediaItemsViews { get; } = new();
-  public static VideoDetail VideoDetail { get; } = new();
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
@@ -77,8 +76,8 @@ public sealed class Core {
     VM.MainWindow.TreeViewCategories.AddCategories();
     R.CategoryGroup.AddCategory(R.Person.Tree);
     R.CategoryGroup.AddCategory(R.Keyword.Tree);
-    VideoDetail.MediaPlayer.SetView(UiFullVideo);
-    VideoDetail.MediaPlayer.SetView(UiDetailVideo);
+    VM.Video.MediaPlayer.SetView(UiFullVideo);
+    VM.Video.MediaPlayer.SetView(UiDetailVideo);
   }
 
   private void AttachVMEvents() {
@@ -91,13 +90,13 @@ public sealed class Core {
         VM.MediaViewer.IsVisible = isInViewMode;
 
         if (isInViewMode) {
-          VideoDetail.MediaPlayer.SetView(UiFullVideo);
+          VM.Video.MediaPlayer.SetView(UiFullVideo);
           S.Segment.Rect.MediaItem = VM.MediaItem.Current;
         }
         else {
           MediaItemsViews.SelectAndScrollToCurrentMediaItem();
           VM.MediaViewer.Deactivate();
-          VideoDetail.MediaPlayer.SetView(UiDetailVideo);
+          VM.Video.MediaPlayer.SetView(UiDetailVideo);
         }
 
         VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
@@ -109,7 +108,7 @@ public sealed class Core {
     VM.MediaItem.PropertyChanged += (_, e) => {
       if (nameof(VM.MediaItem.Current).Equals(e.PropertyName)) {
         VM.MainWindow.StatusBar.Update();
-        VideoDetail.SetCurrent(VM.MediaItem.Current);
+        VM.Video.SetCurrent(VM.MediaItem.Current);
 
         if (VM.MainWindow.IsInViewMode) {
           VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
@@ -134,14 +133,14 @@ public sealed class Core {
         R.GeoName.ApiLimitExceeded = false;
     };
 
-    VideoDetail.MediaPlayer.RepeatEndedEvent += delegate {
+    VM.Video.MediaPlayer.RepeatEndedEvent += delegate {
       VM.MediaViewer.OnPlayerRepeatEnded();
     };
 
-    VideoDetail.CurrentVideoItems.Selected.ItemsChangedEventHandler += (_, e) => {
+    VM.Video.CurrentVideoItems.Selected.ItemsChangedEventHandler += (_, e) => {
       var vi = e.Data.FirstOrDefault();
-      VM.MediaItem.Current = (MediaItemM)vi ?? VideoDetail.Current;
-      VideoDetail.MediaPlayer.SetCurrent(vi);
+      VM.MediaItem.Current = (MediaItemM)vi ?? VM.Video.Current;
+      VM.Video.MediaPlayer.SetCurrent(vi);
     };
 
     VM.MediaViewer.PropertyChanged += (_, e) => {
@@ -154,7 +153,7 @@ public sealed class Core {
           if (VM.MediaViewer.Current != null && !ReferenceEquals(VM.MediaItem.Current, VM.MediaViewer.Current))
             VM.MediaItem.Current = VM.MediaViewer.Current;
           else
-            VideoDetail.SetCurrent(VM.MediaViewer.Current, true);
+            VM.Video.SetCurrent(VM.MediaViewer.Current, true);
           break;
         case nameof(VM.MediaViewer.Scale):
           S.Segment.Rect.UpdateScale(VM.MediaViewer.Scale);
@@ -252,7 +251,7 @@ public sealed class Core {
       var all = items.OfType<VideoItemM>().Select(x => x.Video).Concat(items).Distinct().ToArray();
       VM.MediaItem.OnMetadataChanged(all);
       MediaItemsViews.UpdateViews(all);
-      VideoDetail.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
+      VM.Video.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
       VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
       VM.MainWindow.StatusBar.UpdateRating();
       VM.UpdateModifiedMediaItemsCount();
@@ -268,8 +267,8 @@ public sealed class Core {
         VM.MediaViewer.Current = VM.MediaViewer.Current;
 
       MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
-      if (items.Contains(VideoDetail.Current))
-        VideoDetail.CurrentVideoItems.ReWrapAll();
+      if (items.Contains(VM.Video.Current))
+        VM.Video.CurrentVideoItems.ReWrapAll();
     };
 
     R.MediaItem.ItemDeletedEvent += (_, e) => {
@@ -286,7 +285,7 @@ public sealed class Core {
       VM.UpdateMediaItemsCount();
       VM.UpdateModifiedMediaItemsCount();
       MediaItemsViews.RemoveMediaItems(e.Data);
-      VideoDetail.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
+      VM.Video.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
 
       if (VM.MediaViewer.IsVisible) {
         VM.MediaViewer.MediaItems.Remove(e.Data[0]);

@@ -7,18 +7,18 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.DataViews;
+namespace PictureManager.Domain.ViewModels.Entities;
 
-public sealed class VideoDetail : ObservableObject {
+public sealed class VideoVM : ObservableObject {
   private VideoM _current;
 
   public CollectionViewVideoItems CurrentVideoItems { get; } = new();
   public VideoM Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
   public MediaPlayer MediaPlayer { get; } = new();
 
-  public Func<string, string, object[]> GetVideoMetadataFunc { get; set; }
+  public static Func<string, string, object[]> GetVideoMetadataFunc { get; set; }
 
-  public VideoDetail() {
+  public VideoVM() {
     MediaPlayer.SelectNextItemAction = CurrentVideoItems.SelectNextOrFirstItem;
     MediaPlayer.GetNewClipFunc = GetNewClip;
     MediaPlayer.GetNewImageFunc = GetNewImage;

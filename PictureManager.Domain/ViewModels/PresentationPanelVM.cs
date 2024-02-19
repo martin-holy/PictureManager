@@ -83,8 +83,8 @@ public sealed class PresentationPanelVM : ObservableObject {
 
     IsPaused = false;
     IsRunning = true;
-    Core.VideoDetail.MediaPlayer.PlayType = PlayType.Video;
-    Core.VideoDetail.MediaPlayer.RepeatForSeconds = Interval;
+    Core.VM.Video.MediaPlayer.PlayType = PlayType.Video;
+    Core.VM.Video.MediaPlayer.RepeatForSeconds = Interval;
 
     if (!delay) Next();
   }
@@ -95,7 +95,7 @@ public sealed class PresentationPanelVM : ObservableObject {
 
     IsPaused = false;
     IsRunning = false;
-    Core.VideoDetail.MediaPlayer.RepeatForSeconds = 0; // infinity
+    Core.VM.Video.MediaPlayer.RepeatForSeconds = 0; // infinity
   }
 
   public void Pause() {
