@@ -75,7 +75,7 @@
               <TextBlock
                 x:Name="tbPositionSlashCount"
                 Style="{StaticResource STextBlock}"
-                Text="{Binding Core.MediaItemsViews.Current.PositionSlashCount}"/>
+                Text="{Binding Core.VM.MediaItemsViews.Current.PositionSlashCount}"/>
             </Border>
           </StackPanel>
         </Border>

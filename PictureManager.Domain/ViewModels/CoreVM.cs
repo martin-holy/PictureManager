@@ -2,7 +2,6 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models;
@@ -28,7 +27,7 @@ public class CoreVM {
 
   public ImageComparerVM ImageComparer { get; } = new();
   public MainWindowVM MainWindow { get; } = new();
-  public MediaItemsViews MediaItemsViews { get; }
+  public MediaItemsViewsVM MediaItemsViews { get; } = new();
   public MediaViewerVM MediaViewer { get; } = new();
   public PeopleVM People { get; set; }
   public SegmentsDrawerVM SegmentsDrawer { get; }
@@ -60,7 +59,6 @@ public class CoreVM {
     Video = new();
     Viewer = new(_coreR.Viewer, _coreS.Viewer);
 
-    MediaItemsViews = Core.MediaItemsViews;
     SegmentsDrawer = new(_coreS.Segment, _coreR.Segment.Drawer);
 
     UpdateMediaItemsCount();

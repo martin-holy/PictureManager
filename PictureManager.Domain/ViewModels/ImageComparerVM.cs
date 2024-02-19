@@ -1,7 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +13,15 @@ public sealed class ImageComparerVM : ObservableObject {
   private int _diff;
 
   public int Diff { get => _diff; set { _diff = value; OnPropertyChanged(); } }
-  public static RelayCommand<MediaItemsView> AverageHashCommand { get; set; }
-  public static RelayCommand<MediaItemsView> PHashCommand { get; set; }
+  public static RelayCommand<MediaItemsViewVM> AverageHashCommand { get; set; }
+  public static RelayCommand<MediaItemsViewVM> PHashCommand { get; set; }
 
   public ImageComparerVM() {
     AverageHashCommand = new(x => Compare(x, _avgHashes, Imaging.GetBitmapAvgHash), Res.IconCompare, "Compare images using average hash");
     PHashCommand = new(x => Compare(x, _pHashes, Imaging.GetBitmapPerceptualHash), Res.IconCompare, "Compare images using perceptual hash");
   }
 
-  public void Compare(MediaItemsView view, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
+  public void Compare(MediaItemsViewVM view, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
     if (view == null) return;
 
     var items = view.LoadedItems.Where(x => view.Filter.Filter(x));

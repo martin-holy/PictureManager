@@ -15,7 +15,7 @@ public class StatusBarVM(Core core) : ObservableObject {
   private string _fileSize;
 
   public Core Core { get; } = core;
-  public bool IsCountVisible => Core.MediaItemsViews.Current != null || Core.VM.MediaViewer.IsVisible;
+  public bool IsCountVisible => Core.VM.MediaItemsViews.Current != null || Core.VM.MediaViewer.IsVisible;
   public string FileSize { get => _fileSize; set { _fileSize = value; OnPropertyChanged(); } }
 
   public ObservableCollection<string> FilePath {

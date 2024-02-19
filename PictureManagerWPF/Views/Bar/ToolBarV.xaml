@@ -8,7 +8,6 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
-  xmlns:domain="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type vm:ToolBarVM}">
@@ -95,7 +94,7 @@
 
           <!-- Filters Panel -->
           <ContentPresenter
-            Content="{Binding MediaItemsViews.Current.Filter}"
+            Content="{Binding VM.MediaItemsViews.Current.Filter}"
             ContentTemplate="{StaticResource MediaItemsFilterV}"/>
 
           <mhc:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
@@ -174,7 +173,7 @@
                 <Style.Triggers>
                   <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                      <Condition Binding="{Binding MediaItemsViews.Current, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
+                      <Condition Binding="{Binding VM.MediaItemsViews.Current, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
                       <Condition Binding="{Binding VM.MainWindow.IsInViewMode}" Value="False"/>
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Visibility" Value="Visible"/>
@@ -195,16 +194,16 @@
               TickFrequency="0.1"
               SmallChange="0.1"
               LargeChange="0.2"
-              Value="{Binding MediaItemsViews.Current.ThumbScale, Mode=TwoWay}"/>
+              Value="{Binding VM.MediaItemsViews.Current.ThumbScale, Mode=TwoWay}"/>
 
             <!-- Image Comparer -->
             <mhc:IconButton
               Command="vm:ImageComparerVM.AverageHashCommand"
-              CommandParameter="{Binding MediaItemsViews.Current}"/>
+              CommandParameter="{Binding VM.MediaItemsViews.Current}"/>
 
             <mhc:IconButton
               Command="vm:ImageComparerVM.PHashCommand"
-              CommandParameter="{Binding MediaItemsViews.Current}"/>
+              CommandParameter="{Binding VM.MediaItemsViews.Current}"/>
 
             <Slider
               Style="{StaticResource MH.Styles.Controls.PopupSlider}"

@@ -39,7 +39,7 @@ public sealed class SegmentsMatchingVM {
           ? Core.VM.MediaViewer.Current != null
             ? new[] { Core.VM.MediaViewer.Current }
             : Array.Empty<MediaItemM>()
-          : Core.MediaItemsViews.Current?.GetSelectedOrAll().ToArray()
+          : Core.VM.MediaItemsViews.Current?.GetSelectedOrAll().ToArray()
             ?? Array.Empty<MediaItemM>();
 
         return items.Concat(items.GetVideoItems()).GetSegments();

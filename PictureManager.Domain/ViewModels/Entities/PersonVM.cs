@@ -28,7 +28,7 @@ public sealed class PersonVM : ObservableObject {
         _segmentS = segmentS;
         CanDropFunc = CanDrop;
         TopSegmentsDropAction = TopSegmentsDrop;
-        LoadMediaItemsCommand = new(() => Core.MediaItemsViews.LoadByTag(PersonM), Res.IconImageMultiple, "Load Media items in new tab");
+        LoadMediaItemsCommand = new(() => Core.VM.MediaItemsViews.LoadByTag(PersonM), Res.IconImageMultiple, "Load Media items in new tab");
     }
 
     private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
