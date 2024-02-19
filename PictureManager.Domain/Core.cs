@@ -2,7 +2,6 @@ using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Repositories;
@@ -28,9 +27,7 @@ public sealed class Core {
   public static Settings Settings { get; } = new();
 
   public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
-
   public static TabControl MainTabs { get; } = new() { CanCloseTabs = true };
-  public static MediaItemsViews MediaItemsViews { get; } = new();
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
@@ -60,7 +57,7 @@ public sealed class Core {
 
   public void AfterInit() {
     var scale = GetDisplayScale();
-    MediaItemsViews.DefaultThumbScale = 1 / scale;
+    MediaItemsViewsVM.DefaultThumbScale = 1 / scale;
     SegmentS.SetSegmentUiSize(scale);
     S = new(R);
     VM = new(S, R);
@@ -94,7 +91,7 @@ public sealed class Core {
           S.Segment.Rect.MediaItem = VM.MediaItem.Current;
         }
         else {
-          MediaItemsViews.SelectAndScrollToCurrentMediaItem();
+          VM.MediaItemsViews.SelectAndScrollToCurrentMediaItem();
           VM.MediaViewer.Deactivate();
           VM.Video.MediaPlayer.SetView(UiDetailVideo);
         }
@@ -163,8 +160,8 @@ public sealed class Core {
 
     MainTabs.TabClosedEvent += tab => {
       switch (tab.Data) {
-        case MediaItemsView miView:
-          MediaItemsViews.CloseView(miView);
+        case MediaItemsViewVM miView:
+          VM.MediaItemsViews.CloseView(miView);
           break;
         case PersonS people:
           people.Selected.DeselectAll();
@@ -177,7 +174,7 @@ public sealed class Core {
 
     MainTabs.PropertyChanged += (_, e) => {
       if (nameof(MainTabs.Selected).Equals(e.PropertyName))
-        MediaItemsViews.SetCurrentView(MainTabs.Selected?.Data as MediaItemsView);
+        VM.MediaItemsViews.SetCurrentView(MainTabs.Selected?.Data as MediaItemsViewVM);
     };
   }
 
@@ -244,13 +241,13 @@ public sealed class Core {
 
     R.MediaItem.ItemRenamedEvent += (_, _) => {
       VM.MediaItem.OnPropertyChanged(nameof(VM.MediaItem.Current));
-      MediaItemsViews.Current?.SoftLoad(MediaItemsViews.Current.FilteredItems, true, false);
+      VM.MediaItemsViews.Current?.SoftLoad(VM.MediaItemsViews.Current.FilteredItems, true, false);
     };
 
     R.MediaItem.MetadataChangedEvent += items => {
       var all = items.OfType<VideoItemM>().Select(x => x.Video).Concat(items).Distinct().ToArray();
       VM.MediaItem.OnMetadataChanged(all);
-      MediaItemsViews.UpdateViews(all);
+      VM.MediaItemsViews.UpdateViews(all);
       VM.Video.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
       VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
       VM.MainWindow.StatusBar.UpdateRating();
@@ -266,7 +263,7 @@ public sealed class Core {
       if (VM.MediaViewer.IsVisible && items.Contains(VM.MediaViewer.Current))
         VM.MediaViewer.Current = VM.MediaViewer.Current;
 
-      MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
+      VM.MediaItemsViews.ReWrapViews(items.Cast<MediaItemM>().ToArray());
       if (items.Contains(VM.Video.Current))
         VM.Video.CurrentVideoItems.ReWrapAll();
     };
@@ -284,7 +281,7 @@ public sealed class Core {
 
       VM.UpdateMediaItemsCount();
       VM.UpdateModifiedMediaItemsCount();
-      MediaItemsViews.RemoveMediaItems(e.Data);
+      VM.MediaItemsViews.RemoveMediaItems(e.Data);
       VM.Video.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
 
       if (VM.MediaViewer.IsVisible) {
@@ -298,8 +295,8 @@ public sealed class Core {
       FileOperationDelete(e.Data.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
     };
 
-    MediaItemsViews.PropertyChanged += (_, e) => {
-      if (nameof(MediaItemsViews.Current).Equals(e.PropertyName)) {
+    VM.MediaItemsViews.PropertyChanged += (_, e) => {
+      if (nameof(VM.MediaItemsViews.Current).Equals(e.PropertyName)) {
         VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
         VM.MainWindow.StatusBar.OnPropertyChanged(nameof(VM.MainWindow.StatusBar.IsCountVisible));
       }

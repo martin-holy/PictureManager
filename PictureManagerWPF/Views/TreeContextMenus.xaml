@@ -6,15 +6,14 @@
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
   xmlns:tc="clr-namespace:PictureManager.Domain.TreeCategories;assembly=PictureManager.Domain"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
-  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
   xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
   <!-- Tag Items Load and Filters -->
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu" x:Shared="False">
-    <MenuItem Command="dv:MediaItemsViews.LoadByTagCommand" CommandParameter="{Binding}"/>
-    <MenuItem Command="dv:MediaItemsViews.FilterSetAndCommand" CommandParameter="{Binding}"/>
-    <MenuItem Command="dv:MediaItemsViews.FilterSetOrCommand" CommandParameter="{Binding}"/>
-    <MenuItem Command="dv:MediaItemsViews.FilterSetNotCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="vm:MediaItemsViewsVM.LoadByTagCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="vm:MediaItemsViewsVM.FilterSetAndCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="vm:MediaItemsViewsVM.FilterSetOrCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="vm:MediaItemsViewsVM.FilterSetNotCommand" CommandParameter="{Binding}"/>
   </x:Array>
 
   <!-- People -->
@@ -93,7 +92,7 @@
         <Path Data="{StaticResource IconImageMultiple}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
       </MenuItem.Icon>
       <MenuItem Command="vm:CoreVM.CompressImagesCommand" CommandParameter="{Binding}"/>
-      <MenuItem Command="dv:MediaItemsViews.RebuildThumbnailsCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="vm:MediaItemsViewsVM.RebuildThumbnailsCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="vm:CoreVM.ReloadMetadataCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="vm:CoreVM.ResizeImagesCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="vm:CoreVM.SaveImageMetadataToFilesCommand" CommandParameter="{Binding}"/>

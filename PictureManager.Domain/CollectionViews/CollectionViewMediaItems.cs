@@ -1,8 +1,8 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,8 +45,8 @@ public class CollectionViewMediaItems : CollectionView<MediaItemM> {
   public override int GetItemSize(MediaItemM item, bool getWidth) {
     var size = getWidth ? item.ThumbWidth : item.ThumbHeight;
 
-    if (Math.Abs(ThumbScale - MediaItemsViews.DefaultThumbScale) > 0)
-      size = (int)Math.Round((size / MediaItemsViews.DefaultThumbScale) * ThumbScale, 0);
+    if (Math.Abs(ThumbScale - MediaItemsViewsVM.DefaultThumbScale) > 0)
+      size = (int)Math.Round((size / MediaItemsViewsVM.DefaultThumbScale) * ThumbScale, 0);
 
     return size;
   }

@@ -35,7 +35,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
     if (Core.VM.MediaViewer.IsVisible)
       Core.VM.MainWindow.IsInViewMode = false;
 
-    _ = Core.MediaItemsViews.LoadByFolder(item);
+    _ = Core.VM.MediaItemsViews.LoadByFolder(item);
   }
 
   public override bool CanDrop(object src, ITreeItem dest) {
@@ -53,9 +53,9 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
       }
       case string[] dragged: {
         // MediaItems
-        if (Core.MediaItemsViews.Current == null) break;
+        if (Core.VM.MediaItemsViews.Current == null) break;
 
-        var selected = Core.MediaItemsViews.Current.Selected.Items
+        var selected = Core.VM.MediaItemsViews.Current.Selected.Items
           .Select(p => p.FilePath)
           .OrderBy(p => p)
           .ToArray();
@@ -91,7 +91,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         break;
 
       case string[]: // MediaItems
-        var items = Core.MediaItemsViews.Current.Selected.Items.OfType<RealMediaItemM>().ToList();
+        var items = Core.VM.MediaItemsViews.Current.Selected.Items.OfType<RealMediaItemM>().ToList();
         // TODO mi rewrite (don't do anything if count is 0)
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} media items",

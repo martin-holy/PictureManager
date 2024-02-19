@@ -4,7 +4,7 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="PM.Views.MainTabsV" DataType="{x:Type mhuic:TabControl}">
     <DataTemplate.Resources>
@@ -26,7 +26,7 @@
         <mhc:Slot Name="TabStripSlot" Placement="Top">
           <mhc:Slot.Content>
             <mhc:IconButton
-              Command="dv:MediaItemsViews.AddViewCommand"
+              Command="vm:MediaItemsViewsVM.AddViewCommand"
               Width="24"
               Height="24"
               Padding="6"

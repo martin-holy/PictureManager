@@ -9,13 +9,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.DataViews;
+namespace PictureManager.Domain.ViewModels;
 
-public sealed class MediaItemsViews : ObservableObject {
-  private readonly List<MediaItemsView> _all = [];
-  private MediaItemsView _current;
-    
-  public MediaItemsView Current { get => _current; set { _current = value; OnPropertyChanged(); } }
+public sealed class MediaItemsViewsVM : ObservableObject {
+  private readonly List<MediaItemsViewVM> _all = [];
+  private MediaItemsViewVM _current;
+
+  public MediaItemsViewVM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
   public static double DefaultThumbScale { get; set; } = 1.0;
 
   public static RelayCommand<object> FilterSetAndCommand { get; set; }
@@ -28,7 +28,7 @@ public sealed class MediaItemsViews : ObservableObject {
   public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; }
   public static RelayCommand ViewModifiedCommand { get; set; }
 
-  public MediaItemsViews() {
+  public MediaItemsViewsVM() {
     FilterSetAndCommand = new(item => Current.Filter.Set(item, DisplayFilter.And), _ => Current != null, Res.IconFilter, "Filter And");
     FilterSetOrCommand = new(item => Current.Filter.Set(item, DisplayFilter.Or), _ => Current != null, Res.IconFilter, "Filter Or");
     FilterSetNotCommand = new(item => Current.Filter.Set(item, DisplayFilter.Not), _ => Current != null, Res.IconFilter, "Filter Not");
@@ -52,7 +52,7 @@ public sealed class MediaItemsViews : ObservableObject {
       view.Remove(items, Current == view);
   }
 
-  public void CloseView(MediaItemsView view) {
+  public void CloseView(MediaItemsViewVM view) {
     view.Clear();
     view.SelectionChangedEventHandler -= OnViewSelectionChanged;
     view.FilteredChangedEventHandler -= OnViewFilteredChanged;
@@ -62,7 +62,7 @@ public sealed class MediaItemsViews : ObservableObject {
     Core.VM.MediaItem.Current = null;
   }
 
-  public void SetCurrentView(MediaItemsView view) {
+  public void SetCurrentView(MediaItemsViewVM view) {
     Current = view;
     Current?.UpdateSelected();
     Core.VM.MediaItem.Current = Current?.Selected.Items.Count > 0
@@ -71,7 +71,7 @@ public sealed class MediaItemsViews : ObservableObject {
   }
 
   private void AddViewIfNotActive(string tabName) {
-    if (Core.MainTabs.Selected?.Data is MediaItemsView) {
+    if (Core.MainTabs.Selected?.Data is MediaItemsViewVM) {
       if (tabName != null)
         Core.MainTabs.Selected.Name = tabName;
 
@@ -82,7 +82,7 @@ public sealed class MediaItemsViews : ObservableObject {
   }
 
   private void AddView(string tabName) {
-    var view = new MediaItemsView(DefaultThumbScale);
+    var view = new MediaItemsViewVM(DefaultThumbScale);
     _all.Add(view);
     Current = view;
     view.SelectionChangedEventHandler += OnViewSelectionChanged;
