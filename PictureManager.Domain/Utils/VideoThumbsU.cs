@@ -4,6 +4,7 @@ using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Services;
+using PictureManager.Domain.ViewModels;
 using PictureManager.Domain.ViewModels.Entities;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ public static class VideoThumbsU {
 
     var videos = GetVideos(items, rebuild);
     if (videos.Length > 0)
-      Core.VideoFrameSaver.Save(videos, OnSave, OnError, OnFinished);
+      CoreVM.VideoFrameSaver.Save(videos, OnSave, OnError, OnFinished);
   }
 
   private static VfsVideo[] GetVideos(MediaItemM[] items, bool rebuild) {

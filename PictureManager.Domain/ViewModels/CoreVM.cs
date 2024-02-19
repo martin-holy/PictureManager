@@ -1,4 +1,5 @@
 ﻿using MH.UI.Controls;
+using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
@@ -35,6 +36,10 @@ public class CoreVM {
   public SegmentsDrawerVM SegmentsDrawer { get; }
   public SegmentsMatchingVM SegmentsMatching { get; set; }
   public TitleProgressBarVM TitleProgressBar { get; } = new();
+
+  public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
+  public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
+  public static IVideoFrameSaver VideoFrameSaver { get; set; }
 
   public static RelayCommand AppClosingCommand { get; set; }
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");
