@@ -1,4 +1,3 @@
-using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
@@ -23,10 +22,6 @@ public sealed class Core {
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }
   public static Settings Settings { get; } = new();
-
-  public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
-  public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
-  public static IVideoFrameSaver VideoFrameSaver { get; set; }
 
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
@@ -58,7 +53,6 @@ public sealed class Core {
     S = new(R);
     VM = new(S, R);
     AttachEvents();
-    AttachVMEvents();
 
     R.Keyword.Tree.AutoAddedGroup ??=
       R.CategoryGroup.ItemCreate(R.Keyword.Tree, "Auto Added");
@@ -69,46 +63,8 @@ public sealed class Core {
     VM.MainWindow.TreeViewCategories.AddCategories();
     R.CategoryGroup.AddCategory(R.Person.Tree);
     R.CategoryGroup.AddCategory(R.Keyword.Tree);
-    VM.Video.MediaPlayer.SetView(UiFullVideo);
-    VM.Video.MediaPlayer.SetView(UiDetailVideo);
-  }
-
-  private void AttachVMEvents() {
-    AttachVMMediaItemsEventHandlers();
-
-    VM.MainWindow.PropertyChanged += (_, e) => {
-      if (nameof(VM.MainWindow.IsInViewMode).Equals(e.PropertyName)) {
-        var isInViewMode = VM.MainWindow.IsInViewMode;
-
-        VM.MediaViewer.IsVisible = isInViewMode;
-
-        if (isInViewMode) {
-          VM.Video.MediaPlayer.SetView(UiFullVideo);
-          S.Segment.Rect.MediaItem = VM.MediaItem.Current;
-        }
-        else {
-          VM.MediaItemsViews.SelectAndScrollToCurrentMediaItem();
-          VM.MediaViewer.Deactivate();
-          VM.Video.MediaPlayer.SetView(UiDetailVideo);
-        }
-
-        VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
-      }
-    };
-  }
-
-  private void AttachVMMediaItemsEventHandlers() {
-    VM.MediaItem.PropertyChanged += (_, e) => {
-      if (nameof(VM.MediaItem.Current).Equals(e.PropertyName)) {
-        VM.MainWindow.StatusBar.Update();
-        VM.Video.SetCurrent(VM.MediaItem.Current);
-
-        if (VM.MainWindow.IsInViewMode) {
-          VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
-          S.Segment.Rect.MediaItem = VM.MediaItem.Current;
-        }
-      }
-    };
+    VM.Video.MediaPlayer.SetView(CoreVM.UiFullVideo);
+    VM.Video.MediaPlayer.SetView(CoreVM.UiDetailVideo);
   }
 
   private void AttachEvents() {
@@ -124,6 +80,26 @@ public sealed class Core {
     Settings.PropertyChanged += (_, e) => {
       if (nameof(Settings.GeoNamesUserName).Equals(e.PropertyName))
         R.GeoName.ApiLimitExceeded = false;
+    };
+
+    VM.MainWindow.PropertyChanged += (_, e) => {
+      if (nameof(VM.MainWindow.IsInViewMode).Equals(e.PropertyName)) {
+        var isInViewMode = VM.MainWindow.IsInViewMode;
+
+        VM.MediaViewer.IsVisible = isInViewMode;
+
+        if (isInViewMode) {
+          VM.Video.MediaPlayer.SetView(CoreVM.UiFullVideo);
+          S.Segment.Rect.MediaItem = VM.MediaItem.Current;
+        }
+        else {
+          VM.MediaItemsViews.SelectAndScrollToCurrentMediaItem();
+          VM.MediaViewer.Deactivate();
+          VM.Video.MediaPlayer.SetView(CoreVM.UiDetailVideo);
+        }
+
+        VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+      }
     };
 
     VM.Video.MediaPlayer.RepeatEndedEvent += delegate {
@@ -289,6 +265,18 @@ public sealed class Core {
       }
       
       FileOperationDelete(e.Data.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
+    };
+
+    VM.MediaItem.PropertyChanged += (_, e) => {
+      if (nameof(VM.MediaItem.Current).Equals(e.PropertyName)) {
+        VM.MainWindow.StatusBar.Update();
+        VM.Video.SetCurrent(VM.MediaItem.Current);
+
+        if (VM.MainWindow.IsInViewMode) {
+          VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+          S.Segment.Rect.MediaItem = VM.MediaItem.Current;
+        }
+      }
     };
 
     VM.MediaItemsViews.PropertyChanged += (_, e) => {

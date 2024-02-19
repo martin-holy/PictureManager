@@ -3,6 +3,7 @@ using MH.Utils.BaseClasses;
 using PictureManager.Converters;
 using PictureManager.Domain;
 using PictureManager.Domain.Services;
+using PictureManager.Domain.ViewModels;
 using PictureManager.Domain.ViewModels.Entities;
 using PictureManager.ShellStuff;
 using System.Collections.Generic;
@@ -26,9 +27,9 @@ public sealed class AppCore : ObservableObject {
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
     VideoVM.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
-    Core.UiFullVideo = new MediaPlayer();
-    Core.UiDetailVideo = new MediaPlayer();
-    Core.VideoFrameSaver = new VideoFrameSaver();
+    CoreVM.UiFullVideo = new MediaPlayer();
+    CoreVM.UiDetailVideo = new MediaPlayer();
+    CoreVM.VideoFrameSaver = new VideoFrameSaver();
 
     SegmentVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
     MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
@@ -63,5 +64,5 @@ public sealed class AppCore : ObservableObject {
   }
 
   public static MediaPlayer CurrentMediaPlayer() =>
-    (MediaPlayer)(Core.VM.MainWindow.IsInViewMode ? Core.UiFullVideo : Core.UiDetailVideo);
+    (MediaPlayer)(Core.VM.MainWindow.IsInViewMode ? CoreVM.UiFullVideo : CoreVM.UiDetailVideo);
 }

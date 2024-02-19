@@ -67,7 +67,7 @@
           <!-- Video -->
           <ContentControl
             x:Name="player"
-            Content="{Binding Path=UiFullVideo, Source={x:Static pm:App.Core}}"
+            Content="{Binding Path=VM.UiFullVideo, Source={x:Static pm:App.Core}}"
             Visibility="Collapsed">
 
             <FrameworkElement.LayoutTransform>

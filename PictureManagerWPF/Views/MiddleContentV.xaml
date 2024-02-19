@@ -8,7 +8,7 @@
   <DataTemplate DataType="{x:Type vm:MiddleContentVM}">
     <Grid DataContext="{Binding Source={x:Static pm:App.Core}}">
       <!-- Video Frame Saver -->
-      <ContentControl Content="{Binding Path=VideoFrameSaver, Source={x:Static pm:App.Core}}"/>
+      <ContentControl Content="{Binding Path=VM.VideoFrameSaver, Source={x:Static pm:App.Core}}"/>
 
       <!-- Main Tabs -->
       <ContentPresenter

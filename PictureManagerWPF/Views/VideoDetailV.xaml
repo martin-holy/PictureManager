@@ -27,7 +27,7 @@
 
       <ContentControl
         x:Name="player"
-        Content="{Binding Path=UiDetailVideo, Source={x:Static pm:App.Core}}"
+        Content="{Binding Path=VM.UiDetailVideo, Source={x:Static pm:App.Core}}"
         VerticalAlignment="Top">
 
         <FrameworkElement.LayoutTransform>
