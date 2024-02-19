@@ -5,7 +5,6 @@ using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
-using PictureManager.Domain.TreeCategories;
 using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -25,7 +24,6 @@ public sealed class Core {
   public static CoreVM VM { get; private set; }
   public static Settings Settings { get; } = new();
 
-  public static RatingsTreeCategory RatingsTreeCategory { get; } = new();
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
