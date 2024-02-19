@@ -1,7 +1,6 @@
 using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils;
-using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
@@ -36,13 +35,10 @@ public sealed class Core {
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
-  public static SegmentsView SegmentsView { get; set; }
 
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public static Func<double> GetDisplayScale { get; set; }
-
-  public static RelayCommand OpenSegmentsViewCommand { get; set; }
 
   private Core() {
     Tasks.SetUiTaskScheduler();
@@ -83,7 +79,6 @@ public sealed class Core {
     R.CategoryGroup.AddCategory(R.Keyword.Tree);
     VideoDetail.MediaPlayer.SetView(UiFullVideo);
     VideoDetail.MediaPlayer.SetView(UiDetailVideo);
-    OpenSegmentsViewCommand = new(OpenSegmentsView, Res.IconSegment, "Segments View");
   }
 
   private void AttachVMEvents() {
@@ -320,7 +315,7 @@ public sealed class Core {
       VM.MainWindow.ToolsTabs.PersonDetailTab?.UpdateDisplayKeywordsIfContains(items);
       VM.MainWindow.ToolsTabs.PeopleTab?.Update(items);
       S.Person.PeopleView?.Update(items);
-      SegmentsView?.CvPeople.Update(items);
+      VM.SegmentsMatching?.CvPeople.Update(items);
     };
 
     R.Person.ItemDeletedEvent += (_, e) => {
@@ -329,7 +324,7 @@ public sealed class Core {
       S.Person.Selected.Set(e.Data, false);
       S.Person.PeopleView?.Remove(e.Data);
       VM.MainWindow.ToolsTabs.PeopleTab?.Remove(e.Data);
-      SegmentsView?.CvPeople.Remove(e.Data);
+      VM.SegmentsMatching?.CvPeople.Remove(e.Data);
 
       if (ReferenceEquals(VM.MainWindow.ToolsTabs.PersonDetailTab?.PersonM, e.Data))
         VM.MainWindow.ToolsTabs.Close(VM.MainWindow.ToolsTabs.PersonDetailTab);
@@ -339,7 +334,7 @@ public sealed class Core {
   private static void AttachSegmentsEventHandlers() {
     R.Segment.ItemCreatedEvent += (_, e) => {
       R.MediaItem.AddSegment(e.Data);
-      SegmentsView?.CvSegments.Update(e.Data, false);
+      VM.SegmentsMatching?.CvSegments.Update(e.Data, false);
     };
 
     R.Segment.SegmentPersonChangedEvent += (_, e) => {
@@ -352,20 +347,13 @@ public sealed class Core {
       VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.Item2);
       S.Person.PeopleView?.Update(e.Data.Item3);
       S.Segment.Selected.DeselectAll();
-
-      if (SegmentsView != null) {
-        SegmentsView.CvSegments.Update(e.Data.Item2, false);
-        var pIn = e.Data.Item2.GetPeople().ToArray();
-        var pOut = e.Data.Item3.Except(pIn).ToArray();
-        SegmentsView.CvPeople.Update(pIn, false);
-        SegmentsView.CvPeople.Remove(pOut);
-      }
+      VM.SegmentsMatching?.OnSegmentsPersonChanged(e.Data.Item2);
     };
 
     R.Segment.KeywordsChangedEvent += items => {
       R.MediaItem.ModifyIfContains(items);
       VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(items, true, false);
-      SegmentsView?.CvSegments.Update(items);
+      VM.SegmentsMatching?.CvSegments.Update(items);
     };
 
     R.Segment.ItemDeletedEvent += (_, e) => {
@@ -376,18 +364,8 @@ public sealed class Core {
     R.Segment.ItemsDeletedEvent += (_, e) => {
       R.MediaItem.RemoveSegments(e.Data);
       VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.ToArray(), true, true);
-      SegmentsView?.CvSegments.Remove(e.Data.ToArray());
+      VM.SegmentsMatching?.CvSegments.Remove(e.Data.ToArray());
       VM.SegmentsDrawer.RemoveIfContains(e.Data.ToArray());
     };
-  }
-
-  private static void OpenSegmentsView() {
-    var result = SegmentsView.GetSegmentsToLoadUserInput();
-    if (result < 1) return;
-    var segments = SegmentsView.GetSegments(result).ToArray();
-    SegmentsView ??= new(S.Segment);
-    MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
-    if (VM.MediaViewer.IsVisible) VM.MainWindow.IsInViewMode = false;
-    SegmentsView.Reload(segments);
   }
 }

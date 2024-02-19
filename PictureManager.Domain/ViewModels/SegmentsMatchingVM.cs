@@ -10,14 +10,14 @@ using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.DataViews;
+namespace PictureManager.Domain.ViewModels;
 
-public sealed class SegmentsView {
+public sealed class SegmentsMatchingVM {
   public CanDragFunc CanDragFunc { get; }
   public CollectionViewPeople CvPeople { get; } = new();
   public CollectionViewSegments CvSegments { get; } = new();
 
-  public SegmentsView(SegmentS segmentS) {
+  public SegmentsMatchingVM(SegmentS segmentS) {
     CanDragFunc = one => segmentS.GetOneOrSelected(one as SegmentM);
   }
 
@@ -54,6 +54,15 @@ public sealed class SegmentsView {
       default:
         return Enumerable.Empty<SegmentM>();
     }
+  }
+
+  public void OnSegmentsPersonChanged(SegmentM[] segments) {
+    CvSegments.Update(segments, false);
+    var p = CvSegments.Root.Source.GetPeople().ToArray();
+    var pIn = p.Except(CvPeople.Root.Source).ToArray();
+    var pOut = CvPeople.Root.Source.Except(p).ToArray();
+    CvPeople.Update(pIn, false);
+    CvPeople.Remove(pOut);
   }
 
   public void Reload(SegmentM[] items) {

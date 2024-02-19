@@ -4,7 +4,6 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
   xmlns:dv="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain"
-  xmlns:domain="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="Views.MainMenu">
@@ -42,7 +41,7 @@
           <MenuItem Command="vm:CoreVM.ReloadMetadataCommand"/>
           <MenuItem Command="vm:CoreVM.RotateMediaItemsCommand" InputGestureText="Ctrl+R"/>
           <MenuItem Command="vm:CoreVM.SaveImageMetadataToFilesCommand"/>
-          <MenuItem Command="domain:Core.OpenSegmentsViewCommand"/>
+          <MenuItem Command="vm:CoreVM.OpenSegmentsMatchingCommand"/>
           <MenuItem
             Command="dv:MediaItemsViews.ViewModifiedCommand"
             Header="{Binding VM.MediaItem.ModifiedItemsCount, Source={x:Static pm:App.Core}}"
