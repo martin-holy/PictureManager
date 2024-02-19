@@ -4,6 +4,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,7 @@ namespace PictureManager.Domain.ViewModels;
 public sealed class TreeViewCategoriesVM : TabControl {
   public TreeViewSearchVM TreeViewSearch { get; }
   public Dictionary<object, int> MarkedTags { get; } = new();
+  public RatingsTreeCategory RatingsTreeCategory { get; } = new();
 
   public TreeViewCategoriesVM() {
     TreeViewSearch = new(this);
@@ -21,7 +23,7 @@ public sealed class TreeViewCategoriesVM : TabControl {
     Tabs.Clear();
     AddCategory(Core.R.FavoriteFolder.Tree);
     AddCategory(Core.R.Folder.Tree);
-    AddCategory(Core.RatingsTreeCategory);
+    AddCategory(RatingsTreeCategory);
     AddCategory(Core.R.Person.Tree);
     AddCategory(Core.R.FolderKeyword.Tree);
     AddCategory(Core.R.Keyword.Tree);
@@ -59,7 +61,7 @@ public sealed class TreeViewCategoriesVM : TabControl {
       Mark(mi.GetFolders());
       Mark(mi.Folder.GetFolderKeywords());
       Mark(mi.GetGeoNames());
-      Mark(Core.RatingsTreeCategory.GetRatingByValue(mi.Rating));
+      Mark(RatingsTreeCategory.GetRatingByValue(mi.Rating));
     }
 
     OnPropertyChanged(nameof(MarkedTags));
