@@ -117,4 +117,11 @@ public sealed class MediaViewerVM : ObservableObject {
         Previous();
     }
   }
+
+  public void Remove(MediaItemM oldMi, MediaItemM newMi) {
+    MediaItems.Remove(oldMi);
+    if (newMi == null) return;
+    _indexOfCurrent = MediaItems.IndexOf(newMi);
+    Current = newMi;
+  }
 }
