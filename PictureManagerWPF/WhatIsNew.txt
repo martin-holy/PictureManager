@@ -4,6 +4,10 @@
 [B] - Bug fix
 
 Latest:
+ - [B] TreeView ScrollTo
+ - [B] StatusBar PositionSlashCount
+ - [B] TreeView auto horizontal scroll on select
+ - [B] MediaItemsThumbs load
  - [B] RangeSlider
 
 24.02.07.1702:
