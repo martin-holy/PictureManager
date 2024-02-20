@@ -42,7 +42,7 @@ public class TreeViewBase : TreeView {
     if (TreeView == null) return;
     SetItemsSource();
     TreeView.ScrollToTopAction = ScrollToTop;
-    TreeView.ScrollToItemsAction = ScrollToItems;
+    TreeView.ScrollToItemsAction = ScrollToItemsWhenReady;
     TreeView.ExpandRootWhenReadyAction = ExpandRootWhenReady;
   }
 
@@ -76,6 +76,10 @@ public class TreeViewBase : TreeView {
     if (_sv == null || _sv.VerticalOffset == 0) return;
     _sv.ScrollToTop();
     _sv.UpdateLayout();
+  }
+
+  private void ScrollToItemsWhenReady(object[] items, bool exactly) {
+    Dispatcher.BeginInvoke(DispatcherPriority.Background, () => ScrollToItems(items, exactly));
   }
 
   private void ScrollToItems(object[] items, bool exactly) {
