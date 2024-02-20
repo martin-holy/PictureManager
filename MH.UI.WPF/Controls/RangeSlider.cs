@@ -15,6 +15,7 @@ public class RangeSlider : Control {
   private FrameworkElement _selectedArea;
   private FrameworkElement _endArea;
   private Thumb _startThumb, _endThumb;
+  private bool _arrangeIsPending;
 
   public static readonly DependencyProperty RangeProperty = DependencyProperty.Register(
     nameof(Range), typeof(SelectionRange), typeof(RangeSlider),
@@ -47,17 +48,24 @@ public class RangeSlider : Control {
     _endArea = GetTemplateChild("PART_EndArea") as FrameworkElement;
     _startThumb = GetTemplateChild("PART_StartThumb") as Thumb;
     _endThumb = GetTemplateChild("PART_EndThumb") as Thumb;
+
+    IsVisibleChanged += delegate {
+      if (!_arrangeIsPending) return;
+      _arrangeIsPending = false;
+      ArrangeOverride(RenderSize);
+    };
   }
 
   protected override Size ArrangeOverride(Size bounds) {
     var arrangeSize = base.ArrangeOverride(bounds);
+    if (!IsVisible) { _arrangeIsPending = true; return arrangeSize; }
     if (_startArea == null || _selectedArea == null || _endArea == null) return arrangeSize;
 
     var size = _sliderContainer?.ActualWidth ?? bounds.Width;
     var start = Range == null || Range.Start == 0 ? 0 : (Range.Start - Range.Min) / (Range.Max - Range.Min) * size;
     var end = Range == null || Range.End == 0 ? size : (Range.End - Range.Min) / (Range.Max - Range.Min) * size;
-    if (double.IsNaN(start)) start = 0;
-    if (double.IsNaN(end)) end = size;
+    if (double.IsNaN(start) || start < 0) start = 0;
+    if (double.IsNaN(end) || end > size) end = size;
     var rectStart = new Rect(0, 0, start, bounds.Height);
     var rectSelected = new Rect(start, 0, end - start, bounds.Height);
     var rectEnd = new Rect(end, 0, size - end, bounds.Height);
