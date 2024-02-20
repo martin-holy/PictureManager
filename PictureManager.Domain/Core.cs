@@ -257,11 +257,10 @@ public sealed class Core {
       VM.Video.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
 
       if (VM.MediaViewer.IsVisible) {
-        VM.MediaViewer.MediaItems.Remove(e.Data[0]);
-        if (VM.MediaItem.Current != null)
-          VM.MediaViewer.Current = VM.MediaItem.Current;
-        else
+        if (VM.MediaItem.Current == null)
           VM.MainWindow.IsInViewMode = false;
+        else
+          VM.MediaViewer.Remove(e.Data[0], VM.MediaItem.Current);
       }
       
       FileOperationDelete(e.Data.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
