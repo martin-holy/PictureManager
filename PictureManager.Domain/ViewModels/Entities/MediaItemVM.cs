@@ -72,8 +72,7 @@ public sealed class MediaItemVM : ObservableObject {
 
     if (mode == FileOperationMode.Move) {
       var mis = items.Cast<MediaItemM>().ToList();
-      Current = Core.VM.MediaItemsViews.Current.FilteredItems.GetNextOrPreviousItem(mis);
-      // TODO add VirtualMediaItems
+      Current = null;
       Core.VM.MediaItemsViews.Current.Remove(mis, true);
     }
   }
