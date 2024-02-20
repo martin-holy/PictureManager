@@ -18,23 +18,23 @@ public class SelectionRange : ObservableObject {
 
   public event EventHandler ChangedEvent = delegate { };
 
-  public void CoerceValues(bool maxSelection) {
-    if (maxSelection) {
-      Start = Min;
-      End = Max;
-
-      return;
-    }
-
-    if (Start < Min) Start = Min;
-    if (Start > Max) Start = Max;
-    if (End < Min) End = Min;
-    if (End > Max) End = Max;
-    if (End == 0) End = Max;
-  }
-
   public bool Fits(double value) =>
     value >= Start && value <= End;
+
+  public void RaiseChangedEvent() =>
+    ChangedEvent(this, EventArgs.Empty);
+
+  public void Reset(double min, double max) {
+    Min = min;
+    Start = min;
+    End = max;
+    Max = max;
+  }
+
+  public void SetFullRange() {
+    Start = Min;
+    End = Max;
+  }
 
   public void Zero() {
     Start = 0;
@@ -42,7 +42,4 @@ public class SelectionRange : ObservableObject {
     Min = 0;
     Max = 0;
   }
-
-  public void RaiseChangedEvent() =>
-    ChangedEvent(this, EventArgs.Empty);
 }
