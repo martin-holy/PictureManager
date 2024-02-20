@@ -43,9 +43,9 @@ public sealed class MediaItemsFilterVM : ObservableObject {
     FilterOr.Clear();
     FilterNot.Clear();
 
-    Size.CoerceValues(true);
-    Height.CoerceValues(true);
-    Width.CoerceValues(true);
+    Size.SetFullRange();
+    Height.SetFullRange();
+    Width.SetFullRange();
 
     OnFilterChanged();
   }
@@ -113,7 +113,7 @@ public sealed class MediaItemsFilterVM : ObservableObject {
     return true;
   }
 
-  public void UpdateSizeRanges(IList<MediaItemM> limit, bool maxSelection) {
+  public void UpdateSizeRanges(IList<MediaItemM> limit) {
     var zeroItems = !limit.Any();
 
     if (zeroItems) {
@@ -122,17 +122,11 @@ public sealed class MediaItemsFilterVM : ObservableObject {
       Width.Zero();
     }
     else {
-      Size.Min = Math.Round(limit.Min(x => x.Width * x.Height) / 1000000.0, 1);
-      Size.Max = Math.Round((limit.Max(x => x.Width * x.Height) + 100000) / 1000000.0, 1);
-      Size.CoerceValues(maxSelection);
-
-      Height.Min = limit.Min(x => x.Height);
-      Height.Max = limit.Max(x => x.Height);
-      Height.CoerceValues(maxSelection);
-
-      Width.Min = limit.Min(x => x.Width);
-      Width.Max = limit.Max(x => x.Width);
-      Width.CoerceValues(maxSelection);
+      Size.Reset(
+        Math.Round(limit.Min(x => x.Width * x.Height) / 1000000.0, 1),
+        Math.Round((limit.Max(x => x.Width * x.Height) + 100000) / 1000000.0, 1));
+      Height.Reset(limit.Min(x => x.Height), limit.Max(x => x.Height));
+      Width.Reset(limit.Min(x => x.Width), limit.Max(x => x.Width));
     }
   }
 }
