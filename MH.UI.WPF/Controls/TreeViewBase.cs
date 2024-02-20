@@ -1,6 +1,7 @@
 ﻿using MH.UI.Interfaces;
 using MH.UI.WPF.Extensions;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace MH.UI.WPF.Controls;
 
 public class TreeViewBase : TreeView {
   private bool _isScrollingTo;
+  private bool _resetHScroll;
+  private double _resetHOffset;
   private ScrollViewer _sv;
 
   public static readonly DependencyProperty TreeViewProperty = DependencyProperty.Register(
@@ -23,21 +26,39 @@ public class TreeViewBase : TreeView {
     set => SetValue(TreeViewProperty, value);
   }
 
+  public RelayCommand<RequestBringIntoViewEventArgs> TreeItemIntoViewCommand { get; set; }
+
+  public TreeViewBase() {
+    TreeItemIntoViewCommand = new(OnTreeItemIntoView);
+  }
+
   public override void OnApplyTemplate() {
     base.OnApplyTemplate();
 
     _sv = (ScrollViewer)Template.FindName("PART_ScrollViewer", this);
     _sv.IsVisibleChanged += delegate { if (_sv.IsVisible) TreeView?.OnIsVisible(); };
-    _sv.ScrollChanged += (_, e) => {
-      if (!_isScrollingTo && TreeView != null && e.VerticalChange != 0 && _sv.IsVisible)
-        TreeView.TopTreeItem = GetHitTestItem(10, 10);
-    };
+    _sv.ScrollChanged += OnScrollChanged;
 
     if (TreeView == null) return;
     SetItemsSource();
     TreeView.ScrollToTopAction = ScrollToTop;
     TreeView.ScrollToItemsAction = ScrollToItems;
     TreeView.ExpandRootWhenReadyAction = ExpandRootWhenReady;
+  }
+
+  private void OnTreeItemIntoView(RequestBringIntoViewEventArgs e) {
+    _resetHScroll = true;
+    _resetHOffset = _sv.HorizontalOffset;
+  }
+
+  public virtual void OnScrollChanged(object sender, ScrollChangedEventArgs e) {
+    if (!_isScrollingTo && TreeView != null && e.VerticalChange != 0 && _sv.IsVisible)
+      TreeView.TopTreeItem = GetHitTestItem(10, 10);
+
+    if (_resetHScroll) {
+      _resetHScroll = false;
+      _sv.ScrollToHorizontalOffset(_resetHOffset);
+    }
   }
 
   private void SetItemsSource() {

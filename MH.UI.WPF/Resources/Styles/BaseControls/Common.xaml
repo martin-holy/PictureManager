@@ -164,6 +164,12 @@
                              {RelativeSource AncestorType=mhc:TreeViewBase}}"
                     CommandParameter="{Binding}"/>
                 </b:EventTrigger>
+                <b:EventTrigger EventName="RequestBringIntoView">
+                  <b:InvokeCommandAction
+                    Command="{Binding TreeItemIntoViewCommand, RelativeSource=
+                             {RelativeSource AncestorType=mhc:TreeViewBase}}"
+                    PassEventArgsToCommand="True"/>
+                </b:EventTrigger>
               </b:Interaction.Triggers>
 
               <Grid Margin="{Binding Converter={x:Static mhConv:TreeMarginConverter.Inst}, ConverterParameter=16}">
