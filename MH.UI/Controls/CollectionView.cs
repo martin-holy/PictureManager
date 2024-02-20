@@ -94,7 +94,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   }
 
   public void Update(T item, bool ifContains = true) =>
-    Update(new[] { item });
+    Update(new[] { item }, ifContains);
 
   public void Update(T[] items, bool ifContains = true) =>
     ReGroupItems(items, false, ifContains);
