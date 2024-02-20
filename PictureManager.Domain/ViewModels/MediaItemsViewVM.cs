@@ -253,7 +253,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       LoadedItems.Add(mi);
     }
 
-    Filter.UpdateSizeRanges(LoadedItems, true);
+    Filter.UpdateSizeRanges(LoadedItems);
     if (hide) return;
     FilteredItems.Clear();
     FilteredItems.AddRange(LoadedItems.Where(Filter.Filter));
@@ -298,13 +298,12 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       OpenItem(FilteredItems[0]);
   }
 
-  private void AfterLoad(bool maxSizeSelection = false) {
+  private void AfterLoad() {
     foreach (var mi in Selected.Items.Where(x => !FilteredItems.Contains(x)).ToArray())
       Selected.Set(mi, false);
 
     OnPropertyChanged(nameof(PositionSlashCount));
     FilteredChangedEventHandler(this, EventArgs.Empty);
-    //Filter.UpdateSizeRanges(LoadedItems, maxSizeSelection);
 
     if (FilteredItems.Contains(Core.VM.MediaItem.Current))
       ScrollTo(Root, Core.VM.MediaItem.Current);
