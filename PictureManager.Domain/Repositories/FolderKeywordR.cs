@@ -76,7 +76,7 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
 
     if (fk == null) {
       // remove placeholder
-      if (Tree.Items.Count == 1 && FolderKeywordPlaceHolder.Equals(Tree.Items[0]))
+      if (Tree.Items.Count == 1 && ReferenceEquals(FolderKeywordPlaceHolder, Tree.Items[0]))
         Tree.Items.Clear();
 
       fk = new(folder.Name, fkRoot);

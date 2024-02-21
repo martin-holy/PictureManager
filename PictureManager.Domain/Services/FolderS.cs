@@ -241,7 +241,7 @@ public sealed class FolderS(FolderR r) {
       r.IsModified = true;
 
       // add folder to the tree if destination is empty
-      if (dest.Items.Count == 1 && FolderPlaceHolder.Equals(dest.Items[0])) {
+      if (dest.Items.Count == 1 && ReferenceEquals(FolderPlaceHolder, dest.Items[0])) {
         dest.Items.Clear();
         dest.Items.Add(src);
         return;

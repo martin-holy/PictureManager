@@ -39,7 +39,7 @@ public sealed class MergePeopleDialogM : Dialog {
   }
 
   private SegmentM[] GetSegmentsToUpdate(PersonM person, IEnumerable<PersonM> people) {
-    var oldPeople = people.Where(x => !x.Equals(person)).ToHashSet();
+    var oldPeople = people.Where(x => !ReferenceEquals(x, person)).ToHashSet();
     return _segmentS.DataAdapter.All
       .Where(x => oldPeople.Contains(x.Person))
       .Concat(_unknownSelected)
@@ -69,7 +69,7 @@ public sealed class MergePeopleDialogM : Dialog {
       return false;
     }
 
-    personS.MergePeople(Person, people.Where(x => !x.Equals(Person)).ToArray());
+    personS.MergePeople(Person, people.Where(x => !ReferenceEquals(x, Person)).ToArray());
     _inst.Clear();
     return true;
   }

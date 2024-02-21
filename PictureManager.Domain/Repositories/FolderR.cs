@@ -26,7 +26,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
 
     foreach (var item in root.Items)
     foreach (var subItem in GetAll<T>(item))
-      if (!FolderS.FolderPlaceHolder.Equals(subItem))
+      if (!ReferenceEquals(FolderS.FolderPlaceHolder, subItem))
         yield return subItem;
   }
 
