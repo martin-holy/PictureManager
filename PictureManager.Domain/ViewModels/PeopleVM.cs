@@ -9,7 +9,7 @@ namespace PictureManager.Domain.ViewModels;
 public sealed class PeopleVM : CollectionViewPeople {
   public void Reload() {
     var source = PersonS.GetAll().ToList();
-    var groupByItems = GetGroupByItems(source).ToArray();
+    var groupByItems = new[] { GroupByItems.GetPeopleGroupsInGroup(source) };
 
     Reload(source, GroupMode.ThenByRecursive, groupByItems, false);
     Root.IsExpanded = true;
