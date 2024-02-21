@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 
 namespace MH.UI.Controls;
 
@@ -58,7 +59,7 @@ public class SlidePanelsGrid : ObservableObject {
   private void InitPanel(SlidePanel panel) {
     if (panel == null) return;
     panel.PropertyChanged += (_, e) => {
-      if (!nameof(panel.IsPinned).Equals(e.PropertyName)) return;
+      if (!e.Is(nameof(panel.IsPinned))) return;
       PinLayouts[ActiveLayout][(int)panel.Position] = panel.IsPinned;
       SetPin(panel);
     };
