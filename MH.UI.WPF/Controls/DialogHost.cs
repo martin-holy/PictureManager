@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,7 +27,7 @@ public class DialogHost {
     DialogTemplateSelector = Application.Current.FindResource("MH.Styles.Controls.DialogHost.DialogTemplateSelector") as DataTemplateSelector;
 
     content.PropertyChanged += (_, e) => {
-      if (nameof(content.Result).Equals(e.PropertyName, StringComparison.Ordinal))
+      if (e.Is(nameof(content.Result)))
         Window.Close();
     };
   }

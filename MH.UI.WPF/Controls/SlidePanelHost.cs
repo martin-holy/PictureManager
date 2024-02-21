@@ -1,5 +1,6 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -37,7 +38,7 @@ public class SlidePanelHost : Control {
   }
 
   private void OnAnySlidePanelPropertyChanged(object sender, PropertyChangedEventArgs e) {
-    if (!nameof(SlidePanel.IsOpen).Equals(e.PropertyName)) return;
+    if (!e.Is(nameof(SlidePanel.IsOpen))) return;
     if (SlidePanel.IsOpen)
       _sbOpen.Begin(this);
     else
