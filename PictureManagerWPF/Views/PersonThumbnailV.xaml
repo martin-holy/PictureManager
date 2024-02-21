@@ -2,7 +2,8 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:PersonM}">
     <DataTemplate.Resources>
@@ -10,26 +11,26 @@
         <ResourceDictionary.MergedDictionaries>
           <wpfu:CachedResourceDictionary Source="SegmentV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
-
-        <DataTemplate x:Key="NoSegmentIcon">
-          <Grid>
-            <Path
-              Style="{StaticResource MH.Styles.Icon}"
-              Data="{StaticResource IconPeople}"
-              Width="40"
-              Height="40"
-              Fill="Gray"/>
-          </Grid>
-        </DataTemplate>
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <ContentControl x:Name="content" Content="{Binding Segment}"/>
+    <Grid>
+      <Grid
+        ToolTip="{Binding Name}"
+        Background="Transparent"
+        Visibility="{Binding Segment, Converter={x:Static mhConv:VisibilityConverter.AllToCollapsed}}">
 
-    <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding Segment}" Value="{x:Null}">
-        <Setter TargetName="content" Property="ContentTemplate" Value="{StaticResource NoSegmentIcon}"/>
-      </DataTrigger>
-    </DataTemplate.Triggers>
+        <Path
+          Style="{StaticResource MH.Styles.Icon}"
+          Data="{StaticResource IconPeople}"
+          Width="40"
+          Height="40"
+          Fill="Gray"/>
+      </Grid>
+
+      <ContentControl
+        Content="{Binding Segment}"
+        Visibility="{Binding Segment, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>
