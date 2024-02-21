@@ -30,10 +30,6 @@ public class RangeSlider : Control {
   public double TickFrequency { get => (double)GetValue(TickFrequencyProperty); set => SetValue(TickFrequencyProperty, value); }
 
   static RangeSlider() {
-    DefaultStyleKeyProperty.OverrideMetadata(
-      typeof(RangeSlider),
-      new FrameworkPropertyMetadata(typeof(RangeSlider)));
-
     EventManager.RegisterClassHandler(typeof(RangeSlider), Thumb.DragDeltaEvent, new DragDeltaEventHandler(OnThumbDragDelta));
     EventManager.RegisterClassHandler(typeof(RangeSlider), Thumb.DragCompletedEvent, new DragCompletedEventHandler(OnDragCompletedEvent));
   }

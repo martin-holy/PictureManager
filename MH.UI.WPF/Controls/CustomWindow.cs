@@ -76,12 +76,6 @@ namespace MH.UI.WPF.Controls {
     public static RelayCommand<CustomWindow> ToggleFullScreenCommand { get; } = new(
       window => window.IsFullScreen = !window.IsFullScreen);
 
-    static CustomWindow() {
-      DefaultStyleKeyProperty.OverrideMetadata(
-        typeof(CustomWindow),
-        new FrameworkPropertyMetadata(typeof(CustomWindow)));
-    }
-
     public CustomWindow() {
       StateChanged += delegate { OnStateChanged(); };
       Loaded += delegate {

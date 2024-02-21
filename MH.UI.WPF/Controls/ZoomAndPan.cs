@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 
 namespace MH.UI.WPF.Controls {
   public class ZoomAndPan: ContentControl {
@@ -91,12 +90,6 @@ namespace MH.UI.WPF.Controls {
     private TranslateTransform _contentTransform;
     private Point _origin;
     private Point _start;
-
-    static ZoomAndPan() {
-      DefaultStyleKeyProperty.OverrideMetadata(
-        typeof(ZoomAndPan),
-        new FrameworkPropertyMetadata(typeof(ZoomAndPan)));
-    }
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();

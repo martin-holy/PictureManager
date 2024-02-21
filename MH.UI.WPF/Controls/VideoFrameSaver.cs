@@ -28,12 +28,6 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   private Action<VfsFrame, Exception> _onErrorAction;
   private Action _onFinishedAction;
 
-  static VideoFrameSaver() {
-    DefaultStyleKeyProperty.OverrideMetadata(
-      typeof(VideoFrameSaver),
-      new FrameworkPropertyMetadata(typeof(VideoFrameSaver)));
-  }
-
   public VideoFrameSaver() {
     LoadedBehavior = MediaState.Manual;
     UnloadedBehavior = MediaState.Close;

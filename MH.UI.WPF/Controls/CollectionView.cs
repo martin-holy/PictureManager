@@ -28,12 +28,6 @@ namespace MH.UI.WPF.Controls {
     public static RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; } = new(OpenItem);
     public static RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; } = new(SelectItem);
 
-    static CollectionView() {
-      DefaultStyleKeyProperty.OverrideMetadata(
-        typeof(CollectionView),
-        new FrameworkPropertyMetadata(typeof(CollectionView)));
-    }
-
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 

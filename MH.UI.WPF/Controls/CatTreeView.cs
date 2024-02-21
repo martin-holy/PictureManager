@@ -1,9 +1,9 @@
 ﻿using MH.UI.Interfaces;
+using MH.UI.WPF.Extensions;
 using MH.Utils;
 using MH.Utils.Interfaces;
 using System.Windows;
 using System.Windows.Controls;
-using MH.UI.WPF.Extensions;
 using static MH.Utils.DragDropHelper;
 
 namespace MH.UI.WPF.Controls;
@@ -12,10 +12,6 @@ public class CatTreeView : TreeViewBase {
   public CanDragFunc CanDragFunc { get; }
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction DoDropAction { get; }
-
-  static CatTreeView() {
-    DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView), new FrameworkPropertyMetadata(typeof(CatTreeView)));
-  }
 
   public CatTreeView() {
     CanDragFunc = CanDrag;
