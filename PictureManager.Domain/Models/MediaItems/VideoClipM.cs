@@ -1,4 +1,5 @@
 ﻿using MH.UI.Interfaces;
+using MH.Utils.Extensions;
 
 namespace PictureManager.Domain.Models.MediaItems;
 
@@ -16,7 +17,7 @@ public sealed class VideoClipM : VideoItemM, IVideoClip {
 
   public VideoClipM(int id, VideoM video, int timeStart) : base(id, video, timeStart) {
     PropertyChanged += (_, e) => {
-      if (nameof(TimeStart).Equals(e.PropertyName))
+      if (e.Is(nameof(TimeStart)))
         OnPropertyChanged(nameof(Duration));
     };
   }

@@ -1,4 +1,5 @@
-﻿using PictureManager.Domain.ViewModels;
+﻿using MH.Utils.Extensions;
+using PictureManager.Domain.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -23,7 +24,7 @@ public static class HideMouseTimer {
     };
 
     panel.PropertyChanged += (_, e) => {
-      if (!nameof(panel.IsRunning).Equals(e.PropertyName)) return;
+      if (!e.Is(nameof(panel.IsRunning))) return;
       if (panel.IsRunning) {
         window.MouseMove += OnMouseMoveHideTimer;
         _timer.Start();
