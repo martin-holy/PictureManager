@@ -28,6 +28,7 @@ public class SlidePanel : ObservableObject {
   private void OnIsOpenChanged(bool value) {
     if (value.Equals(_isOpen)) return;
     _isOpen = value;
+    if (!IsOpen && IsPinned) IsPinned = false;
     OnPropertyChanged(nameof(IsOpen));
   }
 
