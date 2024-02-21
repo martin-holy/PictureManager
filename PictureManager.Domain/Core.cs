@@ -78,12 +78,12 @@ public sealed class Core {
     AttachSegmentsEventHandlers();
 
     Settings.PropertyChanged += (_, e) => {
-      if (nameof(Settings.GeoNamesUserName).Equals(e.PropertyName))
+      if (e.Is(nameof(Settings.GeoNamesUserName)))
         R.GeoName.ApiLimitExceeded = false;
     };
 
     VM.MainWindow.PropertyChanged += (_, e) => {
-      if (nameof(VM.MainWindow.IsInViewMode).Equals(e.PropertyName)) {
+      if (e.Is(nameof(VM.MainWindow.IsInViewMode))) {
         var isInViewMode = VM.MainWindow.IsInViewMode;
 
         VM.MediaViewer.IsVisible = isInViewMode;
@@ -145,7 +145,7 @@ public sealed class Core {
     };
 
     VM.MainTabs.PropertyChanged += (_, e) => {
-      if (nameof(VM.MainTabs.Selected).Equals(e.PropertyName))
+      if (e.Is(nameof(VM.MainTabs.Selected)))
         VM.MediaItemsViews.SetCurrentView(VM.MainTabs.Selected?.Data as MediaItemsViewVM);
     };
   }
@@ -267,7 +267,7 @@ public sealed class Core {
     };
 
     VM.MediaItem.PropertyChanged += (_, e) => {
-      if (nameof(VM.MediaItem.Current).Equals(e.PropertyName)) {
+      if (e.Is(nameof(VM.MediaItem.Current))) {
         VM.MainWindow.StatusBar.Update();
         VM.Video.SetCurrent(VM.MediaItem.Current);
 
@@ -279,7 +279,7 @@ public sealed class Core {
     };
 
     VM.MediaItemsViews.PropertyChanged += (_, e) => {
-      if (nameof(VM.MediaItemsViews.Current).Equals(e.PropertyName)) {
+      if (e.Is(nameof(VM.MediaItemsViews.Current))) {
         VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
         VM.MainWindow.StatusBar.OnPropertyChanged(nameof(VM.MainWindow.StatusBar.IsCountVisible));
       }
