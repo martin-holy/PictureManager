@@ -31,6 +31,16 @@
   <Color x:Key="White30">#4CFFFFFF</Color>
   <Color x:Key="Black25">#40000000</Color>
   <Color x:Key="Black55">#8C000000</Color>
+
+  <Color x:Key="Gray1">#0F0F0F</Color>
+  <Color x:Key="Gray2">#252525</Color>
+  <Color x:Key="Gray3">#414141</Color>
+  <Color x:Key="Gray4">#5F5F5F</Color>
+  <Color x:Key="Gray5">#7F7F7F</Color>
+  <Color x:Key="Gray6">#9E9E9E</Color>
+  <Color x:Key="Gray7">#BDBDBD</Color>
+  <Color x:Key="Gray8">#D8D8D8</Color>
+  <Color x:Key="Gray9">#EEEEEE</Color>
  
   <SolidColorBrush x:Key="MH.Brushes.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Foreground" Color="{StaticResource ForegroundColor}"/>
@@ -123,12 +133,12 @@
   <sys:Double x:Key="ScrollBar.Width">14</sys:Double>
   <sys:Double x:Key="ScrollBar.HorizontalRepeatButton.Width">14</sys:Double>
   <sys:Double x:Key="ScrollBar.VerticalRepeatButton.Height">14</sys:Double>
-  <SolidColorBrush x:Key="ScrollBar.Static.Glyph" Color="{StaticResource GrayColor3}"/>
-  <SolidColorBrush x:Key="ScrollBar.Static.Thumb" Color="{StaticResource GrayColor2}"/>
-  <SolidColorBrush x:Key="ScrollBar.MouseOver.Glyph" Color="{StaticResource ForegroundColor}"/>
-  <SolidColorBrush x:Key="ScrollBar.MouseOver.Thumb" Color="{StaticResource ForegroundColor}"/>
-  <SolidColorBrush x:Key="ScrollBar.Pressed.Glyph" Color="{x:Static SystemParameters.WindowGlassColor}"/>
-  <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="{StaticResource ForegroundColor}"/>
+  <SolidColorBrush x:Key="ScrollBar.Static.Glyph" Color="{StaticResource Gray3}"/>
+  <SolidColorBrush x:Key="ScrollBar.Static.Thumb" Color="{StaticResource Gray3}"/>
+  <SolidColorBrush x:Key="ScrollBar.MouseOver.Glyph" Color="{StaticResource Gray4}"/>
+  <SolidColorBrush x:Key="ScrollBar.MouseOver.Thumb" Color="{StaticResource Gray4}"/>
+  <SolidColorBrush x:Key="ScrollBar.Pressed.Glyph" Color="{StaticResource Gray6}"/>
+  <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="{StaticResource Gray6}"/>
 
   <SolidColorBrush x:Key="Slider.Foreground" Color="{StaticResource GrayColor1}"/>
   <SolidColorBrush x:Key="SliderThumb.Static.Background" Color="{StaticResource GrayColor3}"/>
