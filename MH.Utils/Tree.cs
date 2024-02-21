@@ -172,7 +172,7 @@ public static class Tree {
 
     if (newParent == null) return;
 
-    if (!item.Parent.Equals(newParent)) {
+    if (!ReferenceEquals(item.Parent, newParent)) {
       item.Parent.Items.Remove(item);
       item.Parent = newParent;
     }

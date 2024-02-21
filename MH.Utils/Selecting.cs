@@ -86,7 +86,7 @@ namespace MH.Utils {
 
       // multi select
       var indexOfItem = items.IndexOf(item);
-      var fromItem = items.FirstOrDefault(x => x.IsSelected && !Equals(x, item));
+      var fromItem = items.FirstOrDefault(x => x.IsSelected && !ReferenceEquals(x, item));
       var from = fromItem == null ? 0 : items.IndexOf(fromItem);
       var to = indexOfItem;
       var change = false;
