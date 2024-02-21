@@ -57,14 +57,14 @@ public class TreeCategory : TreeItem, ITreeCategory {
     throw new NotImplementedException();
 
   public static bool CanDrop(ITreeItem src, ITreeItem dest) {
-    if (src == null || dest == null || Equals(src, dest) ||
-        src.Parent.Equals(dest) || dest.Parent?.Equals(src) == true ||
+    if (src == null || dest == null || ReferenceEquals(src, dest) ||
+        ReferenceEquals(src.Parent, dest) || ReferenceEquals(dest.Parent, src) ||
         (src is ITreeGroup && dest is not ITreeGroup)) return false;
 
     // if src or dest categories are null or they are not equal
     if (Tree.GetParentOf<ITreeCategory>(src) is not { } srcCat ||
         Tree.GetParentOf<ITreeCategory>(dest) is not { } destCat ||
-        !Equals(srcCat, destCat)) return false;
+        !ReferenceEquals(srcCat, destCat)) return false;
 
     return true;
   }
