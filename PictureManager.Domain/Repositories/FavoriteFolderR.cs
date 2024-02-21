@@ -49,7 +49,7 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
     });
 
   public void ItemDeleteByFolder(FolderM folder) {
-    if (All.SingleOrDefault(x => x.Folder.Equals(folder)) is { } ff)
+    if (All.SingleOrDefault(x => ReferenceEquals(x.Folder, folder)) is { } ff)
       ItemDelete(ff);
   }
 

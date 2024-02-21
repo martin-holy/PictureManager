@@ -44,9 +44,9 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         // Folder
         if (dest is FolderM destData
             && !destData.HasThisParent(srcData)
-            && !Equals(srcData, destData)
+            && !ReferenceEquals(srcData, destData)
             && destData.IsAccessible
-            && !Equals(srcData.Parent, destData))
+            && !ReferenceEquals(srcData.Parent, destData))
           return true;
 
         break;

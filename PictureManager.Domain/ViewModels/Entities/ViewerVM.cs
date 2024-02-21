@@ -80,7 +80,7 @@ public sealed class ViewerVM : ObservableObject {
           ? DragDropEffects.None
           : DragDropEffects.Copy;
 
-    return folder.Equals(target)
+    return ReferenceEquals(folder, target)
       ? DragDropEffects.None
       : DragDropEffects.Move;
   }
@@ -97,7 +97,7 @@ public sealed class ViewerVM : ObservableObject {
       return DragDropEffects.None;
 
     if (haveSameOrigin)
-      return keyword.Equals(target)
+      return ReferenceEquals(keyword, target)
         ? DragDropEffects.None
         : DragDropEffects.Move;
 
