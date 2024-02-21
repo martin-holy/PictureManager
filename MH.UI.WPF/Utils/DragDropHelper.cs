@@ -101,7 +101,7 @@ namespace MH.UI.WPF.Utils {
           ? canDrag(dragData)
           : dragDataType == null
             ? dragData
-            : dragDataType.Equals(dragData.GetType())
+            : dragDataType == dragData.GetType()
               ? dragData
               : null;
 
@@ -130,13 +130,13 @@ namespace MH.UI.WPF.Utils {
     private static void AllowDropCheck(object sender, DragEventArgs e) {
       DragEventArgs = e;
       var target = (e.OriginalSource as FrameworkElement)?.DataContext;
-      e.Effects = (DragDropEffects)GetCanDrop((DependencyObject)sender)(target, _data, sender.Equals(_sourceControl));
+      e.Effects = (DragDropEffects)GetCanDrop((DependencyObject)sender)(target, _data, ReferenceEquals(sender, _sourceControl));
       e.Handled = true;
     }
 
     private static void Drop(object sender, DragEventArgs e) {
       if (_data == null) return;
-      GetDoDrop((DependencyObject)sender)(_data, sender.Equals(_sourceControl));
+      GetDoDrop((DependencyObject)sender)(_data, ReferenceEquals(sender, _sourceControl));
     }
   }
 }
