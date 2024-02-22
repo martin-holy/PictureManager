@@ -1,4 +1,5 @@
-﻿using MH.Utils;
+﻿using MH.UI.WPF.Extensions;
+using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.HelperClasses;
@@ -84,7 +85,7 @@ public static class MediaItemVM {
     try {
       mim.Lat = GetGps(bm, "System.GPS.Latitude.Proxy");
       mim.Lng = GetGps(bm, "System.GPS.Longitude.Proxy");
-      var geoNameId = TryGetQuery(bm, "/xmp/GeoNames:GeoNameId")?.ToString();
+      var geoNameId = bm.GetQuery<string>("/xmp/GeoNames:GeoNameId");
       mim.GeoNameId = string.IsNullOrEmpty(geoNameId) ? null : int.Parse(geoNameId);
       if (gpsOnly) return;
 
@@ -92,7 +93,7 @@ public static class MediaItemVM {
       mim.Rating = bm.Rating;
       mim.Comment = StringUtils.NormalizeComment(bm.Comment);
       // Orientation 1: 0, 3: 180, 6: 270, 8: 90
-      mim.Orientation = (Orientation)((ushort?)TryGetQuery(bm, "System.Photo.Orientation") ?? 1);
+      mim.Orientation = (Orientation)bm.GetQuery<ushort>("System.Photo.Orientation", 1);
       mim.Keywords = bm.Keywords?.ToArray();
     }
     catch (Exception) {
@@ -101,7 +102,7 @@ public static class MediaItemVM {
   }
 
   private static double? GetGps(BitmapMetadata bm, string query) {
-    var val = TryGetQuery(bm, query)?.ToString();
+    var val = bm.GetQuery<string>(query);
     if (val == null) return null;
     var vals = val[..^1].Split(',');
 
@@ -110,22 +111,22 @@ public static class MediaItemVM {
   }
 
   private static List<Tuple<string, List<Tuple<string, string[]>>>> ReadPeopleSegmentsKeywords(BitmapMetadata bm) {
-    if (TryGetQuery(bm, _msRegions) is not BitmapMetadata regions) return null;
+    if (bm.GetQuery<BitmapMetadata>(_msRegions) is not { } regions) return null;
     var output = new List<Tuple<string, List<Tuple<string, string[]>>>>();
       
     foreach (var r in regions.Select(x => _msRegions + x)) {
-      if (TryGetQuery(bm, r + _msPersonName)?.ToString() is not { } name) continue;
-        
+      var name = bm.GetQuery<string>(r + _msPersonName);
+
       if (output.SingleOrDefault(x => x.Item1.Equals(name, StringComparison.OrdinalIgnoreCase)) is not { } person) {
-        person = new(name, new());
+        person = new(name, []);
         output.Add(person);
       }
 
-      if (TryGetQuery(bm, r + _msPersonRectangle)?.ToString() is not { } rect) continue;
+      if (bm.GetQuery<string>(r + _msPersonRectangle) is not { } rect) continue;
 
-      var keywords = TryGetQuery(bm, r + _msPersonRectangleKeywords) as BitmapMetadata;
+      var keywords = bm.GetQuery<BitmapMetadata>(r + _msPersonRectangleKeywords);
       person.Item2.Add(new(rect, keywords?
-        .Select(x => TryGetQuery(keywords, x)?.ToString())
+        .Select(x => keywords.GetQuery<string>(x))
         .Where(x => x != null)
         .ToArray()));
     }
@@ -182,10 +183,10 @@ public static class MediaItemVM {
     regions.SetQuery(_msRegions, new BitmapMetadata("xmpbag"));
 
     // preserve original metadata because they can contain additional data
-    if (TryGetQuery(bm, _msRegions) is BitmapMetadata existingRegions) {
+    if (bm.GetQuery<BitmapMetadata>(_msRegions) is { } existingRegions) {
       foreach (var idx in existingRegions) {
-        if (TryGetQuery(bm, _msRegions + idx) as BitmapMetadata is not { } reg) continue;
-        if (TryGetQuery(reg, _msPersonName)?.ToString() is not { } name) continue;
+        if (bm.GetQuery<BitmapMetadata>(_msRegions + idx) is not { } reg) continue;
+        if (reg.GetQuery<string>(_msPersonName) is not { } name) continue;
         if (peopleRects.FirstOrDefault(x => name.Equals(x.Item1?.Name, StringComparison.OrdinalIgnoreCase)) is not { } pr) continue;
         peopleRects.Remove(pr);
 
@@ -207,7 +208,7 @@ public static class MediaItemVM {
       WritePersonRectangleKeywords(regions, r + _msPersonRectangleKeywords, pr.Item3);
     }
 
-    if (TryGetQuery(regions, _msRegionInfo) is { } ri)
+    if (regions.GetQuery<object>(_msRegionInfo) is { } ri)
       bm.SetQuery(_msRegionInfo, ri);
   }
 
@@ -275,15 +276,6 @@ public static class MediaItemVM {
     }
 
     return bSuccess;
-  }
-
-  private static object TryGetQuery(BitmapMetadata bm, string query) {
-    try {
-      return bm.GetQuery(query);
-    }
-    catch (Exception) {
-      return null;
-    }
   }
 
   private static void SetOrRemoveQuery(BitmapMetadata bm, string query, object value) {
