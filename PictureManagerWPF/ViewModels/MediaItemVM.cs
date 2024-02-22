@@ -186,8 +186,8 @@ public static class MediaItemVM {
     if (bm.GetQuery<BitmapMetadata>(_msRegions) is { } existingRegions) {
       foreach (var idx in existingRegions) {
         if (bm.GetQuery<BitmapMetadata>(_msRegions + idx) is not { } reg) continue;
-        if (reg.GetQuery<string>(_msPersonName) is not { } name) continue;
-        if (peopleRects.FirstOrDefault(x => name.Equals(x.Item1?.Name, StringComparison.OrdinalIgnoreCase)) is not { } pr) continue;
+        var name = reg.GetQuery<string>(_msPersonName);
+        if (peopleRects.FirstOrDefault(x => string.Equals(name, x.Item1?.Name, StringComparison.OrdinalIgnoreCase)) is not { } pr) continue;
         peopleRects.Remove(pr);
 
         SetOrRemoveQuery(reg, _msPersonRectangle, pr.Item2);
