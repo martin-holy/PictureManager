@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.HelperClasses;
 
-public class MediaItemMetadata {
-  public RealMediaItemM MediaItem { get; }
+public class MediaItemMetadata(RealMediaItemM mediaItem) {
+  public RealMediaItemM MediaItem { get; } = mediaItem;
   public int Rating { get; set; }
   public string Comment { get; set; }
   public int Width { get; set; }
@@ -24,10 +24,6 @@ public class MediaItemMetadata {
   public double? Lng { get; set; }
   public int? GeoNameId { get; set; }
   public List<Tuple<string, List<Tuple<string, string[]>>>> PeopleSegmentsKeywords { get; set; }
-
-  public MediaItemMetadata(RealMediaItemM mediaItem) {
-    MediaItem = mediaItem;
-  }
 
   public async Task FindRefs() {
     MediaItem.Rating = Rating;
@@ -52,15 +48,15 @@ public class MediaItemMetadata {
 
     MediaItem.People = new(PeopleSegmentsKeywords.Count);
     foreach (var psk in PeopleSegmentsKeywords) {
-      var person = Core.R.Person.GetPerson(psk.Item1, true);
+      var person = string.IsNullOrEmpty(psk.Item1) ? null : Core.R.Person.GetPerson(psk.Item1, true);
 
       // segments
       if (!psk.Item2.Any()) {
-        MediaItem.People.Add(person);
+        if (person != null) MediaItem.People.Add(person);
         continue;
       }
 
-      MediaItem.Segments ??= new();
+      MediaItem.Segments ??= [];
         
       foreach (var c in psk.Item2) {
         var d = c.Item1.Split(",").Select(x => double.TryParse(x, CultureInfo.InvariantCulture, out var v) ? v : 0).ToArray();
@@ -72,7 +68,7 @@ public class MediaItemMetadata {
         if (c.Item2 == null)
           segment.Keywords = null;
         else {
-          segment.Keywords = new();
+          segment.Keywords = [];
           foreach (var k in c.Item2) {
             var keyword = Core.R.Keyword.GetByFullPath(k);
             if (keyword != null)
