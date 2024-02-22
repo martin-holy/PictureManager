@@ -117,7 +117,7 @@ public static class MediaItemVM {
     foreach (var r in regions.Select(x => _msRegions + x)) {
       var name = bm.GetQuery<string>(r + _msPersonName);
 
-      if (output.SingleOrDefault(x => x.Item1.Equals(name, StringComparison.OrdinalIgnoreCase)) is not { } person) {
+      if (output.SingleOrDefault(x => string.Equals(x.Item1, name, StringComparison.OrdinalIgnoreCase)) is not { } person) {
         person = new(name, []);
         output.Add(person);
       }
