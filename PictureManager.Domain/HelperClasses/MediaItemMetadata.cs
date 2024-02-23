@@ -86,6 +86,7 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
     if (bin?.Any() == true) {
       segment = bin[^1];
       bin.RemoveAt(bin.Count - 1);
+      segment.Size = 0; // not to trigger bound checks on X and Y
       segment.X = x;
       segment.Y = y;
       segment.Size = s;
