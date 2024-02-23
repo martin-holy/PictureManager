@@ -27,31 +27,15 @@
   - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
 ## CollectionView
   - wrong sort (it is by text and not number) on update when grouped by date
+## TreeViewSearch
+  - selecting result select item in the tree under result as well
 
 
                                   *** UPDATE ***
         # MH.UI
-## Tabs
-  - allow moving tab to left|middle|right panel
-## CategoryViewGroup
-  - GroupedBy instance for empty group with icon from View
 ## CollectionView
   - don't show expanded root if source is empty
 
-        # MH.Utils
-## Dialog
-  - add CanExecute for buttons like Yes/OK
-  - open next to mouse cursor
-
-        # MH.UI.WPF
-##
-  - remove DefaultStyleKeyProperty.OverrideMetadata, it works without it
-## IconButton
-  - use button foreground and background for icon in IconButton and IconToggleButton
-  - add background behind text in IconTextButton
-## Style
-  - Label - remove default padding?
-  - MH.Styles.IconShadow
 
         # Picture Manager
 ##
@@ -59,8 +43,6 @@
   - join FileOperationDialogM and FileOperationCollisionDialogM
   - Log button
   - show media items with selected people
-  - replace Equals with ReferenceEquals where possible
-  - use BitmapMetadataExtensions in MediaItemsVM
   - CoreUI with interfaces for CoreM and CoreVM
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
@@ -138,6 +120,8 @@
   - filter for segment resolution
 ## TreeView
   - show ScrollToParent on mouse hover. Icon with ToolTip (Parent.Name) for each parent. Maybe shared button for whole TreeView
+## GroupByDialog
+  - incremental search
 
                                     *** DISCARDED ***
   - make thumbnail images sharper (size is 2.7x bigger)
