@@ -12,20 +12,20 @@ public sealed class TreeViewSearchVM : ObservableObject {
   private readonly TreeViewCategoriesVM _tvc;
   private string _searchText;
   private bool _isOpen;
-  private TreeViewSearchItemM _selected;
 
   public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); Search(); } }
   public bool IsOpen { get => _isOpen; set { _isOpen = value; OnPropertyChanged(); } }
-  public TreeViewSearchItemM Selected { get => _selected; set { _selected = value; OnPropertyChanged(); NavigateTo(value); } }
   public ObservableCollection<TreeViewSearchItemM> SearchResult { get; } = [];
 
   public RelayCommand OpenCommand { get; }
   public RelayCommand CloseCommand { get; }
+  public RelayCommand<TreeViewSearchItemM> NavigateToCommand { get; }
 
   public TreeViewSearchVM(TreeViewCategoriesVM tvc) {
     _tvc = tvc;
     OpenCommand = new(Open, Res.IconMagnify, "Search");
     CloseCommand = new(() => IsOpen = false, Res.IconXCross, "Close");
+    NavigateToCommand = new(NavigateTo);
   }
 
   private void NavigateTo(TreeViewSearchItemM item) {

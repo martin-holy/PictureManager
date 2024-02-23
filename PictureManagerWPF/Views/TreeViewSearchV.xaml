@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IListItem.xaml"/>
@@ -35,8 +36,15 @@
         x:Name="result"
         Grid.Row="1"
         MaxHeight="400"
-        ItemsSource="{Binding SearchResult}"
-        SelectedItem="{Binding Selected}">
+        ItemsSource="{Binding SearchResult}">
+
+        <b:Interaction.Triggers>
+          <b:EventTrigger EventName="MouseLeftButtonUp">
+            <b:InvokeCommandAction
+              Command="{Binding NavigateToCommand}"
+              CommandParameter="{Binding Path=SelectedItem, ElementName=result}"/>
+          </b:EventTrigger>
+        </b:Interaction.Triggers>
 
         <ListBox.ItemTemplate>
           <DataTemplate>
