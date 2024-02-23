@@ -48,6 +48,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = [];
 
   public void CreateNew(double x, double y) {
+    if (MediaItem == null) return;
     MousePosToRawImage(ref x, ref y, _scale, MediaItem);
     _isNew = true;
     _startX = x;
