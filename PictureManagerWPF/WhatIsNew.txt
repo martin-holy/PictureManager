@@ -4,6 +4,14 @@
 [B] - Bug fix
 
 Latest:
+ - [B] Read segments from JPG metadata
+ - [B] Create new segment
+ - [B] Save segments without person to JPG metadata
+ - [B] Read segments without person from JPG metadata
+ - [U] Group People only by category by default
+ - [U] ScrollBar colors
+ - [U] Person thumbnail tool tip with name
+ - [B] CollectionView Update
  - [B] TreeView ScrollTo
  - [B] StatusBar PositionSlashCount
  - [B] TreeView auto horizontal scroll on select
