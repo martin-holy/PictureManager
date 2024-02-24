@@ -291,7 +291,7 @@ public sealed class Core {
       R.MediaItem.ModifyIfContains(e.Data);
 
     R.Person.KeywordsChangedEvent += items => {
-      VM.MainWindow.ToolsTabs.PersonTab?.UpdateDisplayKeywordsIfContains(items);
+      VM.MainWindow.ToolsTabs.PersonDetailTab?.UpdateDisplayKeywordsIfContains(items);
       VM.MainWindow.ToolsTabs.PeopleTab?.Update(items);
       VM.People?.Update(items);
       VM.SegmentsMatching?.CvPeople.Update(items);
@@ -305,8 +305,8 @@ public sealed class Core {
       VM.MainWindow.ToolsTabs.PeopleTab?.Remove(e.Data);
       VM.SegmentsMatching?.CvPeople.Remove(e.Data);
 
-      if (ReferenceEquals(VM.MainWindow.ToolsTabs.PersonTab?.PersonM, e.Data))
-        VM.MainWindow.ToolsTabs.Close(VM.MainWindow.ToolsTabs.PersonTab);
+      if (ReferenceEquals(VM.MainWindow.ToolsTabs.PersonDetailTab?.PersonM, e.Data))
+        VM.MainWindow.ToolsTabs.Close(VM.MainWindow.ToolsTabs.PersonDetailTab);
     };
   }
 
@@ -323,7 +323,7 @@ public sealed class Core {
     R.Segment.SegmentsPersonChangedEvent += (_, e) => {
       R.Person.OnSegmentsPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
       R.MediaItem.TogglePerson(e.Data.Item2);
-      VM.MainWindow.ToolsTabs.PersonTab?.Update(e.Data.Item2);
+      VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.Item2);
       VM.People?.Update(e.Data.Item3);
       S.Segment.Selected.DeselectAll();
       VM.SegmentsMatching?.OnSegmentsPersonChanged(e.Data.Item2);
@@ -331,7 +331,7 @@ public sealed class Core {
 
     R.Segment.KeywordsChangedEvent += items => {
       R.MediaItem.ModifyIfContains(items);
-      VM.MainWindow.ToolsTabs.PersonTab?.Update(items, true, false);
+      VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(items, true, false);
       VM.SegmentsMatching?.CvSegments.Update(items);
     };
 
@@ -342,7 +342,7 @@ public sealed class Core {
 
     R.Segment.ItemsDeletedEvent += (_, e) => {
       R.MediaItem.RemoveSegments(e.Data);
-      VM.MainWindow.ToolsTabs.PersonTab?.Update(e.Data.ToArray(), true, true);
+      VM.MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Data.ToArray(), true, true);
       VM.SegmentsMatching?.CvSegments.Remove(e.Data.ToArray());
       VM.SegmentsDrawer.RemoveIfContains(e.Data.ToArray());
     };

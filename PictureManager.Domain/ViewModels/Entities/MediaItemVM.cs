@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain.ViewModels.Entities;
 
 public sealed class MediaItemVM : ObservableObject {
+  private readonly CoreVM _coreVM;
   private readonly MediaItemS _s;
   private MediaItemM _current;
   private int _modifiedItemsCount;
@@ -31,12 +32,19 @@ public sealed class MediaItemVM : ObservableObject {
 
   public static RelayCommand CommentCommand { get; set; }
   public static RelayCommand DeleteCommand { get; set; }
+  public static RelayCommand<GeoNameM> LoadByGeoNameCommand { get; set; }
+  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; }
+  public static RelayCommand<PersonM> LoadByPersonCommand { get; set; }
   public static RelayCommand RenameCommand { get; set; }
 
-  public MediaItemVM(CoreVM coreVM, MediaItemS model) {
-    _s = model;
+  public MediaItemVM(CoreVM coreVM, MediaItemS s) {
+    _coreVM = coreVM;
+    _s = s;
     CommentCommand = new(() => Comment(Current), () => Current != null, Res.IconNotification, "Comment");
     DeleteCommand = new(() => Delete(coreVM.GetActive<MediaItemM>()), () => coreVM.AnyActive<MediaItemM>());
+    LoadByGeoNameCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
+    LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
+    LoadByPersonCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     RenameCommand = new(Rename, () => Current is RealMediaItemM, null, "Rename");
   }
 
@@ -53,6 +61,9 @@ public sealed class MediaItemVM : ObservableObject {
     if (Dialog.Show(inputDialog) == 1)
       _s.SetComment(mi, StringUtils.NormalizeComment(inputDialog.Answer));
   }
+
+  private void LoadBy(object o) =>
+    _coreVM.MediaItemsViews.LoadByTag(o);
 
   public void CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder) {
     var fop = new FileOperationDialogM(mode, false);

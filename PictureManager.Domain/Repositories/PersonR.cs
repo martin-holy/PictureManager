@@ -2,6 +2,7 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.TreeCategories;
 using System;
@@ -34,6 +35,9 @@ public class PersonR : TreeDataAdapter<PersonM> {
     foreach (var personM in Tree.Items.OfType<PersonM>())
       yield return personM;
   }
+
+  public IEnumerable<PersonM> GetBy(KeywordM keyword, bool recursive) =>
+    All.GetBy(keyword, recursive);
 
   public override void Save() =>
     SaveToSingleFile(GetAll());

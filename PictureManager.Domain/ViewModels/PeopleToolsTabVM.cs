@@ -6,12 +6,13 @@ using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Services;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.ViewModels;
 
 public sealed class PeopleToolsTabVM : CollectionViewPeople {
-  public void ReloadFrom() {
+  private static IEnumerable<PersonM> GetPeople() {
     var md = new MessageDialog(
       "Reload People",
       "From which source do you want to load the people?",
@@ -25,15 +26,16 @@ public sealed class PeopleToolsTabVM : CollectionViewPeople {
     };
 
     var result = Dialog.Show(md);
-    if (result < 1) return;
+    if (result < 1) return Enumerable.Empty<PersonM>();
 
-    var items = result switch {
+    return result switch {
       1 => Core.VM.MediaItemsViews.Current?.GetSelectedOrAll().GetPeople(),
       2 => Core.VM.MediaViewer.MediaItems.GetPeople(),
       3 => PersonS.GetAll(),
       _ => Enumerable.Empty<PersonM>()
     };
-
-    Reload(items.EmptyIfNull().OrderBy(x => x.Name).ToList(), GroupMode.GroupBy, null, true);
   }
+
+  public void Reload(PersonM[] people) =>
+    Reload((people ?? GetPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList(), GroupMode.GroupBy, null, true);
 }

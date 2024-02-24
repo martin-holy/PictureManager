@@ -7,7 +7,7 @@
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
-  <DataTemplate DataType="{x:Type vme:PersonVM}">
+  <DataTemplate DataType="{x:Type vme:PersonDetailVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -45,7 +45,7 @@
       </Grid>
 
       <StackPanel Grid.Row="1" Orientation="Horizontal">
-        <mhc:IconButton Command="{Binding LoadMediaItemsCommand}"/>
+        <mhc:IconButton Command="vme:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding PersonM}"/>
         <mhc:IconButton Command="vme:SegmentVM.SetSelectedAsUnknownCommand"/>
       </StackPanel>
 

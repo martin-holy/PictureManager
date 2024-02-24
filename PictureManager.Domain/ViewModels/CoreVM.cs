@@ -23,6 +23,7 @@ public class CoreVM {
 
   public GeoNameVM GeoName { get; }
   public MediaItemVM MediaItem { get; }
+  public PersonVM Person { get; }
   public SegmentVM Segment { get; }
   public VideoVM Video { get; }
   public ViewerVM Viewer { get; }
@@ -62,7 +63,8 @@ public class CoreVM {
 
     GeoName = new(_coreR.GeoName);
     MediaItem = new(this, _coreS.MediaItem);
-    Segment = new(_coreS.Segment, _coreR.Segment);
+    Person = new(this, _coreR.Person);
+    Segment = new(this, _coreS.Segment, _coreR.Segment);
     Video = new();
     Viewer = new(_coreR.Viewer, _coreS.Viewer);
 
@@ -72,7 +74,7 @@ public class CoreVM {
 
     AppClosingCommand = new(AppClosing);
     OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
-    OpenSegmentsMatchingCommand = new(OpenSegmentsMatching, Res.IconSegment, "Segments View");
+    OpenSegmentsMatchingCommand = new(() => OpenSegmentsMatching(null), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
     CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
     GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
@@ -117,12 +119,15 @@ public class CoreVM {
     Core.VM.MainTabs.Activate(Res.IconPeopleMultiple, "People", People);
   }
 
-  private void OpenSegmentsMatching() {
-    var result = SegmentsMatchingVM.GetSegmentsToLoadUserInput();
-    if (result < 1) return;
-    var segments = SegmentsMatchingVM.GetSegments(result).ToArray();
+  public void OpenSegmentsMatching(SegmentM[] segments) {
+    if (segments == null) {
+      var result = SegmentsMatchingVM.GetSegmentsToLoadUserInput();
+      if (result < 1) return;
+      segments = SegmentsMatchingVM.GetSegments(result).ToArray();
+    }
+    
     SegmentsMatching ??= new(_coreS.Segment);
-    Core.VM.MainTabs.Activate(Res.IconSegment, "Segments", SegmentsMatching);
+    MainTabs.Activate(Res.IconSegment, "Segments", SegmentsMatching);
     if (MediaViewer.IsVisible) MainWindow.IsInViewMode = false;
     SegmentsMatching.Reload(segments);
   }
