@@ -87,6 +87,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
 
   public void ReWrapAll() {
     UpdateRoot(Root, _ => CollectionViewGroup<T>.ReWrapAll(Root));
+    ScrollTo(TopGroup, TopItem);
   }
 
   public void ReWrapAll(IEnumerable<T> items) {
