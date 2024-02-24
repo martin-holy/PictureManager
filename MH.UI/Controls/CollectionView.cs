@@ -169,7 +169,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     }
   }
 
-  public void ScrollTo(CollectionViewGroup<T> group, T item) {
+  public void ScrollTo(CollectionViewGroup<T> group, T item, bool exactly = true) {
     if (group == null && item == null) return;
 
     CollectionViewRow<T> row = default;
@@ -179,7 +179,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
 
     TopGroup = group;
     TopItem = item;
-    ScrollTo(row != null ? row : group);
+    ScrollTo(row != null ? row : group, exactly);
   }
 
   public T SelectFirstItem() {
