@@ -15,8 +15,7 @@
         # Picture Manager
   - read only drives and creating thumbnails
 ## MediaItems
-  - D:\!test\364__32_original.jpg save metadata or crop doesn't work (re-save without metadata in XnView fixed the file)
-  - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
+  - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
   - Skipped items while moving are removed from MediaItemsView
 ## Video Items (VideoImage and VideoClip)
   - Display aspect ratio different from video width and height ratio
@@ -27,8 +26,6 @@
   - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
 ## CollectionView
   - wrong sort (it is by text and not number) on update when grouped by date
-## TreeViewSearch
-  - selecting result select item in the tree under result as well
 
 
                                   *** UPDATE ***
@@ -44,6 +41,8 @@
   - Log button
   - show media items with selected people
   - CoreUI with interfaces for CoreM and CoreVM
+  - replace Contains with ReferenceEquals
+  - move MediaItemsViews to MediaItemVM
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
