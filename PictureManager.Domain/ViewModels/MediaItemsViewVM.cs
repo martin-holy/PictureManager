@@ -54,6 +54,9 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     Selected.AllDeselectedEventHandler += delegate { SelectionChanged(); };
   }
 
+  public override void OnIsVisible() =>
+    ScrollTo(TopGroup, TopItem, false);
+
   public override void OnItemOpened(MediaItemM item) {
     if (item == null) return;
 
@@ -146,7 +149,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     Core.VM.MediaItem.Current = mi;
     if (mi == null) return;
     Selected.Set(mi, true);
-    ScrollTo(Root, mi);
+    ScrollTo(Root, mi, false);
     SelectionChanged();
   }
 
