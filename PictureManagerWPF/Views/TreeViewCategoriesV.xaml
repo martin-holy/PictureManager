@@ -7,7 +7,8 @@
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhui="clr-namespace:MH.UI;assembly=MH.UI"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="TreeViewSearchV.xaml"/>
@@ -40,6 +41,12 @@
     </DataTemplate.Resources>
 
     <Grid Background="{StaticResource MH.Control.Static.Background}">
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="MouseLeave">
+          <b:InvokeCommandAction Command="{Binding TreeViewSearch.CloseCommand}"/>
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+
       <TabControl
         x:Name="Tabs"
         Style="{StaticResource MH.Styles.BaseControls.TabControl-Slot}"
