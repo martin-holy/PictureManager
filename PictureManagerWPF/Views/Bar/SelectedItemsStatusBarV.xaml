@@ -29,7 +29,7 @@
         </Grid.ColumnDefinitions>
 
         <mhc:IconTextBlock
-          ap:Text.Text="{Binding VM.MediaItemsViews.Current.Selected.Items.Count, FallbackValue=0}"
+          ap:Text.Text="{Binding VM.MediaItem.Views.Current.Selected.Items.Count, FallbackValue=0}"
           ap:Icon.Data="{StaticResource IconImage}"/>
         <mhc:IconTextBlock
           Grid.Column="1"

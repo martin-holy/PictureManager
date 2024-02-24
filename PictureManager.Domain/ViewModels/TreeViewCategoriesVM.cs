@@ -46,9 +46,9 @@ public sealed class TreeViewCategoriesVM : TabControl {
       ? Core.VM.MediaItem.Current == null
         ? Array.Empty<MediaItemM>()
         : new[] { Core.VM.MediaItem.Current }
-      : Core.VM.MediaItemsViews.Current == null
+      : Core.VM.MediaItem.Views.Current == null
         ? Array.Empty<MediaItemM>()
-        : Core.VM.MediaItemsViews.Current.GetSelectedOrAll().ToArray();
+        : Core.VM.MediaItem.Views.Current.GetSelectedOrAll().ToArray();
 
     if (mediaItems.Length == 0) {
       OnPropertyChanged(nameof(MarkedTags));
