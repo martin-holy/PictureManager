@@ -39,7 +39,7 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
         var result = FileOperationCollisionDialogM.Open(mi.FilePath, destFilePath, ref miNewFileName);
 
         if (result == CollisionResult.Skip) {
-          _ = Tasks.RunOnUiThread(() => Core.VM.MediaItemsViews.Current.Selected.Set(mi, false));
+          _ = Tasks.RunOnUiThread(() => Core.VM.MediaItem.Views.Current.Selected.Set(mi, false));
           continue;
         }
 

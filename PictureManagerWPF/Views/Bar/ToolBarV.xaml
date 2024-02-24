@@ -94,7 +94,7 @@
 
           <!-- Filters Panel -->
           <ContentPresenter
-            Content="{Binding VM.MediaItemsViews.Current.Filter}"
+            Content="{Binding VM.MediaItem.Views.Current.Filter}"
             ContentTemplate="{StaticResource MediaItemsFilterV}"/>
 
           <mhc:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
@@ -173,7 +173,7 @@
                 <Style.Triggers>
                   <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                      <Condition Binding="{Binding VM.MediaItemsViews.Current, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
+                      <Condition Binding="{Binding VM.MediaItem.Views.Current, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
                       <Condition Binding="{Binding VM.MainWindow.IsInViewMode}" Value="False"/>
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Visibility" Value="Visible"/>
@@ -194,16 +194,16 @@
               TickFrequency="0.1"
               SmallChange="0.1"
               LargeChange="0.2"
-              Value="{Binding VM.MediaItemsViews.Current.ThumbScale, Mode=TwoWay}"/>
+              Value="{Binding VM.MediaItem.Views.Current.ThumbScale, Mode=TwoWay}"/>
 
             <!-- Image Comparer -->
             <mhc:IconButton
               Command="vm:ImageComparerVM.AverageHashCommand"
-              CommandParameter="{Binding VM.MediaItemsViews.Current}"/>
+              CommandParameter="{Binding VM.MediaItem.Views.Current}"/>
 
             <mhc:IconButton
               Command="vm:ImageComparerVM.PHashCommand"
-              CommandParameter="{Binding VM.MediaItemsViews.Current}"/>
+              CommandParameter="{Binding VM.MediaItem.Views.Current}"/>
 
             <Slider
               Style="{StaticResource MH.Styles.Controls.PopupSlider}"

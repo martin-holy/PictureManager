@@ -84,7 +84,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
   }
 
   private void SelectionChanged() {
-    if (!ReferenceEquals(this, Core.VM.MediaItemsViews.Current) || Core.VM.MediaViewer.IsVisible) return;
+    if (!ReferenceEquals(this, Core.VM.MediaItem.Views.Current) || Core.VM.MediaViewer.IsVisible) return;
 
     SelectionChangedEventHandler(this, EventArgs.Empty);
     OnPropertyChanged(nameof(PositionSlashCount));

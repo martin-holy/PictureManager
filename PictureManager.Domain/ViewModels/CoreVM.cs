@@ -31,7 +31,6 @@ public class CoreVM {
   public ImageComparerVM ImageComparer { get; } = new();
   public TabControl MainTabs { get; } = new() { CanCloseTabs = true };
   public MainWindowVM MainWindow { get; } = new();
-  public MediaItemsViewsVM MediaItemsViews { get; } = new();
   public MediaViewerVM MediaViewer { get; } = new();
   public PeopleVM People { get; set; }
   public SegmentsDrawerVM SegmentsDrawer { get; }
@@ -89,14 +88,14 @@ public class CoreVM {
   public bool AnyActive<T>(FolderM folder = null) where T : MediaItemM =>
     folder != null
     || (MainWindow.IsInViewMode && MediaItem.Current is T)
-    || MediaItemsViews.Current?.Selected.Items.OfType<T>().Any() == true;
+    || MediaItem.Views.Current?.Selected.Items.OfType<T>().Any() == true;
 
   public T[] GetActive<T>(FolderM folder = null) where T : MediaItemM =>
     folder != null
       ? folder.GetMediaItems(Keyboard.IsShiftOn()).OfType<T>().ToArray()
       : MainWindow.IsInViewMode
         ? MediaItem.Current is T current ? new[] { current } : Array.Empty<T>()
-        : MediaItemsViews.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
+        : MediaItem.Views.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
 
   private void AppClosing() {
     if (_coreR.Changes > 0 &&
@@ -163,8 +162,8 @@ public class CoreVM {
         var mim = new MediaItemMetadata(mi);
         MediaItemS.ReadMetadata(mim, false);
         mi.SetThumbSize();
-        MediaItemsViews.Current.LoadedItems.Add(mi);
-        MediaItemsViews.Current.SoftLoad(MediaItemsViews.Current.LoadedItems, true, true);
+        MediaItem.Views.Current.LoadedItems.Add(mi);
+        MediaItem.Views.Current.SoftLoad(MediaItem.Views.Current.LoadedItems, true, true);
       })
     );
   }

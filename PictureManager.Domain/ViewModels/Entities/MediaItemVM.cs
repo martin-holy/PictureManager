@@ -27,6 +27,7 @@ public sealed class MediaItemVM : ObservableObject {
 
   public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
   public GeoNameM CurrentGeoName => Current?.GeoLocation?.GeoName;
+  public MediaItemsViewsVM Views { get; } = new();
   public int ModifiedItemsCount { get => _modifiedItemsCount; set { _modifiedItemsCount = value; OnPropertyChanged(); } }
   public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
 
@@ -41,7 +42,7 @@ public sealed class MediaItemVM : ObservableObject {
     _coreVM = coreVM;
     _s = s;
     CommentCommand = new(() => Comment(Current), () => Current != null, Res.IconNotification, "Comment");
-    DeleteCommand = new(() => Delete(coreVM.GetActive<MediaItemM>()), () => coreVM.AnyActive<MediaItemM>());
+    DeleteCommand = new(() => Delete(_coreVM.GetActive<MediaItemM>()), () => _coreVM.AnyActive<MediaItemM>());
     LoadByGeoNameCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPersonCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
@@ -63,7 +64,7 @@ public sealed class MediaItemVM : ObservableObject {
   }
 
   private void LoadBy(object o) =>
-    _coreVM.MediaItemsViews.LoadByTag(o);
+    _coreVM.MediaItem.Views.LoadByTag(o);
 
   public void CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder) {
     var fop = new FileOperationDialogM(mode, false);
@@ -84,7 +85,7 @@ public sealed class MediaItemVM : ObservableObject {
     if (mode == FileOperationMode.Move) {
       var mis = items.Cast<MediaItemM>().ToList();
       Current = null;
-      Core.VM.MediaItemsViews.Current.Remove(mis, true);
+      Core.VM.MediaItem.Views.Current.Remove(mis, true);
     }
   }
 
