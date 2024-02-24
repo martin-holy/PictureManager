@@ -145,7 +145,6 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
 
   public void SelectAndScrollToCurrentMediaItem() {
     var mi = GetItemToScrollTo();
-    Selected.DeselectAll();
     Core.VM.MediaItem.Current = mi;
     if (mi == null) return;
     Selected.Set(mi, true);
@@ -238,13 +237,13 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
   }
 
   private void AddMediaItems(List<MediaItemM> items, bool and = false, bool hide = false) {
+    Selected.DeselectAll();
     foreach (var mi in items) {
+      if (mi.IsSelected) mi.IsSelected = false;
+
       if (hide) {
         LoadedItems.Remove(mi);
         FilteredItems.Remove(mi);
-        if (Selected.Items.Remove(mi))
-          mi.IsSelected = false;
-
         continue;
       }
 
