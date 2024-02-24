@@ -119,7 +119,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public async void LoadByTag(object item) {
     var and = Keyboard.IsCtrlOn();
     var hide = Keyboard.IsAltOn();
-    var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn());
+    var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn()).OfType<RealMediaItemM>().Cast<MediaItemM>();
 
     // if CTRL is pressed, add new items to already loaded items
     if (and) items = Current.LoadedItems.Union(items);
