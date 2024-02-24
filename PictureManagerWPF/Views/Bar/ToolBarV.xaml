@@ -196,6 +196,9 @@
               LargeChange="0.2"
               Value="{Binding VM.MediaItem.Views.Current.ThumbScale, Mode=TwoWay}"/>
 
+            <!-- View Selected -->
+            <mhc:IconButton Command="vme:MediaItemVM.ViewSelectedCommand"/>
+
             <!-- Image Comparer -->
             <mhc:IconButton
               Command="vm:ImageComparerVM.AverageHashCommand"

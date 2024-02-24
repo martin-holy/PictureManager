@@ -37,6 +37,7 @@ public sealed class MediaItemVM : ObservableObject {
   public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; }
   public static RelayCommand<PersonM> LoadByPersonCommand { get; set; }
   public static RelayCommand RenameCommand { get; set; }
+  public static RelayCommand ViewSelectedCommand { get; set; }
 
   public MediaItemVM(CoreVM coreVM, MediaItemS s) {
     _coreVM = coreVM;
@@ -47,6 +48,7 @@ public sealed class MediaItemVM : ObservableObject {
     LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPersonCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     RenameCommand = new(Rename, () => Current is RealMediaItemM, null, "Rename");
+    ViewSelectedCommand = new(ViewSelected, CanViewSelected, Res.IconImageMultiple, "View selected");
   }
 
   private void Comment(MediaItemM mi) {
@@ -65,6 +67,15 @@ public sealed class MediaItemVM : ObservableObject {
 
   private void LoadBy(object o) =>
     _coreVM.MediaItem.Views.LoadByTag(o);
+
+  private void ViewSelected() {
+    var items = Views.Current.Selected.Items.ToList();
+    _coreVM.MainWindow.IsInViewMode = true;
+    _coreVM.MediaViewer.SetMediaItems(items, items[0]);
+  }
+
+  private bool CanViewSelected() =>
+    Views.Current?.Selected.Items.Count > 1;
 
   public void CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder) {
     var fop = new FileOperationDialogM(mode, false);
