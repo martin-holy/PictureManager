@@ -280,16 +280,13 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     };
 
   public IEnumerable<MediaItemM> GetItems(KeywordM keyword, bool recursive) {
-    var set = (recursive ? keyword.Flatten() : new[] { keyword }).ToHashSet();
-
-    return GetAll(mi =>
-      mi.Keywords?.Any(k => set.Contains(k)) == true ||
-      mi.Segments?.Any(s => s.Keywords?.Any(k => set.Contains(k)) == true) == true);
+    var arr = recursive ? keyword.Flatten().ToArray() : new[] { keyword };
+    return GetAll(x => x.Keywords?.Any(k => arr.Any(ar => ReferenceEquals(ar, k))) == true);
   }
 
   public IEnumerable<MediaItemM> GetItems(GeoNameM geoName, bool recursive) {
-    var set = (recursive ? geoName.Flatten() : new[] { geoName }).ToHashSet();
-    return GetAll(x => set.Contains(x.GeoLocation?.GeoName)).OrderBy(mi => mi.FileName);
+    var arr = recursive ? geoName.Flatten().ToArray() : new[] { geoName };
+    return GetAll(x => arr.Any(ar => ReferenceEquals(ar, x.GeoLocation?.GeoName))).OrderBy(mi => mi.FileName);
   }
 
   public IEnumerable<MediaItemM> GetItems(RatingM rating) =>

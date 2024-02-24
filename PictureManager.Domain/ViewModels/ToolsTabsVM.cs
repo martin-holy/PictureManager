@@ -7,25 +7,25 @@ namespace PictureManager.Domain.ViewModels;
 
 public sealed class ToolsTabsVM : TabControl {
   public PeopleToolsTabVM PeopleTab { get; private set; }
-  public PersonVM PersonTab { get; private set; }
+  public PersonDetailVM PersonDetailTab { get; private set; }
 
   public static RelayCommand<PersonM> OpenPersonTabCommand { get; set; }
   public static RelayCommand OpenPeopleTabCommand { get; set; }
 
   public ToolsTabsVM() {
     OpenPersonTabCommand = new(OpenPersonTab, Res.IconInformation, "Detail");
-    OpenPeopleTabCommand = new(OpenPeopleTab, Res.IconPeopleMultiple, "People");
+    OpenPeopleTabCommand = new(() => OpenPeopleTab(null), Res.IconPeopleMultiple, "People");
   }
 
-  private void OpenPeopleTab() {
+  public void OpenPeopleTab(PersonM[] people) {
     PeopleTab ??= new();
-    PeopleTab.ReloadFrom();
+    PeopleTab.Reload(people);
     Activate(Res.IconPeopleMultiple, "People", PeopleTab);
   }
 
   private void OpenPersonTab(PersonM person) {
-    PersonTab ??= new(Core.S.Person, Core.S.Segment);
-    PersonTab.Reload(person);
-    Activate(Res.IconPeople, "Person", PersonTab);
+    PersonDetailTab ??= new(Core.S.Person, Core.S.Segment);
+    PersonDetailTab.Reload(person);
+    Activate(Res.IconPeople, "Person", PersonDetailTab);
   }
 }

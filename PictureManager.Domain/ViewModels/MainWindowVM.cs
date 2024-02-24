@@ -62,7 +62,7 @@ public class MainWindowVM : ObservableObject {
 
     ToolsTabs.TabClosedEvent += tab => {
       switch (tab.Data) {
-        case PersonVM pd: pd.Reload(null); break;
+        case PersonDetailVM pd: pd.Reload(null); break;
       }
     };
 

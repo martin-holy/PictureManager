@@ -1,6 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Services;
@@ -118,6 +119,12 @@ public class SegmentR : TableDataAdapter<SegmentM> {
     item.MediaItem = null;
     item.Person = null;
   }
+
+  public IEnumerable<SegmentM> GetBy(KeywordM keyword, bool recursive) =>
+    All.GetBy(keyword, recursive);
+
+  public IEnumerable<SegmentM> GetBy(PersonM person) =>
+    All.Where(x => ReferenceEquals(x.Person, person));
 
   public void RemovePerson(PersonM person) {
     var segments = All.Where(x => ReferenceEquals(x.Person, person)).ToArray();

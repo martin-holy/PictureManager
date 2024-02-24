@@ -1,4 +1,5 @@
-﻿using MH.Utils.Extensions;
+﻿using MH.Utils;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,4 +17,9 @@ public static class HaveKeywordsExtensions {
       .EmptyIfNull()
       .SelectMany(x => x.GetKeywords())
       .Distinct();
+
+  public static IEnumerable<T> GetBy<T>(this IEnumerable<T> items, KeywordM keyword, bool recursive) where T : IHaveKeywords {
+    var arr = recursive ? keyword.Flatten().ToArray() : new[] { keyword };
+    return items.Where(x => x.Keywords?.Any(k => arr.Any(ar => ReferenceEquals(ar, k))) == true);
+  }
 }

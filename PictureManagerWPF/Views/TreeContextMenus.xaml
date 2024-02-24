@@ -9,8 +9,7 @@
   xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
   <!-- Tag Items Load and Filters -->
-  <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu" x:Shared="False">
-    <MenuItem Command="vm:MediaItemsViewsVM.LoadByTagCommand" CommandParameter="{Binding}"/>
+  <x:Array Type="{x:Type sys:Object}" x:Key="FilterItemTreeContextMenu" x:Shared="False">
     <MenuItem Command="vm:MediaItemsViewsVM.FilterSetAndCommand" CommandParameter="{Binding}"/>
     <MenuItem Command="vm:MediaItemsViewsVM.FilterSetOrCommand" CommandParameter="{Binding}"/>
     <MenuItem Command="vm:MediaItemsViewsVM.FilterSetNotCommand" CommandParameter="{Binding}"/>
@@ -30,7 +29,9 @@
         <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
         <Separator/>
-        <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}"/>
+        <MenuItem Command="vme:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="vme:SegmentVM.LoadByPersonCommand" CommandParameter="{Binding}"/>
+        <CollectionContainer Collection="{StaticResource FilterItemTreeContextMenu}"/>
       </CompositeCollection>
     </ContextMenu.ItemsSource>
   </ContextMenu>
@@ -108,8 +109,14 @@
   <!-- GeoName -->
   <ContextMenu
     x:Key="TreeContextMenuGeoName"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}"
-    ItemsSource="{StaticResource TagItemTreeContextMenu}"/>
+    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <ContextMenu.ItemsSource>
+      <CompositeCollection>
+        <MenuItem Command="vme:MediaItemVM.LoadByGeoNameCommand" CommandParameter="{Binding}"/>
+        <CollectionContainer Collection="{StaticResource FilterItemTreeContextMenu}"/>
+      </CompositeCollection>
+    </ContextMenu.ItemsSource>
+  </ContextMenu>
   
   <!-- Keyword -->
   <ContextMenu x:Key="TreeContextMenuKeyword" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
@@ -119,7 +126,10 @@
         <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
         <Separator/>
-        <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}"/>
+        <MenuItem Command="vme:MediaItemVM.LoadByKeywordCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="vme:PersonVM.LoadByKeywordCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="vme:SegmentVM.LoadByKeywordCommand" CommandParameter="{Binding}"/>
+        <CollectionContainer Collection="{StaticResource FilterItemTreeContextMenu}"/>
       </CompositeCollection>
     </ContextMenu.ItemsSource>
   </ContextMenu>
