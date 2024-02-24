@@ -4,10 +4,13 @@
 [B] - Bug fix
 
 Latest:
- - [B] Read segments from JPG metadata
+ - [U] PeopleToolsTab GroupMode.ThenByRecursive by default
+ - [N] Load MediaItems, People or Segments from pop-up menu on Person, Keyword and GeoName in tree
+ - [B] Selecting TreeSearch result select tree item under result as well
+ - [B] Read segments from jpg metadata
  - [B] Create new segment
- - [B] Save segments without person to JPG metadata
- - [B] Read segments without person from JPG metadata
+ - [B] Save segments without person to jpg metadata
+ - [B] Read segments without person from jpg metadata
  - [U] Group People only by category by default
  - [U] ScrollBar colors
  - [U] Person thumbnail tool tip with name
