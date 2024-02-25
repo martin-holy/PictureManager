@@ -3,7 +3,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,15 +96,11 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
     if (ThumbWidth != 0 && ThumbHeight != 0 && !reload) return;
     if (Width == 0 || Height == 0) return;
 
-    // TODO: move next and last line calculation elsewhere
-    var desiredSize = (int)(Core.Settings.ThumbnailSize * MediaItemsViewsVM.DefaultThumbScale);
     var rotated = Orientation is Orientation.Rotate90 or Orientation.Rotate270;
-
-    // TODO move rotation check to GetThumbSize or create func for getting w & h rotated
     Imaging.GetThumbSize(
       rotated ? Height : Width,
       rotated ? Width : Height,
-      desiredSize,
+      Core.Settings.ThumbnailSize,
       out var w,
       out var h);
 

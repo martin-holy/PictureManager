@@ -184,12 +184,12 @@
 
             <Separator/>
 
-            <!-- Thumbnails size -->
+            <!-- Thumbnails scale -->
             <Slider
               Style="{StaticResource MH.Styles.Controls.PopupSlider}"
-              ToolTip="Thumbnails size"
+              ToolTip="Thumbnails scale"
               ap:Icon.Data="{StaticResource IconMagnify}"
-              Minimum="0.1"
+              Minimum="0.2"
               Maximum="2"
               TickFrequency="0.1"
               SmallChange="0.1"

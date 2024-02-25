@@ -48,7 +48,6 @@ public sealed class Core {
 
   public void AfterInit() {
     var scale = GetDisplayScale();
-    MediaItemsViewsVM.DefaultThumbScale = 1 / scale;
     SegmentS.SetSegmentUiSize(scale);
     S = new(R);
     VM = new(S, R);

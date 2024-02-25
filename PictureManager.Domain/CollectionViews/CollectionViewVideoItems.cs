@@ -16,7 +16,7 @@ public class CollectionViewVideoItems : CollectionView<VideoItemM> {
   }
 
   public override int GetItemSize(VideoItemM item, bool getWidth) =>
-    (getWidth ? item.ThumbWidth : item.ThumbHeight) / 3;
+    (int)((getWidth ? item.ThumbWidth : item.ThumbHeight) * Core.Settings.VideoItemThumbScale);
 
   public override IEnumerable<GroupByItem<VideoItemM>> GetGroupByItems(IEnumerable<VideoItemM> source) {
     var src = source.ToArray();

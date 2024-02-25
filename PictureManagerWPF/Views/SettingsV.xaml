@@ -16,6 +16,14 @@
       <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="Padding" Value="4"/>
       </Style>
+
+      <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="IsTabStop" Value="True"/>
+        <Setter Property="IsSnapToTickEnabled" Value="True"/>
+        <Setter Property="TickFrequency" Value="1"/>
+        <Setter Property="SmallChange" Value="1"/>
+      </Style>
     </DataTemplate.Resources>
 
     <ItemsControl HorizontalAlignment="Left" Margin="2" MinWidth="400">
@@ -46,7 +54,8 @@
               <ContentPresenter
                 Grid.Row="1"
                 Content="{Binding Path=[1]}"
-                DataContext="{Binding Source={x:Static pmd:Core.Settings}}"/>
+                DataContext="{Binding Source={x:Static pmd:Core.Settings}}"
+                Margin="3,3,0,0"/>
             </Grid>
           </Border>
 
@@ -66,6 +75,28 @@
           </x:Array>
 
           <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding MediaItemThumbScale, StringFormat='Media item thumbnail scale: {0:G2}'}"/>
+            <Slider
+              Minimum="0.2"
+              Maximum="2"
+              TickFrequency="0.1"
+              SmallChange="0.1"
+              LargeChange="0.2"
+              Value="{Binding MediaItemThumbScale, Mode=TwoWay}"/>
+          </x:Array>
+
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding VideoItemThumbScale, StringFormat='Video item thumbnail scale: {0:G3}'}"/>
+            <Slider
+              Minimum="0.2"
+              Maximum="0.6"
+              TickFrequency="0.01"
+              SmallChange="0.01"
+              LargeChange="0.05"
+              Value="{Binding VideoItemThumbScale, Mode=TwoWay}"/>
+          </x:Array>
+
+          <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="FFMPEG path:"/>
             <TextBox Text="{Binding FfmpegPath, Mode=TwoWay}"/>
           </x:Array>
@@ -82,26 +113,12 @@
 
           <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="{Binding JpegQualityLevel, StringFormat='Jpeg quality level: {0}'}"/>
-            <Slider
-              Margin="3"
-              Minimum="80"
-              Maximum="95"
-              VerticalAlignment="Center"
-              IsTabStop="True"
-              SmallChange="1"
-              Value="{Binding JpegQualityLevel, Mode=TwoWay}"/>
+            <Slider Minimum="80" Maximum="95" Value="{Binding JpegQualityLevel, Mode=TwoWay}"/>
           </x:Array>
 
           <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="{Binding ThumbnailSize, StringFormat='Thumbnail size: {0}'}"/>
-            <Slider
-              Margin="3"
-              Minimum="200"
-              Maximum="500"
-              VerticalAlignment="Center"
-              IsTabStop="True"
-              SmallChange="1"
-              Value="{Binding ThumbnailSize, Mode=TwoWay}"/>
+            <Slider Minimum="200" Maximum="500" Value="{Binding ThumbnailSize, Mode=TwoWay}"/>
           </x:Array>
         </x:Array>
       </ItemsControl.ItemsSource>

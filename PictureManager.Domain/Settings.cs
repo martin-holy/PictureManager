@@ -20,6 +20,8 @@ public sealed class Settings : ObservableObject {
   private double _imagesToVideoSpeed = 0.25;
   private string _geoNamesUserName;
   private bool _loadGeoNamesFromWeb;
+  private double _mediaItemThumbScale = 0.8;
+  private double _videoItemThumbScale = 0.28;
 
   public int JpegQualityLevel { get => _jpegQualityLevel; set { _jpegQualityLevel = value; OnPropertyChanged(); } }
   public string CachePath { get => _cachePath; set => OnCachePathChange(value); }
@@ -31,7 +33,8 @@ public sealed class Settings : ObservableObject {
   public double ImagesToVideoSpeed { get => _imagesToVideoSpeed; set { _imagesToVideoSpeed = value; OnPropertyChanged(); } }
   public string GeoNamesUserName { get => _geoNamesUserName; set { _geoNamesUserName = value; OnPropertyChanged(); } }
   public bool LoadGeoNamesFromWeb { get => _loadGeoNamesFromWeb; set { _loadGeoNamesFromWeb = value; OnPropertyChanged(); } }
-
+  public double MediaItemThumbScale { get => _mediaItemThumbScale; set { _mediaItemThumbScale = value; OnPropertyChanged(); } }
+  public double VideoItemThumbScale { get => _videoItemThumbScale; set { _videoItemThumbScale = value; OnPropertyChanged(); } }
   public string SettingsFileName { get; set; } = Path.Combine("db", "settings.csv");
 
   public Settings() {
@@ -61,6 +64,8 @@ public sealed class Settings : ObservableObject {
       sw.WriteLine($"{nameof(ImagesToVideoSpeed)}|{ImagesToVideoSpeed}");
       sw.WriteLine($"{nameof(GeoNamesUserName)}|{GeoNamesUserName}");
       sw.WriteLine($"{nameof(LoadGeoNamesFromWeb)}|{(LoadGeoNamesFromWeb ? 1 : 0)}");
+      sw.WriteLine($"{nameof(MediaItemThumbScale)}|{MediaItemThumbScale}");
+      sw.WriteLine($"{nameof(VideoItemThumbScale)}|{VideoItemThumbScale}");
 
       _settingsChanged = false;
       return true;
@@ -105,6 +110,10 @@ public sealed class Settings : ObservableObject {
         GeoNamesUserName = geoNamesUserName;
       if (props.TryGetValue(nameof(LoadGeoNamesFromWeb), out var loadGeoNamesFromWeb))
         LoadGeoNamesFromWeb = "1".Equals(loadGeoNamesFromWeb);
+      if (props.TryGetValue(nameof(MediaItemThumbScale), out var mediaItemThumbScale))
+        MediaItemThumbScale = double.Parse(mediaItemThumbScale);
+      if (props.TryGetValue(nameof(VideoItemThumbScale), out var videoItemThumbScale))
+        VideoItemThumbScale = double.Parse(videoItemThumbScale);
 
       _settingsChanged = false;
       return true;
