@@ -16,7 +16,6 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   private MediaItemsViewVM _current;
 
   public MediaItemsViewVM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
-  public static double DefaultThumbScale { get; set; } = 1.0;
 
   public static RelayCommand<object> FilterSetAndCommand { get; set; }
   public static RelayCommand<object> FilterSetOrCommand { get; set; }
@@ -82,7 +81,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private void AddView(string tabName) {
-    var view = new MediaItemsViewVM(DefaultThumbScale);
+    var view = new MediaItemsViewVM(Core.Settings.MediaItemThumbScale);
     _all.Add(view);
     Current = view;
     view.SelectionChangedEventHandler += OnViewSelectionChanged;

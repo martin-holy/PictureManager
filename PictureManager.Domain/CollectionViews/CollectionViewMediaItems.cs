@@ -2,7 +2,6 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,14 +41,8 @@ public class CollectionViewMediaItems : CollectionView<MediaItemM> {
     return top;
   }
 
-  public override int GetItemSize(MediaItemM item, bool getWidth) {
-    var size = getWidth ? item.ThumbWidth : item.ThumbHeight;
-
-    if (Math.Abs(ThumbScale - MediaItemsViewsVM.DefaultThumbScale) > 0)
-      size = (int)Math.Round((size / MediaItemsViewsVM.DefaultThumbScale) * ThumbScale, 0);
-
-    return size;
-  }
+  public override int GetItemSize(MediaItemM item, bool getWidth) =>
+    (int)((getWidth ? item.ThumbWidth : item.ThumbHeight) * ThumbScale);
 
   public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>
     string.Compare(itemA.FileName, itemB.FileName, StringComparison.CurrentCultureIgnoreCase);
