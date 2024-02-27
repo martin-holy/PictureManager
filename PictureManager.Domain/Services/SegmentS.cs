@@ -1,11 +1,13 @@
 using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Repositories;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Services;
@@ -131,5 +133,15 @@ public sealed class SegmentS : ObservableObject {
         .ThenBy(x => x.FileName);
 
     return new[] { segment.MediaItem };
+  }
+
+  public void MoveCacheFiles(IEnumerable<SegmentM> segments, FolderM srcF, FolderM destF) {
+    foreach (var segment in segments) {
+      var srcPath = IOExtensions.PathCombine(srcF.FullPathCache, segment.FileNameCache);
+      var destPath = IOExtensions.PathCombine(destF.FullPathCache, segment.FileNameCache);
+      File.Delete(destPath);
+      if (File.Exists(srcPath))
+        File.Move(srcPath, destPath);
+    }
   }
 }
