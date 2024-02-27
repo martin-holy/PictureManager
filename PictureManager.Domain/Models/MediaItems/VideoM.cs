@@ -16,6 +16,9 @@ public sealed class VideoM(int id, FolderM folder, string fileName) : RealMediaI
   public override IEnumerable<PersonM> GetPeople() =>
     GetVideoItems().GetPeople().Concat(base.GetPeople()).Distinct();
 
+  public IEnumerable<SegmentM> GetAllSegments() =>
+    GetVideoItems().GetSegments();
+
   public override void SetInfoBox(bool update = false) {
     base.SetInfoBox(update);
     OnPropertyChanged(nameof(HasVideoItems));
