@@ -60,12 +60,6 @@ public sealed class ImageR : TableDataAdapter<ImageM> {
   public ImageM ItemCreate(FolderM folder, string fileName) =>
     ItemCreate(new(GetNextId(), folder, fileName));
 
-  public ImageM ItemCopy(ImageM item, FolderM folder, string fileName) {
-    var copy = ItemCreate(folder, fileName);
-    _coreR.MediaItem.ItemCopyCommon(item, copy);
-    return copy;
-  }
-
   protected override void OnItemDeleted(ImageM item) {
     _coreR.MediaItem.OnItemDeletedCommon(item);
   }

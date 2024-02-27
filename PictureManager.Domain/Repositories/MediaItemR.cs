@@ -125,12 +125,12 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
 
   public RealMediaItemM ItemCopy(RealMediaItemM item, FolderM folder, string fileName) =>
     item switch {
-      ImageM img => _coreR.Image.ItemCopy(img, folder, fileName),
-      VideoM vid => _coreR.Video.ItemCopy(vid, folder, fileName),
+      ImageM => ItemCopyCommon(item, _coreR.Image.ItemCreate(folder, fileName)),
+      VideoM => ItemCopyCommon(item, _coreR.Video.ItemCreate(folder, fileName)),
       _ => null
     };
 
-  public void ItemCopyCommon(RealMediaItemM item, RealMediaItemM copy) {
+  private RealMediaItemM ItemCopyCommon(RealMediaItemM item, RealMediaItemM copy) {
     copy.Width = item.Width;
     copy.Height = item.Height;
     copy.Orientation = item.Orientation;
@@ -152,6 +152,8 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     if (item.Segments != null)
       foreach (var segment in item.Segments)
         _coreR.Segment.ItemCopy(segment, copy);
+
+    return copy;
   }
 
   private void ModifyOnlyDA(RealMediaItemM mi) {
