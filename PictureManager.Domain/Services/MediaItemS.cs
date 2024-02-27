@@ -30,13 +30,15 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
       if (token.IsCancellationRequested) break;
       progress.Report(new object[] { Convert.ToInt32((double)done / count * 100), mi.Folder.FullPath, destFolder.FullPath, mi.FileName });
 
-      var miNewFileName = mi.FileName;
+      var srcFolder = mi.Folder;
+      var srcFileName = mi.FileName;
+      var destFileName = mi.FileName;
       var destFilePath = IOExtensions.PathCombine(destFolder.FullPath, mi.FileName);
 
       // if the file with the same name exists in the destination
       // show dialog with options to Rename, Replace or Skip the file
       if (File.Exists(destFilePath)) {
-        var result = FileOperationCollisionDialogM.Open(mi.FilePath, destFilePath, ref miNewFileName);
+        var result = FileOperationCollisionDialogM.Open(mi.FilePath, destFilePath, ref destFileName);
 
         if (result == CollisionResult.Skip) {
           _ = Tasks.RunOnUiThread(() => Core.VM.MediaItem.Views.Current.Selected.Set(mi, false));
@@ -49,45 +51,13 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
 
       switch (mode) {
         case FileOperationMode.Copy:
-          // create object copy
-          var miCopy = await Tasks.RunOnUiThread(() => r.ItemCopy(mi, destFolder, miNewFileName));
-          // copy MediaItem and cache on file system
-          Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
-          File.Copy(mi.FilePath, miCopy.FilePath, true);
-          File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
-
-          if (mi.Segments != null)
-            for (var i = 0; i < mi.Segments.Count; i++)
-              File.Copy(mi.Segments[i].FilePathCache, miCopy.Segments[i].FilePathCache, true);
-
+          var miCopy = await Tasks.RunOnUiThread(() => r.ItemCopy(mi, destFolder, destFileName));
+          CopyFile(mi, miCopy);
           break;
 
         case FileOperationMode.Move:
-          var srcFilePath = mi.FilePath;
-          var srcFilePathCache = mi.FilePathCache;
-          var srcDirPathCache = Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException();
-
-          // DB
-          await Tasks.RunOnUiThread(() => r.ItemMove(mi, destFolder, miNewFileName));
-
-          // File System
-          File.Delete(mi.FilePath);
-          File.Move(srcFilePath, mi.FilePath);
-
-          // Cache
-          Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
-          // Thumbnail
-          File.Delete(mi.FilePathCache);
-          if (File.Exists(srcFilePathCache))
-            File.Move(srcFilePathCache, mi.FilePathCache);
-          // Segments
-          foreach (var segment in mi.Segments ?? Enumerable.Empty<SegmentM>()) {
-            File.Delete(segment.FilePathCache);
-            var srcSegmentPath = Path.Combine(srcDirPathCache, $"segment_{segment.GetHashCode()}.jpg");
-            if (File.Exists(srcSegmentPath))
-              File.Move(srcSegmentPath, segment.FilePathCache);
-          }
-
+          await Tasks.RunOnUiThread(() => r.ItemMove(mi, destFolder, destFileName));
+          MoveFile(mi, srcFolder, destFolder, srcFileName, destFileName);
           break;
       }
 
@@ -95,6 +65,32 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
     }
 
     await Tasks.RunOnUiThread(() => r.ItemsDelete(replaced));
+  }
+
+  public void CopyFile(MediaItemM miSrc, MediaItemM miCopy) {
+    Directory.CreateDirectory(miCopy.Folder.FullPathCache);
+    File.Copy(miSrc.FilePath, miCopy.FilePath, true);
+    File.Copy(miSrc.FilePathCache, miCopy.FilePathCache, true);
+    if (miSrc.Segments == null) return;
+    for (var i = 0; i < miSrc.Segments.Count; i++)
+      File.Copy(miSrc.Segments[i].FilePathCache, miCopy.Segments[i].FilePathCache, true);
+  }
+
+  public void MoveFile(MediaItemM mi, FolderM srcF, FolderM destF, string srcFileName, string destFileName) {
+    var srcFilePath = IOExtensions.PathCombine(srcF.FullPath, srcFileName);
+    var destFilePath = IOExtensions.PathCombine(destF.FullPath, destFileName);
+    var srcFilePathCache = IOExtensions.PathCombine(srcF.FullPathCache, srcFileName);
+    var destFilePathCache = IOExtensions.PathCombine(destF.FullPathCache, destFileName);
+
+    File.Delete(destFilePath);
+    File.Move(srcFilePath, destFilePath);
+
+    Directory.CreateDirectory(destF.FullPathCache);
+    File.Delete(destFilePathCache);
+    if (File.Exists(srcFilePathCache))
+      File.Move(srcFilePathCache, destFilePathCache);
+
+    Core.S.Segment.MoveCacheFiles(mi is VideoM vid ? vid.GetAllSegments() : mi.GetSegments(), srcF, destF);
   }
 
   public void Delete(MediaItemM[] items) =>
