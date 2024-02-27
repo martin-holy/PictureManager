@@ -22,6 +22,7 @@ public sealed class Settings : ObservableObject {
   private bool _loadGeoNamesFromWeb;
   private double _mediaItemThumbScale = 0.8;
   private double _videoItemThumbScale = 0.28;
+  private bool _scrollExactlyToMediaItem;
 
   public int JpegQualityLevel { get => _jpegQualityLevel; set { _jpegQualityLevel = value; OnPropertyChanged(); } }
   public string CachePath { get => _cachePath; set => OnCachePathChange(value); }
@@ -35,6 +36,8 @@ public sealed class Settings : ObservableObject {
   public bool LoadGeoNamesFromWeb { get => _loadGeoNamesFromWeb; set { _loadGeoNamesFromWeb = value; OnPropertyChanged(); } }
   public double MediaItemThumbScale { get => _mediaItemThumbScale; set { _mediaItemThumbScale = value; OnPropertyChanged(); } }
   public double VideoItemThumbScale { get => _videoItemThumbScale; set { _videoItemThumbScale = value; OnPropertyChanged(); } }
+  public bool ScrollExactlyToMediaItem { get => _scrollExactlyToMediaItem; set { _scrollExactlyToMediaItem = value; OnPropertyChanged(); } }
+
   public string SettingsFileName { get; set; } = Path.Combine("db", "settings.csv");
 
   public Settings() {
@@ -66,6 +69,7 @@ public sealed class Settings : ObservableObject {
       sw.WriteLine($"{nameof(LoadGeoNamesFromWeb)}|{(LoadGeoNamesFromWeb ? 1 : 0)}");
       sw.WriteLine($"{nameof(MediaItemThumbScale)}|{MediaItemThumbScale}");
       sw.WriteLine($"{nameof(VideoItemThumbScale)}|{VideoItemThumbScale}");
+      sw.WriteLine($"{nameof(ScrollExactlyToMediaItem)}|{(ScrollExactlyToMediaItem ? 1 : 0)}");
 
       _settingsChanged = false;
       return true;
@@ -114,6 +118,8 @@ public sealed class Settings : ObservableObject {
         MediaItemThumbScale = double.Parse(mediaItemThumbScale);
       if (props.TryGetValue(nameof(VideoItemThumbScale), out var videoItemThumbScale))
         VideoItemThumbScale = double.Parse(videoItemThumbScale);
+      if (props.TryGetValue(nameof(ScrollExactlyToMediaItem), out var scrollExactlyToMediaItem))
+        ScrollExactlyToMediaItem = "1".Equals(scrollExactlyToMediaItem);
 
       _settingsChanged = false;
       return true;

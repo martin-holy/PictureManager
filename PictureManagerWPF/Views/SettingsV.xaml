@@ -120,6 +120,11 @@
             <TextBlock Text="{Binding ThumbnailSize, StringFormat='Thumbnail size: {0}'}"/>
             <Slider Minimum="200" Maximum="500" Value="{Binding ThumbnailSize, Mode=TwoWay}"/>
           </x:Array>
+
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Scroll exactly to MediaItem in thumbnails:"/>
+            <CheckBox IsChecked="{Binding ScrollExactlyToMediaItem, Mode=TwoWay}"/>
+          </x:Array>
         </x:Array>
       </ItemsControl.ItemsSource>
     </ItemsControl>
