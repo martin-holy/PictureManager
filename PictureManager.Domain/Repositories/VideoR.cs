@@ -60,12 +60,6 @@ public sealed class VideoR : TableDataAdapter<VideoM> {
   public VideoM ItemCreate(FolderM folder, string fileName) =>
     ItemCreate(new(GetNextId(), folder, fileName));
 
-  public VideoM ItemCopy(VideoM item, FolderM folder, string fileName) {
-    var copy = ItemCreate(folder, fileName);
-    _coreR.MediaItem.ItemCopyCommon(item, copy);
-    return copy;
-  }
-
   protected override void OnItemDeleted(VideoM item) {
     _coreR.MediaItem.OnItemDeletedCommon(item);
   }
