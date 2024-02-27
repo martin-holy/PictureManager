@@ -6,7 +6,6 @@ using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Models;
@@ -72,7 +71,8 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
   #endregion DB Properties
 
   public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-  public string FilePathCache => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{GetHashCode().ToString()}.jpg");
+  public string FileNameCache => $"segment_{GetHashCode().ToString()}.jpg";
+  public string FilePathCache => IOExtensions.PathCombine(MediaItem.Folder.FullPathCache, FileNameCache);
 
   public SegmentM() { }
 
