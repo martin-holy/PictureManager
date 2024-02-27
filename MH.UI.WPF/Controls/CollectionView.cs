@@ -8,92 +8,107 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Keyboard = System.Windows.Input.Keyboard;
 
-namespace MH.UI.WPF.Controls {
-  public class CollectionView : TreeViewBase {
-    public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
-      nameof(View), typeof(ICollectionView), typeof(CollectionView), new(ViewChanged));
+namespace MH.UI.WPF.Controls;
 
-    private static void ViewChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      if (d is not CollectionView view) return;
-      view.TreeView = view.View;
-    }
+public class CollectionView : TreeViewBase {
+  private double _openTime;
+  private DateTime _lastClickTime = DateTime.Now;
 
-    public ICollectionView View {
-      get => (ICollectionView)GetValue(ViewProperty);
-      set => SetValue(ViewProperty, value);
-    }
+  public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
+    nameof(View), typeof(ICollectionView), typeof(CollectionView), new(ViewChanged));
 
-    public static GroupByDialogDataTemplateSelector GroupByDialogDataTemplateSelector { get; } = new();
-
-    public static RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; } = new(OpenItem);
-    public static RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; } = new(SelectItem);
-
-    public override void OnApplyTemplate() {
-      base.OnApplyTemplate();
-
-      // TODO expand all in one update, so maybe removing binding to IsSelected?
-      // keep binding for double click 
-      PreviewMouseLeftButtonUp += (_, e) => {
-        if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0
-            && e.OriginalSource is ToggleButton { Name: "expander" } btn) {
-          View.SetExpanded(btn.DataContext);
-        }
-      };
-    }
-
-    private static object GetDataContext(object source) {
-      if (source is not FrameworkElement fe) return null;
-      if (fe.TemplatedParent == null)
-        fe = fe.Parent as FrameworkElement;
-
-      return fe?.FindTopTemplatedParent()?.DataContext;
-    }
-
-    private static void OpenItem(MouseButtonEventArgs e) {
-      if (e.ChangedButton != MouseButton.Left
-          || (e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { } cv
-          || !cv.View.CanOpen) return;
-
-      cv.View.OpenItem(GetDataContext(e.OriginalSource));
-    }
-
-    private static void SelectItem(MouseButtonEventArgs e) {
-      if ((e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { } cv
-          || !cv.View.CanSelect) return;
-
-      var item = GetDataContext(e.OriginalSource);
-      var row = (e.Source as FrameworkElement)?.DataContext;
-      var btn = e.OriginalSource as Button ?? (e.OriginalSource as FrameworkElement)?.TryFindParent<Button>();
-
-      if (item == null || row == null || btn != null) return;
-
-      bool isCtrlOn;
-      bool isShiftOn;
-
-      if (e.ChangedButton is not MouseButton.Left) {
-        isCtrlOn = true;
-        isShiftOn = false;
-      }
-      else {
-        isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
-        isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      }
-
-      cv.View.SelectItem(row, item, isCtrlOn, isShiftOn);
-    }
+  public ICollectionView View {
+    get => (ICollectionView)GetValue(ViewProperty);
+    set => SetValue(ViewProperty, value);
   }
 
-  public class GroupByDialogDataTemplateSelector : DataTemplateSelector {
-    public static Func<object, string> TypeToKey { get; set; }
+  public static GroupByDialogDataTemplateSelector GroupByDialogDataTemplateSelector { get; } = new();
 
-    public override DataTemplate SelectTemplate(object item, DependencyObject container) {
-      if (item == null || TypeToKey == null)
-        return base.SelectTemplate(item, container);
+  public static RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; } = new(OpenItem);
+  public static RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; } = new(SelectItem);
 
-      var key = TypeToKey(item);
-      return key != null && Application.Current.TryFindResource(key) is DataTemplate template
-        ? template
-        : base.SelectTemplate(item, container);
+  public override void OnApplyTemplate() {
+    base.OnApplyTemplate();
+
+    // TODO expand all in one update, so maybe removing binding to IsSelected?
+    // keep binding for double click 
+    PreviewMouseLeftButtonUp += (_, e) => {
+      if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0
+          && e.OriginalSource is ToggleButton { Name: "expander" } btn) {
+        View.SetExpanded(btn.DataContext);
+      }
+    };
+  }
+
+  private static void OpenItem(MouseButtonEventArgs e) {
+    if (e.ChangedButton != MouseButton.Left
+        || (e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { } cv
+        || !cv.View.CanOpen) return;
+
+    cv.OpenItem(GetDataContext(e.OriginalSource));
+  }
+
+  public void OpenItem(object item) {
+    var startTime = DateTime.Now;
+    View.OpenItem(item);
+    _openTime = (DateTime.Now - startTime).TotalMilliseconds;
+  }
+
+  private static void SelectItem(MouseButtonEventArgs e) {
+    if ((e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { } cv
+        || !cv.View.CanSelect || cv.DoubleClicking()) return;
+
+    var item = GetDataContext(e.OriginalSource);
+    var row = (e.Source as FrameworkElement)?.DataContext;
+    var btn = e.OriginalSource as Button ?? (e.OriginalSource as FrameworkElement)?.TryFindParent<Button>();
+
+    if (item == null || row == null || btn != null) return;
+
+    bool isCtrlOn;
+    bool isShiftOn;
+
+    if (e.ChangedButton is not MouseButton.Left) {
+      isCtrlOn = true;
+      isShiftOn = false;
     }
+    else {
+      isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+      isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+    }
+
+    cv.View.SelectItem(row, item, isCtrlOn, isShiftOn);
+  }
+
+  public bool DoubleClicking() {
+    var sinceLastClick = (DateTime.Now - _lastClickTime).TotalMilliseconds;
+    _lastClickTime = DateTime.Now;
+    return sinceLastClick - _openTime < 300;
+  }
+
+  private static void ViewChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+    if (d is not CollectionView view) return;
+    view.TreeView = view.View;
+  }
+
+  private static object GetDataContext(object source) {
+    if (source is not FrameworkElement fe) return null;
+    if (fe.TemplatedParent == null)
+      fe = fe.Parent as FrameworkElement;
+
+    return fe?.FindTopTemplatedParent()?.DataContext;
+  }
+}
+
+public class GroupByDialogDataTemplateSelector : DataTemplateSelector {
+  public static Func<object, string> TypeToKey { get; set; }
+
+  public override DataTemplate SelectTemplate(object item, DependencyObject container) {
+    if (item == null || TypeToKey == null)
+      return base.SelectTemplate(item, container);
+
+    var key = TypeToKey(item);
+    return key != null && Application.Current.TryFindResource(key) is DataTemplate template
+      ? template
+      : base.SelectTemplate(item, container);
   }
 }
