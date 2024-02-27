@@ -148,7 +148,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     Core.VM.MediaItem.Current = mi;
     if (mi == null) return;
     Selected.Set(mi, true);
-    ScrollTo(Root, mi, false);
+    ScrollTo(Root, mi, Core.Settings.ScrollExactlyToMediaItem);
     SelectionChanged();
   }
 
