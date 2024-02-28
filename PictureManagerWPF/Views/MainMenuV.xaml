@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
   xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
 
@@ -41,10 +40,7 @@
           <MenuItem Command="vm:CoreVM.RotateMediaItemsCommand" InputGestureText="Ctrl+R"/>
           <MenuItem Command="vm:CoreVM.SaveImageMetadataToFilesCommand"/>
           <MenuItem Command="vm:CoreVM.OpenSegmentsMatchingCommand"/>
-          <MenuItem
-            Command="vm:MediaItemsViewsVM.ViewModifiedCommand"
-            Header="{Binding VM.MediaItem.ModifiedItemsCount, Source={x:Static pm:App.Core}}"
-            HeaderStringFormat="Show {0} modified"/>
+          <MenuItem Command="vm:MediaItemsViewsVM.ViewModifiedCommand"/>
           <MenuItem Command="vm:MediaItemsViewsVM.ShuffleCommand"/>
         </MenuItem>
 

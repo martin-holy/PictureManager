@@ -221,7 +221,6 @@ public sealed class Core {
       VM.Video.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
       VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
       VM.MainWindow.StatusBar.UpdateRating();
-      VM.UpdateModifiedMediaItemsCount();
     };
 
     R.MediaItem.OrientationChangedEvent += items => {
@@ -250,7 +249,6 @@ public sealed class Core {
         : e.Data.OfType<VideoItemM>().FirstOrDefault()?.Video;
 
       VM.UpdateMediaItemsCount();
-      VM.UpdateModifiedMediaItemsCount();
       VM.MediaItem.Views.RemoveMediaItems(e.Data);
       VM.Video.CurrentVideoItems.Remove(e.Data.OfType<VideoItemM>().ToArray());
 

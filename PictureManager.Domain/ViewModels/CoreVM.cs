@@ -131,10 +131,8 @@ public class CoreVM {
     SegmentsMatching.Reload(segments);
   }
 
-  private void CompressImages(ImageM[] items) {
+  private static void CompressImages(ImageM[] items) =>
     Dialog.Show(new CompressDialogM(items, Core.Settings.Common.JpegQuality));
-    UpdateModifiedMediaItemsCount();
-  }
 
   private void GetGeoNamesFromWeb(ImageM[] items) {
     items = items.Where(x => x.GeoLocation is { } gl && gl.GeoName == null && gl.Lat != null && gl.Lng != null).ToArray();
@@ -197,14 +195,8 @@ public class CoreVM {
     progress.Start();
     Dialog.Show(progress);
     _ = MainWindow.StatusBar.UpdateFileSize();
-    UpdateModifiedMediaItemsCount();
   }
 
   public void UpdateMediaItemsCount() =>
     MediaItem.ItemsCount = _coreR.Image.All.Count + _coreR.Video.All.Count;
-
-  public void UpdateModifiedMediaItemsCount() =>
-    MediaItem.ModifiedItemsCount =
-      _coreR.Image.All.Count(x => x.IsOnlyInDb) +
-      _coreR.Video.All.Count(x => x.IsOnlyInDb);
 }
