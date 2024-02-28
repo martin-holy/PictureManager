@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace PictureManager.Domain.ViewModels.Entities;
 
-public sealed class SegmentVM {
+public sealed class SegmentVM : ObservableObject {
   private readonly CoreVM _coreVM;
   private readonly SegmentS _s;
   private readonly SegmentR _r;

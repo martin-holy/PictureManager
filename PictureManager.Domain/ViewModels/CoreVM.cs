@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.ViewModels;
 
-public class CoreVM {
+public class CoreVM : ObservableObject {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 

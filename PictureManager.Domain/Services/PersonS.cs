@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace PictureManager.Domain.Services;
 
-public sealed class PersonS(PersonR r) {
+public sealed class PersonS(PersonR r) : ObservableObject {
   public Selecting<PersonM> Selected { get; } = new();
 
   public void ToggleTopSegment(PersonM person, SegmentM segment) {
