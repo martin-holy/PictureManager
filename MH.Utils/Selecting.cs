@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace MH.Utils {
-  public class Selecting<T> where T : class, ISelectable {
+  public class Selecting<T> : ObservableObject where T : class, ISelectable {
     public ObservableCollection<T> Items { get; } = new();
 
     public event EventHandler<ObjectEventArgs<T[]>> ItemsChangedEventHandler = delegate { };

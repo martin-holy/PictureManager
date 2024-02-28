@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace MH.Utils.BaseClasses;
 
-public class RelayCommand : ICommand {
+public class RelayCommand : ObservableObject, ICommand {
   protected Action CommandAction;
   protected Func<bool> CanExecuteFunc;
 
