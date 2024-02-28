@@ -1,12 +1,11 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace MH.UI.WPF.Controls;
 
-public class DialogHost {
+public class DialogHost : ObservableObject {
   public Dialog Content { get; }
   public CustomWindow Window { get; }
   public DataTemplateSelector DialogTemplateSelector { get; }
