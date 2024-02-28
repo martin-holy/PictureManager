@@ -20,7 +20,7 @@
         <MenuItem.ItemsSource>
           <CompositeCollection>
             <MenuItem Header="All" Command="vme:ViewerVM.SetCurrentCommand" DataContext="{x:Null}"/>
-            <CollectionContainer Collection="{Binding R.Viewer.Tree.Items, Source={x:Static pm:App.Core}}"/>
+            <CollectionContainer Collection="{Binding VM.Viewer.All, Source={x:Static pm:App.Core}}"/>
           </CompositeCollection>
         </MenuItem.ItemsSource>
 

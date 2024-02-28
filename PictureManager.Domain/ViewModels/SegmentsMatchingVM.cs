@@ -12,7 +12,7 @@ using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.ViewModels;
 
-public sealed class SegmentsMatchingVM {
+public sealed class SegmentsMatchingVM : ObservableObject {
   public CanDragFunc CanDragFunc { get; }
   public CollectionViewPeople CvPeople { get; } = new();
   public CollectionViewSegments CvSegments { get; } = new();

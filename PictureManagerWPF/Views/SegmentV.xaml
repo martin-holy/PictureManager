@@ -49,8 +49,8 @@
 
                 <ItemsControl.ItemContainerStyle>
                   <Style TargetType="{x:Type ContentPresenter}">
-                    <Setter Property="Canvas.Left" Value="{Binding Item1}"/>
-                    <Setter Property="Canvas.Top" Value="{Binding Item2}"/>
+                    <Setter Property="Canvas.Left" Value="{Binding Item1, Mode=OneTime}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Item2, Mode=OneTime}"/>
                   </Style>
                 </ItemsControl.ItemContainerStyle>
 
@@ -58,14 +58,14 @@
                   <DataTemplate>
                     <Rectangle
                       x:Name="rect"
-                      Width="{Binding Item3}"
-                      Height="{Binding Item3}" 
+                      Width="{Binding Item3, Mode=OneTime}"
+                      Height="{Binding Item3, Mode=OneTime}" 
                       StrokeThickness="1"
                       Stroke="White"
                       Effect="{StaticResource MH.Effects.DropShadow}"/>
 
                     <DataTemplate.Triggers>
-                      <DataTrigger Binding="{Binding Item4}" Value="True">
+                      <DataTrigger Binding="{Binding Item4, Mode=OneTime}" Value="True">
                         <Setter TargetName="rect" Property="Stroke" Value="LimeGreen"/>
                       </DataTrigger>
                     </DataTemplate.Triggers>

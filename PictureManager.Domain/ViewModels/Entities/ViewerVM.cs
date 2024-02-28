@@ -1,5 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
@@ -13,6 +14,7 @@ public sealed class ViewerVM : ObservableObject {
   private readonly ViewerR _r;
   private ViewerM _selected;
 
+  public ExtObservableCollection<ITreeItem> All => _r.Tree.Items;
   public ViewerM Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
   public ObservableCollection<ListItem<CategoryGroupM>> CategoryGroups { get; } = [];
 
