@@ -88,7 +88,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
       BitmapSourceExtensions
         .Create(filePath, rect)
         .Resize(SegmentS.SegmentSize)
-        .SaveAsJpeg(segment.FilePathCache, Core.Settings.JpegQualityLevel);
+        .SaveAsJpeg(segment.FilePathCache, Core.Settings.Common.JpegQuality);
     }
     catch (Exception ex) {
       ErrorCache.Add(segment);

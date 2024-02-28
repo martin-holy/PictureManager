@@ -100,7 +100,7 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
     Imaging.GetThumbSize(
       rotated ? Height : Width,
       rotated ? Width : Height,
-      Core.Settings.ThumbnailSize,
+      Core.Settings.MediaItem.ThumbSize,
       out var w,
       out var h);
 

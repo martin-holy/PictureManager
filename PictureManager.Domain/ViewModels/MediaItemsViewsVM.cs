@@ -81,7 +81,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private void AddView(string tabName) {
-    var view = new MediaItemsViewVM(Core.Settings.MediaItemThumbScale);
+    var view = new MediaItemsViewVM(Core.Settings.MediaItem.MediaItemThumbScale);
     _all.Add(view);
     Current = view;
     view.SelectionChangedEventHandler += OnViewSelectionChanged;

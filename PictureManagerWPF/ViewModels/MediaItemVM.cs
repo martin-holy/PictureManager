@@ -243,7 +243,7 @@ public static class MediaItemVM {
   private static bool WriteMetadataToFile(ImageM img, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
     bool bSuccess;
     var hResult = 0;
-    var encoder = new JpegBitmapEncoder { QualityLevel = Core.Settings.JpegQualityLevel };
+    var encoder = new JpegBitmapEncoder { QualityLevel = Core.Settings.Common.JpegQuality };
     encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0],
       withThumbnail ? decoder.Frames[0].Thumbnail : null, metadata, decoder.Frames[0].ColorContexts));
 

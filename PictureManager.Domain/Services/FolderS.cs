@@ -107,8 +107,8 @@ public sealed class FolderS(FolderR r) {
         ref skippedFiles, ref renamedFiles, progress, token);
 
     // get source and destination paths to Cache
-    var srcDirPathCache = srcDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
-    var destDirPathCache = destDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
+    var srcDirPathCache = srcDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath);
+    var destDirPathCache = destDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath);
 
     // for each file in the folder
     foreach (var srcFilePath in Directory.EnumerateFiles(srcDirPath)) {

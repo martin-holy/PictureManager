@@ -21,7 +21,7 @@ public sealed class Core {
   public static CoreR R { get; } = new();
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }
-  public static Settings Settings { get; } = new();
+  public static Settings Settings { get; } = Settings.Load();
 
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
@@ -29,7 +29,6 @@ public sealed class Core {
 
   private Core() {
     Tasks.SetUiTaskScheduler();
-    Settings.Load();
   }
 
   public Task InitAsync(IProgress<string> progress) {
@@ -37,7 +36,7 @@ public sealed class Core {
       R.AddDataAdapters();
       Drives.UpdateSerialNumbers();
       progress.Report("Migrating Database");
-      SimpleDB.Migrate(7, DatabaseMigration.Resolver);
+      SimpleDB.Migrate(8, DatabaseMigration.Resolver);
       R.LoadAllTables(progress);
       R.LinkReferences(progress);
       R.ClearDataAdapters();
@@ -76,8 +75,8 @@ public sealed class Core {
     AttachPeopleEventHandlers();
     AttachSegmentsEventHandlers();
 
-    Settings.PropertyChanged += (_, e) => {
-      if (e.Is(nameof(Settings.GeoNamesUserName)))
+    Settings.GeoName.PropertyChanged += (_, e) => {
+      if (e.Is(nameof(Settings.GeoName.UserName)))
         R.GeoName.ApiLimitExceeded = false;
     };
 

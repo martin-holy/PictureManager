@@ -27,6 +27,6 @@ public class RealMediaItemM(int id, FolderM folder, string fileName) : MediaItem
   public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
 
   private string GetFilePathCache() =>
-    FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath) +
+    FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath) +
     (this is ImageM ? string.Empty : ".jpg");
 }

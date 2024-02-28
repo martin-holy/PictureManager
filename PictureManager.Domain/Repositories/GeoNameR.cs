@@ -52,7 +52,7 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
   private async Task<GeoNameM> CreateGeoNameHierarchy(string url) {
     if (ApiLimitExceeded) return null;
 
-    if (!Core.Settings.LoadGeoNamesFromWeb) {
+    if (!Core.Settings.GeoName.LoadFromWeb) {
       if (!_webLoadDisabled) {
         _webLoadDisabled = true;
         Log.Error("Load GeoNames from web is disabled.", "Enable it in the settings.");
@@ -61,7 +61,7 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
       return null;
     }
 
-    if (string.IsNullOrEmpty(Core.Settings.GeoNamesUserName)) {
+    if (string.IsNullOrEmpty(Core.Settings.GeoName.UserName)) {
       ApiLimitExceeded = true;
       Log.Error("GeoNames user name was not set.", "Please register at geonames.org and set your user name in the settings.");
       return null;
@@ -70,7 +70,7 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
     try {
       var root = await Task.Run(() => {
         var xml = new XmlDocument();
-        xml.Load($"{url}&username={Core.Settings.GeoNamesUserName}");
+        xml.Load($"{url}&username={Core.Settings.GeoName.UserName}");
         return xml.SelectSingleNode("/geonames");
       });
 
