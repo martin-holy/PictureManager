@@ -43,7 +43,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.FilteredItems.Count > 0, null, "Rebuild Thumbnails");
-    ViewModifiedCommand = new(ViewModified, Res.IconImageMultiple);
+    ViewModifiedCommand = new(ViewModified, Res.IconImageMultiple, "Show modified");
   }
 
   public void RemoveMediaItems(IList<MediaItemM> items) {
