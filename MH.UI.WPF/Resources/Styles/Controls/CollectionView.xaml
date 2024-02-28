@@ -165,12 +165,13 @@
 
       <ItemsControl.ItemContainerStyle>
         <Style TargetType="FrameworkElement">
-          <Setter Property="MaxWidth" Value="{Binding ActualWidth, ElementName=ic}"/>
+          <Setter Property="MaxWidth" Value="{Binding ActualWidth, ElementName=ic, FallbackValue=1000}"/>
           <Setter Property="Width">
             <Setter.Value>
               <MultiBinding
                 Converter="{x:Static mhConv:CollectionViewItemSizeConverter.Inst}"
-                ConverterParameter="{StaticResource True}">
+                ConverterParameter="{StaticResource True}"
+                FallbackValue="1000">
                 <Binding/>
                 <Binding Path="DataContext" ElementName="ic"/>
               </MultiBinding>
@@ -180,7 +181,8 @@
             <Setter.Value>
               <MultiBinding
                 Converter="{x:Static mhConv:CollectionViewItemSizeConverter.Inst}"
-                ConverterParameter="{StaticResource False}">
+                ConverterParameter="{StaticResource False}"
+                FallbackValue="1000">
                 <Binding/>
                 <Binding Path="DataContext" ElementName="ic"/>
               </MultiBinding>
