@@ -6,11 +6,22 @@
 
   <DataTemplate DataType="{x:Type pmd:Settings}">
     <DataTemplate.Resources>
+      <Style x:Key="PM.Settings.GroupText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontWeight" Value="DemiBold"/>
+      </Style>
+
+      <Style x:Key="PM.Settings.Group" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource MH.Brushes.Black25}"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+      </Style>
+
       <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontWeight" Value="DemiBold"/>
         <Setter Property="Margin" Value="0,0,0,2"/>
-        <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
       </Style>
 
       <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -24,110 +35,139 @@
         <Setter Property="TickFrequency" Value="1"/>
         <Setter Property="SmallChange" Value="1"/>
       </Style>
+
+      <Style x:Key="PM.Settings.SettingItem" TargetType="ContentControl">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ContentControl">
+              <Border
+                x:Name="root"
+                Background="Transparent"
+                Margin="6,2,2,2"
+                Padding="6,2,6,6"
+                CornerRadius="3">
+
+                <Grid>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                  </Grid.RowDefinitions>
+
+                  <ContentPresenter
+                    Content="{Binding Path=Content[0], RelativeSource={RelativeSource TemplatedParent}}"
+                    DataContext="{Binding Source={x:Static pmd:Core.Settings}}"
+                    Margin="0,0,0,3"/>
+                  <ContentPresenter
+                    Grid.Row="1"
+                    Content="{Binding Path=Content[1], RelativeSource={RelativeSource TemplatedParent}}"
+                    DataContext="{Binding Source={x:Static pmd:Core.Settings}}"
+                    Margin="3,0,0,0"/>
+                </Grid>
+              </Border>
+
+              <ControlTemplate.Triggers>
+                <Trigger SourceName="root" Property="IsMouseOver" Value="True">
+                  <Setter TargetName="root" Property="Background" Value="{StaticResource MH.Brushes.Black25}"/>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
     </DataTemplate.Resources>
 
-    <ItemsControl HorizontalAlignment="Left" Margin="2" MinWidth="400">
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <StackPanel Orientation="Vertical"/>
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
+    <ScrollViewer Width="400" HorizontalAlignment="Left">
+      <StackPanel Orientation="Vertical">
+        <!-- Common -->
+        <Border Style="{StaticResource PM.Settings.Group}">
+          <TextBlock Text="Common" Style="{StaticResource PM.Settings.GroupText}"/>
+        </Border>
 
-      <ItemsControl.ItemTemplate>
-        <DataTemplate>
-          <Border
-            x:Name="root"
-            Background="Transparent"
-            Margin="2"
-            Padding="6,2,6,6"
-            CornerRadius="3">
-
-            <Grid>
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-              </Grid.RowDefinitions>
-
-              <ContentPresenter
-                Content="{Binding Path=[0]}"
-                DataContext="{Binding Source={x:Static pmd:Core.Settings}}"/>
-              <ContentPresenter
-                Grid.Row="1"
-                Content="{Binding Path=[1]}"
-                DataContext="{Binding Source={x:Static pmd:Core.Settings}}"
-                Margin="3,3,0,0"/>
-            </Grid>
-          </Border>
-
-          <DataTemplate.Triggers>
-            <Trigger SourceName="root" Property="IsMouseOver" Value="True">
-              <Setter TargetName="root" Property="Background" Value="{StaticResource MH.Brushes.Black25}"/>
-            </Trigger>
-          </DataTemplate.Triggers>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-
-      <ItemsControl.ItemsSource>
-        <x:Array Type="{x:Type sys:Array}">
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
           <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="Cache path:"/>
-            <TextBox Text="{Binding CachePath, Mode=TwoWay}"/>
+            <TextBox Text="{Binding Common.CachePath, Mode=TwoWay}"/>
           </x:Array>
+        </ContentControl>
 
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding MediaItemThumbScale, StringFormat='Media item thumbnail scale: {0:G2}'}"/>
+            <TextBlock Text="FFMPEG path:"/>
+            <TextBox Text="{Binding Common.FfmpegPath, Mode=TwoWay}"/>
+          </x:Array>
+        </ContentControl>
+
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding Common.JpegQuality, StringFormat='Jpeg quality: {0}'}"/>
+            <Slider Minimum="80" Maximum="95" Value="{Binding Common.JpegQuality, Mode=TwoWay}"/>
+          </x:Array>
+        </ContentControl>
+
+        <!-- GeoName -->
+        <Border Style="{StaticResource PM.Settings.Group}">
+          <TextBlock Text="GeoName" Style="{StaticResource PM.Settings.GroupText}"/>
+        </Border>
+
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Load from web:"/>
+            <CheckBox IsChecked="{Binding GeoName.LoadFromWeb, Mode=TwoWay}"/>
+          </x:Array>
+        </ContentControl>
+        
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="User name:"/>
+            <TextBox Text="{Binding GeoName.UserName, Mode=TwoWay}"/>
+          </x:Array>
+        </ContentControl>
+
+        <!-- MediaItem -->
+        <Border Style="{StaticResource PM.Settings.Group}">
+          <TextBlock Text="MediaItem" Style="{StaticResource PM.Settings.GroupText}"/>
+        </Border>
+
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding MediaItem.MediaItemThumbScale, StringFormat='Media item thumbnail scale: {0:G2}'}"/>
             <Slider
               Minimum="0.2"
               Maximum="2"
               TickFrequency="0.1"
               SmallChange="0.1"
               LargeChange="0.2"
-              Value="{Binding MediaItemThumbScale, Mode=TwoWay}"/>
+              Value="{Binding MediaItem.MediaItemThumbScale, Mode=TwoWay}"/>
           </x:Array>
-
+        </ContentControl>
+        
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding VideoItemThumbScale, StringFormat='Video item thumbnail scale: {0:G3}'}"/>
+            <TextBlock Text="Scroll exactly to MediaItem in thumbnails:"/>
+            <CheckBox IsChecked="{Binding MediaItem.ScrollExactlyToMediaItem, Mode=TwoWay}"/>
+          </x:Array>
+        </ContentControl>
+        
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding MediaItem.ThumbSize, StringFormat='Thumbnail size: {0}'}"/>
+            <Slider Minimum="200" Maximum="500" Value="{Binding MediaItem.ThumbSize, Mode=TwoWay}"/>
+          </x:Array>
+        </ContentControl>
+        
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding MediaItem.VideoItemThumbScale, StringFormat='Video item thumbnail scale: {0:G3}'}"/>
             <Slider
               Minimum="0.2"
               Maximum="0.6"
               TickFrequency="0.01"
               SmallChange="0.01"
               LargeChange="0.05"
-              Value="{Binding VideoItemThumbScale, Mode=TwoWay}"/>
+              Value="{Binding MediaItem.VideoItemThumbScale, Mode=TwoWay}"/>
           </x:Array>
-
-          <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="FFMPEG path:"/>
-            <TextBox Text="{Binding FfmpegPath, Mode=TwoWay}"/>
-          </x:Array>
-
-          <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="GeoNames User:"/>
-            <TextBox Text="{Binding GeoNamesUserName, Mode=TwoWay}"/>
-          </x:Array>
-
-          <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Load GeoNames from web:"/>
-            <CheckBox IsChecked="{Binding LoadGeoNamesFromWeb, Mode=TwoWay}"/>
-          </x:Array>
-
-          <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding JpegQualityLevel, StringFormat='Jpeg quality level: {0}'}"/>
-            <Slider Minimum="80" Maximum="95" Value="{Binding JpegQualityLevel, Mode=TwoWay}"/>
-          </x:Array>
-
-          <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding ThumbnailSize, StringFormat='Thumbnail size: {0}'}"/>
-            <Slider Minimum="200" Maximum="500" Value="{Binding ThumbnailSize, Mode=TwoWay}"/>
-          </x:Array>
-
-          <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Scroll exactly to MediaItem in thumbnails:"/>
-            <CheckBox IsChecked="{Binding ScrollExactlyToMediaItem, Mode=TwoWay}"/>
-          </x:Array>
-        </x:Array>
-      </ItemsControl.ItemsSource>
-    </ItemsControl>
+        </ContentControl>
+      </StackPanel>
+    </ScrollViewer>
   </DataTemplate>
-    
 </ResourceDictionary>

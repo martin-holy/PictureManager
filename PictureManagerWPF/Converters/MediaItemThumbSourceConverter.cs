@@ -83,15 +83,15 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
     Utils.Imaging.CreateImageThumbnail(
       mi.FilePath,
       mi.FilePathCache,
-      Core.Settings.ThumbnailSize,
-      Core.Settings.JpegQualityLevel);
+      Core.Settings.MediaItem.ThumbSize,
+      Core.Settings.Common.JpegQuality);
 
   private static void CreateVideoItemThumbnail(VideoItemM vi) {
     if (ReferenceEquals(Core.VM.Video.MediaPlayer.CurrentItem, vi)) {
       AppCore.CurrentMediaPlayer()
         .ToBitmap()
-        .Resize(Core.Settings.ThumbnailSize)
-        .SaveAsJpeg(vi.FilePathCache, Core.Settings.JpegQualityLevel);
+        .Resize(Core.Settings.MediaItem.ThumbSize)
+        .SaveAsJpeg(vi.FilePathCache, Core.Settings.Common.JpegQuality);
 
       TriggerChanged(vi);
     }

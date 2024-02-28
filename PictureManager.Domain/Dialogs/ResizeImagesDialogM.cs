@@ -5,8 +5,10 @@ using PictureManager.Domain.Models.MediaItems;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MH.Utils.Extensions;
 
 namespace PictureManager.Domain.Dialogs {
   public sealed class ResizeImagesDialogM : Dialog {
@@ -41,7 +43,7 @@ namespace PictureManager.Domain.Dialogs {
         new(CloseCommand, false, true) }; 
       _items = items;
       ProgressMax = _items.Length;
-      DirPaths = new(Core.Settings.DirectorySelectFolders.Split(','));
+      DirPaths = new(Core.Settings.Common.DirectorySelectFolders.EmptyIfNull());
       SetMaxMpx();
     }
 
@@ -92,7 +94,7 @@ namespace PictureManager.Domain.Dialogs {
 
             try {
               var dest = Path.Combine(destination, mi.FileName);
-              Imaging.ResizeJpg(mi.FilePath, dest, px, withMetadata, withThumbnail, Core.Settings.JpegQualityLevel);
+              Imaging.ResizeJpg(mi.FilePath, dest, px, withMetadata, withThumbnail, Core.Settings.Common.JpegQuality);
             }
             catch (Exception ex) {
               Log.Error(ex, mi.FilePath);
@@ -115,7 +117,7 @@ namespace PictureManager.Domain.Dialogs {
 
       if (!DirPaths.Contains(dir.SelectedFolder.FullPath)) {
         DirPaths.Insert(0, dir.SelectedFolder.FullPath);
-        Core.Settings.DirectorySelectFolders = string.Join(',', DirPaths);
+        Core.Settings.Common.DirectorySelectFolders = DirPaths.ToArray();
         Core.Settings.Save();
       }
 

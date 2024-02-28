@@ -16,6 +16,7 @@ public static class DatabaseMigration {
     if (oldVersion < 5) From4To5();
     if (oldVersion < 6) From5To6();
     if (oldVersion < 7) From6To7();
+    if (oldVersion < 8) From7To8();
   }
 
   /// <summary>
@@ -390,5 +391,11 @@ public static class DatabaseMigration {
     Core.R.VideoClip.MaxId = maxId;
     Core.R.VideoImage.MaxId = maxId;
     Core.R.SaveIdSequences();
+  }
+
+  private static void From7To8() {
+    var filePath = Path.Combine("db", "settings.csv");
+    if (File.Exists(filePath))
+      File.Delete(filePath);
   }
 }

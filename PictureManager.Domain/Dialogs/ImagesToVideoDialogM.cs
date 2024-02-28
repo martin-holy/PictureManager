@@ -81,7 +81,7 @@ namespace PictureManager.Domain.Dialogs {
       var mi = _items.First();
 
       // Scale
-      var height = (double)Core.Settings.ImagesToVideoHeight;
+      var height = (double)Core.Settings.ImagesToVideo.Height;
       var width = mi.Orientation is Orientation.Rotate270 or Orientation.Rotate90
         ? Math.Round(mi.Height / (mi.Width / height), 0)
         : Math.Round(mi.Width / (mi.Height / height), 0);
@@ -96,15 +96,15 @@ namespace PictureManager.Domain.Dialogs {
         _ => string.Empty
       };
 
-      var speedStr = Core.Settings.ImagesToVideoSpeed.ToString(CultureInfo.InvariantCulture);
-      var args = $"-y -r 1/{speedStr} -f concat -safe 0 -i \"{_inputListPath}\" -c:v libx264 -r 25 -preset medium -crf {Core.Settings.ImagesToVideoQuality} -vf \"{rotation}scale={scale},format=yuv420p\" \"{_outputFilePath}\"";
+      var speedStr = Core.Settings.ImagesToVideo.Speed.ToString(CultureInfo.InvariantCulture);
+      var args = $"-y -r 1/{speedStr} -f concat -safe 0 -i \"{_inputListPath}\" -c:v libx264 -r 25 -preset medium -crf {Core.Settings.ImagesToVideo.Quality} -vf \"{rotation}scale={scale},format=yuv420p\" \"{_outputFilePath}\"";
       var tcs = new TaskCompletionSource<bool>();
 
       _process = new() {
         EnableRaisingEvents = true,
         StartInfo = new() {
           Arguments = args,
-          FileName = Core.Settings.FfmpegPath,
+          FileName = Core.Settings.Common.FfmpegPath,
           UseShellExecute = false,
           CreateNoWindow = false
         }
@@ -123,7 +123,7 @@ namespace PictureManager.Domain.Dialogs {
       Core.Settings.Save();
 
       // check for FFMPEG
-      if (!File.Exists(Core.Settings.FfmpegPath)) {
+      if (!File.Exists(Core.Settings.Common.FfmpegPath)) {
         Show(new MessageDialog(
           "FFMPEG not found",
           "FFMPEG was not found. Install it and set the path in the settings.",

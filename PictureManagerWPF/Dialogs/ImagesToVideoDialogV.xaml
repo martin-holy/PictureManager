@@ -35,7 +35,7 @@
         IsSnapToTickEnabled="True"
         VerticalAlignment="Center"
         Margin="5,0,0,0"
-        Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoSpeed, Mode=TwoWay}"/>
+        Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideo.Speed, Mode=TwoWay}"/>
 
       <TextBlock
         Grid.Row="0"
@@ -66,7 +66,7 @@
           TickFrequency="1"
           IsSnapToTickEnabled="True"
           VerticalAlignment="Center" 
-          Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoQuality, Mode=TwoWay}"/>
+          Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideo.Quality, Mode=TwoWay}"/>
 
         <!-- Height -->
         <TextBlock Grid.Column="2" Text="Height:" TextAlignment="Right"/>
@@ -74,7 +74,7 @@
           Grid.Column="3"
           FontSize="16"
           Height="30"
-          Text="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoHeight, Mode=TwoWay}"/>
+          Text="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideo.Height, Mode=TwoWay}"/>
       </Grid>
 
       <!-- ProgressBar -->

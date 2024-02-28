@@ -68,15 +68,15 @@ public static class VideoThumbsU {
     mi,
     mi is VideoItemM vi ? vi.TimeStart : 0,
     mi.FilePathCache,
-    Core.Settings.ThumbnailSize,
-    Core.Settings.JpegQualityLevel);
+    Core.Settings.MediaItem.ThumbSize,
+    Core.Settings.Common.JpegQuality);
 
   private static VfsFrame ToVfsFrame(SegmentM s) => new(
     s,
     s.MediaItem is VideoItemM vi ? vi.TimeStart : 0,
     s.FilePathCache,
     SegmentS.SegmentSize,
-    Core.Settings.JpegQualityLevel,
+    Core.Settings.Common.JpegQuality,
     (int)s.X, (int)s.Y, (int)s.Size, (int)s.Size);
 
   private static void OnSave(VfsFrame frame) {

@@ -132,7 +132,7 @@ public class CoreVM {
   }
 
   private void CompressImages(ImageM[] items) {
-    Dialog.Show(new CompressDialogM(items, Core.Settings.JpegQualityLevel));
+    Dialog.Show(new CompressDialogM(items, Core.Settings.Common.JpegQuality));
     UpdateModifiedMediaItemsCount();
   }
 
