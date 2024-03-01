@@ -1,12 +1,12 @@
 ﻿using MH.UI.Interfaces;
+using MH.Utils.Extensions;
 
 namespace PictureManager.Domain.Models.MediaItems;
 
 public sealed class VideoImageM(int id, VideoM video, int timeStart) : VideoItemM(id, video, timeStart), IVideoImage {
-  public override string FilePathCache => GetFilePathCache();
+  public override string FilePathCache =>
+    IOExtensions.PathCombine(Video.Folder.FullPathCache, FileNameCache(Video.FileName));
 
-  private string GetFilePathCache() {
-    var fpc = Video.FilePathCache;
-    return $"{fpc[..fpc.LastIndexOf('.')]}_image_{GetHashCode().ToString()}.jpg";
-  }
+  public override string FileNameCache(string fileName) =>
+    $"{fileName[..fileName.LastIndexOf('.')]}_image_{GetHashCode().ToString()}.jpg";
 }

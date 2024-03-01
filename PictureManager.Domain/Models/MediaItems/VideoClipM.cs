@@ -8,7 +8,8 @@ public sealed class VideoClipM : VideoItemM, IVideoClip {
   private double _volume;
   private double _speed;
 
-  public override string FilePathCache => GetFilePathCache();
+  public override string FilePathCache =>
+    IOExtensions.PathCombine(Video.Folder.FullPathCache, FileNameCache(Video.FileName));
   public int TimeEnd { get => _timeEnd; set { _timeEnd = value; OnPropertyChanged(); OnPropertyChanged(nameof(Duration)); } }
   public double Volume { get => _volume; set { _volume = value; OnPropertyChanged(); OnPropertyChanged(nameof(VolumePercent)); } }
   public double Speed { get => _speed; set { _speed = value; OnPropertyChanged(); } }
@@ -22,8 +23,6 @@ public sealed class VideoClipM : VideoItemM, IVideoClip {
     };
   }
 
-  private string GetFilePathCache() {
-    var fpc = Video.FilePathCache;
-    return $"{fpc[..fpc.LastIndexOf('.')]}_clip_{GetHashCode().ToString()}.jpg";
-  }
+  public override string FileNameCache(string fileName) =>
+    $"{fileName[..fileName.LastIndexOf('.')]}_clip_{GetHashCode().ToString()}.jpg";
 }
