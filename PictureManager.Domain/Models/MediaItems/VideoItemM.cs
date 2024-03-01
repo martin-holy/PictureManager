@@ -15,4 +15,6 @@ public class VideoItemM(int id, VideoM video, int timeStart) : MediaItemM(id), I
   public override Orientation Orientation { get => Video.Orientation; set => Video.Orientation = value; }
   public override int ThumbWidth { get => Video.ThumbWidth; set => Video.ThumbWidth = value; }
   public override int ThumbHeight { get => Video.ThumbHeight; set => Video.ThumbHeight = value; }
+
+  public virtual string FileNameCache(string fileName) => fileName;
 }
