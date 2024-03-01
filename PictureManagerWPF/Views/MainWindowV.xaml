@@ -15,8 +15,7 @@
   CanResize="True"
   CanFullScreen="True"
   UseLayoutRounding="True"
-  SnapsToDevicePixels="True"
-  FontSize="14">
+  SnapsToDevicePixels="True">
 
   <Window.InputBindings>
     <KeyBinding Modifiers="Control" Key="R" Command="vm:CoreVM.RotateMediaItemsCommand"/>
