@@ -15,6 +15,7 @@
 
         <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Common.xaml"/>
         <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
+        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Common.xaml"/>
         <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Brushes.xaml"/>
         <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Effects.xaml"/>
         <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Icons.xaml"/>
