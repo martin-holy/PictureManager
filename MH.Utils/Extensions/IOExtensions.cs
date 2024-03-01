@@ -12,10 +12,12 @@ public static class IOExtensions {
   public static string PathCombine(string path1, string path2) =>
     string.Concat(path1, Path.DirectorySeparatorChar.ToString(), path2);
 
-  public static void DeleteDirectoryIfEmpty(string path) {
+  public static bool DeleteDirectoryIfEmpty(string path) {
+    if (!Directory.Exists(path)) return false;
     using var enumerator = Directory.EnumerateFileSystemEntries(path).GetEnumerator();
-    if (Directory.Exists(path) && !enumerator.MoveNext())
-      Directory.Delete(path);
+    if (enumerator.MoveNext()) return false;
+    Directory.Delete(path);
+    return true;
   }
 
   public static string GetNewFileName(string directory, string fileName) {
