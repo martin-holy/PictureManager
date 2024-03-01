@@ -27,6 +27,7 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
   public bool IsAccessible { get; set; }
   public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
   public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath);
+  public bool HasSubFolders => Items.Count > 0 && !ReferenceEquals(Items[0], FolderS.FolderPlaceHolder);
 
   public FolderM(int id, string name, ITreeItem parent) : base(Res.IconFolder, name) {
     Id = id;
