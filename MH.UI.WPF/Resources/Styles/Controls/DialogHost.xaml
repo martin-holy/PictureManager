@@ -15,7 +15,14 @@
   </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type mhc:DialogHost}">
-    <DockPanel x:Name="root">
+    <DockPanel x:Name="root" Focusable="True" FocusVisualStyle="{x:Null}">
+      <DockPanel.InputBindings>
+        <KeyBinding
+          Key="Esc"
+          Command="mhbc:Dialog.CloseCommand"
+          CommandParameter="{Binding Path=DataContext.(mhc:DialogHost.Content), ElementName=root}"/>
+      </DockPanel.InputBindings>
+
       <Grid Height="30" Background="#30000000" DockPanel.Dock="Top">
         <StackPanel
           Orientation="Horizontal"
@@ -110,5 +117,11 @@
           ContentTemplateSelector="{Binding ElementName=root, Path=DataContext.(mhc:DialogHost.DialogTemplateSelector)}"/>
       </DockPanel>
     </DockPanel>
+
+    <DataTemplate.Triggers>
+      <Trigger SourceName="root" Property="IsVisible" Value="True">
+        <Setter TargetName="root" Property="FocusManager.FocusedElement" Value="{Binding ElementName=root}"/>
+      </Trigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>
