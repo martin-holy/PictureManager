@@ -1,18 +1,14 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Services;
 using PictureManager.Domain.Utils;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace PictureManager.Domain.ViewModels.Entities;
 
@@ -20,7 +16,6 @@ public sealed class MediaItemVM : ObservableObject {
   private readonly CoreVM _coreVM;
   private readonly MediaItemS _s;
   private MediaItemM _current;
-  private int _modifiedItemsCount;
   private int _itemsCount;
 
   public static IImageSourceConverter<MediaItemM> ThumbConverter { get; set; }
@@ -28,7 +23,6 @@ public sealed class MediaItemVM : ObservableObject {
   public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
   public GeoNameM CurrentGeoName => Current?.GeoLocation?.GeoName;
   public MediaItemsViewsVM Views { get; } = new();
-  public int ModifiedItemsCount { get => _modifiedItemsCount; set { _modifiedItemsCount = value; OnPropertyChanged(); } }
   public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
 
   public static RelayCommand CommentCommand { get; set; }
@@ -76,29 +70,6 @@ public sealed class MediaItemVM : ObservableObject {
 
   private bool CanViewSelected() =>
     Views.Current?.Selected.Items.Count > 1;
-
-  public void CopyMove(FileOperationMode mode, List<RealMediaItemM> items, FolderM destFolder) {
-    var fop = new FileOperationDialogM(mode, false);
-    fop.RunTask = Task.Run(async () => {
-      fop.LoadCts = new();
-      var token = fop.LoadCts.Token;
-
-      try {
-        await _s.CopyMove(mode, items, destFolder, fop.Progress, token);
-      }
-      catch (Exception ex) {
-        await Tasks.RunOnUiThread(() => Dialog.Show(new ErrorDialogM(ex)));
-      }
-    }).ContinueWith(_ => Tasks.RunOnUiThread(() => fop.Result = 1));
-
-    _ = Dialog.Show(fop);
-
-    if (mode == FileOperationMode.Move) {
-      var mis = items.Cast<MediaItemM>().ToList();
-      Current = null;
-      Core.VM.MediaItem.Views.Current.Remove(mis, true);
-    }
-  }
 
   public bool Delete(MediaItemM[] items) {
     if (items.Length == 0 || Dialog.Show(new MessageDialog(

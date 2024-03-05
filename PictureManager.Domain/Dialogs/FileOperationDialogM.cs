@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using System;
 using System.Threading;
@@ -18,13 +19,12 @@ public sealed class FileOperationDialogM : Dialog {
   public string DirFrom { get => _dirFrom; set { _dirFrom = value; OnPropertyChanged(); } }
   public string DirTo { get => _dirTo; set { _dirTo = value; OnPropertyChanged(); } }
   public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
-  public CancellationTokenSource LoadCts { get; set; }
-  public Task RunTask { get; set; }
+  public CancellationTokenSource WorkCts { get; private set; } = new();
+  public object WorkResult { get; private set; }
+  public Task WorkTask { get; set; }
   public IProgress<object[]> Progress { get; set; }
 
-  public FileOperationDialogM(FileOperationMode mode, bool isIndeterminate) : base("", Res.IconImageMultiple) {
-    Title = $"File Operation Dialog ({mode})";
-    IsIndeterminate = isIndeterminate;
+  public FileOperationDialogM(string title) : base(title, Res.IconImageMultiple) {
     ProgressValue = 0;
 
     Progress = new Progress<object[]>(e => {
@@ -38,15 +38,22 @@ public sealed class FileOperationDialogM : Dialog {
   }
 
   ~FileOperationDialogM() {
-    if (LoadCts != null) {
-      LoadCts.Dispose();
-      LoadCts = null;
+    if (WorkCts != null) {
+      WorkCts.Dispose();
+      WorkCts = null;
     }
   }
 
+  public void SetWorkTask<T>(Task<T> work) {
+    WorkTask = work.ContinueWith(res => {
+      WorkResult = res.Result;
+      return Tasks.RunOnUiThread(() => Result = 1);
+    });
+  }
+
   public override Task OnResultChanged(int result) {
-    if (result != 0 || LoadCts == null) return Task.CompletedTask;
-    LoadCts.Cancel();
-    return RunTask;
+    if (result != 0 || WorkCts == null) return Task.CompletedTask;
+    WorkCts.Cancel();
+    return WorkTask;
   }
 }

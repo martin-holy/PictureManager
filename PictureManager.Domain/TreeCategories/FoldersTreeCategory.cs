@@ -8,6 +8,7 @@ using PictureManager.Domain.Models;
 using PictureManager.Domain.Models.MediaItems;
 using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
+using PictureManager.Domain.Utils;
 using System;
 using System.IO;
 using System.Linq;
@@ -18,15 +19,10 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
   public FoldersTreeCategory(FolderR r) :
     base(Res.IconFolder, "Folders", (int)Category.Folders) {
     DataAdapter = r;
-    DataAdapter.ItemCreatedEvent += OnItemCreated;
-
     CanMoveItem = true;
     CanCopyItem = true;
     UseTreeDelete = true;
   }
-
-  private void OnItemCreated(object sender, ObjectEventArgs<FolderM> e) =>
-    TreeView.ScrollTo(e.Data, false);
 
   public override void OnItemSelected(object o) {
     // SHIFT key => recursive
@@ -73,9 +69,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
 
   public override void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy) {
     if (dest is not FolderM destFolder) return;
-    var foMode = copy
-      ? FileOperationMode.Copy
-      : FileOperationMode.Move;
+    var mode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
 
     switch (src) {
       case FolderM srcData: // Folder
@@ -86,21 +80,21 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
               true)) != 1)
           return;
 
-        Core.S.Folder.CopyMove(foMode, srcData, destFolder);
+        CopyMoveU.CopyMoveFolder(srcData, destFolder, mode);
 
         break;
 
       case string[]: // MediaItems
-        var items = Core.VM.MediaItem.Views.Current.Selected.Items.OfType<RealMediaItemM>().ToList();
+        var items = Core.VM.MediaItem.Views.Current.Selected.Items.OfType<RealMediaItemM>().ToArray();
         // TODO mi rewrite (don't do anything if count is 0)
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} media items",
-              $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Count)} to '{dest.Name}'?",
+              $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Length)} to '{dest.Name}'?",
               Res.IconQuestion,
               true)) != 1)
           return;
 
-        Core.VM.MediaItem.CopyMove(foMode, items, destFolder);
+        CopyMoveU.CopyMoveMediaItems(items, destFolder, mode);
 
         break;
     }
