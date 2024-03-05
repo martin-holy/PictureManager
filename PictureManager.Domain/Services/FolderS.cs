@@ -9,14 +9,6 @@ namespace PictureManager.Domain.Services;
 public sealed class FolderS {
   public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
 
-  public static void DeleteFromDisk(FolderM item) {
-    if (Directory.Exists(item.FullPathCache))
-      Directory.Delete(item.FullPathCache, true);
-
-    if (Directory.Exists(item.FullPath))
-      Core.FileOperationDelete([item.FullPath], true, false);
-  }
-
   public static string GetDriveIcon(DriveType type) =>
     type switch {
       DriveType.CDRom => Res.IconCd,

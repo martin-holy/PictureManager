@@ -78,10 +78,21 @@ public class FolderR : TreeDataAdapter<FolderM> {
     return null;
   }
 
+  protected override void OnItemDeleted(FolderM item) {
+    if (!Core.R.IsCopyMoveInProgress) DeleteFromDrive(item);
+  }
+
   public DriveM AddDrive(ITreeItem parent, string name, string sn) {
     var item = new DriveM(GetNextId(), name, parent, sn);
     IsModified = true;
     All.Add(item);
     return item;
+  }
+
+  public static void DeleteFromDrive(FolderM item) {
+    var path = item.FullPath;
+    var cachePath = item.FullPathCache;
+    if (Directory.Exists(path)) CoreR.FileOperationDelete([path], true, false);
+    if (Directory.Exists(cachePath)) Directory.Delete(cachePath, true);
   }
 }

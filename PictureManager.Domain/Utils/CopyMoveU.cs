@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Utils;
 
+// BUG segment on replaced mi not removed from SegmentsMatching before removing Folder from mi
 public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   private readonly FileOperationDialogM _dlg = new($"File Operation ({mode})");
   private readonly Dictionary<MediaItemM, string> _renamed = new();
@@ -30,22 +31,40 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   }
 
   public static void CopyMoveFolder(FolderM src, FolderM dest, FileOperationMode mode) {
-    var cm = new CopyMoveU(mode, Core.R);
-    if (!cm.Do(cm.CopyMoveFolder(src, dest))) return;
+    try {
+      Core.R.IsCopyMoveInProgress = true;
+      var cm = new CopyMoveU(mode, Core.R);
+      if (!cm.Do(cm.CopyMoveFolder(src, dest))) return;
 
-    Core.R.FolderKeyword.Reload();
-    if (mode == FileOperationMode.Move)
-      Core.VM.MainWindow.StatusBar.UpdateFilePath();
+      Core.R.FolderKeyword.Reload();
+      if (mode == FileOperationMode.Move)
+        Core.VM.MainWindow.StatusBar.UpdateFilePath();
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
+    finally {
+      Core.R.IsCopyMoveInProgress = false;
+    }
   }
 
   public static void CopyMoveMediaItems(RealMediaItemM[] items, FolderM dest, FileOperationMode mode) {
-    var cm = new CopyMoveU(mode, Core.R);
-    if (!cm.Do(cm.CopyMoveMediaItems(items, dest))) return;
+    try {
+      Core.R.IsCopyMoveInProgress = true;
+      var cm = new CopyMoveU(mode, Core.R);
+      if (!cm.Do(cm.CopyMoveMediaItems(items, dest))) return;
 
-    if (mode == FileOperationMode.Move) {
-      var mis = items.Except(cm.Skipped).ToList();
-      Core.VM.MediaItem.Current = null;
-      Core.VM.MediaItem.Views.Current.Remove(mis, true);
+      if (mode == FileOperationMode.Move) {
+        var mis = items.Except(cm.Skipped).ToList();
+        Core.VM.MediaItem.Current = null;
+        Core.VM.MediaItem.Views.Current.Remove(mis, true);
+      }
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
+    finally {
+      Core.R.IsCopyMoveInProgress = false;
     }
   }
 
@@ -130,7 +149,6 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   }
 
   private void CopyMoveCommonInDB() {
-    // BUG file on drive deleted in event in Core
     coreR.MediaItem.ItemsDelete(_replaced.ToArray());
     if (mode != FileOperationMode.Move) return;
     foreach (var (mi, newFileName) in _renamed)

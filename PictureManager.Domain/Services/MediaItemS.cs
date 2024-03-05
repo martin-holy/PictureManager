@@ -20,7 +20,6 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
 
   public bool Exists(MediaItemM mi) {
     if (mi == null || File.Exists(mi.FilePath)) return true;
-    File.Delete(mi.FilePathCache);
     r.ItemsDelete(new[] { mi });
     return false;
   }
