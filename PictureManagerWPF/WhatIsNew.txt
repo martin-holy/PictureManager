@@ -4,6 +4,19 @@
 [B] - Bug fix
 
 Latest:
+ - [N] DialogHost close with Esc key
+ - [U] Count of modified items removed from text in menu
+ - [U] Settings (design and persistence to JSON)
+ - [N] Scroll exactly to MediaItem in thumbnails in Settings
+ - [N] MediaItem and VideoItem thumbnail scale in settings
+ - [N] View selected MediaItems
+ - [U] MediaItemsView selection
+ - [U] CollectionView ScrollTo after ReWrapAll (when reloading metadata or changing thumb scale)
+ - [U] ScrollTo not exactly to current MediaItem if it is in the view in MediaItemsView
+ - [U] Close tree search on mouse leave
+ - [B] Load only Images and Videos in MediaItemsView
+
+ 24.02.24.1414:
  - [U] PeopleToolsTab GroupMode.ThenByRecursive by default
  - [N] Load MediaItems, People or Segments from pop-up menu on Person, Keyword and GeoName in tree
  - [B] Selecting TreeSearch result select tree item under result as well
