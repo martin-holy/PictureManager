@@ -17,6 +17,7 @@
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
   - Skipped items while moving are removed from MediaItemsView
+  - move media items: segments cache not copied
 ## Video Items (VideoImage and VideoClip)
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
@@ -26,6 +27,8 @@
   - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
 ## CollectionView
   - wrong sort (it is by text and not number) on update when grouped by date
+## SegmentsMatching
+  - scroll people down => select segment in segments => select person => people are scrolled to top
 
 
                                   *** UPDATE ***
@@ -39,14 +42,11 @@
   - Rethink hierarchical keywords moving
   - join FileOperationDialogM and FileOperationCollisionDialogM
   - Log button
-  - show media items with selected people
   - CoreUI with interfaces for CoreM and CoreVM
   - replace Contains with ReferenceEquals
-  - move MediaItemsViews to MediaItemVM
+  - change icon for segments drawer
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
-  - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
-  - close search on mouse leave
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
 ## Segments
@@ -57,11 +57,14 @@
 ## MediaItems
   - save to file only metadata visible for viewer
 ## MediaItemsView
-  - change SelectAndScrollToCurrentMediaItem to scroll to exactly to media item
-    only if is not in the view otherwise scroll to top item
   - use Filter on MediaItem type in LoadByTag GetItems
 ## ProgressBarAsyncDialog
   - do Init and Start in constructor
+## LoadByFolder
+  - remove double check for file type
+## PeopleToolsTab
+  - Add newly created person
+  - don't reload on dialog cancel
 
 
                                     *** NEW ***
@@ -71,6 +74,7 @@
     if the point is more away from the slider => change value is smaller
     and if is closer => change value is bigger
     (or zooming time line)
+  - show media items with selected people
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
     so I can choice how to display filtered data: in MediaItemsView or MediaViewer
@@ -79,10 +83,9 @@
   - GeoNames for Folders
 ## MediaItems
   - add flip H a V
-## CatTreeView
   - filter for video length
-  - LeftMouseButtonClick on Person or Keyword opens menu with options (load, filter, set to person, set to segment, set to media item)
-  - show small segment next to person icon or show just small segment
+## CatTreeView
+  - multilevel groups
 ## Video Items (VideoImage and VideoClip)
   - tool tip for VideoItems with all info
   - reset sort order button of VideoItems to delete relation in DB
@@ -92,15 +95,9 @@
   - import/export
   - export to mp4 (FFMPEG)
 ## MediaViewer
-  - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima
   - func to zoom to segment
 ## ThumbnailsGrid
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
-  - vymyslet to tak, aby zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
-    pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
-  - v nahledech na videa neustale prehravat video vytvoreny ze screenshotu toho videa ve velikosti nahledu, takze to snad 
-    nebude narocny a bude se to moc prehravat porad a kdyz se na nahled najede mysi tak se bude prehravat puvodni video
-  - umoznit zmenit nahled u videa
   - TimeLine for thumbnails showing dates and number of day from first date in folder
 ## Viewers
   - Rename Viewers to Workspaces
@@ -108,9 +105,6 @@
   - save in user profile
   - new table for MediaItems hashes for comparison
   - ToolTip or dialog with number of changes of each table
-  - keep list of modified, make MediaItems implementation universal
-  - listen in DataAdapter on OnPropertyChanged and on ObservableCollection to log changes for overview
-    and automatic setting IsModified
 ## Segments
   - keywords:
     - sort like in the tree
@@ -121,12 +115,10 @@
   - show ScrollToParent on mouse hover. Icon with ToolTip (Parent.Name) for each parent. Maybe shared button for whole TreeView
 ## GroupByDialog
   - incremental search
+## PersonDetail
+  - Comment
+## MovieManager Plug-in
 
-                                    *** DISCARDED ***
-  - make thumbnail images sharper (size is 2.7x bigger)
-## MediaViewer
-  - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
-  - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
 
 
 #Shortcuts:
