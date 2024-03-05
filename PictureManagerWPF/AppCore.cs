@@ -2,6 +2,7 @@
 using MH.Utils.BaseClasses;
 using PictureManager.Converters;
 using PictureManager.Domain;
+using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
 using PictureManager.Domain.ViewModels;
 using PictureManager.Domain.ViewModels.Entities;
@@ -17,7 +18,7 @@ public sealed class AppCore : ObservableObject {
   public static RelayCommand TestButtonCommand { get; } = new(Tests.Run, Res.IconBug, "Test Button");
 
   public AppCore() {
-    Core.FileOperationDelete = FileOperationDelete;
+    CoreR.FileOperationDelete = FileOperationDelete;
     Core.GetDisplayScale = GetDisplayScale;
 
     MH.UI.WPF.Utils.Init.SetDelegates();

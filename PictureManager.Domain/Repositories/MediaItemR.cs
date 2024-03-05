@@ -56,19 +56,22 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     RaiseItemDeleted(item);
 
   public void OnItemDeletedCommon(MediaItemM item) {
-    File.Delete(item.FilePathCache);
     item.People = null;
     item.Keywords = null;
     item.Segments = null;
 
-    if (item is RealMediaItemM rmi) {
-      rmi.Folder.MediaItems.Remove(rmi);
-      rmi.Folder = null;
-    }
+    if (item is not RealMediaItemM rmi) return;
+    rmi.Folder.MediaItems.Remove(rmi);
+    rmi.Folder = null;
   }
 
-  protected override void OnItemsDeleted(IList<MediaItemM> items) =>
+  protected override void OnItemsDeleted(IList<MediaItemM> items) {
     RaiseItemsDeleted(items);
+
+    if (_coreR.IsCopyMoveInProgress) return;
+    CoreR.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
+    items.Select(x => x.FilePathCache).Where(File.Exists).ToList().ForEach(File.Delete);
+  }
 
   public override int GetNextId() {
     var id = ++MaxId;
