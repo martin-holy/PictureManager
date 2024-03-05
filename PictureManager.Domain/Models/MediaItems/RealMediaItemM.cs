@@ -1,6 +1,4 @@
 ﻿using MH.Utils;
-using MH.Utils.Extensions;
-using System.IO;
 
 namespace PictureManager.Domain.Models.MediaItems;
 
@@ -16,17 +14,10 @@ public class RealMediaItemM(int id, FolderM folder, string fileName) : MediaItem
 
   public sealed override FolderM Folder { get; set; } = folder;
   public sealed override string FileName { get; set; } = fileName;
-  public override string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
-  public override string FilePathCache => GetFilePathCache();
-
   public override int Width { get => _width; set { _width = value; OnPropertyChanged(); } }
   public override int Height { get => _height; set { _height = value; OnPropertyChanged(); } }
   public override int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
   public override int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
   public override Orientation Orientation { get => _orientation; set { _orientation = value; OnPropertyChanged(); } }
   public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
-
-  private string GetFilePathCache() =>
-    FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath) +
-    (this is ImageM ? string.Empty : ".jpg");
 }
