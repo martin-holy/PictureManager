@@ -171,14 +171,6 @@ public sealed class Core {
 
     R.Folder.ItemsDeletedEvent += (_, _) =>
       R.FolderKeyword.Reload();
-
-    S.Folder.ItemCopiedEvent += (_, _) =>
-      R.FolderKeyword.Reload();
-
-    S.Folder.ItemMovedEvent += (_, _) => {
-      R.FolderKeyword.Reload();
-      VM.MainWindow.StatusBar.UpdateFilePath();
-    };
   }
 
   private static void AttachGeoLocationsEventHandlers() {
