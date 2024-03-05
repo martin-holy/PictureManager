@@ -5,7 +5,8 @@
   xmlns:mhbc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:bhv="clr-namespace:MH.UI.WPF.Behaviors">
 
   <ResourceDictionary.MergedDictionaries>
     <u:CachedResourceDictionary Source="../../Brushes.xaml"/>
@@ -15,7 +16,7 @@
   </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type mhc:DialogHost}">
-    <DockPanel x:Name="root" Focusable="True" FocusVisualStyle="{x:Null}">
+    <DockPanel x:Name="root" Focusable="True" FocusVisualStyle="{x:Null}" bhv:KeyboardFocus.On="{Binding ElementName=root}">
       <DockPanel.InputBindings>
         <KeyBinding
           Key="Esc"
@@ -117,11 +118,5 @@
           ContentTemplateSelector="{Binding ElementName=root, Path=DataContext.(mhc:DialogHost.DialogTemplateSelector)}"/>
       </DockPanel>
     </DockPanel>
-
-    <DataTemplate.Triggers>
-      <Trigger SourceName="root" Property="IsVisible" Value="True">
-        <Setter TargetName="root" Property="FocusManager.FocusedElement" Value="{Binding ElementName=root}"/>
-      </Trigger>
-    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>

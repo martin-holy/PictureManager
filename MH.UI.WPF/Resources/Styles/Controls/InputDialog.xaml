@@ -4,7 +4,8 @@
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
   xmlns:mhud="clr-namespace:MH.Utils.Dialogs;assembly=MH.Utils"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:bhv="clr-namespace:MH.UI.WPF.Behaviors">
 
   <ResourceDictionary.MergedDictionaries>
     <u:CachedResourceDictionary Source="../../Effects.xaml"/>
@@ -38,17 +39,12 @@
           Padding="5"
           Margin="5"
           Text="{Binding Answer, UpdateSourceTrigger=PropertyChanged}"
-          ToolTip="{Binding ErrorMessage}"/>
+          ToolTip="{Binding ErrorMessage}"
+          bhv:KeyboardFocus.On="{Binding ElementName=tbAnswer}"/>
       </StackPanel>
     </DockPanel>
 
     <DataTemplate.Triggers>
-      <Trigger Property="IsVisible" Value="True">
-        <Setter
-          TargetName="tbAnswer"
-          Property="FocusManager.FocusedElement"
-          Value="{Binding ElementName=tbAnswer}"/>
-      </Trigger>
       <DataTrigger Binding="{Binding Error}" Value="True">
         <Setter TargetName="tbAnswer" Property="Background" Value="#7FFF0000"/>
       </DataTrigger>
