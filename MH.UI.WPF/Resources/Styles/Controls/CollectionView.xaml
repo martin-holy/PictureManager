@@ -146,14 +146,10 @@
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseDoubleClick">
-          <b:InvokeCommandAction
-            Command="wpfc:CollectionView.OpenItemCommand"
-            PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="wpfc:CollectionView.OpenItemCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseUp">
-          <b:InvokeCommandAction
-            Command="wpfc:CollectionView.SelectItemCommand"
-            PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="wpfc:CollectionView.SelectItemCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -165,29 +161,8 @@
 
       <ItemsControl.ItemContainerStyle>
         <Style TargetType="FrameworkElement">
-          <Setter Property="MaxWidth" Value="{Binding ActualWidth, ElementName=ic, FallbackValue=1000}"/>
-          <Setter Property="Width">
-            <Setter.Value>
-              <MultiBinding
-                Converter="{x:Static mhConv:CollectionViewItemSizeConverter.Inst}"
-                ConverterParameter="{StaticResource True}"
-                FallbackValue="1000">
-                <Binding/>
-                <Binding Path="DataContext" ElementName="ic"/>
-              </MultiBinding>
-            </Setter.Value>
-          </Setter>
-          <Setter Property="Height">
-            <Setter.Value>
-              <MultiBinding
-                Converter="{x:Static mhConv:CollectionViewItemSizeConverter.Inst}"
-                ConverterParameter="{StaticResource False}"
-                FallbackValue="1000">
-                <Binding/>
-                <Binding Path="DataContext" ElementName="ic"/>
-              </MultiBinding>
-            </Setter.Value>
-          </Setter>
+          <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource Self},
+            Converter={x:Static mhConv:CollectionViewItemSizeConverter.Inst}}"/>
         </Style>
       </ItemsControl.ItemContainerStyle>
     </ItemsControl>

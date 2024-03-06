@@ -36,14 +36,19 @@ public class TreeViewBase : TreeView {
     base.OnApplyTemplate();
 
     _sv = (ScrollViewer)Template.FindName("PART_ScrollViewer", this);
-    _sv.IsVisibleChanged += delegate { if (_sv.IsVisible) TreeView?.OnIsVisible(); };
+    _sv.IsVisibleChanged += delegate { SetIsVisible(); };
     _sv.ScrollChanged += OnScrollChanged;
+    SetIsVisible();
 
     if (TreeView == null) return;
     SetItemsSource();
     TreeView.ScrollToTopAction = ScrollToTop;
     TreeView.ScrollToItemsAction = ScrollToItemsWhenReady;
     TreeView.ExpandRootWhenReadyAction = ExpandRootWhenReady;
+  }
+
+  private void SetIsVisible() {
+    if (TreeView != null) TreeView.IsVisible = _sv.IsVisible;
   }
 
   private void OnTreeItemIntoView(RequestBringIntoViewEventArgs e) {

@@ -12,6 +12,8 @@ namespace MH.UI.Controls;
 public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : class, ISelectable {
   private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
   private readonly GroupByDialog<T> _groupByDialog = new();
+  private readonly HashSet<T> _pendingRemoveItems = [];
+  private readonly HashSet<T> _pendingUpdateItems = [];
 
   public CollectionViewGroup<T> Root { get; set; }
   public T TopItem { get; set; }
@@ -106,10 +108,31 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   public void Remove(T[] items) =>
     ReGroupItems(items, true, true);
 
+  public void ReGroupPendingItems() {
+    if (_pendingRemoveItems.Count > 0) {
+      ReGroupItems(_pendingRemoveItems.ToArray(), true);
+      _pendingRemoveItems.Clear();
+    }
+
+    if (_pendingUpdateItems.Count > 0) {
+      ReGroupItems(_pendingUpdateItems.ToArray(), false);
+      _pendingUpdateItems.Clear();
+    }
+  }
+
   public void ReGroupItems(T[] items, bool remove, bool ifContains = false) {
     if (Root == null || items == null) return;
     if (ifContains) items = Root.Source.Intersect(items).ToArray();
     if (items.Length == 0) return;
+    
+    if (!IsVisible) {
+      foreach (var item in items) {
+        if (remove) _pendingRemoveItems.Add(item);
+        else _pendingUpdateItems.Add(item);
+      }
+      return;
+    }
+    
     var toReWrap = new HashSet<CollectionViewGroup<T>>();
 
     if (remove)
@@ -137,8 +160,11 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
       ScrollTo(TopGroup ?? Root, TopItem);
   }
 
-  public override void OnIsVisible() =>
+  public override void OnIsVisibleChanged() {
+    if (!IsVisible) return;
+    ReGroupPendingItems();
     ScrollTo(TopGroup, TopItem);
+  }
 
   public void SetExpanded(object group) {
     if (group is not CollectionViewGroup<T> g) return;

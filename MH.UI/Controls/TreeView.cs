@@ -10,10 +10,12 @@ namespace MH.UI.Controls;
 
 public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeItem {
   private ITreeItem _topTreeItem;
+  private bool _isVisible;
 
   public ExtObservableCollection<object> RootHolder { get; } = new();
   public Selecting<T> SelectedTreeItems { get; } = new();
   public ITreeItem TopTreeItem { get => _topTreeItem; set { _topTreeItem = value; OnTopTreeItemChanged(); } }
+  public bool IsVisible { get => _isVisible; set { _isVisible = value; OnIsVisibleChanged(); } }
   // TODO rename and combine with single and multi select
   public bool ShowTreeItemSelection { get; set; }
   public Action ScrollToTopAction { get; set; }
@@ -27,8 +29,9 @@ public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeIte
     TreeItemSelectedCommand = new(OnTreeItemSelected);
   }
 
-  public virtual void OnIsVisible() =>
-    ScrollTo(TopTreeItem);
+  public virtual void OnIsVisibleChanged() {
+    if (IsVisible) ScrollTo(TopTreeItem);
+  }
 
   public virtual void OnTreeItemSelected(object o) {
     if (o is not T t) return;
