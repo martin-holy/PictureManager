@@ -46,6 +46,9 @@ namespace MH.Utils.Extensions {
       list.Insert(newIndex, item);
     }
 
+    public static List<T> NullIfEmpty<T>(this List<T> list) =>
+      list.Count == 0 ? null : list;
+
     public static List<T> Toggle<T>(this List<T> list, T item, bool nullIfEmpty) {
       if (list == null) {
         list = new() { item };
