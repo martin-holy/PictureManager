@@ -54,8 +54,11 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     Selected.AllDeselectedEventHandler += delegate { SelectionChanged(); };
   }
 
-  public override void OnIsVisible() =>
-    ScrollTo(TopGroup, TopItem, false);
+  public override void OnIsVisibleChanged() {
+    if (!IsVisible) return;
+    ReGroupPendingItems();
+    ScrollTo(TopGroup, TopItem, Core.Settings.MediaItem.ScrollExactlyToMediaItem);
+  }
 
   public override void OnItemOpened(MediaItemM item) {
     if (item == null) return;
