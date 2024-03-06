@@ -29,6 +29,7 @@
   - wrong sort (it is by text and not number) on update when grouped by date
 ## SegmentsMatching
   - scroll people down => select segment in segments => select person => people are scrolled to top
+    maybe set focus on mouse enter
 
 
                                   *** UPDATE ***
@@ -40,7 +41,6 @@
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
-  - join FileOperationDialogM and FileOperationCollisionDialogM
   - Log button
   - CoreUI with interfaces for CoreM and CoreVM
   - replace Contains with ReferenceEquals
