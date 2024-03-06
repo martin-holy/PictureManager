@@ -4,6 +4,7 @@
 [B] - Bug fix
 
 Latest:
+ - [B] CollectionView ReGroupItems when is not visible
  - [N] DialogHost close with Esc key
  - [U] Count of modified items removed from text in menu
  - [U] Settings (design and persistence to JSON)
