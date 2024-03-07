@@ -61,6 +61,8 @@ public sealed class VideoR : TableDataAdapter<VideoM> {
     ItemCreate(new(GetNextId(), folder, fileName));
 
   protected override void OnItemDeleted(VideoM item) {
+    _coreR.VideoClip.ItemsDelete(item.VideoClips.ToArray());
+    _coreR.VideoImage.ItemsDelete(item.VideoImages.ToArray());
     _coreR.MediaItem.OnItemDeletedCommon(item);
   }
 }
