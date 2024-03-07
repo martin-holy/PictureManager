@@ -11,75 +11,137 @@
         <ResourceDictionary.MergedDictionaries>
           <wpfu:CachedResourceDictionary Source="../Views/MediaItemThumbnailLiteV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
+
+        <Style TargetType="TextBlock" x:Key="InfoText">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="Margin" Value="4"/>
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="InfoValue">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="HorizontalAlignment" Value="Right"/>
+          <Setter Property="Margin" Value="4"/>
+        </Style>
+
+        <Style TargetType="Rectangle" x:Key="InfoBackground">
+          <Setter Property="Margin" Value="0,2"/>
+          <Setter Property="Fill" Value="{StaticResource MH.Brushes.Black25}"/>
+          <Setter Property="Stroke" Value="Black"/>
+          <Setter Property="StrokeThickness" Value="1"/>
+        </Style>
+
+        <Style TargetType="Border" x:Key="UnknownFileBorder">
+          <Setter Property="BorderThickness" Value="1"/>
+          <Setter Property="BorderBrush" Value="Black"/>
+          <Setter Property="Width" Value="100"/>
+          <Setter Property="Height" Value="100"/>
+        </Style>
+
+        <Style TargetType="Path" x:Key="UnknownFilePath">
+          <Setter Property="Data" Value="{StaticResource IconFileSolid}"/>
+          <Setter Property="Fill" Value="{StaticResource MH.Brushes.Foreground}"/>
+          <Setter Property="Margin" Value="10"/>
+          <Setter Property="Stretch" Value="Uniform"/>
+          <Setter Property="HorizontalAlignment" Value="Center"/>
+          <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Border x:Key="UnknownFile1" Style="{StaticResource UnknownFileBorder}">
+          <Path Style="{StaticResource UnknownFilePath}"/>
+        </Border>
+        <Border x:Key="UnknownFile2" Style="{StaticResource UnknownFileBorder}">
+          <Path Style="{StaticResource UnknownFilePath}"/>
+        </Border>
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <StackPanel Margin="5">
-      <!-- Thumbnails -->
-      <Grid>
+    <Grid Margin="4,4,4,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="5"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="5"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+
+      <!-- Source Thumbnail -->
+      <ContentControl
+        Content="{Binding SrcMediaItem, TargetNullValue={StaticResource UnknownFile1}}"
+        ToolTip="{Binding SrcPath}"
+        Grid.Column="0"/>
+
+      <!-- Destination Thumbnail -->
+      <ContentControl
+        Content="{Binding DestMediaItem, TargetNullValue={StaticResource UnknownFile2}}"
+        ToolTip="{Binding DestPath}"
+        Grid.Column="2"/>
+
+      <!-- Info -->
+      <Grid Grid.Column="4" Width="260" VerticalAlignment="Bottom">
         <Grid.RowDefinitions>
-          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
           <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="5"/>
-          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <!-- Source Thumbnail -->
-        <Grid Grid.Row="0" Grid.Column="0" ToolTip="{Binding SrcFileInfo.FullName}">
-          <ContentPresenter Content="{Binding SrcMediaItem}"/>
-        </Grid>
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
+        <TextBlock Text="Dimensions:" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource InfoValue}">
+          <TextBlock.Text>
+            <MultiBinding StringFormat="{}{0}x{1}">
+              <Binding Path="SrcMediaItem.Width" FallbackValue="0"/>
+              <Binding Path="SrcMediaItem.Height" FallbackValue="0"/>
+            </MultiBinding>
+          </TextBlock.Text>
+        </TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource InfoValue}">
+          <TextBlock.Text>
+            <MultiBinding StringFormat="{}{0}x{1}">
+              <Binding Path="DestMediaItem.Width" FallbackValue="0"/>
+              <Binding Path="DestMediaItem.Height" FallbackValue="0"/>
+            </MultiBinding>
+          </TextBlock.Text>
+        </TextBlock>
 
-        <!-- Destination Thumbnail -->
-        <Grid Grid.Row="0" Grid.Column="2" ToolTip="{Binding DestFileInfo.FullName}">
-          <ContentPresenter Content="{Binding DestMediaItem}"/>
-        </Grid>
+        <Rectangle Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
+        <TextBlock Text="File size:" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
+        <TextBlock Text="{Binding SrcSize}" Grid.Row="2" Grid.Column="1" Style="{StaticResource InfoValue}"/>
+        <TextBlock Text="{Binding DestSize}" Grid.Row="3" Grid.Column="1" Style="{StaticResource InfoValue}"/>
 
-        <!-- Source File Info -->
-        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
-          <TextBlock Margin="4" Text="{Binding SrcFileInfo.Length, StringFormat='File size: {0:D} B'}"/>
-          <TextBlock Margin="4" Text="{Binding SrcFileInfo.LastWriteTime, StringFormat='Modified: {0:G}'}"/>
-          <TextBlock Margin="4">
-            <TextBlock.Text>
-              <MultiBinding StringFormat="Dimensions: {0}x{1}">
-                <Binding Path="SrcMediaItem.Width"/>
-                <Binding Path="SrcMediaItem.Height"/>
-              </MultiBinding>
-            </TextBlock.Text>
-          </TextBlock>
-        </StackPanel>
+        <Rectangle Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
+        <TextBlock Text="Modified:" Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
+        <TextBlock Text="{Binding SrcLastWrite}" Grid.Row="4" Grid.Column="1" Style="{StaticResource InfoValue}"/>
+        <TextBlock Text="{Binding DestLastWrite}" Grid.Row="5" Grid.Column="1" Style="{StaticResource InfoValue}"/>
 
-        <!-- Destination File Info -->
-        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical">
-          <TextBlock Margin="4" Text="{Binding DestFileInfo.Length, StringFormat='File size: {0:D} B'}"/>
-          <TextBlock Margin="4" Text="{Binding DestFileInfo.LastWriteTime, StringFormat='Modified: {0:G}'}"/>
-          <TextBlock Margin="4">
-            <TextBlock.Text>
-              <MultiBinding StringFormat="Dimensions: {0}x{1}">
-                <Binding Path="DestMediaItem.Width"/>
-                <Binding Path="DestMediaItem.Height"/>
-              </MultiBinding>
-            </TextBlock.Text>
-          </TextBlock>
-        </StackPanel>
-      </Grid>
-
-      <!-- File Name -->
-      <StackPanel Orientation="Horizontal">
-        <Label Content="File name:"/>
+        <Rectangle Grid.Row="6" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
+        <TextBlock
+          Text="File name:"
+          Grid.Row="6"
+          Grid.Column="0"
+          VerticalAlignment="Bottom"
+          Margin="4"/>
         <TextBox
           x:Name="fileName"
           Text="{Binding FileName}"
-          Margin="5,0"
-          MinWidth="200" 
+          Grid.Row="7"
+          Grid.Column="0"
+          Grid.ColumnSpan="2"
+          Margin="4,6"
+          HorizontalAlignment="Stretch"
           VerticalAlignment="Center"
           Height="24"
           ToolTip="{x:Null}"/>
-      </StackPanel>
-    </StackPanel>
+      </Grid>
+    </Grid>
 
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding Error, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">

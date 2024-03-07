@@ -56,19 +56,23 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     RaiseItemDeleted(item);
 
   public void OnItemDeletedCommon(MediaItemM item) {
-    File.Delete(item.FilePathCache);
     item.People = null;
     item.Keywords = null;
     item.Segments = null;
 
-    if (item is RealMediaItemM rmi) {
-      rmi.Folder.MediaItems.Remove(rmi);
-      rmi.Folder = null;
-    }
+    if (item is not RealMediaItemM rmi) return;
+    rmi.Folder.MediaItems.Remove(rmi);
+    rmi.Folder = null;
   }
 
-  protected override void OnItemsDeleted(IList<MediaItemM> items) =>
+  protected override void OnItemsDeleted(IList<MediaItemM> items) {
     RaiseItemsDeleted(items);
+
+    // delete from drive
+    if (_coreR.IsCopyMoveInProgress) return;
+    CoreR.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
+    items.Select(x => x.FilePathCache).Where(File.Exists).ToList().ForEach(File.Delete);
+  }
 
   public override int GetNextId() {
     var id = ++MaxId;
@@ -95,7 +99,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     if (_supportedVideoExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
       return _coreR.Video.ItemCreate(folder, fileName);
 
-    throw new($"Can not create item. Unknown MediaItem type. {fileName}");
+    return null;
   }
 
   public void ItemRename(RealMediaItemM item, string newFileName) {
@@ -115,48 +119,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     RaiseItemRenamed(item);
   }
 
-  public void ItemMove(RealMediaItemM item, FolderM folder, string fileName) {
-    item.FileName = fileName;
-    item.Folder.MediaItems.Remove(item);
-    item.Folder = folder;
-    item.Folder.MediaItems.Add(item);
-    ModifyOnlyDA(item);
-  }
-
-  public RealMediaItemM ItemCopy(RealMediaItemM item, FolderM folder, string fileName) =>
-    item switch {
-      ImageM => ItemCopyCommon(item, _coreR.Image.ItemCreate(folder, fileName)),
-      VideoM => ItemCopyCommon(item, _coreR.Video.ItemCreate(folder, fileName)),
-      _ => null
-    };
-
-  private RealMediaItemM ItemCopyCommon(RealMediaItemM item, RealMediaItemM copy) {
-    copy.Width = item.Width;
-    copy.Height = item.Height;
-    copy.Orientation = item.Orientation;
-    copy.Rating = item.Rating;
-    copy.Comment = item.Comment;
-    copy.IsOnlyInDb = item.IsOnlyInDb;
-
-    if (item.GeoLocation != null) {
-      copy.GeoLocation = item.GeoLocation;
-      _coreR.MediaItemGeoLocation.IsModified = true;
-    }
-
-    if (item.People != null)
-      copy.People = new(item.People);
-
-    if (item.Keywords != null)
-      copy.Keywords = new(item.Keywords);
-
-    if (item.Segments != null)
-      foreach (var segment in item.Segments)
-        _coreR.Segment.ItemCopy(segment, copy);
-
-    return copy;
-  }
-
-  private void ModifyOnlyDA(RealMediaItemM mi) {
+  public void ModifyOnlyDA(RealMediaItemM mi) {
     switch (mi) {
       case ImageM img: _coreR.Image.Modify(img); break;
       case VideoM vid: _coreR.Video.Modify(vid); break;
@@ -256,9 +219,9 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   }
 
   public void RemoveSegments(IList<SegmentM> segments) {
-    foreach (var segment in segments) {
-      segment.MediaItem.Segments = segment.MediaItem.Segments.Toggle(segment, true);
-      Modify(segment.MediaItem);
+    foreach (var miSeg in segments.GroupBy(x => x.MediaItem).Where(x => x.Key.Segments != null)) {
+      miSeg.Key.Segments = miSeg.Key.Segments.Except(miSeg).ToList().NullIfEmpty();
+      Modify(miSeg.Key);
     }
     
     RaiseMetadataChanged(segments.GetMediaItems().ToArray());
