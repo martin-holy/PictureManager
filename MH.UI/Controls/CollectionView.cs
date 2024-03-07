@@ -12,8 +12,8 @@ namespace MH.UI.Controls;
 public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : class, ISelectable {
   private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
   private readonly GroupByDialog<T> _groupByDialog = new();
-  private readonly HashSet<T> _pendingRemoveItems = [];
-  private readonly HashSet<T> _pendingUpdateItems = [];
+  private readonly HashSet<T> _pendingRemove = [];
+  private readonly HashSet<T> _pendingUpdate = [];
 
   public CollectionViewGroup<T> Root { get; set; }
   public T TopItem { get; set; }
@@ -109,15 +109,10 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     ReGroupItems(items, true, true);
 
   public void ReGroupPendingItems() {
-    if (_pendingRemoveItems.Count > 0) {
-      ReGroupItems(_pendingRemoveItems.ToArray(), true);
-      _pendingRemoveItems.Clear();
-    }
-
-    if (_pendingUpdateItems.Count > 0) {
-      ReGroupItems(_pendingUpdateItems.ToArray(), false);
-      _pendingUpdateItems.Clear();
-    }
+    ReGroupItems(_pendingRemove.ToArray(), true);
+    ReGroupItems(_pendingUpdate.Except(_pendingRemove).ToArray(), false);
+    _pendingRemove.Clear();
+    _pendingUpdate.Clear();
   }
 
   public void ReGroupItems(T[] items, bool remove, bool ifContains = false) {
@@ -127,8 +122,8 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     
     if (!IsVisible) {
       foreach (var item in items) {
-        if (remove) _pendingRemoveItems.Add(item);
-        else _pendingUpdateItems.Add(item);
+        if (remove) _pendingRemove.Add(item);
+        else _pendingUpdate.Add(item);
       }
       return;
     }
