@@ -68,6 +68,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   protected override void OnItemsDeleted(IList<MediaItemM> items) {
     RaiseItemsDeleted(items);
 
+    // delete from drive
     if (_coreR.IsCopyMoveInProgress) return;
     CoreR.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
     items.Select(x => x.FilePathCache).Where(File.Exists).ToList().ForEach(File.Delete);
@@ -218,9 +219,9 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   }
 
   public void RemoveSegments(IList<SegmentM> segments) {
-    foreach (var segment in segments) {
-      segment.MediaItem.Segments = segment.MediaItem.Segments.Toggle(segment, true);
-      Modify(segment.MediaItem);
+    foreach (var miSeg in segments.GroupBy(x => x.MediaItem).Where(x => x.Key.Segments != null)) {
+      miSeg.Key.Segments = miSeg.Key.Segments.Except(miSeg).ToList().NullIfEmpty();
+      Modify(miSeg.Key);
     }
     
     RaiseMetadataChanged(segments.GetMediaItems().ToArray());
