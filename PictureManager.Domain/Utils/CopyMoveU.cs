@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Utils;
 
-// BUG there is new fileNameCache for VideoItems on Copy mode as well like in segments
 public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   private readonly FileOperationDialogM _dlg = new($"File Operation ({mode})");
   private readonly Dictionary<MediaItemM, string> _renamed = new();
   private readonly HashSet<MediaItemM> _replaced = [];
   private readonly List<(SegmentM, SegmentM)> _segments = [];
+  private readonly List<(VideoItemM, VideoItemM)> _videoItems = [];
 
   public HashSet<MediaItemM> Skipped = [];
 
@@ -73,6 +73,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     await Task.Run(() => CopyMoveFolderRecursive(src, dest));
     CopyMoveFolderInDBRecursive(src, dest);
     CopySegmentsCacheOnDrive();
+    CopyVideoItemsCacheOnDrive();
     return true;
   }
 
@@ -81,6 +82,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     await Task.Run(() => CopyMoveMediaItemsFiles(items, dest));
     CopyMoveMediaItemsInDB(items, dest);
     CopySegmentsCacheOnDrive();
+    CopyVideoItemsCacheOnDrive();
     return true;
   }
 
@@ -251,14 +253,15 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
 
   private void CopyMoveCacheOnDrive(MediaItemM mi, string srcPathCache, string targetPathCache, string targetFileName) {
     if (mi == null) return;
-    var mis = mi is VideoM vid ? [..vid.GetVideoItems()] : new List<MediaItemM>();
-    mis.Add(mi);
+    var mis = new List<MediaItemM> { mi };
+    var fileNames = new List<(string, string)>();
 
-    var fileNames = new List<(string, string)>(
-      mis.Select(x => (x.FileNameCache(x.FileName), x.FileNameCache(targetFileName))));
-    
-    if (mode == FileOperationMode.Move)
+    if (mode == FileOperationMode.Move) {
+      if (mi is VideoM vid) mis.AddRange(vid.GetVideoItems());
       fileNames.AddRange(mis.GetSegments().Select(x => (x.FileNameCache, x.FileNameCache)));
+    }
+
+    fileNames.AddRange(mis.Select(x => (x.FileNameCache(x.FileName), x.FileNameCache(targetFileName))));
 
     try {
       foreach (var fileName in fileNames) {
@@ -274,14 +277,24 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   }
 
   private void CopySegmentsCacheOnDrive() {
+    CopyCacheOnDrive(_segments
+      .GroupBy(x => x.Item2.MediaItem.Folder)
+      .Select(x => (x.Key.FullPathCache, x.Select(y => (y.Item1.FilePathCache, y.Item2.FilePathCache)))));
+  }
+
+  private void CopyVideoItemsCacheOnDrive() =>
+    CopyCacheOnDrive(_videoItems
+      .GroupBy(x => x.Item2.Folder)
+      .Select(x => (x.Key.FullPathCache, x.Select(y => (y.Item1.FilePathCache, y.Item2.FilePathCache)))));
+
+  private void CopyCacheOnDrive(IEnumerable<(string, IEnumerable<(string, string)>)> folders) {
     if (mode != FileOperationMode.Copy) return;
     try {
-      foreach (var folder in _segments.GroupBy(x => x.Item2.MediaItem.Folder)) {
-        Directory.CreateDirectory(folder.Key.FullPathCache);
-        foreach (var (srcS, destS) in folder) {
-          var src = srcS.FilePathCache;
+      foreach (var folder in folders) {
+        Directory.CreateDirectory(folder.Item1);
+        foreach (var (src, dest) in folder.Item2) {
           if (!File.Exists(src)) continue;
-          CopyMoveFileOnDrive(src, destS.FilePathCache);
+          CopyMoveFileOnDrive(src, dest);
         }
       }
     }
@@ -321,6 +334,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
       vcCopy.Volume = vc.Volume;
       vcCopy.Speed = vc.Speed;
       MediaItemCopyCommon(vc, vcCopy);
+      _videoItems.Add((vc, vcCopy));
     }
   }
 
@@ -330,6 +344,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     foreach (var vi in vid.VideoImages) {
       var viCopy = coreR.VideoImage.CustomItemCreate(copy, vi.TimeStart);
       MediaItemCopyCommon(vi, viCopy);
+      _videoItems.Add((vi, viCopy));
     }
   }
 
