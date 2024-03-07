@@ -6,7 +6,6 @@ using PictureManager.Domain.Repositories;
 using PictureManager.Domain.Services;
 using PictureManager.Domain.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,8 +22,6 @@ public sealed class Core {
   public static CoreVM VM { get; private set; }
   public static Settings Settings { get; } = Settings.Load();
 
-  public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
-  public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public static Func<double> GetDisplayScale { get; set; }
 
   private Core() {
@@ -166,19 +163,10 @@ public sealed class Core {
     R.Folder.ItemDeletedEvent += (_, e) => {
       R.FavoriteFolder.ItemDeleteByFolder(e.Data);
       R.MediaItem.ItemsDelete(e.Data.MediaItems.Cast<MediaItemM>().ToArray());
-      FolderS.DeleteFromDisk(e.Data);
     };
 
     R.Folder.ItemsDeletedEvent += (_, _) =>
       R.FolderKeyword.Reload();
-
-    S.Folder.ItemCopiedEvent += (_, _) =>
-      R.FolderKeyword.Reload();
-
-    S.Folder.ItemMovedEvent += (_, _) => {
-      R.FolderKeyword.Reload();
-      VM.MainWindow.StatusBar.UpdateFilePath();
-    };
   }
 
   private static void AttachGeoLocationsEventHandlers() {
@@ -258,8 +246,6 @@ public sealed class Core {
         else
           VM.MediaViewer.Remove(e.Data[0], VM.MediaItem.Current);
       }
-      
-      FileOperationDelete(e.Data.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
     };
 
     VM.MediaItem.PropertyChanged += (_, e) => {

@@ -1,13 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Repositories;
 
 public sealed class CoreR : SimpleDB {
+  public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
+  public static FileOperationDeleteFunc FileOperationDelete { get; set; }
+  public bool IsCopyMoveInProgress { get; set; }
+
   public CategoryGroupR CategoryGroup { get; }
   public FavoriteFolderR FavoriteFolder { get; }
   public FolderKeywordR FolderKeyword { get; }
