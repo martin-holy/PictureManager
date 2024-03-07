@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Utils;
 
-// BUG segment on replaced mi not removed from SegmentsMatching before removing Folder from mi
+// BUG there is new fileNameCache for VideoItems on Copy mode as well like in segments
 public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   private readonly FileOperationDialogM _dlg = new($"File Operation ({mode})");
   private readonly Dictionary<MediaItemM, string> _renamed = new();
@@ -320,7 +320,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
       vcCopy.TimeEnd = vc.TimeEnd;
       vcCopy.Volume = vc.Volume;
       vcCopy.Speed = vc.Speed;
-      copy.VideoClips.Add(MediaItemCopyCommon(vc, vcCopy));
+      MediaItemCopyCommon(vc, vcCopy);
     }
   }
 
@@ -329,11 +329,11 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     copy.VideoImages = [];
     foreach (var vi in vid.VideoImages) {
       var viCopy = coreR.VideoImage.CustomItemCreate(copy, vi.TimeStart);
-      copy.VideoImages.Add(MediaItemCopyCommon(vi, viCopy));
+      MediaItemCopyCommon(vi, viCopy);
     }
   }
 
-  private T MediaItemCopyCommon<T>(T mi, T copy) where T : MediaItemM {
+  private void MediaItemCopyCommon(MediaItemM mi, MediaItemM copy) {
     copy.Rating = mi.Rating;
     copy.Comment = mi.Comment;
 
@@ -351,8 +351,6 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     if (mi.Segments != null)
       foreach (var segment in mi.Segments)
         _segments.Add(new(segment, coreR.Segment.ItemCopy(segment, copy)));
-
-    return copy;
   }
 
   private void MediaItemMove(RealMediaItemM item, FolderM folder) {
