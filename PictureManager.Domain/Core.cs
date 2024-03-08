@@ -269,6 +269,11 @@ public sealed class Core {
   }
 
   private static void AttachPeopleEventHandlers() {
+    R.Person.ItemCreatedEvent += (_, e) => {
+      VM.MainWindow.ToolsTabs.PeopleTab?.Update(e.Data, false);
+      VM.People?.Update(e.Data, false);
+    };
+
     R.Person.ItemRenamedEvent += (_, e) =>
       R.MediaItem.ModifyIfContains(e.Data);
 
