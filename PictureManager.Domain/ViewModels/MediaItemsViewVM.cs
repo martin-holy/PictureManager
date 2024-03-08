@@ -172,12 +172,12 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       var mediaItems = folder.MediaItems.ToDictionary(x => x.FileName);
 
       // get new items from folder
-      newItems.AddRange(from file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)
-        where MediaItemS.IsSupportedFileType(file)
-        select Path.GetFileName(file)
-        into fileName
-        where !mediaItems.Remove(fileName)
-        select new MediaItemMetadata(Core.R.MediaItem.ItemCreate(folder, fileName)));
+      foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
+        var fileName = Path.GetFileName(file);
+        if (mediaItems.Remove(fileName)) continue;
+        if (Core.R.MediaItem.ItemCreate(folder, fileName) is not { } mi) continue;
+        newItems.Add(new(mi));
+      }
 
       // remove MediaItems deleted outside of this application
       Core.R.MediaItem.ItemsDelete(mediaItems.Values.Cast<MediaItemM>().ToArray());
