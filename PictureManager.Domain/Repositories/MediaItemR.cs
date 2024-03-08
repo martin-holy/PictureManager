@@ -239,6 +239,8 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     item switch {
       RatingTreeM rating => GetItems(rating.Rating),
       PersonM person => GetItems(person),
+      PersonM[] people => GetItems(people),
+      SegmentM[] segments => GetItems(segments),
       KeywordM keyword => GetItems(keyword, recursive),
       GeoNameM geoName => GetItems(geoName, recursive),
       _ => Array.Empty<MediaItemM>()
@@ -261,6 +263,12 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     GetAll(mi => mi.People?.Contains(person) == true ||
                  mi.Segments?.Any(s => s.Person == person) == true)
       .OrderBy(mi => mi.FileName);
+
+  public IEnumerable<MediaItemM> GetItems(PersonM[] people) =>
+    GetAll(mi => mi.GetPeople().Intersect(people).Any()).OrderBy(mi => mi.FileName);
+
+  public IEnumerable<MediaItemM> GetItems(SegmentM[] segments) =>
+    segments.GetMediaItems();
 
   public void Rotate(RealMediaItemM[] items, Orientation rotation) {
     foreach (var mi in items) {

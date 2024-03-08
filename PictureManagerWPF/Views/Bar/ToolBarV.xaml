@@ -130,6 +130,7 @@
           <Separator/>
 
           <mhc:IconButton Command="vm:ToolsTabsVM.OpenPeopleTabCommand"/>
+          <mhc:IconButton Command="vme:MediaItemVM.LoadByPeopleOrSegmentsCommand"/>
           
           <!-- Presentation ToolBar -->
           <StackPanel
