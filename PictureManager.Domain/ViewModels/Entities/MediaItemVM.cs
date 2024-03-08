@@ -30,6 +30,7 @@ public sealed class MediaItemVM : ObservableObject {
   public static RelayCommand<GeoNameM> LoadByGeoNameCommand { get; set; }
   public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; }
   public static RelayCommand<PersonM> LoadByPersonCommand { get; set; }
+  public static RelayCommand LoadByPeopleOrSegmentsCommand { get; set; }
   public static RelayCommand RenameCommand { get; set; }
   public static RelayCommand ViewSelectedCommand { get; set; }
 
@@ -41,6 +42,7 @@ public sealed class MediaItemVM : ObservableObject {
     LoadByGeoNameCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPersonCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
+    LoadByPeopleOrSegmentsCommand = new(LoadByPeopleOrSegments, Res.IconImageMultiple, "Load Media items with selected People or Segments");
     RenameCommand = new(Rename, () => Current is RealMediaItemM, null, "Rename");
     ViewSelectedCommand = new(ViewSelected, CanViewSelected, Res.IconImageMultiple, "View selected");
   }
@@ -61,6 +63,31 @@ public sealed class MediaItemVM : ObservableObject {
 
   private void LoadBy(object o) =>
     _coreVM.MediaItem.Views.LoadByTag(o);
+
+  private void LoadByPeopleOrSegments() {
+    var md = new MessageDialog(
+      "Load Media items",
+      "Do you want to load Media items from selected People or Segments?",
+      Res.IconImageMultiple,
+      true);
+
+    md.Buttons = new DialogButton[] {
+      new(md.SetResult(1, Res.IconPeople, "People"), true),
+      new(md.SetResult(2, Res.IconSegment, "Segments"))
+    };
+
+    var result = Dialog.Show(md);
+    if (result < 1) return;
+
+    var items = result switch {
+      1 => Core.S.Person.Selected.Items.ToArray(),
+      2 => Core.S.Segment.Selected.Items.ToArray(),
+      _ => Array.Empty<object>()
+    };
+
+    if (items.Length == 0) return;
+    _coreVM.MediaItem.Views.LoadByTag(items);
+  }
 
   private void ViewSelected() {
     var items = Views.Current.Selected.Items.ToList();

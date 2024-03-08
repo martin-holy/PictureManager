@@ -130,6 +130,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       : item switch {
         RatingTreeM rating => rating.Rating.Value.ToString(),
         PersonM person => person.Name,
+        PersonM[] => "By People",
+        SegmentM[] => "By Segments",
         KeywordM keyword => keyword.Name,
         GeoNameM geoName => geoName.Name,
         _ => string.Empty
