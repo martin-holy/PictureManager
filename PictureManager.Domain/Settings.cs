@@ -53,7 +53,12 @@ public sealed class Settings {
   }
 
   public static Settings CreateNew() =>
-    new Settings().Init();
+    new Settings {
+      Common = new(),
+      GeoName = new(),
+      ImagesToVideo = new(),
+      MediaItem = new()
+    }.Init();
 
   public Settings Init() {
     AttachEvents(new ObservableObject[] { Common, GeoName, ImagesToVideo, MediaItem });
