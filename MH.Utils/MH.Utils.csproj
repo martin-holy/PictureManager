@@ -4,12 +4,19 @@
     <TargetFramework>net8.0</TargetFramework>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <AssemblyVersion>1.52.0</AssemblyVersion>
-    <FileVersion>1.52.0</FileVersion>
-    <Version>1.52.0</Version>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Year>$([System.DateTime]::Now.ToString("yy"))</Year>
+    <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
+    <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
+    <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
+    <Version>$(Year).$(Month).$(Date).$(Time)</Version>
+    <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
+    <FileVersion>$(Year).$(Month).$(Date).$(Time)</FileVersion>
   </PropertyGroup>
 
 </Project>
