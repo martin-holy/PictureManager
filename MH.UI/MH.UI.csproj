@@ -9,6 +9,16 @@
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Year>$([System.DateTime]::Now.ToString("yy"))</Year>
+    <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
+    <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
+    <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
+    <Version>$(Year).$(Month).$(Date).$(Time)</Version>
+    <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
+    <FileVersion>$(Year).$(Month).$(Date).$(Time)</FileVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\MH.Utils\MH.Utils.csproj" />
   </ItemGroup>
