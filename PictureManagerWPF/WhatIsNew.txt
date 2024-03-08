@@ -4,6 +4,8 @@
 [B] - Bug fix
 
 Latest:
+ - [N] Load Media items by selected People or Segments
+ - [U] SegmentsDrawer icon on tab
  - [N] Add newly created person to People views
  - [U] PeopleToolsTab don't reload when empty
  - [U] CopyMove rewrite
