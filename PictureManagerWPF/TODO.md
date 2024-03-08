@@ -16,8 +16,6 @@
   - read only drives and creating thumbnails
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
-  - Skipped items while moving are removed from MediaItemsView
-  - move media items: segments cache not copied
 ## Video Items (VideoImage and VideoClip)
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
@@ -36,6 +34,7 @@
         # MH.UI
 ## CollectionView
   - don't show expanded root if source is empty
+  - method Add or Insert => Update(e.Data, false)
 
 
         # Picture Manager
@@ -62,9 +61,10 @@
   - do Init and Start in constructor
 ## LoadByFolder
   - remove double check for file type
-## PeopleToolsTab
-  - Add newly created person
-  - don't reload on dialog cancel
+## Core
+  - use named methods for events
+  - split repository and view-model events handling
+    so maybe don't do events handling in EntityR but in CoreR
 
 
                                     *** NEW ***
