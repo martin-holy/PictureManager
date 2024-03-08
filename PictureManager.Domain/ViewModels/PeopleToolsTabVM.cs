@@ -36,6 +36,9 @@ public sealed class PeopleToolsTabVM : CollectionViewPeople {
     };
   }
 
-  public void Reload(PersonM[] people) =>
-    Reload((people ?? GetPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList(), GroupMode.ThenByRecursive, null, true);
+  public void Reload(PersonM[] people) {
+    var src = (people ?? GetPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList();
+    if (src.Count == 0) return;
+    Reload(src, GroupMode.ThenByRecursive, null, true);
+  }
 }
