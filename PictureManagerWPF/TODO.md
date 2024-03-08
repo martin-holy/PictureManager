@@ -43,7 +43,6 @@
   - Log button
   - CoreUI with interfaces for CoreM and CoreVM
   - replace Contains with ReferenceEquals
-  - change icon for segments drawer
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
 ## Keywords
@@ -59,8 +58,6 @@
   - use Filter on MediaItem type in LoadByTag GetItems
 ## ProgressBarAsyncDialog
   - do Init and Start in constructor
-## LoadByFolder
-  - remove double check for file type
 ## Core
   - use named methods for events
   - split repository and view-model events handling
@@ -74,7 +71,6 @@
     if the point is more away from the slider => change value is smaller
     and if is closer => change value is bigger
     (or zooming time line)
-  - show media items with selected people
   - sort MediaItems and Segments by color of Thumb image
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
