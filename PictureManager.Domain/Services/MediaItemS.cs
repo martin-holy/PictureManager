@@ -11,8 +11,6 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain.Services;
 
 public sealed class MediaItemS(MediaItemR r) : ObservableObject {
-  private static readonly string[] _supportedExts = { ".jpg", ".jpeg", ".mp4" };
-
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
 
   public void Delete(MediaItemM[] items) =>
@@ -23,9 +21,6 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
     r.ItemsDelete(new[] { mi });
     return false;
   }
-
-  public static bool IsSupportedFileType(string filePath) =>
-    _supportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
 
   public void OnMetadataReloaded(RealMediaItemM[] items) {
     r.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
