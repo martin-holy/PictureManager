@@ -212,29 +212,7 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 # MyStuff
-FastPictureManager_2015_10_18.zip
-PictureManager před čištěním.7z
-PictureManager_pred prespisem do WPF.zip
-PictureManager_WinForms/
-/PictureManagerWPF/user.config
-/SimpleDB55k.zip
-/PictureManagerWPF_SQLite_version.zip
-/PictureManagerWPF_SQLite_version/ThumbnailCreator.exe
-/PictureManagerWPF_SQLite_version/System.Windows.Interactivity.dll
-/PictureManagerWPF_SQLite_version/System.Data.SQLite.dll
-/PictureManagerWPF_SQLite_version/PictureManager_SQLite.exe
-/PictureManagerWPF_SQLite_version/MahApps.Metro.dll
-/PictureManagerWPF_SQLite_version/Gu.Wpf.Media.dll
-/PictureManagerWPF_SQLite_version/data.db
-/PictureManagerWPF_SQLite_version/ControlzEx.dll
-/PictureManagerWPF_2019_08_06.7z
-/PictureManagerWPF_2019_09_06.7z
-/PictureManagerWPF_2020_04_15.7z
-/MigrationBackup/af5da076/PictureManagerWPF
-/PictureManagerWPF_2021_06_23.7z
-/PictureManager With Face Detection exe.7z
+Temp/
 /.idea/.idea.PictureManager/.idea
-/PictureManagerWPF_2022_01_18.zip
-/PictureManagerWPF_2022_04_26.zip
 *.bkp
 *.dtmp
