@@ -4,6 +4,9 @@
 [B] - Bug fix
 
 Latest:
+ - [N] Load People by group (in menu)
+
+24.03.08.1818:
  - [N] Load Media items by selected People or Segments
  - [U] SegmentsDrawer icon on tab
  - [N] Add newly created person to People views
@@ -22,7 +25,7 @@ Latest:
  - [U] Close tree search on mouse leave
  - [B] Load only Images and Videos in MediaItemsView
 
- 24.02.24.1414:
+24.02.24.1414:
  - [U] PeopleToolsTab GroupMode.ThenByRecursive by default
  - [N] Load MediaItems, People or Segments from pop-up menu on Person, Keyword and GeoName in tree
  - [B] Selecting TreeSearch result select tree item under result as well
