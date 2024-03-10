@@ -10,7 +10,8 @@ namespace PictureManager.Domain.Models;
 /// <summary>
 /// DB fields: ID|Name|Category|GroupItems
 /// </summary>
-public sealed class CategoryGroupM : TreeItem, IEquatable<CategoryGroupM>, ITreeGroup {
+public class CategoryGroupM(int id, string name, Category category, string icon)
+  : TreeItem(icon, name), IEquatable<CategoryGroupM>, ITreeGroup {
   #region IEquatable implementation
   public bool Equals(CategoryGroupM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as CategoryGroupM);
@@ -19,13 +20,8 @@ public sealed class CategoryGroupM : TreeItem, IEquatable<CategoryGroupM>, ITree
   public static bool operator !=(CategoryGroupM a, CategoryGroupM b) => !(a == b);
   #endregion
 
-  public int Id { get; }
-  public Category Category { get; }
-
-  public CategoryGroupM(int id, string name, Category category, string icon) : base(icon, name) {
-    Id = id;
-    Category = category;
-  }
+  public int Id { get; } = id;
+  public Category Category { get; } = category;
 }
 
 public static class CategoryGroupExtensions {

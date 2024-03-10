@@ -83,7 +83,8 @@ namespace PictureManager.Domain {
       { typeof(GeoNameM), "TreeContextMenuGeoName" },
       { typeof(ViewersTreeCategory), "TreeContextMenuViewers" },
       { typeof(ViewerM), "TreeContextMenuViewer" },
-      { typeof(CategoryGroupM), "TreeContextMenuGroup" }
+      { typeof(KeywordCategoryGroupM), "TreeContextMenuKeywordGroup" },
+      { typeof(PersonCategoryGroupM), "TreeContextMenuPersonGroup" }
     };
 
     public static string CategoryToIcon(Category category) =>
