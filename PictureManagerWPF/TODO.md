@@ -71,7 +71,6 @@
     if the point is more away from the slider => change value is smaller
     and if is closer => change value is bigger
     (or zooming time line)
-  - sort MediaItems and Segments by color of Thumb image
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
     so I can choice how to display filtered data: in MediaItemsView or MediaViewer
