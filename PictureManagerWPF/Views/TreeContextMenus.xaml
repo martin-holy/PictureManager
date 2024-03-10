@@ -15,6 +15,12 @@
     <MenuItem Command="vm:MediaItemsViewsVM.FilterSetNotCommand" CommandParameter="{Binding}"/>
   </x:Array>
 
+  <x:Array Type="{x:Type sys:Object}" x:Key="TreeContextMenuGroupCommon" x:Shared="False">
+    <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.GroupRenameCommand" CommandParameter="{Binding}"/>
+    <MenuItem Command="mhuibc:TreeCategory.GroupDeleteCommand" CommandParameter="{Binding}"/>
+  </x:Array>
+
   <!-- People -->
   <ContextMenu x:Key="TreeContextMenuPeople" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
     <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
@@ -59,11 +65,21 @@
     <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
   </ContextMenu>
   
-   <!-- Tree Category Group -->
-  <ContextMenu x:Key="TreeContextMenuGroup" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
-    <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
-    <MenuItem Command="mhuibc:TreeCategory.GroupRenameCommand" CommandParameter="{Binding}"/>
-    <MenuItem Command="mhuibc:TreeCategory.GroupDeleteCommand" CommandParameter="{Binding}"/>
+   <!-- Tree Category Keyword Group -->
+  <ContextMenu
+    x:Key="TreeContextMenuKeywordGroup"
+    ItemsSource="{StaticResource TreeContextMenuGroupCommon}"
+    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}"/>
+
+  <!-- Tree Category Person Group -->
+  <ContextMenu x:Key="TreeContextMenuPersonGroup" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
+    <ContextMenu.ItemsSource>
+      <CompositeCollection>
+        <CollectionContainer Collection="{StaticResource TreeContextMenuGroupCommon}"/>
+        <Separator/>
+        <MenuItem Command="vme:PersonVM.LoadByCategoryGroupCommand" CommandParameter="{Binding}"/>
+      </CompositeCollection>
+    </ContextMenu.ItemsSource>
   </ContextMenu>
   
   <!-- Drive -->

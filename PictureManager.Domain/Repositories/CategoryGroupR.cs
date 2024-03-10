@@ -23,7 +23,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>("Cate
 
   public override CategoryGroupM FromCsv(string[] csv) {
     var category = (Category)int.Parse(csv[2]);
-    return new(int.Parse(csv[0]), csv[1], category, Res.CategoryToIcon(category));
+    return GetNew(int.Parse(csv[0]), csv[1], category);
   }
 
   public override string ToCsv(CategoryGroupM cg) =>
@@ -57,11 +57,19 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>("Cate
 
   public override CategoryGroupM ItemCreate(ITreeItem parent, string name) {
     var cat = (Category)Tree.GetParentOf<ITreeCategory>(parent).Id;
-    var group = new CategoryGroupM(GetNextId(), name, cat, Res.CategoryToIcon(cat)) { Parent = parent };
+    var group = GetNew(GetNextId(), name, cat);
+    group.Parent = parent;
     group.Items.CollectionChanged += GroupItems_CollectionChanged;
 
     return TreeItemCreate(group);
   }
+
+  private static CategoryGroupM GetNew(int id, string name, Category cat) =>
+    cat switch {
+      Category.Keywords => new KeywordCategoryGroupM(id, name, cat, Res.CategoryToIcon(cat)),
+      Category.People => new PersonCategoryGroupM(id, name, cat, Res.CategoryToIcon(cat)),
+      _ => null
+    };
 
   public override string ValidateNewItemName(ITreeItem parent, string name) =>
     parent.Items
