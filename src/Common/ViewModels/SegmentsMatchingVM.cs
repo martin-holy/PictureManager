@@ -1,16 +1,16 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Services;
+using PictureManager.Common.CollectionViews;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class SegmentsMatchingVM : ObservableObject {
   public CanDragFunc CanDragFunc { get; }

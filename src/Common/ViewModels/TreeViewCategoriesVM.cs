@@ -2,13 +2,13 @@
 using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.TreeCategories;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.TreeCategories;
 using System;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class TreeViewCategoriesVM : TabControl {
   public TreeViewSearchVM TreeViewSearch { get; }

@@ -2,13 +2,13 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Utils;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Utils;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Dialogs;
+namespace PictureManager.Common.Dialogs;
 
 public sealed class FileOperationCollisionDialogM : Dialog {
   private readonly FolderM _destFolder;

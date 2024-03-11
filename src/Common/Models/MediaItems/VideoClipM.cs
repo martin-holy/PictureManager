@@ -1,7 +1,7 @@
 ﻿using MH.UI.Interfaces;
 using MH.Utils.Extensions;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Common.Models.MediaItems;
 
 public sealed class VideoClipM : VideoItemM, IVideoClip {
   private int _timeEnd;

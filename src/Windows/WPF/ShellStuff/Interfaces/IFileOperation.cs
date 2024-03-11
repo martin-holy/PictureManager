@@ -3,7 +3,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace PictureManager.ShellStuff.Interfaces {
+namespace PictureManager.Windows.WPF.ShellStuff.Interfaces {
   [ComImport]
   [Guid("947aab5f-0a5c-4c13-b4d6-4bf7836fc9f8")]
   [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

@@ -1,10 +1,10 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Repositories;
 using System.Linq;
 
-namespace PictureManager.Domain.Services;
+namespace PictureManager.Common.Services;
 
 public sealed class ViewerS(ViewerR r) : ObservableObject {
   private ViewerM _current;

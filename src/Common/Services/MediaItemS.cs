@@ -1,14 +1,14 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.HelperClasses;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.HelperClasses;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Repositories;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Services;
+namespace PictureManager.Common.Services;
 
 public sealed class MediaItemS(MediaItemR r) : ObservableObject {
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }

@@ -2,12 +2,12 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Interfaces;
+using PictureManager.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Common.Models;
 
 /// <summary>
 /// DB fields: ID|Name|Parent

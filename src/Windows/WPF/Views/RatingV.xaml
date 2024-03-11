@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:pmConv="clr-namespace:PictureManager.Converters">
+  xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
+  xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters">
 
   <DataTemplate DataType="{x:Type m:RatingM}">
     <Grid>

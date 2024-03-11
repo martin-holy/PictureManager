@@ -1,10 +1,10 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
+using PictureManager.Common.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: ID|Lat|Lng|GeoName

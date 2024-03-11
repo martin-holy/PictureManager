@@ -2,7 +2,7 @@
 using MH.Utils;
 using MH.Utils.Extensions;
 
-namespace PictureManager.Converters;
+namespace PictureManager.Windows.WPF.Converters;
 
 public class OrientationToAngleConverter : BaseConverter {
   private static readonly object _lock = new();

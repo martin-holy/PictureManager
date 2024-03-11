@@ -1,11 +1,11 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace PictureManager.ViewModels {
+namespace PictureManager.Windows.WPF.ViewModels {
   public static class MediaItemVideoPreviewVM {
     public static MediaElement VideoPreview { get; }
     public static RelayCommand<Grid> ShowVideoPreviewCommand { get; }

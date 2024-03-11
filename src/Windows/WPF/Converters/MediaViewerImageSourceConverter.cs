@@ -1,9 +1,9 @@
 ﻿using MH.UI.WPF.Converters;
 using MH.Utils;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
 using System;
 
-namespace PictureManager.Converters;
+namespace PictureManager.Windows.WPF.Converters;
 
 public class MediaViewerImageSourceConverter : BaseConverter {
   private static readonly object _lock = new();

@@ -4,16 +4,16 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Repositories;
-using PictureManager.Domain.Services;
-using PictureManager.Domain.Utils;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Repositories;
+using PictureManager.Common.Services;
+using PictureManager.Common.Utils;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.TreeCategories;
+namespace PictureManager.Common.TreeCategories;
 
 public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
   public FoldersTreeCategory(FolderR r) :

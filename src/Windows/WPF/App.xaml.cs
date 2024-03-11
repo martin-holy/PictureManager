@@ -1,12 +1,12 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain;
-using PictureManager.Domain.Dialogs;
-using PictureManager.Views;
+using PictureManager.Common;
+using PictureManager.Common.Dialogs;
+using PictureManager.Windows.WPF.Views;
 using System;
 using System.Windows;
 using System.Windows.Input;
 
-namespace PictureManager {
+namespace PictureManager.Windows.WPF {
   public partial class App {
     public static Core Core => (Core)Current.Properties[nameof(AppProperty.Core)];
     public static AppCore Ui => (AppCore)Current.Properties[nameof(AppProperty.Ui)];

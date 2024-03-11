@@ -1,7 +1,7 @@
 ﻿using MH.UI.WPF.Converters;
 using System.Collections.Generic;
 
-namespace PictureManager.Converters; 
+namespace PictureManager.Windows.WPF.Converters;
 
 public class MarkedTagsItemsCountConverter : BaseMultiConverter {
   private static readonly object _lock = new();

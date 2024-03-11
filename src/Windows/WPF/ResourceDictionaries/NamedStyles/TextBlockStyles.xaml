@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pm="clr-namespace:PictureManager"
-  xmlns:pmConv="clr-namespace:PictureManager.Converters"
+  xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
+  xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <!-- STextBlock -->

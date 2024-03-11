@@ -1,6 +1,6 @@
 ﻿using MH.UI.Interfaces;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Common.Models.MediaItems;
 
 public sealed class VideoImageM(int id, VideoM video, int timeStart) : VideoItemM(id, video, timeStart), IVideoImage {
   public override string FileNameCache(string fileName) =>

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace PictureManager.ShellStuff {
+namespace PictureManager.Windows.WPF.ShellStuff {
   public static class FileInformation {
     internal static object[] GetVideoMetadata(string dirPath, string fileName) {
       var shl = new Shell32.Shell();

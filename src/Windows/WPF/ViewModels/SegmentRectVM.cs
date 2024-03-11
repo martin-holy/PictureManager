@@ -1,11 +1,11 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Services;
+using PictureManager.Common;
+using PictureManager.Common.Models;
+using PictureManager.Common.Services;
 using System.Windows;
 using System.Windows.Input;
 
-namespace PictureManager.ViewModels;
+namespace PictureManager.Windows.WPF.ViewModels;
 
 public sealed class SegmentRectVM : ObservableObject {
   private IInputElement _view;

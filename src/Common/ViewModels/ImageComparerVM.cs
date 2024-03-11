@@ -1,11 +1,11 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class ImageComparerVM : ObservableObject {
   private readonly Dictionary<object, long> _avgHashes = new();

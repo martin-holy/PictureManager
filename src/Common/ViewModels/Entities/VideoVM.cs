@@ -1,13 +1,13 @@
 ﻿using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.CollectionViews;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.ViewModels.Entities;
+namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class VideoVM : ObservableObject {
   private VideoM _current;

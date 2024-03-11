@@ -3,7 +3,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using System;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Common.Models;
 
 /// <summary>
 /// DB fields: ID|Name|ToponymName|FCode|Parent

@@ -1,14 +1,14 @@
 using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Dialogs;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Services;
+namespace PictureManager.Common.Services;
 
 public sealed class SegmentS : ObservableObject {
   public SegmentR DataAdapter { get; set; }

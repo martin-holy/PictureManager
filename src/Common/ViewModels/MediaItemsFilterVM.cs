@@ -1,13 +1,13 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Interfaces;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class MediaItemsFilterVM : ObservableObject {
   private bool _showImages = true;

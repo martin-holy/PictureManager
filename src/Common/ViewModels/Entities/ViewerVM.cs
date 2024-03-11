@@ -1,14 +1,14 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Repositories;
-using PictureManager.Domain.Services;
+using PictureManager.Common.Models;
+using PictureManager.Common.Repositories;
+using PictureManager.Common.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.ViewModels.Entities;
+namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class ViewerVM : ObservableObject {
   private readonly ViewerR _r;

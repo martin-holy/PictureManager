@@ -4,8 +4,8 @@
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhuiint="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+  xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
+  xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 

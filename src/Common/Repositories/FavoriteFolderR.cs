@@ -1,10 +1,10 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.TreeCategories;
+using PictureManager.Common.Models;
+using PictureManager.Common.TreeCategories;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: ID|Folder|Title

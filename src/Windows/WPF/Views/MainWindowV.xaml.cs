@@ -1,7 +1,7 @@
-﻿using PictureManager.Domain;
-using PictureManager.ViewModels;
+﻿using PictureManager.Common;
+using PictureManager.Windows.WPF.ViewModels;
 
-namespace PictureManager.Views;
+namespace PictureManager.Windows.WPF.Views;
 
 public partial class MainWindowV {
   public MainWindowV() {

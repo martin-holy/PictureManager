@@ -1,17 +1,17 @@
 ﻿using MH.UI.HelperClasses;
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Services;
-using PictureManager.Domain.ViewModels;
-using PictureManager.Domain.ViewModels.Entities;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Services;
+using PictureManager.Common.ViewModels;
+using PictureManager.Common.ViewModels.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Utils;
+namespace PictureManager.Common.Utils;
 
 public static class VideoThumbsU {
   private static HashSet<MediaItemM> _workingOn;

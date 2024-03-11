@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace PictureManager.Utils;
+namespace PictureManager.Windows.WPF.Utils;
 
 public static class Imaging {
   public static BitmapImage GetBitmapImage(string filePath, Orientation orientation) {

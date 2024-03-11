@@ -1,9 +1,9 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: ID|MediaItem|Time|Rating|Comment|People|Keywords

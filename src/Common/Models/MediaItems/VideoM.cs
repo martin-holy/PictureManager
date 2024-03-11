@@ -1,9 +1,9 @@
 ﻿using MH.Utils.Extensions;
-using PictureManager.Domain.Interfaces;
+using PictureManager.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Common.Models.MediaItems;
 
 public sealed class VideoM(int id, FolderM folder, string fileName) : RealMediaItemM(id, folder, fileName) {
   public bool HasVideoItems => GetVideoItems().Any();

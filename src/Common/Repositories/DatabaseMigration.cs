@@ -1,11 +1,11 @@
-﻿using System;
+﻿using MH.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MH.Utils;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 public static class DatabaseMigration {
   public static void Resolver(int oldVersion, int newVersion) {

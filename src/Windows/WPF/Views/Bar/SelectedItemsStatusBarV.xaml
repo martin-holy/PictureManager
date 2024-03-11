@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+  xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
 
   <DataTemplate x:Key="PM.Views.SelectedItemsStatusBarV" DataType="{x:Type pmd:Core}">
     <DataTemplate.Resources>

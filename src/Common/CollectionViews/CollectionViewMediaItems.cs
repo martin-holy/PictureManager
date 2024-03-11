@@ -1,12 +1,12 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.CollectionViews;
+namespace PictureManager.Common.CollectionViews;
 
 public class CollectionViewMediaItems : CollectionView<MediaItemM> {
   private double _thumbScale;

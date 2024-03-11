@@ -1,11 +1,11 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Dialogs;
+using PictureManager.Common.Models;
+using PictureManager.Common.Repositories;
 using System.Linq;
 
-namespace PictureManager.Domain.TreeCategories;
+namespace PictureManager.Common.TreeCategories;
 
 public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
   private CategoryGroupM _unknownGroup;

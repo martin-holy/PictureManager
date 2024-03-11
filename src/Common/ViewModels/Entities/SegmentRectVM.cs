@@ -1,10 +1,10 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Services;
+using PictureManager.Common.Models;
+using PictureManager.Common.Services;
 using System;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.ViewModels.Entities;
+namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class SegmentRectVM : ObservableObject {
   public List<Tuple<int, int, int, bool>> SegmentToolTipRects { get; private set; }

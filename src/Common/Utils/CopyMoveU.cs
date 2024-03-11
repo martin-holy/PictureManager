@@ -1,19 +1,19 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.HelperClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Repositories;
-using PictureManager.Domain.Services;
+using PictureManager.Common.Dialogs;
+using PictureManager.Common.HelperClasses;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Repositories;
+using PictureManager.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Utils;
+namespace PictureManager.Common.Utils;
 
 public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   private readonly FileOperationDialogM _dlg = new($"File Operation ({mode})");

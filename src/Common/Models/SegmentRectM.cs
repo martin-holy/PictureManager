@@ -1,9 +1,9 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
 
-namespace PictureManager.Domain.Models {
+namespace PictureManager.Common.Models {
   public sealed class SegmentRectM : ObservableObject {
     private double _scale;
 

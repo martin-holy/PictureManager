@@ -2,19 +2,19 @@
 using MH.UI.WPF.Extensions;
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Domain;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Services;
-using PictureManager.Domain.Utils;
+using PictureManager.Common;
+using PictureManager.Common.Interfaces;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Services;
+using PictureManager.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace PictureManager.Converters;
+namespace PictureManager.Windows.WPF.Converters;
 
 public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImageSourceConverter<SegmentM> {
   private static readonly object _lock = new();

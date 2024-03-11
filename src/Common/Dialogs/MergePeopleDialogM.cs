@@ -1,13 +1,13 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Services;
+using PictureManager.Common.CollectionViews;
+using PictureManager.Common.Models;
+using PictureManager.Common.Services;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Dialogs;
+namespace PictureManager.Common.Dialogs;
 
 public sealed class MergePeopleDialogM : Dialog {
   private static MergePeopleDialogM _inst;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PictureManager.Domain.Interfaces;
+namespace PictureManager.Common.Interfaces;
 
 public interface IImageSourceConverter<T> {
   public HashSet<T> ErrorCache { get; }

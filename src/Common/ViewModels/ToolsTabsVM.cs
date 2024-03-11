@@ -1,9 +1,9 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.ViewModels.Entities;
+using PictureManager.Common.Models;
+using PictureManager.Common.ViewModels.Entities;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class ToolsTabsVM : TabControl {
   public PeopleToolsTabVM PeopleTab { get; private set; }

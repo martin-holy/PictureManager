@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PictureManager.ShellStuff {
+namespace PictureManager.Windows.WPF.ShellStuff {
   [Flags]
   public enum SIGDN : uint {
     SIGDN_NORMALDISPLAY = 0x00000000,

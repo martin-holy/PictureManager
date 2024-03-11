@@ -1,13 +1,13 @@
 // Stephen Toub
 
-using PictureManager.ShellStuff.Interfaces;
+using PictureManager.Windows.WPF.ShellStuff.Interfaces;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Interop;
 
-namespace PictureManager.ShellStuff {
+namespace PictureManager.Windows.WPF.ShellStuff {
   internal class FileOperation : IDisposable {
     private bool _disposed;
     private readonly IFileOperation _fileOperation;

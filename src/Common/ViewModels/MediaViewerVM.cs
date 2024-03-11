@@ -1,10 +1,10 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class MediaViewerVM : ObservableObject {
   private double _scale;

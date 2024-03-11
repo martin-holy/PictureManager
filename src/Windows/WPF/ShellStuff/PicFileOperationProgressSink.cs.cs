@@ -1,7 +1,7 @@
-﻿using PictureManager.ShellStuff.Interfaces;
+﻿using PictureManager.Windows.WPF.ShellStuff.Interfaces;
 using System.Collections.Generic;
 
-namespace PictureManager.ShellStuff {
+namespace PictureManager.Windows.WPF.ShellStuff {
   public class PicFileOperationProgressSink : FileOperationProgressSink {
     public Dictionary<string, string> FileOperationResult = new Dictionary<string, string>();
 

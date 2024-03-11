@@ -1,10 +1,10 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.Models;
+using PictureManager.Common.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PictureManager.Domain.Dialogs {
+namespace PictureManager.Common.Dialogs {
   public sealed class FolderKeywordsDialogM : Dialog {
     private FolderM _selectedFolder;
 

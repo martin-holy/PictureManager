@@ -4,7 +4,7 @@ using MH.Utils.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Common.Models;
 
 public sealed class FolderKeywordM : TreeItem {
   public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);

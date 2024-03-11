@@ -1,10 +1,10 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 public sealed class MediaItemGeoLocationR : OneToOneDataAdapter<MediaItemM, GeoLocationM> {
   public MediaItemGeoLocationR(CoreR coreR) : base("MediaItemGeoLocation", coreR.MediaItem, coreR.GeoLocation) {
