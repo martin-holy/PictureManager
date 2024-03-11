@@ -4,7 +4,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
-namespace PictureManager.ShellStuff.Interfaces {
+namespace PictureManager.Windows.WPF.ShellStuff.Interfaces {
   [ComImport]
   [Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe")]
   [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

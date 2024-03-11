@@ -1,14 +1,14 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   private readonly CoreR _coreR;

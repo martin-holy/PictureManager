@@ -2,14 +2,14 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Services;
+using PictureManager.Common.CollectionViews;
+using PictureManager.Common.Models;
+using PictureManager.Common.Services;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class SegmentsDrawerVM : CollectionViewSegments {
   private readonly SegmentS _segmentS;

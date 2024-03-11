@@ -2,12 +2,12 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Services;
+using PictureManager.Common.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 
-namespace PictureManager.Domain.Dialogs;
+namespace PictureManager.Common.Dialogs;
 
 public sealed class FolderBrowserDialogM : Dialog {
   private FolderTreeViewItem _selectedFolder;

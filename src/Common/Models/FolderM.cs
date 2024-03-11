@@ -2,15 +2,15 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Repositories;
-using PictureManager.Domain.Services;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Repositories;
+using PictureManager.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Common.Models;
 
 public class FolderM : TreeItem, IEquatable<FolderM> {
   #region IEquatable implementation

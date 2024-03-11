@@ -7,7 +7,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PictureManager.Domain;
+namespace PictureManager.Common;
 
 public sealed class Settings {
   private static readonly string _filePath = "settings.json";

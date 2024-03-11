@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace PictureManager.Views {
+namespace PictureManager.Windows.WPF.Views {
   public partial class SplashScreenV : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged = delegate { };
     public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged(this, new(name));

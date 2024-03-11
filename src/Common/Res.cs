@@ -1,9 +1,9 @@
 ﻿using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.TreeCategories;
+using PictureManager.Common.Models;
+using PictureManager.Common.TreeCategories;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain {
+namespace PictureManager.Common {
   public static class Res {
     private const string _default = "default";
 

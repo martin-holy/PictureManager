@@ -1,14 +1,14 @@
 ﻿using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.HelperClasses;
+namespace PictureManager.Common.HelperClasses;
 
 public class MediaItemMetadata(RealMediaItemM mediaItem) {
   public RealMediaItemM MediaItem { get; } = mediaItem;

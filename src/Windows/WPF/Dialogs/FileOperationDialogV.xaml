@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
+  xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type md:FileOperationDialogM}">
     <DataTemplate.Resources>

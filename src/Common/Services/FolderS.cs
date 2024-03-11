@@ -1,10 +1,10 @@
 ﻿using MH.Utils;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
+using PictureManager.Common.Models;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Services;
+namespace PictureManager.Common.Services;
 
 public sealed class FolderS {
   public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);

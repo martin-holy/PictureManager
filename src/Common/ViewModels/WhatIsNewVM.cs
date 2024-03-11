@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public class WhatIsNewVM {
   private static WhatIsNewVM _inst;

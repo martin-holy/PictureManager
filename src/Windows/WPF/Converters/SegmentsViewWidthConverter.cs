@@ -1,7 +1,7 @@
-﻿using System.Windows.Data;
-using MH.UI.WPF.Converters;
+﻿using MH.UI.WPF.Converters;
+using System.Windows.Data;
 
-namespace PictureManager.Converters; 
+namespace PictureManager.Windows.WPF.Converters;
 
 public class SegmentsViewWidthConverter : BaseConverter {
   private static readonly object _lock = new();

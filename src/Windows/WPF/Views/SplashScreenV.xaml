@@ -1,8 +1,8 @@
 ﻿<Window
-  x:Class="PictureManager.Views.SplashScreenV"
+  x:Class="PictureManager.Windows.WPF.Views.SplashScreenV"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:v="clr-namespace:PictureManager.Views"
+  xmlns:v="clr-namespace:PictureManager.Windows.WPF.Views"
   Height="150"
   Width="500"
   FontSize="13.333"

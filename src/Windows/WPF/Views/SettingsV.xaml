@@ -2,7 +2,7 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+  xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type pmd:Settings}">
     <DataTemplate.Resources>

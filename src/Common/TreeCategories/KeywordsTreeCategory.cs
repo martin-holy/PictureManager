@@ -1,13 +1,13 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.Models;
+using PictureManager.Common.Dialogs;
+using PictureManager.Common.Models;
+using PictureManager.Common.Repositories;
 using System;
 using System.Linq;
-using PictureManager.Domain.Repositories;
 
-namespace PictureManager.Domain.TreeCategories;
+namespace PictureManager.Common.TreeCategories;
 
 public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM> {
   public CategoryGroupM AutoAddedGroup { get; set; }

@@ -1,11 +1,11 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.TreeCategories;
+using PictureManager.Common.Models;
+using PictureManager.Common.TreeCategories;
 using System.Linq;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault

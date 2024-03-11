@@ -1,6 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class TitleProgressBarVM : ObservableObject {
   private int _valueA = 100;

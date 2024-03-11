@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain"
-  xmlns:vme="clr-namespace:PictureManager.Domain.ViewModels.Entities;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
+  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
 
   <DataTemplate x:Key="Views.MainMenu">
     <Menu Background="Transparent">

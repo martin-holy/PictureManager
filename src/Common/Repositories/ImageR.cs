@@ -1,11 +1,11 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System.Collections.Generic;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|People|Keywords|IsOnlyInDb

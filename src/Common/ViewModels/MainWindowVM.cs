@@ -1,9 +1,9 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Services;
-using PictureManager.Domain.ViewModels.Entities;
+using PictureManager.Common.Services;
+using PictureManager.Common.ViewModels.Entities;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public class MainWindowVM : ObservableObject {
   private bool _isFullScreen;

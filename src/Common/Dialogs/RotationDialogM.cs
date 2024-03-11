@@ -1,7 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 
-namespace PictureManager.Domain.Dialogs;
+namespace PictureManager.Common.Dialogs;
 
 public sealed class RotationDialogM : Dialog {
   private static RotationDialogM _inst;

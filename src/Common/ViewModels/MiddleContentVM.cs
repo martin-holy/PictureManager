@@ -1,3 +1,3 @@
-﻿namespace PictureManager.Domain.ViewModels;
+﻿namespace PictureManager.Common.ViewModels;
 
 public class MiddleContentVM;

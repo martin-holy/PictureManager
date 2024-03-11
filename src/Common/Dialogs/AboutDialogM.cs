@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-namespace PictureManager.Domain.Dialogs {
+namespace PictureManager.Common.Dialogs {
   public sealed class AboutDialogM : Dialog {
     private FileVersionInfo _version;
 

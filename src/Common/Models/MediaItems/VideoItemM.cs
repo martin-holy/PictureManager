@@ -2,7 +2,7 @@
 using MH.Utils;
 using MH.Utils.Extensions;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Common.Models.MediaItems;
 
 public class VideoItemM(int id, VideoM video, int timeStart) : MediaItemM(id), IVideoItem {
   public VideoM Video { get; set; } = video;

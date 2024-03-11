@@ -6,7 +6,7 @@
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Domain.ViewModels;assembly=PictureManager.Domain">
+  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
 
   <DataTemplate x:Key="MediaItemsFilterV" DataType="{x:Type vm:MediaItemsFilterVM}">
     <DataTemplate.Resources>

@@ -1,9 +1,9 @@
 // Stephen Toub
 
-using PictureManager.ShellStuff.Interfaces;
+using PictureManager.Windows.WPF.ShellStuff.Interfaces;
 using System.Diagnostics;
 
-namespace PictureManager.ShellStuff {
+namespace PictureManager.Windows.WPF.ShellStuff {
   public class FileOperationProgressSink : IFileOperationProgressSink {
     public virtual void StartOperations() {
       TraceAction("StartOperations", "", 0);

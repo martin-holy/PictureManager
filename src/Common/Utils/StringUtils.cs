@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Utils {
+namespace PictureManager.Common.Utils {
   public static class StringUtils {
     private static readonly HashSet<char> CommentAllowedCharacters = new("@#$€_&+-()*'.:;!?=<>% ");
 

@@ -1,7 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using System;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Common.Models;
 
 public sealed class FavoriteFolderM(int id, string name) : TreeItem(Res.IconFolder, name), IEquatable<FavoriteFolderM> {
   #region IEquatable implementation

@@ -1,9 +1,9 @@
 ﻿using MH.UI.BaseClasses;
-using PictureManager.Domain.Models;
+using PictureManager.Common.Dialogs;
+using PictureManager.Common.Models;
 using System.Linq;
-using PictureManager.Domain.Dialogs;
 
-namespace PictureManager.Domain.TreeCategories;
+namespace PictureManager.Common.TreeCategories;
 
 public sealed class RatingsTreeCategory : TreeCategory {
   public RatingsTreeCategory() : base(Res.IconStar, "Ratings", (int)Category.Ratings) {

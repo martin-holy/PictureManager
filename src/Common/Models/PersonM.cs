@@ -1,11 +1,11 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Interfaces;
+using PictureManager.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BitsMasks = PictureManager.Domain.Utils.BitsMasks;
+using BitsMasks = PictureManager.Common.Utils.BitsMasks;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Common.Models;
 
 /// <summary>
 /// DB fields: ID|Name|Segment|Keywords

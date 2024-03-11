@@ -1,9 +1,9 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Models;
+using PictureManager.Common.Repositories;
 
-namespace PictureManager.Domain.TreeCategories;
+namespace PictureManager.Common.TreeCategories;
 
 public sealed class FolderKeywordsTreeCategory : TreeCategory<FolderM> {
   public static RelayCommand<FolderM> SetAsFolderKeywordCommand { get; set; }

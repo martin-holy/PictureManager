@@ -2,16 +2,16 @@
 using MH.UI.WPF.Extensions;
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Domain;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Utils;
+using PictureManager.Common;
+using PictureManager.Common.Interfaces;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
 
-namespace PictureManager.Converters;
+namespace PictureManager.Windows.WPF.Converters;
 
 public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSourceConverter<MediaItemM> {
   private static readonly object _lock = new();

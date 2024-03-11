@@ -2,7 +2,7 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 
-namespace PictureManager.Domain.Models; 
+namespace PictureManager.Common.Models; 
 
 public sealed class TreeViewSearchItemM(string icon, string name, ITreeItem data, string toolTip, TreeCategory category)
   : ListItem(icon, name, data) {

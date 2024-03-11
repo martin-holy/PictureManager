@@ -2,13 +2,13 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Repositories;
-using PictureManager.Domain.Services;
+using PictureManager.Common.Interfaces;
+using PictureManager.Common.Models;
+using PictureManager.Common.Repositories;
+using PictureManager.Common.Services;
 using System.Linq;
 
-namespace PictureManager.Domain.ViewModels.Entities;
+namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class SegmentVM : ObservableObject {
   private readonly CoreVM _coreVM;

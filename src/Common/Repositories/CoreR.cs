@@ -1,11 +1,11 @@
 ﻿using MH.Utils;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
+using PictureManager.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Repositories;
+namespace PictureManager.Common.Repositories;
 
 public sealed class CoreR : SimpleDB {
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);

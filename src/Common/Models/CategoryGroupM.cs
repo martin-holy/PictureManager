@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Common.Models;
 
 /// <summary>
 /// DB fields: ID|Name|Category|GroupItems

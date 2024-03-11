@@ -2,15 +2,15 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Services;
+namespace PictureManager.Common.Services;
 
 public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   private const int _editLimit = 10;

@@ -1,11 +1,11 @@
 ﻿using MH.Utils.Extensions;
-using PictureManager.Domain.ViewModels;
+using PictureManager.Common.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace PictureManager.ViewModels;
+namespace PictureManager.Windows.WPF.ViewModels;
 
 public static class HideMouseTimer {
   private static bool _isHidden;

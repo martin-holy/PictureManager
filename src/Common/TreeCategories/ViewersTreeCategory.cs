@@ -1,8 +1,8 @@
 ﻿using MH.UI.BaseClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Models;
+using PictureManager.Common.Repositories;
 
-namespace PictureManager.Domain.TreeCategories;
+namespace PictureManager.Common.TreeCategories;
 
 public sealed class ViewersTreeCategory : TreeCategory<ViewerM> {
   public ViewersTreeCategory(ViewerR r) :

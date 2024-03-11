@@ -1,12 +1,12 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Interfaces;
+using PictureManager.Common.Models;
+using PictureManager.Common.Repositories;
 using System.Linq;
 
-namespace PictureManager.Domain.Services;
+namespace PictureManager.Common.Services;
 
 public sealed class PersonS(PersonR r) : ObservableObject {
   public Selecting<PersonM> Selected { get; } = new();

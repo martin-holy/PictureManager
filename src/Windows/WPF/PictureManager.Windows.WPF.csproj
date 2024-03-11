@@ -51,7 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
     <ProjectReference Include="..\..\..\libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj" />
-    <ProjectReference Include="..\..\Common\Domain\PictureManager.Domain.csproj" />
+    <ProjectReference Include="..\..\Common\PictureManager.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,10 +1,10 @@
 ﻿using MH.UI.Controls;
-using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Services;
+using PictureManager.Common.CollectionViews;
+using PictureManager.Common.Models;
+using PictureManager.Common.Services;
 using System.Linq;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class PeopleVM : CollectionViewPeople {
   public void Reload() {

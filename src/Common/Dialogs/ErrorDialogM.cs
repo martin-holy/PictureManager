@@ -2,7 +2,7 @@
 using MH.Utils.Dialogs;
 using System;
 
-namespace PictureManager.Domain.Dialogs;
+namespace PictureManager.Common.Dialogs;
 
 public sealed class ErrorDialogM : Dialog {
   private string _message;

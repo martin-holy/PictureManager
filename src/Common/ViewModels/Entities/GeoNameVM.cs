@@ -1,8 +1,8 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Repositories;
 
-namespace PictureManager.Domain.ViewModels.Entities;
+namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class GeoNameVM {
   private readonly GeoNameR _r;

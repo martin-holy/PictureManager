@@ -1,9 +1,9 @@
 ﻿using MH.Utils;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Repositories;
 using System;
-using PictureManager.Domain.Repositories;
 
-namespace PictureManager.Domain.Services;
+namespace PictureManager.Common.Services;
 
 public sealed class ImageS(ImageR r) {
   public static Func<ImageM, bool> WriteMetadata { get; set; }

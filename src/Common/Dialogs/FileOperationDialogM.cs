@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Dialogs;
+namespace PictureManager.Common.Dialogs;
 
 public sealed class FileOperationDialogM : Dialog {
   private int _progressValue;

@@ -1,6 +1,6 @@
 using System;
 
-namespace PictureManager.ShellStuff {
+namespace PictureManager.Windows.WPF.ShellStuff {
   [Flags]
   internal enum FileOperationFlags : uint {
     FOF_MULTIDESTFILES = 0x0001,

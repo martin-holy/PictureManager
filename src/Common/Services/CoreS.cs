@@ -1,7 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Repositories;
 
-namespace PictureManager.Domain.Services;
+namespace PictureManager.Common.Services;
 
 // TODO add Image inside MediaItem
 public class CoreS(CoreR coreR) : ObservableObject {

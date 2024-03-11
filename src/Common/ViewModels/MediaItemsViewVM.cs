@@ -3,17 +3,17 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.HelperClasses;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Services;
+using PictureManager.Common.CollectionViews;
+using PictureManager.Common.HelperClasses;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public class MediaItemsViewVM : CollectionViewMediaItems {
   private bool _isLoading;

@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace PictureManager.ShellStuff {
+namespace PictureManager.Windows.WPF.ShellStuff {
   class ComReleaser<T> : IDisposable where T : class {
     private T _obj;
 

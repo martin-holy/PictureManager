@@ -2,14 +2,14 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Services;
+using PictureManager.Common.CollectionViews;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Services;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class PeopleToolsTabVM : CollectionViewPeople {
   private static IEnumerable<PersonM> GetPeople() {

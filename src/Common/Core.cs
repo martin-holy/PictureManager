@@ -1,16 +1,16 @@
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Models.MediaItems;
-using PictureManager.Domain.Repositories;
-using PictureManager.Domain.Services;
-using PictureManager.Domain.ViewModels;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Repositories;
+using PictureManager.Common.Services;
+using PictureManager.Common.ViewModels;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain;
+namespace PictureManager.Common;
 
 public sealed class Core {
   private static Core _inst;

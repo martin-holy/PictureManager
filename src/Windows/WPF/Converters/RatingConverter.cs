@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace PictureManager.Converters; 
+namespace PictureManager.Windows.WPF.Converters;
 
 public class RatingConverter : BaseConverter {
   private static readonly object _lock = new();

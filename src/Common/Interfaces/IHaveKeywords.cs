@@ -1,10 +1,10 @@
 ﻿using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models;
+using PictureManager.Common.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Interfaces;
+namespace PictureManager.Common.Interfaces;
 
 public interface IHaveKeywords {
     public List<KeywordM> Keywords { get; set; }

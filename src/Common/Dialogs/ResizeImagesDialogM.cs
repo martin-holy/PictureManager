@@ -1,16 +1,16 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.Models.MediaItems;
+using MH.Utils.Extensions;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MH.Utils.Extensions;
 
-namespace PictureManager.Domain.Dialogs {
+namespace PictureManager.Common.Dialogs {
   public sealed class ResizeImagesDialogM : Dialog {
     private CancellationTokenSource _cts;
     private readonly ImageM[] _items;

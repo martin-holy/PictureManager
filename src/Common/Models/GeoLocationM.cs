@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PictureManager.Domain.Models;
+namespace PictureManager.Common.Models;
 
 public sealed class GeoLocationM(int id) : IEquatable<GeoLocationM> {
   #region IEquatable implementation

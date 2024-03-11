@@ -1,12 +1,12 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Services;
+using PictureManager.Common.Models;
+using PictureManager.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.CollectionViews;
+namespace PictureManager.Common.CollectionViews;
 
 public class CollectionViewSegments : CollectionView<SegmentM> {
   public CollectionViewSegments() {

@@ -1,19 +1,19 @@
 ﻿using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Converters;
-using PictureManager.Domain;
-using PictureManager.Domain.Repositories;
-using PictureManager.Domain.Services;
-using PictureManager.Domain.ViewModels;
-using PictureManager.Domain.ViewModels.Entities;
-using PictureManager.ShellStuff;
+using PictureManager.Common;
+using PictureManager.Common.Repositories;
+using PictureManager.Common.Services;
+using PictureManager.Common.ViewModels;
+using PictureManager.Common.ViewModels.Entities;
+using PictureManager.Windows.WPF.Converters;
+using PictureManager.Windows.WPF.ShellStuff;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace PictureManager;
+namespace PictureManager.Windows.WPF;
 
 public sealed class AppCore : ObservableObject {
-  public PictureManager.ViewModels.SegmentRectVM SegmentRectVM { get; private set; }
+  public WPF.ViewModels.SegmentRectVM SegmentRectVM { get; private set; }
 
   public static RelayCommand TestButtonCommand { get; } = new(Tests.Run, Res.IconBug, "Test Button");
 

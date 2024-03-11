@@ -1,12 +1,12 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Models;
+using PictureManager.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PictureManager.Domain.ViewModels;
+namespace PictureManager.Common.ViewModels;
 
 public sealed class TreeViewSearchVM : ObservableObject {
   private readonly TreeViewCategoriesVM _tvc;

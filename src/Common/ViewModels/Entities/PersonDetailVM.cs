@@ -1,14 +1,14 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.CollectionViews;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Services;
+using PictureManager.Common.CollectionViews;
+using PictureManager.Common.Models;
+using PictureManager.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.Domain.ViewModels.Entities;
+namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class PersonDetailVM : ObservableObject {
   private readonly PersonS _personS;

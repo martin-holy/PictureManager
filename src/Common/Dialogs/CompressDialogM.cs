@@ -1,7 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Models.MediaItems;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,8 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Dialogs {
-    public class CompressDialogM : Dialog {
+namespace PictureManager.Common.Dialogs {
+  public class CompressDialogM : Dialog {
     private CancellationTokenSource _cts;
     private Task _workTask;
 

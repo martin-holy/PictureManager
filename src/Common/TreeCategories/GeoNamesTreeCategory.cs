@@ -1,9 +1,9 @@
 ﻿using MH.UI.BaseClasses;
-using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Repositories;
+using PictureManager.Common.Dialogs;
+using PictureManager.Common.Models;
+using PictureManager.Common.Repositories;
 
-namespace PictureManager.Domain.TreeCategories;
+namespace PictureManager.Common.TreeCategories;
 
 public sealed class GeoNamesTreeCategory : TreeCategory<GeoNameM> {
   public GeoNamesTreeCategory(GeoNameR r) :

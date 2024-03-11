@@ -1,6 +1,6 @@
 ﻿using MH.Utils;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Common.Models.MediaItems;
 
 /// <summary>
 /// DB fields: ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb

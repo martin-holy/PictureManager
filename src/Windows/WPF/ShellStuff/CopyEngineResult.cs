@@ -1,6 +1,6 @@
 // Stephen Toub
 
-namespace PictureManager.ShellStuff {
+namespace PictureManager.Windows.WPF.ShellStuff {
   public enum CopyEngineResult : uint {
     COPYENGINE_OK = 0x0,
 

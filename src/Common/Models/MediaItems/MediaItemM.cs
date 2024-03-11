@@ -2,12 +2,12 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Interfaces;
+using PictureManager.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PictureManager.Domain.Models.MediaItems;
+namespace PictureManager.Common.Models.MediaItems;
 
 public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords {
   #region IEquatable implementation
