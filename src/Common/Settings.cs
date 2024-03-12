@@ -1,6 +1,7 @@
-﻿using MH.Utils;
+﻿using MH.UI.Controls;
+using MH.UI.Dialogs;
+using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;

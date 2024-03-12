@@ -1,5 +1,4 @@
-﻿using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
+﻿using MH.UI.Controls;
 using System;
 
 namespace PictureManager.Common.Dialogs;

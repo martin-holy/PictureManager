@@ -1,5 +1,6 @@
-﻿using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
+﻿using MH.UI.Controls;
+using MH.UI.Dialogs;
+using MH.Utils.BaseClasses;
 using PictureManager.Common.Repositories;
 
 namespace PictureManager.Common.ViewModels.Entities;

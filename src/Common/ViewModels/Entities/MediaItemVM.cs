@@ -1,5 +1,6 @@
-﻿using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
+﻿using MH.UI.Controls;
+using MH.UI.Dialogs;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models;

@@ -1,5 +1,5 @@
-﻿using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
+﻿using MH.UI.Controls;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common.Models.MediaItems;
 using System;
