@@ -268,14 +268,36 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="mhc:TreeViewBase">
-          <ScrollViewer
+          <mhc:ScrollViewerExt
             x:Name="PART_ScrollViewer"
             Focusable="False"
             Padding="{TemplateBinding Padding}" 
             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
 
+            <mhc:ScrollViewerExt.VerticalTopContent>
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <RepeatButton
+                  Command="{Binding ScrollLevelUpCommand}"
+                  Content="M30,0 60,30 0,30z"
+                  ToolTip="Scroll one level up"
+                  Style="{DynamicResource ScrollBarButton}"/>
+
+                <RepeatButton
+                  Command="{Binding ScrollSiblingUpCommand}"
+                  Content="M30,0 60,30 0,30z"
+                  ToolTip="Scroll one sibling up"
+                  Grid.Row="1"
+                  Style="{DynamicResource ScrollBarButton}"/>
+              </Grid>
+            </mhc:ScrollViewerExt.VerticalTopContent>
+
             <ItemsPresenter/>
-          </ScrollViewer>
+          </mhc:ScrollViewerExt>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
