@@ -22,12 +22,22 @@ public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeIte
   public Action<object[], bool> ScrollToItemsAction { get; set; }
   public Action<ITreeItem> ExpandRootWhenReadyAction { get; set; }
 
+  public RelayCommand ScrollSiblingUpCommand { get; }
+  public RelayCommand ScrollLevelUpCommand { get; }
   public RelayCommand<object> TreeItemSelectedCommand { get; }
   public event EventHandler<ObjectEventArgs<T>> TreeItemSelectedEvent = delegate { };
 
   public TreeView() {
+    ScrollSiblingUpCommand = new(ScrollSiblingUp);
+    ScrollLevelUpCommand = new(ScrollLevelUp);
     TreeItemSelectedCommand = new(OnTreeItemSelected);
   }
+
+  private void ScrollSiblingUp() =>
+    ScrollTo(TopTreeItem?.GetPreviousSibling());
+
+  private void ScrollLevelUp() =>
+    ScrollTo(TopTreeItem?.Parent);
 
   public virtual void OnIsVisibleChanged() {
     if (IsVisible) ScrollTo(TopTreeItem);
