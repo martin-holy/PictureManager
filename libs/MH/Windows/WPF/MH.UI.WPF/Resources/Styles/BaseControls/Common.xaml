@@ -83,6 +83,11 @@
     </Setter>
   </Style>
 
+  <Style TargetType="TreeViewItem">
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+  </Style>
+
   <Style x:Key="MH.Styles.Controls.TreeViewItemLite" TargetType="TreeViewItem">
     <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
