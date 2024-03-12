@@ -1,8 +1,9 @@
-﻿using MH.Utils.Dialogs;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using System;
 using System.Threading.Tasks;
 
-namespace MH.Utils.BaseClasses;
+namespace MH.UI.Controls;
 
 public class Dialog : ObservableObject {
   private string _title;

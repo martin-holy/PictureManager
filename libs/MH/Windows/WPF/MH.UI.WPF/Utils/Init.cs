@@ -15,6 +15,6 @@ public static class Init {
     MH.Utils.Imaging.GetBitmapHashPixels = Imaging.GetBitmapHashPixels;
     MH.Utils.Imaging.ResizeJpg = Imaging.ResizeJpg;
 
-    MH.Utils.BaseClasses.Dialog.Show = DialogHost.Show;
+    MH.UI.Controls.Dialog.Show = DialogHost.Show;
   }
 }

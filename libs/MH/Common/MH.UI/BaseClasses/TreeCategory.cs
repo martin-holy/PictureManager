@@ -1,8 +1,8 @@
 ﻿using MH.UI.Controls;
+using MH.UI.Dialogs;
 using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using MH.Utils.EventsArgs;
 using MH.Utils.Interfaces;
 using System;

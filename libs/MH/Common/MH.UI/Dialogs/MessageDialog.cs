@@ -1,6 +1,6 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.Controls;
 
-namespace MH.Utils.Dialogs;
+namespace MH.UI.Dialogs;
 
 public class MessageDialog : Dialog {
   private string _message;

@@ -1,10 +1,10 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.Controls;
 using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MH.Utils.Dialogs;
+namespace MH.UI.Dialogs;
 
 public abstract class ProgressBarDialog : Dialog {
   private string _message;
