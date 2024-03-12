@@ -331,4 +331,10 @@ public static class Tree {
       .Distinct()
       .OrderBy(x => x.GetFullName(".", nameSelector))
       .Select(nameSelector);
+
+  public static ITreeItem GetPreviousSibling(this ITreeItem item) {
+    if (item.Parent == null) return null;
+    var idx = item.Parent.Items.IndexOf(item);
+    return idx < 1 ? null : item.Parent.Items[idx - 1];
+  }
 }
