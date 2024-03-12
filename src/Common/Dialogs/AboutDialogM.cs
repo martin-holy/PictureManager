@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.Controls;
+using MH.Utils.BaseClasses;
 using System.Diagnostics;
 using System.Reflection;
 

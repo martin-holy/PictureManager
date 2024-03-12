@@ -1,6 +1,7 @@
-﻿using MH.Utils;
+﻿using MH.UI.Controls;
+using MH.UI.Dialogs;
+using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using PictureManager.Common.Models.MediaItems;
 using System.Collections.Generic;
 using System.Linq;

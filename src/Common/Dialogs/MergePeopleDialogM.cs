@@ -1,6 +1,4 @@
 ﻿using MH.UI.Controls;
-using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using PictureManager.Common.CollectionViews;
 using PictureManager.Common.Models;
 using PictureManager.Common.Services;
