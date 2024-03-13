@@ -2,6 +2,7 @@
 
 public static class Res {
   public const string IconAutoPlay = "IconAutoPlay";
+  public const string IconGroup = "IconGroup";
   public const string IconCheckMark = "IconCheckMark";
   public const string IconChevronDown = "IconChevronDown";
   public const string IconChevronLeft = "IconChevronLeft";
@@ -10,6 +11,7 @@ public static class Res {
   public const string IconMovieClapper = "IconMovieClapper";
   public const string IconPause = "IconPause";
   public const string IconPlay = "IconPlay";
+  public const string IconQuestion = "IconQuestion";
   public const string IconStop = "IconStop";
   public const string IconTimelineShiftBeginning = "IconTimelineShift.Beginning";
   public const string IconTimelineShiftEnd = "IconTimelineShift.End";

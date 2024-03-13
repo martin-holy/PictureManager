@@ -15,7 +15,7 @@ public class GroupByDialog<T> : Dialog where T : class, ISelectable {
   public bool IsGroupBy { get => _isGroupBy; set { _isGroupBy = value; OnPropertyChanged(); } }
   public bool IsThenBy { get => _isThenBy; set { _isThenBy = value; OnPropertyChanged(); } }
 
-  public GroupByDialog() : base("Chose items for grouping", "IconGroup") {
+  public GroupByDialog() : base("Chose items for grouping", Res.IconGroup) {
     Buttons = new DialogButton[] {
       new(OkCommand, true),
       new(CancelCommand, false, true) };

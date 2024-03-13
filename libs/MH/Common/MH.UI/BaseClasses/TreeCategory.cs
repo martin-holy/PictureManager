@@ -161,7 +161,7 @@ public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
     Dialog.Show(new MessageDialog(
       "Delete Confirmation",
       $"Do you really want to delete '{name}'?",
-      "IconQuestion",
+      Res.IconQuestion,
       true)) == 1;
 }
 
