@@ -59,8 +59,8 @@ public sealed class PresentationPanelVM : ObservableObject {
 
   public PresentationPanelVM(MediaViewerVM mediaViewerVM) {
     _mediaViewerVM = mediaViewerVM;
-    StartPresentationCommand = new(Presentation, MH.Utils.Res.IconPlay, "Start presentation");
-    StopPresentationCommand = new(Presentation, MH.Utils.Res.IconStop, "Stop presentation");
+    StartPresentationCommand = new(Presentation, MH.UI.Res.IconPlay, "Start presentation");
+    StopPresentationCommand = new(Presentation, MH.UI.Res.IconStop, "Stop presentation");
 
     _timer.Interval = Interval * 1000;
     _timer.Elapsed += (_, _) => Next();
