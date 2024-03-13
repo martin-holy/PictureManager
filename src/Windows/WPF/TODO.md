@@ -31,6 +31,11 @@
 
 
                                   *** UPDATE ***
+        # MH.UI.WPF
+## Dialog
+  - dialogs now have bigger base font so set everywhere smaller font size
+
+
         # MH.UI
 ## CollectionView
   - don't show expanded root if source is empty
@@ -56,6 +61,7 @@
   - save to file only metadata visible for viewer
 ## MediaItemsView
   - use Filter on MediaItem type in LoadByTag GetItems
+  - open items from group or all with default sort or all sorted by groups or ...?
 ## ProgressBarAsyncDialog
   - do Init and Start in constructor
 ## Core
