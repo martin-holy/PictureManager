@@ -4,6 +4,8 @@
 [B] - Bug fix
 
 Latest:
+ - [B] CollectionView crash in some cases
+ - [N] TreeView scroll one level/sibling up
  - [N] Load People by group (in menu)
 
 24.03.08.1818:
