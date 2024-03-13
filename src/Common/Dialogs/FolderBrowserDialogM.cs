@@ -4,7 +4,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Services;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 
 namespace PictureManager.Common.Dialogs;
@@ -13,11 +12,10 @@ public sealed class FolderBrowserDialogM : Dialog {
   private FolderTreeViewItem _selectedFolder;
 
   public FolderTreeViewItem SelectedFolder { get => _selectedFolder; private set { _selectedFolder = value; OnPropertyChanged(); } }
-  public ObservableCollection<FolderTreeViewItem> Drives { get; } = [];
-  public RelayCommand<FolderTreeViewItem> SelectCommand { get; }
+  public TreeView<FolderTreeViewItem> TreeView { get; } = new() { ShowTreeItemSelection = true };
 
   public FolderBrowserDialogM() : base("Browse For Folder", Res.IconFolder) {
-    SelectCommand = new(x => SelectedFolder = x);
+    TreeView.TreeItemSelectedEvent += (_, e) => SelectedFolder = e.Data;
     Buttons = new DialogButton[] {
       new(OkCommand, true),
       new(CloseCommand, false, true) };
@@ -27,6 +25,8 @@ public sealed class FolderBrowserDialogM : Dialog {
 
   private void AddDrives() {
     var drives = Environment.GetLogicalDrives();
+    TreeView.RootHolder.Clear();
+    TreeView.SelectedTreeItems.DeselectAll();
 
     foreach (var drive in drives) {
       var di = new DriveInfo(drive);
@@ -39,7 +39,7 @@ public sealed class FolderBrowserDialogM : Dialog {
       // add placeholder so the Drive can be expanded
       item.Items.Add(new FolderTreeViewItem(null, null));
 
-      Drives.Add(item);
+      TreeView.RootHolder.Add(item);
     }
   }
 }
