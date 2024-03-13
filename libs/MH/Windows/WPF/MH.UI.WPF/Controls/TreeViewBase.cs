@@ -88,7 +88,7 @@ public class TreeViewBase : TreeView {
   }
 
   private void ScrollToItems(object[] items, bool exactly) {
-    var root = (ITreeItem)TreeView.RootHolder[0];
+    var root = (ITreeItem)items[0];
     var idxItem = ((ITreeItem)items[^1]).GetIndex(root);
 
     if (idxItem < 0 || !GetDiff(idxItem, root, out var diff) || diff == 0) return;

@@ -287,13 +287,15 @@
                 </Grid.RowDefinitions>
 
                 <RepeatButton
-                  Command="{Binding ScrollLevelUpCommand}"
+                  Command="{Binding Path=(mhc:TreeViewBase.TreeView).ScrollLevelUpCommand,
+                            RelativeSource={RelativeSource TemplatedParent}}"
                   Content="M30,0 60,30 0,30z"
                   ToolTip="Scroll one level up"
                   Style="{DynamicResource ScrollBarButton}"/>
 
                 <RepeatButton
-                  Command="{Binding ScrollSiblingUpCommand}"
+                  Command="{Binding Path=(mhc:TreeViewBase.TreeView).ScrollSiblingUpCommand,
+                            RelativeSource={RelativeSource TemplatedParent}}"
                   Content="M30,0 60,30 0,30z"
                   ToolTip="Scroll one sibling up"
                   Grid.Row="1"
