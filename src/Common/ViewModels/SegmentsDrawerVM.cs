@@ -51,7 +51,7 @@ public sealed class SegmentsDrawerVM : CollectionViewSegments {
     if (!add && Dialog.Show(new MessageDialog(
           "Segments Drawer",
           "Do you want to remove segments from drawer?",
-          Res.IconQuestion,
+          MH.UI.Res.IconQuestion,
           true)) != 1)
       return;
 

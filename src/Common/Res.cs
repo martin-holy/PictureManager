@@ -31,18 +31,14 @@ namespace PictureManager.Common {
     public const string IconFolderOpen = "IconFolderOpen";
     public const string IconFolderPuzzle = "IconFolderPuzzle";
     public const string IconFolderStar = "IconFolderStar";
-    public const string IconCheckMark = "IconCheckMark";
-    public const string IconImage = "IconImage";
     public const string IconImageMultiple = "IconImageMultiple";
     public const string IconInformation = "IconInformation";
     public const string IconLocationCheckin = "IconLocationCheckin";
     public const string IconMagnify = "IconMagnify";
-    public const string IconMovieClapper = "IconMovieClapper";
     public const string IconNotification = "IconNotification";
     public const string IconPeople = "IconPeople";
     public const string IconPeopleMultiple = "IconPeopleMultiple";
     public const string IconPlus = "IconPlus";
-    public const string IconQuestion = "IconQuestion";
     public const string IconRuler = "IconRuler";
     public const string IconSave = "IconSave";
     public const string IconSegment = "IconSegment";
@@ -52,7 +48,6 @@ namespace PictureManager.Common {
     public const string IconTag = "IconTag";
     public const string IconTagLabel = "IconTagLabel";
     public const string IconUnknownSegment = "IconUnknownSegment";
-    public const string IconXCross = "IconXCross";
 
     public static readonly Dictionary<object, object> IconToBrushDic = new() {
       { _default, ColorBrushWhite },
@@ -96,7 +91,7 @@ namespace PictureManager.Common {
         Category.FolderKeywords => IconFolder,
         Category.Keywords => IconTagLabel,
         Category.Viewers => IconEye,
-        Category.VideoClips => IconMovieClapper,
+        Category.VideoClips => MH.UI.Res.IconMovieClapper,
         _ => IconEmpty
       };
 

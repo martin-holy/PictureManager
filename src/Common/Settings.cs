@@ -48,7 +48,7 @@ public sealed class Settings {
         Dialog.Show(new MessageDialog(
           "Settings changes",
           "There are some changes in settings. Do you want to save them?",
-          Res.IconQuestion,
+          MH.UI.Res.IconQuestion,
           true)) == 1)
       Save();
   }

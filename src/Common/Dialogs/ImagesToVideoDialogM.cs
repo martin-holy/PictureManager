@@ -26,9 +26,9 @@ namespace PictureManager.Common.Dialogs {
     public delegate void OnSuccess(FolderM folder, string fileName);
     public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
 
-    public ImagesToVideoDialogM(ImageM[] items, OnSuccess onSuccess) : base("Images to Video", Res.IconMovieClapper) {
+    public ImagesToVideoDialogM(ImageM[] items, OnSuccess onSuccess) : base("Images to Video", MH.UI.Res.IconMovieClapper) {
       Buttons = new DialogButton[] {
-        new(new(CreateVideo, () => !IsBusy, Res.IconMovieClapper, "Create Video"), true),
+        new(new(CreateVideo, () => !IsBusy, MH.UI.Res.IconMovieClapper, "Create Video"), true),
         new(CloseCommand, false, true) };
 
       _items = items;

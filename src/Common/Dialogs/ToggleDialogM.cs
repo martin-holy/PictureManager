@@ -58,9 +58,9 @@ public sealed class ToggleDialogM : Dialog {
     if (People.Length > 0)
       yield return new(SetResult(2, Res.IconPeople, "{0} Person{1}".Plural(People.Length)));
     if (MediaItems.Length > 0)
-      yield return new(SetResult(3, Res.IconImage, "{0} Media Item{1}".Plural(MediaItems.Length)));
+      yield return new(SetResult(3, MH.UI.Res.IconImage, "{0} Media Item{1}".Plural(MediaItems.Length)));
     if (VideoItems.Length > 0)
-      yield return new(SetResult(4, Res.IconMovieClapper, "{0} Video Item{1}".Plural(VideoItems.Length)));
+      yield return new(SetResult(4, MH.UI.Res.IconMovieClapper, "{0} Video Item{1}".Plural(VideoItems.Length)));
   }
 
   public static void Clear() {

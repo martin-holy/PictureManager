@@ -19,7 +19,7 @@ namespace PictureManager.Common.Dialogs {
     public FolderKeywordsDialogM() : base("Folder Keywords", Res.IconFolderPuzzle) {
       SelectCommand = new(x => SelectedFolder = x);
       Buttons = new DialogButton[] {
-        new(new(() => Remove(SelectedFolder), () => SelectedFolder != null, Res.IconXCross, "Remove")),
+        new(new(() => Remove(SelectedFolder), () => SelectedFolder != null, MH.UI.Res.IconXCross, "Remove")),
         new(CloseCommand, false, true) };
 
       foreach (var folder in Core.R.FolderKeyword.All.OrderBy(x => x.FullPath))
@@ -28,7 +28,7 @@ namespace PictureManager.Common.Dialogs {
 
     private void Remove(FolderM folder) {
       if (folder == null) return;
-      if (Show(new MessageDialog("Remove Confirmation", "Are you sure?", Res.IconQuestion, true)) != 1) return;
+      if (Show(new MessageDialog("Remove Confirmation", "Are you sure?", MH.UI.Res.IconQuestion, true)) != 1) return;
 
       Core.R.FolderKeyword.ItemDelete(folder);
       Items.Remove(folder);

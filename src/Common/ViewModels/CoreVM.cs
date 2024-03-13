@@ -102,7 +102,7 @@ public class CoreVM : ObservableObject {
         Dialog.Show(new MessageDialog(
           "Database changes",
           "There are some changes in database. Do you want to save them?",
-          Res.IconQuestion,
+          MH.UI.Res.IconQuestion,
           true)) == 1)
       _coreR.SaveAllTables();
 
@@ -187,10 +187,10 @@ public class CoreVM : ObservableObject {
     if (Dialog.Show(new MessageDialog(
           "Save metadata to files",
           "Do you really want to save image metadata to {0} file{1}?".Plural(items.Length),
-          Res.IconQuestion,
+          MH.UI.Res.IconQuestion,
           true)) != 1) return;
 
-    var progress = new ProgressBarAsyncDialog("Saving metadata to files...", Res.IconImage, true, Environment.ProcessorCount);
+    var progress = new ProgressBarAsyncDialog("Saving metadata to files...", MH.UI.Res.IconImage, true, Environment.ProcessorCount);
     progress.Init(items, null, mi => _coreS.Image.TryWriteMetadata(mi), mi => mi.FilePath, null);
     progress.Start();
     Dialog.Show(progress);
