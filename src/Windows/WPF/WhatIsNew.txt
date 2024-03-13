@@ -4,6 +4,7 @@
 [B] - Bug fix
 
 Latest:
+ - [U] FolderBrowserDialog style
  - [B] CollectionView crash in some cases
  - [N] TreeView scroll one level/sibling up
  - [N] Load People by group (in menu)
