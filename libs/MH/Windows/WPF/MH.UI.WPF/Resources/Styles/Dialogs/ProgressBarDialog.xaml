@@ -21,8 +21,7 @@
       <TextBlock
         TextWrapping="Wrap"
         Margin="5,10"
-        Text="{Binding Message}"
-        FontSize="14"/>
+        Text="{Binding Message}"/>
     </DockPanel>
   </DataTemplate>
 </ResourceDictionary>
