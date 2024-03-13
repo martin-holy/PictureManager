@@ -24,7 +24,7 @@ public sealed class TreeViewSearchVM : ObservableObject {
   public TreeViewSearchVM(TreeViewCategoriesVM tvc) {
     _tvc = tvc;
     OpenCommand = new(Open, Res.IconMagnify, "Search");
-    CloseCommand = new(() => IsOpen = false, Res.IconXCross, "Close");
+    CloseCommand = new(() => IsOpen = false, MH.UI.Res.IconXCross, "Close");
     NavigateToCommand = new(NavigateTo);
   }
 

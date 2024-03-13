@@ -12,7 +12,7 @@ namespace PictureManager.Common.Dialogs {
 
     public RelayCommand OpenHomePageCommand { get; }
     
-    public AboutDialogM() : base("About", Res.IconImage) {
+    public AboutDialogM() : base("About", MH.UI.Res.IconImage) {
       Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 
       OpenHomePageCommand = new(() => OpenUrl(HomePageUrl));

@@ -27,12 +27,12 @@ namespace PictureManager.Common.Dialogs {
     public bool IsWorkInProgress { get => _isWorkInProgress; set { _isWorkInProgress = value; OnPropertyChanged(); } }
     public ImageM[] Items { get; set; }
 
-    public CompressDialogM(ImageM[] items, int jpegQualityLevel) : base("Compress Pictures to JPG", Res.IconImage) {
+    public CompressDialogM(ImageM[] items, int jpegQualityLevel) : base("Compress Pictures to JPG", MH.UI.Res.IconImage) {
       Items = items;
       JpegQualityLevel = jpegQualityLevel;
       ProgressValue = Items.Length;
       Buttons = new DialogButton[] {
-        new(new(Compress, () => !IsWorkInProgress, Res.IconImage, "Compress"), true),
+        new(new(Compress, () => !IsWorkInProgress, MH.UI.Res.IconImage, "Compress"), true),
         new(CloseCommand, false, true) };
     }
 

@@ -43,7 +43,7 @@ public sealed class VideoVM : ObservableObject {
     Current = vid;
     SetVideoSource(Current);
     ReloadCurrentVideoItems();
-    Core.VM.MainWindow.ToolsTabs.Activate(Res.IconMovieClapper, "Video", this);
+    Core.VM.MainWindow.ToolsTabs.Activate(MH.UI.Res.IconMovieClapper, "Video", this);
   }
 
   private void ReloadCurrentVideoItems() {

@@ -201,7 +201,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     if (Dialog.Show(new MessageDialog(
           "Delete Segment",
           "Do you really want to delete this segment?",
-          Res.IconQuestion,
+          MH.UI.Res.IconQuestion,
           true)) != 1) return;
 
     segmentS.DataAdapter.ItemDelete(item.Segment);

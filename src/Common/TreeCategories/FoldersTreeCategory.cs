@@ -76,7 +76,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} folder",
               $"Do you really want to {(copy ? "copy" : "move")} folder '{srcData.Name}' to '{dest.Name}'?",
-              Res.IconQuestion,
+              MH.UI.Res.IconQuestion,
               true)) != 1)
           return;
 
@@ -90,7 +90,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} media items",
               $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Length)} to '{dest.Name}'?",
-              Res.IconQuestion,
+              MH.UI.Res.IconQuestion,
               true)) != 1)
           return;
 

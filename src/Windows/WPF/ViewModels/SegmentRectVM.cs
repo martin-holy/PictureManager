@@ -1,5 +1,4 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Common;
 using PictureManager.Common.Models;
 using PictureManager.Common.Services;
 using System.Windows;
@@ -27,7 +26,7 @@ public sealed class SegmentRectVM : ObservableObject {
     CreateCommand = new(Create, () => SegmentRectS.AreVisible);
     EditCommand = new(Edit);
     EndEditCommand = new(SegmentRectS.EndEdit);
-    DeleteCommand = new(SegmentRectS.Delete, Res.IconXCross, "Delete");
+    DeleteCommand = new(SegmentRectS.Delete, MH.UI.Res.IconXCross, "Delete");
   }
 
   private void SetCurrent(MouseEventArgs e) {

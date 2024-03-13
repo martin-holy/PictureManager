@@ -25,7 +25,7 @@ public sealed class SegmentsMatchingVM : ObservableObject {
     var md = new MessageDialog("Segments", "Load segments from ...", Res.IconSegment, true);
 
     md.Buttons = new DialogButton[] {
-      new(md.SetResult(1, Res.IconImage, "Media items"), true),
+      new(md.SetResult(1, MH.UI.Res.IconImage, "Media items"), true),
       new(md.SetResult(2, Res.IconPeople, "People")),
       new(md.SetResult(3, Res.IconSegment, "Segments")) };
 

@@ -51,7 +51,7 @@ public sealed class SegmentVM : ObservableObject {
 
   private static void SetAsUnknown(SegmentM[] segments, SegmentR r) {
     var msg = "Do you want to set {0} segment{1} as unknown?".Plural(segments.Length);
-    if (Dialog.Show(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1) return;
+    if (Dialog.Show(new MessageDialog("Set as unknown", msg, MH.UI.Res.IconQuestion, true)) != 1) return;
     r.ChangePerson(null, segments, segments.GetPeople().ToArray());
   }
 }

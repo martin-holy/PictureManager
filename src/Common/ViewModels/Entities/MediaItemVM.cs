@@ -103,7 +103,7 @@ public sealed class MediaItemVM : ObservableObject {
     if (items.Length == 0 || Dialog.Show(new MessageDialog(
           "Delete Confirmation",
           "Do you really want to delete {0} item{1}?".Plural(items.Length),
-          Res.IconQuestion,
+          MH.UI.Res.IconQuestion,
           true)) != 1) return false;
 
     _s.Delete(items);
@@ -114,11 +114,11 @@ public sealed class MediaItemVM : ObservableObject {
     if (items.Length == 0 || Dialog.Show(new MessageDialog(
           "Reload metadata from files",
           "Do you really want to reload image metadata for {0} file{1}?".Plural(items.Length),
-          Res.IconQuestion,
+          MH.UI.Res.IconQuestion,
           true)) != 1) return;
 
     // TODO check async and maybe use the other ProgressBarDialog
-    var progress = new ProgressBarAsyncDialog("Reloading metadata...", Res.IconImage, true, Environment.ProcessorCount);
+    var progress = new ProgressBarAsyncDialog("Reloading metadata...", MH.UI.Res.IconImage, true, Environment.ProcessorCount);
     progress.Init(items, null, async mi => await _s.ReloadMetadata(mi), mi => mi.FilePath,
       delegate { _s.OnMetadataReloaded(items); });
     progress.Start();
