@@ -1,4 +1,4 @@
-﻿namespace MH.Utils;
+﻿namespace MH.UI;
 
 public static class Res {
   public const string IconAutoPlay = "IconAutoPlay";
