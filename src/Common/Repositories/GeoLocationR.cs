@@ -48,7 +48,7 @@ public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>("
 
     GeoLocationM gl;
     if (lat != null && lng != null) {
-      gl = All.SingleOrDefault(x =>
+      gl = All.FirstOrDefault(x =>
         x.Lat != null &&
         x.Lng != null &&
         Math.Abs((double)x.Lat - (double)lat) < 0.00001 &&
