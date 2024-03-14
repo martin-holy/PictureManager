@@ -1,8 +1,10 @@
 ﻿using MH.UI.WPF.Controls;
+using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
-namespace MH.UI.WPF.Utils; 
+namespace MH.UI.WPF.Utils;
 
 public static class Init {
   public static void SetDelegates() {
@@ -16,5 +18,7 @@ public static class Init {
     MH.Utils.Imaging.ResizeJpg = Imaging.ResizeJpg;
 
     MH.UI.Controls.Dialog.Show = DialogHost.Show;
+
+    MH.Utils.Tasks.Dispatch = (action) => Application.Current.Dispatcher.Invoke(DispatcherPriority.Render, action);
   }
 }
