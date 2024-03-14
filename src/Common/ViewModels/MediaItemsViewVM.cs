@@ -185,7 +185,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       toLoad.AddRange(folder.MediaItems);
     }
 
-    return ReadMetadata(newItems).ContinueWith(_ => {
+    return Import(newItems).ContinueWith(_ => {
       Tasks.RunOnUiThread(() => {
         var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
         //toLoad.AddRange(GetVideoItems(toLoad));
@@ -200,7 +200,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
   private async void CancelImport() =>
     await _importTask.Cancel();
 
-  private async Task ReadMetadata(List<MediaItemMetadata> items) {
+  private async Task Import(List<MediaItemMetadata> items) {
     if (items.Count == 0) return;
     IsLoading = false;
     IsImporting = true;
@@ -208,34 +208,17 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     ImportDoneCount = 0;
 
     try {
-      await _importTask.Start(new(() => {
-        try {
-          Parallel.ForEach(
-            items.Where(x => x.MediaItem is ImageM),
-            new() { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _importTask.Token },
-            mim => {
-              MediaItemS.ReadMetadata(mim, false);
-              _importProgress.Report(1);
-            });
-        }
-        catch (OperationCanceledException) { }
-      }));
+      await _importTask.Start(new(() => ReadMetadata(items))).ContinueWith(async delegate {
+        Tasks.Dispatch(delegate { ImportDoneCount = 0; }); // new counter for loading GeoNames if any
+        foreach (var mim in items) {
+          if (mim.Success)
+            await mim.FindRefs();
+          else
+            Core.R.MediaItem.ItemDelete(mim.MediaItem);
 
-      if (!_importTask.Token.IsCancellationRequested)
-        foreach (var mim in items.Where(x => x.MediaItem is VideoM)) {
-          MediaItemS.ReadMetadata(mim, false);
-          _importProgress.Report(1);
+          Tasks.Dispatch(delegate { ImportDoneCount++; });
         }
-    
-      ImportDoneCount = 0; // new counter for loading GeoNames if any
-      foreach (var mim in items) {
-        if (mim.Success)
-          await mim.FindRefs();
-        else
-          Core.R.MediaItem.ItemDelete(mim.MediaItem);
-
-        _importProgress.Report(1);
-      }
+      }, Tasks.UiTaskScheduler);
     }
     catch (Exception ex) {
       Log.Error(ex);
@@ -243,6 +226,25 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     finally {
       IsImporting = false;
       IsLoading = true;
+    }
+  }
+
+  private void ReadMetadata(List<MediaItemMetadata> items) {
+    try {
+      var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _importTask.Token };
+      Parallel.ForEach(items.Where(x => x.MediaItem is ImageM), po, mim => {
+        MediaItemS.ReadMetadata(mim, false);
+        _importProgress.Report(1);
+      });
+    }
+    catch (OperationCanceledException) { }
+
+    foreach (var mim in items.Where(x => x.MediaItem is VideoM)) {
+      if (_importTask.Token.IsCancellationRequested) break;
+      Tasks.RunOnUiThread(() => {
+        MediaItemS.ReadMetadata(mim, false);
+        Tasks.Dispatch(delegate { ImportDoneCount++; });
+      }).Wait();
     }
   }
 
