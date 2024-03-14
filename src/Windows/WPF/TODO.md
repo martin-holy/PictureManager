@@ -31,10 +31,6 @@
 
 
                                   *** UPDATE ***
-        # MH.UI.WPF
-## Dialog
-  - dialogs now have bigger base font so set everywhere smaller font size
-
 
         # MH.UI
 ## CollectionView
@@ -45,7 +41,6 @@
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
-  - Log button
   - CoreUI with interfaces for CoreM and CoreVM
   - replace Contains with ReferenceEquals
 ## TreeViewCategories
@@ -53,7 +48,6 @@
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
 ## Segments
-  - with segment creation create unknown person (#1234) as well so that every segment has person
   - add button remove selected segments from drawer
 ## ToggleDialog
   - show selected items on dialog
@@ -77,6 +71,7 @@
     if the point is more away from the slider => change value is smaller
     and if is closer => change value is bigger
     (or zooming time line)
+  - Array.ForEach extension using for loop
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
     so I can choice how to display filtered data: in MediaItemsView or MediaViewer
@@ -113,8 +108,6 @@
     - disable/enable available
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
   - filter for segment resolution
-## TreeView
-  - show ScrollToParent on mouse hover. Icon with ToolTip (Parent.Name) for each parent. Maybe shared button for whole TreeView
 ## GroupByDialog
   - incremental search
 ## PersonDetail
