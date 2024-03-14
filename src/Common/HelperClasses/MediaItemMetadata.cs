@@ -25,7 +25,7 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
   public int? GeoNameId { get; set; }
   public List<Tuple<string, List<Tuple<string, string[]>>>> PeopleSegmentsKeywords { get; set; }
 
-  public async Task FindRefs() {
+  public Task FindRefs() {
     MediaItem.Rating = Rating;
     MediaItem.Comment = Comment;
     MediaItem.Width = Width;
@@ -34,7 +34,7 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
     MediaItem.SetThumbSize(true);
     FindPeople();
     FindKeywords();
-    await FindGeoLocation();
+    return FindGeoLocation();
   }
 
   public void FindPeople() {

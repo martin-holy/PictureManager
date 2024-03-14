@@ -37,6 +37,8 @@ public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>("
 
   public async Task<GeoLocationM> GetOrCreate(double? lat, double? lng, int? gnId, GeoNameM gn, bool online = true) {
     if (lat == null && lng == null && gnId == null && gn == null) return null;
+    lat = lat == null ? null : Math.Round((double)lat, 5);
+    lng = lng == null ? null : Math.Round((double)lng, 5);
 
     if (gnId != null) {
       gn = coreR.GeoName.All.SingleOrDefault(x => x.GetHashCode() == gnId);
@@ -68,10 +70,7 @@ public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>("
       gl = All.SingleOrDefault(x => ReferenceEquals(x.GeoName, gn) && x.Lat == null && x.Lng == null);
     }
 
-    return gl ?? ItemCreate(
-      lat == null ? null : Math.Round((double)lat, 5),
-      lng == null ? null : Math.Round((double)lng, 5),
-      gn);
+    return gl ?? ItemCreate(lat, lng, gn);
   }
 
   public void RemoveGeoName(GeoNameM geoName) {

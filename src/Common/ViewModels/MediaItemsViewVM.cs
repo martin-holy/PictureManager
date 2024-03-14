@@ -207,36 +207,43 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     ImportCount = items.Count;
     ImportDoneCount = 0;
 
-    await _importTask.Start(new(() => {
-      try {
-        Parallel.ForEach(
-          items.Where(x => x.MediaItem is ImageM),
-          new() { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _importTask.Token },
-          mim => {
-            MediaItemS.ReadMetadata(mim, false);
-            _importProgress.Report(1);
-          });
+    try {
+      await _importTask.Start(new(() => {
+        try {
+          Parallel.ForEach(
+            items.Where(x => x.MediaItem is ImageM),
+            new() { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _importTask.Token },
+            mim => {
+              MediaItemS.ReadMetadata(mim, false);
+              _importProgress.Report(1);
+            });
+        }
+        catch (OperationCanceledException) { }
+      }));
+
+      if (!_importTask.Token.IsCancellationRequested)
+        foreach (var mim in items.Where(x => x.MediaItem is VideoM)) {
+          MediaItemS.ReadMetadata(mim, false);
+          _importProgress.Report(1);
+        }
+    
+      ImportDoneCount = 0; // new counter for loading GeoNames if any
+      foreach (var mim in items) {
+        if (mim.Success)
+          await mim.FindRefs();
+        else
+          Core.R.MediaItem.ItemDelete(mim.MediaItem);
+
+        _importProgress.Report(1);
       }
-      catch (OperationCanceledException) { }
-    }));
-
-    foreach (var mim in items.Where(x => x.MediaItem is VideoM)) {
-      MediaItemS.ReadMetadata(mim, false);
-      _importProgress.Report(1);
     }
-
-    ImportDoneCount = 0; // new counter for loading GeoNames if any
-    foreach (var mim in items) {
-      if (mim.Success)
-        await mim.FindRefs();
-      else
-        Core.R.MediaItem.ItemDelete(mim.MediaItem);
-
-      _importProgress.Report(1);
+    catch (Exception ex) {
+      Log.Error(ex);
     }
-
-    IsImporting = false;
-    IsLoading = true;
+    finally {
+      IsImporting = false;
+      IsLoading = true;
+    }
   }
 
   private void AddMediaItems(List<MediaItemM> items, bool and = false, bool hide = false) {
