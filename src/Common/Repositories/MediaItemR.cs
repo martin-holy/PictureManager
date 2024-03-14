@@ -65,14 +65,8 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     rmi.Folder = null;
   }
 
-  protected override void OnItemsDeleted(IList<MediaItemM> items) {
+  protected override void OnItemsDeleted(IList<MediaItemM> items) =>
     RaiseItemsDeleted(items);
-
-    // delete from drive
-    if (_coreR.IsCopyMoveInProgress) return;
-    CoreR.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
-    items.Select(x => x.FilePathCache).Where(File.Exists).ToList().ForEach(File.Delete);
-  }
 
   public override int GetNextId() {
     var id = ++MaxId;
@@ -155,6 +149,12 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     _coreR.Video.ItemsDelete(items.OfType<VideoM>().ToArray());
     _coreR.VideoClip.ItemsDelete(items.OfType<VideoClipM>().ToArray());
     _coreR.VideoImage.ItemsDelete(items.OfType<VideoImageM>().ToArray());
+  }
+
+  public void ItemsDeleteFromDrive(IList<MediaItemM> items) {
+    ItemsDelete(items);
+    CoreR.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
+    items.Select(x => x.FilePathCache).Where(File.Exists).ToList().ForEach(File.Delete);
   }
 
   public override IEnumerable<MediaItemM> GetAll(Func<MediaItemM, bool> where) =>
