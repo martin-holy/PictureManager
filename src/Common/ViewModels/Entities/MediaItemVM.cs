@@ -106,7 +106,7 @@ public sealed class MediaItemVM : ObservableObject {
           MH.UI.Res.IconQuestion,
           true)) != 1) return false;
 
-    _s.Delete(items);
+    _s.DeleteFromDrive(items);
     return true;
   }
 

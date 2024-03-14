@@ -13,8 +13,8 @@ namespace PictureManager.Common.Services;
 public sealed class MediaItemS(MediaItemR r) : ObservableObject {
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
 
-  public void Delete(MediaItemM[] items) =>
-    r.ItemsDelete(items);
+  public void DeleteFromDrive(MediaItemM[] items) =>
+    r.ItemsDeleteFromDrive(items);
 
   public bool Exists(MediaItemM mi) {
     if (mi == null || File.Exists(mi.FilePath)) return true;
