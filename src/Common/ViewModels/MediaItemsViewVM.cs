@@ -6,7 +6,6 @@ using MH.Utils.Interfaces;
 using PictureManager.Common.CollectionViews;
 using PictureManager.Common.HelperClasses;
 using PictureManager.Common.Models.MediaItems;
-using PictureManager.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,38 +16,27 @@ namespace PictureManager.Common.ViewModels;
 
 public class MediaItemsViewVM : CollectionViewMediaItems {
   private bool _isLoading;
-  private bool _isImporting;
-  private int _importCount;
-  private int _importDoneCount;
-  private readonly IProgress<int> _importProgress;
-  private readonly WorkTask _importTask = new();
-
+  
   public event EventHandler SelectionChangedEventHandler = delegate { };
   public event EventHandler FilteredChangedEventHandler = delegate { };
 
   public List<MediaItemM> LoadedItems { get; } = new();
   public List<MediaItemM> FilteredItems { get; } = new();
   public MediaItemsFilterVM Filter { get; } = new();
+  public MediaItemsImport Import { get; } = new();
   public DragDropHelper.CanDragFunc CanDragFunc { get; }
   public bool IsLoading { get => _isLoading; set { _isLoading = value; OnPropertyChanged(); } }
-  public bool IsImporting { get => _isImporting; set { _isImporting = value; OnPropertyChanged(); } }
-  public int ImportCount { get => _importCount; set { _importCount = value; OnPropertyChanged(); } }
-  public int ImportDoneCount { get => _importDoneCount; set { _importDoneCount = value; OnPropertyChanged(); } }
+  
   public string PositionSlashCount =>
     Selected.Items.Count == 0
       ? FilteredItems.Count.ToString()
       : $"{FilteredItems.IndexOf(Selected.Items[0]) + 1}/{FilteredItems.Count}";
 
-  public RelayCommand CancelImportCommand { get; }
   public RelayCommand SelectAllCommand { get; }
 
   public MediaItemsViewVM(double thumbScale) : base(thumbScale) {
     CanDragFunc = CanDrag;
-    _importProgress = new Progress<int>(x => ImportDoneCount += x);
-
-    CancelImportCommand = new(CancelImport);
     SelectAllCommand = new(() => Selected.Set(FilteredItems));
-
     Filter.FilterChangedEventHandler += delegate { SoftLoad(LoadedItems, true, true); };
     Selected.ItemsChangedEventHandler += delegate { SelectionChanged(); };
     Selected.AllDeselectedEventHandler += delegate { SelectionChanged(); };
@@ -185,67 +173,13 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       toLoad.AddRange(folder.MediaItems);
     }
 
-    return Import(newItems).ContinueWith(_ => {
-      Tasks.RunOnUiThread(() => {
-        var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
-        //toLoad.AddRange(GetVideoItems(toLoad));
-        AddMediaItems(Sort(toLoad.Except(notImported)).ToList(), and, hide);
-        Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
-        AfterLoad();
-        IsLoading = false;
-      });
-    });
-  }
-
-  private async void CancelImport() =>
-    await _importTask.Cancel();
-
-  private async Task Import(List<MediaItemMetadata> items) {
-    if (items.Count == 0) return;
-    IsLoading = false;
-    IsImporting = true;
-    ImportCount = items.Count;
-    ImportDoneCount = 0;
-
-    try {
-      await _importTask.Start(new(() => ReadMetadata(items))).ContinueWith(async delegate {
-        Tasks.Dispatch(delegate { ImportDoneCount = 0; }); // new counter for loading GeoNames if any
-        foreach (var mim in items) {
-          if (mim.Success)
-            await mim.FindRefs();
-          else
-            Core.R.MediaItem.ItemDelete(mim.MediaItem);
-
-          Tasks.Dispatch(delegate { ImportDoneCount++; });
-        }
-      }, Tasks.UiTaskScheduler);
-    }
-    catch (Exception ex) {
-      Log.Error(ex);
-    }
-    finally {
-      IsImporting = false;
-      IsLoading = true;
-    }
-  }
-
-  private void ReadMetadata(List<MediaItemMetadata> items) {
-    try {
-      var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _importTask.Token };
-      Parallel.ForEach(items.Where(x => x.MediaItem is ImageM), po, mim => {
-        MediaItemS.ReadMetadata(mim, false);
-        _importProgress.Report(1);
-      });
-    }
-    catch (OperationCanceledException) { }
-
-    foreach (var mim in items.Where(x => x.MediaItem is VideoM)) {
-      if (_importTask.Token.IsCancellationRequested) break;
-      Tasks.RunOnUiThread(() => {
-        MediaItemS.ReadMetadata(mim, false);
-        Tasks.Dispatch(delegate { ImportDoneCount++; });
-      }).Wait();
-    }
+    return Import.Import(newItems).ContinueWith(delegate {
+      var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
+      AddMediaItems(Sort(toLoad.Except(notImported)).ToList(), and, hide);
+      Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
+      AfterLoad();
+      IsLoading = false;
+    }, Tasks.UiTaskScheduler);
   }
 
   private void AddMediaItems(List<MediaItemM> items, bool and = false, bool hide = false) {
