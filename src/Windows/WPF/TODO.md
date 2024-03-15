@@ -71,7 +71,6 @@
     if the point is more away from the slider => change value is smaller
     and if is closer => change value is bigger
     (or zooming time line)
-  - Array.ForEach extension using for loop
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
     so I can choice how to display filtered data: in MediaItemsView or MediaViewer
