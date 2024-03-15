@@ -105,6 +105,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     _all.ForEach(x => x.Update(mediaItems));
 
   public Task LoadByFolder(ITreeItem item) {
+    if (Current?.IsImporting == true) return Task.CompletedTask;
     if (item is FolderM { IsAccessible: false }) return Task.CompletedTask;
     var and = Keyboard.IsCtrlOn();
     var hide = Keyboard.IsAltOn();
@@ -112,7 +113,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
 
     item.IsSelected = true;
     AddViewIfNotActive(and || hide ? null : item.Name);
-    return Current.LoadByFolder(item, and, hide, recursive);
+    return Current?.LoadByFolder(item, and, hide, recursive);
   }
 
   public async void LoadByTag(object item) {
