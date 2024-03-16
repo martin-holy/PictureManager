@@ -1,6 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MovieManager.Common.Models;
+using PictureManager.Plugins.Common.Interfaces.Repositories;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -10,13 +11,7 @@ namespace MovieManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Title|Year|Length|Rating|PersonalRating|Genre|SubGenres|Actors|Keywords|SeenWhen|MPAA|Plot
 /// </summary>
-public sealed class MovieR : TableDataAdapter<MovieM> {
-  private readonly CoreR _coreR;
-
-  public MovieR(CoreR coreR) : base("Movies", 13) {
-    _coreR = coreR;
-  }
-
+public sealed class MovieR(CoreR coreR, IPluginCoreR pmCoreR) : TableDataAdapter<MovieM>("Movies", 13) {
   public override MovieM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]) {
       Year = csv[2].IntParseOrDefault(0),
@@ -46,8 +41,10 @@ public sealed class MovieR : TableDataAdapter<MovieM> {
 
   public override void LinkReferences() {
     foreach (var (m, csv) in AllCsv) {
-      m.Genre = _coreR.Genre.GetById(csv[6], true);
-      // TODO SubGenre, Actors and Keywords
+      m.Genre = coreR.Genre.GetById(csv[6], true);
+      m.SubGenres = coreR.Genre.LinkList(csv[7], null, null);
+      m.Actors = pmCoreR.Person.Link(csv[8], this);
+      m.Keywords = pmCoreR.Keyword.Link(csv[9], this);
     }
   }
 }
