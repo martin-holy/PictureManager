@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\libs\MH\Common\MH.UI\MH.UI.csproj" />
     <ProjectReference Include="..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
+    <ProjectReference Include="..\..\plugins\Plugins\src\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj" />
   </ItemGroup>
 
 </Project>

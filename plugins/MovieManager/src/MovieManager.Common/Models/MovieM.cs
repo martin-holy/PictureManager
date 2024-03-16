@@ -14,8 +14,8 @@ public sealed class MovieM : ObservableObject {
   public double PersonalRating { get; set; }
   public GenreM Genre { get; set; }
   public List<GenreM> SubGenres { get; set; }
-  public List<IPersonM> Actors { get; set; }
-  public List<IKeywordM> Keywords { get; set; }
+  public List<IPluginPersonM> Actors { get; set; }
+  public List<IPluginKeywordM> Keywords { get; set; }
   public DateOnly[] SeenWhen { get; set; }
   public string MPAA { get; set; }
   public string Plot { get; set; }
