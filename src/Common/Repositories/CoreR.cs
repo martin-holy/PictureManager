@@ -1,13 +1,14 @@
 ﻿using MH.Utils;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
+using PictureManager.Plugins.Common.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Common.Repositories;
 
-public sealed class CoreR : SimpleDB {
+public sealed class CoreR : SimpleDB, IPluginCoreR {
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public bool IsCopyMoveInProgress { get; set; }
@@ -30,6 +31,9 @@ public sealed class CoreR : SimpleDB {
 
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
+
+  IPluginKeywordR IPluginCoreR.Keyword => Keyword;
+  IPluginPersonR IPluginCoreR.Person => Person;
 
   public CoreR() {
     CategoryGroup = new(this);

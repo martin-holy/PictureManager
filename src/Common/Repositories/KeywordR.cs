@@ -3,6 +3,8 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.TreeCategories;
+using PictureManager.Plugins.Common.Interfaces.Models;
+using PictureManager.Plugins.Common.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordR : TreeDataAdapter<KeywordM> {
+public class KeywordR : TreeDataAdapter<KeywordM>, IPluginKeywordR {
   private readonly CoreR _coreR;
   private const string _notFoundRecordNamePrefix = "Not found ";
 
@@ -56,6 +58,9 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
 
   public List<KeywordM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
+
+  List<IPluginKeywordM> IPluginKeywordR.Link(string csv, IDataAdapter seeker) =>
+    Link(csv, seeker).Cast<IPluginKeywordM>().ToList();
 
   private KeywordM GetNotFoundRecord(int notFoundId) {
     var id = GetNextId();
