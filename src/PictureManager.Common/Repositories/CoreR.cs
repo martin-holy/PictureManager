@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Repositories;
 
-public sealed class CoreR : SimpleDB, IPluginCoreR {
+public sealed class CoreR : SimpleDB, IPluginHostCoreR {
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public bool IsCopyMoveInProgress { get; set; }
@@ -32,8 +32,8 @@ public sealed class CoreR : SimpleDB, IPluginCoreR {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
-  IPluginKeywordR IPluginCoreR.Keyword => Keyword;
-  IPluginPersonR IPluginCoreR.Person => Person;
+  IPluginHostKeywordR IPluginHostCoreR.Keyword => Keyword;
+  IPluginHostPersonR IPluginHostCoreR.Person => Person;
 
   public CoreR() {
     CategoryGroup = new(this);

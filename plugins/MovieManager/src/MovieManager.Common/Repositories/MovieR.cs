@@ -11,7 +11,7 @@ namespace MovieManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Title|Year|Length|Rating|PersonalRating|Genre|SubGenres|Actors|Keywords|SeenWhen|MPAA|Plot
 /// </summary>
-public sealed class MovieR(CoreR coreR, IPluginCoreR pmCoreR) : TableDataAdapter<MovieM>("Movies", 13) {
+public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAdapter<MovieM>("Movies", 13) {
   public override MovieM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]) {
       Year = csv[2].IntParseOrDefault(0),
@@ -43,8 +43,8 @@ public sealed class MovieR(CoreR coreR, IPluginCoreR pmCoreR) : TableDataAdapter
     foreach (var (m, csv) in AllCsv) {
       m.Genre = coreR.Genre.GetById(csv[6], true);
       m.SubGenres = coreR.Genre.LinkList(csv[7], null, null);
-      m.Actors = pmCoreR.Person.Link(csv[8], this);
-      m.Keywords = pmCoreR.Keyword.Link(csv[9], this);
+      m.Actors = phCoreR.Person.Link(csv[8], this);
+      m.Keywords = phCoreR.Keyword.Link(csv[9], this);
     }
   }
 }

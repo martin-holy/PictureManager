@@ -14,7 +14,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordR : TreeDataAdapter<KeywordM>, IPluginKeywordR {
+public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostKeywordR {
   private readonly CoreR _coreR;
   private const string _notFoundRecordNamePrefix = "Not found ";
 
@@ -59,8 +59,8 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IPluginKeywordR {
   public List<KeywordM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
-  List<IPluginKeywordM> IPluginKeywordR.Link(string csv, IDataAdapter seeker) =>
-    Link(csv, seeker).Cast<IPluginKeywordM>().ToList();
+  List<IPluginHostKeywordM> IPluginHostKeywordR.Link(string csv, IDataAdapter seeker) =>
+    Link(csv, seeker).Cast<IPluginHostKeywordM>().ToList();
 
   private KeywordM GetNotFoundRecord(int notFoundId) {
     var id = GetNextId();

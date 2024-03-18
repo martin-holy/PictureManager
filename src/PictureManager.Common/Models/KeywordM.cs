@@ -13,7 +13,7 @@ namespace PictureManager.Common.Models;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordM : TreeItem, IEquatable<KeywordM>, IPluginKeywordM {
+public class KeywordM : TreeItem, IEquatable<KeywordM>, IPluginHostKeywordM {
   #region IEquatable implementation
   public bool Equals(KeywordM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as KeywordM);
