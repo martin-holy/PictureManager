@@ -49,9 +49,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
-    <ProjectReference Include="..\..\libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj" />
-    <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
+    <ProjectReference Include="..\..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
+    <ProjectReference Include="..\..\..\libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj" />
+    <ProjectReference Include="..\..\Common\PictureManager.Common.csproj" />
+    <ProjectReference Include="..\..\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,7 +62,8 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(SolutionDir)plugins\Plugins\src\PictureManager.Plugins.Common\bin\$(Configuration)\net8.0\PictureManager.Plugins.Common.dll&quot; &quot;$(SolutionDir)src\Windows\WPF\bin\$(Configuration)\$(TargetFramework)\plugins\Plugins\&quot; /Y" />
+    <Exec Command="xcopy &quot;$(SolutionDir)plugins\MovieManager\src\MovieManager.Common\bin\$(Configuration)\net8.0\MovieManager.Common.dll&quot; &quot;$(TargetDir)plugins\MovieManager\&quot; /Y" />
+    <Exec Command="xcopy &quot;$(SolutionDir)plugins\MovieManager\src\MovieManager.Windows.WPF\bin\$(Configuration)\net8.0-windows\MovieManager.Windows.WPF.dll&quot; &quot;$(TargetDir)plugins\MovieManager\&quot; /Y" />
   </Target>
 
 </Project>
