@@ -4,6 +4,6 @@ using System.Collections.Generic;
 
 namespace PictureManager.Plugins.Common.Interfaces.Repositories;
 
-public interface IPluginKeywordR {
-  public List<IPluginKeywordM> Link(string csv, IDataAdapter seeker);
+public interface IPluginHostKeywordR {
+  public List<IPluginHostKeywordM> Link(string csv, IDataAdapter seeker);
 }

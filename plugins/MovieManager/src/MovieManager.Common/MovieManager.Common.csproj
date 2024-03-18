@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -23,7 +24,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
-    <ProjectReference Include="..\..\..\Plugins\src\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\src\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj">
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

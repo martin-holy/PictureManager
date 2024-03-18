@@ -7,9 +7,9 @@ public sealed  class CoreR : SimpleDB {
   public GenreR Genre { get; }
   public MovieR Movie { get; }
 
-  public CoreR(IPluginCoreR pmCoreR) {
+  public CoreR(IPluginHostCoreR phCoreR) {
     Genre = new();
-    Movie = new(this, pmCoreR);
+    Movie = new(this, phCoreR);
   }
 
   public void AddDataAdapters() {
