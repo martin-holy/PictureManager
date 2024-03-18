@@ -49,10 +49,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
-    <ProjectReference Include="..\..\..\libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj" />
-    <ProjectReference Include="..\..\Common\PictureManager.Common.csproj" />
-    <ProjectReference Include="..\..\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj" />
+    <ProjectReference Include="..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
+    <ProjectReference Include="..\..\libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj" />
+    <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
+    <ProjectReference Include="..\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

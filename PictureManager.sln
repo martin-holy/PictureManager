@@ -22,6 +22,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Windows.WPF", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Plugins.Common", "src\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj", "{DB1DD0A0-C2BD-4A1B-9EFC-C38EC96FF879}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Common", "src\PictureManager.Common\PictureManager.Common.csproj", "{B55BDA55-4B8C-4660-AA3E-5C5A846873BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Windows.WPF", "src\PictureManager.Windows.WPF\PictureManager.Windows.WPF.csproj", "{B8FC45F5-F582-4B0F-BF72-0166841061D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +56,14 @@ Global
 		{DB1DD0A0-C2BD-4A1B-9EFC-C38EC96FF879}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB1DD0A0-C2BD-4A1B-9EFC-C38EC96FF879}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB1DD0A0-C2BD-4A1B-9EFC-C38EC96FF879}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B55BDA55-4B8C-4660-AA3E-5C5A846873BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B55BDA55-4B8C-4660-AA3E-5C5A846873BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B55BDA55-4B8C-4660-AA3E-5C5A846873BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B55BDA55-4B8C-4660-AA3E-5C5A846873BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8FC45F5-F582-4B0F-BF72-0166841061D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8FC45F5-F582-4B0F-BF72-0166841061D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8FC45F5-F582-4B0F-BF72-0166841061D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8FC45F5-F582-4B0F-BF72-0166841061D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
