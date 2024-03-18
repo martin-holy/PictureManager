@@ -4,6 +4,9 @@
   - minimize window will break full screen mode
 ## ErrorDialog
   - resize stretch
+## MediaPlayer
+  - select video => select clip => TimelinePosition changes => play => TimelinePosition is set to 0
+  - TimelinePosition changes but video not after changing TimelinePosition with buttons
 
         # Picture Manager - Need Help
 ## VideoPlayer
