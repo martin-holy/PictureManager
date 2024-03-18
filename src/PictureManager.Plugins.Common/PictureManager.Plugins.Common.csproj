@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -16,16 +16,15 @@
 
   <PropertyGroup>
     <Authors>Martin Holý</Authors>
-    <Copyright>Martin Holý (2015 - 2024)</Copyright>
+    <Copyright>Martin Holý (2024)</Copyright>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libs\MH\Common\MH.UI\MH.UI.csproj" />
-    <ProjectReference Include="..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
-    <ProjectReference Include="..\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj" />
+    <ProjectReference Include="..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
-
 </Project>
