@@ -41,6 +41,10 @@
   - method Add or Insert => Update(e.Data, false)
 
 
+        # MH.UI
+## SimpleDB
+  - save not found records (like segment for Person.TopSegments or MediaItem for Movie) for adding them back on DB save
+
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
