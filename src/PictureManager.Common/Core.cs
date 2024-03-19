@@ -4,8 +4,11 @@ using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
+using PictureManager.Common.Utils;
 using PictureManager.Common.ViewModels;
+using PictureManager.Plugins.Common.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +24,7 @@ public sealed class Core {
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }
   public static Settings Settings { get; } = Settings.Load();
+  public List<IPluginCore> Plugins { get; } = [];
 
   public static Func<double> GetDisplayScale { get; set; }
 
@@ -36,6 +40,7 @@ public sealed class Core {
       R.Migrate(8, DatabaseMigration.Resolver);
       R.LoadAllTables(progress);
       R.LinkReferences(progress);
+      LoadPlugins(progress).Wait();
       R.ClearDataAdapters();
       R.SetIsReady();
       progress.Report("Loading UI");
@@ -47,6 +52,9 @@ public sealed class Core {
     SegmentS.SetSegmentUiSize(scale);
     S = new(R);
     VM = new(S, R);
+
+    foreach (var plugin in Plugins) plugin.AfterInit();
+
     AttachEvents();
 
     R.Keyword.Tree.AutoAddedGroup ??=
@@ -60,6 +68,12 @@ public sealed class Core {
     R.CategoryGroup.AddCategory(R.Keyword.Tree);
     VM.Video.MediaPlayer.SetView(CoreVM.UiFullVideo);
     VM.Video.MediaPlayer.SetView(CoreVM.UiDetailVideo);
+  }
+
+  private Task LoadPlugins(IProgress<string> progress) {
+    if (PluginU.GetPluginCore("MovieManager") is not { } mm) return Task.CompletedTask;
+    Plugins.Add(mm);
+    return mm.InitAsync(R, progress);
   }
 
   private void AttachEvents() {
