@@ -23,7 +23,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   public event EventHandler<ObjectEventArgs<(PersonM, SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
   public event DataEventHandler<SegmentM[]> KeywordsChangedEvent = delegate { };
 
-  public SegmentR(CoreR coreR) : base("Segments", 5) {
+  public SegmentR(CoreR coreR) : base(coreR, "Segments", 5) {
     _coreR = coreR;
     IsDriveRelated = true;
   }

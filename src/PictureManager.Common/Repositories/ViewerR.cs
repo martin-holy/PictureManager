@@ -15,7 +15,7 @@ public class ViewerR : TreeDataAdapter<ViewerM> {
 
   public ViewersTreeCategory Tree { get; }
 
-  public ViewerR(CoreR coreR) : base("Viewers", 7) {
+  public ViewerR(CoreR coreR) : base(coreR, "Viewers", 7) {
     _coreR = coreR;
     Tree = new(this);
   }

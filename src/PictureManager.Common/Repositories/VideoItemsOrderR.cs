@@ -8,7 +8,7 @@ namespace PictureManager.Common.Repositories;
 public sealed class VideoItemsOrderR : OneToManyMultiDataAdapter<VideoM, VideoItemM> {
   private readonly CoreR _coreR;
 
-  public VideoItemsOrderR(CoreR coreR) : base("VideoItemsOrder", coreR.Video) {
+  public VideoItemsOrderR(CoreR coreR) : base(coreR, "VideoItemsOrder", coreR.Video) {
     _coreR = coreR;
     IsDriveRelated = true;
     coreR.ReadyEvent += delegate { OnDbReady(); };

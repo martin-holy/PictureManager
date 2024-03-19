@@ -35,12 +35,12 @@ public sealed class CoreR : SimpleDB, IPluginHostCoreR {
   IPluginHostKeywordR IPluginHostCoreR.Keyword => Keyword;
   IPluginHostPersonR IPluginHostCoreR.Person => Person;
 
-  public CoreR() {
+  public CoreR() : base("db") {
     CategoryGroup = new(this);
     FavoriteFolder = new(this);
     FolderKeyword = new(this);
-    Folder = new();
-    GeoName = new();
+    Folder = new(this);
+    GeoName = new(this);
     GeoLocation = new(this);
     Image = new(this);
     Keyword = new(this);

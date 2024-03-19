@@ -7,7 +7,7 @@ using System.Linq;
 namespace PictureManager.Common.Repositories;
 
 public sealed class MediaItemGeoLocationR : OneToOneDataAdapter<MediaItemM, GeoLocationM> {
-  public MediaItemGeoLocationR(CoreR coreR) : base("MediaItemGeoLocation", coreR.MediaItem, coreR.GeoLocation) {
+  public MediaItemGeoLocationR(CoreR coreR) : base(coreR, "MediaItemGeoLocation", coreR.MediaItem, coreR.GeoLocation) {
     IsDriveRelated = true;
   }
 

@@ -16,7 +16,7 @@ namespace PictureManager.Common.Repositories;
 public class FolderR : TreeDataAdapter<FolderM> {
   public FoldersTreeCategory Tree { get; }
 
-  public FolderR() : base("Folders", 3) {
+  public FolderR(CoreR coreR) : base(coreR, "Folders", 3) {
     IsDriveRelated = true;
     Tree = new(this);
   }

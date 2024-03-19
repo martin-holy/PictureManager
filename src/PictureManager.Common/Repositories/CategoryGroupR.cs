@@ -15,7 +15,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Category|GroupItems
 /// </summary>
-public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>("CategoryGroups", 4) {
+public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR, "CategoryGroups", 4) {
   private readonly List<ITreeCategory> _categories = [];
 
   public override void Save() =>

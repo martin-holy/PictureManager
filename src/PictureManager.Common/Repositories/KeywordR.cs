@@ -20,7 +20,7 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostKeywordR {
 
   public KeywordsTreeCategory Tree { get; }
 
-  public KeywordR(CoreR coreR) : base("Keywords", 3) {
+  public KeywordR(CoreR coreR) : base(coreR, "Keywords", 3) {
     _coreR = coreR;
     Tree = new(this);
   }

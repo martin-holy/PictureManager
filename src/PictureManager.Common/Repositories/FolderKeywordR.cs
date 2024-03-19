@@ -21,7 +21,7 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
   public static readonly FolderKeywordM FolderKeywordPlaceHolder = new(string.Empty, null);
   public List<FolderKeywordM> All2 { get; } = [];
 
-  public FolderKeywordR(CoreR coreR) : base("FolderKeywords", 1) {
+  public FolderKeywordR(CoreR coreR) : base(coreR, "FolderKeywords", 1) {
     _coreR = coreR;
     IsDriveRelated = true;
     Tree = new(this);

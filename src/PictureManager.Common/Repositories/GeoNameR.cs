@@ -20,7 +20,7 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
   public GeoNamesTreeCategory Tree { get; }
   public bool ApiLimitExceeded { get; set; }
 
-  public GeoNameR() : base("GeoNames", 5) {
+  public GeoNameR(CoreR coreR) : base(coreR, "GeoNames", 5) {
     Tree = new(this);
   }
 

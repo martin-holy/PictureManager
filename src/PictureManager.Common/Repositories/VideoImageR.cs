@@ -11,7 +11,7 @@ namespace PictureManager.Common.Repositories;
 public class VideoImageR : TableDataAdapter<VideoImageM> {
   private readonly CoreR _coreR;
 
-  public VideoImageR(CoreR coreR) : base("VideoImages", 7) {
+  public VideoImageR(CoreR coreR) : base(coreR, "VideoImages", 7) {
     _coreR = coreR;
     IsDriveRelated = true;
   }

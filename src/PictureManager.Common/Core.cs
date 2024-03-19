@@ -33,7 +33,7 @@ public sealed class Core {
       R.AddDataAdapters();
       Drives.UpdateSerialNumbers();
       progress.Report("Migrating Database");
-      SimpleDB.Migrate(8, DatabaseMigration.Resolver);
+      R.Migrate(8, DatabaseMigration.Resolver);
       R.LoadAllTables(progress);
       R.LinkReferences(progress);
       R.ClearDataAdapters();
