@@ -1,6 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
+using PictureManager.Plugins.Common.Interfaces.Models;
 using PictureManager.Plugins.Common.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
@@ -32,8 +33,9 @@ public sealed class CoreR : SimpleDB, IPluginHostCoreR {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
-  IPluginHostKeywordR IPluginHostCoreR.Keyword => Keyword;
-  IPluginHostPersonR IPluginHostCoreR.Person => Person;
+  IPluginHostRepository<IPluginHostKeywordM> IPluginHostCoreR.Keyword => Keyword;
+  IPluginHostRepository<IPluginHostMediaItemM> IPluginHostCoreR.MediaItem => MediaItem;
+  IPluginHostRepository<IPluginHostPersonM> IPluginHostCoreR.Person => Person;
 
   public CoreR() : base("db") {
     CategoryGroup = new(this);

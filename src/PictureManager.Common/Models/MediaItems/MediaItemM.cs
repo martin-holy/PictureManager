@@ -3,13 +3,14 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Interfaces;
+using PictureManager.Plugins.Common.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Common.Models.MediaItems;
 
-public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords {
+public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords, IPluginHostMediaItemM {
   #region IEquatable implementation
   public bool Equals(MediaItemM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as MediaItemM);
