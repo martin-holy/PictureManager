@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
-  xmlns:wpf="clr-namespace:PictureManager.Windows.WPF">
+  xmlns:pmc="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate x:Key="Views.MainMenu">
     <Menu Background="Transparent">
@@ -15,7 +16,7 @@
             Margin="2 0 0 0"/>
         </MenuItem.Icon>
 
-        <MenuItem Command="wpf:AppCore.TestButtonCommand"/>
+        <!--<MenuItem Command="wpf:AppCore.TestButtonCommand"/>-->
 
         <MenuItem Header="GeoLocation">
           <MenuItem.Icon>
@@ -43,6 +44,33 @@
           <MenuItem Command="vm:CoreVM.OpenSegmentsMatchingCommand"/>
           <MenuItem Command="vm:MediaItemsViewsVM.ViewModifiedCommand"/>
           <MenuItem Command="vm:MediaItemsViewsVM.ShuffleCommand"/>
+        </MenuItem>
+
+        <MenuItem Header="Plugins" ItemsSource="{Binding Path=Plugins, Source={x:Static pmc:Core.Inst}, Mode=OneTime}">
+          <MenuItem.Icon>
+            <Path Data="{StaticResource IconPuzzle}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+          </MenuItem.Icon>
+
+          <MenuItem.ItemContainerStyle>
+            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+              <Setter Property="Header" Value="{Binding VM.PluginTitle}"/>
+              <Setter Property="ItemsSource" Value="{Binding VM.MainMenuCommands}"/>
+              <Setter Property="Icon">
+                <Setter.Value>
+                  <Path
+                    Data="{Binding VM.PluginIcon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
+                    Style="{StaticResource MH.Styles.IconWithShadow}"/>
+                </Setter.Value>
+              </Setter>
+              <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                  <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Command" Value="{Binding}"/>
+                  </Style>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </MenuItem.ItemContainerStyle>
         </MenuItem>
 
         <MenuItem Command="vm:CoreVM.OpenSettingsCommand"/>
