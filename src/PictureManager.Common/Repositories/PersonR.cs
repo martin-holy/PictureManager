@@ -88,7 +88,7 @@ public class PersonR : TreeDataAdapter<PersonM>, IPluginHostRepository<IPluginHo
     LinkList(csv, GetNotFoundRecord, seeker);
 
   List<IPluginHostPersonM> IPluginHostRepository<IPluginHostPersonM>.Link(string csv, IDataAdapter seeker) =>
-    Link(csv, seeker).Cast<IPluginHostPersonM>().ToList();
+    Link(csv, seeker)?.Cast<IPluginHostPersonM>().ToList();
 
   public PersonM GetPerson(int id, IDataAdapter seeker) =>
     AllDict.TryGetValue(id, out var person)

@@ -53,7 +53,7 @@ public sealed class Core {
     S = new(R);
     VM = new(S, R);
 
-    foreach (var plugin in Plugins) plugin.AfterInit();
+    foreach (var plugin in Plugins) plugin.AfterInit(VM);
 
     AttachEvents();
 

@@ -63,7 +63,7 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostRepository<IPlugin
     LinkList(csv, GetNotFoundRecord, seeker);
 
   List<IPluginHostKeywordM> IPluginHostRepository<IPluginHostKeywordM>.Link(string csv, IDataAdapter seeker) =>
-    Link(csv, seeker).Cast<IPluginHostKeywordM>().ToList();
+    Link(csv, seeker)?.Cast<IPluginHostKeywordM>().ToList();
 
   private KeywordM GetNotFoundRecord(int notFoundId) {
     var id = GetNextId();

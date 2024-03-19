@@ -1,11 +1,14 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Plugins.Common.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 
 namespace MovieManager.Common.Models;
 
-public sealed class MovieM : ObservableObject {
+public sealed class MovieM : ObservableObject, ISelectable {
+  private bool _isSelected;
+
   public int Id { get; }
   public string Title { get; set; }
   public int Year { get; set; }
@@ -21,6 +24,8 @@ public sealed class MovieM : ObservableObject {
   public string Plot { get; set; }
   public IPluginHostMediaItemM Cover { get; set; }
   public List<IPluginHostMediaItemM> MediaItems { get; set; }
+
+  public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
 
   // TODO add selected MediaItems to Movie
 

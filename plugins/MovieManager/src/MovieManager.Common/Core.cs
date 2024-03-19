@@ -1,5 +1,4 @@
-﻿using MH.Utils;
-using MovieManager.Common.Repositories;
+﻿using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
 using MovieManager.Common.ViewModels;
 using PictureManager.Plugins.Common.Interfaces;
@@ -30,9 +29,9 @@ public sealed class Core : IPluginCore {
     });
   }
 
-  public void AfterInit() {
+  public void AfterInit(IPluginHostCoreVM phCoreVM) {
     S = new(R);
-    VM = new(S, R);
+    VM = new(phCoreVM, S, R);
     AttachEvents();
   }
 

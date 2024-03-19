@@ -11,13 +11,14 @@ using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels.Entities;
+using PictureManager.Plugins.Common.Interfaces.ViewModels;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.ViewModels;
 
-public class CoreVM : ObservableObject {
+public class CoreVM : ObservableObject, IPluginHostCoreVM {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
