@@ -24,7 +24,7 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
   public Dictionary<int, T> AllDict { get; set; }
   public List<(T, string[])> AllCsv { get; set; }
 
-  public TableDataAdapter(string name, int propsCount) : base(name, propsCount) {
+  public TableDataAdapter(SimpleDB db, string name, int propsCount) : base(db, name, propsCount) {
     TablePropsFilePath = Path.Combine("db", $"{name}_props.csv");
   }
 

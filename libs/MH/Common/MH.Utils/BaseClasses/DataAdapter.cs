@@ -11,7 +11,7 @@ public class DataAdapter : IDataAdapter {
   private bool _isModified;
   protected string CurrentVolumeSerialNumber;
 
-  public SimpleDB DB { get; set; }
+  public SimpleDB DB { get; }
   public string Name { get; }
   public string FilePath { get; }
   public int PropsCount { get; }
@@ -27,10 +27,11 @@ public class DataAdapter : IDataAdapter {
     }
   }
 
-  public DataAdapter(string name, int propsCount) {
+  public DataAdapter(SimpleDB db, string name, int propsCount) {
+    DB = db;
     Name = name;
     PropsCount = propsCount;
-    FilePath = Path.Combine("db", $"{name}.csv");
+    FilePath = db.GetDBFilePath(name);
   }
 
   public virtual void Load() => throw new NotImplementedException();
@@ -53,7 +54,7 @@ public class DataAdapter<T> : DataAdapter {
   public event EventHandler<ObjectEventArgs<T>> ItemDeletedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<IList<T>>> ItemsDeletedEvent = delegate { };
 
-  public DataAdapter(string name, int propsCount) : base(name, propsCount) { }
+  public DataAdapter(SimpleDB db, string name, int propsCount) : base(db, name, propsCount) { }
 
   protected void RaiseItemCreated(T item) => ItemCreatedEvent(this, new(item));
   protected void RaiseItemUpdated(T item) => ItemUpdatedEvent(this, new(item));
@@ -83,7 +84,7 @@ public class DataAdapter<T> : DataAdapter {
   public void LoadDriveRelated() {
     foreach (var drive in Drives.SerialNumbers) {
       CurrentVolumeSerialNumber = drive.Value;
-      SimpleDB.LoadFromFile(ParseLine, SimpleDB.GetDBFilePath(drive.Key, Name));
+      SimpleDB.LoadFromFile(ParseLine, DB.GetDBFilePath(drive.Key, Name));
     }
   }
 
@@ -99,7 +100,7 @@ public class DataAdapter<T> : DataAdapter {
 
   public void SaveDriveRelated(Dictionary<string, IEnumerable<T>> drives) {
     foreach (var (drive, items) in drives)
-      SimpleDB.SaveToFile(items, ToCsv, SimpleDB.GetDBFilePath(drive, Name));
+      SimpleDB.SaveToFile(items, ToCsv, DB.GetDBFilePath(drive, Name));
 
     // TODO should be for each drive
     IsModified = false;

@@ -7,8 +7,8 @@ public class OneToOneDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, TB>>, IR
   public TableDataAdapter<TA> DataAdapterA { get; }
   public TableDataAdapter<TB> DataAdapterB { get; }
 
-  public OneToOneDataAdapter(string name, TableDataAdapter<TA> daA, TableDataAdapter<TB> daB) :
-    base(name, 2) {
+  public OneToOneDataAdapter(SimpleDB db, string name, TableDataAdapter<TA> daA, TableDataAdapter<TB> daB) :
+    base(db, name, 2) {
     DataAdapterA = daA;
     DataAdapterB = daB;
   }

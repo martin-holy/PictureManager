@@ -4,7 +4,7 @@ using System;
 namespace MH.Utils.Interfaces;
 
 public interface IDataAdapter {
-  public SimpleDB DB { get; set; }
+  public SimpleDB DB { get; }
   public string Name { get; }
   public bool IsModified { get; set; }
 

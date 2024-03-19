@@ -8,7 +8,7 @@ namespace MH.Utils.BaseClasses;
 public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where T : class, ITreeItem {
   public event EventHandler<ObjectEventArgs<T>> ItemRenamedEvent = delegate { };
 
-  public TreeDataAdapter(string name, int propsCount) : base(name, propsCount) { }
+  public TreeDataAdapter(SimpleDB db, string name, int propsCount) : base(db, name, propsCount) { }
 
   public virtual T ItemCreate(ITreeItem parent, string name) => throw new NotImplementedException();
   public virtual void ItemCopy(ITreeItem item, ITreeItem dest) => throw new NotImplementedException();

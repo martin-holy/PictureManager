@@ -13,18 +13,20 @@ public class SimpleDB : ObservableObject {
   private readonly List<ITableDataAdapter> _tableDAs = new();
   private readonly List<IRelationDataAdapter> _relationDAs = new();
   private readonly string _isSequencesFilePath;
+  private readonly string _rootDir;
   private int _changes;
   private bool _needBackUp;
-
+  
   public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
   public Dictionary<string, int> IdSequences { get; } = new();
   public bool IsReady { get; private set; }
 
   public event EventHandler ReadyEvent = delegate { };
 
-  public SimpleDB() {
-    Directory.CreateDirectory("db");
-    _isSequencesFilePath = Path.Combine("db", "IdSequences.csv");
+  public SimpleDB(string rootDir) {
+    _rootDir = rootDir;
+    Directory.CreateDirectory(_rootDir);
+    _isSequencesFilePath = Path.Combine(_rootDir, "IdSequences.csv");
     LoadIdSequences();
   }
 
@@ -39,13 +41,11 @@ public class SimpleDB : ObservableObject {
     if (!IdSequences.TryGetValue(dataAdapter.Name, out var maxId))
       IdSequences.Add(dataAdapter.Name, 0);
 
-    dataAdapter.DB = this;
     dataAdapter.MaxId = maxId;
     _tableDAs.Add(dataAdapter);
   }
 
   public void AddRelationDataAdapter(IRelationDataAdapter rda) {
-    rda.DB = this;
     _relationDAs.Add(rda);
   }
 
@@ -130,11 +130,11 @@ public class SimpleDB : ObservableObject {
     if (!_needBackUp) return;
 
     try {
-      using var zip = ZipFile.Open(Path.Combine("db", DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".zip"), ZipArchiveMode.Create);
-      var schemaFilePath = Path.Combine("db", "SchemaVersion");
+      using var zip = ZipFile.Open(Path.Combine(_rootDir, DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".zip"), ZipArchiveMode.Create);
+      var schemaFilePath = Path.Combine(_rootDir, "SchemaVersion");
       zip.CreateEntryFromFile(schemaFilePath, schemaFilePath);
 
-      foreach (var file in Directory.EnumerateFiles("db", "*.csv"))
+      foreach (var file in Directory.EnumerateFiles(_rootDir, "*.csv"))
         _ = zip.CreateEntryFromFile(file, file);
     }
     catch (Exception ex) {
@@ -171,10 +171,10 @@ public class SimpleDB : ObservableObject {
     }
   }
 
-  public static void Migrate(int newVersion, Action<int, int> migrationResolver) {
+  public void Migrate(int newVersion, Action<int, int> migrationResolver) {
     try {
       var oldVersion = 0;
-      var vFilePath = Path.Combine("db", "SchemaVersion");
+      var vFilePath = Path.Combine(_rootDir, "SchemaVersion");
 
       if (File.Exists(vFilePath))
         oldVersion = int.Parse(File.ReadAllLines(vFilePath, Encoding.UTF8)[0]);
@@ -221,9 +221,12 @@ public class SimpleDB : ObservableObject {
     return id;
   }
 
-  public static string GetDBFilePath(string drive, string tableName) {
-    var oldPath = string.Join(Path.DirectorySeparatorChar, "db", $"{tableName}.{drive[..1]}.csv");
-    var newPath = string.Join(Path.DirectorySeparatorChar, "db", $"{tableName}.{Drives.SerialNumbers[drive]}.csv");
+  public string GetDBFilePath(string tableName) =>
+    Path.Combine(_rootDir, $"{tableName}.csv");
+
+  public string GetDBFilePath(string drive, string tableName) {
+    var oldPath = string.Join(Path.DirectorySeparatorChar, _rootDir, $"{tableName}.{drive[..1]}.csv");
+    var newPath = string.Join(Path.DirectorySeparatorChar, _rootDir, $"{tableName}.{Drives.SerialNumbers[drive]}.csv");
 
     if (File.Exists(oldPath))
       File.Move(oldPath, newPath);
