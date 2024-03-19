@@ -20,6 +20,9 @@ public sealed class MovieM : ObservableObject {
   public string MPAA { get; set; }
   public string Plot { get; set; }
 
+  // TODO MediaItems
+  // TODO add selected MediaItems to Movie
+
   public MovieM(int id, string title) {
     Id = id;
     Title = title;

@@ -4,6 +4,7 @@ using MovieManager.Common.Services;
 using MovieManager.Common.ViewModels;
 using PictureManager.Plugins.Common.Interfaces;
 using PictureManager.Plugins.Common.Interfaces.Repositories;
+using PictureManager.Plugins.Common.Interfaces.ViewModels;
 using System;
 using System.Threading.Tasks;
 
@@ -14,12 +15,14 @@ public sealed class Core : IPluginCore {
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }
 
+  IPluginCoreVM IPluginCore.VM => VM;
+
   public Task InitAsync(IPluginHostCoreR phCoreR, IProgress<string> progress) {
     R = new(phCoreR);
     return Task.Run(() => {
       R.AddDataAdapters();
       progress.Report("Migrating MovieManager Database");
-      SimpleDB.Migrate(0, DatabaseMigration.Resolver);
+      R.Migrate(0, DatabaseMigration.Resolver);
       R.LoadAllTables(progress);
       R.LinkReferences(progress);
       R.ClearDataAdapters();

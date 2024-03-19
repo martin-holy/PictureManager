@@ -3,7 +3,7 @@ using MovieManager.Common.Models;
 
 namespace MovieManager.Common.Repositories;
 
-public sealed class GenreR() : TableDataAdapter<GenreM>("Genres", 2) {
+public sealed class GenreR(CoreR coreR) : TableDataAdapter<GenreM>(coreR, "Genres", 2) {
   public override GenreM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]);
 

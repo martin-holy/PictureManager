@@ -1,17 +1,20 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MovieManager.Common.Models;
 using PictureManager.Plugins.Common.Interfaces.Repositories;
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: ID|Title|Year|Length|Rating|PersonalRating|Genre|SubGenres|Actors|Keywords|SeenWhen|MPAA|Plot
 /// </summary>
-public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAdapter<MovieM>("Movies", 13) {
+public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 13) {
   public override MovieM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]) {
       Year = csv[2].IntParseOrDefault(0),
@@ -47,4 +50,66 @@ public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAda
       m.Keywords = phCoreR.Keyword.Link(csv[9], this);
     }
   }
+
+  public void ImportFromJson() {
+    var filePath = Path.Combine("plugins", "MovieManager", "MoviesExport_50.json");
+    if (!File.Exists(filePath)) {
+      Log.Error("Import movies from JSON", $"File not found. {filePath}");
+      return;
+    }
+
+    try {
+      var movies = JsonSerializer.Deserialize<JsonMovies>(File.ReadAllText(filePath));
+      foreach (var movie in movies.Movies) {
+
+        ItemCreate(new(GetNextId(), movie.Title) {
+          Year = movie.MovieYear,
+          Length = movie.Length,
+          Rating = movie.Rating,
+          PersonalRating = movie.PersonalRating,
+          MPAA = movie.MPAA,
+          Plot = movie.Plot
+        });
+        /*
+         *public int Id { get; }
+           public string Title { get; set; }
+           public int Year { get; set; }
+           public int Length { get; set; }
+           public double Rating { get; set; }
+           public double PersonalRating { get; set; }
+           public GenreM Genre { get; set; }
+           public List<GenreM> SubGenres { get; set; }
+           public List<IPluginHostPersonM> Actors { get; set; }
+           public List<IPluginHostKeywordM> Keywords { get; set; }
+           public DateOnly[] SeenWhen { get; set; }
+           public string MPAA { get; set; }
+           public string Plot { get; set; }
+         */
+      }
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
+  }
+}
+
+public class JsonMovies {
+  public JsonMovie[] Movies { get; set; }
+}
+
+public class JsonMovie {
+  public int MovieID { get; set; }
+  public string Title { get; set; }
+  public string Genere { get; set; }
+  public string Subgenre { get; set; }
+  public int MovieYear { get; set; }
+  public int Length { get; set; }
+  public string MPAA { get; set; }
+  public string Plot { get; set; }
+  public string Cover { get; set; }
+  public double Rating { get; set; }
+  public int PersonalRating { get; set; }
+  public string SeenWhen { get; set; }
+  public string DateInsert { get; set; }
+  public string KeyWords { get; set; }
 }
