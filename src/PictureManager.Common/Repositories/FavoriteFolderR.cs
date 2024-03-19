@@ -14,7 +14,7 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
 
   public FavoriteFoldersTreeCategory Tree { get; }
 
-  public FavoriteFolderR(CoreR coreR) : base("FavoriteFolders", 3) {
+  public FavoriteFolderR(CoreR coreR) : base(coreR, "FavoriteFolders", 3) {
     _coreR = coreR;
     IsDriveRelated = true;
     Tree = new(this);

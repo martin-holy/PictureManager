@@ -13,7 +13,7 @@ namespace PictureManager.Common.Repositories;
 public sealed class ImageR : TableDataAdapter<ImageM> {
   private readonly CoreR _coreR;
 
-  public ImageR(CoreR coreR) : base("Images", 11) {
+  public ImageR(CoreR coreR) : base(coreR, "Images", 11) {
     _coreR = coreR;
     IsDriveRelated = true;
   }

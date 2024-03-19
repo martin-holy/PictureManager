@@ -9,7 +9,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Lat|Lng|GeoName
 /// </summary>
-public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>("GeoLocations", 4) {
+public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>(coreR, "GeoLocations", 4) {
   public override GeoLocationM FromCsv(string[] csv) =>
     new(int.Parse(csv[0])) {
       Lat = ToDouble(csv[1]),

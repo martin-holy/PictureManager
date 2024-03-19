@@ -24,7 +24,7 @@ public class PersonR : TreeDataAdapter<PersonM>, IPluginHostPersonR {
   public PeopleTreeCategory Tree { get; }
   public event DataEventHandler<PersonM[]> KeywordsChangedEvent = delegate { };
 
-  public PersonR(CoreR coreR) : base("People", 4) {
+  public PersonR(CoreR coreR) : base(coreR, "People", 4) {
     _coreR = coreR;
     Tree = new(this);
   }
