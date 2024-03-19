@@ -23,6 +23,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\MH\Common\MH.UI\MH.UI.csproj">
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj">
       <Private>False</Private>
     </ProjectReference>

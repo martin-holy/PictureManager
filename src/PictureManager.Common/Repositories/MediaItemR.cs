@@ -81,7 +81,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM>, IPluginHostReposi
   }
 
   public override MediaItemM GetById(string id, bool nullable = false) {
-    var intId = int.Parse(id);
+    if (!int.TryParse(id, out var intId)) return null;
     if (_coreR.Image.AllDict.TryGetValue(intId, out var img)) return img;
     if (_coreR.Video.AllDict.TryGetValue(intId, out var vid)) return vid;
     if (_coreR.VideoClip.AllDict.TryGetValue(intId, out var vc)) return vc;
@@ -93,7 +93,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM>, IPluginHostReposi
     GetById(id, nullable);
 
   List<IPluginHostMediaItemM> IPluginHostRepository<IPluginHostMediaItemM>.Link(string csv, IDataAdapter seeker) =>
-    LinkList(csv, null, seeker).Cast<IPluginHostMediaItemM>().ToList();
+    LinkList(csv, null, seeker)?.Cast<IPluginHostMediaItemM>().ToList();
 
   public RealMediaItemM ItemCreate(FolderM folder, string fileName) {
     if (_supportedImageExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
