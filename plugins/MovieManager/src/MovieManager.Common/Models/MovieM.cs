@@ -19,8 +19,9 @@ public sealed class MovieM : ObservableObject {
   public DateOnly[] SeenWhen { get; set; }
   public string MPAA { get; set; }
   public string Plot { get; set; }
+  public IPluginHostMediaItemM Cover { get; set; }
+  public List<IPluginHostMediaItemM> MediaItems { get; set; }
 
-  // TODO MediaItems
   // TODO add selected MediaItems to Movie
 
   public MovieM(int id, string title) {
