@@ -12,7 +12,8 @@ namespace PictureManager.Common.Utils;
 public static class PluginU {
   public static IPluginCore GetPluginCore(string pluginName) {
     try {
-      var asm = LoadAssembly(Path.GetFullPath($"plugins\\{pluginName}\\{pluginName}.Common.dll"));
+      var pluginPath = Path.GetFullPath(Path.Combine("plugins", pluginName, $"{pluginName}.Common.dll"));
+      var asm = LoadAssembly(pluginPath);
       if (GetFirstTypeWithInterface(asm.GetTypes(), nameof(IPluginCore)) is not { } type) return null;
       return Activator.CreateInstance(type) as IPluginCore;
     }
@@ -25,7 +26,7 @@ public static class PluginU {
   private static Type GetFirstTypeWithInterface(IEnumerable<Type> types, string name) =>
     types.FirstOrDefault(type => type.GetInterface(name) is not null);
 
-  private static Assembly LoadAssembly(string path) {
+  public static Assembly LoadAssembly(string path) {
     var loadContext = new PluginLoadContext(path);
     return loadContext.LoadFromAssemblyName(AssemblyName.GetAssemblyName(path));
   }
