@@ -1,13 +1,17 @@
 ﻿using MH.UI.WPF.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
+using PictureManager.Common.Utils;
 using PictureManager.Common.ViewModels;
 using PictureManager.Common.ViewModels.Entities;
 using PictureManager.Windows.WPF.Converters;
 using PictureManager.Windows.WPF.ShellStuff;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 
 namespace PictureManager.Windows.WPF;
@@ -37,6 +41,7 @@ public sealed class AppCore : ObservableObject {
   }
 
   public void AfterInit() {
+    LoadPlugins();
     SegmentRectVM = new(Core.S.Segment.Rect);
   }
 
@@ -66,4 +71,20 @@ public sealed class AppCore : ObservableObject {
 
   public static MediaPlayer CurrentMediaPlayer() =>
     (MediaPlayer)(Core.VM.MainWindow.IsInViewMode ? CoreVM.UiFullVideo : CoreVM.UiDetailVideo);
+
+  private static void LoadPlugins() {
+    foreach (var plugin in Core.Inst.Plugins) {
+      try {
+        var asmName = $"{plugin.Name}.Windows.WPF";
+        var pluginPath = Path.GetFullPath(Path.Combine("plugins", plugin.Name, $"{asmName}.dll"));
+        var uri = new Uri($"/{asmName};component/resources/main.xaml", UriKind.Relative);
+        PluginU.LoadAssembly(pluginPath);
+        if (Application.LoadComponent(uri) as ResourceDictionary is not { } dict) continue;
+        Application.Current.Resources.MergedDictionaries.Add(dict);
+      }
+      catch (Exception ex) {
+        Log.Error(ex);
+      }
+    }
+  }
 }
