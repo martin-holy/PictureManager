@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace MovieManager.Common;
 
 public sealed class Core : IPluginCore {
+  public string Name => "MovieManager";
   public static CoreR R { get; private set; }
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }

@@ -34,4 +34,8 @@
       <Private>false</Private>
     </ProjectReference>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)MovieManager.Common.dll&quot; &quot;$(MainAppTargetDir)plugins\MovieManager\&quot; /Y" />
+  </Target>
 </Project>

@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
     <EnableSourceControlManagerQueries>true</EnableSourceControlManagerQueries>
+    <MainAppTargetDir>$(SolutionDir)src\PictureManager.Windows.WPF\bin\$(Configuration)\net8.0-windows\</MainAppTargetDir>
   </PropertyGroup>
 </Project>

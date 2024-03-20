@@ -22,4 +22,17 @@
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MovieManager.Common\MovieManager.Common.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)MovieManager.Windows.WPF.dll&quot; &quot;$(MainAppTargetDir)plugins\MovieManager\&quot; /Y" />
+  </Target>
 </Project>

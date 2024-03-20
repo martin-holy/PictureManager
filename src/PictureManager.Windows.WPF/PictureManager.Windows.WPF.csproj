@@ -49,6 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\MH\Common\MH.UI\MH.UI.csproj" />
     <ProjectReference Include="..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj" />
     <ProjectReference Include="..\..\libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj" />
     <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
@@ -60,10 +61,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(SolutionDir)plugins\MovieManager\src\MovieManager.Common\bin\$(Configuration)\net8.0\MovieManager.Common.dll&quot; &quot;$(TargetDir)plugins\MovieManager\&quot; /Y" />
-    <Exec Command="xcopy &quot;$(SolutionDir)plugins\MovieManager\src\MovieManager.Windows.WPF\bin\$(Configuration)\net8.0-windows\MovieManager.Windows.WPF.dll&quot; &quot;$(TargetDir)plugins\MovieManager\&quot; /Y" />
-  </Target>
 
 </Project>

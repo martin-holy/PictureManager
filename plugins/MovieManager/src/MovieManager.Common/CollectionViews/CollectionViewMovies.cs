@@ -13,7 +13,7 @@ public class CollectionViewMovies : CollectionView<MovieM> {
   }
 
   public override int GetItemSize(MovieM item, bool getWidth) =>
-    getWidth ? 50 : 100;
+    getWidth ? 200 : 300;
 
   public override IEnumerable<GroupByItem<MovieM>> GetGroupByItems(IEnumerable<MovieM> source) =>
     Enumerable.Empty<GroupByItem<MovieM>>();
