@@ -4,6 +4,8 @@
 [B] - Bug fix
 
 Latest:
+ - [B] modify DB when Viewer is set to All
+ - [B] MediaPlayer Play when AutoPlay is off
  - [B] crash on MediaItem delete
 
 24.03.15.1212:
