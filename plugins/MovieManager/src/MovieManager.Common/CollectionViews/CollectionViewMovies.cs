@@ -1,4 +1,5 @@
 ﻿using MH.UI.Controls;
+using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
 using System;
 using System.Collections.Generic;
@@ -20,4 +21,7 @@ public class CollectionViewMovies : CollectionView<MovieM> {
 
   public override int SortCompare(MovieM itemA, MovieM itemB) =>
     string.Compare(itemA.Title, itemB.Title, StringComparison.CurrentCultureIgnoreCase);
+
+  public override void OnItemSelected(SelectionEventArgs<MovieM> e) =>
+    Core.S.Movie.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 }

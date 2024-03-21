@@ -4,5 +4,5 @@ using MovieManager.Common.Repositories;
 namespace MovieManager.Common.Services;
 
 public sealed class CoreS(CoreR coreR) : ObservableObject {
-  public MovieS Movie { get; } = new(coreR);
+  public MovieS Movie { get; } = new();
 }

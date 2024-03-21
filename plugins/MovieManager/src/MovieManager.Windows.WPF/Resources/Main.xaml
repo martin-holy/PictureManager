@@ -4,5 +4,6 @@
     
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="../Views/MoviesV.xaml"/>
+    <wpfu:CachedResourceDictionary Source="../Views/MovieDetailV.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

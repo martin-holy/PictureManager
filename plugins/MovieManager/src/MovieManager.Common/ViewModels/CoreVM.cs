@@ -3,6 +3,7 @@ using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
 using PictureManager.Plugins.Common.Interfaces.ViewModels;
 using System.Collections.Generic;
+using MovieManager.Common.Models;
 
 namespace MovieManager.Common.ViewModels;
 
@@ -15,6 +16,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public string PluginTitle => "Movie Manager";
 
   public MoviesVM Movies { get; private set; }
+  public MovieDetailVM MovieDetail { get; private set; }
 
   public List<RelayCommand> MainMenuCommands { get; } = [];
 
@@ -38,5 +40,11 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     Movies ??= new();
     Movies.Open(_coreR.Movie.All);
     _phCoreVM.MainTabs.Activate("IconMovieClapper", "Movies", Movies);
+  }
+
+  public void OpenMovieDetail(MovieM movie) {
+    MovieDetail ??= new();
+    MovieDetail.Reload(movie);
+    _phCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);
   }
 }

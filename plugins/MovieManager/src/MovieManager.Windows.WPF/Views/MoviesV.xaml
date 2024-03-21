@@ -14,6 +14,12 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <mhc:CollectionView View="{Binding}"/>
+    <mhc:CollectionView View="{Binding}">
+      <mhc:CollectionView.ItemsPanel>
+        <ItemsPanelTemplate>
+          <mhc:VirtualizingSingleItemScrollStackPanel/>
+        </ItemsPanelTemplate>
+      </mhc:CollectionView.ItemsPanel>
+    </mhc:CollectionView>
   </DataTemplate>
 </ResourceDictionary>

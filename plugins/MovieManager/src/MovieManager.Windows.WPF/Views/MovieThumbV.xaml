@@ -4,6 +4,9 @@
   xmlns:m="clr-namespace:MovieManager.Common.Models;assembly=MovieManager.Common">
     
   <DataTemplate DataType="{x:Type m:MovieM}">
-    <TextBlock Text="{Binding Title}"/>
+    <Grid Background="Transparent">
+      <TextBlock Text="{Binding Title}"/>
+    </Grid>
+    
   </DataTemplate>
 </ResourceDictionary>
