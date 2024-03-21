@@ -19,7 +19,7 @@
 
         <MenuItem.ItemsSource>
           <CompositeCollection>
-            <MenuItem Header="All" Command="vme:ViewerVM.SetCurrentCommand" DataContext="{x:Null}"/>
+            <MenuItem Header="All" Command="vme:ViewerVM.ChangeCurrentCommand" DataContext="{x:Null}"/>
             <CollectionContainer Collection="{Binding VM.Viewer.All, Source={x:Static pm:App.Core}}"/>
           </CompositeCollection>
         </MenuItem.ItemsSource>
@@ -27,7 +27,7 @@
         <MenuItem.ItemContainerStyle>
           <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
             <Setter Property="Header" Value="{Binding Path=(m:ViewerM.Name)}"/>
-            <Setter Property="Command" Value="vme:ViewerVM.SetCurrentCommand"/>
+            <Setter Property="Command" Value="vme:ViewerVM.ChangeCurrentCommand"/>
             <Setter Property="CommandParameter" Value="{Binding}"/>
           </Style>
         </MenuItem.ItemContainerStyle>
