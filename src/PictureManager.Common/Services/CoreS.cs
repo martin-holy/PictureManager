@@ -10,5 +10,5 @@ public class CoreS(CoreR coreR) : ObservableObject {
   public MediaItemS MediaItem { get; } = new(coreR.MediaItem);
   public PersonS Person { get; } = new(coreR.Person);
   public SegmentS Segment { get; } = new(coreR.Segment);
-  public ViewerS Viewer { get; } = new(coreR.Viewer);
+  public ViewerS Viewer { get; } = new(coreR);
 }
