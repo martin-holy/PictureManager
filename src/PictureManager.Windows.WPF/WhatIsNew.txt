@@ -4,6 +4,9 @@
 [B] - Bug fix
 
 Latest:
+ - [B] Reload FolderKeywords when Viewer is All
+
+24.03.21.1515:
  - [B] modify DB when Viewer is set to All
  - [B] MediaPlayer Play when AutoPlay is off
  - [B] crash on MediaItem delete
