@@ -152,9 +152,14 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   }
 
   public void ItemsDeleteFromDrive(IList<MediaItemM> items) {
+    try {
+      CoreR.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
+      items.Select(x => x.FilePathCache).Where(File.Exists).ToList().ForEach(File.Delete);
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
     ItemsDelete(items);
-    CoreR.FileOperationDelete(items.OfType<RealMediaItemM>().Select(x => x.FilePath).Where(File.Exists).ToList(), true, false);
-    items.Select(x => x.FilePathCache).Where(File.Exists).ToList().ForEach(File.Delete);
   }
 
   public override IEnumerable<MediaItemM> GetAll(Func<MediaItemM, bool> where) =>
