@@ -5,7 +5,6 @@
 ## ErrorDialog
   - resize stretch
 ## MediaPlayer
-  - select video => select clip => TimelinePosition changes => play => TimelinePosition is set to 0
   - TimelinePosition changes but video not after changing TimelinePosition with buttons
 
         # Picture Manager - Need Help
@@ -65,6 +64,9 @@
   - use named methods for events
   - split repository and view-model events handling
     so maybe don't do events handling in EntityR but in CoreR
+## Video
+  - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
+    + setting this position in VideoDetail
 
 
                                     *** NEW ***
