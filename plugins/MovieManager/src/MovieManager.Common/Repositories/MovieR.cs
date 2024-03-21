@@ -66,7 +66,7 @@ public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAda
       var movies = JsonSerializer.Deserialize<JsonMovies>(File.ReadAllText(filePath));
       foreach (var movie in movies.Movies) {
 
-        ItemCreate(new(GetNextId(), movie.Title) {
+        var m = ItemCreate(new(GetNextId(), movie.Title) {
           Year = movie.MovieYear,
           Length = movie.Length,
           Rating = movie.Rating,
@@ -74,6 +74,15 @@ public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAda
           MPAA = movie.MPAA,
           Plot = movie.Plot
         });
+
+        m.Genre = coreR.Genre.GetGenre(movie.Genere.Trim(), true);
+        var subGenres = movie.Subgenre
+          .Split('|').Select(x => coreR.Genre.GetGenre(x.Trim(), true))
+          .Where(x => x != null)
+          .ToList();
+        if (subGenres.Count > 0) m.SubGenres = subGenres;
+
+
         /*
          *public int Id { get; }
            public string Title { get; set; }
@@ -97,11 +106,11 @@ public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAda
   }
 }
 
-public class JsonMovies {
+file class JsonMovies {
   public JsonMovie[] Movies { get; set; }
 }
 
-public class JsonMovie {
+file class JsonMovie {
   public int MovieID { get; set; }
   public string Title { get; set; }
   public string Genere { get; set; }
