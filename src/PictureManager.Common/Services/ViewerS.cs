@@ -6,33 +6,33 @@ using System.Linq;
 
 namespace PictureManager.Common.Services;
 
-public sealed class ViewerS(ViewerR r) : ObservableObject {
+public sealed class ViewerS(CoreR coreR) : ObservableObject {
   private ViewerM _current;
 
   public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-  public void SetCurrent(ViewerM viewer) {
+  public void ChangeCurrent(ViewerM viewer) {
     if (ReferenceEquals(Current, viewer)) return;
     if (Current != null) Current.IsDefault = false;
-    if (viewer != null && !viewer.IsDefault) {
-      viewer.IsDefault = true;
-      r.IsModified = true;
-    }
-    
+    foreach (var f in coreR.Folder.All.Where(x => x.IsHidden)) f.IsHidden = false;
+    foreach (var cg in coreR.CategoryGroup.All.Where(x => x.IsHidden)) cg.IsHidden = false;
+    coreR.Viewer.IsModified = true;
+    SetCurrent(viewer);
+  }
+
+  public void SetCurrent(ViewerM viewer) {
+    if (viewer != null && !viewer.IsDefault) viewer.IsDefault = true;
     Current = viewer;
-    foreach (var f in Core.R.Folder.All.Where(x => x.IsHidden)) f.IsHidden = false;
-    foreach (var cg in Core.R.CategoryGroup.All.Where(x => x.IsHidden)) cg.IsHidden = false;
     if (Current == null) return;
-
     Current.UpdateHashSets();
-    Core.R.FolderKeyword.Reload();
+    coreR.FolderKeyword.Reload();
 
-    foreach (var f in Core.R.Folder.Tree.Items.Cast<FolderM>()) {
+    foreach (var f in coreR.Folder.Tree.Items.Cast<FolderM>()) {
       f.IsExpanded = false;
       f.IsHidden = !CanViewerSee(f);
     }
 
-    foreach (var cg in Core.R.CategoryGroup.All)
+    foreach (var cg in coreR.CategoryGroup.All)
       cg.IsHidden = Current?.ExcludedCategoryGroups.Contains(cg) == true;
   }
 
