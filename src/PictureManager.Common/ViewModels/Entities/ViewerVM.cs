@@ -27,7 +27,7 @@ public sealed class ViewerVM : ObservableObject {
   public DoDropAction DoDropKeyword { get; }
 
   public RelayCommand UpdateExcludedCategoryGroupsCommand { get; }
-  public static RelayCommand<ViewerM> SetCurrentCommand { get; set; }
+  public static RelayCommand<ViewerM> ChangeCurrentCommand { get; set; }
 
   public ViewerVM(ViewerR r, ViewerS s) {
     _r = r;
@@ -40,7 +40,7 @@ public sealed class ViewerVM : ObservableObject {
     DoDropKeyword = DoDropKeywordMethod;
 
     UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
-    SetCurrentCommand = new(s.SetCurrent, Res.IconEye);
+    ChangeCurrentCommand = new(s.ChangeCurrent, Res.IconEye);
   }
 
   private void UpdateExcludedCategoryGroups() {
