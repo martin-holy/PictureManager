@@ -234,8 +234,11 @@ public sealed class MediaPlayer : ObservableObject {
     TimelineMaximum = duration > 1000 ? duration : 1000;
     IsPlaying = AutoPlay;
 
-    if (!AutoPlay)
+    if (!AutoPlay) {
+      _uiPlayer?.Play();
+      _uiPlayer?.Pause();
       ShiftTimeline(TimelineShift.Beginning);
+    }
 
     if (PlayType != PlayType.Video)
       SelectNextItemAction?.Invoke(false, true);
