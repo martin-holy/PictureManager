@@ -38,6 +38,8 @@ public class CoreVM : ObservableObject, IPluginHostCoreVM {
   public SegmentsMatchingVM SegmentsMatching { get; set; }
   public TitleProgressBarVM TitleProgressBar { get; } = new();
 
+  public TabControl ToolsTabs => MainWindow.ToolsTabs;
+
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
