@@ -16,6 +16,7 @@
 
         # Picture Manager
   - read only drives and creating thumbnails
+  - check loading FolderKeywords when Viewer is All
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
 ## Video Items (VideoImage and VideoClip)
