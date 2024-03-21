@@ -4,6 +4,9 @@
 [B] - Bug fix
 
 Latest:
+ - [B] crash on MediaItem delete
+
+24.03.15.1212:
  - [B] GeoLocation lat lng round
  - [B] MediaItemsView import
  - [U] FolderBrowserDialog style
