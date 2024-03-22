@@ -76,6 +76,7 @@
   <Style TargetType="{x:Type mhc:IconTextBlock}" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlock}"/>
   <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.Styles.Controls.IconTextButton}"/>
   <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.Styles.Controls.IconToggleButton}"/>
+  <Style TargetType="{x:Type mhc:PopupSlider}" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
   <Style TargetType="{x:Type mhc:RangeSlider}" BasedOn="{StaticResource MH.Styles.Controls.RangeSlider}"/>
   <Style TargetType="{x:Type mhc:ScrollViewerExt}" BasedOn="{StaticResource MH.Styles.Controls.ScrollViewerExt}"/>
   <Style TargetType="{x:Type mhc:SlidePanelHost}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelHost}"/>
