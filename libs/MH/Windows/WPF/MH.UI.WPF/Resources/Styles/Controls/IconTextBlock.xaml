@@ -12,51 +12,47 @@
 
   <Style x:Key="MH.Styles.Controls.IconTextBlock" TargetType="{x:Type c:IconTextBlock}">
     <Setter Property="Margin" Value="2"/>
-    <Setter Property="Width" Value="26"/>
-    <Setter Property="Height" Value="26"/>
     <Setter Property="Background" Value="{StaticResource MH.Brushes.Background}"/>
     <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Brushes.Text}"/>
-    <Setter Property="FontSize" Value="10"/>
-    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="ap:Icon.Size" Value="18"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type c:IconTextBlock}">
-          <Grid
-            Width="{TemplateBinding Width}"
-            Height="{TemplateBinding Height}">
+          <Border
+            Background="{TemplateBinding Background}"
+            CornerRadius="3"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            BorderBrush="Black">
 
-            <Border
-              Background="{TemplateBinding Background}"
-              CornerRadius="3"
-              BorderThickness="{TemplateBinding BorderThickness}"
-              BorderBrush="Black"/>
+            <Grid VerticalAlignment="Center">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
 
-            <Path
-              x:Name="icon"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Top"
-              Width="15"
-              Height="15"
-              Margin="2,2,0,0"
-              Data="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
-              Fill="{Binding Path=(ap:Icon.Fill), RelativeSource={RelativeSource TemplatedParent}}"
-              Effect="{StaticResource MH.Effects.DropShadow}"
-              Stretch="Uniform"/>
+              <Path
+                x:Name="icon"
+                Data="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
+                Fill="{Binding Path=(ap:Icon.Fill), RelativeSource={RelativeSource TemplatedParent}}"
+                Width="{Binding Path=(ap:Icon.Size), RelativeSource={RelativeSource TemplatedParent}}"
+                Height="{Binding Path=(ap:Icon.Size), RelativeSource={RelativeSource TemplatedParent}}"
+                Effect="{StaticResource MH.Effects.DropShadow}"
+                Margin="2"
+                Stretch="Uniform"/>
 
-            <TextBlock
-              x:Name="text"
-              HorizontalAlignment="Right"
-              VerticalAlignment="Bottom"
-              Text="{Binding Path=(ap:Text.Text), RelativeSource={RelativeSource TemplatedParent}}"
-              Foreground="{TemplateBinding Foreground}"
-              FontSize="{TemplateBinding FontSize}"
-              FontWeight="{TemplateBinding FontWeight}"
-              Effect="{StaticResource MH.Effects.DropShadow}"
-              Margin="0,0,2,-1"
-              Padding="0"/>
-          </Grid>
+              <TextBlock
+                x:Name="text"
+                Grid.Column="1"
+                Text="{Binding Path=(ap:Text.Text), RelativeSource={RelativeSource TemplatedParent}}"
+                Foreground="{TemplateBinding Foreground}"
+                FontSize="{TemplateBinding FontSize}"
+                FontWeight="{TemplateBinding FontWeight}"
+                Effect="{StaticResource MH.Effects.DropShadow}"
+                Margin="2,2,4,2"/>
+            </Grid>
+          </Border>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="False">
