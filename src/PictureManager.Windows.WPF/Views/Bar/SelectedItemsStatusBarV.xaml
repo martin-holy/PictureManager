@@ -7,7 +7,7 @@
 
   <DataTemplate x:Key="PM.Views.SelectedItemsStatusBarV" DataType="{x:Type pmd:Core}">
     <DataTemplate.Resources>
-      <Style TargetType="mhc:IconTextBlock" BasedOn="{StaticResource {x:Type mhc:IconTextBlock}}">
+      <Style TargetType="mhc:IconText" BasedOn="{StaticResource {x:Type mhc:IconText}}">
         <Setter Property="Background" Value="{StaticResource MH.Brushes.Black55}"/>
         <Setter Property="Margin" Value="1"/>
       </Style>
@@ -28,15 +28,15 @@
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <mhc:IconTextBlock
+        <mhc:IconText
           ap:Text.Text="{Binding VM.MediaItem.Views.Current.Selected.Items.Count, FallbackValue=0}"
           ap:Icon.Data="{StaticResource IconImage}"/>
-        <mhc:IconTextBlock
+        <mhc:IconText
           Grid.Column="1"
           Margin="0,1,0,1"
           ap:Text.Text="{Binding S.Person.Selected.Items.Count}"
           ap:Icon.Data="{StaticResource IconPeople}"/>
-        <mhc:IconTextBlock
+        <mhc:IconText
           Grid.Column="2"
           ap:Text.Text="{Binding S.Segment.Selected.Items.Count}"
           ap:Icon.Data="{StaticResource IconSegment}"/>
