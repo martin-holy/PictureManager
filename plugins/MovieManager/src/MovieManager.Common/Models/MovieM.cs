@@ -8,12 +8,13 @@ namespace MovieManager.Common.Models;
 
 public sealed class MovieM : ObservableObject, ISelectable {
   private bool _isSelected;
+  private double _rating;
 
   public int Id { get; }
   public string Title { get; set; }
   public int Year { get; set; }
   public int Length { get; set; }
-  public double Rating { get; set; }
+  public double Rating { get => _rating; set { _rating = value; OnPropertyChanged(); } }
   public double PersonalRating { get; set; }
   public GenreM Genre { get; set; }
   public List<GenreM> SubGenres { get; set; }
