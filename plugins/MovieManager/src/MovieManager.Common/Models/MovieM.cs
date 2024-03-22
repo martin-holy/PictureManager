@@ -9,13 +9,14 @@ namespace MovieManager.Common.Models;
 public sealed class MovieM : ObservableObject, ISelectable {
   private bool _isSelected;
   private double _rating;
+  private double _personalRating;
 
   public int Id { get; }
   public string Title { get; set; }
   public int Year { get; set; }
   public int Length { get; set; }
   public double Rating { get => _rating; set { _rating = value; OnPropertyChanged(); } }
-  public double PersonalRating { get; set; }
+  public double PersonalRating { get => _personalRating; set { _personalRating = value; OnPropertyChanged(); } }
   public GenreM Genre { get; set; }
   public List<GenreM> SubGenres { get; set; }
   public List<IPluginHostPersonM> Actors { get; set; }
@@ -27,6 +28,9 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public List<IPluginHostMediaItemM> MediaItems { get; set; }
 
   public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
+
+  public string FormatedLength =>
+    TimeSpan.FromMinutes(Length).ToString(@"h\:mm");
 
   // TODO add selected MediaItems to Movie
 

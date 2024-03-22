@@ -12,6 +12,7 @@
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
 
       <TextBlock
@@ -24,29 +25,51 @@
         TextAlignment="Center"
         VerticalAlignment="Center"/>
 
-      <mhc:PopupSlider
-        Grid.Row="1"
-        Minimum="0"
-        Maximum="10"
-        TickFrequency="0.1"
-        HorizontalAlignment="Center"
-        Value="{Binding MovieM.Rating, Mode=TwoWay}">
-        <mhc:PopupSlider.Content>
-          <!--<mhc:IconTextButton
-            ToolTip="Rating"
-            ap:Icon.Data="{StaticResource IconStar}"
-            ap:Text.Text="{Binding MovieM.Rating, StringFormat={}{0:G2}}"/>-->
-          <Button>
-            <mhc:IconTextBlock
+      <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <mhc:IconTextBlock
+          ToolTip="Length"
+          ap:Icon.Data="{StaticResource IconClock}"
+          ap:Text.Text="{Binding MovieM.FormatedLength}"
+          BorderThickness="0"/>
+
+        <mhc:PopupSlider
+          Grid.Column="1"
+          Maximum="10"
+          TickFrequency="0.1"
+          HorizontalAlignment="Center"
+          Value="{Binding MovieM.Rating, Mode=TwoWay}">
+          <mhc:PopupSlider.Content>
+            <mhc:IconTextBlockButton
+              ToolTip="Rating"
               ap:Icon.Data="{StaticResource IconStar}"
               ap:Text.Text="{Binding MovieM.Rating, StringFormat={}{0:G2}}"/>
-          </Button>
-        </mhc:PopupSlider.Content>
-      </mhc:PopupSlider>
+          </mhc:PopupSlider.Content>
+        </mhc:PopupSlider>
+
+        <mhc:PopupSlider
+          Grid.Column="2"
+          Maximum="10"
+          TickFrequency="0.5"
+          HorizontalAlignment="Center"
+          Value="{Binding MovieM.PersonalRating, Mode=TwoWay}">
+          <mhc:PopupSlider.Content>
+            <mhc:IconTextBlockButton
+              ToolTip="Personal Rating"
+              ap:Icon.Data="{StaticResource IconStar}"
+              ap:Text.Text="{Binding MovieM.PersonalRating, StringFormat={}{0:G2}}"/>
+          </mhc:PopupSlider.Content>
+        </mhc:PopupSlider>
+      </Grid>
 
       <!-- Genre -->
       <DockPanel
-        Grid.Row="2"
+        Grid.Row="3"
         Margin="4,0,0,0"
         VerticalAlignment="Center">
   
@@ -75,7 +98,7 @@
       </DockPanel>
 
       <TextBlock
-        Grid.Row="3"
+        Grid.Row="4"
         Text="{Binding MovieM.Plot}"
         TextWrapping="Wrap"
         TextAlignment="Justify"
