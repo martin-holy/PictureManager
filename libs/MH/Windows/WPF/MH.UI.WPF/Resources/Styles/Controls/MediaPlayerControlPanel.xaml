@@ -76,35 +76,45 @@
         </StackPanel>
 
         <!-- Speed -->
-        <Slider
-          Style="{StaticResource MH.Styles.Controls.PopupSlider}"
-          ap:Icon.Data="{StaticResource IconSpeed}"
-          ToolTip="Speed"
+        <c:PopupSlider
           Minimum="0.1"
           Maximum="3"
           TickFrequency="0.01"
           IsTabStop="False"
-          Value="{Binding Speed}"/>
+          Value="{Binding Speed}">
+          <c:PopupSlider.Content>
+            <c:IconTextButton
+              ToolTip="Speed"
+              ap:Icon.Data="{StaticResource IconSpeed}"
+              ap:Text.Text="{Binding Speed, StringFormat={}{0:G2}}"/>
+          </c:PopupSlider.Content>
+        </c:PopupSlider>
 
         <!-- Repeat for seconds -->
-        <Slider
-          Style="{StaticResource MH.Styles.Controls.PopupSlider}"
-          Minimum="0"
+        <c:PopupSlider
           Maximum="10"
-          Value="{Binding RepeatForSeconds, Mode=TwoWay}"
-          ap:Icon.Data="{StaticResource IconTimer}"
-          ToolTip="Time in seconds the video clip is repeated for"/>
+          Value="{Binding RepeatForSeconds, Mode=TwoWay}">
+          <c:PopupSlider.Content>
+            <c:IconTextButton
+              ToolTip="Time in seconds the video clip is repeated for"
+              ap:Icon.Data="{StaticResource IconTimer}"
+              ap:Text.Text="{Binding RepeatForSeconds, StringFormat={}{0:G2}}"/>
+          </c:PopupSlider.Content>
+        </c:PopupSlider>
 
         <!-- Volume -->
-        <Slider
-          Style="{StaticResource MH.Styles.Controls.PopupSlider}"
-          ap:Icon.Data="{StaticResource IconVolume}"
-          ToolTip="Volume"
-          Minimum="0"
+        <c:PopupSlider
           Maximum="1"
           TickFrequency="0.01"
           IsTabStop="False"
-          Value="{Binding Volume}"/>
+          Value="{Binding Volume}">
+          <c:PopupSlider.Content>
+            <c:IconTextButton
+              ToolTip="Volume"
+              ap:Icon.Data="{StaticResource IconVolume}"
+              ap:Text.Text="{Binding Volume, StringFormat={}{0:G2}}"/>
+          </c:PopupSlider.Content>
+        </c:PopupSlider>
 
         <!-- Mute -->
         <c:IconToggleButton
