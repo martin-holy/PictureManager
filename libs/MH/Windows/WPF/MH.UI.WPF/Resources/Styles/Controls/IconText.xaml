@@ -10,7 +10,7 @@
     <u:CachedResourceDictionary Source="../../Effects.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <Style x:Key="MH.Styles.Controls.IconTextBlock" TargetType="{x:Type c:IconTextBlock}">
+  <Style x:Key="MH.Styles.Controls.IconText" TargetType="{x:Type c:IconText}">
     <Setter Property="Margin" Value="2"/>
     <Setter Property="Width" Value="26"/>
     <Setter Property="Height" Value="26"/>
@@ -22,7 +22,7 @@
     <Setter Property="FontWeight" Value="Bold"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type c:IconTextBlock}">
+        <ControlTemplate TargetType="{x:Type c:IconText}">
           <Grid
             Width="{TemplateBinding Width}"
             Height="{TemplateBinding Height}">
