@@ -152,13 +152,17 @@
             </Grid>
 
             <!-- Interval -->
-            <Slider
-              Style="{StaticResource MH.Styles.Controls.PopupSlider}"
+            <mhc:PopupSlider
               Minimum="1"
               Maximum="10"
-              Value="{Binding Interval, Mode=TwoWay}"
-              ap:Icon.Data="{StaticResource IconTimer}"
-              ToolTip="Presentation interval"/>
+              Value="{Binding Interval, Mode=TwoWay}">
+              <mhc:PopupSlider.Content>
+                <mhc:IconTextButton
+                  ToolTip="Presentation interval"
+                  ap:Icon.Data="{StaticResource IconTimer}"
+                  ap:Text.Text="{Binding Interval, StringFormat={}{0:G2}}"/>
+              </mhc:PopupSlider.Content>
+            </mhc:PopupSlider>
 
             <!-- Play Panoramic Images -->
             <CheckBox
@@ -186,16 +190,20 @@
             <Separator/>
 
             <!-- Thumbnails scale -->
-            <Slider
-              Style="{StaticResource MH.Styles.Controls.PopupSlider}"
-              ToolTip="Thumbnails scale"
-              ap:Icon.Data="{StaticResource IconMagnify}"
+            <mhc:PopupSlider
               Minimum="0.2"
               Maximum="2"
               TickFrequency="0.1"
               SmallChange="0.1"
               LargeChange="0.2"
-              Value="{Binding VM.MediaItem.Views.Current.ThumbScale, Mode=TwoWay}"/>
+              Value="{Binding VM.MediaItem.Views.Current.ThumbScale, Mode=TwoWay}">
+              <mhc:PopupSlider.Content>
+                <mhc:IconTextButton
+                  ToolTip="Thumbnails scale"
+                  ap:Icon.Data="{StaticResource IconMagnify}"
+                  ap:Text.Text="{Binding VM.MediaItem.Views.Current.ThumbScale, StringFormat={}{0:G2}}"/>
+              </mhc:PopupSlider.Content>
+            </mhc:PopupSlider>
 
             <!-- View Selected -->
             <mhc:IconButton Command="vme:MediaItemVM.ViewSelectedCommand"/>
@@ -209,13 +217,16 @@
               Command="vm:ImageComparerVM.PHashCommand"
               CommandParameter="{Binding VM.MediaItem.Views.Current}"/>
 
-            <Slider
-              Style="{StaticResource MH.Styles.Controls.PopupSlider}"
-              ToolTip="Compare limit"
-              ap:Icon.Data="{StaticResource IconCompare}"
-              Minimum="0"
+            <mhc:PopupSlider
               Maximum="25"
-              Value="{Binding VM.ImageComparer.Diff, Mode=TwoWay}"/>
+              Value="{Binding VM.ImageComparer.Diff, Mode=TwoWay}">
+              <mhc:PopupSlider.Content>
+                <mhc:IconTextButton
+                  ToolTip="Compare limit"
+                  ap:Icon.Data="{StaticResource IconCompare}"
+                  ap:Text.Text="{Binding VM.ImageComparer.Diff, StringFormat={}{0:G2}}"/>
+              </mhc:PopupSlider.Content>
+            </mhc:PopupSlider>
           </StackPanel>
         </StackPanel>
       </StackPanel>
