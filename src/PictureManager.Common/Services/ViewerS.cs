@@ -23,9 +23,9 @@ public sealed class ViewerS(CoreR coreR) : ObservableObject {
   public void SetCurrent(ViewerM viewer) {
     if (viewer != null && !viewer.IsDefault) viewer.IsDefault = true;
     Current = viewer;
-    if (Current == null) return;
-    Current.UpdateHashSets();
+    Current?.UpdateHashSets();
     coreR.FolderKeyword.Reload();
+    if (Current == null) return;
 
     foreach (var f in coreR.Folder.Tree.Items.Cast<FolderM>()) {
       f.IsExpanded = false;
