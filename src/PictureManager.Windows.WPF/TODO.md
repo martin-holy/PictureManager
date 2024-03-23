@@ -40,6 +40,11 @@
   - method Add or Insert => Update(e.Data, false)
 
 
+        # MH.UI.WPF
+##
+  - change EqualityConverter to be like CalcNumberConverter
+
+
         # MH.UI
 ## SimpleDB
   - save not found records (like segment for Person.TopSegments or MediaItem for Movie) for adding them back on DB save
@@ -50,6 +55,7 @@
   - CoreUI with interfaces for CoreM and CoreVM
   - replace Contains with ReferenceEquals
   - group people by folder
+  - use IconTextBlockItemsControl
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
 ## Keywords
