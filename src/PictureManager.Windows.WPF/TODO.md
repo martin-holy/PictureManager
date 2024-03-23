@@ -49,6 +49,7 @@
   - Rethink hierarchical keywords moving
   - CoreUI with interfaces for CoreM and CoreVM
   - replace Contains with ReferenceEquals
+  - group people by folder
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
 ## Keywords

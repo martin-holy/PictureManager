@@ -1,5 +1,4 @@
 ﻿using MH.UI.BaseClasses;
-using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Dialogs;
 using PictureManager.Common.Models;
@@ -12,16 +11,12 @@ namespace PictureManager.Common.TreeCategories;
 public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM> {
   public CategoryGroupM AutoAddedGroup { get; set; }
 
-  public KeywordsTreeCategory(KeywordR r) :
-    base(Res.IconTagLabel, "Keywords", (int)Category.Keywords) {
+  public KeywordsTreeCategory(KeywordR r) : base(Res.IconTagLabel, "Keywords", (int)Category.Keywords) {
     DataAdapter = r;
-    DataAdapter.ItemCreatedEvent += OnItemCreated;
     CanMoveItem = true;
     UseTreeDelete = true;
+    ScrollToAfterCreate = true;
   }
-
-  private void OnItemCreated(object sender, ObjectEventArgs<KeywordM> e) =>
-    TreeView.ScrollTo(e.Data, false);
 
   public override void OnItemSelected(object o) =>
     ToggleDialogM.ToggleKeyword(o as KeywordM);
