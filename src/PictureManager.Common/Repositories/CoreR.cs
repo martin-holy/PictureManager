@@ -33,9 +33,9 @@ public sealed class CoreR : SimpleDB, IPluginHostCoreR {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
-  IPluginHostRepository<IPluginHostKeywordM> IPluginHostCoreR.Keyword => Keyword;
-  IPluginHostRepository<IPluginHostMediaItemM> IPluginHostCoreR.MediaItem => MediaItem;
-  IPluginHostRepository<IPluginHostPersonM> IPluginHostCoreR.Person => Person;
+  IPluginHostKeywordR IPluginHostCoreR.Keyword => Keyword;
+  IPluginHostR<IPluginHostMediaItemM> IPluginHostCoreR.MediaItem => MediaItem;
+  IPluginHostR<IPluginHostPersonM> IPluginHostCoreR.Person => Person;
 
   public CoreR() : base("db") {
     CategoryGroup = new(this);

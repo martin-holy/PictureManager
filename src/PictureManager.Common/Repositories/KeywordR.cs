@@ -14,7 +14,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostRepository<IPluginHostKeywordM> {
+public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostKeywordR {
   private readonly CoreR _coreR;
   private const string _notFoundRecordNamePrefix = "Not found ";
 
@@ -56,13 +56,13 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostRepository<IPlugin
       .SingleOrDefault(x => x.Name.Equals("Auto Added"));
   }
 
-  IPluginHostKeywordM IPluginHostRepository<IPluginHostKeywordM>.GetById(string id, bool nullable) =>
+  IPluginHostKeywordM IPluginHostR<IPluginHostKeywordM>.GetById(string id, bool nullable) =>
     GetById(id, nullable);
 
   public List<KeywordM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
-  List<IPluginHostKeywordM> IPluginHostRepository<IPluginHostKeywordM>.Link(string csv, IDataAdapter seeker) =>
+  List<IPluginHostKeywordM> IPluginHostR<IPluginHostKeywordM>.Link(string csv, IDataAdapter seeker) =>
     Link(csv, seeker)?.Cast<IPluginHostKeywordM>().ToList();
 
   private KeywordM GetNotFoundRecord(int notFoundId) {
@@ -81,40 +81,41 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostRepository<IPlugin
       ? $"{name} item already exists!"
       : null;
 
-  public KeywordM GetByFullPath(string fullPath) {
+  public KeywordM GetByFullPath(string fullPath, IEnumerable<ITreeItem> src = null, ITreeItem rootForNew = null) {
     if (string.IsNullOrEmpty(fullPath)) return null;
-
-    ITreeItem GetFirst(ITreeItem[] items) =>
-      items.FirstOrDefault(x => !x.HasThisParent(Tree.AutoAddedGroup))
-      ?? items.FirstOrDefault();
-
-    var first = true;
-    ITreeItem[] last = Array.Empty<ITreeItem>();
+    src ??= All.Where(x => x.Parent is not KeywordM);
+    rootForNew ??= Tree.AutoAddedGroup;
+    var last = Array.Empty<ITreeItem>();
 
     foreach (var path in fullPath.Split('/')) {
-      var found = (first
-          ? All.Where(x => x.Parent is not KeywordM)
-          : last.SelectMany(x => x.Items))
-        .Where(x => x.Name.Equals(path, StringComparison.OrdinalIgnoreCase))
-        .ToArray();
+      var found = src.Where(x => x.Name.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
 
       last = found.Length switch {
-        0 => new[] { (ITreeItem)ItemCreate(first
-          ? Tree.AutoAddedGroup
-          : GetFirst(last), path) },
+        0 => new[] { (ITreeItem)ItemCreate(rootForNew, path) },
         1 => new[] { found[0] },
         _ => found
       };
 
-      first = false;
+      src = last.SelectMany(x => x.Items);
+      rootForNew = GetFirst(last);
     }
 
     return GetFirst(last) as KeywordM;
+
+    ITreeItem GetFirst(ITreeItem[] items) =>
+      items.FirstOrDefault(x => !x.HasThisParent(Tree.AutoAddedGroup))
+      ?? items.FirstOrDefault();
   }
+
+  IPluginHostKeywordM IPluginHostKeywordR.GetByFullPath(string fullPath, IEnumerable<ITreeItem> src, ITreeItem rootForNew) =>
+    GetByFullPath(fullPath, src, rootForNew);
 
   public void MoveGroupItemsToRoot(CategoryGroupM group) {
     if (group.Category != Category.Keywords) return;
     foreach (var item in group.Items.ToArray())
       ItemMove(item, Tree, false);
   }
+
+  public ITreeItem GetCategoryGroup(string name) =>
+    Tree.Items.GetByName(name) ?? _coreR.CategoryGroup.ItemCreate(Tree, name);
 }

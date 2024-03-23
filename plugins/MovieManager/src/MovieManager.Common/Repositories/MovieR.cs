@@ -64,8 +64,9 @@ public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAda
 
     try {
       var movies = JsonSerializer.Deserialize<JsonMovies>(File.ReadAllText(filePath));
-      foreach (var movie in movies.Movies) {
+      var cg = phCoreR.Keyword.GetCategoryGroup("MovieManager");
 
+      foreach (var movie in movies.Movies) {
         var m = ItemCreate(new(GetNextId(), movie.Title) {
           Year = movie.MovieYear,
           Length = movie.Length,
@@ -77,11 +78,22 @@ public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAda
 
         m.Genre = coreR.Genre.GetGenre(movie.Genere.Trim(), true);
         var subGenres = movie.Subgenre
-          .Split('|').Select(x => coreR.Genre.GetGenre(x.Trim(), true))
+          .Split('|')
+          .Select(x => x.Trim())
+          .Where(x => !string.IsNullOrEmpty(x))
+          .Select(x => coreR.Genre.GetGenre(x, true))
           .Where(x => x != null)
           .ToList();
         if (subGenres.Count > 0) m.SubGenres = subGenres;
 
+        var keywords = movie.KeyWords
+          .Split('|')
+          .Select(x => x.Trim())
+          .Where(x => !string.IsNullOrEmpty(x))
+          .Select(x => phCoreR.Keyword.GetByFullPath(x, null, cg))
+          .Where(x => x != null)
+          .ToList();
+        if (keywords.Count > 0) m.Keywords = keywords;
 
         /*
          *public int Id { get; }

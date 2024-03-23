@@ -3,7 +3,7 @@
 namespace PictureManager.Plugins.Common.Interfaces.Repositories;
 
 public interface IPluginHostCoreR {
-  public IPluginHostRepository<IPluginHostKeywordM> Keyword { get; }
-  public IPluginHostRepository<IPluginHostMediaItemM> MediaItem { get; }
-  public IPluginHostRepository<IPluginHostPersonM> Person { get; }
+  public IPluginHostKeywordR Keyword { get; }
+  public IPluginHostR<IPluginHostMediaItemM> MediaItem { get; }
+  public IPluginHostR<IPluginHostPersonM> Person { get; }
 }
