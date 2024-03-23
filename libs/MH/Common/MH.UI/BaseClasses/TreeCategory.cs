@@ -92,6 +92,7 @@ public class TreeCategory : TreeItem, ITreeCategory {
 }
 
 public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
+  public bool ScrollToAfterCreate { get; set; }
   protected ITreeDataAdapter<TI> DataAdapter { get; set; }
 
   public event EventHandler<TreeItemDroppedEventArgs> AfterDropEvent = delegate { };
@@ -103,7 +104,8 @@ public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
 
     try {
       parent.IsExpanded = true;
-      DataAdapter.ItemCreate(parent, newName);
+      var item = DataAdapter.ItemCreate(parent, newName);
+      if (ScrollToAfterCreate) TreeView.ScrollTo(item, false);
     }
     catch (Exception ex) {
       Log.Error(ex);
