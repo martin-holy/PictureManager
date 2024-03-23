@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -40,4 +41,12 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
     TopSegments = TopSegments.Toggle(segment, true);
     if (flag) OnPropertyChanged(nameof(TopSegments));
   }
+}
+
+public static class PersonExtensions {
+  public static IEnumerable<FolderM> GetFolders(this PersonM person) =>
+    person.Segments.EmptyIfNull().GetFolders();
+
+  public static IEnumerable<FolderM> GetFolders(this IEnumerable<PersonM> people) =>
+    people.SelectMany(GetFolders).Distinct();
 }
