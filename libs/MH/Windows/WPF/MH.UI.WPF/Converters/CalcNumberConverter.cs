@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Windows.Data;
+﻿using System.Windows.Data;
 
 namespace MH.UI.WPF.Converters;
 
@@ -36,15 +35,13 @@ public class CalcNumberConverter : BaseConverter {
   public bool DoDivide { get; init; }
 
   public override object Convert(object value, object parameter) {
-    if (value is not double d
-        || parameter is not string s
-        || !double.TryParse(s, CultureInfo.InvariantCulture, out var p))
+    if (value is not double v || parameter is not double p)
       return Binding.DoNothing;
 
-    if (DoAdd) return d + p;
-    if (DoSubtract) return d - p;
-    if (DoMultiply) return d * p;
-    if (DoDivide) return d / p;
+    if (DoAdd) return v + p;
+    if (DoSubtract) return v - p;
+    if (DoMultiply) return v * p;
+    if (DoDivide) return v / p;
 
     return Binding.DoNothing;
   }
