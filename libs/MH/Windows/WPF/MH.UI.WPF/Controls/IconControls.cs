@@ -10,3 +10,5 @@ public class IconButton : Button;
 public class IconTextButton : Button;
 public class IconTextBlockButton : Button;
 public class IconToggleButton : ToggleButton;
+
+public class IconTextBlockItemsControl : ItemsControl;
