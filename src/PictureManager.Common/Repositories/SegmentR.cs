@@ -67,6 +67,8 @@ public class SegmentR : TableDataAdapter<SegmentM> {
         if (personId != 0) {
           segment.Person = _coreR.Person.GetPerson(personId, this);
           segment.Person.Segment ??= segment;
+          segment.Person.Segments ??= [];
+          segment.Person.Segments.Add(segment);
         }
       }
       else
