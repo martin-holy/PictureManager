@@ -19,6 +19,7 @@ public class CollectionViewPeople : CollectionView<PersonM> {
     var top = new List<GroupByItem<PersonM>>();
     top.Add(GroupByItems.GetPeopleGroupsInGroup(src));
     top.Add(GroupByItems.GetKeywordsInGroup(src));
+    top.AddRange(GroupByItems.GetFolders(src));
 
     return top;
   }

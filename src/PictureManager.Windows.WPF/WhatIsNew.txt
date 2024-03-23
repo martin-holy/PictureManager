@@ -4,6 +4,7 @@
 [B] - Bug fix
 
 Latest:
+ - [N] Group People by Folder (from Segments only)
  - [B] Reload FolderKeywords when Viewer is All
 
 24.03.21.1515:
