@@ -38,4 +38,10 @@
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
+
+  <DataTemplate x:Key="MH.DT.IListItem.Border.RoundDarker" DataType="{x:Type mhuInt:IListItem}">
+    <Border Style="{StaticResource MH.S.Border.RoundDarker}">
+      <TextBlock Text="{Binding Name}"/>
+    </Border>
+  </DataTemplate>
 </ResourceDictionary>
