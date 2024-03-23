@@ -6,103 +6,99 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type vm:MovieDetailVM}">
-    <Grid>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
-      </Grid.RowDefinitions>
+    <ScrollViewer>
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-      <TextBlock
-        Text="{Binding MovieM.Title}"
-        Background="{StaticResource MH.Brushes.Black55}"
-        FontSize="20"
-        Padding="4"
-        Margin="0,0,0,5"
-        HorizontalAlignment="Stretch"
-        TextAlignment="Center"
-        VerticalAlignment="Center"/>
+        <!-- Title -->
+        <TextBlock
+          Text="{Binding MovieM.Title}"
+          Background="{StaticResource MH.Brushes.Black55}"
+          FontSize="20"
+          Padding="4"
+          Margin="0,0,0,5"
+          HorizontalAlignment="Stretch"
+          TextAlignment="Center"
+          VerticalAlignment="Center"/>
 
-      <Grid Grid.Row="1">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+        <!-- Length, Rating, PersonalRating -->
+        <Grid Grid.Row="1">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
 
-        <mhc:IconTextBlock
-          ToolTip="Length"
-          ap:Icon.Data="{StaticResource IconClock}"
-          ap:Text.Text="{Binding MovieM.FormatedLength}"
-          BorderThickness="0"/>
+          <!-- Length -->
+          <mhc:IconTextBlock
+            ToolTip="Length"
+            ap:Icon.Data="{StaticResource IconClock}"
+            ap:Text.Text="{Binding MovieM.FormatedLength}"
+            BorderThickness="0"/>
 
-        <mhc:PopupSlider
-          Grid.Column="1"
-          Maximum="10"
-          TickFrequency="0.1"
-          HorizontalAlignment="Center"
-          Value="{Binding MovieM.Rating, Mode=TwoWay}">
-          <mhc:PopupSlider.Content>
-            <mhc:IconTextBlockButton
-              ToolTip="Rating"
-              ap:Icon.Data="{StaticResource IconStar}"
-              ap:Text.Text="{Binding MovieM.Rating, StringFormat={}{0:G2}}"/>
-          </mhc:PopupSlider.Content>
-        </mhc:PopupSlider>
+          <!-- Rating -->
+          <mhc:PopupSlider
+            Grid.Column="1"
+            Maximum="10"
+            TickFrequency="0.1"
+            HorizontalAlignment="Center"
+            Value="{Binding MovieM.Rating, Mode=TwoWay}">
+            <mhc:PopupSlider.Content>
+              <mhc:IconTextBlockButton
+                ToolTip="Rating"
+                ap:Icon.Data="{StaticResource IconStar}"
+                ap:Text.Text="{Binding MovieM.Rating, StringFormat={}{0:G2}}"/>
+            </mhc:PopupSlider.Content>
+          </mhc:PopupSlider>
 
-        <mhc:PopupSlider
-          Grid.Column="2"
-          Maximum="10"
-          TickFrequency="0.5"
-          HorizontalAlignment="Center"
-          Value="{Binding MovieM.PersonalRating, Mode=TwoWay}">
-          <mhc:PopupSlider.Content>
-            <mhc:IconTextBlockButton
-              ToolTip="Personal Rating"
-              ap:Icon.Data="{StaticResource IconStar}"
-              ap:Text.Text="{Binding MovieM.PersonalRating, StringFormat={}{0:G2}}"/>
-          </mhc:PopupSlider.Content>
-        </mhc:PopupSlider>
+          <!-- PersonalRating -->
+          <mhc:PopupSlider
+            Grid.Column="2"
+            Maximum="10"
+            TickFrequency="0.5"
+            HorizontalAlignment="Center"
+            Value="{Binding MovieM.PersonalRating, Mode=TwoWay}">
+            <mhc:PopupSlider.Content>
+              <mhc:IconTextBlockButton
+                ToolTip="Personal Rating"
+                ap:Icon.Data="{StaticResource IconStar}"
+                ap:Text.Text="{Binding MovieM.PersonalRating, StringFormat={}{0:G2}}"/>
+            </mhc:PopupSlider.Content>
+          </mhc:PopupSlider>
+        </Grid>
+
+        <!-- SubGenre -->
+        <mhc:IconTextBlockItemsControl
+          Grid.Row="3"
+          ItemsSource="{Binding MovieM.SubGenres}"
+          ap:Icon.Data="{StaticResource IconBug}"
+          ap:Icon.Fill="{StaticResource ColorBrushTag}"
+          ItemTemplate="{StaticResource MH.DT.IListItem.Border.RoundDarker}"/>
+
+        <!-- Plot -->
+        <TextBlock
+          Grid.Row="4"
+          Text="{Binding MovieM.Plot}"
+          TextWrapping="Wrap"
+          TextAlignment="Justify"
+          Margin="8,4"/>
+
+        <!-- Keywords -->
+        <mhc:IconTextBlockItemsControl
+          Grid.Row="5"
+          MaxHeight="110"
+          ItemsSource="{Binding MovieM.Keywords}"
+          ap:Icon.Data="{StaticResource IconTag}"
+          ap:Icon.Fill="{StaticResource ColorBrushTag}"
+          ItemTemplate="{StaticResource MH.DT.IListItem.Border.RoundDarker}"/>
       </Grid>
-
-      <!-- Genre -->
-      <DockPanel
-        Grid.Row="3"
-        Margin="4,0,0,0"
-        VerticalAlignment="Center">
-  
-        <Path
-          Style="{StaticResource MH.Styles.Icon}"
-          Effect="{StaticResource MH.Effects.DropShadow}"
-          Data="{StaticResource IconBug}"
-          Fill="{StaticResource ColorBrushTag}"
-          Margin="0,0,4,0"/>
-
-        <ItemsControl ItemsSource="{Binding MovieM.SubGenres}">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <WrapPanel Orientation="Horizontal"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Border Style="{StaticResource SBorderText}">
-                <TextBlock Text="{Binding Name}" Style="{StaticResource STextBlock}"/>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </DockPanel>
-
-      <TextBlock
-        Grid.Row="4"
-        Text="{Binding MovieM.Plot}"
-        TextWrapping="Wrap"
-        TextAlignment="Justify"
-        Margin="8,4"/>
-    </Grid>
+    </ScrollViewer>
   </DataTemplate>
 </ResourceDictionary>
