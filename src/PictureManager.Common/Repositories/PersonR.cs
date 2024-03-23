@@ -134,12 +134,22 @@ public class PersonR : TreeDataAdapter<PersonM>, IPluginHostR<IPluginHostPersonM
     ?? (create ? ItemCreate(Tree, name) : null);
 
   public void OnSegmentPersonChanged(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
-    if (newPerson != null) newPerson.Segment ??= segment;
+    if (newPerson != null) {
+      newPerson.Segment ??= segment;
+      newPerson.Segments = newPerson.Segments.Toggle(segment, true);
+    }
+
     if (oldPerson == null) return;
-    if (ReferenceEquals(oldPerson.Segment, segment)) oldPerson.Segment = null;
-    if (oldPerson.TopSegments?.Contains(segment) != true) return;
-    oldPerson.ToggleTopSegment(segment);
-    IsModified = true;
+    oldPerson.Segments = oldPerson.Segments.Toggle(segment, true);
+
+    if (oldPerson.TopSegments?.Contains(segment) == true) {
+      oldPerson.ToggleTopSegment(segment);
+      IsModified = true;
+    }
+
+    if (ReferenceEquals(oldPerson.Segment, segment))
+      oldPerson.Segment = oldPerson.TopSegments?.FirstOrDefault()
+                          ?? oldPerson.Segments?.FirstOrDefault();
   }
 
   public void OnSegmentsPersonChanged(PersonM person, SegmentM[] segments, PersonM[] people) {

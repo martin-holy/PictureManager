@@ -47,6 +47,9 @@ public static class GroupByItems {
     where T : MediaItemM =>
     items.GetFolders().ToGroupByItemsAsTree<T>(GroupByFolder);
 
+  public static IEnumerable<GroupByItem<PersonM>> GetFolders(IEnumerable<PersonM> items) =>
+    items.GetFolders().ToGroupByItemsAsTree<PersonM>(GroupByFolder);
+
   public static IEnumerable<GroupByItem<SegmentM>> GetFolders(IEnumerable<SegmentM> items) =>
     items.GetFolders().ToGroupByItemsAsTree<SegmentM>(GroupByFolder);
 
@@ -117,8 +120,14 @@ public static class GroupByItems {
   private static bool GroupByFolder(FolderM folder, object parameter) =>
     parameter is FolderM f && folder.GetThisAndParents().Contains(f);
 
+  private static bool GroupByFolder(IEnumerable<FolderM> items, object parameter) =>
+    items?.Any(x => GroupByFolder(x, parameter)) == true;
+
   private static bool GroupByFolder(MediaItemM item, object parameter) =>
     GroupByFolder(item.Folder, parameter);
+
+  private static bool GroupByFolder(PersonM item, object parameter) =>
+    GroupByFolder(item.GetFolders(), parameter);
 
   private static bool GroupByFolder(SegmentM item, object parameter) =>
     GroupByFolder(item.MediaItem.Folder, parameter);
