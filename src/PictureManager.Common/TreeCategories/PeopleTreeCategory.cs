@@ -1,5 +1,4 @@
 ﻿using MH.UI.BaseClasses;
-using MH.Utils.BaseClasses;
 using PictureManager.Common.Dialogs;
 using PictureManager.Common.Models;
 using PictureManager.Common.Repositories;
@@ -21,16 +20,10 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
     set => _unknownGroup = value;
   }
 
-  public PeopleTreeCategory(PersonR r) :
-    base(Res.IconPeopleMultiple, "People", (int)Category.People) {
+  public PeopleTreeCategory(PersonR r) : base(Res.IconPeopleMultiple, "People", (int)Category.People) {
     DataAdapter = r;
-    DataAdapter.ItemCreatedEvent += OnItemCreated;
     CanMoveItem = true;
-  }
-
-  private void OnItemCreated(object sender, ObjectEventArgs<PersonM> e) {
-    if (!e.Data.IsUnknown)
-      TreeView.ScrollTo(e.Data, false);
+    ScrollToAfterCreate = true;
   }
 
   public override void OnItemSelected(object o) {
