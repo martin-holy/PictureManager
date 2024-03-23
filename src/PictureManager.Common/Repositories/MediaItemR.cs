@@ -13,7 +13,7 @@ using MH.Utils.Interfaces;
 
 namespace PictureManager.Common.Repositories;
 
-public sealed class MediaItemR : TableDataAdapter<MediaItemM>, IPluginHostRepository<IPluginHostMediaItemM> {
+public sealed class MediaItemR : TableDataAdapter<MediaItemM>, IPluginHostR<IPluginHostMediaItemM> {
   private readonly CoreR _coreR;
   private static readonly string[] _supportedImageExts = { ".jpg", ".jpeg" };
   private static readonly string[] _supportedVideoExts = { ".mp4" };
@@ -89,10 +89,10 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM>, IPluginHostReposi
     return null;
   }
 
-  IPluginHostMediaItemM IPluginHostRepository<IPluginHostMediaItemM>.GetById(string id, bool nullable) =>
+  IPluginHostMediaItemM IPluginHostR<IPluginHostMediaItemM>.GetById(string id, bool nullable) =>
     GetById(id, nullable);
 
-  List<IPluginHostMediaItemM> IPluginHostRepository<IPluginHostMediaItemM>.Link(string csv, IDataAdapter seeker) =>
+  List<IPluginHostMediaItemM> IPluginHostR<IPluginHostMediaItemM>.Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, null, seeker)?.Cast<IPluginHostMediaItemM>().ToList();
 
   public RealMediaItemM ItemCreate(FolderM folder, string fileName) {
