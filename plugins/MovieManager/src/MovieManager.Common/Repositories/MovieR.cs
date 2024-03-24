@@ -7,7 +7,11 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace MovieManager.Common.Repositories;
 
@@ -115,6 +119,48 @@ public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAda
     catch (Exception ex) {
       Log.Error(ex);
     }
+  }
+
+  private static Task<string> GetMovieJson(string imdbId) {
+    var url = $"https://imdb.com/title/{imdbId}/?ref_=fn_al_tt_1";
+    var stopString = "og:url";
+
+    try {
+      var html = GetHtml(url, stopString).Result;
+      return Task.FromResult(GetJsonFromHtml(html));
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
+
+    return null;
+  }
+
+  private static async Task<string> GetHtml(string url, string stopString) {
+    var sb = new StringBuilder();
+    var buffer = new char[1024];
+
+    using (var client = new HttpClient()) {
+      await using (var contentStream = await client.GetStreamAsync(url))
+      using (var reader = new StreamReader(contentStream, Encoding.UTF8)) {
+        while (!reader.EndOfStream) {
+          var bytesRead = await reader.ReadAsync(buffer, 0, buffer.Length);
+          
+          sb.Append(buffer, 0, bytesRead);
+          if (buffer.Contains(stopString)) break;
+        }
+      }
+    }
+
+    return sb.ToString();
+  }
+
+  private static string GetJsonFromHtml(string html) {
+    var match = Regex.Match(html,
+      @"<script[^>]+type\s*=\s*['""]application/ld\+json['""][^>]*>(.*?)<\/script>",
+      RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+    return match.Success ? match.Groups[1].Value : string.Empty;
   }
 }
 
