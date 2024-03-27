@@ -15,6 +15,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public string PluginIcon => "IconMovieClapper";
   public string PluginTitle => "Movie Manager";
 
+  public ImportVM Import { get; private set; }
   public MoviesVM Movies { get; private set; }
   public MovieDetailVM MovieDetail { get; private set; }
 
@@ -29,11 +30,17 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     _coreS = coreS;
     _coreR = coreR;
 
-    ImportMoviesCommand = new(_coreR.Movie.ImportFromJson, "IconBug", "Import");
+    ImportMoviesCommand = new(OpenImportMovies, "IconBug", "Import");
     OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
 
     MainMenuCommands.AddRange(new[] { ImportMoviesCommand, OpenMoviesCommand, SaveDbCommand });
+  }
+
+  private void OpenImportMovies() {
+    Import ??= new(_coreS.Import);
+    Import.Open();
+    _phCoreVM.MainTabs.Activate("IconMovieClapper", "Import", Import);
   }
 
   private void OpenMovies() {

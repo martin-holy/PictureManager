@@ -33,6 +33,9 @@
     <ProjectReference Include="..\..\..\..\src\PictureManager.Plugins.Common\PictureManager.Plugins.Common.csproj">
       <Private>false</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\plugins\src\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
