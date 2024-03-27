@@ -26,7 +26,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Common", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Windows.WPF", "src\PictureManager.Windows.WPF\PictureManager.Windows.WPF.csproj", "{B8FC45F5-F582-4B0F-BF72-0166841061D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieManager.Plugins.IMDbAPIdev", "plugins\MovieManager\plugins\src\MovieManager.Plugins.IMDbAPIdev\MovieManager.Plugins.IMDbAPIdev.csproj", "{D8A3060D-6FAA-4861-AA66-E4EFE6446237}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.IMDbAPIdev", "plugins\MovieManager\plugins\src\MovieManager.Plugins.IMDbAPIdev\MovieManager.Plugins.IMDbAPIdev.csproj", "{D8A3060D-6FAA-4861-AA66-E4EFE6446237}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieManager.Plugins.Common", "plugins\MovieManager\plugins\src\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj", "{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieManager.Plugins.MediaIMDbCom", "plugins\MovieManager\plugins\src\MovieManager.Plugins.MediaIMDbCom\MovieManager.Plugins.MediaIMDbCom.csproj", "{24D50757-6B9E-4847-81B0-B04372249E54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +74,14 @@ Global
 		{D8A3060D-6FAA-4861-AA66-E4EFE6446237}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8A3060D-6FAA-4861-AA66-E4EFE6446237}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8A3060D-6FAA-4861-AA66-E4EFE6446237}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24D50757-6B9E-4847-81B0-B04372249E54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24D50757-6B9E-4847-81B0-B04372249E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24D50757-6B9E-4847-81B0-B04372249E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24D50757-6B9E-4847-81B0-B04372249E54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +91,8 @@ Global
 		{DED6E1C3-238F-4B9E-BB10-3DD80519B4E6} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 		{DB1DD0A0-C2BD-4A1B-9EFC-C38EC96FF879} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 		{D8A3060D-6FAA-4861-AA66-E4EFE6446237} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
+		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
+		{24D50757-6B9E-4847-81B0-B04372249E54} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C456C484-3702-4A0E-9458-46475FC39272}
