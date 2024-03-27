@@ -128,7 +128,8 @@
   - Comment
 ## MovieManager Plug-in
 
-
+                                    *** Code ***
+- Find generic way to create and open tab from Command
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
