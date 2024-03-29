@@ -4,7 +4,6 @@ using MH.Utils.BaseClasses;
 using PictureManager.Common;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
-using PictureManager.Common.Utils;
 using PictureManager.Common.ViewModels;
 using PictureManager.Common.ViewModels.Entities;
 using PictureManager.Windows.WPF.Converters;
@@ -12,6 +11,7 @@ using PictureManager.Windows.WPF.ShellStuff;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 
 namespace PictureManager.Windows.WPF;
@@ -78,7 +78,7 @@ public sealed class AppCore : ObservableObject {
         var asmName = $"{plugin.Name}.Windows.WPF";
         var pluginPath = Path.GetFullPath(Path.Combine("plugins", plugin.Name, $"{asmName}.dll"));
         var uri = new Uri($"/{asmName};component/resources/main.xaml", UriKind.Relative);
-        PluginU.LoadAssembly(pluginPath);
+        Assembly.LoadFrom(pluginPath);
         if (Application.LoadComponent(uri) as ResourceDictionary is not { } dict) continue;
         Application.Current.Resources.MergedDictionaries.Add(dict);
       }
