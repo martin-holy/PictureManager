@@ -1,5 +1,13 @@
 <Project>
   <PropertyGroup>
     <EnableSourceControlManagerQueries>true</EnableSourceControlManagerQueries>
+    <MainAppTargetDir>$(SolutionDir)src\PictureManager.Windows.WPF\bin\$(Configuration)\net8.0-windows\</MainAppTargetDir>
+
+    <CurrentYear>$([System.DateTime]::Now.ToString("yy"))</CurrentYear>
+    <CurrentMonth>$([System.DateTime]::Now.ToString("MM"))</CurrentMonth>
+    <CurrentDate>$([System.DateTime]::Now.ToString("dd"))</CurrentDate>
+    <CurrentTime>$([System.DateTime]::Now.ToString("HHmm"))</CurrentTime>
+
+    <CurrentDateTimeVersion>$(CurrentYear).$(CurrentMonth).$(CurrentDate).$(CurrentTime)</CurrentDateTimeVersion>
   </PropertyGroup>
 </Project>
