@@ -4,6 +4,16 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Version>$(CurrentDateTimeVersion)</Version>
+    <AssemblyVersion>$(CurrentDateTimeVersion)</AssemblyVersion>
+    <FileVersion>$(CurrentDateTimeVersion)</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>Martin Holý</Authors>
+  </PropertyGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(TargetDir)MovieManager.Plugins.Common.dll&quot; &quot;$(MainAppTargetDir)plugins\MovieManager\&quot; /Y" />
   </Target>

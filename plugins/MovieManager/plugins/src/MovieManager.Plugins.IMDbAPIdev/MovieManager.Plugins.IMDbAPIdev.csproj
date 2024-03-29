@@ -2,7 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Version>$(CurrentDateTimeVersion)</Version>
+    <AssemblyVersion>$(CurrentDateTimeVersion)</AssemblyVersion>
+    <FileVersion>$(CurrentDateTimeVersion)</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>Martin Holý</Authors>
   </PropertyGroup>
 
   <ItemGroup>

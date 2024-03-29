@@ -42,12 +42,9 @@ public sealed class Core : IPMPluginCore {
   }
 
   private Task LoadPlugins(IProgress<string> progress) {
-    return Task.CompletedTask;
-    // TODO
-    var path = Path.GetFullPath(Path.Combine("plugins", "MovieManager", "plugins", "MovieManager.Plugins.MediaIMDbCom.dll"));
-    if (MH.Utils.Plugin.Load<IMMPluginCore>(path) is not { } pc) return Task.CompletedTask;
+    var path = Path.Combine("plugins", "MovieManager", "plugins", "MovieManager.Plugins.MediaIMDbCom.dll");
+    if (MH.Utils.Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return Task.CompletedTask;
     TitleSearch = pc as ITitleSearchPlugin;
-
     return Task.CompletedTask;
   }
 
