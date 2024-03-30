@@ -1,6 +1,6 @@
 ﻿namespace MovieManager.Plugins.Common.Interfaces;
 
-public interface ISearchMovie {
+public interface IMovieSearchResult {
   public IImage Image { get; }
   public string Id { get; }
   public string Name { get; }

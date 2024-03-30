@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace MovieManager.Plugins.MediaIMDbCom;
 
-public class Movie : ISearchMovie {
+public class MovieSearchResult : IMovieSearchResult {
   [JsonPropertyName("i")]
   public Image Image { get; set; }
 
@@ -19,5 +19,5 @@ public class Movie : ISearchMovie {
   [JsonPropertyName("y")]
   public int Year { get; set; }
 
-  IImage ISearchMovie.Image => Image;
+  IImage IMovieSearchResult.Image => Image;
 }

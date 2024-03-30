@@ -1,4 +1,5 @@
 ﻿namespace MovieManager.Plugins.Common.Interfaces;
 
-internal interface IActorSearchPlugin {
+public interface IActorSearchPlugin {
+  public IActorSearchResult[] SearchActor(string query);
 }

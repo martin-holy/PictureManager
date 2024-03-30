@@ -90,14 +90,15 @@ public sealed class MovieR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAda
           .ToList();
         if (subGenres.Count > 0) m.SubGenres = subGenres;
 
-        var keywords = movie.KeyWords
+        // to much useless keywords
+        /*var keywords = movie.KeyWords
           .Split('|')
           .Select(x => x.Trim())
           .Where(x => !string.IsNullOrEmpty(x))
           .Select(x => phCoreR.Keyword.GetByFullPath(x, null, cg))
           .Where(x => x != null)
           .ToList();
-        if (keywords.Count > 0) m.Keywords = keywords;
+        if (keywords.Count > 0) m.Keywords = keywords;*/
 
         /*
          *public int Id { get; }

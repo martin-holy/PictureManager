@@ -1,5 +1,5 @@
 ﻿namespace MovieManager.Plugins.Common.Interfaces;
 
-public interface IActorPlugin {
+public interface IActorDetailPlugin {
   public void GetActorById(string id);
 }

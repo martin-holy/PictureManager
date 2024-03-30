@@ -17,7 +17,7 @@ public sealed class Core : IPMPluginCore {
   public static CoreR R { get; private set; }
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }
-  public static ITitleSearchPlugin TitleSearch { get; private set; }
+  public static IMovieSearchPlugin MovieSearch { get; private set; }
 
   IPluginCoreVM IPMPluginCore.VM => VM;
 
@@ -44,7 +44,7 @@ public sealed class Core : IPMPluginCore {
   private Task LoadPlugins(IProgress<string> progress) {
     var path = Path.Combine("plugins", "MovieManager", "plugins", "MovieManager.Plugins.MediaIMDbCom.dll");
     if (MH.Utils.Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return Task.CompletedTask;
-    TitleSearch = pc as ITitleSearchPlugin;
+    MovieSearch = pc as IMovieSearchPlugin;
     return Task.CompletedTask;
   }
 
