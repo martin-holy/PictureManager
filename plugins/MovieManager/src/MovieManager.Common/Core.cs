@@ -7,6 +7,7 @@ using PictureManager.Plugins.Common.Interfaces.ViewModels;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using MH.Utils;
 using IMMPluginCore = MovieManager.Plugins.Common.Interfaces.IPluginCore;
 using IPMPluginCore = PictureManager.Plugins.Common.Interfaces.IPluginCore;
 
@@ -18,6 +19,7 @@ public sealed class Core : IPMPluginCore {
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }
   public static IMovieSearchPlugin MovieSearch { get; private set; }
+  public static IMovieDetailPlugin MovieDetail { get; private set; }
 
   IPluginCoreVM IPMPluginCore.VM => VM;
 
@@ -42,13 +44,24 @@ public sealed class Core : IPMPluginCore {
   }
 
   private Task LoadPlugins(IProgress<string> progress) {
-    var path = Path.Combine("plugins", "MovieManager", "plugins", "MovieManager.Plugins.MediaIMDbCom.dll");
-    if (MH.Utils.Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return Task.CompletedTask;
-    MovieSearch = pc as IMovieSearchPlugin;
+    SetMovieSearchPlugin();
+    SetMovieDetailPlugin();
     return Task.CompletedTask;
   }
 
   private void AttachEvents() {
 
+  }
+
+  private void SetMovieSearchPlugin() {
+    var path = Path.Combine("plugins", "MovieManager", "plugins", "MovieManager.Plugins.MediaIMDbCom.dll");
+    if (Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return;
+    MovieSearch = pc as IMovieSearchPlugin;
+  }
+
+  private void SetMovieDetailPlugin() {
+    var path = Path.Combine("plugins", "MovieManager", "plugins", "MovieManager.Plugins.IMDbAPIdev.dll");
+    if (Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return;
+    MovieDetail = pc as IMovieDetailPlugin;
   }
 }

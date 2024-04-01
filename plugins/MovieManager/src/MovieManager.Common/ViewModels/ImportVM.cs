@@ -62,7 +62,7 @@ public class ImportVM : ObservableObject {
   }
 
   private void ImportMovie(IMovieSearchResult result) {
-
+    var movie = Core.MovieDetail.GetMovieDetail(result.Id);
   }
 
   public void Open() {

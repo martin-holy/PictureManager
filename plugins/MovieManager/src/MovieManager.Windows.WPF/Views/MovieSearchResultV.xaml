@@ -10,7 +10,7 @@
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
 
-      <TextBlock Text="{Binding Name}"/>
+      <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
 
       <StackPanel Grid.Row="1" Orientation="Horizontal">
         <StackPanel.Resources>

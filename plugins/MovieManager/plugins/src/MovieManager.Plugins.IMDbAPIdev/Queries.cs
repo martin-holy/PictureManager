@@ -1,12 +1,11 @@
 ﻿using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.IMDbAPIdev;
 
 public static class Queries {
-  public static async Task<string> Execute(object query) {
+  public static JsonElement Execute(object query) {
     var client = new HttpClient();
     var request = new HttpRequestMessage {
       RequestUri = new("https://graph.imdbapi.dev/v1"),
@@ -14,15 +13,15 @@ public static class Queries {
       Content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json")
     };
 
-    var response = await client.SendAsync(request);
+    var response = client.SendAsync(request).Result;
 
     if (!response.IsSuccessStatusCode) {
       throw new($"GraphQL request failed with status code {response.StatusCode}");
     }
 
-    var responseContent = await response.Content.ReadAsStringAsync();
+    var responseContent = response.Content.ReadAsStringAsync().Result;
     var jsonDocument = JsonDocument.Parse(responseContent);
-    var responseData = jsonDocument.RootElement.GetProperty("data").ToString();
+    var responseData = jsonDocument.RootElement.GetProperty("data");
 
     return responseData;
   }

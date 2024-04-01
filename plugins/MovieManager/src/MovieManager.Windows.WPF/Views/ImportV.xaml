@@ -14,7 +14,7 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Grid HorizontalAlignment="Left">
+    <Grid HorizontalAlignment="Left" Width="400">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
@@ -23,20 +23,19 @@
 
       <TextBox
         x:Name="titles"
-        Width="300"
-        HorizontalAlignment="Left"
+        HorizontalAlignment="Stretch"
         VerticalAlignment="Top"
         VerticalContentAlignment="Top"
         TextWrapping="NoWrap"
+        FontSize="14"
         AcceptsReturn="True"
         Text="Pitch Perfect 2"
-        MinLines="5"
-        MaxLines="8"/>
+        MinLines="5"/>
 
       <ListBox
         x:Name="result"
         Grid.Row="1"
-        MaxHeight="400"
+        Height="200"
         ItemsSource="{Binding MovieSearchResults}"
         ItemTemplate="{StaticResource MM.DT.IMovieSearchResult}">
 
