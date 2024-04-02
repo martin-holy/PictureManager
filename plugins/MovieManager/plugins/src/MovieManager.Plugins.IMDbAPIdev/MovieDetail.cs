@@ -10,9 +10,6 @@ public class MovieDetail : IMovieDetail {
   [JsonPropertyName("type")]
   public string Type { get; set; }
 
-  [JsonPropertyName("is_adult")]
-  public bool IsAdult { get; set; }
-
   [JsonPropertyName("primary_title")]
   public string Title { get; set; }
 
@@ -37,11 +34,11 @@ public class MovieDetail : IMovieDetail {
   [JsonPropertyName("posters")]
   public Image[] Posters { get; set; }
 
-  public string[] MPAA { get; set; }
-
   [JsonPropertyName("casts")]
   public Cast[] Casts { get; set; }
 
+  public IDetailId DetailId { get; set; }
+  public string[] MPAA { get; set; }
   IImage[] IMovieDetail.Posters => Posters;
   ICast[] IMovieDetail.Casts => Casts;
 }

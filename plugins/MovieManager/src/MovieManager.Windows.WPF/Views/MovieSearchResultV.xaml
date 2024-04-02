@@ -22,7 +22,7 @@
         <TextBlock Text="Year:"/>
         <TextBlock Text="{Binding Year}"/>
         <TextBlock Text="Id:"/>
-        <TextBlock Text="{Binding Id}"/>
+        <TextBlock Text="{Binding DetailId.Id}"/>
         <TextBlock Text="Type:"/>
         <TextBlock Text="{Binding Type}"/>
       </StackPanel>

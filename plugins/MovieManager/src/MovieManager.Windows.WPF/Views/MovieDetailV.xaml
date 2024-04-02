@@ -74,10 +74,10 @@
           </mhc:PopupSlider>
         </Grid>
 
-        <!-- SubGenre -->
+        <!-- Genres -->
         <mhc:IconTextBlockItemsControl
           Grid.Row="3"
-          ItemsSource="{Binding MovieM.SubGenres}"
+          ItemsSource="{Binding MovieM.Genres}"
           ap:Icon.Data="{StaticResource IconBug}"
           ap:Icon.Fill="{StaticResource ColorBrushTag}"
           ItemTemplate="{StaticResource MH.DT.IListItem.Border.RoundDarker}"/>

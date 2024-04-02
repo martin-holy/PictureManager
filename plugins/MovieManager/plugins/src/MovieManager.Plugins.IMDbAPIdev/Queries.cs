@@ -38,7 +38,6 @@ public static class Queries {
       title(id: $id) {
         id
         type
-        is_adult
         primary_title
         start_year
         end_year

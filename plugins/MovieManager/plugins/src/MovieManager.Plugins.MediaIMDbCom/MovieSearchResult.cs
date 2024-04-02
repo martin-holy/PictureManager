@@ -4,12 +4,6 @@ using System.Text.Json.Serialization;
 namespace MovieManager.Plugins.MediaIMDbCom;
 
 public class MovieSearchResult : IMovieSearchResult {
-  [JsonPropertyName("i")]
-  public Image Image { get; set; }
-
-  [JsonPropertyName("id")]
-  public string Id { get; set; }
-
   [JsonPropertyName("l")]
   public string Name { get; set; }
 
@@ -18,6 +12,15 @@ public class MovieSearchResult : IMovieSearchResult {
 
   [JsonPropertyName("y")]
   public int Year { get; set; }
+
+  [JsonPropertyName("id")]
+  public string Id { get; set; }
+
+  [JsonIgnore]
+  public IDetailId DetailId { get; set; }
+
+  [JsonPropertyName("i")]
+  public Image Image { get; set; }
 
   IImage IMovieSearchResult.Image => Image;
 }

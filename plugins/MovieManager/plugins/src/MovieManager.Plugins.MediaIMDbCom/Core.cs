@@ -1,4 +1,5 @@
-﻿using MovieManager.Plugins.Common.Interfaces;
+﻿using MovieManager.Plugins.Common;
+using MovieManager.Plugins.Common.Interfaces;
 using System.Linq;
 using System.Text.Json;
 
@@ -13,6 +14,10 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin {
       .RootElement
       .GetProperty("d")
       .Deserialize<MovieSearchResult[]>()
+      .Select(x => {
+        x.DetailId = new DetailId(x.Id, "IMDb");
+        return x;
+      })
       .Cast<IMovieSearchResult>()
       .ToArray();
 

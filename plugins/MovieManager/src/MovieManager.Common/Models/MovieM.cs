@@ -14,15 +14,15 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public int Id { get; }
   public string Title { get; set; }
   public int Year { get; set; }
+  public int? YearEnd { get; set; }
   public int Length { get; set; }
   public double Rating { get => _rating; set { _rating = value; OnPropertyChanged(); } }
   public double PersonalRating { get => _personalRating; set { _personalRating = value; OnPropertyChanged(); } }
-  public GenreM Genre { get; set; }
-  public List<GenreM> SubGenres { get; set; }
+  public List<GenreM> Genres { get; set; }
   public List<IPluginHostPersonM> Actors { get; set; }
   public List<IPluginHostKeywordM> Keywords { get; set; }
   public DateOnly[] SeenWhen { get; set; }
-  public string MPAA { get; set; }
+  public string[] MPAA { get; set; }
   public string Plot { get; set; }
   public IPluginHostMediaItemM Cover { get; set; }
   public List<IPluginHostMediaItemM> MediaItems { get; set; }
@@ -31,8 +31,6 @@ public sealed class MovieM : ObservableObject, ISelectable {
 
   public string FormatedLength =>
     TimeSpan.FromMinutes(Length).ToString(@"h\:mm");
-
-  // TODO add selected MediaItems to Movie
 
   public MovieM(int id, string title) {
     Id = id;

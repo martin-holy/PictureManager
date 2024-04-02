@@ -1,5 +1,5 @@
 ﻿namespace MovieManager.Plugins.Common.Interfaces;
 
 public interface IMovieDetailPlugin {
-  public IMovieDetail GetMovieDetail(string id);
+  public IMovieDetail GetMovieDetail(IDetailId id);
 }

@@ -10,7 +10,7 @@ public class Cast : ICast {
   [JsonPropertyName("characters")]
   public string[] Characters { get; set; }
 
-  public string Id => CastName.Id;
+  public IDetailId DetailId { get; set; }
   public string Name => CastName.Name;
 }
 
