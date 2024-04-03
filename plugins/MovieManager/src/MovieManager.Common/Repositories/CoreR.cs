@@ -9,6 +9,7 @@ public sealed  class CoreR : SimpleDB {
   public ActorDetailIdR ActorDetailId { get; }
   public GenreR Genre { get; }
   public CharacterR Character { get; }
+  public MovieDetailIdR MovieDetailId { get; }
   public MovieR Movie { get; }
 
   public CoreR(IPluginHostCoreR phCoreR) : base(Path.Combine("plugins", "MovieManager", "db")) {
@@ -16,6 +17,7 @@ public sealed  class CoreR : SimpleDB {
     ActorDetailId = new(this);
     Genre = new(this);
     Character = new(this);
+    MovieDetailId = new(this);
     Movie = new(this);
   }
 
@@ -24,6 +26,7 @@ public sealed  class CoreR : SimpleDB {
     AddTableDataAdapter(ActorDetailId);
     AddTableDataAdapter(Genre);
     AddTableDataAdapter(Character);
+    AddTableDataAdapter(MovieDetailId);
     AddTableDataAdapter(Movie);
   }
 }

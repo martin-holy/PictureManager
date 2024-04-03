@@ -6,7 +6,7 @@ namespace MovieManager.Common.Repositories;
 /// <summary>
 /// DB fields: Id|Name|Actor|Movie
 /// </summary>
-public class CharacterR(CoreR coreR) : TableDataAdapter<CharacterM>(coreR, "Character", 4) {
+public class CharacterR(CoreR coreR) : TableDataAdapter<CharacterM>(coreR, "Characters", 4) {
   public override CharacterM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]);
 

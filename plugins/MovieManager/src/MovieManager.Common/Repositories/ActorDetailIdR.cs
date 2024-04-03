@@ -1,14 +1,14 @@
-﻿using System.Linq;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
 using MovieManager.Plugins.Common.Interfaces;
+using System.Linq;
 
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: Id|DetailId|DetailName|Actor
 /// </summary>
-public sealed class ActorDetailIdR(CoreR coreR) : TableDataAdapter<ActorDetailIdM>(coreR, "ActorDetailId", 4) {
+public sealed class ActorDetailIdR(CoreR coreR) : TableDataAdapter<ActorDetailIdM>(coreR, "ActorDetailIds", 4) {
   public override ActorDetailIdM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1], csv[2]);
 

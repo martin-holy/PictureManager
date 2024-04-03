@@ -62,9 +62,12 @@ public class ImportVM : ObservableObject {
   }
 
   private void ImportMovie(IMovieSearchResult result) {
-    // TODO do not allow duplicities
+    var movie = Core.R.MovieDetailId.GetMovie(result.DetailId);
+    if (movie != null) return; // TODO notify that movie is already in DB
+
     var movieDetail = Core.MovieDetail.GetMovieDetail(result.DetailId);
-    var movie = Core.R.Movie.ItemCreate(movieDetail);
+    movie = Core.R.Movie.ItemCreate(movieDetail);
+    Core.R.MovieDetailId.ItemCreate(result.DetailId, movie);
 
     foreach (var cast in movieDetail.Casts) {
       var actor = Core.R.ActorDetailId.GetActor(cast.DetailId);
@@ -77,8 +80,6 @@ public class ImportVM : ObservableObject {
       foreach (var character in cast.Characters)
         Core.R.Character.ItemCreate(character, actor, movie);
     }
-
-    // TODO DetailId relation
   }
 
   public void Open() {
