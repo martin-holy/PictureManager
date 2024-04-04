@@ -19,7 +19,6 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public double Rating { get => _rating; set { _rating = value; OnPropertyChanged(); } }
   public double PersonalRating { get => _personalRating; set { _personalRating = value; OnPropertyChanged(); } }
   public List<GenreM> Genres { get; set; }
-  public List<IPluginHostPersonM> Actors { get; set; }
   public List<IPluginHostKeywordM> Keywords { get; set; }
   public DateOnly[] SeenWhen { get; set; }
   public string[] MPAA { get; set; }

@@ -90,13 +90,13 @@
           TextAlignment="Justify"
           Margin="8,4"/>
 
-        <!-- Keywords -->
+        <!-- Casts -->
         <mhc:IconTextBlockItemsControl
           Grid.Row="5"
           MaxHeight="110"
-          ItemsSource="{Binding MovieM.Keywords}"
-          ap:Icon.Data="{StaticResource IconTag}"
-          ap:Icon.Fill="{StaticResource ColorBrushTag}"
+          ItemsSource="{Binding Casts}"
+          ap:Icon.Data="{StaticResource IconPeople}"
+          ap:Icon.Fill="{StaticResource ColorBrushPeople}"
           ItemTemplate="{StaticResource MH.DT.IListItem.Border.RoundDarker}"/>
       </Grid>
     </ScrollViewer>

@@ -40,7 +40,7 @@ public sealed class MovieR(CoreR coreR) : TableDataAdapter<MovieM>(coreR, "Movie
 
   public override void LinkReferences() {
     foreach (var (item, csv) in AllCsv)
-      item.Genres = coreR.Genre.LinkList(csv[5], null, null);
+      item.Genres = coreR.Genre.LinkList(csv[7], null, null);
   }
 
   public MovieM ItemCreate(IMovieDetail md) {
