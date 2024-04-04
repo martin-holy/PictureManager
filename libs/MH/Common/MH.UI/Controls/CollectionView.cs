@@ -2,6 +2,7 @@
 using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -116,15 +117,18 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   }
 
   public void ReGroupItems(T[] items, bool remove, bool ifContains = false) {
-    if (Root == null || items == null) return;
+    if (Root == null || items == null || items.Length == 0) return;
+
+    if (!IsVisible && remove) {
+      items.ForEach(x => _pendingRemove.Add(x));
+      return;
+    }
+
     if (ifContains) items = Root.Source.Intersect(items).ToArray();
     if (items.Length == 0) return;
     
-    if (!IsVisible) {
-      foreach (var item in items) {
-        if (remove) _pendingRemove.Add(item);
-        else _pendingUpdate.Add(item);
-      }
+    if (!IsVisible && !remove) {
+      items.ForEach(x => _pendingUpdate.Add(x));
       return;
     }
     
