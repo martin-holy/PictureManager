@@ -28,16 +28,26 @@
           TextAlignment="Center"
           VerticalAlignment="Center"/>
 
-        <!-- Length, Rating, PersonalRating -->
+        <!-- Year, Length, Rating, PersonalRating, MPAA -->
         <Grid Grid.Row="1">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
           </Grid.ColumnDefinitions>
+
+          <!-- Year -->
+          <mhc:IconTextBlock
+            ToolTip="Year"
+            ap:Icon.Data="{StaticResource IconCalendar}"
+            ap:Text.Text="{Binding MovieM.Year}"
+            BorderThickness="0"/>
 
           <!-- Length -->
           <mhc:IconTextBlock
+            Grid.Column="1"
             ToolTip="Length"
             ap:Icon.Data="{StaticResource IconClock}"
             ap:Text.Text="{Binding MovieM.FormatedLength}"
@@ -45,7 +55,7 @@
 
           <!-- Rating -->
           <mhc:PopupSlider
-            Grid.Column="1"
+            Grid.Column="2"
             Maximum="10"
             TickFrequency="0.1"
             HorizontalAlignment="Center"
@@ -60,7 +70,7 @@
 
           <!-- PersonalRating -->
           <mhc:PopupSlider
-            Grid.Column="2"
+            Grid.Column="3"
             Maximum="10"
             TickFrequency="0.5"
             HorizontalAlignment="Center"
@@ -72,6 +82,21 @@
                 ap:Text.Text="{Binding MovieM.PersonalRating, StringFormat={}{0:G2}}"/>
             </mhc:PopupSlider.Content>
           </mhc:PopupSlider>
+
+          <!-- MPAA -->
+          <mhc:IconTextBlockItemsControl
+            Grid.Column="4"
+            ToolTip="MPAA"
+            ItemsSource="{Binding MovieM.MPAA}"
+            ap:Icon.Data="{StaticResource IconBug}">
+            <mhc:IconTextBlockItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Style="{StaticResource MH.S.Border.RoundDarker}">
+                  <TextBlock Text="{Binding}"/>
+                </Border>
+              </DataTemplate>
+            </mhc:IconTextBlockItemsControl.ItemTemplate>
+          </mhc:IconTextBlockItemsControl>
         </Grid>
 
         <!-- Genres -->
