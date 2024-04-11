@@ -30,6 +30,8 @@
 ## SegmentsMatching
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
+## SegmentsDrawer
+  - segments from not mounted drive
 
 
                                   *** UPDATE ***

@@ -48,6 +48,7 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/InputDialog.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/MessageDialog.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/ProgressBarDialog.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/Dialogs/ToggleDialog.xaml"/>
 
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Border.xaml"/>
   </ResourceDictionary.MergedDictionaries>
