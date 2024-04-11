@@ -41,7 +41,9 @@
 
   <DataTemplate x:Key="MH.DT.IListItem.Border.RoundDarker" DataType="{x:Type mhuInt:IListItem}">
     <Border Style="{StaticResource MH.S.Border.RoundDarker}">
-      <TextBlock Text="{Binding Name}"/>
+      <ContentPresenter
+        Content="{Binding}"
+        ContentTemplate="{StaticResource MH.DataTemplates.IListItem}"/>
     </Border>
   </DataTemplate>
 </ResourceDictionary>
