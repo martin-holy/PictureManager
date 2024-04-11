@@ -1,5 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
+using PictureManager.Plugins.Common.Interfaces.Models;
 using PictureManager.Plugins.Common.Interfaces.Repositories;
 
 namespace MovieManager.Common.Repositories;
@@ -24,4 +25,9 @@ public class ActorR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAdapter<Ac
 
   public ActorM ItemCreate(string name) =>
     ItemCreate(new ActorM(GetNextId(), name));
+
+  public void SetPerson(ActorM actor, IPluginHostPersonM person) {
+    actor.Person = person;
+    IsModified = true;
+  }
 }

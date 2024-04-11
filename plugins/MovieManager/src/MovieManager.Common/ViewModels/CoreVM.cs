@@ -1,9 +1,12 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.Dialogs;
+using MH.Utils.BaseClasses;
+using MovieManager.Common.Models;
 using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
+using PictureManager.Plugins.Common.Interfaces.Models;
 using PictureManager.Plugins.Common.Interfaces.ViewModels;
 using System.Collections.Generic;
-using MovieManager.Common.Models;
+using System.Linq;
 
 namespace MovieManager.Common.ViewModels;
 
@@ -30,6 +33,8 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     _coreS = coreS;
     _coreR = coreR;
 
+    InitToggleDialog();
+
     ImportMoviesCommand = new(OpenImportMovies, "IconBug", "Import");
     OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
@@ -53,5 +58,18 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     MovieDetail ??= new();
     MovieDetail.Reload(movie);
     _phCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);
+  }
+
+  private void InitToggleDialog() {
+    var sts = _phCoreVM.ToggleDialog.SourceTypes;
+    var ttActor = new ToggleDialogTargetType<ActorM>(
+      "IconPeople",
+      _ => Core.S.Actor.Selected.Items.Count == 0 ? [] : [Core.S.Actor.Selected.Items.First()],
+      _ => "Actor");
+
+    if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(IPluginHostPersonM))) is { } stPerson) {
+      stPerson.Options.Add(new ToggleDialogOption<IPluginHostPersonM, ActorM>(ttActor,
+        (items, item) => Core.R.Actor.SetPerson(items.First(), item)));
+    }
   }
 }
