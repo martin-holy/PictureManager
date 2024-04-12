@@ -1,5 +1,4 @@
 ﻿using MH.UI.BaseClasses;
-using PictureManager.Common.Dialogs;
 using PictureManager.Common.Models;
 using PictureManager.Common.Repositories;
 
@@ -12,5 +11,5 @@ public sealed class GeoNamesTreeCategory : TreeCategory<GeoNameM> {
   }
 
   public override void OnItemSelected(object o) =>
-    ToggleDialogM.SetGeoName(o as GeoNameM);
+    Core.VM.ToggleDialog.Toggle(o as GeoNameM);
 }

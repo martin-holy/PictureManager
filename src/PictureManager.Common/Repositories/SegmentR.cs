@@ -17,8 +17,9 @@ namespace PictureManager.Common.Repositories;
 /// </summary>
 public class SegmentR : TableDataAdapter<SegmentM> {
   private readonly CoreR _coreR;
+  private List<int> _drawerNotAvailable = [];
 
-  public List<SegmentM> Drawer { get; } = [];
+  public List<SegmentM> Drawer { get; private set; } = [];
   public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<(PersonM, SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
   public event DataEventHandler<SegmentM[]> KeywordsChangedEvent = delegate { };
@@ -49,7 +50,11 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   public override void PropsToCsv() {
     TableProps.Clear();
     TableProps.Add(nameof(SegmentS.SegmentSize), SegmentS.SegmentSize.ToString());
-    TableProps.Add("SegmentsDrawer", string.Join(",", Drawer.Select(x => x.GetHashCode().ToString())));
+    TableProps.Add("SegmentsDrawer", string.Join(",",
+      Drawer
+        .Select(x => x.GetHashCode())
+        .Concat(_drawerNotAvailable)
+        .Select(x => x.ToString())));
   }
 
   public override void LinkReferences() {
@@ -86,17 +91,11 @@ public class SegmentR : TableDataAdapter<SegmentM> {
     if (TableProps == null) return;
     if (TableProps.TryGetValue(nameof(SegmentS.SegmentSize), out var segmentSize))
       SegmentS.SegmentSize = int.Parse(segmentSize);
+
     if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
-      Drawer.Clear();
-
-      var drawer = segmentsDrawer
-        .Split(',')
-        .Select(id => AllDict[int.Parse(id)])
-        .OrderBy(x => x.MediaItem.Folder.FullPath)
-        .ThenBy(x => x.MediaItem.FileName);
-
-      foreach (var segment in drawer)
-        Drawer.Add(segment);
+      var drawer = IdsToRecords(segmentsDrawer, AllDict);
+      Drawer = drawer.Item1;
+      _drawerNotAvailable = drawer.Item2;
     }
 
     // table props are not needed any more

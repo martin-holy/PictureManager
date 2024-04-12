@@ -1,5 +1,4 @@
 ﻿using MH.UI.BaseClasses;
-using PictureManager.Common.Dialogs;
 using PictureManager.Common.Models;
 using PictureManager.Common.Repositories;
 using System.Linq;
@@ -29,7 +28,7 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
   public override void OnItemSelected(object o) {
     switch (o) {
       case PersonM p:
-        ToggleDialogM.TogglePerson(p);
+        Core.VM.ToggleDialog.Toggle(p);
         break;
       case PeopleTreeCategory:
         Core.VM.OpenPeopleView();
