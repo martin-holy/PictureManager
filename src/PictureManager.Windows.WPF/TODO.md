@@ -21,8 +21,6 @@
 ## Video Items (VideoImage and VideoClip)
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
-## Person Detail
-  - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 ## MainTabs
   - creating new tab resets scroll bars on hidden tabs. probably on LayoutUpdate when ItemsSource is updated
 ## CollectionView
@@ -30,8 +28,6 @@
 ## SegmentsMatching
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
-## SegmentsDrawer
-  - segments from not mounted drive
 
 
                                   *** UPDATE ***
@@ -47,10 +43,6 @@
   - change EqualityConverter to be like CalcNumberConverter
 
 
-        # MH.UI
-## SimpleDB
-  - save not found records (like segment for Person.TopSegments or MediaItem for Movie) for adding them back on DB save
-
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
@@ -65,6 +57,8 @@
   - add button remove selected segments from drawer
 ## ToggleDialog
   - show selected items on dialog
+  - add support for removing GeoName
+  - add support for removing Person on Segment
 ## MediaItems
   - save to file only metadata visible for viewer
 ## MediaItemsView
