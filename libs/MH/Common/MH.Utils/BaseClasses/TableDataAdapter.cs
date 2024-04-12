@@ -78,6 +78,23 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
     return items.Count == 0 ? null : items;
   }
 
+  /// <summary>
+  /// Returns List of found records and List of not found Ids
+  /// </summary>
+  public static Tuple<List<TI>, List<int>> IdsToRecords<TI>(string csv, Dictionary<int, TI> source) {
+    if (string.IsNullOrEmpty(csv)) return null;
+    var found = new List<TI>();
+    var notFound = new List<int>();
+
+    foreach (var id in csv.Split(',').Select(int.Parse))
+      if (source.TryGetValue(id, out var rec))
+        found.Add(rec);
+      else
+        notFound.Add(id);
+
+    return new(found, notFound);
+  }
+
   public List<T> LinkList(string csv, Func<int, T> getNotFoundRecord, IDataAdapter seeker) =>
     IdToRecord(csv, AllDict, notFoundId => ResolveNotFoundRecord(notFoundId, getNotFoundRecord, seeker));
 
