@@ -18,6 +18,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
   private readonly CoreR _coreR;
   private const string _unknownPersonNamePrefix = "P -";
   private const string _notFoundRecordNamePrefix = "Not found ";
+  private readonly Dictionary<PersonM, List<int>> _notAvailableTopSegments = [];
 
   public PeopleTreeCategory Tree { get; }
   public event DataEventHandler<PersonM[]> KeywordsChangedEvent = delegate { };
@@ -55,18 +56,23 @@ public class PersonR : TreeDataAdapter<PersonM> {
     string.Join("|",
       person.GetHashCode().ToString(),
       person.Name,
-      person.TopSegments.ToHashCodes().ToCsv(),
+      TopSegmentsToCsv(person),
       person.Keywords.ToHashCodes().ToCsv());
 
   public override void LinkReferences() {
     _coreR.CategoryGroup.LinkGroups(Tree, AllDict);
 
     foreach (var (person, csv) in AllCsv) {
-      // Persons top segments
-      var ts = _coreR.Segment.Link(csv[2], this);
-      if (ts != null) person.TopSegments = new(ts);
-      if (person.TopSegments != null)
-        person.Segment = person.TopSegments[0];
+      // top segments
+      if (IdsToRecords(csv[2], _coreR.Segment.AllDict) is { } ts) {
+        if (ts.Item1.Count > 0) {
+          person.TopSegments = new(ts.Item1);
+          person.Segment = person.TopSegments[0];
+        }
+
+        if (ts.Item2.Count > 0)
+          _notAvailableTopSegments.Add(person, ts.Item2);
+      }
 
       // reference to Keywords
       person.Keywords = _coreR.Keyword.Link(csv[3], this);
@@ -86,6 +92,12 @@ public class PersonR : TreeDataAdapter<PersonM> {
     AllDict.TryGetValue(id, out var person)
       ? person
       : ResolveNotFoundRecord(id, GetNotFoundRecord, seeker);
+
+  // the sort order for not available will be lost so take available first
+  private string TopSegmentsToCsv(PersonM person) =>
+    _notAvailableTopSegments.TryGetValue(person, out var ts)
+      ? (person.TopSegments.ToHashCodes() ?? Array.Empty<int>()).Concat(ts).ToCsv()
+      : person.TopSegments.ToHashCodes().ToCsv();
 
   private PersonM GetNotFoundRecord(int notFoundId) {
     var id = GetNextId();
