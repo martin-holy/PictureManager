@@ -7,6 +7,8 @@ Latest:
  - [N] Group People by Folder (from Segments only)
  - [B] Reload FolderKeywords when Viewer is All
  - [B] CollectionView crash in some cases
+ - [B] SegmentsDrawer - segments from not available drives
+ - [B] Person top segments from not available drives
 
 24.03.21.1515:
  - [B] modify DB when Viewer is set to All
