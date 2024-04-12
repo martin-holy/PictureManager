@@ -1,5 +1,4 @@
 ﻿using MH.UI.BaseClasses;
-using PictureManager.Common.Dialogs;
 using PictureManager.Common.Models;
 using System.Linq;
 
@@ -11,7 +10,7 @@ public sealed class RatingsTreeCategory : TreeCategory {
   }
 
   public override void OnItemSelected(object o) =>
-    ToggleDialogM.SetRating(o as RatingTreeM);
+    Core.VM.ToggleDialog.Toggle(o as RatingTreeM);
 
   private void Load() {
     for (var i = 0; i < 6; i++)

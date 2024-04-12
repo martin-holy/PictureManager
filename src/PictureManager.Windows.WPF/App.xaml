@@ -39,7 +39,6 @@
         <wpfu:CachedResourceDictionary Source="Dialogs/MergePeopleDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/ResizeImagesDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
-        <wpfu:CachedResourceDictionary Source="Dialogs/ToggleDialogV.xaml"/>
 
         <wpfu:CachedResourceDictionary Source="Views/MainMenuV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Views/MainTabsV.xaml"/>

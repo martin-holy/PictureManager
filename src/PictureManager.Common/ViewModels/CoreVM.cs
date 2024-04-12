@@ -206,46 +206,46 @@ public class CoreVM : ObservableObject {
   private void InitToggleDialog() {
     var ttSegment = new ToggleDialogTargetType<SegmentM>(
       Res.IconSegment,
-      _ => Core.S.Segment.Selected.Items.ToArray(),
+      _ => _coreS.Segment.Selected.Items.ToArray(),
       count => "{0} Segment{1}".Plural(count));
 
     var ttPerson = new ToggleDialogTargetType<PersonM>(
       Res.IconPeople,
-      _ => Core.S.Person.Selected.Items.ToArray(),
+      _ => _coreS.Person.Selected.Items.ToArray(),
       count => "{0} Person{1}".Plural(count));
 
     var ttMediaItem = new ToggleDialogTargetType<MediaItemM>(
       MH.UI.Res.IconImage,
       item => item is PersonM person
-        ? Core.VM.GetActive<MediaItemM>().Where(mi => mi.Segments?.GetPeople().Contains(person) != true).ToArray()
-        : Core.VM.GetActive<MediaItemM>(),
+        ? GetActive<MediaItemM>().Where(mi => mi.Segments?.GetPeople().Contains(person) != true).ToArray()
+        : GetActive<MediaItemM>(),
       count => "{0} Media Item{1}".Plural(count));
 
-    var ttVideoItem = new ToggleDialogTargetType<VideoItemM>(
+    var ttVideoItem = new ToggleDialogTargetType<MediaItemM>(
       MH.UI.Res.IconMovieClapper,
       item => item is PersonM person
-        ? Core.VM.Video.CurrentVideoItems.Selected.Items.ToArray().Where(mi => mi.Segments?.GetPeople().Contains(person) != true).ToArray()
-        : Core.VM.Video.CurrentVideoItems.Selected.Items.ToArray(),
+        ? Video.CurrentVideoItems.Selected.Items.Where(mi => mi.Segments?.GetPeople().Contains(person) != true).Cast<MediaItemM>().ToArray()
+        : Video.CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray(),
       count => "{0} Video Item{1}".Plural(count));
 
     var stKeyword = new ToggleDialogSourceType<KeywordM>(Res.IconTagLabel, "Add/Remove Keyword", "Add or Remove on:");
-    stKeyword.Options.Add(new ToggleDialogOption<KeywordM, SegmentM>(ttSegment, Core.R.Segment.ToggleKeyword));
-    stKeyword.Options.Add(new ToggleDialogOption<KeywordM, PersonM>(ttPerson, Core.R.Person.ToggleKeyword));
-    stKeyword.Options.Add(new ToggleDialogOption<KeywordM, MediaItemM>(ttMediaItem, Core.R.MediaItem.ToggleKeyword));
-    stKeyword.Options.Add(new ToggleDialogOption<KeywordM, VideoItemM>(ttVideoItem, Core.R.MediaItem.ToggleKeyword));
+    stKeyword.Options.Add(new ToggleDialogOption<KeywordM, MediaItemM>(ttMediaItem, _coreR.MediaItem.ToggleKeyword));
+    stKeyword.Options.Add(new ToggleDialogOption<KeywordM, MediaItemM>(ttVideoItem, _coreR.MediaItem.ToggleKeyword));
+    stKeyword.Options.Add(new ToggleDialogOption<KeywordM, PersonM>(ttPerson, _coreR.Person.ToggleKeyword));
+    stKeyword.Options.Add(new ToggleDialogOption<KeywordM, SegmentM>(ttSegment, _coreR.Segment.ToggleKeyword));
 
     var stPerson = new ToggleDialogSourceType<PersonM>(Res.IconPeople, "Add/Remove Person", "Add or Remove on:");
-    stPerson.Options.Add(new ToggleDialogOption<PersonM, SegmentM>(ttSegment, Core.S.Segment.SetSelectedAsPerson));
-    stPerson.Options.Add(new ToggleDialogOption<PersonM, MediaItemM>(ttMediaItem, Core.R.MediaItem.TogglePerson));
-    stPerson.Options.Add(new ToggleDialogOption<PersonM, VideoItemM>(ttVideoItem, Core.R.MediaItem.TogglePerson));
+    stPerson.Options.Add(new ToggleDialogOption<PersonM, MediaItemM>(ttMediaItem, _coreR.MediaItem.TogglePerson));
+    stPerson.Options.Add(new ToggleDialogOption<PersonM, MediaItemM>(ttVideoItem, _coreR.MediaItem.TogglePerson));
+    stPerson.Options.Add(new ToggleDialogOption<PersonM, SegmentM>(ttSegment, _coreS.Segment.SetSelectedAsPerson));
 
     var stGeoName = new ToggleDialogSourceType<GeoNameM>(Res.IconLocationCheckin, "Set GeoName", "Set GeoName on:");
-    stGeoName.Options.Add(new ToggleDialogOption<GeoNameM, MediaItemM>(ttMediaItem, Core.R.MediaItem.SetGeoName));
-    stGeoName.Options.Add(new ToggleDialogOption<GeoNameM, VideoItemM>(ttVideoItem, Core.R.MediaItem.SetGeoName));
+    stGeoName.Options.Add(new ToggleDialogOption<GeoNameM, MediaItemM>(ttMediaItem, _coreR.MediaItem.SetGeoName));
+    stGeoName.Options.Add(new ToggleDialogOption<GeoNameM, MediaItemM>(ttVideoItem, _coreR.MediaItem.SetGeoName));
 
-    var stRating = new ToggleDialogSourceType<RatingM>(Res.IconStar, "Set Rating", "Set Rating on:");
-    stRating.Options.Add(new ToggleDialogOption<RatingM, MediaItemM>(ttMediaItem, Core.R.MediaItem.SetRating));
-    stRating.Options.Add(new ToggleDialogOption<RatingM, VideoItemM>(ttVideoItem, Core.R.MediaItem.SetRating));
+    var stRating = new ToggleDialogSourceType<RatingTreeM>(Res.IconStar, "Set Rating", "Set Rating on:");
+    stRating.Options.Add(new ToggleDialogOption<RatingTreeM, MediaItemM>(ttMediaItem, (items, item) => _coreR.MediaItem.SetRating(items, item.Rating)));
+    stRating.Options.Add(new ToggleDialogOption<RatingTreeM, MediaItemM>(ttVideoItem, (items, item) => _coreR.MediaItem.SetRating(items, item.Rating)));
     
     ToggleDialog.SourceTypes.Add(stKeyword);
     ToggleDialog.SourceTypes.Add(stPerson);
