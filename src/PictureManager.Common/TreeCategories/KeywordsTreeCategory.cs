@@ -1,6 +1,5 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Common.Dialogs;
 using PictureManager.Common.Models;
 using PictureManager.Common.Repositories;
 using System;
@@ -19,7 +18,7 @@ public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM
   }
 
   public override void OnItemSelected(object o) =>
-    ToggleDialogM.ToggleKeyword(o as KeywordM);
+    Core.VM.ToggleDialog.Toggle(o as KeywordM);
 
   public override bool CanDrop(object src, ITreeItem dest) =>
     base.CanDrop(src, dest) && src is ITreeItem srcItem &&
