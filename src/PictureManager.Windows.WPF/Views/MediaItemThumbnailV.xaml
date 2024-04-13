@@ -5,17 +5,12 @@
   xmlns:mim="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
   xmlns:vm="clr-namespace:PictureManager.Windows.WPF.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type mim:MediaItemM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-
         <sys:Double x:Key="ThumbnailInfoMinSize">170.0</sys:Double>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -74,14 +69,10 @@
     </Grid>
     
     <DataTemplate.Triggers>
-      <DataTrigger Value="True">
-        <DataTrigger.Binding>
-          <MultiBinding Converter="{x:Static mhConv:EqualityConverter.Inst}">
-            <Binding Path="ActualWidth" ElementName="border"/>
-            <Binding Source="{StaticResource SignLessThan}"/>
-            <Binding Source="{StaticResource ThumbnailInfoMinSize}"/>
-          </MultiBinding>
-        </DataTrigger.Binding>
+      <DataTrigger Value="True" Binding="{Binding ActualWidth, ElementName=border,
+        Converter={x:Static mhConv:DoubleEqualityConverter.IsLessThan},
+        ConverterParameter={StaticResource ThumbnailInfoMinSize}}">
+
         <Setter TargetName="info" Property="Visibility" Value="Hidden"/>
       </DataTrigger>
       
