@@ -270,8 +270,8 @@ public sealed class Core {
 
   private static void AttachPeopleEventHandlers() {
     R.Person.ItemCreatedEvent += (_, e) => {
-      VM.MainWindow.ToolsTabs.PeopleTab?.Update(e.Data, false);
-      VM.People?.Update(e.Data, false);
+      VM.MainWindow.ToolsTabs.PeopleTab?.Insert(e.Data);
+      VM.People?.Insert(e.Data);
     };
 
     R.Person.ItemRenamedEvent += (_, e) =>
@@ -300,7 +300,7 @@ public sealed class Core {
   private static void AttachSegmentsEventHandlers() {
     R.Segment.ItemCreatedEvent += (_, e) => {
       R.MediaItem.AddSegment(e.Data);
-      VM.SegmentsMatching?.CvSegments.Update(e.Data, false);
+      VM.SegmentsMatching?.CvSegments.Insert(e.Data);
     };
 
     R.Segment.SegmentPersonChangedEvent += (_, e) => {
