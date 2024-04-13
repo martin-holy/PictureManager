@@ -40,7 +40,8 @@ public sealed class PersonDetailVM : ObservableObject {
   private void TopSegmentsDrop(object data, bool haveSameOrigin) {
     var segment = data as SegmentM;
     _personS.ToggleTopSegment(PersonM, segment);
-    TopSegments.ReGroupItems(new[] { segment }, haveSameOrigin);
+    if (haveSameOrigin) TopSegments.Remove(segment);
+    else TopSegments.Insert(segment);
   }
 
   public void Reload(PersonM person) {
@@ -82,7 +83,7 @@ public sealed class PersonDetailVM : ObservableObject {
   public void Update(SegmentM[] segments, bool where, bool remove) {
     if (PersonM == null) return;
     var items = segments.Where(x => ReferenceEquals(PersonM, x.Person) == where).ToArray();
-    AllSegments.ReGroupItems(items, remove, remove);
+    if (remove) AllSegments.Remove(items); else AllSegments.Insert(items);
 
     items = remove
       ? items
@@ -90,7 +91,7 @@ public sealed class PersonDetailVM : ObservableObject {
         ? Array.Empty<SegmentM>()
         : items.Where(PersonM.TopSegments.Contains).ToArray();
 
-    TopSegments.ReGroupItems(items, remove, remove);
+    if (remove) TopSegments.Remove(items); else TopSegments.Insert(items);
   }
 
   public void UpdateDisplayKeywordsIfContains(PersonM[] items) {

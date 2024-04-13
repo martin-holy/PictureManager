@@ -57,11 +57,11 @@ public sealed class SegmentsMatchingVM : ObservableObject {
   }
 
   public void OnSegmentsPersonChanged(SegmentM[] segments) {
-    CvSegments.Update(segments, false);
+    CvSegments.Insert(segments);
     var p = CvSegments.Root.Source.GetPeople().ToArray();
     var pIn = p.Except(CvPeople.Root.Source).ToArray();
     var pOut = CvPeople.Root.Source.Except(p).ToArray();
-    CvPeople.Update(pIn, false);
+    CvPeople.Insert(pIn);
     CvPeople.Remove(pOut);
   }
 
