@@ -125,7 +125,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
     if (item.IsUnknown) item.IsUnknown = false;
   }
 
-  protected override void OnItemDeleted(PersonM item) {
+  protected override void OnItemDeleted(object sender, PersonM item) {
     item.Parent?.Items.Remove(item);
     item.Parent = null;
     item.Segment = null;

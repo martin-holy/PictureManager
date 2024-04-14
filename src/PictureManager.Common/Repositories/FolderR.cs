@@ -78,7 +78,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
     return null;
   }
 
-  protected override void OnItemDeleted(FolderM item) {
+  protected override void OnItemDeleted(object sender, FolderM item) {
     if (!Core.R.IsCopyMoveInProgress) DeleteFromDrive(item);
   }
 

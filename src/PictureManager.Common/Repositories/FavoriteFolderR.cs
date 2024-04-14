@@ -53,7 +53,7 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
       ItemDelete(ff);
   }
 
-  protected override void OnItemDeleted(FavoriteFolderM item) {
+  protected override void OnItemDeleted(object sender, FavoriteFolderM item) {
     item.Parent.Items.Remove(item);
     item.Folder = null;
   }
