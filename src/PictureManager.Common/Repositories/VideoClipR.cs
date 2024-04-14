@@ -60,11 +60,11 @@ public class VideoClipR : TableDataAdapter<VideoClipM> {
   public VideoClipM CustomItemCreate(VideoM video, int timeStart) =>
     ItemCreate(new(GetNextId(), video, timeStart));
 
-  protected override void OnItemCreated(VideoClipM item) {
+  protected override void OnItemCreated(object sender, VideoClipM item) {
     item.Video.Toggle(item);
   }
 
-  protected override void OnItemDeleted(VideoClipM item) {
+  protected override void OnItemDeleted(object sender, VideoClipM item) {
     _coreR.MediaItem.OnItemDeletedCommon(item);
     item.Video.Toggle(item);
     item.Video = null;

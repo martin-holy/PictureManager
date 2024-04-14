@@ -115,7 +115,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       Keywords = item.Keywords?.ToList()
     });
 
-  protected override void OnItemDeleted(SegmentM item) {
+  protected override void OnItemDeleted(object sender, SegmentM item) {
     File.Delete(item.FilePathCache);
     item.MediaItem = null;
     item.Person = null;

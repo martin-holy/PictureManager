@@ -80,7 +80,7 @@ public class ViewerR : TreeDataAdapter<ViewerM> {
   public override ViewerM ItemCreate(ITreeItem parent, string name) =>
     TreeItemCreate(new(GetNextId(), name, parent));
 
-  protected override void OnItemDeleted(ViewerM item) {
+  protected override void OnItemDeleted(object sender, ViewerM item) {
     item.Parent.Items.Remove(item);
     item.Parent = null;
     item.IncludedFolders.Clear();
