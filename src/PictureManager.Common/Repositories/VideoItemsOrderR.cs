@@ -15,10 +15,10 @@ public sealed class VideoItemsOrderR : OneToManyMultiDataAdapter<VideoM, VideoIt
   }
 
   private void OnDbReady() {
-    _coreR.VideoClip.ItemDeletedEvent += (_, e) => RemoveValueItem(e.Data);
-    _coreR.VideoImage.ItemDeletedEvent += (_, e) => RemoveValueItem(e.Data);
-    _coreR.VideoClip.ItemCreatedEvent += (_, e) => OnValueItemCreated(e.Data);
-    _coreR.VideoImage.ItemCreatedEvent += (_, e) => OnValueItemCreated(e.Data);
+    _coreR.VideoClip.ItemDeletedEvent += (_, e) => RemoveValueItem(e);
+    _coreR.VideoImage.ItemDeletedEvent += (_, e) => RemoveValueItem(e);
+    _coreR.VideoClip.ItemCreatedEvent += (_, e) => OnValueItemCreated(e);
+    _coreR.VideoImage.ItemCreatedEvent += (_, e) => OnValueItemCreated(e);
   }
 
   private void RemoveValueItem(VideoItemM item) {

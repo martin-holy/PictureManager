@@ -21,7 +21,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
   private readonly Dictionary<PersonM, List<int>> _notAvailableTopSegments = [];
 
   public PeopleTreeCategory Tree { get; }
-  public event DataEventHandler<PersonM[]> KeywordsChangedEvent = delegate { };
+  public event EventHandler<PersonM[]> PersonsKeywordsChangedEvent = delegate { };
 
   public PersonR(CoreR coreR) : base("People", 4) {
     _coreR = coreR;
@@ -156,7 +156,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
                           ?? oldPerson.Segments?.FirstOrDefault();
   }
 
-  public void OnSegmentsPersonChanged(PersonM person, SegmentM[] segments, PersonM[] people) {
+  public void OnSegmentsPersonChanged(SegmentM[] segments, PersonM person, PersonM[] people) {
     // delete unknown people without segments
     var toDelete = person == null
       ? people
@@ -173,14 +173,14 @@ public class PersonR : TreeDataAdapter<PersonM> {
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
   public void ToggleKeyword(PersonM[] people, KeywordM keyword) =>
-    keyword.Toggle(people, _ => IsModified = true, () => KeywordsChangedEvent(people));
+    keyword.Toggle(people, _ => IsModified = true, () => PersonsKeywordsChangedEvent(this, people));
 
   public void ToggleKeywords(PersonM person, IEnumerable<KeywordM> keywords) {
     foreach (var keyword in keywords)
       person.Keywords = person.Keywords.Toggle(keyword);
 
     IsModified = true;
-    KeywordsChangedEvent(new[] { person });
+    PersonsKeywordsChangedEvent(this, new[] { person });
   }
 
   public void MoveGroupItemsToRoot(CategoryGroupM group) {
