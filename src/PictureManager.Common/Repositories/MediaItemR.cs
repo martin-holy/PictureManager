@@ -15,34 +15,34 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   private static readonly string[] _supportedImageExts = { ".jpg", ".jpeg" };
   private static readonly string[] _supportedVideoExts = { ".mp4" };
 
-  public event EventHandler<ObjectEventArgs<MediaItemM>> ItemRenamedEvent = delegate { };
-  public event DataEventHandler<MediaItemM[]> MetadataChangedEvent = delegate { };
-  public event DataEventHandler<RealMediaItemM[]> OrientationChangedEvent = delegate { };
+  public event EventHandler<MediaItemM> ItemRenamedEvent = delegate { };
+  public event EventHandler<MediaItemM[]> MetadataChangedEvent = delegate { };
+  public event EventHandler<RealMediaItemM[]> OrientationChangedEvent = delegate { };
 
   public MediaItemR(CoreR coreR) : base(string.Empty, 0) {
     _coreR = coreR;
     _coreR.ReadyEvent += delegate { OnDbReady(); };
   }
 
-  private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, new(item));
-  public void RaiseMetadataChanged(MediaItemM[] items) => MetadataChangedEvent(items);
-  public void RaiseOrientationChanged(RealMediaItemM[] items) => OrientationChangedEvent(items);
+  private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, item);
+  public void RaiseMetadataChanged(MediaItemM[] items) => MetadataChangedEvent(this, items);
+  public void RaiseOrientationChanged(RealMediaItemM[] items) => OrientationChangedEvent(this, items);
 
   private void OnDbReady() {
     MaxId = _coreR.Image.MaxId;
 
-    _coreR.Image.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
-    _coreR.Image.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
-    _coreR.Image.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
-    _coreR.Video.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
-    _coreR.Video.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
-    _coreR.Video.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
-    _coreR.VideoClip.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
-    _coreR.VideoClip.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
-    _coreR.VideoClip.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
-    _coreR.VideoImage.ItemCreatedEvent += (_, e) => OnItemCreated(e.Data);
-    _coreR.VideoImage.ItemDeletedEvent += (_, e) => OnItemDeleted(e.Data);
-    _coreR.VideoImage.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Data.Cast<MediaItemM>().ToArray());
+    _coreR.Image.ItemCreatedEvent += (_, e) => OnItemCreated(e);
+    _coreR.Image.ItemDeletedEvent += (_, e) => OnItemDeleted(e);
+    _coreR.Image.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Cast<MediaItemM>().ToArray());
+    _coreR.Video.ItemCreatedEvent += (_, e) => OnItemCreated(e);
+    _coreR.Video.ItemDeletedEvent += (_, e) => OnItemDeleted(e);
+    _coreR.Video.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Cast<MediaItemM>().ToArray());
+    _coreR.VideoClip.ItemCreatedEvent += (_, e) => OnItemCreated(e);
+    _coreR.VideoClip.ItemDeletedEvent += (_, e) => OnItemDeleted(e);
+    _coreR.VideoClip.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Cast<MediaItemM>().ToArray());
+    _coreR.VideoImage.ItemCreatedEvent += (_, e) => OnItemCreated(e);
+    _coreR.VideoImage.ItemDeletedEvent += (_, e) => OnItemDeleted(e);
+    _coreR.VideoImage.ItemsDeletedEvent += (_, e) => OnItemsDeleted(e.Cast<MediaItemM>().ToArray());
   }
 
   protected override void OnItemCreated(MediaItemM item) {

@@ -38,8 +38,8 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     CanDragFunc = CanDrag;
     SelectAllCommand = new(() => Selected.Set(FilteredItems));
     Filter.FilterChangedEventHandler += delegate { SoftLoad(LoadedItems, true, true); };
-    Selected.ItemsChangedEventHandler += delegate { SelectionChanged(); };
-    Selected.AllDeselectedEventHandler += delegate { SelectionChanged(); };
+    Selected.ItemsChangedEvent += delegate { SelectionChanged(); };
+    Selected.AllDeselectedEvent += delegate { SelectionChanged(); };
   }
 
   public override void OnIsVisibleChanged() {

@@ -20,9 +20,9 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   private List<int> _drawerNotAvailable = [];
 
   public List<SegmentM> Drawer { get; private set; } = [];
-  public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<(PersonM, SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
-  public event DataEventHandler<SegmentM[]> KeywordsChangedEvent = delegate { };
+  public event EventHandler<(SegmentM, PersonM, PersonM)> SegmentPersonChangedEvent = delegate { };
+  public event EventHandler<(SegmentM[], PersonM, PersonM[])> SegmentsPersonChangedEvent = delegate { };
+  public event EventHandler<SegmentM[]> SegmentsKeywordsChangedEvent = delegate { };
 
   public SegmentR(CoreR coreR) : base("Segments", 5) {
     _coreR = coreR;
@@ -135,26 +135,26 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       IsModified = true;
     }
 
-    SegmentsPersonChangedEvent(this, new((null, segments, new[] { person })));
+    SegmentsPersonChangedEvent(this, (segments, null, new[] { person }));
   }
 
   public void RemoveKeyword(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
   public void ToggleKeyword(SegmentM[] segments, KeywordM keyword) =>
-    keyword.Toggle(segments, _ => IsModified = true, () => KeywordsChangedEvent(segments));
+    keyword.Toggle(segments, _ => IsModified = true, () => SegmentsKeywordsChangedEvent(this, segments));
 
   public void ChangePerson(PersonM person, SegmentM[] segments, PersonM[] people) {
     foreach (var segment in segments)
       ChangePerson(segment, person);
 
-    SegmentsPersonChangedEvent(this, new((person, segments, people)));
+    SegmentsPersonChangedEvent(this, (segments, person, people));
   }
 
   private void ChangePerson(SegmentM segment, PersonM person) {
     var oldPerson = segment.Person;
     segment.Person = person;
     IsModified = true;
-    SegmentPersonChangedEvent(this, new((segment, oldPerson, person)));
+    SegmentPersonChangedEvent(this, (segment, oldPerson, person));
   }
 }
