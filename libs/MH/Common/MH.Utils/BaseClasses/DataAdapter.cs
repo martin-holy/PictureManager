@@ -48,17 +48,17 @@ public class DataAdapter : IDataAdapter {
 public class DataAdapter<T> : DataAdapter {
   public HashSet<T> All { get; set; }
 
-  public event EventHandler<ObjectEventArgs<T>> ItemCreatedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<T>> ItemUpdatedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<T>> ItemDeletedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<IList<T>>> ItemsDeletedEvent = delegate { };
+  public event EventHandler<T> ItemCreatedEvent = delegate { };
+  public event EventHandler<T> ItemUpdatedEvent = delegate { };
+  public event EventHandler<T> ItemDeletedEvent = delegate { };
+  public event EventHandler<IList<T>> ItemsDeletedEvent = delegate { };
 
   public DataAdapter(string name, int propsCount) : base(name, propsCount) { }
 
-  protected void RaiseItemCreated(T item) => ItemCreatedEvent(this, new(item));
-  protected void RaiseItemUpdated(T item) => ItemUpdatedEvent(this, new(item));
-  protected void RaiseItemDeleted(T item) => ItemDeletedEvent(this, new(item));
-  protected void RaiseItemsDeleted(IList<T> items) => ItemsDeletedEvent(this, new(items));
+  protected void RaiseItemCreated(T item) => ItemCreatedEvent(this, item);
+  protected void RaiseItemUpdated(T item) => ItemUpdatedEvent(this, item);
+  protected void RaiseItemDeleted(T item) => ItemDeletedEvent(this, item);
+  protected void RaiseItemsDeleted(IList<T> items) => ItemsDeletedEvent(this, items);
 
   protected virtual void OnItemCreated(T item) { }
   protected virtual void OnItemUpdated(T item) { }

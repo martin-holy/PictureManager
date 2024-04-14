@@ -1,5 +1,4 @@
-﻿using MH.Utils.BaseClasses;
-using System;
+﻿using System;
 
 namespace MH.Utils.Interfaces;
 
@@ -25,7 +24,7 @@ public interface ITableDataAdapter : IDataAdapter {
 public interface IRelationDataAdapter : IDataAdapter;
 
 public interface ITreeDataAdapter<T> : ITableDataAdapter where T : class, ITreeItem {
-  public event EventHandler<ObjectEventArgs<T>> ItemCreatedEvent;
+  public event EventHandler<T> ItemCreatedEvent;
   public T ItemCreate(ITreeItem parent, string name);
   public void ItemRename(ITreeItem item, string name);
   public void ItemCopy(ITreeItem item, ITreeItem dest);

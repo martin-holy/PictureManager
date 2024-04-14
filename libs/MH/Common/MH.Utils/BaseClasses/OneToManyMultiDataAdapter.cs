@@ -17,8 +17,8 @@ public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, Li
     //ValueDataAdapters = daB;
 
     KeyDataAdapter.ItemDeletedEvent += (_, e) => {
-      if (All != null && All.TryGetValue(e.Data, out var b))
-        ItemDelete(new(e.Data, b));
+      if (All != null && All.TryGetValue(e, out var b))
+        ItemDelete(new(e, b));
     };
   }
 
