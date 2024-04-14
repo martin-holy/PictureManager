@@ -35,20 +35,11 @@
         # MH.UI
 ## CollectionView
   - don't show expanded root if source is empty
-  - method Add or Insert => Update(e.Data, false)
-
-
-        # MH.UI.WPF
-##
-  - change EqualityConverter to be like CalcNumberConverter
 
 
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
-  - CoreUI with interfaces for CoreM and CoreVM
-  - replace Contains with ReferenceEquals
-  - use IconTextBlockItemsControl
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
 ## Keywords
@@ -64,12 +55,6 @@
 ## MediaItemsView
   - use Filter on MediaItem type in LoadByTag GetItems
   - open items from group or all with default sort or all sorted by groups or ...?
-## ProgressBarAsyncDialog
-  - do Init and Start in constructor
-## Core
-  - use named methods for events
-  - split repository and view-model events handling
-    so maybe don't do events handling in EntityR but in CoreR
 ## Video
   - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
     + setting this position in VideoDetail
@@ -125,7 +110,13 @@
 ## MovieManager Plug-in
 
                                     *** Code ***
-- Find generic way to create and open tab from Command
+##
+  - Find generic way to create and open tab from Command
+  - OneToManyMultiDataAdapter do it without reference to CoreR
+  - replace Contains with ReferenceEquals
+  - use IconTextBlockItemsControl
+## ProgressBarAsyncDialog
+  - do Init and Start in constructor
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
