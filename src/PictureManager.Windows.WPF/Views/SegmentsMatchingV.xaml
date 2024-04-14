@@ -4,8 +4,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
-  xmlns:s="clr-namespace:PictureManager.Common.Services;assembly=PictureManager.Common"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
+  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
+  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type vm:SegmentsMatchingVM}">
     <DataTemplate.Resources>
@@ -20,7 +20,7 @@
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition
-          Width="{Binding Source={x:Static s:SegmentS.SegmentUiFullWidth},
+          Width="{Binding Source={x:Static vme:SegmentVM.SegmentUiFullWidth},
                   Converter={x:Static pmConv:SegmentsViewWidthConverter.Inst},
                   ConverterParameter=3,
                   FallbackValue=280}"/>

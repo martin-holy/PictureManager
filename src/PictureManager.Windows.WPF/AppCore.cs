@@ -19,7 +19,6 @@ public sealed class AppCore : ObservableObject {
 
   public AppCore() {
     CoreR.FileOperationDelete = FileOperationDelete;
-    Core.GetDisplayScale = GetDisplayScale;
 
     MH.UI.WPF.Utils.Init.SetDelegates();
     MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
@@ -28,6 +27,7 @@ public sealed class AppCore : ObservableObject {
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
     VideoVM.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
+    CoreVM.DisplayScale = GetDisplayScale();
     CoreVM.UiFullVideo = new MediaPlayer();
     CoreVM.UiDetailVideo = new MediaPlayer();
     CoreVM.VideoFrameSaver = new VideoFrameSaver();
