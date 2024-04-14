@@ -44,7 +44,7 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
     All.Remove((T)item);
     IsModified = true;
     RaiseItemDeleted((T)item);
-    OnItemDeleted((T)item);
+    OnItemDeleted(this, (T)item);
   }
 
   public virtual void TreeItemDelete(ITreeItem item) {
@@ -54,10 +54,10 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
       ItemDelete(treeItem);
 
     RaiseItemsDeleted(items);
-    OnItemsDeleted(items);
+    OnItemsDeleted(this, items);
   }
 
-  protected override void OnItemsDeleted(IList<T> items) {
+  protected override void OnItemsDeleted(object sender, IList<T> items) {
     items[0].Parent?.Items.Remove(items[0]);
 
     foreach (var item in items) {
