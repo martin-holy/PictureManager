@@ -6,14 +6,14 @@ using System.Linq;
 namespace MH.Utils.BaseClasses;
 
 public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where T : class, ITreeItem {
-  public event EventHandler<ObjectEventArgs<T>> ItemRenamedEvent = delegate { };
+  public event EventHandler<T> ItemRenamedEvent = delegate { };
 
   public TreeDataAdapter(SimpleDB db, string name, int propsCount) : base(db, name, propsCount) { }
 
   public virtual T ItemCreate(ITreeItem parent, string name) => throw new NotImplementedException();
   public virtual void ItemCopy(ITreeItem item, ITreeItem dest) => throw new NotImplementedException();
   
-  protected void RaiseItemRenamed(T item) => ItemRenamedEvent(this, new(item));
+  protected void RaiseItemRenamed(T item) => ItemRenamedEvent(this, item);
 
   protected virtual void OnItemRenamed(T item) { }
 
@@ -44,7 +44,7 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
     All.Remove((T)item);
     IsModified = true;
     RaiseItemDeleted((T)item);
-    OnItemDeleted((T)item);
+    OnItemDeleted(this, (T)item);
   }
 
   public virtual void TreeItemDelete(ITreeItem item) {
@@ -54,10 +54,10 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
       ItemDelete(treeItem);
 
     RaiseItemsDeleted(items);
-    OnItemsDeleted(items);
+    OnItemsDeleted(this, items);
   }
 
-  protected override void OnItemsDeleted(IList<T> items) {
+  protected override void OnItemsDeleted(object sender, IList<T> items) {
     items[0].Parent?.Items.Remove(items[0]);
 
     foreach (var item in items) {

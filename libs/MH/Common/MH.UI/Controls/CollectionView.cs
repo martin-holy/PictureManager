@@ -97,11 +97,17 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     if (Root.Source.Intersect(items).Any()) ReWrapAll();
   }
 
-  public void Update(T item, bool ifContains = true) =>
-    Update(new[] { item }, ifContains);
+  public void Insert(T item) =>
+    Insert(new[] { item });
 
-  public void Update(T[] items, bool ifContains = true) =>
-    ReGroupItems(items, false, ifContains);
+  public void Insert(T[] items) =>
+    ReGroupItems(items, false, false);
+
+  public void Update(T item) =>
+    Update(new[] { item });
+
+  public void Update(T[] items) =>
+    ReGroupItems(items, false, true);
 
   public void Remove(T item) =>
     Remove(new[] { item });
@@ -110,13 +116,13 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     ReGroupItems(items, true, true);
 
   public void ReGroupPendingItems() {
-    ReGroupItems(_pendingRemove.ToArray(), true);
-    ReGroupItems(_pendingUpdate.Except(_pendingRemove).ToArray(), false);
+    ReGroupItems(_pendingRemove.ToArray(), true, false);
+    ReGroupItems(_pendingUpdate.Except(_pendingRemove).ToArray(), false, false);
     _pendingRemove.Clear();
     _pendingUpdate.Clear();
   }
 
-  public void ReGroupItems(T[] items, bool remove, bool ifContains = false) {
+  private void ReGroupItems(T[] items, bool remove, bool ifContains) {
     if (Root == null || items == null || items.Length == 0) return;
 
     if (!IsVisible && remove) {

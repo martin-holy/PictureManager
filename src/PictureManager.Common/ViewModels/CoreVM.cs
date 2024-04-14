@@ -4,6 +4,7 @@ using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Common.Dialogs;
 using PictureManager.Common.HelperClasses;
 using PictureManager.Common.Models;
@@ -13,6 +14,8 @@ using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels.Entities;
 using PictureManager.Plugins.Common.Interfaces.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,7 +44,7 @@ public class CoreVM : ObservableObject, IPluginHostCoreVM {
   public TitleProgressBarVM TitleProgressBar { get; } = new();
 
   public TabControl ToolsTabs => MainWindow.ToolsTabs;
-
+  public static double DisplayScale { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
@@ -102,6 +105,206 @@ public class CoreVM : ObservableObject, IPluginHostCoreVM {
       : MainWindow.IsInViewMode
         ? MediaItem.Current is T current ? new[] { current } : Array.Empty<T>()
         : MediaItem.Views.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
+
+  public void AttachEvents() {
+    MainTabs.PropertyChanged += OnMainTabsPropertyChanged;
+    MainTabs.TabClosedEvent += OnMainTabsTabClosed;
+    MainWindow.PropertyChanged += OnMainWindowPropertyChanged;
+    MediaItem.PropertyChanged += OnMediaItemPropertyChanged;
+    MediaItem.Views.PropertyChanged += OnMediaItemViewsPropertyChanged;
+    MediaViewer.PropertyChanged += OnMediaViewerPropertyChanged;
+    Video.MediaPlayer.RepeatEndedEvent += MediaViewer.OnPlayerRepeatEnded;
+    Video.CurrentVideoItems.Selected.ItemsChangedEvent += OnVideoItemsSelectionChanged;
+
+    _coreR.Folder.ItemRenamedEvent += OnFolderRenamed;
+
+    _coreR.MediaItem.ItemCreatedEvent += OnMediaItemCreated;
+    _coreR.MediaItem.ItemRenamedEvent += OnMediaItemRenamed;
+    _coreR.MediaItem.ItemsDeletedEvent += OnMediaItemsDeleted;
+    _coreR.MediaItem.MetadataChangedEvent += OnMediaItemsMetadataChanged;
+    _coreR.MediaItem.OrientationChangedEvent += OnMediaItemsOrientationChanged;
+
+    _coreR.Person.ItemCreatedEvent += OnPersonCreated;
+    _coreR.Person.ItemDeletedEvent += OnPersonDeleted;
+    _coreR.Person.PersonsKeywordsChangedEvent += OnPersonsKeywordsChanged;
+
+    _coreR.Segment.ItemCreatedEvent += OnSegmentCreated;
+    _coreR.Segment.ItemsDeletedEvent += OnSegmentsDeleted;
+    _coreR.Segment.SegmentsKeywordsChangedEvent += OnSegmentsKeywordsChanged;
+    _coreR.Segment.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
+  }
+
+  private void OnMainTabsPropertyChanged(object sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(MainTabs.Selected)))
+      MediaItem.Views.SetCurrentView(MainTabs.Selected?.Data as MediaItemsViewVM);
+  }
+
+  private void OnMainTabsTabClosed(IListItem tab) {
+    switch (tab.Data) {
+      case MediaItemsViewVM miView:
+        MediaItem.Views.CloseView(miView);
+        break;
+      case PersonS people:
+        people.Selected.DeselectAll();
+        break;
+      case Settings settings:
+        settings.OnClosing();
+        break;
+    }
+  }
+
+  private void OnMainWindowPropertyChanged(object sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(MainWindow.IsInViewMode))) {
+      var isInViewMode = MainWindow.IsInViewMode;
+
+      MediaViewer.IsVisible = isInViewMode;
+
+      if (isInViewMode) {
+        Video.MediaPlayer.SetView(UiFullVideo);
+        _coreS.Segment.Rect.MediaItem = MediaItem.Current;
+      }
+      else {
+        MediaItem.Views.SelectAndScrollToCurrentMediaItem();
+        MediaViewer.Deactivate();
+        Video.MediaPlayer.SetView(UiDetailVideo);
+      }
+
+      MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+    }
+  }
+
+  private void OnMediaItemPropertyChanged(object sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(MediaItem.Current))) {
+      MainWindow.StatusBar.Update();
+      Video.SetCurrent(MediaItem.Current);
+
+      if (MainWindow.IsInViewMode) {
+        MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+        _coreS.Segment.Rect.MediaItem = MediaItem.Current;
+      }
+    }
+  }
+
+  private void OnMediaItemViewsPropertyChanged(object sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(MediaItem.Views.Current))) {
+      MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+      MainWindow.StatusBar.OnPropertyChanged(nameof(MainWindow.StatusBar.IsCountVisible));
+    }
+  }
+
+  private void OnMediaViewerPropertyChanged(object sender, PropertyChangedEventArgs e) {
+    switch (e.PropertyName) {
+      case nameof(MediaViewer.IsVisible):
+        MainWindow.StatusBar.Update();
+        MainWindow.StatusBar.OnPropertyChanged(nameof(MainWindow.StatusBar.IsCountVisible));
+        break;
+      case nameof(MediaViewer.Current):
+        if (MediaViewer.Current != null && !ReferenceEquals(MediaItem.Current, MediaViewer.Current))
+          MediaItem.Current = MediaViewer.Current;
+        else
+          Video.SetCurrent(MediaViewer.Current, true);
+        break;
+      case nameof(MediaViewer.Scale):
+        _coreS.Segment.Rect.UpdateScale(MediaViewer.Scale);
+        break;
+    }
+  }
+
+  private void OnVideoItemsSelectionChanged(object sender, VideoItemM[] e) {
+    var vi = e.FirstOrDefault();
+    MediaItem.Current = (MediaItemM)vi ?? Video.Current;
+    Video.MediaPlayer.SetCurrent(vi);
+  }
+
+  private void OnFolderRenamed(object sender, FolderM item) {
+    MainWindow.StatusBar.UpdateFilePath();
+  }
+
+  private void OnMediaItemCreated(object sender, MediaItemM item) {
+    UpdateMediaItemsCount();
+  }
+
+  private void OnMediaItemsDeleted(object sender, IList<MediaItemM> items) {
+    MediaItem.Current = MediaViewer.IsVisible && items.All(x => x is RealMediaItemM)
+      ? MediaViewer.MediaItems.GetNextOrPreviousItem(items)
+      : items.OfType<VideoItemM>().FirstOrDefault()?.Video;
+
+    UpdateMediaItemsCount();
+    MediaItem.Views.RemoveMediaItems(items);
+    Video.CurrentVideoItems.Remove(items.OfType<VideoItemM>().ToArray());
+
+    if (MediaViewer.IsVisible) {
+      if (MediaItem.Current == null)
+        MainWindow.IsInViewMode = false;
+      else
+        MediaViewer.Remove(items[0], MediaItem.Current);
+    }
+  }
+
+  private void OnMediaItemRenamed(object sender, MediaItemM item) {
+    MediaItem.OnPropertyChanged(nameof(MediaItem.Current));
+    MediaItem.Views.Current?.SoftLoad(MediaItem.Views.Current.FilteredItems, true, false);
+  }
+
+  private void OnMediaItemsMetadataChanged(object sender, MediaItemM[] items) {
+    var all = items.OfType<VideoItemM>().Select(x => x.Video).Concat(items).Distinct().ToArray();
+    MediaItem.OnMetadataChanged(all);
+    MediaItem.Views.UpdateViews(all);
+    Video.CurrentVideoItems.Update(items.OfType<VideoItemM>().ToArray());
+    MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+    MainWindow.StatusBar.UpdateRating();
+  }
+
+  private void OnMediaItemsOrientationChanged(object sender, RealMediaItemM[] items) {
+    if (MediaViewer.IsVisible && items.Contains(MediaViewer.Current))
+      MediaViewer.Current = MediaViewer.Current;
+
+    MediaItem.Views.ReWrapViews(items.Cast<MediaItemM>().ToArray());
+    if (items.Contains(Video.Current))
+      Video.CurrentVideoItems.ReWrapAll();
+  }
+
+  private void OnPersonCreated(object sender, PersonM item) {
+    MainWindow.ToolsTabs.PeopleTab?.Insert(item);
+    People?.Insert(item);
+  }
+
+  private void OnPersonDeleted(object sender, PersonM item) {
+    People?.Remove(item);
+    MainWindow.ToolsTabs.PeopleTab?.Remove(item);
+    SegmentsMatching?.CvPeople.Remove(item);
+
+    if (ReferenceEquals(MainWindow.ToolsTabs.PersonDetailTab?.PersonM, item))
+      MainWindow.ToolsTabs.Close(MainWindow.ToolsTabs.PersonDetailTab);
+  }
+
+  private void OnPersonsKeywordsChanged(object sender, PersonM[] items) {
+    MainWindow.ToolsTabs.PersonDetailTab?.UpdateDisplayKeywordsIfContains(items);
+    MainWindow.ToolsTabs.PeopleTab?.Update(items);
+    People?.Update(items);
+    SegmentsMatching?.CvPeople.Update(items);
+  }
+
+  private void OnSegmentCreated(object sender, SegmentM e) {
+    SegmentsMatching?.CvSegments.Insert(e);
+  }
+
+  private void OnSegmentsDeleted(object sender, IList<SegmentM> items) {
+    MainWindow.ToolsTabs.PersonDetailTab?.Update(items.ToArray(), true, true);
+    SegmentsMatching?.CvSegments.Remove(items.ToArray());
+    SegmentsDrawer.RemoveIfContains(items.ToArray());
+  }
+
+  private void OnSegmentsKeywordsChanged(object sender, SegmentM[] items) {
+    MainWindow.ToolsTabs.PersonDetailTab?.Update(items, true, false);
+    SegmentsMatching?.CvSegments.Update(items);
+  }
+
+  private void OnSegmentsPersonChanged(object sender, (SegmentM[], PersonM, PersonM[]) e) {
+    MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Item1);
+    People?.Update(e.Item3);
+    SegmentsMatching?.OnSegmentsPersonChanged(e.Item1);
+  }
 
   private void AppClosing() {
     if (_coreR.Changes > 0 &&

@@ -2,6 +2,7 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using PictureManager.Common.Models.MediaItems;
+using System;
 using System.Collections.Generic;
 
 namespace PictureManager.Common.ViewModels;
@@ -63,7 +64,7 @@ public sealed class MediaViewerVM : ObservableObject {
     NavigateCommand = new(Navigate);
   }
 
-  public void OnPlayerRepeatEnded() {
+  public void OnPlayerRepeatEnded(object sender, EventArgs e) {
     if (PresentationPanel.IsPaused)
       PresentationPanel.Start(Current, false);
   }

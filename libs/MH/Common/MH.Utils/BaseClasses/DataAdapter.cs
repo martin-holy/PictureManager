@@ -49,22 +49,22 @@ public class DataAdapter : IDataAdapter {
 public class DataAdapter<T> : DataAdapter {
   public HashSet<T> All { get; set; }
 
-  public event EventHandler<ObjectEventArgs<T>> ItemCreatedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<T>> ItemUpdatedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<T>> ItemDeletedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<IList<T>>> ItemsDeletedEvent = delegate { };
+  public event EventHandler<T> ItemCreatedEvent = delegate { };
+  public event EventHandler<T> ItemUpdatedEvent = delegate { };
+  public event EventHandler<T> ItemDeletedEvent = delegate { };
+  public event EventHandler<IList<T>> ItemsDeletedEvent = delegate { };
 
   public DataAdapter(SimpleDB db, string name, int propsCount) : base(db, name, propsCount) { }
 
-  protected void RaiseItemCreated(T item) => ItemCreatedEvent(this, new(item));
-  protected void RaiseItemUpdated(T item) => ItemUpdatedEvent(this, new(item));
-  protected void RaiseItemDeleted(T item) => ItemDeletedEvent(this, new(item));
-  protected void RaiseItemsDeleted(IList<T> items) => ItemsDeletedEvent(this, new(items));
+  protected void RaiseItemCreated(T item) => ItemCreatedEvent(this, item);
+  protected void RaiseItemUpdated(T item) => ItemUpdatedEvent(this, item);
+  protected void RaiseItemDeleted(T item) => ItemDeletedEvent(this, item);
+  protected void RaiseItemsDeleted(IList<T> items) => ItemsDeletedEvent(this, items);
 
-  protected virtual void OnItemCreated(T item) { }
-  protected virtual void OnItemUpdated(T item) { }
-  protected virtual void OnItemDeleted(T item) { }
-  protected virtual void OnItemsDeleted(IList<T> items) { }
+  protected virtual void OnItemCreated(object sender, T item) { }
+  protected virtual void OnItemUpdated(object sender, T item) { }
+  protected virtual void OnItemDeleted(object sender, T item) { }
+  protected virtual void OnItemsDeleted(object sender, IList<T> items) { }
 
   public virtual T FromCsv(string[] csv) => throw new NotImplementedException();
   public virtual string ToCsv(T item) => throw new NotImplementedException();
@@ -131,7 +131,7 @@ public class DataAdapter<T> : DataAdapter {
     All.Add(item);
     IsModified = true;
     RaiseItemCreated(item);
-    OnItemCreated(item);
+    OnItemCreated(this, item);
     return item;
   }
 
@@ -150,7 +150,7 @@ public class DataAdapter<T> : DataAdapter {
     if (items == null || items.Count == 0) return;
     foreach (var item in items) ItemDelete(item, false);
     RaiseItemsDeleted(items);
-    OnItemsDeleted(items);
-    foreach (var item in items) OnItemDeleted(item);
+    OnItemsDeleted(this, items);
+    foreach (var item in items) OnItemDeleted(this, item);
   }
 }

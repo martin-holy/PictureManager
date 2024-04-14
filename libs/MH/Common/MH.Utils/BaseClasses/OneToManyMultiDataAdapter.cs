@@ -17,8 +17,8 @@ public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, Li
     //ValueDataAdapters = daB;
 
     KeyDataAdapter.ItemDeletedEvent += (_, e) => {
-      if (All != null && All.TryGetValue(e.Data, out var b))
-        ItemDelete(new(e.Data, b));
+      if (All != null && All.TryGetValue(e, out var b))
+        ItemDelete(new(e, b));
     };
   }
 
@@ -40,7 +40,7 @@ public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, Li
     All.Add(item.Key, item.Value);
     IsModified = true;
     RaiseItemCreated(item);
-    OnItemCreated(item);
+    OnItemCreated(this, item);
     return item;
   }
 
@@ -52,8 +52,8 @@ public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, Li
     if (!singleDelete) return;
     var items = new[] { item };
     RaiseItemsDeleted(items);
-    OnItemDeleted(item);
-    OnItemsDeleted(items);
+    OnItemDeleted(this, item);
+    OnItemsDeleted(this, items);
   }
 
   public virtual TB GetValueById(string id) => throw new NotImplementedException();

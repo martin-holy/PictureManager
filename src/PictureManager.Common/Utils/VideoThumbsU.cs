@@ -3,7 +3,6 @@ using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
-using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels;
 using PictureManager.Common.ViewModels.Entities;
 using System;
@@ -75,7 +74,7 @@ public static class VideoThumbsU {
     s,
     s.MediaItem is VideoItemM vi ? vi.TimeStart : 0,
     s.FilePathCache,
-    SegmentS.SegmentSize,
+    SegmentVM.SegmentSize,
     Core.Settings.Common.JpegQuality,
     (int)s.X, (int)s.Y, (int)s.Size, (int)s.Size);
 

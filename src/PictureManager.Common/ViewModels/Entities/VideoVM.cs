@@ -75,7 +75,7 @@ public sealed class VideoVM : ObservableObject {
       CurrentVideoItems.Selected.Select(item);
 
     if (item is VideoClipM && !e.Data.Item2) return; // if !start
-    CurrentVideoItems.ReGroupItems(new[] { item }, false);
+    CurrentVideoItems.Insert(item);
     // TODO mi rewrite ScrollTo
     File.Delete(item.FilePathCache);
     item.OnPropertyChanged(nameof(item.FilePathCache));
