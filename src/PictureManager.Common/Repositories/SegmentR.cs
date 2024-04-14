@@ -4,7 +4,7 @@ using MH.Utils.Interfaces;
 using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
-using PictureManager.Common.Services;
+using PictureManager.Common.ViewModels.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,7 +49,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
 
   public override void PropsToCsv() {
     TableProps.Clear();
-    TableProps.Add(nameof(SegmentS.SegmentSize), SegmentS.SegmentSize.ToString());
+    TableProps.Add(nameof(SegmentVM.SegmentSize), SegmentVM.SegmentSize.ToString());
     TableProps.Add("SegmentsDrawer", string.Join(",",
       Drawer
         .Select(x => x.GetHashCode())
@@ -89,8 +89,8 @@ public class SegmentR : TableDataAdapter<SegmentM> {
 
     // Table Properties
     if (TableProps == null) return;
-    if (TableProps.TryGetValue(nameof(SegmentS.SegmentSize), out var segmentSize))
-      SegmentS.SegmentSize = int.Parse(segmentSize);
+    if (TableProps.TryGetValue(nameof(SegmentVM.SegmentSize), out var segmentSize))
+      SegmentVM.SegmentSize = int.Parse(segmentSize);
 
     if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
       var drawer = IdsToRecords(segmentsDrawer, AllDict);

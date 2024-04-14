@@ -6,8 +6,8 @@ using PictureManager.Common;
 using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
-using PictureManager.Common.Services;
 using PictureManager.Common.Utils;
+using PictureManager.Common.ViewModels.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -87,7 +87,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
     try {
       BitmapSourceExtensions
         .Create(filePath, rect)
-        .Resize(SegmentS.SegmentSize)
+        .Resize(SegmentVM.SegmentSize)
         .SaveAsJpeg(segment.FilePathCache, Core.Settings.Common.JpegQuality);
     }
     catch (Exception ex) {

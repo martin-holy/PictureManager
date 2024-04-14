@@ -42,6 +42,7 @@ public class CoreVM : ObservableObject {
   public SegmentsMatchingVM SegmentsMatching { get; set; }
   public TitleProgressBarVM TitleProgressBar { get; } = new();
 
+  public static double DisplayScale { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }

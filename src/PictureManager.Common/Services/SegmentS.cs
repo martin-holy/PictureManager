@@ -14,9 +14,6 @@ public sealed class SegmentS : ObservableObject {
   public SegmentR DataAdapter { get; set; }
   public SegmentRectS Rect { get; }
   public Selecting<SegmentM> Selected { get; } = new();
-  public static int SegmentSize { get; set; } = 100;
-  public static int SegmentUiSize { get; set; }
-  public static int SegmentUiFullWidth { get; set; }
 
   public bool CanSetAsSamePerson {
     get {
@@ -37,12 +34,6 @@ public sealed class SegmentS : ObservableObject {
     Selected.Select(segments, segment, isCtrlOn, isShiftOn);
     Core.S.Person.Selected.Add(Selected.Items.GetPeople());
     OnPropertyChanged(nameof(CanSetAsSamePerson));
-  }
-
-  public static void SetSegmentUiSize(double scale) {
-    var size = (int)(SegmentSize / scale);
-    SegmentUiSize = size;
-    SegmentUiFullWidth = size + 6; // + border, margin
   }
 
   public SegmentM[] GetOneOrSelected(SegmentM one) =>
