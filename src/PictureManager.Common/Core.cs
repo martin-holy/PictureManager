@@ -1,9 +1,9 @@
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Common.Interfaces;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels;
+using PictureManager.Common.ViewModels.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,8 +19,6 @@ public sealed class Core {
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }
   public static Settings Settings { get; } = Settings.Load();
-
-  public static Func<double> GetDisplayScale { get; set; }
 
   private Core() {
     Tasks.SetUiTaskScheduler();
@@ -41,8 +39,7 @@ public sealed class Core {
   }
 
   public void AfterInit() {
-    var scale = GetDisplayScale();
-    SegmentS.SetSegmentUiSize(scale);
+    SegmentVM.SetSegmentUiSize(CoreVM.DisplayScale);
     S = new(R);
     VM = new(S, R);
 

@@ -15,6 +15,10 @@ public sealed class SegmentVM : ObservableObject {
   private readonly CoreVM _coreVM;
   private readonly SegmentS _s;
   private readonly SegmentR _r;
+
+  public static int SegmentSize { get; set; } = 100;
+  public static int SegmentUiSize { get; set; }
+  public static int SegmentUiFullWidth { get; set; }
   public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; }
 
   public SegmentRectVM Rect { get; } = new();
@@ -53,5 +57,11 @@ public sealed class SegmentVM : ObservableObject {
     var msg = "Do you want to set {0} segment{1} as unknown?".Plural(segments.Length);
     if (Dialog.Show(new MessageDialog("Set as unknown", msg, MH.UI.Res.IconQuestion, true)) != 1) return;
     r.ChangePerson(null, segments, segments.GetPeople().ToArray());
+  }
+
+  public static void SetSegmentUiSize(double scale) {
+    var size = (int)(SegmentSize / scale);
+    SegmentUiSize = size;
+    SegmentUiFullWidth = size + 6; // + border, margin
   }
 }

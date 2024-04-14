@@ -1,7 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Models;
-using PictureManager.Common.Services;
+using PictureManager.Common.ViewModels.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +31,7 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
   }
 
   public override int GetItemSize(SegmentM item, bool getWidth) =>
-    SegmentS.SegmentUiFullWidth;
+    SegmentVM.SegmentUiFullWidth;
 
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>
     string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);
