@@ -101,6 +101,6 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
     Reload();
   }
 
-  protected override void OnItemDeleted(FolderM item) =>
+  protected override void OnItemDeleted(object sender, FolderM item) =>
     Reload();
 }

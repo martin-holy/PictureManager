@@ -68,10 +68,9 @@ public sealed class SegmentsDrawerVM : CollectionViewSegments {
       foreach (var segment in segments)
         Items.Remove(segment);
 
-    if (count != Items.Count) {
-      _segmentS.DataAdapter.AreTablePropsModified = true;
-      ReGroupItems(segments, !add);
-    }
+    if (count == Items.Count) return;
+    _segmentS.DataAdapter.AreTablePropsModified = true;
+    if (add) Insert(segments); else Remove(segments);
   }
 
   public void RemoveIfContains(SegmentM[] segments) {

@@ -78,7 +78,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
         ? $"{name} group already exists!"
         : null;
 
-  protected override void OnItemDeleted(CategoryGroupM item) {
+  protected override void OnItemDeleted(object sender, CategoryGroupM item) {
     item.Parent.Items.Remove(item);
   }
 

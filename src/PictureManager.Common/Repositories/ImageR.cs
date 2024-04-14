@@ -60,7 +60,7 @@ public sealed class ImageR : TableDataAdapter<ImageM> {
   public ImageM ItemCreate(FolderM folder, string fileName) =>
     ItemCreate(new(GetNextId(), folder, fileName));
 
-  protected override void OnItemDeleted(ImageM item) {
+  protected override void OnItemDeleted(object sender, ImageM item) {
     _coreR.MediaItem.OnItemDeletedCommon(item);
   }
 }

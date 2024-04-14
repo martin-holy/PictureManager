@@ -1,6 +1,5 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels.Entities;
 
 namespace PictureManager.Common.ViewModels;
@@ -75,5 +74,5 @@ public class MainWindowVM : ObservableObject {
 
   // (segment size + 1) * count + ScrollBar + Margin + ToBeSure
   private static double GetToolsTabsWidth() =>
-    (SegmentS.SegmentUiFullWidth + 1) * 4 + 15 + 2 + 1;
+    (SegmentVM.SegmentUiFullWidth + 1) * 4 + 15 + 2 + 1;
 }
