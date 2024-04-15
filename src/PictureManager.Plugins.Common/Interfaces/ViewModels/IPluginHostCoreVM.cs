@@ -7,4 +7,5 @@ public interface IPluginHostCoreVM {
   public TabControl MainTabs { get; }
   public TabControl ToolsTabs { get; }
   public ToggleDialog ToggleDialog { get; }
+  public IPluginHostSegmentVM Segment { get; }
 }
