@@ -35,7 +35,7 @@ public class CoreVM : ObservableObject {
 
   public ImageComparerVM ImageComparer { get; } = new();
   public TabControl MainTabs { get; } = new() { CanCloseTabs = true };
-  public MainWindowVM MainWindow { get; } = new();
+  public MainWindowVM MainWindow { get; }
   public MediaViewerVM MediaViewer { get; } = new();
   public PeopleVM People { get; set; }
   public SegmentsDrawerVM SegmentsDrawer { get; }
@@ -73,6 +73,7 @@ public class CoreVM : ObservableObject {
     Video = new();
     Viewer = new(_coreR.Viewer, _coreS.Viewer);
 
+    MainWindow = new(this);
     SegmentsDrawer = new(_coreS.Segment, _coreR.Segment.Drawer);
 
     UpdateMediaItemsCount();
