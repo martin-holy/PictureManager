@@ -44,7 +44,6 @@ public sealed class Core {
   }
 
   public void AfterInit() {
-    SegmentVM.SetSegmentUiSize(CoreVM.DisplayScale);
     S = new(R);
     VM = new(S, R);
 

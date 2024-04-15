@@ -18,8 +18,8 @@ public sealed class SegmentVM : ObservableObject, IPluginHostSegmentVM {
   private readonly SegmentR _r;
 
   public static int SegmentSize { get; set; } = 100;
-  public static int SegmentUiSize { get; set; }
-  public static int SegmentUiFullWidth { get; set; }
+  public int SegmentUiSize { get; set; }
+  public int SegmentUiFullWidth { get; set; }
   public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; }
 
   public SegmentRectVM Rect { get; } = new();
@@ -33,6 +33,9 @@ public sealed class SegmentVM : ObservableObject, IPluginHostSegmentVM {
     _coreVM = coreVM;
     _s = s;
     _r = r;
+
+    SetSegmentUiSize(CoreVM.DisplayScale);
+
     LoadByKeywordCommand = new(LoadBy, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new(LoadBy, Res.IconSegment, "Load Segments");
     SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson, Res.IconEquals, "Set selected as same person");
@@ -60,7 +63,7 @@ public sealed class SegmentVM : ObservableObject, IPluginHostSegmentVM {
     r.ChangePerson(null, segments, segments.GetPeople().ToArray());
   }
 
-  public static void SetSegmentUiSize(double scale) {
+  private void SetSegmentUiSize(double scale) {
     var size = (int)(SegmentSize / scale);
     SegmentUiSize = size;
     SegmentUiFullWidth = size + 6; // + border, margin
