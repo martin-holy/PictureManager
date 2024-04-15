@@ -1,6 +1,5 @@
 ﻿namespace PictureManager.Plugins.Common.Interfaces.Models;
 
-public interface IPluginHostPersonM {
+public interface IPluginHostSegmentM {
   public int Id { get; }
-  public IPluginHostSegmentM Segment { get; }
 }
