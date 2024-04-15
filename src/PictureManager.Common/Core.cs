@@ -3,7 +3,6 @@ using MH.Utils.Extensions;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels;
-using PictureManager.Common.ViewModels.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,7 +38,6 @@ public sealed class Core {
   }
 
   public void AfterInit() {
-    SegmentVM.SetSegmentUiSize(CoreVM.DisplayScale);
     S = new(R);
     VM = new(S, R);
 
