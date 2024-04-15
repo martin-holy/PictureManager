@@ -51,6 +51,8 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/Dialogs/ToggleDialog.xaml"/>
 
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Border.xaml"/>
+
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Templates/All.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
   <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MH.Styles.BaseControls.ButtonBase}"/>
