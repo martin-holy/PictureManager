@@ -3,127 +3,126 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:MovieManager.Common.ViewModels;assembly=MovieManager.Common"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+
+  <ResourceDictionary.MergedDictionaries>
+    <mhu:CachedResourceDictionary Source="CharacterV.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type vm:MovieDetailVM}">
-    <ScrollViewer>
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
 
-        <!-- Title -->
-        <TextBlock
-          Text="{Binding MovieM.Title}"
-          Background="{StaticResource MH.Brushes.Black55}"
-          FontSize="20"
-          Padding="4"
-          Margin="0,0,0,5"
-          HorizontalAlignment="Stretch"
-          TextAlignment="Center"
-          VerticalAlignment="Center"/>
+      <!-- Title -->
+      <TextBlock
+        Text="{Binding MovieM.Title}"
+        Background="{StaticResource MH.Brushes.Black55}"
+        FontSize="20"
+        Padding="4"
+        Margin="0,0,0,5"
+        HorizontalAlignment="Stretch"
+        TextAlignment="Center"
+        VerticalAlignment="Center"/>
 
-        <!-- Year, Length, Rating, PersonalRating, MPAA -->
-        <Grid Grid.Row="1">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-          </Grid.ColumnDefinitions>
+      <!-- Year, Length, Rating, PersonalRating, MPAA -->
+      <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-          <!-- Year -->
-          <mhc:IconTextBlock
-            ToolTip="Year"
-            ap:Icon.Data="{StaticResource IconCalendar}"
-            ap:Text.Text="{Binding MovieM.Year}"
-            BorderThickness="0"/>
+        <!-- Year -->
+        <mhc:IconTextBlock
+          ToolTip="Year"
+          ap:Icon.Data="{StaticResource IconCalendar}"
+          ap:Text.Text="{Binding MovieM.Year}"
+          BorderThickness="0"/>
 
-          <!-- Length -->
-          <mhc:IconTextBlock
-            Grid.Column="1"
-            ToolTip="Length"
-            ap:Icon.Data="{StaticResource IconClock}"
-            ap:Text.Text="{Binding MovieM.FormatedLength}"
-            BorderThickness="0"/>
+        <!-- Length -->
+        <mhc:IconTextBlock
+          Grid.Column="1"
+          ToolTip="Length"
+          ap:Icon.Data="{StaticResource IconClock}"
+          ap:Text.Text="{Binding MovieM.FormatedLength}"
+          BorderThickness="0"/>
 
-          <!-- Rating -->
-          <mhc:PopupSlider
-            Grid.Column="2"
-            Maximum="10"
-            TickFrequency="0.1"
-            HorizontalAlignment="Center"
-            Value="{Binding MovieM.Rating, Mode=TwoWay}">
-            <mhc:PopupSlider.Content>
-              <mhc:IconTextBlockButton
-                ToolTip="Rating"
-                ap:Icon.Data="{StaticResource IconStar}"
-                ap:Text.Text="{Binding MovieM.Rating, StringFormat={}{0:G2}}"/>
-            </mhc:PopupSlider.Content>
-          </mhc:PopupSlider>
+        <!-- Rating -->
+        <mhc:PopupSlider
+          Grid.Column="2"
+          Maximum="10"
+          TickFrequency="0.1"
+          HorizontalAlignment="Center"
+          Value="{Binding MovieM.Rating, Mode=TwoWay}">
+          <mhc:PopupSlider.Content>
+            <mhc:IconTextBlockButton
+              ToolTip="Rating"
+              ap:Icon.Data="{StaticResource IconStar}"
+              ap:Text.Text="{Binding MovieM.Rating, StringFormat={}{0:G2}}"/>
+          </mhc:PopupSlider.Content>
+        </mhc:PopupSlider>
 
-          <!-- PersonalRating -->
-          <mhc:PopupSlider
-            Grid.Column="3"
-            Maximum="10"
-            TickFrequency="0.5"
-            HorizontalAlignment="Center"
-            Value="{Binding MovieM.PersonalRating, Mode=TwoWay}">
-            <mhc:PopupSlider.Content>
-              <mhc:IconTextBlockButton
-                ToolTip="Personal Rating"
-                ap:Icon.Data="{StaticResource IconStar}"
-                ap:Text.Text="{Binding MovieM.PersonalRating, StringFormat={}{0:G2}}"/>
-            </mhc:PopupSlider.Content>
-          </mhc:PopupSlider>
+        <!-- PersonalRating -->
+        <mhc:PopupSlider
+          Grid.Column="3"
+          Maximum="10"
+          TickFrequency="0.5"
+          HorizontalAlignment="Center"
+          Value="{Binding MovieM.PersonalRating, Mode=TwoWay}">
+          <mhc:PopupSlider.Content>
+            <mhc:IconTextBlockButton
+              ToolTip="Personal Rating"
+              ap:Icon.Data="{StaticResource IconStar}"
+              ap:Text.Text="{Binding MovieM.PersonalRating, StringFormat={}{0:G2}}"/>
+          </mhc:PopupSlider.Content>
+        </mhc:PopupSlider>
 
-          <!-- MPAA -->
-          <mhc:IconTextBlockItemsControl
-            Grid.Column="4"
-            ToolTip="MPAA"
-            ItemsSource="{Binding MovieM.MPAA}"
-            ap:Icon.Data="{StaticResource IconBug}">
-            <mhc:IconTextBlockItemsControl.ItemTemplate>
-              <DataTemplate>
-                <Border Style="{StaticResource MH.S.Border.RoundDarker}">
-                  <TextBlock Text="{Binding}"/>
-                </Border>
-              </DataTemplate>
-            </mhc:IconTextBlockItemsControl.ItemTemplate>
-          </mhc:IconTextBlockItemsControl>
-        </Grid>
-
-        <!-- Genres -->
+        <!-- MPAA -->
         <mhc:IconTextBlockItemsControl
-          Grid.Row="3"
-          ItemsSource="{Binding MovieM.Genres}"
-          ap:Icon.Data="{StaticResource IconBug}"
-          ap:Icon.Fill="{StaticResource ColorBrushTag}"
-          ItemTemplate="{StaticResource MH.DT.IListItem.Border.RoundDarker}"/>
-
-        <!-- Plot -->
-        <TextBlock
-          Grid.Row="4"
-          Text="{Binding MovieM.Plot}"
-          TextWrapping="Wrap"
-          TextAlignment="Justify"
-          Margin="8,4"/>
-
-        <!-- Casts -->
-        <mhc:IconTextBlockItemsControl
-          Grid.Row="5"
-          MaxHeight="110"
-          ItemsSource="{Binding Casts}"
-          ap:Icon.Data="{StaticResource IconPeople}"
-          ap:Icon.Fill="{StaticResource ColorBrushPeople}"
-          ItemTemplate="{StaticResource MH.DT.IListItem.Border.RoundDarker}"/>
+          Grid.Column="4"
+          ToolTip="MPAA"
+          ItemsSource="{Binding MovieM.MPAA}"
+          ap:Icon.Data="{StaticResource IconBug}">
+          <mhc:IconTextBlockItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border Style="{StaticResource MH.S.Border.RoundDarker}">
+                <TextBlock Text="{Binding}" HorizontalAlignment="Center"/>
+              </Border>
+            </DataTemplate>
+          </mhc:IconTextBlockItemsControl.ItemTemplate>
+        </mhc:IconTextBlockItemsControl>
       </Grid>
-    </ScrollViewer>
+
+      <!-- Genres -->
+      <mhc:IconTextBlockItemsControl
+        Grid.Row="3"
+        ItemsSource="{Binding MovieM.Genres}"
+        ap:Icon.Data="{StaticResource IconBug}"
+        ap:Icon.Fill="{StaticResource ColorBrushTag}"
+        ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"/>
+
+      <!-- Plot -->
+      <TextBlock
+        Grid.Row="4"
+        Text="{Binding MovieM.Plot}"
+        TextWrapping="Wrap"
+        TextAlignment="Justify"
+        Margin="8,4"/>
+
+      <!-- Characters -->
+      <mhc:CollectionView
+        Grid.Row="5"
+        View="{Binding Characters}"/>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>

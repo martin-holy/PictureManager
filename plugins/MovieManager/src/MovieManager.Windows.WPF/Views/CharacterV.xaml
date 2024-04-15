@@ -1,0 +1,59 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:models="clr-namespace:MovieManager.Common.Models;assembly=MovieManager.Common"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:mm="clr-namespace:MovieManager.Common;assembly=MovieManager.Common">
+
+  <DataTemplate DataType="{x:Type models:CharacterM}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+
+      <Grid
+        Grid.RowSpan="2"
+        Width="{Binding PhCoreVM.Segment.SegmentUiSize, Source={x:Static mm:Core.VM}}"
+        Height="{Binding PhCoreVM.Segment.SegmentUiSize, Source={x:Static mm:Core.VM}}">
+
+        <Grid
+          Background="Transparent"
+          Visibility="{Binding Segment, Converter={x:Static mhConv:VisibilityConverter.AllToCollapsed}}">
+
+          <Path
+            Style="{StaticResource MH.Styles.Icon}"
+            Data="{StaticResource IconPeople}"
+            Width="40"
+            Height="40"
+            Fill="Gray"/>
+        </Grid>
+
+        <ContentControl
+          Content="{Binding Segment}"
+          Visibility="{Binding Segment, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
+      </Grid>
+
+      <TextBlock
+        Grid.Row="0"
+        Grid.Column="1"
+        Text="{Binding Actor.Name}"
+        TextWrapping="Wrap"
+        VerticalAlignment="Center"
+        Margin="4,0,4,0"/>
+
+      <TextBlock
+        Grid.Row="1"
+        Grid.Column="1"
+        Text="{Binding Name}"
+        TextWrapping="Wrap"
+        VerticalAlignment="Center"
+        Margin="4,0,4,0"/>
+    </Grid>
+  </DataTemplate>
+    
+</ResourceDictionary>

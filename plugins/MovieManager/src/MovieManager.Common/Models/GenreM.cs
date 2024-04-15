@@ -1,8 +1,9 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 
 namespace MovieManager.Common.Models;
 
-public sealed class GenreM : ObservableObject {
+public sealed class GenreM : ObservableObject, IHaveName {
   private string _name;
   
   public int Id { get; }

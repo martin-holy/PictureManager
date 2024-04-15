@@ -31,6 +31,8 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords, IPlu
   public bool IsUnknown { get => Bits[BitsMasks.IsUnknown]; set { Bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }
   public List<SegmentM> Segments { get; set; }
 
+  IPluginHostSegmentM IPluginHostPersonM.Segment => Segment;
+
   public PersonM() { }
 
   public PersonM(int id, string name) : base(Res.IconPeople, name) {

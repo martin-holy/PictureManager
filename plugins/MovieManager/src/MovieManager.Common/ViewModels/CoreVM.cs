@@ -11,10 +11,10 @@ using System.Linq;
 namespace MovieManager.Common.ViewModels;
 
 public sealed class CoreVM : ObservableObject, IPluginCoreVM {
-  private readonly IPluginHostCoreVM _phCoreVM;
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
+  public IPluginHostCoreVM PhCoreVM { get; }
   public string PluginIcon => "IconMovieClapper";
   public string PluginTitle => "Movie Manager";
 
@@ -29,7 +29,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public RelayCommand SaveDbCommand { get; }
 
   public CoreVM(IPluginHostCoreVM phCoreVM, CoreS coreS, CoreR coreR) {
-    _phCoreVM = phCoreVM;
+    PhCoreVM = phCoreVM;
     _coreS = coreS;
     _coreR = coreR;
 
@@ -45,23 +45,23 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   private void OpenImportMovies() {
     Import ??= new(_coreS.Import);
     Import.Open();
-    _phCoreVM.MainTabs.Activate("IconMovieClapper", "Import", Import);
+    PhCoreVM.MainTabs.Activate("IconMovieClapper", "Import", Import);
   }
 
   private void OpenMovies() {
     Movies ??= new();
     Movies.Open(_coreR.Movie.All);
-    _phCoreVM.MainTabs.Activate("IconMovieClapper", "Movies", Movies);
+    PhCoreVM.MainTabs.Activate("IconMovieClapper", "Movies", Movies);
   }
 
   public void OpenMovieDetail(MovieM movie) {
     MovieDetail ??= new();
     MovieDetail.Reload(movie);
-    _phCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);
+    PhCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);
   }
 
   private void InitToggleDialog() {
-    var sts = _phCoreVM.ToggleDialog.SourceTypes;
+    var sts = PhCoreVM.ToggleDialog.SourceTypes;
     var ttActor = new ToggleDialogTargetType<ActorM>(
       "IconPeople",
       _ => Core.S.Actor.Selected.Items.Count == 0 ? [] : [Core.S.Actor.Selected.Items.First()],
