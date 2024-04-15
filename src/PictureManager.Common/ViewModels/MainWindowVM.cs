@@ -37,12 +37,12 @@ public class MainWindowVM : ObservableObject {
 
   public static RelayCommand SwitchToBrowserCommand { get; set; }
 
-  public MainWindowVM() {
+  public MainWindowVM(CoreVM coreVM) {
     StatusBar = new(Core.Inst);
     SlidePanelsGrid = new(
       new(Position.Left, TreeViewCategories, 380),
       new(Position.Top, ToolBar, 30),
-      new(Position.Right, ToolsTabs, GetToolsTabsWidth()) { CanOpen = false },
+      new(Position.Right, ToolsTabs, GetToolsTabsWidth(coreVM.Segment.SegmentUiFullWidth)) { CanOpen = false },
       new(Position.Bottom, StatusBar, 0),
       MiddleContent,
       new[] { // Left, Top, Right, Bottom, FullScreen (not part of SlidePanelsGrid)
@@ -73,6 +73,6 @@ public class MainWindowVM : ObservableObject {
   }
 
   // (segment size + 1) * count + ScrollBar + Margin + ToBeSure
-  private static double GetToolsTabsWidth() =>
-    (SegmentVM.SegmentUiFullWidth + 1) * 4 + 15 + 2 + 1;
+  private static double GetToolsTabsWidth(int segmentSize) =>
+    (segmentSize + 1) * 4 + 15 + 2 + 1;
 }
