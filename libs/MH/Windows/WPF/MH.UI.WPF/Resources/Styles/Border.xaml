@@ -6,10 +6,9 @@
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="BorderBrush" Value="Black"/>
     <Setter Property="Background" Value="{StaticResource MH.Brushes.Black25}"/>
-    <Setter Property="VerticalAlignment" Value="Top"/>
-    <Setter Property="Padding" Value="2,1,2,2"/>
+    <Setter Property="Padding" Value="2,0,2,2"/>
     <Setter Property="CornerRadius" Value="5"/>
-    <Setter Property="Margin" Value="2"/>
+    <Setter Property="Margin" Value="1"/>
     <Setter Property="MinWidth" Value="24"/>
   </Style>
 </ResourceDictionary>
