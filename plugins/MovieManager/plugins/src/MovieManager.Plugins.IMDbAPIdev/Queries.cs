@@ -6,7 +6,7 @@ namespace MovieManager.Plugins.IMDbAPIdev;
 
 public static class Queries {
   public static JsonElement Execute(object query) {
-    var client = new HttpClient();
+    using var client = new HttpClient();
     var request = new HttpRequestMessage {
       RequestUri = new("https://graph.imdbapi.dev/v1"),
       Method = HttpMethod.Post,

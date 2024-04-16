@@ -20,8 +20,11 @@ public sealed class MovieDetailIdR(CoreR coreR) : TableDataAdapter<MovieDetailId
       item.Movie.GetHashCode().ToString());
 
   public override void LinkReferences() {
-    foreach (var (item, csv) in AllCsv)
+    foreach (var (item, csv) in AllCsv) {
       item.Movie = coreR.Movie.GetById(csv[3]);
+      if (item.Movie != null)
+        item.Movie.DetailId = item;
+    }
   }
 
   public MovieDetailIdM ItemCreate(IDetailId detailId, MovieM movie) =>

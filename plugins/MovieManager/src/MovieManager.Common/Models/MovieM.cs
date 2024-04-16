@@ -23,13 +23,17 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public DateOnly[] SeenWhen { get; set; }
   public string[] MPAA { get; set; }
   public string Plot { get; set; }
-  public IPluginHostMediaItemM Cover { get; set; }
+  public IPluginHostMediaItemM Poster { get; set; }
   public List<IPluginHostMediaItemM> MediaItems { get; set; }
+  public MovieDetailIdM DetailId { get; set; }
 
   public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
 
   public string FormatedLength =>
     TimeSpan.FromMinutes(Length).ToString(@"h\:mm");
+
+  public string PosterFileName =>
+    $"{Year}-{DetailId.DetailName}-{DetailId.DetailId}-{Title}.jpg";
 
   public MovieM(int id, string title) {
     Id = id;
