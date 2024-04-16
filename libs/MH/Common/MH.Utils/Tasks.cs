@@ -22,4 +22,16 @@ public static class Tasks {
   }
 
   public static Action<Action> Dispatch { get; set; }
+
+  /// <summary>
+  /// Executes the work on background thread and than executes the onSuccess or the onError on UI thread
+  /// </summary>
+  public static void DoWork<T>(Func<T> work, Action<T> onSuccess, Action<Exception> onError) {
+    Task.Run(work).ContinueWith(task => {
+      if (task.IsFaulted)
+        onError(task.Exception?.InnerException);
+      else
+        onSuccess(task.Result);
+    }, UiTaskScheduler);
+  }
 }
