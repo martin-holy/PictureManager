@@ -55,6 +55,7 @@
         <wpfu:CachedResourceDictionary Source="Views/WhatIsNewV.xaml"/>
 
         <wpfu:CachedResourceDictionary Source="Views/SegmentV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/MediaItemBaseV.xaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
