@@ -3,7 +3,7 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models.MediaItems;
-using PictureManager.Plugins.Common.Interfaces.Models;
+using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Models;
 
-public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable, IHaveKeywords, IPluginHostSegmentM {
+public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable, IHaveKeywords, ISegmentM {
   private bool _isSelected;
 
   #region DB Properties

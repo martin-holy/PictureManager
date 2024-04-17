@@ -3,8 +3,9 @@ using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
 using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
-using PictureManager.Plugins.Common.Interfaces.Models;
-using PictureManager.Plugins.Common.Interfaces.ViewModels;
+using PictureManager.Interfaces.Models;
+using PictureManager.Interfaces.Plugin;
+using PictureManager.Interfaces.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +15,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
-  public IPluginHostCoreVM PhCoreVM { get; }
+  public ICoreVM PhCoreVM { get; }
   public string PluginIcon => "IconMovieClapper";
   public string PluginTitle => "Movie Manager";
 
@@ -28,7 +29,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public RelayCommand OpenMoviesCommand { get; }
   public RelayCommand SaveDbCommand { get; }
 
-  public CoreVM(IPluginHostCoreVM phCoreVM, CoreS coreS, CoreR coreR) {
+  public CoreVM(ICoreVM phCoreVM, CoreS coreS, CoreR coreR) {
     PhCoreVM = phCoreVM;
     _coreS = coreS;
     _coreR = coreR;
@@ -67,8 +68,8 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
       _ => Core.S.Actor.Selected.Items.Count == 0 ? [] : [Core.S.Actor.Selected.Items.First()],
       _ => "Actor");
 
-    if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(IPluginHostPersonM))) is { } stPerson) {
-      stPerson.Options.Add(new ToggleDialogOption<IPluginHostPersonM, ActorM>(ttActor,
+    if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(IPersonM))) is { } stPerson) {
+      stPerson.Options.Add(new ToggleDialogOption<IPersonM, ActorM>(ttActor,
         (items, item) => Core.R.Actor.SetPerson(items.First(), item)));
     }
   }

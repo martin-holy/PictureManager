@@ -1,11 +1,11 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Plugins.Common.Interfaces.Models;
+using PictureManager.Interfaces.Models;
 
 namespace MovieManager.Common.Models;
 
 public class ActorM : ListItem {
   public int Id { get; }
-  public IPluginHostPersonM Person { get; set; }
+  public IPersonM Person { get; set; }
 
   public ActorM(int id, string name) {
     Id = id;

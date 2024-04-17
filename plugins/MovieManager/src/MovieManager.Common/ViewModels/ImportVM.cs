@@ -7,6 +7,7 @@ using MovieManager.Plugins.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace MovieManager.Common.ViewModels;
@@ -89,10 +90,12 @@ public class ImportVM : ObservableObject {
 
   private void ImportPoster(IImage poster, MovieM movie) {
     if (poster == null) return;
-    
+    var filePath = Path.Combine(Core.Inst.DirPosters, movie.PosterFileName);
+
     Tasks.DoWork(
-      () => Plugins.Common.Core.DownloadAndSaveFile(poster.Url, movie.PosterFileName),
-      fileName => {
+      () => Plugins.Common.Core.DownloadAndSaveFile(poster.Url, filePath),
+      _ => {
+        var mi = Core.S.PhCoreS.MediaItem.ImportMediaItem(Core.Inst.DirPosters, movie.PosterFileName);
         // TODO import MediaItem and add it to Movie
       },
       Log.Error);

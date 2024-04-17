@@ -12,7 +12,7 @@ using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels.Entities;
-using PictureManager.Plugins.Common.Interfaces.ViewModels;
+using PictureManager.Interfaces.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.ViewModels;
 
-public class CoreVM : ObservableObject, IPluginHostCoreVM {
+public class CoreVM : ObservableObject, ICoreVM {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
@@ -49,7 +49,7 @@ public class CoreVM : ObservableObject, IPluginHostCoreVM {
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
 
-  IPluginHostSegmentVM IPluginHostCoreVM.Segment => Segment;
+  ISegmentVM ICoreVM.Segment => Segment;
 
   public static RelayCommand AppClosingCommand { get; set; }
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");

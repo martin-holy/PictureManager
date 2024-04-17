@@ -1,6 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Plugins.Common.Interfaces.Models;
+using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 
@@ -19,12 +19,12 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public double Rating { get => _rating; set { _rating = value; OnPropertyChanged(); } }
   public double PersonalRating { get => _personalRating; set { _personalRating = value; OnPropertyChanged(); } }
   public List<GenreM> Genres { get; set; }
-  public List<IPluginHostKeywordM> Keywords { get; set; }
+  public List<IKeywordM> Keywords { get; set; }
   public DateOnly[] SeenWhen { get; set; }
   public string[] MPAA { get; set; }
   public string Plot { get; set; }
-  public IPluginHostMediaItemM Poster { get; set; }
-  public List<IPluginHostMediaItemM> MediaItems { get; set; }
+  public IMediaItemM Poster { get; set; }
+  public List<IMediaItemM> MediaItems { get; set; }
   public MovieDetailIdM DetailId { get; set; }
 
   public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }

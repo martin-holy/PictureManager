@@ -5,8 +5,8 @@ using MH.Utils.Interfaces;
 using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.TreeCategories;
-using PictureManager.Plugins.Common.Interfaces.Models;
-using PictureManager.Plugins.Common.Interfaces.Repositories;
+using PictureManager.Interfaces.Models;
+using PictureManager.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Segments|Keywords
 /// </summary>
-public class PersonR : TreeDataAdapter<PersonM>, IPluginHostR<IPluginHostPersonM> {
+public class PersonR : TreeDataAdapter<PersonM>, IRepository<IPersonM> {
   private readonly CoreR _coreR;
   private const string _unknownPersonNamePrefix = "P -";
   private const string _notFoundRecordNamePrefix = "Not found ";
@@ -87,14 +87,14 @@ public class PersonR : TreeDataAdapter<PersonM>, IPluginHostR<IPluginHostPersonM
     }
   }
 
-  IPluginHostPersonM IPluginHostR<IPluginHostPersonM>.GetById(string id, bool nullable) =>
+  IPersonM IRepository<IPersonM>.GetById(string id, bool nullable) =>
     GetById(id, nullable);
 
   public List<PersonM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
-  List<IPluginHostPersonM> IPluginHostR<IPluginHostPersonM>.Link(string csv, IDataAdapter seeker) =>
-    Link(csv, seeker)?.Cast<IPluginHostPersonM>().ToList();
+  List<IPersonM> IRepository<IPersonM>.Link(string csv, IDataAdapter seeker) =>
+    Link(csv, seeker)?.Cast<IPersonM>().ToList();
 
   public PersonM GetPerson(int id, IDataAdapter seeker) =>
     AllDict.TryGetValue(id, out var person)

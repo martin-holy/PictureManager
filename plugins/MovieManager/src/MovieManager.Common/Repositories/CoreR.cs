@@ -1,5 +1,5 @@
 ﻿using MH.Utils;
-using PictureManager.Plugins.Common.Interfaces.Repositories;
+using PictureManager.Interfaces.Repositories;
 using System.IO;
 
 namespace MovieManager.Common.Repositories;
@@ -12,7 +12,7 @@ public sealed  class CoreR : SimpleDB {
   public MovieDetailIdR MovieDetailId { get; }
   public MovieR Movie { get; }
 
-  public CoreR(IPluginHostCoreR phCoreR) : base(Path.Combine("plugins", "MovieManager", "db")) {
+  public CoreR(ICoreR phCoreR) : base(Path.Combine("plugins", "MovieManager", "db")) {
     Actor = new(this, phCoreR);
     ActorDetailId = new(this);
     Genre = new(this);

@@ -1,14 +1,14 @@
 ﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
-using PictureManager.Plugins.Common.Interfaces.Models;
-using PictureManager.Plugins.Common.Interfaces.Repositories;
+using PictureManager.Interfaces.Models;
+using PictureManager.Interfaces.Repositories;
 
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: Id|Name|Person
 /// </summary>
-public class ActorR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 3) {
+public class ActorR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 3) {
   public override ActorM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]);
 
@@ -26,7 +26,7 @@ public class ActorR(CoreR coreR, IPluginHostCoreR phCoreR) : TableDataAdapter<Ac
   public ActorM ItemCreate(string name) =>
     ItemCreate(new ActorM(GetNextId(), name));
 
-  public void SetPerson(ActorM actor, IPluginHostPersonM person) {
+  public void SetPerson(ActorM actor, IPersonM person) {
     actor.Person = person;
     IsModified = true;
   }
