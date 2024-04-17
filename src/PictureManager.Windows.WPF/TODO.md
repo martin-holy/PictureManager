@@ -115,6 +115,9 @@
   - OneToManyMultiDataAdapter do it without reference to CoreR
   - replace Contains with ReferenceEquals
   - use IconTextBlockItemsControl
+  - don't do CreateDirectory in FolderR.ItemCreate. it can throw exception
+## SimpleDB
+  - better CSV mapping, maybe Dictionary<propName, csvIndex>
 ## ProgressBarAsyncDialog
   - do Init and Start in constructor
 
