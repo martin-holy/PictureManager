@@ -5,6 +5,7 @@
     
   <DataTemplate DataType="{x:Type m:MovieM}">
     <Grid Background="Transparent">
+      <ContentControl Content="{Binding Poster}" ContentTemplate="{StaticResource PM.T.MediaItemBase}"/>
       <TextBlock Text="{Binding Title}"/>
     </Grid>
     

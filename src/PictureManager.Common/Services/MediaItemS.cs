@@ -1,8 +1,10 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.HelperClasses;
+using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
+using PictureManager.Common.Utils;
 using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Services;
 using System;
@@ -51,7 +53,6 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject, IMediaItemS {
     r.Modify(mi);
   }
 
-  public IMediaItemM ImportMediaItem(string folderPath, string fileName) {
-    return null; // TODO
-  }
+  IMediaItemM IMediaItemS.ImportMediaItem(IFolderM folder, string fileName) =>
+    CopyMoveU.CreateMediaItemAndReadMetadata((FolderM)folder, fileName);
 }

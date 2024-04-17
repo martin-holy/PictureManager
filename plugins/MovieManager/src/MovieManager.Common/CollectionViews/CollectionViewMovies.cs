@@ -13,8 +13,17 @@ public class CollectionViewMovies : CollectionView<MovieM> {
     Name = "Movies";
   }
 
-  public override int GetItemSize(MovieM item, bool getWidth) =>
-    getWidth ? 200 : 300;
+  public override int GetItemSize(MovieM item, bool getWidth) {
+    var scale = Core.PMCore.Settings.MediaItem.MediaItemThumbScale;
+
+    if (item.Poster != null)
+      return (int)((getWidth ? item.Poster.ThumbWidth : item.Poster.ThumbHeight) * scale);
+
+    var h = Core.PMCore.Settings.MediaItem.ThumbSize * scale;
+    var w = h / 1.5;
+    
+    return getWidth ? (int)w : (int)h;
+  }
 
   public override IEnumerable<GroupByItem<MovieM>> GetGroupByItems(IEnumerable<MovieM> source) =>
     Enumerable.Empty<GroupByItem<MovieM>>();

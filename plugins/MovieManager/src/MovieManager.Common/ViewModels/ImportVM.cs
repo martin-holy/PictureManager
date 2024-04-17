@@ -32,6 +32,7 @@ public class ImportVM : ObservableObject {
       StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
     ));
 
+    Core.R.SetPosterFolder();
     SearchMovie();
   }
 
@@ -89,15 +90,13 @@ public class ImportVM : ObservableObject {
   }
 
   private void ImportPoster(IImage poster, MovieM movie) {
-    if (poster == null) return;
-    var filePath = Path.Combine(Core.Inst.DirPosters, movie.PosterFileName);
+    if (poster == null || Core.R.PostersFolder == null) return;
+
+    var filePath = Path.Combine(Core.R.PostersDir, movie.PosterFileName);
 
     Tasks.DoWork(
       () => Plugins.Common.Core.DownloadAndSaveFile(poster.Url, filePath),
-      _ => {
-        var mi = Core.S.PhCoreS.MediaItem.ImportMediaItem(Core.Inst.DirPosters, movie.PosterFileName);
-        // TODO import MediaItem and add it to Movie
-      },
+      _ => movie.Poster = Core.S.PhCoreS.MediaItem.ImportMediaItem(Core.R.PostersFolder, movie.PosterFileName),
       Log.Error);
   }
 

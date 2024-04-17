@@ -3,6 +3,7 @@ using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
 using MovieManager.Common.ViewModels;
 using MovieManager.Plugins.Common.Interfaces;
+using PictureManager.Interfaces;
 using PictureManager.Interfaces.Plugin;
 using PictureManager.Interfaces.Repositories;
 using PictureManager.Interfaces.Services;
@@ -17,6 +18,9 @@ namespace MovieManager.Common;
 
 public sealed class Core : IPMPluginCore {
   public string Name => "MovieManager";
+  public string BaseDir { get; }
+  public string PluginsDir { get; }
+  public static ICore PMCore { get; private set; }
   public static Core Inst { get; private set; }
   public static CoreR R { get; private set; }
   public static CoreS S { get; private set; }
@@ -24,16 +28,17 @@ public sealed class Core : IPMPluginCore {
   public static IMovieSearchPlugin MovieSearch { get; private set; }
   public static IMovieDetailPlugin MovieDetail { get; private set; }
 
-  public string DirPlugins { get; private set; }
-  public string DirPosters { get; private set; }
-
   IPluginCoreVM IPMPluginCore.VM => VM;
 
-  public Task InitAsync(ICoreR phCoreR, IProgress<string> progress) {
+  public Core() {
     Inst = this;
-    DirPlugins = Path.Combine("plugins", "MovieManager", "plugins");
-    DirPosters = Path.Combine("plugins", "MovieManager", "posters");
-    R = new(phCoreR);
+    BaseDir = Path.Combine("plugins", Name);
+    PluginsDir = Path.Combine(BaseDir, "plugins");
+  }
+
+  public Task InitAsync(ICore pmCore, ICoreR phCoreR, IProgress<string> progress) {
+    PMCore = pmCore;
+    R = new(phCoreR, this);
 
     return Task.Run(() => {
       R.AddDataAdapters();
@@ -64,13 +69,13 @@ public sealed class Core : IPMPluginCore {
   }
 
   private void SetMovieSearchPlugin() {
-    var path = Path.Combine(DirPlugins, "MovieManager.Plugins.MediaIMDbCom.dll");
+    var path = Path.Combine(PluginsDir, "MovieManager.Plugins.MediaIMDbCom.dll");
     if (Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return;
     MovieSearch = pc as IMovieSearchPlugin;
   }
 
   private void SetMovieDetailPlugin() {
-    var path = Path.Combine(DirPlugins, "MovieManager.Plugins.IMDbAPIdev.dll");
+    var path = Path.Combine(PluginsDir, "MovieManager.Plugins.IMDbAPIdev.dll");
     if (Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return;
     MovieDetail = pc as IMovieDetailPlugin;
   }
