@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using PictureManager.Interfaces.Settings;
 
 namespace PictureManager.Common;
 
-public sealed class Settings {
+public sealed class Settings : ISettings {
   private static readonly string _filePath = "settings.json";
   
   [JsonIgnore]
@@ -20,6 +21,8 @@ public sealed class Settings {
   public GeoNameSettings GeoName { get; set; }
   public ImagesToVideoSettings ImagesToVideo { get; set; }
   public MediaItemSettings MediaItem { get; set; }
+
+  IMediaItemSettings ISettings.MediaItem => MediaItem;
 
   public void Save() {
     try {
@@ -108,7 +111,7 @@ public sealed class ImagesToVideoSettings : ObservableObject {
   public double Speed { get => _speed; set { _speed = value; OnPropertyChanged(); } }
 }
 
-public sealed class MediaItemSettings : ObservableObject {
+public sealed class MediaItemSettings : ObservableObject, IMediaItemSettings {
   private double _mediaItemThumbScale = 0.8;
   private bool _scrollExactlyToMediaItem;
   private int _thumbSize = 400;

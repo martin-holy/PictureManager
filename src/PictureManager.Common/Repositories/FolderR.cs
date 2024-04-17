@@ -4,6 +4,9 @@ using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.Services;
 using PictureManager.Common.TreeCategories;
+using PictureManager.Interfaces.Models;
+using PictureManager.Interfaces.Repositories;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +16,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class FolderR : TreeDataAdapter<FolderM> {
+public class FolderR : TreeDataAdapter<FolderM>, IFolderR {
   public FoldersTreeCategory Tree { get; }
 
   public FolderR(CoreR coreR) : base(coreR, "Folders", 3) {
@@ -94,5 +97,20 @@ public class FolderR : TreeDataAdapter<FolderM> {
     var cachePath = item.FullPathCache;
     if (Directory.Exists(path)) CoreR.FileOperationDelete([path], true, false);
     if (Directory.Exists(cachePath)) Directory.Delete(cachePath, true);
+  }
+
+  IFolderM IFolderR.GetFolder(string folderPath) => GetFolder(folderPath);
+
+  public FolderM GetFolder(string folderPath) {
+    if (!Directory.Exists(folderPath) || string.IsNullOrEmpty(folderPath)) return null;
+    var parts = folderPath.Split(Path.DirectorySeparatorChar);
+    if (Tree.Items.GetByName(parts[0], StringComparison.OrdinalIgnoreCase) is not { } folder) return null;
+
+    for (int i = 1; i < parts.Length; i++) {
+      folder = folder.Items.GetByName(parts[i], StringComparison.OrdinalIgnoreCase)
+               ?? ItemCreate(folder, parts[i]);
+    }
+
+    return folder as FolderM;
   }
 }

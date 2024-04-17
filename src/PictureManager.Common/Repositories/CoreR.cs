@@ -35,6 +35,7 @@ public sealed class CoreR : SimpleDB, ICoreR {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
+  IFolderR ICoreR.Folder => Folder;
   IKeywordR ICoreR.Keyword => Keyword;
   IRepository<IMediaItemM> ICoreR.MediaItem => MediaItem;
   IRepository<IPersonM> ICoreR.Person => Person;

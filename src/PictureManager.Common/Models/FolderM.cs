@@ -5,6 +5,7 @@ using MH.Utils.Interfaces;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
+using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Models;
 
-public class FolderM : TreeItem, IEquatable<FolderM> {
+public class FolderM : TreeItem, IEquatable<FolderM>, IFolderM {
   #region IEquatable implementation
   public bool Equals(FolderM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as FolderM);

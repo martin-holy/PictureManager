@@ -4,7 +4,9 @@ using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.Utils;
 using PictureManager.Common.ViewModels;
+using PictureManager.Interfaces;
 using PictureManager.Interfaces.Plugin;
+using PictureManager.Interfaces.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common;
 
-public sealed class Core {
+public sealed class Core : ICore {
   private static Core _inst;
   private static readonly object _lock = new();
   public static Core Inst { get { lock (_lock) { return _inst ??= new(); } } }
@@ -22,6 +24,8 @@ public sealed class Core {
   public static CoreVM VM { get; private set; }
   public static Settings Settings { get; } = Settings.Load();
   public List<IPluginCore> Plugins { get; } = [];
+
+  ISettings ICore.Settings => Settings;
 
   private Core() {
     Tasks.SetUiTaskScheduler();
@@ -70,7 +74,7 @@ public sealed class Core {
   private Task LoadPlugins(IProgress<string> progress) {
     if (PluginU.GetPluginCore("MovieManager") is not { } mm) return Task.CompletedTask;
     Plugins.Add(mm);
-    return mm.InitAsync(R, progress);
+    return mm.InitAsync(this, R, progress);
   }
 
   private void AttachEvents() {
