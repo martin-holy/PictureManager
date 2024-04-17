@@ -1,7 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using System.Collections.Generic;
 
-namespace PictureManager.Plugins.Common.Interfaces.ViewModels;
+namespace PictureManager.Interfaces.Plugin;
 
 public interface IPluginCoreVM {
   public string PluginIcon { get; }

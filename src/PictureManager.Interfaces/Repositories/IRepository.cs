@@ -1,9 +1,9 @@
 ﻿using MH.Utils.Interfaces;
 using System.Collections.Generic;
 
-namespace PictureManager.Plugins.Common.Interfaces.Repositories;
+namespace PictureManager.Interfaces.Repositories;
 
-public interface IPluginHostR<T> {
+public interface IRepository<T> {
   public T GetById(string id, bool nullable = false);
   public List<T> Link(string csv, IDataAdapter seeker);
 }

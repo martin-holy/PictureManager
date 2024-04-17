@@ -1,11 +1,11 @@
 ﻿using MH.UI.Controls;
 using MH.UI.Dialogs;
 
-namespace PictureManager.Plugins.Common.Interfaces.ViewModels;
+namespace PictureManager.Interfaces.ViewModels;
 
-public interface IPluginHostCoreVM {
+public interface ICoreVM {
   public TabControl MainTabs { get; }
   public TabControl ToolsTabs { get; }
   public ToggleDialog ToggleDialog { get; }
-  public IPluginHostSegmentVM Segment { get; }
+  public ISegmentVM Segment { get; }
 }
