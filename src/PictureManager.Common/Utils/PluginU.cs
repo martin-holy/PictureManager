@@ -1,5 +1,5 @@
 ﻿using MH.Utils;
-using PictureManager.Plugins.Common.Interfaces;
+using PictureManager.Interfaces.Plugin;
 using System;
 using System.IO;
 

@@ -4,8 +4,7 @@ using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.Utils;
 using PictureManager.Common.ViewModels;
-using PictureManager.Common.ViewModels.Entities;
-using PictureManager.Plugins.Common.Interfaces;
+using PictureManager.Interfaces.Plugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +50,7 @@ public sealed class Core {
     S.AttachEvents();
     VM.AttachEvents();
 
-    foreach (var plugin in Plugins) plugin.AfterInit(VM);
+    foreach (var plugin in Plugins) plugin.AfterInit(S, VM);
 
     AttachEvents();
 

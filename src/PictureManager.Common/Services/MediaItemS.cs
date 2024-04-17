@@ -3,6 +3,8 @@ using MH.Utils.BaseClasses;
 using PictureManager.Common.HelperClasses;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
+using PictureManager.Interfaces.Models;
+using PictureManager.Interfaces.Services;
 using System;
 using System.IO;
 using System.Linq;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.Services;
 
-public sealed class MediaItemS(MediaItemR r) : ObservableObject {
+public sealed class MediaItemS(MediaItemR r) : ObservableObject, IMediaItemS {
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
 
   public void DeleteFromDrive(MediaItemM[] items) =>
@@ -47,5 +49,9 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
     mi.SetInfoBox(true);
     mi.OnPropertyChanged(nameof(mi.Comment));
     r.Modify(mi);
+  }
+
+  public IMediaItemM ImportMediaItem(string folderPath, string fileName) {
+    return null; // TODO
   }
 }

@@ -1,7 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common.Interfaces;
-using PictureManager.Plugins.Common.Interfaces.Models;
+using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace PictureManager.Common.Models;
 /// <summary>
 /// DB fields: ID|Name|Segment|Keywords
 /// </summary>
-public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords, IPluginHostPersonM {
+public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords, IPersonM {
   #region IEquatable implementation
   public bool Equals(PersonM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as PersonM);
@@ -31,7 +31,7 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords, IPlu
   public bool IsUnknown { get => Bits[BitsMasks.IsUnknown]; set { Bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }
   public List<SegmentM> Segments { get; set; }
 
-  IPluginHostSegmentM IPluginHostPersonM.Segment => Segment;
+  ISegmentM IPersonM.Segment => Segment;
 
   public PersonM() { }
 

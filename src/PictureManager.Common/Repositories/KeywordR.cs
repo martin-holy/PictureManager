@@ -3,8 +3,8 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.TreeCategories;
-using PictureManager.Plugins.Common.Interfaces.Models;
-using PictureManager.Plugins.Common.Interfaces.Repositories;
+using PictureManager.Interfaces.Repositories;
+using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostKeywordR {
+public class KeywordR : TreeDataAdapter<KeywordM>, IKeywordR {
   private readonly CoreR _coreR;
   private const string _notFoundRecordNamePrefix = "Not found ";
 
@@ -56,14 +56,14 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostKeywordR {
       .SingleOrDefault(x => x.Name.Equals("Auto Added"));
   }
 
-  IPluginHostKeywordM IPluginHostR<IPluginHostKeywordM>.GetById(string id, bool nullable) =>
+  IKeywordM IRepository<IKeywordM>.GetById(string id, bool nullable) =>
     GetById(id, nullable);
 
   public List<KeywordM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
-  List<IPluginHostKeywordM> IPluginHostR<IPluginHostKeywordM>.Link(string csv, IDataAdapter seeker) =>
-    Link(csv, seeker)?.Cast<IPluginHostKeywordM>().ToList();
+  List<IKeywordM> IRepository<IKeywordM>.Link(string csv, IDataAdapter seeker) =>
+    Link(csv, seeker)?.Cast<IKeywordM>().ToList();
 
   private KeywordM GetNotFoundRecord(int notFoundId) {
     var id = GetNextId();
@@ -107,7 +107,7 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IPluginHostKeywordR {
       ?? items.FirstOrDefault();
   }
 
-  IPluginHostKeywordM IPluginHostKeywordR.GetByFullPath(string fullPath, IEnumerable<ITreeItem> src, ITreeItem rootForNew) =>
+  IKeywordM IKeywordR.GetByFullPath(string fullPath, IEnumerable<ITreeItem> src, ITreeItem rootForNew) =>
     GetByFullPath(fullPath, src, rootForNew);
 
   public void MoveGroupItemsToRoot(CategoryGroupM group) {
