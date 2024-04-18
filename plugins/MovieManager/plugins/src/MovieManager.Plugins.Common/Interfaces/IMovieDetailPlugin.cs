@@ -1,5 +1,7 @@
-﻿namespace MovieManager.Plugins.Common.Interfaces;
+﻿using System.Threading.Tasks;
+
+namespace MovieManager.Plugins.Common.Interfaces;
 
 public interface IMovieDetailPlugin {
-  public IMovieDetail GetMovieDetail(IDetailId id);
+  public Task<IMovieDetail> GetMovieDetail(IDetailId id);
 }

@@ -1,5 +1,7 @@
-﻿namespace MovieManager.Plugins.Common.Interfaces;
+﻿using System.Threading.Tasks;
+
+namespace MovieManager.Plugins.Common.Interfaces;
 
 public interface IMovieSearchPlugin {
-  public IMovieSearchResult[] SearchMovie(string query);
+  public Task<IMovieSearchResult[]> SearchMovie(string query);
 }

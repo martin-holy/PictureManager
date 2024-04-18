@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MovieManager.Common.ViewModels;
 
@@ -17,15 +18,15 @@ public class ImportVM : ObservableObject {
 
   public ObservableCollection<IMovieSearchResult> MovieSearchResults { get; } = [];
 
-  public RelayCommand<string> ImportMoviesCommand { get; }
-  public RelayCommand<IMovieSearchResult> ResolveSearchMovieResultCommand { get; }
+  public AsyncRelayCommand<string> ImportMoviesCommand { get; }
+  public AsyncRelayCommand<IMovieSearchResult> ResolveSearchMovieResultCommand { get; }
 
   public ImportVM(ImportS importS) {
     ImportMoviesCommand = new(ImportMovies, "IconBug", "Import");
     ResolveSearchMovieResultCommand = new(ResolveSearchMovieResult);
   }
 
-  private void ImportMovies(string titles) {
+  private Task ImportMovies(string titles) {
     _searchMoviesQueue.Clear();
     _searchMoviesQueue.AddRange(titles.Split(
       new[] { Environment.NewLine },
@@ -33,21 +34,21 @@ public class ImportVM : ObservableObject {
     ));
 
     Core.R.SetPosterFolder();
-    SearchMovie();
+    return SearchMovie();
   }
 
-  private void SearchMovie() {
+  private async Task SearchMovie() {
     if (_searchMoviesQueue.Pop() is not { } title) return;
-    var results = Core.MovieSearch.SearchMovie(title);
+    var results = await Core.MovieSearch.SearchMovie(title);
 
     switch (results.Length) {
       case 0:
-        SearchMovie();
+        await SearchMovie();
         // TODO notify nothing was found
         break;
       case 1:
-        ImportMovie(results[0]);
-        SearchMovie();
+        await ImportMovie(results[0]);
+        await SearchMovie();
         break;
       default:
         ResolveSearchMovieResults(results);
@@ -60,17 +61,18 @@ public class ImportVM : ObservableObject {
       MovieSearchResults.Add(result);
   }
 
-  private void ResolveSearchMovieResult(IMovieSearchResult result) {
+  private async Task ResolveSearchMovieResult(IMovieSearchResult result) {
     MovieSearchResults.Clear();
-    ImportMovie(result);
-    SearchMovie();
+    await ImportMovie(result);
+    await SearchMovie();
   }
 
-  private void ImportMovie(IMovieSearchResult result) {
+  private async Task ImportMovie(IMovieSearchResult result) {
     var movie = Core.R.MovieDetailId.GetMovie(result.DetailId);
     if (movie != null) return; // TODO notify that movie is already in DB
 
-    var movieDetail = Core.MovieDetail.GetMovieDetail(result.DetailId);
+    var movieDetail = await Core.MovieDetail.GetMovieDetail(result.DetailId);
+    if (movieDetail == null) return;
     movie = Core.R.Movie.ItemCreate(movieDetail);
     movie.DetailId = Core.R.MovieDetailId.ItemCreate(result.DetailId, movie);
 

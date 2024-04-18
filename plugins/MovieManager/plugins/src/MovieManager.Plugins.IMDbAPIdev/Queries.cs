@@ -13,13 +13,13 @@ public static class Queries {
       Content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json")
     };
 
-    var response = client.SendAsync(request).Result;
+    var response = client.SendAsync(request).GetAwaiter().GetResult();
 
     if (!response.IsSuccessStatusCode) {
       throw new($"GraphQL request failed with status code {response.StatusCode}");
     }
 
-    var responseContent = response.Content.ReadAsStringAsync().Result;
+    var responseContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
     var jsonDocument = JsonDocument.Parse(responseContent);
     var responseData = jsonDocument.RootElement.GetProperty("data");
 

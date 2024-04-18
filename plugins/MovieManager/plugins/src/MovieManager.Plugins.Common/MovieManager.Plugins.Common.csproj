@@ -18,4 +18,10 @@
     <Exec Command="xcopy &quot;$(TargetDir)MovieManager.Plugins.Common.dll&quot; &quot;$(MainAppTargetDir)plugins\MovieManager\&quot; /Y" />
   </Target>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+
 </Project>
