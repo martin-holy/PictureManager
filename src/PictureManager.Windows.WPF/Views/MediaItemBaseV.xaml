@@ -5,7 +5,7 @@
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters">
 
   <DataTemplate DataType="{x:Type mim:MediaItemM}" x:Key="PM.T.MediaItemBase">
-    <Image Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}">
+    <Image Stretch="Fill">
       <Image.Source>
         <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
           <Binding Path="FilePathCache" IsAsync="True"/>
