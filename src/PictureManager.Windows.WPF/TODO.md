@@ -58,6 +58,8 @@
 ## Video
   - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
     + setting this position in VideoDetail
+## Settings
+  - use WrapPanel and each category is one block
 
 
                                     *** NEW ***
