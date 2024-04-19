@@ -28,9 +28,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.IMDbAP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.Common", "plugins\MovieManager\plugins\src\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj", "{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.MediaIMDbCom", "plugins\MovieManager\plugins\src\MovieManager.Plugins.MediaIMDbCom\MovieManager.Plugins.MediaIMDbCom.csproj", "{24D50757-6B9E-4847-81B0-B04372249E54}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Interfaces", "src\PictureManager.Interfaces\PictureManager.Interfaces.csproj", "{DB292AF4-06A9-41EE-9E28-974E69743328}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.IMDbCom", "plugins\MovieManager\plugins\src\MovieManager.Plugins.IMDbCom\MovieManager.Plugins.IMDbCom.csproj", "{962A7AA4-9675-4B5D-8288-A0363CD49F85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,14 +74,14 @@ Global
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24D50757-6B9E-4847-81B0-B04372249E54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24D50757-6B9E-4847-81B0-B04372249E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24D50757-6B9E-4847-81B0-B04372249E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24D50757-6B9E-4847-81B0-B04372249E54}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DB292AF4-06A9-41EE-9E28-974E69743328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DB292AF4-06A9-41EE-9E28-974E69743328}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB292AF4-06A9-41EE-9E28-974E69743328}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB292AF4-06A9-41EE-9E28-974E69743328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{962A7AA4-9675-4B5D-8288-A0363CD49F85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{962A7AA4-9675-4B5D-8288-A0363CD49F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{962A7AA4-9675-4B5D-8288-A0363CD49F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{962A7AA4-9675-4B5D-8288-A0363CD49F85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,7 +91,7 @@ Global
 		{DED6E1C3-238F-4B9E-BB10-3DD80519B4E6} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 		{D8A3060D-6FAA-4861-AA66-E4EFE6446237} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
-		{24D50757-6B9E-4847-81B0-B04372249E54} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
+		{962A7AA4-9675-4B5D-8288-A0363CD49F85} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C456C484-3702-4A0E-9458-46475FC39272}
