@@ -48,15 +48,25 @@
         </b:Interaction.Triggers>
       </ListBox>
 
-      <Button
-        Grid.Row="2"
-        Margin="5"
-        MinHeight="30"
-        MinWidth="60"
-        HorizontalAlignment="Right"
-        Content="Import"
-        Command="{Binding ImportMoviesCommand}"
-        CommandParameter="{Binding Text, ElementName=titles}"/>
+      <StackPanel Grid.Row="2" Orientation="Horizontal">
+        <Button
+          Margin="5"
+          MinHeight="30"
+          MinWidth="60"
+          HorizontalAlignment="Right"
+          Content="Import"
+          Command="{Binding ImportMoviesCommand}"
+          CommandParameter="{Binding Text, ElementName=titles}"/>
+
+        <Button
+          Margin="5"
+          MinHeight="30"
+          MinWidth="60"
+          HorizontalAlignment="Right"
+          Content="Test"
+          Command="{Binding TestCommand}"/>
+      </StackPanel>
+      
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

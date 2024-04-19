@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetDir)MovieManager.Plugins.MediaIMDbCom.dll&quot; &quot;$(MainAppTargetDir)plugins\MovieManager\plugins\&quot; /Y" />
+    <Exec Command="xcopy &quot;$(TargetDir)MovieManager.Plugins.IMDbCom.dll&quot; &quot;$(MainAppTargetDir)plugins\MovieManager\plugins\&quot; /Y" />
   </Target>
 
 </Project>

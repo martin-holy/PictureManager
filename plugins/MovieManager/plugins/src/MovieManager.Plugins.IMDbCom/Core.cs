@@ -1,13 +1,13 @@
-﻿using MovieManager.Plugins.Common;
-using MovieManager.Plugins.Common.Interfaces;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using MovieManager.Plugins.Common;
+using MovieManager.Plugins.Common.Interfaces;
 
-namespace MovieManager.Plugins.MediaIMDbCom;
+namespace MovieManager.Plugins.IMDbCom;
 
 public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieDetailPlugin {
   public const string IdName = "IMDb";
@@ -35,15 +35,18 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieD
   public IActorSearchResult[] SearchActor(string query) => throw new System.NotImplementedException();
 
   public async Task<IMovieDetail> GetMovieDetail(IDetailId id) {
+    TestJsonImport();
+    return null;
+
     if (!id.Name.Equals(IdName)) return null;
     var url = $"https://www.imdb.com/title/{id.Id}";
     var content = await Common.Core.GetWebPageContent(url);
     var json = ExtractMovieDetailJson(content);
 
-    using var sw = new StreamWriter("d:\\Dev\\PictureManager\\Temp\\TestCompress.html", false, Encoding.UTF8, 65536);
+    /*using var sw = new StreamWriter("d:\\Dev\\PictureManager\\Temp\\TestCompress.html", false, Encoding.UTF8, 65536);
     sw.Write(content);
     using var sw2 = new StreamWriter("d:\\Dev\\PictureManager\\Temp\\TestCompress.json", false, Encoding.UTF8, 65536);
-    sw2.Write(json);
+    sw2.Write(json);*/
 
     return null;
   }
@@ -60,4 +63,11 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieD
 
     return html.Substring(startIndex, jsonLength);
   }
+
+  private void TestJsonImport() {
+    using var sr = new StreamReader("d:\\Dev\\PictureManager\\Temp\\TestCompress.json", Encoding.UTF8);
+    
+    Parser.Parse(sr.BaseStream);
+  }
 }
+

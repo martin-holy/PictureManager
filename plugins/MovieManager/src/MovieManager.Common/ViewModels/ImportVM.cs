@@ -20,10 +20,16 @@ public class ImportVM : ObservableObject {
 
   public AsyncRelayCommand<string> ImportMoviesCommand { get; }
   public AsyncRelayCommand<IMovieSearchResult> ResolveSearchMovieResultCommand { get; }
+  public AsyncRelayCommand TestCommand { get; }
 
   public ImportVM(ImportS importS) {
     ImportMoviesCommand = new(ImportMovies, "IconBug", "Import");
     ResolveSearchMovieResultCommand = new(ResolveSearchMovieResult);
+    TestCommand = new(Test);
+  }
+
+  private async Task Test() {
+    var movieDetail = await Core.MovieDetail.GetMovieDetail(null);
   }
 
   private Task ImportMovies(string titles) {

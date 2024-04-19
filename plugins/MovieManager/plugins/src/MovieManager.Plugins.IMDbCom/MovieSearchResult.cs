@@ -1,7 +1,7 @@
 ﻿using MovieManager.Plugins.Common.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace MovieManager.Plugins.MediaIMDbCom;
+namespace MovieManager.Plugins.IMDbCom;
 
 public class MovieSearchResult : IMovieSearchResult {
   [JsonPropertyName("l")]
