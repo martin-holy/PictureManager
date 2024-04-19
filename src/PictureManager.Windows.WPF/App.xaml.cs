@@ -20,6 +20,7 @@ namespace PictureManager.Windows.WPF {
       };
 
       CommandManager.RequerySuggested += RelayCommand.InvokeCanExecuteChanged;
+      CommandManager.RequerySuggested += AsyncRelayCommand.InvokeCanExecuteChanged;
 
       var splashScreen = new SplashScreenV();
       MainWindow = splashScreen;
