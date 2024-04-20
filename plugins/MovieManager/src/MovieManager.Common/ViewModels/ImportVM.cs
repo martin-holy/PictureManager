@@ -38,7 +38,8 @@ public class ImportVM : ObservableObject {
       StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
     ));
 
-    Core.R.SetPosterFolder();
+    Core.R.SetActorsFolder();
+    Core.R.SetPostersFolder();
     return SearchMovie();
   }
 
@@ -79,7 +80,7 @@ public class ImportVM : ObservableObject {
     var movieDetail = await Core.MovieDetail.GetMovieDetail(result.DetailId);
     if (movieDetail == null) return;
     movie = Core.R.Movie.ItemCreate(movieDetail);
-    movie.DetailId = Core.R.MovieDetailId.ItemCreate(result.DetailId, movie);
+    movie.DetailId = Core.R.MovieDetailId.ItemCreate(movieDetail.DetailId, movie);
 
     foreach (var cast in movieDetail.Cast) {
       var actor = Core.R.ActorDetailId.GetActor(cast.Actor.DetailId);

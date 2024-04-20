@@ -1,5 +1,6 @@
 ﻿using MH.Utils.Extensions;
 using MovieManager.Plugins.Common.Models;
+using System;
 using System.Text.Json;
 
 namespace MovieManager.Plugins.IMDbCom;
@@ -19,6 +20,8 @@ public static class Parser {
   private const string _i = "i";
   private const string _id = "id";
   private const string _imageUrl = "imageUrl";
+  private const string _imgExt = ".jpg";
+  private const string _imgUrlParamStart = "_V1_";
   private const string _l = "l";
   private const string _mainColumnData = "mainColumnData";
   private const string _name = "name";
@@ -41,6 +44,7 @@ public static class Parser {
   private const string _text = "text";
   private const string _titleMainImages = "titleMainImages";
   private const string _titleText = "titleText";
+  private const string _titleType = "titleType";
   private const string _url = "url";
   private const string _width = "width";
   private const string _y = "y";
@@ -70,6 +74,8 @@ public static class Parser {
         || !pageProps.TryGetProperty(_mainColumnData, out var dataB)) return null;
 
     var md = new MovieDetail {
+      DetailId = new (dataA.TryGetString(_id), Core.IdName),
+      Type = dataA.TryGetString(_titleType, _text),
       Title = dataA.TryGetString(_titleText, _text),
       OriginalTitle = dataA.TryGetString(_originalTitleText, _text),
       MPAA = dataA.TryGetString(_certificate, _rating),
@@ -92,7 +98,7 @@ public static class Parser {
   private static Image ParseImage(JsonElement element) =>
     new() {
       Id = element.TryGetString(_id),
-      Url = element.TryGetString(_url) ?? element.TryGetString(_imageUrl),
+      Url = AddUrlParams(element.TryGetString(_url) ?? element.TryGetString(_imageUrl)),
       Height = element.TryGetInt32(_height),
       Width = element.TryGetInt32(_width),
       Desc = element.TryGetString(_caption, _plainText)
@@ -107,4 +113,13 @@ public static class Parser {
       },
       Characters = element.TryGetArray(_characters, x => x.TryGetString(_name))
     };
+
+  public static string AddUrlParams(string url, string urlParams = "QL80") {
+    var startIndex = url.IndexOf(_imgUrlParamStart, StringComparison.Ordinal) + _imgUrlParamStart.Length;
+    var endIndex = url.LastIndexOf(_imgExt, StringComparison.Ordinal);
+
+    return startIndex < 0 || endIndex < 0
+      ? url
+      : url[..startIndex] + urlParams + url[endIndex..];
+  }
 }

@@ -1,4 +1,5 @@
-﻿using MovieManager.Plugins.Common.Interfaces;
+﻿using MH.Utils;
+using MovieManager.Plugins.Common.Interfaces;
 using MovieManager.Plugins.Common.Models;
 using System;
 using System.IO;
@@ -28,7 +29,14 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieD
     var content = await Common.Core.GetWebPageContent(url);
     if (content == null) return null;
     var jsonText = ExtractMovieDetailJson(content);
-    return Parser.ParseMovie(jsonText);
+
+    try {
+      return Parser.ParseMovie(jsonText);
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+      return null;
+    }
   }
 
   private static string ExtractMovieDetailJson(string html) {

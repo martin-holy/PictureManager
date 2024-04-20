@@ -16,11 +16,14 @@ public sealed class CoreR : SimpleDB {
   public MovieDetailIdR MovieDetailId { get; }
   public MovieR Movie { get; }
 
+  public string ActorsDir { get; }
   public string PostersDir { get; }
+  public IFolderM ActorsFolder { get; set; }
   public IFolderM PostersFolder { get; set; }
 
   public CoreR(ICoreR phCoreR, Core core) : base(Path.Combine(core.BaseDir, "db")) {
     _phCoreR = phCoreR;
+    ActorsDir = Path.Combine(core.BaseDir, "actors");
     PostersDir = Path.Combine(core.BaseDir, "posters");
 
     Actor = new(this, phCoreR);
@@ -40,19 +43,27 @@ public sealed class CoreR : SimpleDB {
     AddTableDataAdapter(Movie);
   }
 
-  public void SetPosterFolder() {
+  public void SetActorsFolder() {
+    if (ActorsFolder != null) return;
+    ActorsFolder = GetFolder(ActorsDir);
+  }
+
+  public void SetPostersFolder() {
     if (PostersFolder != null) return;
+    PostersFolder = GetFolder(PostersDir);
+  }
 
-    if (!Directory.Exists(PostersDir)) {
-      try {
-        Directory.CreateDirectory(PostersDir);
-      }
-      catch (Exception ex) {
-        Log.Error(ex);
-        return;
-      }
+  private IFolderM GetFolder(string path) {
+    if (Directory.Exists(path))
+      return _phCoreR.Folder.GetFolder(path);
+
+    try {
+      Directory.CreateDirectory(path!);
+      return _phCoreR.Folder.GetFolder(path);
     }
-
-    PostersFolder = _phCoreR.Folder.GetFolder(PostersDir);
+    catch (Exception ex) {
+      Log.Error(ex);
+      return null;
+    }
   }
 }
