@@ -1,7 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MovieManager.Common.Models;
-using MovieManager.Plugins.Common.Interfaces;
+using MovieManager.Plugins.Common.Models;
 using PictureManager.Interfaces.Repositories;
 using System;
 using System.Globalization;
@@ -20,7 +20,7 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       Length = csv[4].IntParseOrDefault(0),
       Rating = csv[5].IntParseOrDefault(0) / 10.0,
       PersonalRating = csv[6].IntParseOrDefault(0) / 10.0,
-      MPAA = string.IsNullOrEmpty(csv[8]) ? null : csv[8].Split(','),
+      MPAA = string.IsNullOrEmpty(csv[8]) ? null : csv[8],
       SeenWhen = string.IsNullOrEmpty(csv[9]) ? null : csv[9].Split(',').Select(x => DateOnly.ParseExact(x, "yyyyMMdd", CultureInfo.InvariantCulture)).ToArray(),
       Plot = string.IsNullOrEmpty(csv[11]) ? null : csv[11]
     };
@@ -35,7 +35,7 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       ((int)(item.Rating * 10)).ToString(),
       ((int)(item.PersonalRating * 10)).ToString(),
       item.Genres?.ToHashCodes().ToCsv() ?? string.Empty,
-      item.MPAA?.ToCsv() ?? string.Empty,
+      item.MPAA ?? string.Empty,
       item.SeenWhen?.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv() ?? string.Empty,
       item.Poster?.GetHashCode().ToString(),
       item.Plot ?? string.Empty);
@@ -47,11 +47,11 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
     }
   }
 
-  public MovieM ItemCreate(IMovieDetail md) {
+  public MovieM ItemCreate(MovieDetail md) {
     var item = ItemCreate(new MovieM(GetNextId(), md.Title) {
       Year = md.Year,
       YearEnd = md.YearEnd,
-      Length = md.Length,
+      Length = md.Runtime,
       Rating = md.Rating,
       MPAA = md.MPAA,
       Plot = md.Plot

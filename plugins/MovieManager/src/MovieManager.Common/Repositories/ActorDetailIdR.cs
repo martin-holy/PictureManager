@@ -1,6 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
-using MovieManager.Plugins.Common.Interfaces;
+using MovieManager.Plugins.Common.Models;
 using System.Linq;
 
 namespace MovieManager.Common.Repositories;
@@ -24,10 +24,10 @@ public sealed class ActorDetailIdR(CoreR coreR) : TableDataAdapter<ActorDetailId
       item.Actor = coreR.Actor.GetById(csv[3]);
   }
 
-  public ActorDetailIdM ItemCreate(IDetailId detailId, ActorM actor) =>
+  public ActorDetailIdM ItemCreate(DetailId detailId, ActorM actor) =>
     ItemCreate(new(GetNextId(), detailId.Id, detailId.Name) { Actor = actor });
 
-  public ActorM GetActor(IDetailId detailId) =>
+  public ActorM GetActor(DetailId detailId) =>
     All.FirstOrDefault(x =>
       x.DetailName.Equals(detailId.Name)
       && x.DetailId.Equals(detailId.Id))?.Actor;

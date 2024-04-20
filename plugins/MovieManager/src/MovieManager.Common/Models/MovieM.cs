@@ -21,7 +21,7 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public List<GenreM> Genres { get; set; }
   public List<IKeywordM> Keywords { get; set; }
   public DateOnly[] SeenWhen { get; set; }
-  public string[] MPAA { get; set; }
+  public string MPAA { get; set; }
   public string Plot { get; set; }
   public IMediaItemM Poster { get; set; }
   public List<IMediaItemM> MediaItems { get; set; }

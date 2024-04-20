@@ -3,12 +3,11 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MovieManager.Common.Models;
 using MovieManager.Common.Services;
-using MovieManager.Plugins.Common.Interfaces;
+using MovieManager.Plugins.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MovieManager.Common.ViewModels;
@@ -16,10 +15,10 @@ namespace MovieManager.Common.ViewModels;
 public class ImportVM : ObservableObject {
   private readonly List<string> _searchMoviesQueue = [];
 
-  public ObservableCollection<IMovieSearchResult> MovieSearchResults { get; } = [];
+  public ObservableCollection<SearchResult> MovieSearchResults { get; } = [];
 
   public AsyncRelayCommand<string> ImportMoviesCommand { get; }
-  public AsyncRelayCommand<IMovieSearchResult> ResolveSearchMovieResultCommand { get; }
+  public AsyncRelayCommand<SearchResult> ResolveSearchMovieResultCommand { get; }
   public AsyncRelayCommand TestCommand { get; }
 
   public ImportVM(ImportS importS) {
@@ -62,18 +61,18 @@ public class ImportVM : ObservableObject {
     }
   }
 
-  private void ResolveSearchMovieResults(IMovieSearchResult[] results) {
+  private void ResolveSearchMovieResults(SearchResult[] results) {
     foreach (var result in results)
       MovieSearchResults.Add(result);
   }
 
-  private async Task ResolveSearchMovieResult(IMovieSearchResult result) {
+  private async Task ResolveSearchMovieResult(SearchResult result) {
     MovieSearchResults.Clear();
     await ImportMovie(result);
     await SearchMovie();
   }
 
-  private async Task ImportMovie(IMovieSearchResult result) {
+  private async Task ImportMovie(SearchResult result) {
     var movie = Core.R.MovieDetailId.GetMovie(result.DetailId);
     if (movie != null) return; // TODO notify that movie is already in DB
 
@@ -82,22 +81,22 @@ public class ImportVM : ObservableObject {
     movie = Core.R.Movie.ItemCreate(movieDetail);
     movie.DetailId = Core.R.MovieDetailId.ItemCreate(result.DetailId, movie);
 
-    foreach (var cast in movieDetail.Casts) {
-      var actor = Core.R.ActorDetailId.GetActor(cast.DetailId);
+    foreach (var cast in movieDetail.Cast) {
+      var actor = Core.R.ActorDetailId.GetActor(cast.Actor.DetailId);
 
       if (actor == null) {
-        actor = Core.R.Actor.ItemCreate(cast.Name);
-        Core.R.ActorDetailId.ItemCreate(cast.DetailId, actor);
+        actor = Core.R.Actor.ItemCreate(cast.Actor.Name);
+        Core.R.ActorDetailId.ItemCreate(cast.Actor.DetailId, actor);
       }
       
       foreach (var character in cast.Characters)
         Core.R.Character.ItemCreate(character, actor, movie);
     }
 
-    ImportPoster(movieDetail.Posters.FirstOrDefault(), movie);
+    ImportPoster(movieDetail.Poster, movie);
   }
 
-  private void ImportPoster(IImage poster, MovieM movie) {
+  private void ImportPoster(Image poster, MovieM movie) {
     if (poster == null || Core.R.PostersFolder == null) return;
 
     var filePath = Path.Combine(Core.R.PostersDir, movie.PosterFileName);

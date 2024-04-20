@@ -1,6 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
-using MovieManager.Plugins.Common.Interfaces;
+using MovieManager.Plugins.Common.Models;
 using System.Linq;
 
 namespace MovieManager.Common.Repositories;
@@ -27,10 +27,10 @@ public sealed class MovieDetailIdR(CoreR coreR) : TableDataAdapter<MovieDetailId
     }
   }
 
-  public MovieDetailIdM ItemCreate(IDetailId detailId, MovieM movie) =>
+  public MovieDetailIdM ItemCreate(DetailId detailId, MovieM movie) =>
     ItemCreate(new(GetNextId(), detailId.Id, detailId.Name) { Movie = movie });
 
-  public MovieM GetMovie(IDetailId detailId) =>
+  public MovieM GetMovie(DetailId detailId) =>
     All.FirstOrDefault(x =>
       x.DetailName.Equals(detailId.Name)
       && x.DetailId.Equals(detailId.Id))?.Movie;

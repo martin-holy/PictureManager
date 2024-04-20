@@ -88,19 +88,12 @@
         </mhc:PopupSlider>
 
         <!-- MPAA -->
-        <mhc:IconTextBlockItemsControl
+        <Border
           Grid.Column="4"
           ToolTip="MPAA"
-          ItemsSource="{Binding MovieM.MPAA}"
-          ap:Icon.Data="{StaticResource IconBug}">
-          <mhc:IconTextBlockItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Border Style="{StaticResource MH.S.Border.RoundDarker}">
-                <TextBlock Text="{Binding}" HorizontalAlignment="Center"/>
-              </Border>
-            </DataTemplate>
-          </mhc:IconTextBlockItemsControl.ItemTemplate>
-        </mhc:IconTextBlockItemsControl>
+          Style="{StaticResource MH.S.Border.RoundDarker}">
+          <TextBlock Text="{Binding MovieM.MPAA}" HorizontalAlignment="Center"/>
+        </Border>
       </Grid>
 
       <!-- Genres -->

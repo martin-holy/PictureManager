@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:interfaces="clr-namespace:MovieManager.Plugins.Common.Interfaces;assembly=MovieManager.Plugins.Common">
+  xmlns:models="clr-namespace:MovieManager.Plugins.Common.Models;assembly=MovieManager.Plugins.Common">
     
-  <DataTemplate x:Key="MM.DT.IMovieSearchResult" DataType="{x:Type interfaces:IMovieSearchResult}">
+  <DataTemplate x:Key="MM.DT.SearchResult" DataType="{x:Type models:SearchResult}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
