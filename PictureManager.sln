@@ -24,8 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Common", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Windows.WPF", "src\PictureManager.Windows.WPF\PictureManager.Windows.WPF.csproj", "{B8FC45F5-F582-4B0F-BF72-0166841061D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.IMDbAPIdev", "plugins\MovieManager\plugins\src\MovieManager.Plugins.IMDbAPIdev\MovieManager.Plugins.IMDbAPIdev.csproj", "{D8A3060D-6FAA-4861-AA66-E4EFE6446237}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.Common", "plugins\MovieManager\plugins\src\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj", "{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Interfaces", "src\PictureManager.Interfaces\PictureManager.Interfaces.csproj", "{DB292AF4-06A9-41EE-9E28-974E69743328}"
@@ -66,10 +64,6 @@ Global
 		{B8FC45F5-F582-4B0F-BF72-0166841061D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8FC45F5-F582-4B0F-BF72-0166841061D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8FC45F5-F582-4B0F-BF72-0166841061D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8A3060D-6FAA-4861-AA66-E4EFE6446237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8A3060D-6FAA-4861-AA66-E4EFE6446237}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8A3060D-6FAA-4861-AA66-E4EFE6446237}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8A3060D-6FAA-4861-AA66-E4EFE6446237}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -89,7 +83,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C57C05D4-3CA5-42DE-AA13-BCDC3A15FB36} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 		{DED6E1C3-238F-4B9E-BB10-3DD80519B4E6} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
-		{D8A3060D-6FAA-4861-AA66-E4EFE6446237} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 		{962A7AA4-9675-4B5D-8288-A0363CD49F85} = {E72BD25C-CE27-4839-9FB4-9E073F75A6F1}
 	EndGlobalSection
