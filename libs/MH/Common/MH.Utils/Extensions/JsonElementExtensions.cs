@@ -5,48 +5,63 @@ using System.Text.Json;
 namespace MH.Utils.Extensions;
 
 public static class JsonElementExtensions {
+  public static bool TryGetPropertySafe(this JsonElement element, string propName, out JsonElement value) {
+    if (element.ValueKind == JsonValueKind.Object)
+      return element.TryGetProperty(propName, out value);
+
+    value = default;
+    return false;
+  }
+
   public static T[] TryGetArray<T>(this JsonElement element, string propName, Func<JsonElement, T> parseElement) =>
-    element.TryGetProperty(propName, out var prop) && prop.ValueKind == JsonValueKind.Array
+    element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.Array
       ? prop.EnumerateArray().Select(parseElement).ToArray() : [];
 
   public static T[] TryGetArray<T>(this JsonElement element, string propName1, string propName2, Func<JsonElement, T> parseElement) =>
-    element.TryGetProperty(propName1, out var prop) ? prop.TryGetArray(propName2, parseElement) : [];
+    element.TryGetPropertySafe(propName1, out var prop)
+      ? prop.TryGetArray(propName2, parseElement) : [];
 
   public static bool? TryGetBool(this JsonElement element, string propName, bool? ifNull = null) =>
-    element.TryGetProperty(propName, out var prop) && prop.ValueKind is JsonValueKind.True or JsonValueKind.False
+    element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind is JsonValueKind.True or JsonValueKind.False
       ? prop.GetBoolean() : ifNull;
 
   public static bool? TryGetBool(this JsonElement element, string propName1, string propName2, bool? ifNull = null) =>
-    element.TryGetProperty(propName1, out var prop) ? prop.TryGetBool(propName2, ifNull) : ifNull;
+    element.TryGetPropertySafe(propName1, out var prop)
+      ? prop.TryGetBool(propName2, ifNull) : ifNull;
 
   public static double TryGetDouble(this JsonElement element, string propName, double ifNull = 0.0) =>
-    element.TryGetProperty(propName, out var prop) && prop.ValueKind == JsonValueKind.Number
+    element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.Number
       ? prop.TryGetDouble(out var value) ? value : ifNull : ifNull;
 
   public static double TryGetDouble(this JsonElement element, string propName1, string propName2, double ifNull = 0.0) =>
-    element.TryGetProperty(propName1, out var prop) ? prop.TryGetDouble(propName2, ifNull) : ifNull;
+    element.TryGetPropertySafe(propName1, out var prop)
+      ? prop.TryGetDouble(propName2, ifNull) : ifNull;
 
   public static int TryGetInt32(this JsonElement element, string propName, int ifNull = 0) =>
-    element.TryGetProperty(propName, out var prop) && prop.ValueKind == JsonValueKind.Number
+    element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.Number
       ? prop.TryGetInt32(out var value) ? value : ifNull : ifNull;
 
   public static int TryGetInt32(this JsonElement element, string propName1, string propName2, int ifNull = 0) =>
-    element.TryGetProperty(propName1, out var prop) ? prop.TryGetInt32(propName2, ifNull) : ifNull;
+    element.TryGetPropertySafe(propName1, out var prop)
+      ? prop.TryGetInt32(propName2, ifNull) : ifNull;
 
   public static T TryGetObject<T>(this JsonElement element, string propName, Func<JsonElement, T> parseElement) =>
-    element.TryGetProperty(propName, out var prop) && prop.ValueKind == JsonValueKind.Object
+    element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.Object
       ? parseElement(prop) : default;
 
   public static T TryGetObject<T>(this JsonElement element, string propName1, string propName2, Func<JsonElement, T> parseElement) =>
-    element.TryGetProperty(propName1, out var prop) ? prop.TryGetObject(propName2, parseElement) : default;
+    element.TryGetPropertySafe(propName1, out var prop)
+      ? prop.TryGetObject(propName2, parseElement) : default;
 
   public static string TryGetString(this JsonElement element, string propName) =>
-    element.TryGetProperty(propName, out var prop) && prop.ValueKind == JsonValueKind.String
+    element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.String
       ? prop.GetString() : null;
 
   public static string TryGetString(this JsonElement element, string propName1, string propName2) =>
-    element.TryGetProperty(propName1, out var prop) ? prop.TryGetString(propName2) : null;
+    element.TryGetPropertySafe(propName1, out var prop)
+      ? prop.TryGetString(propName2) : null;
 
   public static string TryGetString(this JsonElement element, string propName1, string propName2, string propName3) =>
-    element.TryGetProperty(propName1, out var prop) ? prop.TryGetString(propName2, propName3) : null;
+    element.TryGetPropertySafe(propName1, out var prop)
+      ? prop.TryGetString(propName2, propName3) : null;
 }
