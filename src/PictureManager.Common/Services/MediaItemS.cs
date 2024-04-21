@@ -53,6 +53,9 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject, IMediaItemS {
     r.Modify(mi);
   }
 
-  IMediaItemM IMediaItemS.ImportMediaItem(IFolderM folder, string fileName) =>
-    CopyMoveU.CreateMediaItemAndReadMetadata((FolderM)folder, fileName);
+  IMediaItemM IMediaItemS.GetMediaItem(IFolderM folder, string fileName) {
+    var f = (FolderM)folder;
+    var mi = f.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
+    return mi != null ? mi : CopyMoveU.CreateMediaItemAndReadMetadata(f, fileName);
+  }
 }

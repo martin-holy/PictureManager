@@ -4,7 +4,8 @@
   xmlns:vm="clr-namespace:MovieManager.Common.ViewModels;assembly=MovieManager.Common"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <ResourceDictionary.MergedDictionaries>
     <mhu:CachedResourceDictionary Source="CharacterV.xaml"/>
@@ -39,6 +40,7 @@
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -64,6 +66,7 @@
           TickFrequency="0.1"
           HorizontalAlignment="Center"
           Value="{Binding MovieM.Rating, Mode=TwoWay}">
+
           <mhc:PopupSlider.Content>
             <mhc:IconTextBlockButton
               ToolTip="Rating"
@@ -79,6 +82,7 @@
           TickFrequency="0.5"
           HorizontalAlignment="Center"
           Value="{Binding MovieM.PersonalRating, Mode=TwoWay}">
+
           <mhc:PopupSlider.Content>
             <mhc:IconTextBlockButton
               ToolTip="Personal Rating"
@@ -91,8 +95,13 @@
         <Border
           Grid.Column="4"
           ToolTip="MPAA"
-          Style="{StaticResource MH.S.Border.RoundDarker}">
-          <TextBlock Text="{Binding MovieM.MPAA}" HorizontalAlignment="Center"/>
+          Style="{StaticResource MH.S.Border.RoundDarker}"
+          Visibility="{Binding MovieM.MPAA, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}">
+          
+          <TextBlock
+            Text="{Binding MovieM.MPAA}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"/>
         </Border>
       </Grid>
 
@@ -105,12 +114,13 @@
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"/>
 
       <!-- Plot -->
-      <TextBlock
-        Grid.Row="4"
-        Text="{Binding MovieM.Plot}"
-        TextWrapping="Wrap"
-        TextAlignment="Justify"
-        Margin="8,4"/>
+      <ScrollViewer Grid.Row="4" MaxHeight="100">
+        <TextBlock
+          Text="{Binding MovieM.Plot}"
+          TextWrapping="Wrap"
+          TextAlignment="Justify"
+          Margin="8,4"/>
+      </ScrollViewer>
 
       <!-- Characters -->
       <mhc:CollectionView

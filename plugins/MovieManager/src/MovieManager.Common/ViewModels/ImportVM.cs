@@ -1,111 +1,84 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using MovieManager.Common.Models;
 using MovieManager.Common.Services;
 using MovieManager.Plugins.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace MovieManager.Common.ViewModels;
 
 public class ImportVM : ObservableObject {
-  private readonly List<string> _searchMoviesQueue = [];
+  private readonly ImportS _importS;
+  private readonly List<string> _searchQueue = [];
+  private bool _isSearchInProgress;
+  private bool _isImportInProgress;
 
-  public ObservableCollection<SearchResult> MovieSearchResults { get; } = [];
+  public ObservableCollection<SearchResult> SearchResults { get; } = [];
+  public ObservableCollection<string> ProgressCollection { get; } = [];
+  public IProgress<string> Progress { get; }
 
-  public AsyncRelayCommand<string> ImportMoviesCommand { get; }
-  public AsyncRelayCommand<SearchResult> ResolveSearchMovieResultCommand { get; }
-  public AsyncRelayCommand TestCommand { get; }
+  public AsyncRelayCommand<string> SearchCommand { get; }
+  public AsyncRelayCommand<SearchResult> ImportCommand { get; }
+  public RelayCommand CancelCommand { get; }
 
   public ImportVM(ImportS importS) {
-    ImportMoviesCommand = new(ImportMovies, "IconBug", "Import");
-    ResolveSearchMovieResultCommand = new(ResolveSearchMovieResult);
-    TestCommand = new(Test);
+    _importS = importS;
+    Progress = new Progress<string>(ProgressCollection.Add);
+
+    SearchCommand = new(Search, x => !string.IsNullOrEmpty(x) && !_isSearchInProgress && !_isImportInProgress);
+    ImportCommand = new(Import, x => x != null, "IconBug", "Import");
+    CancelCommand = new(Cancel, () => _isImportInProgress);
   }
 
-  private async Task Test() {
-    var movieDetail = await Core.MovieDetail.GetMovieDetail(null);
-  }
-
-  private Task ImportMovies(string titles) {
-    _searchMoviesQueue.Clear();
-    _searchMoviesQueue.AddRange(titles.Split(
+  private Task Search(string titles) {
+    _importS.PrepareForImport();
+    ProgressCollection.Clear();
+    _searchQueue.Clear();
+    _searchQueue.AddRange(titles.Split(
       new[] { Environment.NewLine },
       StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
     ));
 
-    Core.R.SetActorsFolder();
-    Core.R.SetPostersFolder();
-    return SearchMovie();
+    return SearchQueue();
   }
 
-  private async Task SearchMovie() {
-    if (_searchMoviesQueue.Pop() is not { } title) return;
+  private async Task Import(SearchResult result) {
+    SearchResults.Clear();
+    _isImportInProgress = true;
+    await _importS.ImportMovie(result, Progress);
+    _isImportInProgress = false;
+    Progress.Report(string.Empty);
+
+    await SearchQueue();
+  }
+
+  private void Cancel() {
+    // TODO send cancel to ImportMovie method
+  }
+
+  private async Task SearchQueue() {
+    SearchResults.Clear();
+
+    if (_searchQueue.Pop() is not { } title) {
+      Progress.Report("Importing completed.", true);
+      return;
+    }
+
+    Progress.Report($"Searching for '{title}' ...", true);
+    _isSearchInProgress = true;
     var results = await Core.MovieSearch.SearchMovie(title);
+    _isSearchInProgress = false;
 
-    switch (results.Length) {
-      case 0:
-        await SearchMovie();
-        // TODO notify nothing was found
-        break;
-      case 1:
-        await ImportMovie(results[0]);
-        await SearchMovie();
-        break;
-      default:
-        ResolveSearchMovieResults(results);
-        break;
+    if (results.Length == 0) {
+      Progress.Report("No results were found.", true);
+      await SearchQueue();
     }
-  }
-
-  private void ResolveSearchMovieResults(SearchResult[] results) {
-    foreach (var result in results)
-      MovieSearchResults.Add(result);
-  }
-
-  private async Task ResolveSearchMovieResult(SearchResult result) {
-    MovieSearchResults.Clear();
-    await ImportMovie(result);
-    await SearchMovie();
-  }
-
-  private async Task ImportMovie(SearchResult result) {
-    var movie = Core.R.MovieDetailId.GetMovie(result.DetailId);
-    if (movie != null) return; // TODO notify that movie is already in DB
-
-    var movieDetail = await Core.MovieDetail.GetMovieDetail(result.DetailId);
-    if (movieDetail == null) return;
-    movie = Core.R.Movie.ItemCreate(movieDetail);
-    movie.DetailId = Core.R.MovieDetailId.ItemCreate(movieDetail.DetailId, movie);
-
-    foreach (var cast in movieDetail.Cast) {
-      var actor = Core.R.ActorDetailId.GetActor(cast.Actor.DetailId);
-
-      if (actor == null) {
-        actor = Core.R.Actor.ItemCreate(cast.Actor.Name);
-        Core.R.ActorDetailId.ItemCreate(cast.Actor.DetailId, actor);
-      }
-      
-      foreach (var character in cast.Characters)
-        Core.R.Character.ItemCreate(character, actor, movie);
+    else {
+      foreach (var result in results) SearchResults.Add(result);
+      Progress.Report("Waiting for resolving search results ...", true);
     }
-
-    ImportPoster(movieDetail.Poster, movie);
-  }
-
-  private void ImportPoster(Image poster, MovieM movie) {
-    if (poster == null || Core.R.PostersFolder == null) return;
-
-    var filePath = Path.Combine(Core.R.PostersDir, movie.PosterFileName);
-
-    Tasks.DoWork(
-      () => Plugins.Common.Core.DownloadAndSaveFile(poster.Url, filePath),
-      _ => movie.Poster = Core.S.PhCoreS.MediaItem.ImportMediaItem(Core.R.PostersFolder, movie.PosterFileName),
-      Log.Error);
   }
 
   public void Open() {

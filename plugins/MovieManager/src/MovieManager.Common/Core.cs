@@ -53,7 +53,7 @@ public sealed class Core : IPMPluginCore {
   }
 
   public void AfterInit(ICoreS phCoreS, ICoreVM phCoreVM) {
-    S = new(phCoreS);
+    S = new(phCoreS, R);
     VM = new(phCoreVM, S, R);
     AttachEvents();
   }

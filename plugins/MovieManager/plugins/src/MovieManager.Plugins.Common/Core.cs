@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 namespace MovieManager.Plugins.Common;
 
 public class Core {
-  public static string DownloadAndSaveFile(string url, string filePath) {
+  public static async Task DownloadAndSaveFile(string url, string filePath) {
     using var client = new HttpClient();
-    var bytes = client.GetByteArrayAsync(url).GetAwaiter().GetResult();
-    File.WriteAllBytes(filePath, bytes);
-    return filePath;
+    var bytes = await client.GetByteArrayAsync(url).ConfigureAwait(false);
+    await File.WriteAllBytesAsync(filePath, bytes);
   }
 
   public static async Task<string> GetWebPageContent(string url, string language = "en") {

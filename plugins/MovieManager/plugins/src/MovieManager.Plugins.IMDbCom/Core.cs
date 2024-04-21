@@ -28,7 +28,7 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieD
     var url = $"https://www.imdb.com/title/{id.Id}";
     var content = await Common.Core.GetWebPageContent(url);
     if (content == null) return null;
-    var jsonText = ExtractMovieDetailJson(content);
+    if (ExtractMovieDetailJson(content) is not { } jsonText) return null;
 
     try {
       return Parser.ParseMovie(jsonText);

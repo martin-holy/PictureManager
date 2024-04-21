@@ -6,9 +6,9 @@ using PictureManager.Interfaces.Repositories;
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
-/// DB fields: Id|Name|Person
+/// DB fields: Id|Name|Person|Image
 /// </summary>
-public class ActorR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 3) {
+public class ActorR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 4) {
   public override ActorM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]);
 
@@ -16,11 +16,14 @@ public class ActorR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<ActorM>(core
     string.Join("|",
       item.GetHashCode().ToString(),
       item.Name,
-      item.Person?.GetHashCode().ToString() ?? string.Empty);
+      item.Person?.GetHashCode().ToString() ?? string.Empty,
+      item.Image?.GetHashCode().ToString());
 
   public override void LinkReferences() {
-    foreach (var (item, csv) in AllCsv)
+    foreach (var (item, csv) in AllCsv) {
       item.Person = phCoreR.Person.GetById(csv[2], true);
+      item.Image = phCoreR.MediaItem.GetById(csv[3], true);
+    }
   }
 
   public ActorM ItemCreate(string name) =>

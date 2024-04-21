@@ -3,5 +3,5 @@
 namespace PictureManager.Interfaces.Services;
 
 public interface IMediaItemS {
-  public IMediaItemM ImportMediaItem(IFolderM folder, string fileName);
+  public IMediaItemM GetMediaItem(IFolderM folder, string fileName);
 }

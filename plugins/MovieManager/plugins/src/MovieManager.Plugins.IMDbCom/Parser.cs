@@ -34,6 +34,7 @@ public static class Parser {
   private const string _plotText = "plotText";
   private const string _primaryImage = "primaryImage";
   private const string _props = "props";
+  private const string _q = "q";
   private const string _qid = "qid";
   private const string _rating = "rating";
   private const string _ratingsSummary = "ratingsSummary";
@@ -60,10 +61,26 @@ public static class Parser {
       DetailId = new(element.TryGetString(_id), Core.IdName),
       Name = element.TryGetString(_l),
       Year = element.TryGetInt32(_y),
-      Type = element.TryGetString(_qid),
+      Type = ParseSearchType(element),
       Desc = element.TryGetString(_s),
       Image = element.TryGetObject(_i, ParseImage)
     };
+
+  private static string ParseSearchType(JsonElement element) {
+    var q = element.TryGetString(_q) ?? string.Empty;
+    var qid = element.TryGetString(_qid) ?? string.Empty;
+
+    if (string.Equals(q, "feature") || string.Equals(qid, "movie")) return "Movie";
+    if (string.Equals(q, "video") || string.Equals(qid, "video")) return "Video";
+    if (string.Equals(q, "TV mini-series") || string.Equals(qid, "tvMiniSeries")) return "TV mini-series";
+    if (string.Equals(q, "TV series") || string.Equals(qid, "tvSeries")) return "TV series";
+    if (string.Equals(q, "TV movie") || string.Equals(qid, "tvMovie")) return "TV movie";
+    if (string.Equals(q, "musicVideo") || string.Equals(qid, "musicVideo")) return "Music Video";
+    if (string.Equals(q, "short") || string.Equals(qid, "short")) return "Short";
+    if (string.IsNullOrEmpty(q) && string.IsNullOrEmpty(qid)) return string.Empty;
+
+    return string.Join(' ', q, qid);
+  }
 
   public static MovieDetail ParseMovie(string text) {
     var json = JsonDocument.Parse(text);

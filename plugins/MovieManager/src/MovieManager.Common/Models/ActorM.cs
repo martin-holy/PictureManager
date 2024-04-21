@@ -6,6 +6,8 @@ namespace MovieManager.Common.Models;
 public class ActorM : ListItem {
   public int Id { get; }
   public IPersonM Person { get; set; }
+  public ActorDetailIdM DetailId { get; set; }
+  public IMediaItemM Image { get; set; }
 
   public ActorM(int id, string name) {
     Id = id;

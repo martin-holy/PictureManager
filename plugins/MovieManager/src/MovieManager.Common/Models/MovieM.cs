@@ -32,9 +32,6 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public string FormatedLength =>
     TimeSpan.FromMinutes(Length).ToString(@"h\:mm");
 
-  public string PosterFileName =>
-    $"{Year}-{DetailId.DetailName}-{DetailId.DetailId}-{Title}.jpg";
-
   public MovieM(int id, string title) {
     Id = id;
     Title = title;
