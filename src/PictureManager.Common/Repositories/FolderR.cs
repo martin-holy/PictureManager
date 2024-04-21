@@ -102,7 +102,7 @@ public class FolderR : TreeDataAdapter<FolderM>, IFolderR {
   IFolderM IFolderR.GetFolder(string folderPath) => GetFolder(folderPath);
 
   public FolderM GetFolder(string folderPath) {
-    if (!Directory.Exists(folderPath) || string.IsNullOrEmpty(folderPath)) return null;
+    if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return null;
     var parts = Path.GetFullPath(folderPath).Split(Path.DirectorySeparatorChar);
     if (Tree.Items.GetByName(parts[0], StringComparison.OrdinalIgnoreCase) is not { } folder) return null;
 
