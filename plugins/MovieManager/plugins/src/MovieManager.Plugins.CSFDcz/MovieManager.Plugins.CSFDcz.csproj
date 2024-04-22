@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Version>$(CurrentDateTimeVersion)</Version>
+    <AssemblyVersion>$(CurrentDateTimeVersion)</AssemblyVersion>
+    <FileVersion>$(CurrentDateTimeVersion)</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>Martin Holý</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)MovieManager.Plugins.CSFDcz.dll&quot; &quot;$(MainAppTargetDir)plugins\MovieManager\plugins\&quot; /Y" />
+  </Target>
+
+</Project>
