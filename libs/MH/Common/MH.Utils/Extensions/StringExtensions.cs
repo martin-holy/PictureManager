@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MH.Utils.Extensions {
   public static class StringExtensions {
@@ -38,5 +40,38 @@ namespace MH.Utils.Extensions {
     /// </summary>
     public static string Plural(this string s, int count) =>
       string.Format(s, count, count > 1 ? "s" : string.Empty);
+
+    public static Tuple<int, int> GetRangeBetween(this string text, string start, string end, int startIndex = 0,
+      StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
+
+      var sIdx = text.IndexOf(start, startIndex, comparisonType);
+      if (sIdx == -1) return null;
+
+      var eIdx = text.IndexOf(end, sIdx, comparisonType);
+      if (eIdx == -1) return null;
+
+      sIdx += start.Length;
+
+      return new(sIdx, eIdx);
+    }
+
+    public static List<Tuple<int, int>> GetRangeBetween(this string text, string start, string end, Tuple<int, int> range,
+      StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
+
+      var ranges = new List<Tuple<int, int>>();
+      var startIndex = range.Item1;
+
+      while (true) {
+        var innerRange = text.GetRangeBetween(start, end, startIndex, comparisonType);
+        if (innerRange == null || innerRange.Item1 > range.Item2) break;
+        ranges.Add(innerRange);
+        startIndex = innerRange.Item2;
+      }
+
+      return ranges;
+    }
+
+    public static string GetFromRange(this string text, Tuple<int, int> range) =>
+      text[range.Item1..range.Item2];
   }
 }
