@@ -76,7 +76,8 @@ public sealed class Core : IPMPluginCore {
   }
 
   private void SetMovieDetailPlugin() {
-    var path = Path.Combine(PluginsDir, "MovieManager.Plugins.IMDbCom.dll");
+    //var path = Path.Combine(PluginsDir, "MovieManager.Plugins.IMDbCom.dll");
+    var path = Path.Combine(PluginsDir, "MovieManager.Plugins.CSFDcz.dll");
     if (Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return;
     MovieDetail = pc as IMovieDetailPlugin;
   }
