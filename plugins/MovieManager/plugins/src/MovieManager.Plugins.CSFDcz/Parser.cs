@@ -8,17 +8,17 @@ namespace MovieManager.Plugins.CSFDcz;
 
 public static class Parser {
   public static SearchResult[] ParseSearch(string text) {
-    var moviesRange = text.GetRangeBetween("<section class=\"box main-movies\">", "</section>");
-    var movieResultRanges = text.GetRangeBetween("<article", "</article>", moviesRange);
+    var moviesRange = text.GetRangeBetween("<section class=\"box main-movies\">", null, "</section>");
+    var movieResultRanges = text.GetRangeBetween("<article", null, "</article>", moviesRange);
 
     return movieResultRanges.Select(x => ParseSearchResult(text, x)).ToArray();
   }
 
   private static SearchResult ParseSearchResult(string text, Tuple<int, int> article) {
-    var urlRange = text.GetRangeBetween("<a href=\"", "\"", article.Item1);
-    var nameRange = text.GetRangeBetween("class=\"film-title-name\">", "</a>", urlRange.Item2);
-    var yearRange = text.GetRangeBetween("<span class=\"info\">", "</span>", nameRange.Item2);
-    var infoRange = text.GetRangeBetween("<span class=\"info\">", "</span>", yearRange.Item2);
+    var urlRange = text.GetRangeBetween("<a href=\"", null, "\"", article.Item1);
+    var nameRange = text.GetRangeBetween("class=\"film-title-name\">", null, "</a>", urlRange.Item2);
+    var yearRange = text.GetRangeBetween("<span class=\"info\">", null, "</span>", nameRange.Item2);
+    var infoRange = text.GetRangeBetween("<span class=\"info\">", null, "</span>", yearRange.Item2);
     var actors = ExtractUrlAndText(text.GetFromRange(new(infoRange.Item2, article.Item2)));
 
     return new() {
