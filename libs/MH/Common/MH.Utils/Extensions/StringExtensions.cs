@@ -41,28 +41,33 @@ namespace MH.Utils.Extensions {
     public static string Plural(this string s, int count) =>
       string.Format(s, count, count > 1 ? "s" : string.Empty);
 
-    public static Tuple<int, int> GetRangeBetween(this string text, string start, string end, int startIndex = 0,
+    public static Tuple<int, int> GetRangeBetween(this string text, string start, string startEnd, string end, int startIndex = 0,
       StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
 
       var sIdx = text.IndexOf(start, startIndex, comparisonType);
       if (sIdx == -1) return null;
+      sIdx += start.Length;
+
+      if (!string.IsNullOrEmpty(startEnd)) {
+        sIdx = text.IndexOf(startEnd, sIdx, comparisonType);
+        if (sIdx == -1) return null;
+        sIdx += startEnd.Length;
+      }
 
       var eIdx = text.IndexOf(end, sIdx, comparisonType);
       if (eIdx == -1) return null;
 
-      sIdx += start.Length;
-
       return new(sIdx, eIdx);
     }
 
-    public static List<Tuple<int, int>> GetRangeBetween(this string text, string start, string end, Tuple<int, int> range,
+    public static List<Tuple<int, int>> GetRangeBetween(this string text, string start, string startEnd, string end, Tuple<int, int> range,
       StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
 
       var ranges = new List<Tuple<int, int>>();
       var startIndex = range.Item1;
 
       while (true) {
-        var innerRange = text.GetRangeBetween(start, end, startIndex, comparisonType);
+        var innerRange = text.GetRangeBetween(start, startEnd, end, startIndex, comparisonType);
         if (innerRange == null || innerRange.Item1 > range.Item2) break;
         ranges.Add(innerRange);
         startIndex = innerRange.Item2;
@@ -73,5 +78,14 @@ namespace MH.Utils.Extensions {
 
     public static string GetFromRange(this string text, Tuple<int, int> range) =>
       text[range.Item1..range.Item2];
+
+    public static bool TryIndexOf(this string text, string value, ref int index, int startIndex = 0,
+      StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
+
+      var idx = text.IndexOf(value, startIndex, comparisonType);
+      if (idx != -1) index = idx;
+
+      return idx != -1;
+    }
   }
 }
