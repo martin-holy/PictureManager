@@ -77,7 +77,7 @@ namespace MH.Utils.Extensions {
     }
 
     public static string GetFromRange(this string text, Tuple<int, int> range) =>
-      text[range.Item1..range.Item2];
+      range == null ? string.Empty : text[range.Item1..range.Item2];
 
     public static bool TryIndexOf(this string text, string value, ref int index, int startIndex = 0,
       StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
