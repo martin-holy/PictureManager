@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.CSFDcz;
 
+// INFO CSFD doesn't have role names. So I will leave this for now.
+
 public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieDetailPlugin {
   public static readonly string IdName = "CSFD";
 
