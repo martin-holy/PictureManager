@@ -11,6 +11,7 @@ public class SearchResult {
   public string TypeAndYear =>
     (Type, Year) switch {
       (null or "", 0) => string.Empty,
+      (null or "", > 0) => Year.ToString(),
       (_, > 0) => $"{Type} {Year}",
       (_, _) => Type,
     };
