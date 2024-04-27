@@ -25,7 +25,7 @@ public class Core : IPluginCore, IMovieSearchPlugin, IMovieDetailPlugin {
 
   public async Task<MovieDetail> GetMovieDetail(DetailId id) {
     if (!id.Name.Equals(IdName)) return null;
-    var url = $"https://www.fdb.cz/film/{id.Id}";
+    var url = $"https://www.fdb.cz/film/{Parser.DetailIdToUrl(id)}";
     var content = await Common.Core.GetWebPageContent(url, "cs");
     if (content == null) return null;
     

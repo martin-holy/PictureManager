@@ -65,9 +65,8 @@ public static class Parser {
       if (imageRange.Item1 < aRange.Item2)
         sr.Image = new() { Url = text.GetFromRange(imageRange) };
 
-    // TODO BUG Id can't contain "/"
     if (text.GetRangeBetween("href=\"", "film/", "\"", aRange.Item1) is { } urlRange)
-      sr.DetailId = new(text.GetFromRange(urlRange), Core.IdName);
+      sr.DetailId = UrlToDetailId(text.GetFromRange(urlRange));
 
     if (text.GetRangeBetween(">", null, "<", aRange.Item1) is { } nameRange)
       sr.Name = text.GetFromRange(nameRange);
@@ -207,4 +206,10 @@ public static class Parser {
     var match = Regex.Match(text, @"\d+");
     return match.Success ? match.Value : null;
   }
+
+  public static string DetailIdToUrl(DetailId detailId) =>
+    detailId.Id.Replace("_", "/");
+
+  private static DetailId UrlToDetailId(string url) =>
+    new(url.Replace("/", "_"), Core.IdName);
 }
