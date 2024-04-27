@@ -4,16 +4,28 @@
   xmlns:models="clr-namespace:MovieManager.Plugins.Common.Models;assembly=MovieManager.Plugins.Common">
     
   <DataTemplate x:Key="MM.DT.SearchResult" DataType="{x:Type models:SearchResult}">
-    <Grid Margin="0,0,0,6" ToolTip="{Binding DetailId.Id}">
+    <Grid Margin="0,3,0,3" ToolTip="{Binding DetailId.Id}">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
 
-      <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-      <TextBlock Grid.Row="1" Text="{Binding Desc}"/>
-      <TextBlock Grid.Row="2" Text="{Binding TypeAndYear}"/>
+      <Image
+        Grid.Column="0"
+        Grid.RowSpan="3"
+        Height="80"
+        Stretch="Uniform"
+        Margin="0,0,3,0"
+        Source="{Binding Image.Url}"/>
+
+      <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name}" TextWrapping="Wrap" FontWeight="Bold"/>
+      <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Desc}" TextWrapping="Wrap"/>
+      <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding TypeAndYear}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

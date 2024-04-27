@@ -83,7 +83,9 @@
         Grid.Row="4"
         Margin="2"
         ItemsSource="{Binding SearchResults}"
-        ItemTemplate="{StaticResource MM.DT.SearchResult}"/>
+        ItemTemplate="{StaticResource MM.DT.SearchResult}"
+        HorizontalContentAlignment="Stretch"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
 
       <TextBlock
         Text="Log:"
