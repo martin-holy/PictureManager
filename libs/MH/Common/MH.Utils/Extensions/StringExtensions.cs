@@ -79,10 +79,10 @@ namespace MH.Utils.Extensions {
     public static string GetFromRange(this string text, Tuple<int, int> range) =>
       range == null ? string.Empty : text[range.Item1..range.Item2];
 
-    public static bool TryIndexOf(this string text, string value, ref int index, int startIndex = 0,
+    public static bool TryIndexOf(this string text, string value, ref int index,
       StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
 
-      var idx = text.IndexOf(value, startIndex, comparisonType);
+      var idx = text.IndexOf(value, index, comparisonType);
       if (idx != -1) index = idx;
 
       return idx != -1;
