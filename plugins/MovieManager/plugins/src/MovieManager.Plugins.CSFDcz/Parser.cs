@@ -33,7 +33,7 @@ public static class Parser {
   public static MovieDetail ParseMovie(string text, DetailId detailId) {
     var idx = 0;
 
-    if (!text.TryIndexOf("film-info", ref idx, idx)) return null;
+    if (!text.TryIndexOf("film-info", ref idx)) return null;
 
     var md = new MovieDetail {
       DetailId = detailId
@@ -49,7 +49,7 @@ public static class Parser {
     if (text.GetRangeBetween("film-posters", "src=\"//", "\"", idx) is { } posterRange)
       md.Poster = new() { Url = ExtractImage(text.GetFromRange(posterRange)) };
 
-    if (!text.TryIndexOf("film-info-content", ref idx, idx)) return null;
+    if (!text.TryIndexOf("film-info-content", ref idx)) return null;
 
     // rating
     if (text.GetRangeBetween("film-rating-average", ">", "</div>", idx) is { } ratingRange) {
@@ -72,7 +72,7 @@ public static class Parser {
     }
 
     // cast
-    if (text.TryIndexOf("id=\"creators\"", ref idx, idx)) {
+    if (text.TryIndexOf("id=\"creators\"", ref idx)) {
       if (text.GetRangeBetween("Hrají:", ">", "</span>", idx) is { } actorsRange) {
         var actorLinks = ExtractUrlAndText(text.GetFromRange(actorsRange));
         md.Cast = actorLinks
