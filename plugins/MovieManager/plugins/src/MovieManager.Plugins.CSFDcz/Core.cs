@@ -8,8 +8,9 @@ namespace MovieManager.Plugins.CSFDcz;
 
 // INFO CSFD doesn't have role names. So I will leave this for now.
 
-public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieDetailPlugin {
+public class Core : IImportPlugin {
   public static readonly string IdName = "CSFD";
+  public string Name => "CSFD.cz";
 
   public async Task<SearchResult[]> SearchMovie(string query) {
     var url = $"https://www.csfd.cz/hledat/?q={query.Replace(' ', '+')}&series=0&creators=0&users=0";
@@ -24,8 +25,6 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieD
       return [];
     }
   }
-
-  public IActorSearchResult[] SearchActor(string query) => throw new System.NotImplementedException();
 
   public async Task<MovieDetail> GetMovieDetail(DetailId id) {
     if (!id.Name.Equals(IdName)) return null;
@@ -42,4 +41,3 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieD
     }
   }
 }
-

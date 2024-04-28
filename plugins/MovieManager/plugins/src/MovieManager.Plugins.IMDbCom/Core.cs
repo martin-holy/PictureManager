@@ -2,14 +2,14 @@
 using MovieManager.Plugins.Common.Interfaces;
 using MovieManager.Plugins.Common.Models;
 using System;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.IMDbCom;
 
-public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieDetailPlugin {
+public class Core : IImportPlugin {
   public static readonly string IdName = "IMDb";
+  public string Name => "IMDb.com";
+
   private const string _movieDetailJsonStart = "<script id=\"__NEXT_DATA__\" type=\"application/json\">";
   private const string _movieDetailJsonEnd = "</script>";
 
@@ -19,11 +19,7 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieD
     return content == null ? [] : Parser.ParseSearch(content);
   }
 
-  public IActorSearchResult[] SearchActor(string query) => throw new System.NotImplementedException();
-
   public async Task<MovieDetail> GetMovieDetail(DetailId id) {
-    //return Parser.ParseMovie(TestJsonImport());
-
     if (!id.Name.Equals(IdName)) return null;
     var url = $"https://www.imdb.com/title/{id.Id}";
     var content = await Common.Core.GetWebPageContent(url);
@@ -51,10 +47,4 @@ public class Core : IPluginCore, IMovieSearchPlugin, IActorSearchPlugin, IMovieD
 
     return html.Substring(startIndex, jsonLength);
   }
-
-  private string TestJsonImport() {
-    using var sr = new StreamReader("d:\\Dev\\PictureManager\\Temp\\TestCompress.json", Encoding.UTF8);
-    return sr.ReadToEnd();
-  }
 }
-

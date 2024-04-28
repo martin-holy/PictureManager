@@ -34,7 +34,7 @@ public class ImportS {
       return;
     }
 
-    var movieDetail = await Core.MovieDetail.GetMovieDetail(result.DetailId);
+    var movieDetail = await Core.Inst.ImportPlugin.GetMovieDetail(result.DetailId);
     if (movieDetail == null) {
       progress.Report("Information about the movie not found.", true);
       return;

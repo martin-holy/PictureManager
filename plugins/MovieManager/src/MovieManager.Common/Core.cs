@@ -10,13 +10,12 @@ using PictureManager.Interfaces.Services;
 using PictureManager.Interfaces.ViewModels;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using IMMPluginCore = MovieManager.Plugins.Common.Interfaces.IPluginCore;
-using IPMPluginCore = PictureManager.Interfaces.Plugin.IPluginCore;
 
 namespace MovieManager.Common;
 
-public sealed class Core : IPMPluginCore {
+public sealed class Core : IPluginCore {
   public string Name => "MovieManager";
   public string BaseDir { get; }
   public string PluginsDir { get; }
@@ -25,10 +24,10 @@ public sealed class Core : IPMPluginCore {
   public static CoreR R { get; private set; }
   public static CoreS S { get; private set; }
   public static CoreVM VM { get; private set; }
-  public static IMovieSearchPlugin MovieSearch { get; private set; }
-  public static IMovieDetailPlugin MovieDetail { get; private set; }
+  public IImportPlugin ImportPlugin { get; set; }
+  public IImportPlugin[] ImportPlugins { get; private set; }
 
-  IPluginCoreVM IPMPluginCore.VM => VM;
+  IPluginCoreVM IPluginCore.VM => VM;
 
   public Core() {
     Inst = this;
@@ -59,28 +58,23 @@ public sealed class Core : IPMPluginCore {
   }
 
   private Task LoadPlugins(IProgress<string> progress) {
-    SetMovieSearchPlugin();
-    SetMovieDetailPlugin();
+    progress.Report("Loading plugins ...");
+
+    try {
+      ImportPlugins = Directory
+        .EnumerateFiles(PluginsDir, "*.dll", SearchOption.TopDirectoryOnly)
+        .Select(Plugin.LoadPlugin<IImportPlugin>)
+        .Where(x => x != null)
+        .ToArray();
+
+      ImportPlugin = ImportPlugins.FirstOrDefault();
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
+
     return Task.CompletedTask;
   }
 
-  private void AttachEvents() {
-
-  }
-
-  private void SetMovieSearchPlugin() {
-    //var path = Path.Combine(PluginsDir, "MovieManager.Plugins.IMDbCom.dll");
-    //var path = Path.Combine(PluginsDir, "MovieManager.Plugins.CSFDcz.dll");
-    var path = Path.Combine(PluginsDir, "MovieManager.Plugins.FDbCz.dll");
-    if (Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return;
-    MovieSearch = pc as IMovieSearchPlugin;
-  }
-
-  private void SetMovieDetailPlugin() {
-    //var path = Path.Combine(PluginsDir, "MovieManager.Plugins.IMDbCom.dll");
-    //var path = Path.Combine(PluginsDir, "MovieManager.Plugins.CSFDcz.dll");
-    var path = Path.Combine(PluginsDir, "MovieManager.Plugins.FDbCz.dll");
-    if (Plugin.LoadPlugin<IMMPluginCore>(path) is not { } pc) return;
-    MovieDetail = pc as IMovieDetailPlugin;
-  }
+  private void AttachEvents() { }
 }

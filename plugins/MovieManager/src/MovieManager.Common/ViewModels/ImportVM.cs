@@ -68,7 +68,7 @@ public class ImportVM : ObservableObject {
 
     Progress.Report($"Searching for '{title}' ...", true);
     _isSearchInProgress = true;
-    var results = await Core.MovieSearch.SearchMovie(title);
+    var results = await Core.Inst.ImportPlugin.SearchMovie(title);
     _isSearchInProgress = false;
 
     if (results.Length == 0) {

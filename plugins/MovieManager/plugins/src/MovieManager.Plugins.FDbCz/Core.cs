@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.FDbCz;
 
-public class Core : IPluginCore, IMovieSearchPlugin, IMovieDetailPlugin {
+public class Core : IImportPlugin {
   public static readonly string IdName = "FDbCz";
+  public string Name => "FDb.cz";
 
   public async Task<SearchResult[]> SearchMovie(string query) {
     var url = $"https://www.fdb.cz/vyhledavani.html?hledat={query.Replace(' ', '+')}";
@@ -38,4 +39,3 @@ public class Core : IPluginCore, IMovieSearchPlugin, IMovieDetailPlugin {
     }
   }
 }
-
