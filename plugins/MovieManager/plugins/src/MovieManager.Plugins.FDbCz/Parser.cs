@@ -68,6 +68,7 @@ public static class Parser {
 
     var results = new List<SearchResult>();
     
+    // TODO use StringRange.AsEnumerable
     while (true) {
       if (ParseSearchResult(text, ref idx) is { } result)
         results.Add(result);
@@ -79,11 +80,13 @@ public static class Parser {
   }
 
   private static SearchResult ParseSearchResult(string text, ref int idx) {
+    // TODO use StringRange.From
     if (!text.TryIndexOf("class=\"v_box\"", ref idx)
         || !text.TryIndexOf("class=\"info\"", ref idx)) return null;
 
     var sr = new SearchResult();
 
+    // TODO use ?.AsString
     if (_srSearchA.From(text, idx)) {
       if (_srSearchImage.From(text, _srSearchA, out var imgUrl))
         sr.Image = new() { Url = imgUrl };
@@ -95,6 +98,7 @@ public static class Parser {
         sr.Name = name;
     }
 
+    // TODO use ref idx and ?.AsString
     if (_srSearchYearAndType.From(text, idx)) {
       idx = _srSearchYearAndType.EndIndex;
       var yearType = ParseYearTypeSearchResult(_srSearchYearAndType.AsString(text));
@@ -102,6 +106,7 @@ public static class Parser {
       sr.Type = yearType.Item2;
     }
 
+    // TODO use ?.AsString
     if (_srSearchDesc.From(text, idx))
       sr.Desc = _srSearchDesc.AsString(text).Replace("<br/>", " ");
 
@@ -111,6 +116,7 @@ public static class Parser {
   private static Tuple<int, string> ParseYearTypeSearchResult(string text) {
     var year = _srSearchYear.From(text)?.AsString(text);
     var type = _srSearchType.From(text)?.AsString(text);
+    // TODO use AsInt32
     var yearInt = int.TryParse(year, out var yi) ? yi : 0;
     return new(yearInt, type);
   }
@@ -127,6 +133,7 @@ public static class Parser {
     md.Title = _srDetailTitle.From(text, ref idx)?.AsString(text);
 
     // TODO bigger poster
+    // TODO use ?.AsString
     if (_srDetailPoster.From(text, idx))
       md.Poster = new() { Url = _srDetailPoster.AsString(text) };
 
@@ -156,6 +163,7 @@ public static class Parser {
       .Select(x => _genres[int.Parse(x)])
       .ToArray();
 
+    // TODO remove this line and return linq result
     return genres?.Length > 0 ? genres : [];
   }
 
