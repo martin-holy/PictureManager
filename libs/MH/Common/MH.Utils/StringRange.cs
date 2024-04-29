@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace MH.Utils;
 
+//TODO change to class
+//TODO rename Start to StartString and StartIndex to Start
 public struct StringRange {
   public string Start { get; init; }
   public string StartEnd { get; init; }
@@ -39,6 +41,7 @@ public struct StringRange {
   public string AsString(string text) =>
     text[StartIndex..EndIndex];
 
+  // TODO use AsEnumerable
   public List<string> AsStrings(string text, StringRange innerRange) {
     var strings = new List<string>();
     var idx = StartIndex;
@@ -61,6 +64,7 @@ public struct StringRange {
     return false;
   }
 
+  // TODO remove this, it is confusing
   public StringRange? From(string text) =>
     From(text, 0) ? this : null;
 
@@ -73,6 +77,7 @@ public struct StringRange {
   public bool From(string text, StringRange range) =>
     From(text, range.StartIndex, range.EndIndex);
 
+  // TODO use end limit for IndexOf
   public bool From(string text, int searchStart, int searchEnd = -1) {
     // search start
     StartIndex = text.IndexOf(Start, searchStart, ComparisonType);
