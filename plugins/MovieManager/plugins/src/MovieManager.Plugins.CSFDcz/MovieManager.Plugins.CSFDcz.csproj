@@ -20,8 +20,9 @@
     </ProjectReference>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!--This plugin doesn't have cast characters, so I will not use it for now-->
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(TargetDir)MovieManager.Plugins.CSFDcz.dll&quot; &quot;$(MainAppTargetDir)plugins\MovieManager\plugins\&quot; /Y" />
-  </Target>
+  </Target>-->
 
 </Project>
