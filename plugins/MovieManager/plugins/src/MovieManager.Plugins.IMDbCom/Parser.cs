@@ -1,11 +1,12 @@
 ﻿using MH.Utils.Extensions;
 using MovieManager.Plugins.Common.Models;
-using System;
 using System.Text.Json;
 
 namespace MovieManager.Plugins.IMDbCom;
 
 public static class Parser {
+  private const string _imgQuality = "QL80";
+  private const string _searchPosterUrlParams = "QL80_UY150";
   private const string _aboveTheFoldData = "aboveTheFoldData";
   private const string _aggregateRating = "aggregateRating";
   private const string _caption = "caption";
@@ -20,8 +21,6 @@ public static class Parser {
   private const string _i = "i";
   private const string _id = "id";
   private const string _imageUrl = "imageUrl";
-  private const string _imgExt = ".jpg";
-  private const string _imgUrlParamStart = "_V1_";
   private const string _l = "l";
   private const string _mainColumnData = "mainColumnData";
   private const string _name = "name";
@@ -63,7 +62,7 @@ public static class Parser {
       Year = element.TryGetInt32(_y),
       Type = ParseSearchType(element),
       Desc = element.TryGetString(_s),
-      Image = element.TryGetObject(_i, ParseImage)
+      Image = element.TryGetObject(_i, elm => ParseImage(elm, _searchPosterUrlParams))
     };
 
   private static string ParseSearchType(JsonElement element) {
@@ -115,11 +114,18 @@ public static class Parser {
   private static Image ParseImage(JsonElement element) =>
     new() {
       Id = element.TryGetString(_id),
-      Url = AddUrlParams(element.TryGetString(_url) ?? element.TryGetString(_imageUrl)),
+      Url = Common.Core.IMDbPlugin.AddImgUrlParams(
+        element.TryGetString(_url) ?? element.TryGetString(_imageUrl), _imgQuality),
       Height = element.TryGetInt32(_height),
       Width = element.TryGetInt32(_width),
       Desc = element.TryGetString(_caption, _plainText)
     };
+
+  private static Image ParseImage(JsonElement element, string urlParams) {
+    var img = ParseImage(element);
+    img.Url = Common.Core.IMDbPlugin.AddImgUrlParams(img.Url, urlParams);
+    return img;
+  }
 
   private static Cast ParseCast(JsonElement element) =>
     new() {
@@ -130,13 +136,4 @@ public static class Parser {
       },
       Characters = element.TryGetArray(_characters, x => x.TryGetString(_name))
     };
-
-  public static string AddUrlParams(string url, string urlParams = "QL80") {
-    var startIndex = url.IndexOf(_imgUrlParamStart, StringComparison.Ordinal) + _imgUrlParamStart.Length;
-    var endIndex = url.LastIndexOf(_imgExt, StringComparison.Ordinal);
-
-    return startIndex < 0 || endIndex < 0
-      ? url
-      : url[..startIndex] + urlParams + url[endIndex..];
-  }
 }

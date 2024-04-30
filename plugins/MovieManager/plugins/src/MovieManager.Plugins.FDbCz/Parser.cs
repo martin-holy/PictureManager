@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.FDbCz;
 
@@ -57,6 +58,7 @@ public static class Parser {
   private static readonly StringRange _srDetailGenre = new("<a", ">");
   private static readonly StringRange _srDetailYear = new("Rok:", "right_text\">", "<");
   private static readonly StringRange _srDetailRuntime = new("Délka:", "right_text\">", " ");
+  private static readonly StringRange _srDetailIMDbId = new("imdb.com/", "/", "/");
   private static readonly StringRange _srDetailRating = new("hodnoceni\">", ">", "%");
   private static readonly StringRange _srDetailPlot = new("id=\"zbytek\">", "<a");
   private static readonly StringRange _srDetailCasts = new("<table", ">", "</table");
@@ -98,7 +100,7 @@ public static class Parser {
     return sr;
   }
 
-  public static MovieDetail ParseMovie(string text, DetailId detailId) {
+  public static async Task<MovieDetail> ParseMovie(string text, DetailId detailId) {
     var idx = 0;
 
     if (!text.TryIndexOf(_detailStart, ref idx)) return null;
@@ -108,13 +110,13 @@ public static class Parser {
       Title = _srDetailTitle.From(text, ref idx)?.AsString(text)
     };
 
-    // TODO bigger poster
     if (_srDetailPoster.From(text, idx)?.AsString(text) is { } posterUrl)
       md.Poster = new() { Url = posterUrl };
 
     md.Genres = ParseGenres(text, _srDetailGenres.From(text, ref idx));
     md.Year = _srDetailYear.From(text, ref idx)?.AsInt32(text) ?? 0;
     md.Runtime = _srDetailRuntime.From(text, ref idx)?.AsInt32(text) ?? 0;
+    var imdbId = _srDetailIMDbId.From(text, idx)?.AsString(text);
     md.Rating = ExtractRating(_srDetailRating.From(text, ref idx)?.AsString(text));
     md.Plot = _srDetailPlot.From(text, ref idx)?.AsString(text).Replace("<br />", string.Empty);
 
@@ -124,6 +126,11 @@ public static class Parser {
         .Select(x => ParseCast(text, x))
         .Where(x => x != null)
         .ToArray();
+
+    if (!string.IsNullOrEmpty(imdbId)) {
+      var imdbPoster = await GetPosterFromIMDb(imdbId);
+      if (imdbPoster != null) md.Poster = imdbPoster;
+    }
 
     //TODO Images
 
@@ -168,4 +175,11 @@ public static class Parser {
 
   private static DetailId MovieDetailIdFromUrl(string url) =>
     string.IsNullOrEmpty(url) ? null : new(url.Replace("/", "_"), Core.IdName);
+
+  private static async Task<Image> GetPosterFromIMDb(string movieId) {
+    var result = await Common.Core.IMDbPlugin.SearchMovie(movieId);
+    if (result.FirstOrDefault(x => x.DetailId.Id.Equals(movieId))?.Image is not { } image) return null;
+    image.Url = Common.Core.IMDbPlugin.AddImgUrlParams(image.Url, "QL80");
+    return image;
+  }
 }

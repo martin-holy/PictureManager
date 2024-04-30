@@ -68,6 +68,7 @@ public sealed class Core : IPluginCore {
         .ToArray();
 
       ImportPlugin = ImportPlugins.FirstOrDefault();
+      Plugins.Common.Core.IMDbPlugin = ImportPlugins.OfType<IIMDbPlugin>().SingleOrDefault();
     }
     catch (Exception ex) {
       Log.Error(ex);

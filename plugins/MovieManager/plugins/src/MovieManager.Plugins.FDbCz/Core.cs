@@ -31,7 +31,7 @@ public class Core : IImportPlugin {
     if (content == null) return null;
     
     try {
-      return Parser.ParseMovie(content, id);
+      return await Parser.ParseMovie(content, id);
     }
     catch (Exception ex) {
       Log.Error(ex);

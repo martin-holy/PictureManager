@@ -1,4 +1,5 @@
 ﻿using MH.Utils;
+using MovieManager.Plugins.Common.Interfaces;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -8,6 +9,8 @@ using System.Threading.Tasks;
 namespace MovieManager.Plugins.Common;
 
 public class Core {
+  public static IIMDbPlugin IMDbPlugin { get; set; }
+
   public static async Task DownloadAndSaveFile(string url, string filePath) {
     using var client = new HttpClient();
     var bytes = await client.GetByteArrayAsync(url).ConfigureAwait(false);
