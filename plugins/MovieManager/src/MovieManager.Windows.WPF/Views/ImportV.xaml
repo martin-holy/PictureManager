@@ -52,7 +52,7 @@
         Margin="2"
         Padding="2"/>
 
-      <Grid Grid.Column="0" Grid.Row="2">
+      <Grid Grid.Column="0" Grid.Row="2" Margin="2,0,0,0">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
@@ -62,14 +62,10 @@
 
         <ComboBox
           ItemsSource="{Binding ImportPlugins, Source={x:Static common:Core.Inst}}"
-          SelectedItem="{Binding ImportPlugin, Source={x:Static common:Core.Inst}}">
-
-          <ComboBox.ItemTemplate>
-            <DataTemplate DataType="{x:Type interfaces:IImportPlugin}">
-              <TextBlock Text="{Binding Name}"/>
-            </DataTemplate>
-          </ComboBox.ItemTemplate>
-        </ComboBox>
+          SelectedItem="{Binding ImportPlugin, Source={x:Static common:Core.Inst}}"
+          DisplayMemberPath="Name"
+          Height="30"
+          VerticalContentAlignment="Center"/>
 
         <Button
           Grid.Column="1"
