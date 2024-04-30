@@ -26,7 +26,7 @@ public class Core : IImportPlugin {
 
   public async Task<MovieDetail> GetMovieDetail(DetailId id) {
     if (!id.Name.Equals(IdName)) return null;
-    var url = $"https://www.fdb.cz/film/{Parser.DetailIdToUrl(id)}";
+    var url = $"https://www.fdb.cz/film/{Parser.MovieDetailIdToUrl(id)}";
     var content = await Common.Core.GetWebPageContent(url, "cs");
     if (content == null) return null;
     

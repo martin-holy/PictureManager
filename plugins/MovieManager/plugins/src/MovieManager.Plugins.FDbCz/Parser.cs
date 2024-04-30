@@ -1,7 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.Extensions;
 using MovieManager.Plugins.Common.Models;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -37,152 +36,124 @@ public static class Parser {
     { 37, "Biographical" }
   };
 
-  private static StringRange _srSearchA = new("<a", "</a");
-  private static StringRange _srSearchImage = new("rel=\"", "\"");
-  private static StringRange _srSearchDetailId = new("href=", "film/", "\"");
-  private static StringRange _srSearchName = new(">", "<");
-  private static StringRange _srSearchYearAndType = new("<span", ">", "<");
-  private static StringRange _srSearchYear = new("(", ")");
-  private static StringRange _srSearchType = new("[", "]");
-  private static StringRange _srSearchDesc = new("class=\"info\"", ">", "</div");
+  private const string _detailStart = "zakladni_info";
+  private const string _castStart = ">hraje:<";
+  private const string _classVbox = "class=\"v_box\"";
+  private const string _classInfo = "class=\"info\"";
+  
+  private static readonly StringRange _srSearch = new("id=\"hle_film");
+  private static readonly StringRange _srSearchA = new("<a", "</a");
+  private static readonly StringRange _srSearchImage = new("rel=\"", "\"");
+  private static readonly StringRange _srSearchDetailId = new("href=", "film/", "\"");
+  private static readonly StringRange _srSearchName = new(">");
+  private static readonly StringRange _srSearchYearAndType = new("<span", ">", "<");
+  private static readonly StringRange _srSearchYear = new("(", ")");
+  private static readonly StringRange _srSearchType = new("[", "]");
+  private static readonly StringRange _srSearchDesc = new("class=\"info\"", ">", "</div");
 
-  private static StringRange _srDetailTitle = new("<a", ">", "</a");
-  private static StringRange _srDetailPoster = new("boxPlakaty", "src=\"", "\"");
-  private static StringRange _srDetailGenres = new("Žánr:", "clear_text");
-  private static StringRange _srDetailGenre = new("<a", ">");
-  private static StringRange _srDetailYear = new("Rok:", "right_text\">", "<");
-  private static StringRange _srDetailRuntime = new("Délka:", "right_text\">", " ");
-  private static StringRange _srDetailRating = new("hodnoceni\">", ">", "%");
-  private static StringRange _srDetailPlot = new("id=\"zbytek\">", "<a");
-  private static StringRange _srDetailCasts = new("<table", ">", "</table");
-  private static StringRange _srDetailCast = new("<tr", "</tr");
-  private static StringRange _srDetailCastImage = new("class=\"photo", "rel=\"", "\"");
-  private static StringRange _srDetailCastId = new("class=\"nazev", "lidi/", ".");
-  private static StringRange _srDetailCastName = new(">", "<");
-  private static StringRange _srDetailCastCharacters = new("role=", ">", "<");
+  private static readonly StringRange _srDetailTitle = new("<a", ">", "</a");
+  private static readonly StringRange _srDetailPoster = new("boxPlakaty", "src=\"", "\"");
+  private static readonly StringRange _srDetailGenres = new("Žánr:", "clear_text");
+  private static readonly StringRange _srDetailGenre = new("<a", ">");
+  private static readonly StringRange _srDetailYear = new("Rok:", "right_text\">", "<");
+  private static readonly StringRange _srDetailRuntime = new("Délka:", "right_text\">", " ");
+  private static readonly StringRange _srDetailRating = new("hodnoceni\">", ">", "%");
+  private static readonly StringRange _srDetailPlot = new("id=\"zbytek\">", "<a");
+  private static readonly StringRange _srDetailCasts = new("<table", ">", "</table");
+  private static readonly StringRange _srDetailCast = new("<tr", "</tr");
+  private static readonly StringRange _srDetailCastImage = new("class=\"photo", "rel=\"", "\"");
+  private static readonly StringRange _srDetailCastId = new("class=\"nazev", "lidi/", ".");
+  private static readonly StringRange _srDetailCastName = new(">", "<");
+  private static readonly StringRange _srDetailCastCharacters = new("role=", ">", "<");
 
   public static SearchResult[] ParseSearch(string text) {
     var idx = 0;
 
-    if (!text.TryIndexOf("id=\"hle_film", ref idx)) return null;
-
-    var results = new List<SearchResult>();
-    
-    // TODO use StringRange.AsEnumerable
-    while (true) {
-      if (ParseSearchResult(text, ref idx) is { } result)
-        results.Add(result);
-      else
-        break;
-    }
-
-    return [.. results];
+    return _srSearch.From(text, ref idx)?
+      .AsEnumerable(() => ParseSearchResult(text, ref idx))
+      .ToArray();
   }
 
   private static SearchResult ParseSearchResult(string text, ref int idx) {
-    // TODO use StringRange.From
-    if (!text.TryIndexOf("class=\"v_box\"", ref idx)
-        || !text.TryIndexOf("class=\"info\"", ref idx)) return null;
+    if (!text.TryIndexOf(_classVbox, ref idx)
+        || !text.TryIndexOf(_classInfo, ref idx)) return null;
 
     var sr = new SearchResult();
 
-    // TODO use ?.AsString
-    if (_srSearchA.From(text, idx)) {
-      if (_srSearchImage.From(text, _srSearchA, out var imgUrl))
+    if (_srSearchA.Found(text, idx)) {
+      if (_srSearchImage.From(text, _srSearchA)?.AsString(text) is { } imgUrl)
         sr.Image = new() { Url = imgUrl };
 
-      if (_srSearchDetailId.From(text, _srSearchA, out var detailUrl))
-        sr.DetailId = UrlToDetailId(detailUrl);
-
-      if (_srSearchName.From(text, _srSearchA, out var name))
-        sr.Name = name;
+      sr.DetailId = MovieDetailIdFromUrl(_srSearchDetailId.From(text, _srSearchA)?.AsString(text));
+      sr.Name = _srSearchName.From(text, _srSearchA)?.AsString(text);
     }
 
-    // TODO use ref idx and ?.AsString
-    if (_srSearchYearAndType.From(text, idx)) {
-      idx = _srSearchYearAndType.EndIndex;
-      var yearType = ParseYearTypeSearchResult(_srSearchYearAndType.AsString(text));
-      sr.Year = yearType.Item1;
-      sr.Type = yearType.Item2;
+    if (_srSearchYearAndType.From(text, ref idx) is { } yearType) {
+      sr.Year = _srSearchYear.From(text, yearType)?.AsInt32(text) ?? 0;
+      sr.Type = _srSearchType.From(text, yearType)?.AsString(text);
     }
 
-    // TODO use ?.AsString
-    if (_srSearchDesc.From(text, idx))
-      sr.Desc = _srSearchDesc.AsString(text).Replace("<br/>", " ");
+    sr.Desc = _srSearchDesc.From(text, idx)?.AsString(text).Replace("<br/>", " ");
 
     return sr;
-  }
-
-  private static Tuple<int, string> ParseYearTypeSearchResult(string text) {
-    var year = _srSearchYear.From(text)?.AsString(text);
-    var type = _srSearchType.From(text)?.AsString(text);
-    // TODO use AsInt32
-    var yearInt = int.TryParse(year, out var yi) ? yi : 0;
-    return new(yearInt, type);
   }
 
   public static MovieDetail ParseMovie(string text, DetailId detailId) {
     var idx = 0;
 
-    if (!text.TryIndexOf("zakladni_info", ref idx)) return null;
+    if (!text.TryIndexOf(_detailStart, ref idx)) return null;
 
     var md = new MovieDetail {
-      DetailId = detailId
+      DetailId = detailId,
+      Title = _srDetailTitle.From(text, ref idx)?.AsString(text)
     };
 
-    md.Title = _srDetailTitle.From(text, ref idx)?.AsString(text);
-
     // TODO bigger poster
-    // TODO use ?.AsString
-    if (_srDetailPoster.From(text, idx))
-      md.Poster = new() { Url = _srDetailPoster.AsString(text) };
+    if (_srDetailPoster.From(text, idx)?.AsString(text) is { } posterUrl)
+      md.Poster = new() { Url = posterUrl };
 
     md.Genres = ParseGenres(text, _srDetailGenres.From(text, ref idx));
     md.Year = _srDetailYear.From(text, ref idx)?.AsInt32(text) ?? 0;
     md.Runtime = _srDetailRuntime.From(text, ref idx)?.AsInt32(text) ?? 0;
-    md.Rating = ExtractRating(text, _srDetailRating.From(text, ref idx));
+    md.Rating = ExtractRating(_srDetailRating.From(text, ref idx)?.AsString(text));
     md.Plot = _srDetailPlot.From(text, ref idx)?.AsString(text).Replace("<br />", string.Empty);
 
-    if (text.TryIndexOf(">hraje:<", ref idx) && _srDetailCasts.From(text, idx)) {
+    if (text.TryIndexOf(_castStart, ref idx) && _srDetailCasts.Found(text, idx))
       md.Cast = _srDetailCasts
         .AsEnumerable(text, _srDetailCast)
         .Select(x => ParseCast(text, x))
         .Where(x => x != null)
         .ToArray();
-    }
 
     //TODO Images
 
     return md;
   }
 
-  private static string[] ParseGenres(string text, StringRange? range) {
-    var genres = range?.AsStrings(text, _srDetailGenre)
-      .Select(ExtractFirstInt)
+  private static string[] ParseGenres(string text, StringRange range) =>
+    range?
+      .AsEnumerable(text, _srDetailGenre)
+      .Select(x => ExtractFirstInt(x.AsString(text)))
       .Where(x => x != null)
       .Select(x => _genres[int.Parse(x)])
-      .ToArray();
+      .ToArray() ?? [];
 
-    // TODO remove this line and return linq result
-    return genres?.Length > 0 ? genres : [];
-  }
-
-  private static double ExtractRating(string text, StringRange? range) =>
-    range != null && double.TryParse(range.Value.AsString(text), CultureInfo.InvariantCulture, out var d) ? d / 10.0 : 0;
+  private static double ExtractRating(string rating) =>
+    double.TryParse(rating, CultureInfo.InvariantCulture, out var d) ? d / 10.0 : 0;
 
   private static Cast ParseCast(string text, StringRange range) {
     var actor = new Actor();
     var cast = new Cast { Actor = actor };
-    var idx = range.StartIndex;
+    var idx = range.Start;
 
-    if (_srDetailCastImage.From(text, ref idx, range.EndIndex)?.AsString(text) is { } imgUrl)
+    if (_srDetailCastImage.From(text, ref idx, range.End)?.AsString(text) is { } imgUrl)
       actor.Image = new() { Url = imgUrl };
 
-    if (_srDetailCastId.From(text, ref idx, range.EndIndex)?.AsString(text) is { } id)
+    if (_srDetailCastId.From(text, ref idx, range.End)?.AsString(text) is { } id)
       actor.DetailId = new(id, Core.IdName);
 
-    actor.Name = _srDetailCastName.From(text, ref idx, range.EndIndex)?.AsString(text).Replace("  ", " ");
-    cast.Characters = _srDetailCastCharacters.From(text, ref idx)?.AsString(text).Split("/") ?? [];
+    actor.Name = _srDetailCastName.From(text, ref idx, range.End)?.AsString(text).Replace("  ", " ");
+    cast.Characters = _srDetailCastCharacters.From(text, ref idx, range.End)?.AsString(text).Split("/") ?? [];
 
     return cast;
   }
@@ -192,9 +163,9 @@ public static class Parser {
     return match.Success ? match.Value : null;
   }
 
-  public static string DetailIdToUrl(DetailId detailId) =>
+  public static string MovieDetailIdToUrl(DetailId detailId) =>
     detailId.Id.Replace("_", "/");
 
-  private static DetailId UrlToDetailId(string url) =>
-    new(url.Replace("/", "_"), Core.IdName);
+  private static DetailId MovieDetailIdFromUrl(string url) =>
+    string.IsNullOrEmpty(url) ? null : new(url.Replace("/", "_"), Core.IdName);
 }
