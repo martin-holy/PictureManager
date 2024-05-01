@@ -4,8 +4,19 @@
   xmlns:mim="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters">
 
-  <DataTemplate DataType="{x:Type mim:MediaItemM}" x:Key="PM.T.MediaItemBase">
+  <DataTemplate DataType="{x:Type mim:MediaItemM}" x:Key="PM.T.MediaItemThumb">
     <Image Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Image.Source>
+        <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
+          <Binding Path="FilePathCache" IsAsync="True"/>
+          <Binding/>
+        </MultiBinding>
+      </Image.Source>
+    </Image>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type mim:MediaItemM}" x:Key="PM.T.MediaItemThumb.Fill">
+    <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
       <Image.Source>
         <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
           <Binding Path="FilePathCache" IsAsync="True"/>
