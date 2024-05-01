@@ -60,6 +60,7 @@
                 VerticalScrollBarVisibility="Auto">
 
                 <ItemsPresenter
+                  HorizontalAlignment="Left"
                   Width="{Binding ActualWidth,
                     ElementName=scrollViewer,
                     Converter={x:Static mhConv:CalcNumberConverter.Subtract},
