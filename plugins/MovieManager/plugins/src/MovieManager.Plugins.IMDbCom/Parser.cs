@@ -101,7 +101,7 @@ public static class Parser {
       Rating = dataA.TryGetDouble(_ratingsSummary, _aggregateRating),
       Poster = dataA.TryGetObject(_primaryImage, ParseImage),
       Genres = dataA.TryGetArray(_genres, _genres, x => x.TryGetString(_text)),
-      Plot = dataA.TryGetString(_plot, _plotText, _plainText),
+      Plot = dataA.TryGetString(_plot, _plotText, _plainText)?.ReplaceNewLineChars(" "),
       Images = dataB.TryGetArray(_titleMainImages, _edges, x => x.TryGetObject(_node, ParseImage)),
       Cast = dataB.TryGetArray(_cast, _edges, x => x.TryGetObject(_node, ParseCast))
     };

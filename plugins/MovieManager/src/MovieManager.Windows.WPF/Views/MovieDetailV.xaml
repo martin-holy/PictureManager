@@ -8,6 +8,7 @@
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <ResourceDictionary.MergedDictionaries>
+    <mhu:CachedResourceDictionary Source="../Resources/Icons.xaml"/>
     <mhu:CachedResourceDictionary Source="CharacterV.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
@@ -109,8 +110,7 @@
       <mhc:IconTextBlockItemsControl
         Grid.Row="3"
         ItemsSource="{Binding MovieM.Genres}"
-        ap:Icon.Data="{StaticResource IconBug}"
-        ap:Icon.Fill="{StaticResource ColorBrushTag}"
+        ap:Icon.Data="{StaticResource IconTheaterMasks}"
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"/>
 
       <!-- Plot -->

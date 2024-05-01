@@ -36,7 +36,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
     InitToggleDialog();
 
-    ImportMoviesCommand = new(OpenImportMovies, "IconBug", "Import");
+    ImportMoviesCommand = new(OpenImportMovies, "IconImport", "Import");
     OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
 
@@ -46,7 +46,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   private void OpenImportMovies() {
     Import ??= new(_coreS.Import);
     Import.Open();
-    PhCoreVM.MainTabs.Activate("IconMovieClapper", "Import", Import);
+    PhCoreVM.MainTabs.Activate("IconImport", "Import", Import);
   }
 
   private void OpenMovies() {

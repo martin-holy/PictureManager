@@ -118,7 +118,7 @@ public static class Parser {
     md.Runtime = _srDetailRuntime.From(text, ref idx)?.AsInt32(text) ?? 0;
     var imdbId = _srDetailIMDbId.From(text, idx)?.AsString(text);
     md.Rating = ExtractRating(_srDetailRating.From(text, ref idx)?.AsString(text));
-    md.Plot = _srDetailPlot.From(text, ref idx)?.AsString(text).Replace("<br />", string.Empty);
+    md.Plot = _srDetailPlot.From(text, ref idx)?.AsString(text).Replace("<br />", string.Empty).ReplaceNewLineChars(" ");
 
     if (text.TryIndexOf(_castStart, ref idx) && _srDetailCasts.Found(text, idx))
       md.Cast = _srDetailCasts
@@ -128,11 +128,11 @@ public static class Parser {
         .ToArray();
 
     if (!string.IsNullOrEmpty(imdbId)) {
-      var imdbPoster = await GetPosterFromIMDb(imdbId);
+      var imdbPoster = await Common.Core.IMDbPlugin.GetPoster(imdbId);
       if (imdbPoster != null) md.Poster = imdbPoster;
     }
 
-    //TODO Images
+    // TODO Images <= not worth it, they are to small
 
     return md;
   }
@@ -175,11 +175,4 @@ public static class Parser {
 
   private static DetailId MovieDetailIdFromUrl(string url) =>
     string.IsNullOrEmpty(url) ? null : new(url.Replace("/", "_"), Core.IdName);
-
-  private static async Task<Image> GetPosterFromIMDb(string movieId) {
-    var result = await Common.Core.IMDbPlugin.SearchMovie(movieId);
-    if (result.FirstOrDefault(x => x.DetailId.Id.Equals(movieId))?.Image is not { } image) return null;
-    image.Url = Common.Core.IMDbPlugin.AddImgUrlParams(image.Url, "QL80");
-    return image;
-  }
 }

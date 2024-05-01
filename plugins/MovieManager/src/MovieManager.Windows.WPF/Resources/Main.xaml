@@ -3,6 +3,7 @@
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
     
   <ResourceDictionary.MergedDictionaries>
+    <wpfu:CachedResourceDictionary Source="Icons.xaml"/>
     <wpfu:CachedResourceDictionary Source="../Views/CharacterV.xaml"/>
     <wpfu:CachedResourceDictionary Source="../Views/ImportV.xaml"/>
     <wpfu:CachedResourceDictionary Source="../Views/MovieDetailV.xaml"/>

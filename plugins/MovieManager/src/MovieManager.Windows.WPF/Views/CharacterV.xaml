@@ -6,7 +6,7 @@
   xmlns:mm="clr-namespace:MovieManager.Common;assembly=MovieManager.Common">
 
   <DataTemplate DataType="{x:Type models:CharacterM}">
-    <Grid>
+    <Grid Background="Transparent">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto"/>
         <ColumnDefinition Width="*"/>
@@ -37,13 +37,13 @@
           <!--Show Actor image if available-->
           <ContentControl
             Content="{Binding Actor.Image}"
-            ContentTemplate="{StaticResource PM.T.MediaItemBase}"
+            ContentTemplate="{StaticResource PM.T.MediaItemThumb}"
             Visibility="{Binding Actor.Image, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}">
 
             <ContentControl.ToolTip>
               <ContentControl
                 Content="{Binding Actor.Image}"
-                ContentTemplate="{StaticResource PM.T.MediaItemBase}"/>
+                ContentTemplate="{StaticResource PM.T.MediaItemThumb}"/>
             </ContentControl.ToolTip>
           </ContentControl>
         </Grid>

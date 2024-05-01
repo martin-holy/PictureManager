@@ -2,6 +2,7 @@
 using MovieManager.Plugins.Common.Interfaces;
 using MovieManager.Plugins.Common.Models;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.IMDbCom;
@@ -71,5 +72,12 @@ public class Core : IIMDbPlugin {
     return startIndex < 0 || endIndex < 0
       ? url
       : url[..startIndex] + urlParams + url[endIndex..];
+  }
+
+  public async Task<Image> GetPoster(string movieId) {
+    var result = await SearchMovie(movieId);
+    if (result.FirstOrDefault(x => x.DetailId.Id.Equals(movieId))?.Image is not { } image) return null;
+    image.Url = AddImgUrlParams(image.Url, "QL80");
+    return image;
   }
 }
