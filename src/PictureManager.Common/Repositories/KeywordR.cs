@@ -62,8 +62,8 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IKeywordR {
   public List<KeywordM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
-  List<IKeywordM> IRepository<IKeywordM>.Link(string csv, IDataAdapter seeker) =>
-    Link(csv, seeker)?.Cast<IKeywordM>().ToList();
+  List<IKeywordM> IRepository<IKeywordM>.Link(string csv) =>
+    Link(csv, null)?.Cast<IKeywordM>().ToList();
 
   private KeywordM GetNotFoundRecord(int notFoundId) {
     var id = GetNextId();

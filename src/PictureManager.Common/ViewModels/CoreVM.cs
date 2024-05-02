@@ -12,6 +12,7 @@ using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels.Entities;
+using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -108,6 +109,9 @@ public class CoreVM : ObservableObject, ICoreVM {
       : MainWindow.IsInViewMode
         ? MediaItem.Current is T current ? new[] { current } : Array.Empty<T>()
         : MediaItem.Views.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
+
+  public bool AnyActive() => AnyActive<MediaItemM>();
+  public IMediaItemM[] GetActive() => GetActive<MediaItemM>().Cast<IMediaItemM>().ToArray();
 
   public void AttachEvents() {
     MainTabs.PropertyChanged += OnMainTabsPropertyChanged;
@@ -461,4 +465,7 @@ public class CoreVM : ObservableObject, ICoreVM {
     ToggleDialog.SourceTypes.Add(stGeoName);
     ToggleDialog.SourceTypes.Add(stRating);
   }
+
+  public void ScrollToFolder(IFolderM folder) =>
+    _coreR.Folder.Tree.ScrollTo(folder as FolderM);
 }

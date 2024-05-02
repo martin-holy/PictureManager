@@ -39,6 +39,7 @@ public sealed class CoreR : SimpleDB, ICoreR {
   IKeywordR ICoreR.Keyword => Keyword;
   IRepository<IMediaItemM> ICoreR.MediaItem => MediaItem;
   IRepository<IPersonM> ICoreR.Person => Person;
+  IRepository<ISegmentM> ICoreR.Segment => Segment;
 
   public CoreR() : base("db") {
     CategoryGroup = new(this);
