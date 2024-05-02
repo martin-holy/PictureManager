@@ -1,5 +1,7 @@
-﻿namespace PictureManager.Interfaces.Models;
+﻿using MH.Utils.Interfaces;
 
-public interface ISegmentM {
+namespace PictureManager.Interfaces.Models;
+
+public interface ISegmentM : ISelectable {
   public int Id { get; }
 }

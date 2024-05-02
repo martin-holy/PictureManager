@@ -7,4 +7,5 @@ public interface ICoreR {
   public IKeywordR Keyword { get; }
   public IRepository<IMediaItemM> MediaItem { get; }
   public IRepository<IPersonM> Person { get; }
+  public IRepository<ISegmentM> Segment { get; }
 }
