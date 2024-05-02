@@ -15,6 +15,7 @@ public class CoreS(CoreR coreR) : ObservableObject, ICoreS {
   public ViewerS Viewer { get; } = new(coreR);
 
   IMediaItemS ICoreS.MediaItem => MediaItem;
+  ISegmentS ICoreS.Segment => Segment;
 
   public void AttachEvents() {
     coreR.Person.ItemDeletedEvent += OnPersonDeleted;

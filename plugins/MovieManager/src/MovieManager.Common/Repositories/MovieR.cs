@@ -2,6 +2,7 @@
 using MH.Utils.Extensions;
 using MovieManager.Common.Models;
 using MovieManager.Plugins.Common.Models;
+using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Repositories;
 using System;
 using System.Globalization;
@@ -10,9 +11,9 @@ using System.Linq;
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
-/// DB fields: Id|Title|Year|YearEnd|Length|Rating|PersonalRating|Genres|MPAA|SeenWhen|Poster|Plot
+/// DB fields: Id|Title|Year|YearEnd|Length|Rating|PersonalRating|Genres|MPAA|SeenWhen|Poster|MediaItems|Plot
 /// </summary>
-public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 12) {
+public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 13) {
   public override MovieM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]) {
       Year = csv[2].IntParseOrDefault(0),
@@ -22,7 +23,7 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       PersonalRating = csv[6].IntParseOrDefault(0) / 10.0,
       MPAA = string.IsNullOrEmpty(csv[8]) ? null : csv[8],
       SeenWhen = string.IsNullOrEmpty(csv[9]) ? null : csv[9].Split(',').Select(x => DateOnly.ParseExact(x, "yyyyMMdd", CultureInfo.InvariantCulture)).ToArray(),
-      Plot = string.IsNullOrEmpty(csv[11]) ? null : csv[11]
+      Plot = string.IsNullOrEmpty(csv[12]) ? null : csv[12]
     };
 
   public override string ToCsv(MovieM item) =>
@@ -38,12 +39,14 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       item.MPAA ?? string.Empty,
       item.SeenWhen?.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv() ?? string.Empty,
       item.Poster?.GetHashCode().ToString(),
+      item.MediaItems?.ToHashCodes().ToCsv() ?? string.Empty,
       item.Plot ?? string.Empty);
 
   public override void LinkReferences() {
     foreach (var (item, csv) in AllCsv) {
       item.Genres = coreR.Genre.LinkList(csv[7], null, null);
       item.Poster = phCoreR.MediaItem.GetById(csv[10], true);
+      item.MediaItems = phCoreR.MediaItem.Link(csv[11]);
     }
   }
 
@@ -63,5 +66,11 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       .ToList();
 
     return item;
+  }
+
+  public void AddMediaItems(MovieM movie, IMediaItemM[] mediaItems) {
+    movie.MediaItems ??= [];
+    movie.MediaItems.AddRange(mediaItems.Except(movie.MediaItems));
+    IsModified = true;
   }
 }

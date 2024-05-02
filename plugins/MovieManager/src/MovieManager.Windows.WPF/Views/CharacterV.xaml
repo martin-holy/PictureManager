@@ -24,7 +24,7 @@
         <!--Show Actor image or empty icon if Segment is not available-->
         <Grid
           Background="Transparent"
-          Visibility="{Binding Segment, Converter={x:Static mhConv:VisibilityConverter.AllToCollapsed}}">
+          Visibility="{Binding DisplaySegment, Converter={x:Static mhConv:VisibilityConverter.AllToCollapsed}}">
 
           <Path
             Style="{StaticResource MH.Styles.Icon}"
@@ -49,8 +49,8 @@
         </Grid>
 
         <ContentControl
-          Content="{Binding Segment}"
-          Visibility="{Binding Segment, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
+          Content="{Binding DisplaySegment}"
+          Visibility="{Binding DisplaySegment, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
       </Grid>
 
       <TextBlock

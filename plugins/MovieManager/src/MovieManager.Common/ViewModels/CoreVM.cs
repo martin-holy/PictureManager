@@ -5,6 +5,7 @@ using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
 using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Plugin;
+using PictureManager.Interfaces.Services;
 using PictureManager.Interfaces.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +24,12 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public MoviesVM Movies { get; private set; }
   public MovieDetailVM MovieDetail { get; private set; }
 
-  public List<RelayCommand> MainMenuCommands { get; } = [];
+  public List<RelayCommand> MainMenuCommands { get; }
 
   public RelayCommand ImportMoviesCommand { get; }
   public RelayCommand OpenMoviesCommand { get; }
   public RelayCommand SaveDbCommand { get; }
+  public RelayCommand ScrollToRootFolderCommand { get; }
 
   public CoreVM(ICoreVM phCoreVM, CoreS coreS, CoreR coreR) {
     PhCoreVM = phCoreVM;
@@ -39,8 +41,9 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     ImportMoviesCommand = new(OpenImportMovies, "IconImport", "Import");
     OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
+    ScrollToRootFolderCommand = new(() => PhCoreVM.ScrollToFolder(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
 
-    MainMenuCommands.AddRange(new[] { ImportMoviesCommand, OpenMoviesCommand, SaveDbCommand });
+    MainMenuCommands = [ImportMoviesCommand, OpenMoviesCommand, SaveDbCommand, ScrollToRootFolderCommand];
   }
 
   private void OpenImportMovies() {
@@ -56,7 +59,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   }
 
   public void OpenMovieDetail(MovieM movie) {
-    MovieDetail ??= new();
+    MovieDetail ??= new(PhCoreVM, _coreR, _coreS);
     MovieDetail.Reload(movie);
     PhCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);
   }

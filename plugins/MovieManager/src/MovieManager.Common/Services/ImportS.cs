@@ -20,7 +20,9 @@ public class ImportS {
   }
 
   public void PrepareForImport() {
+    // TODO do this in one method
     _coreR.SetActorsFolder();
+    _coreR.SetImagesFolder();
     _coreR.SetPostersFolder();
   }
 
@@ -34,20 +36,24 @@ public class ImportS {
       return;
     }
 
-    var movieDetail = await Core.Inst.ImportPlugin.GetMovieDetail(result.DetailId);
-    if (movieDetail == null) {
+    var md = await Core.Inst.ImportPlugin.GetMovieDetail(result.DetailId);
+    if (md == null) {
       progress.Report("Information about the movie not found.", true);
       return;
     }
 
-    movie = _coreR.Movie.ItemCreate(movieDetail);
-    movie.DetailId = _coreR.MovieDetailId.ItemCreate(movieDetail.DetailId, movie);
+    movie = _coreR.Movie.ItemCreate(md);
+    movie.DetailId = _coreR.MovieDetailId.ItemCreate(md.DetailId, movie);
+    await DownloadMoviePoster(progress, md, movie);
+    await ImportActors(progress, md, movie);
+    await ImportImages(progress, md, movie);
+    progress.Report($"Importing '{movie.Title}' completed.", true);
+  }
 
-    progress.Report("Downloading the movie poster ...", true);
-    await DownloadMoviePoster(movie, movieDetail.Poster);
+  private async Task ImportActors(IProgress<string> progress, MovieDetail md, MovieM movie) {
+    progress.Report($"Importing {md.Cast.Length} actors ...", true);
 
-    progress.Report($"Importing {movieDetail.Cast.Length} actors ...", true);
-    foreach (var cast in movieDetail.Cast) {
+    foreach (var cast in md.Cast) {
       progress.Report($"{cast.Actor.Name} ({string.Join(", ", cast.Characters)})", true);
       var actor = _coreR.ActorDetailId.GetActor(cast.Actor.DetailId);
 
@@ -61,8 +67,21 @@ public class ImportS {
       foreach (var character in cast.Characters)
         _coreR.Character.ItemCreate(character, actor, movie);
     }
+  }
 
-    progress.Report($"Importing '{movie.Title}' completed.", true);
+  private async Task ImportImages(IProgress<string> progress, MovieDetail md, MovieM movie) {
+    if (md.Images.Length == 0 || GetMovieImagesFolder(movie) is not { } imgFolder) return;
+
+    progress.Report($"Downloading {md.Images.Length} images ...", true);
+    movie.MediaItems ??= [];
+
+    for (var i = 0; i < md.Images.Length; i++) {
+      var di = md.Images[i];
+      var imgId = string.IsNullOrEmpty(di.Id) ? i.ToString() : di.Id;
+      progress.Report(di.Desc, true);
+      var img = await DownloadImage(di, imgFolder, $"{md.Year} {imgId} {di.Desc}.jpg");
+      movie.MediaItems.Add(img);
+    }
   }
 
   private async Task DownloadActorImage(ActorM actor, Image image) {
@@ -71,9 +90,11 @@ public class ImportS {
     actor.Image = await DownloadImage(image, _coreR.ActorsFolder, fileName);
   }
 
-  private async Task DownloadMoviePoster(MovieM movie, Image image) {
+  private async Task DownloadMoviePoster(IProgress<string> progress, MovieDetail md, MovieM movie) {
+    if (md.Poster == null) return;
+    progress.Report("Downloading the movie poster ...", true);
     var fileName = GetMoviePosterFileName(movie);
-    movie.Poster = await DownloadImage(image, _coreR.PostersFolder, fileName);
+    movie.Poster = await DownloadImage(md.Poster, _coreR.PostersFolder, fileName);
   }
 
   private async Task<IMediaItemM> DownloadImage(Image image, IFolderM folder, string fileName) {
@@ -96,4 +117,7 @@ public class ImportS {
 
   private static string GetMoviePosterFileName(MovieM movie) =>
     $"{movie.Year}-{movie.DetailId.DetailName}-{movie.DetailId.DetailId}-{movie.Title}.jpg";
+
+  private IFolderM GetMovieImagesFolder(MovieM movie) =>
+    _coreR.GetFolder(Path.Combine(_coreR.ImagesDir, $"{movie.Year} {movie.Title}"));
 }

@@ -17,4 +17,8 @@ public class CharacterM : ListItem {
   }
 
   public override int GetHashCode() => Id;
+
+  // TODO first Segment from Actor.Person on MediaItem from Movie
+  public ISegmentM DisplaySegment =>
+    Segment ?? Actor?.Person?.Segment;
 }

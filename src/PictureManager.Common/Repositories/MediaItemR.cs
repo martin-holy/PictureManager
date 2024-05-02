@@ -95,8 +95,8 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM>, IRepository<IMedi
   IMediaItemM IRepository<IMediaItemM>.GetById(string id, bool nullable) =>
     GetById(id, nullable);
 
-  List<IMediaItemM> IRepository<IMediaItemM>.Link(string csv, IDataAdapter seeker) =>
-    LinkList(csv, null, seeker)?.Cast<IMediaItemM>().ToList();
+  List<IMediaItemM> IRepository<IMediaItemM>.Link(string csv) =>
+    LinkList(csv, null, null)?.Cast<IMediaItemM>().ToList();
 
   public RealMediaItemM ItemCreate(FolderM folder, string fileName) {
     if (_supportedImageExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))

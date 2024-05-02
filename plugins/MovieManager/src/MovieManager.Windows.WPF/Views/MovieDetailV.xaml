@@ -42,11 +42,27 @@
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <Menu Grid.Column="0">
+          <MenuItem Padding="0" Background="Transparent" Height="30" Width="30">
+            <MenuItem.Icon>
+              <Path
+                Data="{StaticResource IconThreeBars}"
+                Style="{StaticResource MH.Styles.IconWithShadow}"
+                Margin="2,0,0,0"/>
+            </MenuItem.Icon>
+
+            <MenuItem Command="{Binding AddMediaItemsCommand}"/>
+            <MenuItem Command="{Binding SetCharacterSegmentCommand}"/>
+          </MenuItem>
+        </Menu>
+
         <!-- Year -->
         <mhc:IconTextBlock
+          Grid.Column="1"
           ToolTip="Year"
           ap:Icon.Data="{StaticResource IconCalendar}"
           ap:Text.Text="{Binding MovieM.Year}"
@@ -54,7 +70,7 @@
 
         <!-- Length -->
         <mhc:IconTextBlock
-          Grid.Column="1"
+          Grid.Column="2"
           ToolTip="Length"
           ap:Icon.Data="{StaticResource IconClock}"
           ap:Text.Text="{Binding MovieM.FormatedLength}"
@@ -62,7 +78,7 @@
 
         <!-- Rating -->
         <mhc:PopupSlider
-          Grid.Column="2"
+          Grid.Column="3"
           Maximum="10"
           TickFrequency="0.1"
           HorizontalAlignment="Center"
@@ -78,7 +94,7 @@
 
         <!-- PersonalRating -->
         <mhc:PopupSlider
-          Grid.Column="3"
+          Grid.Column="4"
           Maximum="10"
           TickFrequency="0.5"
           HorizontalAlignment="Center"
@@ -94,7 +110,7 @@
 
         <!-- MPAA -->
         <Border
-          Grid.Column="4"
+          Grid.Column="5"
           ToolTip="MPAA"
           Style="{StaticResource MH.S.Border.RoundDarker}"
           Visibility="{Binding MovieM.MPAA, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}">

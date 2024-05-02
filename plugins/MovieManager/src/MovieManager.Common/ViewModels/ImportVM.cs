@@ -28,7 +28,7 @@ public class ImportVM : ObservableObject {
     Progress = new Progress<string>(ProgressCollection.Add);
 
     SearchCommand = new(Search, x => !string.IsNullOrEmpty(x) && !_isSearchInProgress && !_isImportInProgress);
-    ImportCommand = new(Import, x => x != null, "IconBug", "Import");
+    ImportCommand = new(Import, x => x != null, "IconImport", "Import");
     CancelCommand = new(Cancel, () => _isImportInProgress);
   }
 

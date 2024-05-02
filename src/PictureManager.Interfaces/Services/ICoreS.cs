@@ -2,4 +2,5 @@
 
 public interface ICoreS {
   IMediaItemS MediaItem { get; }
+  ISegmentS Segment { get; }
 }

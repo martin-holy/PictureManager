@@ -93,8 +93,8 @@ public class PersonR : TreeDataAdapter<PersonM>, IRepository<IPersonM> {
   public List<PersonM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
-  List<IPersonM> IRepository<IPersonM>.Link(string csv, IDataAdapter seeker) =>
-    Link(csv, seeker)?.Cast<IPersonM>().ToList();
+  List<IPersonM> IRepository<IPersonM>.Link(string csv) =>
+    Link(csv, null)?.Cast<IPersonM>().ToList();
 
   public PersonM GetPerson(int id, IDataAdapter seeker) =>
     AllDict.TryGetValue(id, out var person)
