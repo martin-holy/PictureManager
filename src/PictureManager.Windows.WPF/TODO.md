@@ -29,6 +29,9 @@
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
 
+          # Movie Manager
+  - changing rating doesn't modify DB
+
 
                                   *** UPDATE ***
 
