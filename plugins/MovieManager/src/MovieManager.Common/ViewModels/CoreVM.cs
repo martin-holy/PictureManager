@@ -1,11 +1,11 @@
-﻿using MH.UI.Dialogs;
+﻿using MH.UI.Controls;
+using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
 using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
 using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Plugin;
-using PictureManager.Interfaces.Services;
 using PictureManager.Interfaces.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +36,8 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     _coreS = coreS;
     _coreR = coreR;
 
+    phCoreVM.AppClosingEvent += OnAppClosing;
+
     InitToggleDialog();
 
     ImportMoviesCommand = new(OpenImportMovies, "IconImport", "Import");
@@ -44,6 +46,18 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     ScrollToRootFolderCommand = new(() => PhCoreVM.ScrollToFolder(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
 
     MainMenuCommands = [ImportMoviesCommand, OpenMoviesCommand, SaveDbCommand, ScrollToRootFolderCommand];
+  }
+
+  private void OnAppClosing(object sender, System.EventArgs e) {
+    if (_coreR.Changes > 0 &&
+        Dialog.Show(new MessageDialog(
+          "Database changes",
+          "There are some changes in Movie Manager database.\nDo you want to save them?",
+          MH.UI.Res.IconQuestion,
+          true)) == 1)
+      _coreR.SaveAllTables();
+
+    _coreR.BackUp();
   }
 
   private void OpenImportMovies() {

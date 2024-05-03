@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using System.Xml;
+using MH.Utils.BaseClasses;
 using PictureManager.Interfaces.Models;
 
 namespace MovieManager.Common.Models;
@@ -18,7 +19,17 @@ public class CharacterM : ListItem {
 
   public override int GetHashCode() => Id;
 
-  // TODO first Segment from Actor.Person on MediaItem from Movie
-  public ISegmentM DisplaySegment =>
-    Segment ?? Actor?.Person?.Segment;
+  public ISegmentM DisplaySegment {
+    get {
+      if (Segment != null) return Segment;
+      if (Actor?.Person == null) return null;
+      if (Movie?.MediaItems == null) return Actor.Person.Segment;
+
+      // TODO
+      /*if (Movie.MediaItems.GetSegments().Where(x => ReferenceEquals(x.Person, Actor.Person)).FirstOrDefault() is { } s)
+        return s;*/
+
+      return Actor.Person.Segment;
+    }
+  }
 }

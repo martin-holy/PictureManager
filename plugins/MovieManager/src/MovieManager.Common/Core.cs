@@ -45,7 +45,7 @@ public sealed class Core : IPluginCore {
       R.Migrate(0, DatabaseMigration.Resolver);
       R.LoadAllTables(progress);
       R.LinkReferences(progress);
-      LoadPlugins(progress).Wait();
+      LoadPlugins(progress);
       R.ClearDataAdapters();
       R.SetIsReady();
     });
@@ -57,7 +57,7 @@ public sealed class Core : IPluginCore {
     AttachEvents();
   }
 
-  private Task LoadPlugins(IProgress<string> progress) {
+  private void LoadPlugins(IProgress<string> progress) {
     progress.Report("Loading plugins ...");
 
     try {
@@ -73,8 +73,6 @@ public sealed class Core : IPluginCore {
     catch (Exception ex) {
       Log.Error(ex);
     }
-
-    return Task.CompletedTask;
   }
 
   private void AttachEvents() { }

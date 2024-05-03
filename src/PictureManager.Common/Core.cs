@@ -32,14 +32,14 @@ public sealed class Core : ICore {
   }
 
   public Task InitAsync(IProgress<string> progress) {
-    return Task.Run(() => {
+    return Task.Run(async () => {
       R.AddDataAdapters();
       Drives.UpdateSerialNumbers();
       progress.Report("Migrating Database");
       R.Migrate(8, DatabaseMigration.Resolver);
       R.LoadAllTables(progress);
       R.LinkReferences(progress);
-      LoadPlugins(progress).Wait();
+      await LoadPlugins(progress);
       R.ClearDataAdapters();
       R.SetIsReady();
       progress.Report("Loading UI");
