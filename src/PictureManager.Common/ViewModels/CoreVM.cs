@@ -52,6 +52,8 @@ public class CoreVM : ObservableObject, ICoreVM {
 
   ISegmentVM ICoreVM.Segment => Segment;
 
+  public event EventHandler AppClosingEvent = delegate { };
+
   public static RelayCommand AppClosingCommand { get; set; }
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");
   public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialogM()), null, "Open log");
@@ -314,6 +316,8 @@ public class CoreVM : ObservableObject, ICoreVM {
   }
 
   private void AppClosing() {
+    AppClosingEvent.Invoke(this, EventArgs.Empty);
+
     if (_coreR.Changes > 0 &&
         Dialog.Show(new MessageDialog(
           "Database changes",
