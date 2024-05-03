@@ -132,7 +132,8 @@ public class SimpleDB : ObservableObject {
     try {
       using var zip = ZipFile.Open(Path.Combine(_rootDir, DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".zip"), ZipArchiveMode.Create);
       var schemaFilePath = Path.Combine(_rootDir, "SchemaVersion");
-      zip.CreateEntryFromFile(schemaFilePath, schemaFilePath);
+      if (File.Exists(schemaFilePath))
+        zip.CreateEntryFromFile(schemaFilePath, schemaFilePath);
 
       foreach (var file in Directory.EnumerateFiles(_rootDir, "*.csv"))
         _ = zip.CreateEntryFromFile(file, file);
