@@ -24,6 +24,10 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
   public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
   #endregion
 
+  #region IMediaItemM implementation
+  IEnumerable<ISegmentM> IMediaItemM.GetSegments() => GetSegments();
+  #endregion
+
   public int Id { get; } = id;
   public int Rating { get; set; }
   public string Comment { get; set; }

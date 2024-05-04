@@ -92,6 +92,10 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
   public static bool operator !=(SegmentM a, SegmentM b) => !(a == b);
   #endregion IEquatable implementation
 
+  #region ISegmentM implementation
+  IPersonM ISegmentM.Person => Person;
+  #endregion
+
   public string ToMsRect() =>
     string.Join(", ",
       Math.Round(X / MediaItem.Width, 6).ToString(CultureInfo.InvariantCulture),

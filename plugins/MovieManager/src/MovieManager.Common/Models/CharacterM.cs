@@ -1,4 +1,4 @@
-﻿using System.Xml;
+﻿using System.Linq;
 using MH.Utils.BaseClasses;
 using PictureManager.Interfaces.Models;
 
@@ -24,10 +24,8 @@ public class CharacterM : ListItem {
       if (Segment != null) return Segment;
       if (Actor?.Person == null) return null;
       if (Movie?.MediaItems == null) return Actor.Person.Segment;
-
-      // TODO
-      /*if (Movie.MediaItems.GetSegments().Where(x => ReferenceEquals(x.Person, Actor.Person)).FirstOrDefault() is { } s)
-        return s;*/
+      if (Movie.MediaItems.GetSegments().FirstOrDefault(x => ReferenceEquals(x.Person, Actor.Person)) is { } segment)
+        return segment;
 
       return Actor.Person.Segment;
     }
