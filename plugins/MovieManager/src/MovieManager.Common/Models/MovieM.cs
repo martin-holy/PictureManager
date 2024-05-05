@@ -9,7 +9,7 @@ namespace MovieManager.Common.Models;
 public sealed class MovieM : ObservableObject, ISelectable {
   private bool _isSelected;
   private double _rating;
-  private double _personalRating;
+  private double _myRating;
 
   public int Id { get; }
   public string Title { get; set; }
@@ -17,7 +17,7 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public int? YearEnd { get; set; }
   public int Length { get; set; }
   public double Rating { get => _rating; set { _rating = value; OnPropertyChanged(); } }
-  public double PersonalRating { get => _personalRating; set { _personalRating = value; OnPropertyChanged(); } }
+  public double MyRating { get => _myRating; set { _myRating = value; OnPropertyChanged(); } }
   public List<GenreM> Genres { get; set; }
   public List<IKeywordM> Keywords { get; set; }
   public DateOnly[] SeenWhen { get; set; }

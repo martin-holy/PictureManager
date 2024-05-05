@@ -1,4 +1,5 @@
-﻿using MH.UI.Controls;
+﻿using System;
+using MH.UI.Controls;
 using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
@@ -24,12 +25,14 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public ImportVM Import { get; private set; }
   public MoviesVM Movies { get; private set; }
   public MovieDetailVM MovieDetail { get; private set; }
+  public MoviesFilterVM MoviesFilter { get; private set; }
 
   public List<RelayCommand> MainMenuCommands { get; }
 
   public RelayCommand DeleteSelectedMoviesCommand { get; }
   public RelayCommand ImportMoviesCommand { get; }
   public RelayCommand OpenMoviesCommand { get; }
+  public RelayCommand OpenMoviesFilterCommand { get; }
   public RelayCommand SaveDbCommand { get; }
   public RelayCommand ScrollToRootFolderCommand { get; }
 
@@ -45,6 +48,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     DeleteSelectedMoviesCommand = new(DeleteSelectedMovies, () => _coreS.Movie.Selected.Items.Count > 0, "IconXCross", "Delete selected Movies");
     ImportMoviesCommand = new(OpenImportMovies, "IconImport", "Import");
     OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
+    OpenMoviesFilterCommand = new(OpenMoviesFilter, "IconFilter", "Movies filter");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
     ScrollToRootFolderCommand = new(() => PhCoreVM.ScrollToFolder(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
 
@@ -52,6 +56,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
       DeleteSelectedMoviesCommand,
       ImportMoviesCommand,
       OpenMoviesCommand,
+      OpenMoviesFilterCommand,
       SaveDbCommand,
       ScrollToRootFolderCommand
     ];
@@ -71,7 +76,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     Movies?.Remove([.. e]);
   }
 
-  private void OnAppClosing(object sender, System.EventArgs e) {
+  private void OnAppClosing(object sender, EventArgs e) {
     if (_coreR.Changes > 0 &&
         Dialog.Show(new MessageDialog(
           "Database changes",
@@ -100,8 +105,24 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   private void OpenMovies() {
     Movies ??= new();
-    Movies.Open(_coreR.Movie.All);
+    Movies.Open(MoviesFilter == null
+      ? _coreR.Movie.All
+      : _coreR.Movie.All.Where(MoviesFilter.Filter));
     PhCoreVM.MainTabs.Activate("IconMovieClapper", "Movies", Movies);
+  }
+
+  private void OpenMoviesFilter() {
+    if (MoviesFilter == null) {
+      MoviesFilter = new();
+      MoviesFilter.FilterChangedEvent += OnMoviesFilterChanged;
+    }
+    
+    MoviesFilter.Open(_coreR.Movie.All);
+    PhCoreVM.ToolsTabs.Activate("IconFilter", "Movies filter", MoviesFilter);
+  }
+
+  private void OnMoviesFilterChanged(object sender, EventArgs e) {
+    Movies?.Open(_coreR.Movie.All.Where(MoviesFilter.Filter));
   }
 
   public void OpenMovieDetail(MovieM movie) {

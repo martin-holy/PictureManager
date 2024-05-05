@@ -11,7 +11,7 @@ using System.Linq;
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
-/// DB fields: Id|Title|Year|YearEnd|Length|Rating|PersonalRating|Genres|MPAA|SeenWhen|Poster|MediaItems|Plot
+/// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|SeenWhen|Poster|MediaItems|Plot
 /// </summary>
 public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 13) {
   public override MovieM FromCsv(string[] csv) =>
@@ -20,7 +20,7 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       YearEnd = string.IsNullOrEmpty(csv[3]) ? null : int.Parse(csv[3]),
       Length = csv[4].IntParseOrDefault(0),
       Rating = csv[5].IntParseOrDefault(0) / 10.0,
-      PersonalRating = csv[6].IntParseOrDefault(0) / 10.0,
+      MyRating = csv[6].IntParseOrDefault(0) / 10.0,
       MPAA = string.IsNullOrEmpty(csv[8]) ? null : csv[8],
       SeenWhen = string.IsNullOrEmpty(csv[9]) ? null : csv[9].Split(',').Select(x => DateOnly.ParseExact(x, "yyyyMMdd", CultureInfo.InvariantCulture)).ToArray(),
       Plot = string.IsNullOrEmpty(csv[12]) ? null : csv[12]
@@ -34,7 +34,7 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       item.YearEnd?.ToString() ?? string.Empty,
       item.Length.ToString(),
       ((int)(item.Rating * 10)).ToString(),
-      ((int)(item.PersonalRating * 10)).ToString(),
+      ((int)(item.MyRating * 10)).ToString(),
       item.Genres?.ToHashCodes().ToCsv() ?? string.Empty,
       item.MPAA ?? string.Empty,
       item.SeenWhen?.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv() ?? string.Empty,

@@ -1,0 +1,43 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="clr-namespace:MovieManager.Common.ViewModels;assembly=MovieManager.Common"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+
+  <DataTemplate DataType="{x:Type vm:MoviesFilterVM}">
+    <DataTemplate.Resources>
+      <Style x:Key="SizeTexts" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Text}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,8,0"/>
+      </Style>
+    </DataTemplate.Resources>
+
+    <Grid>
+      <Grid Margin="4">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Year:" Grid.Row="0" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <mhc:RangeSlider Range="{Binding Year}" Grid.Row="0" Grid.Column="1"/>
+
+        <TextBlock Text="Length:" Grid.Row="1" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <mhc:RangeSlider Range="{Binding Length}" Grid.Row="1" Grid.Column="1"/>
+
+        <TextBlock Text="Rating:" Grid.Row="2" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <mhc:RangeSlider Range="{Binding Rating}" Grid.Row="2" Grid.Column="1" TickFrequency="0.1"/>
+
+        <TextBlock Text="My rating:" Grid.Row="3" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <mhc:RangeSlider Range="{Binding MyRating}" Grid.Row="3" Grid.Column="1" TickFrequency="0.1"/>
+      </Grid>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

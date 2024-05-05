@@ -7,6 +7,7 @@
     <wpfu:CachedResourceDictionary Source="../Views/CharacterV.xaml"/>
     <wpfu:CachedResourceDictionary Source="../Views/ImportV.xaml"/>
     <wpfu:CachedResourceDictionary Source="../Views/MovieDetailV.xaml"/>
+    <wpfu:CachedResourceDictionary Source="../Views/MoviesFilterV.xaml"/>
     <wpfu:CachedResourceDictionary Source="../Views/MoviesV.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

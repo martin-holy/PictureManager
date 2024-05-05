@@ -34,7 +34,7 @@
         TextAlignment="Center"
         VerticalAlignment="Center"/>
 
-      <!-- Year, Length, Rating, PersonalRating, MPAA -->
+      <!-- Year, Length, Rating, MyRating, MPAA -->
       <Grid Grid.Row="1">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
@@ -92,19 +92,19 @@
           </mhc:PopupSlider.Content>
         </mhc:PopupSlider>
 
-        <!-- PersonalRating -->
+        <!-- MyRating -->
         <mhc:PopupSlider
           Grid.Column="4"
           Maximum="10"
           TickFrequency="0.5"
           HorizontalAlignment="Center"
-          Value="{Binding MovieM.PersonalRating, Mode=TwoWay}">
+          Value="{Binding MovieM.MyRating, Mode=TwoWay}">
 
           <mhc:PopupSlider.Content>
             <mhc:IconTextBlockButton
-              ToolTip="Personal Rating"
+              ToolTip="My rating"
               ap:Icon.Data="{StaticResource IconStar}"
-              ap:Text.Text="{Binding MovieM.PersonalRating, StringFormat={}{0:G2}}"/>
+              ap:Text.Text="{Binding MovieM.MyRating, StringFormat={}{0:G2}}"/>
           </mhc:PopupSlider.Content>
         </mhc:PopupSlider>
 
