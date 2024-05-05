@@ -54,7 +54,8 @@ public sealed class Core : IPluginCore {
   public void AfterInit(ICoreS phCoreS, ICoreVM phCoreVM) {
     S = new(phCoreS, R);
     VM = new(phCoreVM, S, R);
-    AttachEvents();
+    R.AttachEvents();
+    VM.AttachEvents();
   }
 
   private void LoadPlugins(IProgress<string> progress) {
@@ -74,6 +75,4 @@ public sealed class Core : IPluginCore {
       Log.Error(ex);
     }
   }
-
-  private void AttachEvents() { }
 }

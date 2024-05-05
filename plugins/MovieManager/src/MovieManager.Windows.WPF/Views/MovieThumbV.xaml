@@ -5,9 +5,16 @@
     
   <DataTemplate DataType="{x:Type m:MovieM}">
     <Grid Background="Transparent">
-      <ContentControl Content="{Binding Poster}" ContentTemplate="{StaticResource PM.T.MediaItemThumb.Fill}"/>
-      <TextBlock Text="{Binding Title}"/>
+      <TextBlock
+        Text="{Binding Title}"
+        TextWrapping="Wrap"
+        FontSize="16"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"/>
+
+      <ContentControl
+        Content="{Binding Poster}"
+        ContentTemplate="{StaticResource PM.T.MediaItemThumb.Fill}"/>
     </Grid>
-    
   </DataTemplate>
 </ResourceDictionary>

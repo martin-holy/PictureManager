@@ -1,8 +1,10 @@
-﻿using System;
-using MH.Utils;
+﻿using MH.Utils;
+using MovieManager.Common.Models;
 using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Repositories;
+using System;
 using System.IO;
+using System.Linq;
 
 namespace MovieManager.Common.Repositories;
 
@@ -46,6 +48,15 @@ public sealed class CoreR : SimpleDB {
     AddTableDataAdapter(Character);
     AddTableDataAdapter(MovieDetailId);
     AddTableDataAdapter(Movie);
+  }
+
+  public void AttachEvents() {
+    Movie.ItemDeletedEvent += OnMovieDeleted;
+  }
+
+  private void OnMovieDeleted(object sender, MovieM e) {
+    Character.ItemsDelete(Character.All.Where(x => ReferenceEquals(x.Movie, e)).ToList());
+    MovieDetailId.ItemDelete(MovieDetailId.All.Single(x => ReferenceEquals(x.Movie, e)));
   }
 
   public void SetActorsFolder() {

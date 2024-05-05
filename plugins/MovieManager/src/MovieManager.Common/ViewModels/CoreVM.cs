@@ -1,6 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using MovieManager.Common.Models;
 using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
@@ -26,6 +27,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   public List<RelayCommand> MainMenuCommands { get; }
 
+  public RelayCommand DeleteSelectedMoviesCommand { get; }
   public RelayCommand ImportMoviesCommand { get; }
   public RelayCommand OpenMoviesCommand { get; }
   public RelayCommand SaveDbCommand { get; }
@@ -40,12 +42,33 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
     InitToggleDialog();
 
+    DeleteSelectedMoviesCommand = new(DeleteSelectedMovies, () => _coreS.Movie.Selected.Items.Count > 0, "IconXCross", "Delete selected Movies");
     ImportMoviesCommand = new(OpenImportMovies, "IconImport", "Import");
     OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
     ScrollToRootFolderCommand = new(() => PhCoreVM.ScrollToFolder(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
 
-    MainMenuCommands = [ImportMoviesCommand, OpenMoviesCommand, SaveDbCommand, ScrollToRootFolderCommand];
+    MainMenuCommands = [
+      DeleteSelectedMoviesCommand,
+      ImportMoviesCommand,
+      OpenMoviesCommand,
+      SaveDbCommand,
+      ScrollToRootFolderCommand
+    ];
+  }
+
+  public void AttachEvents() {
+    _coreR.Movie.ItemDeletedEvent += OnMovieDeleted;
+    _coreR.Movie.ItemsDeletedEvent += OnMoviesDeleted;
+  }
+
+  private void OnMovieDeleted(object sender, MovieM e) {
+    if (ReferenceEquals(e, MovieDetail?.MovieM))
+      PhCoreVM.ToolsTabs.Close(MovieDetail);
+  }
+
+  private void OnMoviesDeleted(object sender, IList<MovieM> e) {
+    Movies?.Remove([.. e]);
   }
 
   private void OnAppClosing(object sender, System.EventArgs e) {
@@ -53,11 +76,20 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
         Dialog.Show(new MessageDialog(
           "Database changes",
           "There are some changes in Movie Manager database.\nDo you want to save them?",
-          MH.UI.Res.IconQuestion,
+          "IconDatabase",
           true)) == 1)
       _coreR.SaveAllTables();
 
     _coreR.BackUp();
+  }
+
+  private void DeleteSelectedMovies() {
+    if (Dialog.Show(new MessageDialog(
+          "Delete Movies",
+          "Do you really want to delete {0} Movie{1}?".Plural(_coreS.Movie.Selected.Items.Count),
+          "IconMovieClapper",
+          true)) == 1)
+      _coreR.Movie.ItemsDelete(_coreS.Movie.Selected.Items);
   }
 
   private void OpenImportMovies() {
