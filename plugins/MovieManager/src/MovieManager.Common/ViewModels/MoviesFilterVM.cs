@@ -11,6 +11,7 @@ public sealed class MoviesFilterVM : ObservableObject {
   public SelectionRange Length { get; } = new();
   public SelectionRange Rating { get; } = new();
   public SelectionRange MyRating { get; } = new();
+  public List<GenreFilterVM> Genres { get; set; }
 
   public event EventHandler FilterChangedEvent = delegate { };
 
@@ -38,8 +39,8 @@ public sealed class MoviesFilterVM : ObservableObject {
     RaiseFilterChanged();
   }
 
-  private void Update(IReadOnlyCollection<MovieM> limit) {
-    var zeroItems = !limit.Any();
+  private void Update(IReadOnlyCollection<MovieM> movies, IReadOnlyCollection<GenreM> genres) {
+    var zeroItems = movies.Count == 0;
 
     if (zeroItems) {
       Year.Zero();
@@ -48,11 +49,14 @@ public sealed class MoviesFilterVM : ObservableObject {
       MyRating.Zero();
     }
     else {
-      Year.Reset(limit.Min(x => x.Year), limit.Max(x => x.Year));
-      Length.Reset(limit.Min(x => x.Length), limit.Max(x => x.Length));
-      Rating.Reset(limit.Min(x => x.Rating), limit.Max(x => x.Rating));
-      MyRating.Reset(limit.Min(x => x.MyRating), limit.Max(x => x.MyRating));
+      Year.Reset(movies.Min(x => x.Year), movies.Max(x => x.Year));
+      Length.Reset(movies.Min(x => x.Length), movies.Max(x => x.Length));
+      Rating.Reset(movies.Min(x => x.Rating), movies.Max(x => x.Rating));
+      MyRating.Reset(movies.Min(x => x.MyRating), movies.Max(x => x.MyRating));
     }
+
+    Genres.Clear();
+    Genres.AddRange(genres.Select(x => new GenreFilterVM(x)));
   }
 
   public bool Filter(MovieM movie) {
@@ -65,7 +69,7 @@ public sealed class MoviesFilterVM : ObservableObject {
     return true;
   }
 
-  public void Open(IReadOnlyCollection<MovieM> movies) {
-    Update(movies);
+  public void Open(IReadOnlyCollection<MovieM> movies, IReadOnlyCollection<GenreM> genres) {
+    Update(movies, genres);
   }
 }
