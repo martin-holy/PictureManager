@@ -117,7 +117,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
       MoviesFilter.FilterChangedEvent += OnMoviesFilterChanged;
     }
     
-    MoviesFilter.Open(_coreR.Movie.All);
+    MoviesFilter.Open(_coreR.Movie.All, _coreR.Genre.All);
     PhCoreVM.ToolsTabs.Activate("IconFilter", "Movies filter", MoviesFilter);
   }
 

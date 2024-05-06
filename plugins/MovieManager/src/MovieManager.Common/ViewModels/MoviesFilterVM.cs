@@ -7,11 +7,13 @@ using System.Linq;
 namespace MovieManager.Common.ViewModels;
 
 public sealed class MoviesFilterVM : ObservableObject {
+  private bool _clearing;
+
   public SelectionRange Year { get; } = new();
   public SelectionRange Length { get; } = new();
   public SelectionRange Rating { get; } = new();
   public SelectionRange MyRating { get; } = new();
-  public List<GenreFilterVM> Genres { get; set; }
+  public List<GenreFilterVM> Genres { get; } = [];
 
   public event EventHandler FilterChangedEvent = delegate { };
 
@@ -31,10 +33,13 @@ public sealed class MoviesFilterVM : ObservableObject {
   private void OnRangeChanged(object sender, EventArgs e) => RaiseFilterChanged();
 
   private void Clear() {
+    _clearing = true;
     Year.SetFullRange();
     Length.SetFullRange();
     Rating.SetFullRange();
     MyRating.SetFullRange();
+    Genres.ForEach(x => x.Reset());
+    _clearing = false;
 
     RaiseFilterChanged();
   }
@@ -56,7 +61,11 @@ public sealed class MoviesFilterVM : ObservableObject {
     }
 
     Genres.Clear();
-    Genres.AddRange(genres.Select(x => new GenreFilterVM(x)));
+    foreach (var genre in genres.OrderBy(x => x.Name)) {
+      var gf = new GenreFilterVM(genre);
+      gf.PropertyChanged += delegate { if (!_clearing) RaiseFilterChanged(); };
+      Genres.Add(gf);
+    }
   }
 
   public bool Filter(MovieM movie) {
@@ -65,6 +74,13 @@ public sealed class MoviesFilterVM : ObservableObject {
         || !Rating.IsFullRange && !Rating.Fits(movie.Rating)
         || !MyRating.IsFullRange && !MyRating.Fits(movie.MyRating))
       return false;
+
+    var notG = Genres.Where(x => x.Not).ToArray();
+    if (notG.Length != 0 && notG.Any(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre)))) return false;
+    var andG = Genres.Where(x => x.And).ToArray();
+    if (andG.Length != 0 && (!andG.All(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre))))) return false;
+    var orG = Genres.Where(x => x.Or).ToArray();
+    if (orG.Length != 0 && (!orG.Any(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre))))) return false;
 
     return true;
   }

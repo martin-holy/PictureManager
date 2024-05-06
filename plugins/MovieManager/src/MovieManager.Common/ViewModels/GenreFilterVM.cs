@@ -12,10 +12,17 @@ public sealed class GenreFilterVM : ObservableObject {
   public GenreM Genre { get; set; }
   public bool Unset { get => _unset; set { _unset = value; OnPropertyChanged(); } }
   public bool And { get => _and; set { _and = value; OnPropertyChanged(); } }
-  public bool Or { get => _or; set { _or = value;OnPropertyChanged(); } }
-  public bool Not { get => _not; set { _not = value;OnPropertyChanged(); } }
+  public bool Or { get => _or; set { _or = value; OnPropertyChanged(); } }
+  public bool Not { get => _not; set { _not = value; OnPropertyChanged(); } }
 
   public GenreFilterVM(GenreM genre) {
     Genre = genre;
+  }
+
+  public void Reset() {
+    And = false;
+    Or = false;
+    Not = false;
+    Unset = true;
   }
 }
