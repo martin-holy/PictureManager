@@ -32,6 +32,15 @@ namespace MH.Utils.Extensions {
       return newIdx;
     }
 
+    public static void AddInOrder<T>(this ObservableCollection<T> collection, T item, Func<T, T, int> compare) {
+      int i;
+      for (i = 0; i < collection.Count; i++)
+        if (compare.Invoke(collection[i], item) > 0)
+          break;
+
+      collection.Insert(i, item);
+    }
+
     public static int SetInOrder<T>(this ObservableCollection<T> collection, T item, Func<T, string> keySelector) {
       int newIdx;
       var strB = keySelector(item);
