@@ -5,13 +5,14 @@ using MovieManager.Plugins.Common.Models;
 using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Repositories;
 using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
-/// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|SeenWhen|Poster|MediaItems|Plot
+/// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|Seen|Poster|MediaItems|Plot
 /// </summary>
 public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 13) {
   public override MovieM FromCsv(string[] csv) =>
@@ -22,7 +23,7 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       Rating = csv[5].IntParseOrDefault(0) / 10.0,
       MyRating = csv[6].IntParseOrDefault(0) / 10.0,
       MPAA = string.IsNullOrEmpty(csv[8]) ? null : csv[8],
-      SeenWhen = string.IsNullOrEmpty(csv[9]) ? null : csv[9].Split(',').Select(x => DateOnly.ParseExact(x, "yyyyMMdd", CultureInfo.InvariantCulture)).ToArray(),
+      Seen = string.IsNullOrEmpty(csv[9]) ? [] : new ObservableCollection<DateOnly>(csv[9].Split(',').Select(x => DateOnly.ParseExact(x, "yyyyMMdd", CultureInfo.InvariantCulture))),
       Plot = string.IsNullOrEmpty(csv[12]) ? null : csv[12]
     };
 
@@ -37,7 +38,7 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       ((int)(item.MyRating * 10)).ToString(),
       item.Genres?.ToHashCodes().ToCsv() ?? string.Empty,
       item.MPAA ?? string.Empty,
-      item.SeenWhen?.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv() ?? string.Empty,
+      item.Seen.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv() ?? string.Empty,
       item.Poster?.GetHashCode().ToString(),
       item.MediaItems?.ToHashCodes().ToCsv() ?? string.Empty,
       item.Plot ?? string.Empty);
@@ -69,8 +70,21 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
   }
 
   public void AddMediaItems(MovieM movie, IMediaItemM[] mediaItems) {
+    if (movie == null) return;
     movie.MediaItems ??= [];
     movie.MediaItems.AddRange(mediaItems.Except(movie.MediaItems));
+    IsModified = true;
+  }
+
+  public void AddSeenDate(MovieM movie, DateOnly date) {
+    if (movie == null) return;
+    movie.Seen.AddInOrder(date, (a, b) => a.CompareTo(b));
+    IsModified = true;
+  }
+
+  public void RemoveSeenDate(MovieM movie, DateOnly date) {
+    if (movie == null) return;
+    movie.Seen.Remove(date);
     IsModified = true;
   }
 }

@@ -126,6 +126,13 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   }
 
   public void OpenMovieDetail(MovieM movie) {
+    if (movie == null) {
+      if (MovieDetail != null)
+        PhCoreVM.ToolsTabs.Close(MovieDetail);
+
+      return;
+    }
+
     MovieDetail ??= new(PhCoreVM, _coreR, _coreS);
     MovieDetail.Reload(movie);
     PhCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);

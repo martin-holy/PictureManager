@@ -78,9 +78,9 @@ public sealed class MoviesFilterVM : ObservableObject {
     var notG = Genres.Where(x => x.Not).ToArray();
     if (notG.Length != 0 && notG.Any(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre)))) return false;
     var andG = Genres.Where(x => x.And).ToArray();
-    if (andG.Length != 0 && (!andG.All(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre))))) return false;
+    if (andG.Length != 0 && !andG.All(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre)))) return false;
     var orG = Genres.Where(x => x.Or).ToArray();
-    if (orG.Length != 0 && (!orG.Any(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre))))) return false;
+    if (orG.Length != 0 && !orG.Any(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre)))) return false;
 
     return true;
   }
