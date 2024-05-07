@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
@@ -13,13 +14,20 @@ public class PopupSlider : Slider {
     set => SetValue(ContentProperty, value);
   }
 
+  public event EventHandler PopupClosedEvent = delegate { };
+
   public override void OnApplyTemplate() {
     base.OnApplyTemplate();
 
     if (Content == null || GetTemplateChild("PART_Popup") is not Popup popup) return;
 
     Content.Click += delegate { popup.IsOpen = true; };
-    popup.PreviewMouseUp += delegate { popup.IsOpen = false; };
+
+    popup.PreviewMouseUp += delegate {
+      popup.IsOpen = false;
+      PopupClosedEvent(this, EventArgs.Empty);
+    };
+
     popup.CustomPopupPlacementCallback += (size, targetSize, _) => {
       var x = targetSize.Width / 2 - size.Width / 2;
       return new[] { new CustomPopupPlacement(new(x, targetSize.Height), PopupPrimaryAxis.Vertical) };
