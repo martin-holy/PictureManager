@@ -30,7 +30,7 @@
     maybe set focus on mouse enter
 
           # Movie Manager
-  - changing rating doesn't modify DB
+  - seen date can't be set to already selected date in calendar
 
 
                                   *** UPDATE ***
@@ -62,6 +62,7 @@
 ## MediaItemsView
   - use Filter on MediaItem type in LoadByTag GetItems
   - open items from group or all with default sort or all sorted by groups or ...?
+  - use PopupClosedEvent on thumbs scale
 ## Video
   - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
     + setting this position in VideoDetail
