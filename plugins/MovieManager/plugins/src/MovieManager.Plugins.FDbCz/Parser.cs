@@ -1,6 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.Extensions;
 using MovieManager.Plugins.Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,30 +12,27 @@ namespace MovieManager.Plugins.FDbCz;
 
 public static class Parser {
   private static readonly Dictionary<int, string> _genres = new() {
-    { 86, "Adaptation" }, { 64, "Agitprop" }, { 3, "Action" }, { 90, "Actuality" }, { 63, "Allegorical Images" },
-    { 8, "Animated" }, { 76, "Autobiographical" }, { 43, "Ballad" }, { 65, "Ballet" }, { 113, "Biblical" },
-    { 140, "Burlesque Comedy" }, { 172, "Travelogue" }, { 2, "Crazy" }, { 133, "Cycle" }, { 19, "Black Comedy" },
-    { 10, "Detective" }, { 11, "Children's" }, { 169, "Discussion" }, { 5, "Adventure" }, { 38, "Documentary" },
-    { 137, "Documentary - Drama" }, { 9, "Drama" }, { 102, "Epic" }, { 4, "Erotic" }, { 123, "Etude" },
-    { 158, "Experimental" }, { 12, "Fantasy" }, { 51, "Fairy Tale" }, { 163, "Film-Noir" }, { 75, "Film Poem" },
-    { 127, "Film Essay" }, { 85, "Film Collage" }, { 101, "Philosophical" }, { 58, "Farce" }, { 14, "Gangster" },
-    { 1, "Grotesque" }, { 16, "Historical" }, { 15, "Horror" }, { 96, "Dark Comedy" }, { 135, "Bitter Romance" },
-    { 13, "Musical" }, { 61, "Song Illustration" }, { 138, "Production" }, { 17, "Catastrophic" }, { 83, "Combined" },
-    { 7, "Comedy" }, { 46, "Comics" }, { 74, "Animated" }, { 18, "Crime" }, { 60, "Legend" }, { 166, "Literary" },
-    { 117, "Puppet" }, { 21, "Lyrical" }, { 168, "Medallion" }, { 22, "Melodrama" }, { 23, "Romantic" },
-    { 24, "Musical" }, { 147, "Mysterious" }, { 126, "Mystical" }, { 128, "Mythology" }, { 81, "Religious" },
-    { 25, "Educational" }, { 59, "Opera" }, { 57, "Educational" }, { 68, "Parody" }, { 104, "Tape" }, { 44, "Parable" },
-    { 71, "Poetic" }, { 167, "Poetry" }, { 26, "Fairytale" }, { 79, "Political" }, { 66, "Popular Science" },
-    { 27, "Porn" }, { 28, "Story" }, { 56, "Promotional" }, { 136, "Transfer" }, { 29, "Story" },
-    { 100, "Natural History" }, { 6, "Psychological" }, { 160, "Journalistic" }, { 173, "Reality Show" },
-    { 55, "Advertisement" }, { 52, "Relaxation" }, { 42, "Retro" }, { 80, "Road Movie" }, { 31, "Family" },
-    { 32, "Romantic" }, { 121, "Saga" }, { 69, "Satire" }, { 33, "Sci-Fi" }, { 88, "Situation Grotesque" },
-    { 89, "Situation Comedy" }, { 119, "Sad Comedy" }, { 84, "Social" }, { 170, "Competitive" },
-    { 103, "Social-Historical" }, { 87, "Social-Critical" }, { 77, "Sports" }, { 47, "Editing" }, { 73, "Symbolic" },
-    { 40, "Spy" }, { 175, "Talk Show" }, { 45, "Dance" }, { 174, "Telenovela" }, { 34, "Thriller" }, { 78, "Tragedy" },
-    { 41, "Tragicomedy" }, { 125, "Trick" }, { 35, "War" }, { 171, "Music Video" }, { 49, "Military" },
-    { 124, "Artistic" }, { 36, "Western" }, { 165, "Entertaining" }, { 82, "Operetta" }, { 92, "Living Pictures" },
-    { 37, "Biographical" }
+    { 3, "Action" }, { 5, "Adventure" }, { 8, "Animation" }, { 74, "Animation" }, { 37, "Biography" },
+    { 76, "Biography" }, { 7, "Comedy" }, { 140, "Comedy" }, { 19, "Comedy" }, { 96, "Comedy" }, { 89, "Comedy" },
+    { 119, "Comedy" }, { 41, "Comedy" }, { 18, "Crime" }, { 38, "Documentary" }, { 137, "Documentary" }, { 9, "Drama" },
+    { 31, "Family" }, { 12, "Fantasy" }, { 163, "Film-Noir" },  { 16, "History" }, { 103, "History" }, { 15, "Horror" },
+    { 13, "Music" }, { 24, "Music" }, { 147, "Mystery" }, { 32, "Romance" }, { 23, "Romance" }, { 135, "Romance" },
+    { 33, "Sci-Fi" }, { 77, "Sport" },  { 34, "Thriller" }, { 35, "War" }, { 36, "Western" }, { 169, "Talk-Show" },
+    { 175, "Talk-Show" }, { 90, "News" }, { 65, "Music" }, { 113, "History" }, { 172, "Documentary" }, { 133, "Documentary" },
+    { 10, "Crime" }, { 11, "Kids" }, { 4, "Erotic" }, { 51, "Kids" }, { 58, "Comedy" }, { 14, "Crime" }, { 1, "Comedy" },
+    { 17, "Drama" }, { 46, "Animation" }, { 60, "Fantasy" }, { 117, "Animation" }, { 168, "Biography" }, { 22, "Drama" },
+    { 128, "Fantasy" }, { 25, "Documentary" }, { 59, "Music" }, { 57, "Documentary" }, { 68, "Comedy" }, { 26, "Kids" },
+    { 27, "Erotic" }, { 100, "Documentary" }, { 173, "Reality-TV" }, { 88, "Comedy" }, { 40, "Action" }, { 45, "Music" },
+    { 78, "Drama" }, { 171, "Music" }, { 49, "War" }, { 82, "Music" },
+    { 86, "Adaptation" }, { 64, "Agitprop" }, { 63, "Allegorical Images" }, { 43, "Ballad" }, { 2, "Crazy" }, { 102, "Epic" },
+    { 123, "Etude" }, { 158, "Experimental" }, { 75, "Film Poem" }, { 127, "Film Essay" }, { 85, "Film Collage" },
+    { 101, "Philosophical" }, { 61, "Song Illustration" }, { 138, "Production" }, { 83, "Combined" }, { 166, "Literary" },
+    { 21, "Lyrical" }, { 126, "Mystical" }, { 81, "Religious" }, { 104, "Tape" }, { 44, "Parable" }, { 71, "Poetic" },
+    { 167, "Poetry" }, { 79, "Political" }, { 66, "Popular Science" }, { 28, "Story" }, { 56, "Promotional" },
+    { 136, "Transfer" }, { 29, "Story" }, { 6, "Psychological" }, { 160, "Journalistic" }, { 55, "Advertisement" },
+    { 52, "Relaxation" }, { 42, "Retro" }, { 80, "Road Movie" }, { 121, "Saga" }, { 69, "Satire" }, { 84, "Social" },
+    { 170, "Competitive" }, { 87, "Social-Critical" }, { 47, "Editing" }, { 73, "Symbolic" }, { 174, "Telenovela" },
+    { 125, "Trick" }, { 124, "Artistic" }, { 165, "Entertaining" }, { 92, "Living Pictures" }
   };
 
   private const string _detailStart = "zakladni_info";
@@ -142,11 +140,13 @@ public static class Parser {
       .AsEnumerable(text, _srDetailGenre)
       .Select(x => ExtractFirstInt(x.AsString(text)))
       .Where(x => x != null)
-      .Select(x => _genres[int.Parse(x)])
+      .Select(x => _genres.TryGetValue(int.Parse(x), out var genre) ? genre : string.Empty)
+      .Where(x => !string.IsNullOrEmpty(x))
+      .Distinct()
       .ToArray() ?? [];
 
   private static double ExtractRating(string rating) =>
-    double.TryParse(rating, CultureInfo.InvariantCulture, out var d) ? d / 10.0 : 0;
+    double.TryParse(rating, CultureInfo.InvariantCulture, out var d) ? Math.Round(d / 10.0, 1) : 0;
 
   private static Cast ParseCast(string text, StringRange range) {
     var actor = new Actor();

@@ -20,7 +20,7 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public double MyRating { get => _myRating; set { _myRating = value; OnPropertyChanged(); } }
   public List<GenreM> Genres { get; set; }
   public List<IKeywordM> Keywords { get; set; }
-  public ObservableCollection<DateOnly> Seen { get; set; }
+  public ObservableCollection<DateOnly> Seen { get; set; } = [];
   public string MPAA { get; set; }
   public string Plot { get; set; }
   public IMediaItemM Poster { get; set; }

@@ -70,7 +70,7 @@ public class ImportS {
   }
 
   private async Task ImportImages(IProgress<string> progress, MovieDetail md, MovieM movie) {
-    if (md.Images.Length == 0 || GetMovieImagesFolder(movie) is not { } imgFolder) return;
+    if (md.Images == null || md.Images.Length == 0 || GetMovieImagesFolder(movie) is not { } imgFolder) return;
 
     progress.Report($"Downloading {md.Images.Length} images ...", true);
     movie.MediaItems ??= [];
