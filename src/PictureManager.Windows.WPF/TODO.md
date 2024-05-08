@@ -31,6 +31,7 @@
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
+  - character image tooltip is to big for small images
 
 
                                   *** UPDATE ***
