@@ -1,6 +1,6 @@
 ﻿namespace PictureManager.Interfaces.Services;
 
-public interface ICoreS {
+public interface IPMCoreS {
   IMediaItemS MediaItem { get; }
   ISegmentS Segment { get; }
 }

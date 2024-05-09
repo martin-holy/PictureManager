@@ -2,6 +2,6 @@
 
 namespace PictureManager.Interfaces;
 
-public interface ICore {
-  ISettings Settings { get; }
+public interface IPMCore {
+  IPMSettings Settings { get; }
 }
