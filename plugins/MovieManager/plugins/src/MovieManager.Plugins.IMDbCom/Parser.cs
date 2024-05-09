@@ -1,5 +1,6 @@
 ﻿using MH.Utils.Extensions;
 using MovieManager.Plugins.Common.Models;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace MovieManager.Plugins.IMDbCom;
@@ -50,6 +51,20 @@ public static class Parser {
   private const string _y = "y";
   private const string _year = "year";
 
+  private static readonly Dictionary<string, string> _searchResultTypes = new() {
+    { "feature", "Movie" },
+    { "movie", "Movie" },
+    { "video", "Video" },
+    { "TV mini-series", "TV mini-series" },
+    { "tvMiniSeries", "TV mini-series" },
+    { "TV series", "TV series"},
+    { "tvSeries", "TV series" },
+    { "TV movie", "TV movie" },
+    { "tvMovie", "TV movie" },
+    { "musicVideo", "Music Video" },
+    { "short", "Short" }
+  };
+
   public static SearchResult[] ParseSearch(string text) {
     var json = JsonDocument.Parse(text);
     return json.RootElement.TryGetArray(_d, ParseSearch);
@@ -69,16 +84,17 @@ public static class Parser {
     var q = element.TryGetString(_q) ?? string.Empty;
     var qid = element.TryGetString(_qid) ?? string.Empty;
 
-    if (string.Equals(q, "feature") || string.Equals(qid, "movie")) return "Movie";
-    if (string.Equals(q, "video") || string.Equals(qid, "video")) return "Video";
-    if (string.Equals(q, "TV mini-series") || string.Equals(qid, "tvMiniSeries")) return "TV mini-series";
-    if (string.Equals(q, "TV series") || string.Equals(qid, "tvSeries")) return "TV series";
-    if (string.Equals(q, "TV movie") || string.Equals(qid, "tvMovie")) return "TV movie";
-    if (string.Equals(q, "musicVideo") || string.Equals(qid, "musicVideo")) return "Music Video";
-    if (string.Equals(q, "short") || string.Equals(qid, "short")) return "Short";
     if (string.IsNullOrEmpty(q) && string.IsNullOrEmpty(qid)) return string.Empty;
+    if (!string.IsNullOrEmpty(q) && _searchResultTypes.TryGetValue(q, out var qType)) return qType;
+    if (!string.IsNullOrEmpty(qid) && _searchResultTypes.TryGetValue(qid, out var qidType)) return qidType;
 
     return string.Join(' ', q, qid);
+  }
+
+  private static Image ParseImage(JsonElement element, string urlParams) {
+    var img = ParseImage(element);
+    img.Url = Common.Core.IMDbPlugin.AddImgUrlParams(img.Url, urlParams);
+    return img;
   }
 
   public static MovieDetail ParseMovie(string text) {
@@ -120,12 +136,6 @@ public static class Parser {
       Width = element.TryGetInt32(_width),
       Desc = element.TryGetString(_caption, _plainText)
     };
-
-  private static Image ParseImage(JsonElement element, string urlParams) {
-    var img = ParseImage(element);
-    img.Url = Common.Core.IMDbPlugin.AddImgUrlParams(img.Url, urlParams);
-    return img;
-  }
 
   private static Cast ParseCast(JsonElement element) =>
     new() {
