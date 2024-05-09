@@ -5,7 +5,7 @@ using System;
 
 namespace PictureManager.Interfaces.ViewModels;
 
-public interface ICoreVM {
+public interface IPMCoreVM {
   public TabControl MainTabs { get; }
   public TabControl ToolsTabs { get; }
   public ToggleDialog ToggleDialog { get; }

@@ -6,7 +6,7 @@ using PictureManager.Interfaces.Services;
 namespace PictureManager.Common.Services;
 
 // TODO add Image inside MediaItem
-public class CoreS(CoreR coreR) : ObservableObject, ICoreS {
+public class CoreS(CoreR coreR) : ObservableObject, IPMCoreS {
   public FolderS Folder { get; } = new();
   public ImageS Image { get; } = new(coreR.Image);
   public MediaItemS MediaItem { get; } = new(coreR.MediaItem);
@@ -14,8 +14,8 @@ public class CoreS(CoreR coreR) : ObservableObject, ICoreS {
   public SegmentS Segment { get; } = new(coreR.Segment);
   public ViewerS Viewer { get; } = new(coreR);
 
-  IMediaItemS ICoreS.MediaItem => MediaItem;
-  ISegmentS ICoreS.Segment => Segment;
+  IMediaItemS IPMCoreS.MediaItem => MediaItem;
+  ISegmentS IPMCoreS.Segment => Segment;
 
   public void AttachEvents() {
     coreR.Person.ItemDeletedEvent += OnPersonDeleted;

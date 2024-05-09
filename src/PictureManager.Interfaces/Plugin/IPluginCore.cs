@@ -9,6 +9,6 @@ namespace PictureManager.Interfaces.Plugin;
 public interface IPluginCore {
   public string Name { get; }
   public IPluginCoreVM VM { get; }
-  public Task InitAsync(ICore pmCore, ICoreR pmCoreR, IProgress<string> progress);
-  public void AfterInit(ICoreS pmCoreS, ICoreVM pmCoreVM);
+  public Task InitAsync(IPMCore pmCore, IPMCoreR pmCoreR, IProgress<string> progress);
+  public void AfterInit(IPMCoreS pmCoreS, IPMCoreVM pmCoreVM);
 }

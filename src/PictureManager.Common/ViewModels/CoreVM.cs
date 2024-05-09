@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.ViewModels;
 
-public class CoreVM : ObservableObject, ICoreVM {
+public class CoreVM : ObservableObject, IPMCoreVM {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
@@ -50,7 +50,7 @@ public class CoreVM : ObservableObject, ICoreVM {
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
 
-  ISegmentVM ICoreVM.Segment => Segment;
+  ISegmentVM IPMCoreVM.Segment => Segment;
 
   public event EventHandler AppClosingEvent = delegate { };
 
