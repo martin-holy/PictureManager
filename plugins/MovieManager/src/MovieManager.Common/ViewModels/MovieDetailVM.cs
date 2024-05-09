@@ -11,12 +11,11 @@ using PictureManager.Interfaces.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http.Headers;
 
 namespace MovieManager.Common.ViewModels;
 
 public sealed class MovieDetailVM : ObservableObject {
-  private readonly ICoreVM _phCoreVM;
+  private readonly IPMCoreVM _pmCoreVM;
   private readonly CoreR _coreR;
   private readonly CoreS _coreS;
   private MovieM _movieM;
@@ -31,12 +30,12 @@ public sealed class MovieDetailVM : ObservableObject {
   public RelayCommand<DateOnly> RemoveSeenDateCommand { get; }
   public RelayCommand MyRatingChangedCommand { get; }
 
-  public MovieDetailVM(ICoreVM phCoreVM, CoreR coreR, CoreS coreS) {
-    _phCoreVM = phCoreVM;
+  public MovieDetailVM(IPMCoreVM pmCoreVM, CoreR coreR, CoreS coreS) {
+    _pmCoreVM = pmCoreVM;
     _coreR = coreR;
     _coreS = coreS;
 
-    AddMediaItemsCommand = new(AddMediaItems, phCoreVM.AnyActive, "IconImageMultiple", "Add selected Media items");
+    AddMediaItemsCommand = new(AddMediaItems, pmCoreVM.AnyActive, "IconImageMultiple", "Add selected Media items");
     SetCharacterSegmentCommand = new(SetCharacterSegment, CanSetCharacterSegment, "IconSegment", "Set Character Segment");
     AddSeenDateCommand = new(AddSeenDate);
     RemoveSeenDateCommand = new(RemoveSeenDate, Res.IconXCross, "Remove");
@@ -56,7 +55,7 @@ public sealed class MovieDetailVM : ObservableObject {
   }
 
   private void AddMediaItems() {
-    var mis = _phCoreVM.GetActive();
+    var mis = _pmCoreVM.GetActive();
     if (Dialog.Show(new MessageDialog(
           "Adding selected Media items to Movie",
           "Do you really want to add {0} Media item{1} to Movie?".Plural(mis.Length),
@@ -69,11 +68,11 @@ public sealed class MovieDetailVM : ObservableObject {
   private void SetCharacterSegment() =>
     _coreR.Character.SetSegment(
       _coreS.Character.Selected.Items.FirstOrDefault(),
-      _coreS.PhCoreS.Segment.GetSelected().FirstOrDefault());
+      _coreS.PMCoreS.Segment.GetSelected().FirstOrDefault());
 
   private bool CanSetCharacterSegment() =>
     _coreS.Character.Selected.Items.Count == 1
-    && _coreS.PhCoreS.Segment.GetSelected().Length == 1;
+    && _coreS.PMCoreS.Segment.GetSelected().Length == 1;
 
   private void AddSeenDate(ObservableCollection<DateTime> selectedDates) {
     if (selectedDates?.FirstOrDefault() is not { } dt) return;

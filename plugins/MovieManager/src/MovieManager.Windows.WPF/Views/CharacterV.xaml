@@ -18,8 +18,8 @@
 
       <Grid
         Grid.RowSpan="2"
-        Width="{Binding PhCoreVM.Segment.SegmentUiSize, Source={x:Static mm:Core.VM}}"
-        Height="{Binding PhCoreVM.Segment.SegmentUiSize, Source={x:Static mm:Core.VM}}">
+        Width="{Binding PMCoreVM.Segment.SegmentUiSize, Source={x:Static mm:Core.VM}}"
+        Height="{Binding PMCoreVM.Segment.SegmentUiSize, Source={x:Static mm:Core.VM}}">
 
         <!--Show Actor image or empty icon if Segment is not available-->
         <Grid

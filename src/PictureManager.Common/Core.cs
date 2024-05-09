@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common;
 
-public sealed class Core : ICore {
+public sealed class Core : IPMCore {
   private static Core _inst;
   private static readonly object _lock = new();
   public static Core Inst { get { lock (_lock) { return _inst ??= new(); } } }
@@ -25,7 +25,7 @@ public sealed class Core : ICore {
   public static Settings Settings { get; } = Settings.Load();
   public List<IPluginCore> Plugins { get; } = [];
 
-  ISettings ICore.Settings => Settings;
+  IPMSettings IPMCore.Settings => Settings;
 
   private Core() {
     Tasks.SetUiTaskScheduler();

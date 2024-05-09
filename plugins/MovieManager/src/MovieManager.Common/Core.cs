@@ -19,7 +19,7 @@ public sealed class Core : IPluginCore {
   public string Name => "MovieManager";
   public string BaseDir { get; }
   public string PluginsDir { get; }
-  public static ICore PMCore { get; private set; }
+  public static IPMCore PMCore { get; private set; }
   public static Core Inst { get; private set; }
   public static CoreR R { get; private set; }
   public static CoreS S { get; private set; }
@@ -35,9 +35,9 @@ public sealed class Core : IPluginCore {
     PluginsDir = Path.Combine(BaseDir, "plugins");
   }
 
-  public Task InitAsync(ICore pmCore, ICoreR phCoreR, IProgress<string> progress) {
+  public Task InitAsync(IPMCore pmCore, IPMCoreR pmCoreR, IProgress<string> progress) {
     PMCore = pmCore;
-    R = new(phCoreR, this);
+    R = new(pmCoreR, this);
 
     return Task.Run(() => {
       R.AddDataAdapters();
@@ -51,15 +51,15 @@ public sealed class Core : IPluginCore {
     });
   }
 
-  public void AfterInit(ICoreS phCoreS, ICoreVM phCoreVM) {
-    S = new(phCoreS, R);
-    VM = new(phCoreVM, S, R);
+  public void AfterInit(IPMCoreS pmCoreS, IPMCoreVM pmCoreVM) {
+    S = new(pmCoreS, R);
+    VM = new(pmCoreVM, S, R);
     R.AttachEvents();
     VM.AttachEvents();
   }
 
   private void LoadPlugins(IProgress<string> progress) {
-    progress.Report("Loading plugins ...");
+    progress.Report("Loading Movie Manager plugins ...");
 
     try {
       ImportPlugins = Directory

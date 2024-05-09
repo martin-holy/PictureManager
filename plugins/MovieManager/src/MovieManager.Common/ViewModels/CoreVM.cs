@@ -18,7 +18,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
-  public ICoreVM PhCoreVM { get; }
+  public IPMCoreVM PMCoreVM { get; }
   public string PluginIcon => "IconMovieClapper";
   public string PluginTitle => "Movie Manager";
 
@@ -36,12 +36,12 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public RelayCommand SaveDbCommand { get; }
   public RelayCommand ScrollToRootFolderCommand { get; }
 
-  public CoreVM(ICoreVM phCoreVM, CoreS coreS, CoreR coreR) {
-    PhCoreVM = phCoreVM;
+  public CoreVM(IPMCoreVM pmCoreVM, CoreS coreS, CoreR coreR) {
+    PMCoreVM = pmCoreVM;
     _coreS = coreS;
     _coreR = coreR;
 
-    phCoreVM.AppClosingEvent += OnAppClosing;
+    pmCoreVM.AppClosingEvent += OnAppClosing;
 
     InitToggleDialog();
 
@@ -50,7 +50,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
     OpenMoviesFilterCommand = new(OpenMoviesFilter, "IconFilter", "Movies filter");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
-    ScrollToRootFolderCommand = new(() => PhCoreVM.ScrollToFolder(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
+    ScrollToRootFolderCommand = new(() => PMCoreVM.ScrollToFolder(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
 
     MainMenuCommands = [
       DeleteSelectedMoviesCommand,
@@ -69,7 +69,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   private void OnMovieDeleted(object sender, MovieM e) {
     if (ReferenceEquals(e, MovieDetail?.MovieM))
-      PhCoreVM.ToolsTabs.Close(MovieDetail);
+      PMCoreVM.ToolsTabs.Close(MovieDetail);
   }
 
   private void OnMoviesDeleted(object sender, IList<MovieM> e) {
@@ -99,8 +99,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   private void OpenImportMovies() {
     Import ??= new(_coreS.Import);
-    Import.Open();
-    PhCoreVM.MainTabs.Activate("IconImport", "Import", Import);
+    PMCoreVM.MainTabs.Activate("IconImport", "Import", Import);
   }
 
   private void OpenMovies() {
@@ -108,7 +107,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     Movies.Open(MoviesFilter == null
       ? _coreR.Movie.All
       : _coreR.Movie.All.Where(MoviesFilter.Filter));
-    PhCoreVM.MainTabs.Activate("IconMovieClapper", "Movies", Movies);
+    PMCoreVM.MainTabs.Activate("IconMovieClapper", "Movies", Movies);
   }
 
   private void OpenMoviesFilter() {
@@ -118,7 +117,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     }
     
     MoviesFilter.Open(_coreR.Movie.All, _coreR.Genre.All);
-    PhCoreVM.ToolsTabs.Activate("IconFilter", "Movies filter", MoviesFilter);
+    PMCoreVM.ToolsTabs.Activate("IconFilter", "Movies filter", MoviesFilter);
   }
 
   private void OnMoviesFilterChanged(object sender, EventArgs e) {
@@ -128,18 +127,18 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public void OpenMovieDetail(MovieM movie) {
     if (movie == null) {
       if (MovieDetail != null)
-        PhCoreVM.ToolsTabs.Close(MovieDetail);
+        PMCoreVM.ToolsTabs.Close(MovieDetail);
 
       return;
     }
 
-    MovieDetail ??= new(PhCoreVM, _coreR, _coreS);
+    MovieDetail ??= new(PMCoreVM, _coreR, _coreS);
     MovieDetail.Reload(movie);
-    PhCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);
+    PMCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);
   }
 
   private void InitToggleDialog() {
-    var sts = PhCoreVM.ToggleDialog.SourceTypes;
+    var sts = PMCoreVM.ToggleDialog.SourceTypes;
     var ttActor = new ToggleDialogTargetType<ActorM>(
       "IconPeople",
       _ => Core.S.Actor.Selected.Items.Count == 0 ? [] : [Core.S.Actor.Selected.Items.First()],

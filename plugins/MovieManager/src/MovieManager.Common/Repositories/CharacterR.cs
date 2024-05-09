@@ -8,7 +8,7 @@ namespace MovieManager.Common.Repositories;
 /// <summary>
 /// DB fields: Id|Name|Actor|Movie|Segment
 /// </summary>
-public class CharacterR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<CharacterM>(coreR, "Characters", 5) {
+public class CharacterR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<CharacterM>(coreR, "Characters", 5) {
   public override CharacterM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]);
 
@@ -24,7 +24,7 @@ public class CharacterR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Characte
     foreach (var (item, csv) in AllCsv) {
       item.Actor = coreR.Actor.GetById(csv[2]);
       item.Movie = coreR.Movie.GetById(csv[3]);
-      item.Segment = phCoreR.Segment.GetById(csv[4], true);
+      item.Segment = pmCoreR.Segment.GetById(csv[4], true);
     }
   }
 

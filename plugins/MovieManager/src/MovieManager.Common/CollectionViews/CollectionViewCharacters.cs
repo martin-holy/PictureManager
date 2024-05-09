@@ -15,7 +15,7 @@ public class CollectionViewCharacters : CollectionView<CharacterM> {
   public override IEnumerable<GroupByItem<CharacterM>> GetGroupByItems(IEnumerable<CharacterM> source) => [];
 
   public override int GetItemSize(CharacterM item, bool getWidth) =>
-    getWidth ? 300 : Core.VM.PhCoreVM.Segment.SegmentUiFullWidth;
+    getWidth ? 300 : Core.VM.PMCoreVM.Segment.SegmentUiFullWidth;
 
   public override int SortCompare(CharacterM itemA, CharacterM itemB) =>
     string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);

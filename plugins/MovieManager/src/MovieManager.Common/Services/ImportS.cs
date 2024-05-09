@@ -19,13 +19,6 @@ public class ImportS {
     _coreS = coreS;
   }
 
-  public void PrepareForImport() {
-    // TODO do this in one method
-    _coreR.SetActorsFolder();
-    _coreR.SetImagesFolder();
-    _coreR.SetPostersFolder();
-  }
-
   public async Task ImportMovie(SearchResult result, IProgress<string> progress) {
     if (result == null) return;
     progress.Report($"Importing '{result.Name}' ...", true);
@@ -104,7 +97,7 @@ public class ImportS {
       if (!Path.Exists(filePath)) 
         await Plugins.Common.Core.DownloadAndSaveFile(image.Url, filePath);
 
-      return _coreS.PhCoreS.MediaItem.GetMediaItem(folder, fileName);
+      return _coreS.PMCoreS.MediaItem.GetMediaItem(folder, fileName);
     }
     catch (Exception ex) {
       Log.Error(ex);
@@ -119,5 +112,5 @@ public class ImportS {
     $"{movie.Year}-{movie.DetailId.DetailName}-{movie.DetailId.DetailId}-{movie.Title}.jpg";
 
   private IFolderM GetMovieImagesFolder(MovieM movie) =>
-    _coreR.GetFolder(Path.Combine(_coreR.ImagesDir, $"{movie.Year} {movie.Title}"));
+    _coreR.GetFolder(Path.Combine(_coreR.ImagesFolder.FullPath, $"{movie.Year} {movie.Title}"));
 }

@@ -33,7 +33,6 @@ public class ImportVM : ObservableObject {
   }
 
   private Task Search(string titles) {
-    _importS.PrepareForImport();
     ProgressCollection.Clear();
     _searchQueue.Clear();
     _searchQueue.AddRange(titles.Split(
@@ -79,9 +78,5 @@ public class ImportVM : ObservableObject {
       foreach (var result in results) SearchResults.Add(result);
       Progress.Report("Waiting for resolving search results ...", true);
     }
-  }
-
-  public void Open() {
-
   }
 }

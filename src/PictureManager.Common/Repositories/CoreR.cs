@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Repositories;
 
-public sealed class CoreR : SimpleDB, ICoreR {
+public sealed class CoreR : SimpleDB, IPMCoreR {
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public bool IsCopyMoveInProgress { get; set; }
@@ -35,11 +35,11 @@ public sealed class CoreR : SimpleDB, ICoreR {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
-  IFolderR ICoreR.Folder => Folder;
-  IKeywordR ICoreR.Keyword => Keyword;
-  IRepository<IMediaItemM> ICoreR.MediaItem => MediaItem;
-  IRepository<IPersonM> ICoreR.Person => Person;
-  IRepository<ISegmentM> ICoreR.Segment => Segment;
+  IFolderR IPMCoreR.Folder => Folder;
+  IKeywordR IPMCoreR.Keyword => Keyword;
+  IRepository<IMediaItemM> IPMCoreR.MediaItem => MediaItem;
+  IRepository<IPersonM> IPMCoreR.Person => Person;
+  IRepository<ISegmentM> IPMCoreR.Segment => Segment;
 
   public CoreR() : base("db") {
     CategoryGroup = new(this);

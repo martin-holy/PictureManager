@@ -9,7 +9,8 @@ using System.Linq;
 namespace MovieManager.Common.Repositories;
 
 public sealed class CoreR : SimpleDB {
-  private readonly ICoreR _phCoreR;
+  private readonly IPMCoreR _pmCoreR;
+  private readonly Core _core;
 
   public ActorR Actor { get; }
   public ActorDetailIdR ActorDetailId { get; }
@@ -18,27 +19,23 @@ public sealed class CoreR : SimpleDB {
   public MovieDetailIdR MovieDetailId { get; }
   public MovieR Movie { get; }
 
-  public string ActorsDir { get; }
-  public string ImagesDir { get; }
-  public string PostersDir { get; }
   public IFolderM ActorsFolder { get; set; }
   public IFolderM ImagesFolder { get; set; }
   public IFolderM PostersFolder { get; set; }
   public IFolderM RootFolder { get; set; }
 
-  public CoreR(ICoreR phCoreR, Core core) : base(Path.Combine(core.BaseDir, "db")) {
-    _phCoreR = phCoreR;
-    ActorsDir = Path.Combine(core.BaseDir, "actors");
-    ImagesDir = Path.Combine(core.BaseDir, "images");
-    PostersDir = Path.Combine(core.BaseDir, "posters");
-    RootFolder = GetFolder(core.BaseDir);
+  public CoreR(IPMCoreR pmCoreR, Core core) : base(Path.Combine(core.BaseDir, "db")) {
+    _pmCoreR = pmCoreR;
+    _core = core;
 
-    Actor = new(this, phCoreR);
+    Actor = new(this, pmCoreR);
     ActorDetailId = new(this);
     Genre = new(this);
-    Character = new(this, phCoreR);
+    Character = new(this, pmCoreR);
     MovieDetailId = new(this);
-    Movie = new(this, phCoreR);
+    Movie = new(this, pmCoreR);
+
+    SetFolders();
   }
 
   public void AddDataAdapters() {
@@ -59,28 +56,20 @@ public sealed class CoreR : SimpleDB {
     MovieDetailId.ItemDelete(MovieDetailId.All.Single(x => ReferenceEquals(x.Movie, e)));
   }
 
-  public void SetActorsFolder() {
-    if (ActorsFolder != null) return;
-    ActorsFolder = GetFolder(ActorsDir);
-  }
-
-  public void SetImagesFolder() {
-    if (ImagesFolder != null) return;
-    ImagesFolder = GetFolder(ImagesDir);
-  }
-
-  public void SetPostersFolder() {
-    if (PostersFolder != null) return;
-    PostersFolder = GetFolder(PostersDir);
+  private void SetFolders() {
+    ActorsFolder = GetFolder(Path.Combine(_core.BaseDir, "actors"));
+    ImagesFolder = GetFolder(Path.Combine(_core.BaseDir, "images"));
+    PostersFolder = GetFolder(Path.Combine(_core.BaseDir, "posters"));
+    RootFolder = GetFolder(_core.BaseDir);
   }
 
   public IFolderM GetFolder(string path) {
     if (Directory.Exists(path))
-      return _phCoreR.Folder.GetFolder(path);
+      return _pmCoreR.Folder.GetFolder(path);
 
     try {
       Directory.CreateDirectory(path!);
-      return _phCoreR.Folder.GetFolder(path);
+      return _pmCoreR.Folder.GetFolder(path);
     }
     catch (Exception ex) {
       Log.Error(ex);

@@ -14,7 +14,7 @@ namespace MovieManager.Common.Repositories;
 /// <summary>
 /// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|Seen|Poster|MediaItems|Plot
 /// </summary>
-public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 13) {
+public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 13) {
   public override MovieM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]) {
       Year = csv[2].IntParseOrDefault(0),
@@ -32,22 +32,22 @@ public sealed class MovieR(CoreR coreR, ICoreR phCoreR) : TableDataAdapter<Movie
       item.GetHashCode().ToString(),
       item.Title,
       item.Year.ToString(),
-      item.YearEnd?.ToString() ?? string.Empty,
+      item.YearEnd?.ToString(),
       item.Length.ToString(),
       ((int)(item.Rating * 10)).ToString(),
       ((int)(item.MyRating * 10)).ToString(),
-      item.Genres?.ToHashCodes().ToCsv() ?? string.Empty,
-      item.MPAA ?? string.Empty,
-      item.Seen.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv() ?? string.Empty,
+      item.Genres?.ToHashCodes().ToCsv(),
+      item.MPAA,
+      item.Seen.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv(),
       item.Poster?.GetHashCode().ToString(),
-      item.MediaItems?.ToHashCodes().ToCsv() ?? string.Empty,
-      item.Plot ?? string.Empty);
+      item.MediaItems?.ToHashCodes().ToCsv(),
+      item.Plot);
 
   public override void LinkReferences() {
     foreach (var (item, csv) in AllCsv) {
       item.Genres = coreR.Genre.LinkList(csv[7], null, null);
-      item.Poster = phCoreR.MediaItem.GetById(csv[10], true);
-      item.MediaItems = phCoreR.MediaItem.Link(csv[11]);
+      item.Poster = pmCoreR.MediaItem.GetById(csv[10], true);
+      item.MediaItems = pmCoreR.MediaItem.Link(csv[11]);
     }
   }
 

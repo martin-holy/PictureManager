@@ -2,7 +2,7 @@
 
 namespace PictureManager.Interfaces.Repositories;
 
-public interface ICoreR {
+public interface IPMCoreR {
   public IFolderR Folder { get; }
   public IKeywordR Keyword { get; }
   public IRepository<IMediaItemM> MediaItem { get; }

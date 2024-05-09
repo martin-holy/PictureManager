@@ -11,7 +11,7 @@ using PictureManager.Interfaces.Settings;
 
 namespace PictureManager.Common;
 
-public sealed class Settings : ISettings {
+public sealed class Settings : IPMSettings {
   private static readonly string _filePath = "settings.json";
   
   [JsonIgnore]
@@ -22,7 +22,7 @@ public sealed class Settings : ISettings {
   public ImagesToVideoSettings ImagesToVideo { get; set; }
   public MediaItemSettings MediaItem { get; set; }
 
-  IMediaItemSettings ISettings.MediaItem => MediaItem;
+  IMediaItemSettings IPMSettings.MediaItem => MediaItem;
 
   public void Save() {
     try {
