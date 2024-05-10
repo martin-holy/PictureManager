@@ -2,6 +2,7 @@
 using MovieManager.Common.Models;
 using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Repositories;
+using System;
 
 namespace MovieManager.Common.Repositories;
 
@@ -9,6 +10,8 @@ namespace MovieManager.Common.Repositories;
 /// DB fields: Id|Name|Person|Image
 /// </summary>
 public class ActorR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 4) {
+  public event EventHandler<ActorM> ActorPersonChangedEvent = delegate { };
+    
   public override ActorM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]);
 
@@ -32,5 +35,6 @@ public class ActorR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<ActorM>(co
   public void SetPerson(ActorM actor, IPersonM person) {
     actor.Person = person;
     IsModified = true;
+    ActorPersonChangedEvent(this, actor);
   }
 }

@@ -76,6 +76,15 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
     IsModified = true;
   }
 
+  public void RemoveMediaItems(MovieM movie, IMediaItemM[] mediaItems) {
+    if (movie?.MediaItems == null) return;
+
+    foreach (var mi in mediaItems)
+      movie.MediaItems.Remove(mi);
+
+    IsModified = true;
+  }
+
   public void AddSeenDate(MovieM movie, DateOnly date) {
     if (movie == null) return;
     movie.Seen.AddInOrder(date, (a, b) => a.CompareTo(b));

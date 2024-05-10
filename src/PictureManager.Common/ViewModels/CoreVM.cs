@@ -50,6 +50,7 @@ public class CoreVM : ObservableObject, IPMCoreVM {
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
 
+  IMediaItemVM IPMCoreVM.MediaItem => MediaItem;
   ISegmentVM IPMCoreVM.Segment => Segment;
 
   public event EventHandler AppClosingEvent = delegate { };

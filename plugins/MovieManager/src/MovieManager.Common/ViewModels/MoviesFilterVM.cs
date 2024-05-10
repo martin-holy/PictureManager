@@ -75,7 +75,7 @@ public sealed class MoviesFilterVM : ObservableObject {
     RaiseFilterChanged();
   }
 
-  private void Update(IReadOnlyCollection<MovieM> movies, IReadOnlyCollection<GenreM> genres) {
+  public void Update(IReadOnlyCollection<MovieM> movies, IReadOnlyCollection<GenreM> genres) {
     var zeroItems = movies.Count == 0;
 
     if (zeroItems) {
@@ -120,9 +120,5 @@ public sealed class MoviesFilterVM : ObservableObject {
     if (orG.Length != 0 && !orG.Any(fx => movie.Genres.Any(x => ReferenceEquals(x, fx.Genre)))) return false;
 
     return true;
-  }
-
-  public void Open(IReadOnlyCollection<MovieM> movies, IReadOnlyCollection<GenreM> genres) {
-    Update(movies, genres);
   }
 }

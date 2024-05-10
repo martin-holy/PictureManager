@@ -171,4 +171,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     AddView("Modified");
     await Current.LoadByTag(Core.R.MediaItem.GetModified().ToArray());
   }
+
+  public Task ViewMediaItems(MediaItemM[] items, string name) {
+    AddView(name);
+    return Current.LoadByTag(items);
+  }
 }

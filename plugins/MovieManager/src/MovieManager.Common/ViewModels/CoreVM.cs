@@ -63,8 +63,21 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   }
 
   public void AttachEvents() {
+    _coreR.Actor.ActorPersonChangedEvent += OnActorPersonChanged;
+    _coreR.Movie.ItemCreatedEvent += OnMovieCreated;
     _coreR.Movie.ItemDeletedEvent += OnMovieDeleted;
     _coreR.Movie.ItemsDeletedEvent += OnMoviesDeleted;
+  }
+
+  private void OnActorPersonChanged(object sender, ActorM e) {
+    if (_coreR.Character.All.SingleOrDefault(x =>
+          ReferenceEquals(x.Actor, e) && ReferenceEquals(x.Movie, MovieDetail?.MovieM)) is { } character)
+      character.OnPropertyChanged(nameof(character.DisplaySegment));
+  }
+
+  private void OnMovieCreated(object sender, MovieM e) {
+    Movies?.Update(e);
+    MoviesFilter?.Update(_coreR.Movie.All, _coreR.Genre.All);
   }
 
   private void OnMovieDeleted(object sender, MovieM e) {
@@ -74,6 +87,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   private void OnMoviesDeleted(object sender, IList<MovieM> e) {
     Movies?.Remove([.. e]);
+    MoviesFilter?.Update(_coreR.Movie.All, _coreR.Genre.All);
   }
 
   private void OnAppClosing(object sender, EventArgs e) {
@@ -116,7 +130,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
       MoviesFilter.FilterChangedEvent += OnMoviesFilterChanged;
     }
     
-    MoviesFilter.Open(_coreR.Movie.All, _coreR.Genre.All);
+    MoviesFilter.Update(_coreR.Movie.All, _coreR.Genre.All);
     PMCoreVM.ToolsTabs.Activate("IconFilter", "Movies filter", MoviesFilter);
   }
 
