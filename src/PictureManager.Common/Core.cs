@@ -2,13 +2,13 @@ using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
-using PictureManager.Common.Utils;
 using PictureManager.Common.ViewModels;
 using PictureManager.Interfaces;
 using PictureManager.Interfaces.Plugin;
 using PictureManager.Interfaces.Settings;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -71,10 +71,20 @@ public sealed class Core : IPMCore {
     VM.Video.MediaPlayer.SetView(CoreVM.UiDetailVideo);
   }
 
-  private Task LoadPlugins(IProgress<string> progress) {
-    if (PluginU.GetPluginCore("MovieManager") is not { } mm) return Task.CompletedTask;
-    Plugins.Add(mm);
-    return mm.InitAsync(this, R, progress);
+  private async Task LoadPlugins(IProgress<string> progress) {
+    progress.Report("Loading Picture Manager plugins ...");
+
+    try {
+      foreach (var pluginDir in Directory.EnumerateDirectories("plugins", "*", SearchOption.TopDirectoryOnly)) {
+        var pluginPath = Path.Combine(pluginDir, $"{pluginDir.Split(Path.DirectorySeparatorChar)[1]}.Common.dll");
+        if (!File.Exists(pluginPath) || Plugin.LoadPlugin<IPluginCore>(pluginPath) is not { } plugin) continue;
+        await plugin.InitAsync(this, R, progress);
+        Plugins.Add(plugin);
+      }
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
   }
 
   private void AttachEvents() {
