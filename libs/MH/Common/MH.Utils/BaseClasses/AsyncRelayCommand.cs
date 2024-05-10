@@ -4,21 +4,12 @@ using System.Threading.Tasks;
 
 namespace MH.Utils.BaseClasses;
 
-public class AsyncRelayCommand : ObservableObject, IAsyncCommand {
+public class AsyncRelayCommand : RelayCommandBase, IAsyncCommand {
   protected Func<Task> CommandFunc;
-  protected Func<bool> CanExecuteFunc;
+  
+  protected AsyncRelayCommand() { }
 
-  public string Icon { get; set; }
-  public string Text { get; set; }
-
-  public static event EventHandler CanExecuteChangedEvent = delegate { };
-
-  public event EventHandler CanExecuteChanged {
-    add => CanExecuteChangedEvent += value;
-    remove => CanExecuteChangedEvent -= value;
-  }
-
-  public AsyncRelayCommand() { }
+  protected AsyncRelayCommand(string icon, string text) : base(icon, text) { }
 
   public AsyncRelayCommand(Func<Task> command, string icon = null, string text = null) : this(icon, text) {
     CommandFunc = command;
@@ -28,17 +19,6 @@ public class AsyncRelayCommand : ObservableObject, IAsyncCommand {
     CommandFunc = command;
     CanExecuteFunc = canExecute;
   }
-
-  protected AsyncRelayCommand(string icon, string text) {
-    Icon = icon;
-    Text = text;
-  }
-
-  public static void InvokeCanExecuteChanged(object o, EventArgs e) =>
-    CanExecuteChangedEvent(o, e);
-
-  public virtual bool CanExecute(object parameter) =>
-    CanExecuteFunc == null || CanExecuteFunc();
 
   public virtual async void Execute(object parameter) {
     await ExecuteAsync(parameter);

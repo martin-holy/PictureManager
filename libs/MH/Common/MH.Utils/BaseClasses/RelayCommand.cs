@@ -3,41 +3,21 @@ using System.Windows.Input;
 
 namespace MH.Utils.BaseClasses;
 
-public class RelayCommand : ObservableObject, ICommand {
+public class RelayCommand : RelayCommandBase, ICommand {
   protected Action CommandAction;
-  protected Func<bool> CanExecuteFunc;
 
-  public string Icon { get; set; }
-  public string Text { get; set; }
+  protected RelayCommand() { }
 
-  public static event EventHandler CanExecuteChangedEvent = delegate { };
+  protected RelayCommand(string icon, string text) : base(icon, text) { }
 
-  public event EventHandler CanExecuteChanged {
-    add => CanExecuteChangedEvent += value;
-    remove => CanExecuteChangedEvent -= value;
-  }
-
-  public RelayCommand() { }
-
-  public RelayCommand(Action command, string icon = null, string text = null) : this(icon, text) {
+  public RelayCommand(Action command, string icon = null, string text = null) : base(icon, text) {
     CommandAction = command;
   }
 
-  public RelayCommand(Action command, Func<bool> canExecute, string icon = null, string text = null) : this(icon, text) {
+  public RelayCommand(Action command, Func<bool> canExecute, string icon = null, string text = null) : base(icon, text) {
     CommandAction = command;
     CanExecuteFunc = canExecute;
   }
-
-  protected RelayCommand(string icon, string text) {
-    Icon = icon;
-    Text = text;
-  }
-
-  public static void InvokeCanExecuteChanged(object o, EventArgs e) =>
-    CanExecuteChangedEvent(o, e);
-
-  public virtual bool CanExecute(object parameter) =>
-    CanExecuteFunc == null || CanExecuteFunc();
 
   public virtual void Execute(object parameter) =>
     CommandAction?.Invoke();

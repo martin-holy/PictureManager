@@ -15,14 +15,14 @@ public class RelayCommandConverter : BaseMultiConverter {
   public static RelayCommandConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   public override object Convert(object[] values, object parameter) {
-    if (values is not [FrameworkElement fe, RelayCommand rc]) return Binding.DoNothing;
+    if (values is not [FrameworkElement fe, RelayCommandBase rc]) return Binding.DoNothing;
     SetIconData(fe, rc);
     SetText(fe, rc);
 
     return Binding.DoNothing;
   }
 
-  private static void SetIconData(FrameworkElement fe, RelayCommand rc) {
+  private static void SetIconData(FrameworkElement fe, RelayCommandBase rc) {
     if (string.IsNullOrEmpty(rc.Icon)) return;
 
     switch (fe) {
@@ -36,7 +36,7 @@ public class RelayCommandConverter : BaseMultiConverter {
     }
   }
 
-  private static void SetText(FrameworkElement fe, RelayCommand rc) {
+  private static void SetText(FrameworkElement fe, RelayCommandBase rc) {
     if (string.IsNullOrEmpty(rc.Text)) return;
 
     switch (fe) {
