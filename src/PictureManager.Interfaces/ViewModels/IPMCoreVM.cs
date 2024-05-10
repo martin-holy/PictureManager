@@ -9,6 +9,7 @@ public interface IPMCoreVM {
   public TabControl MainTabs { get; }
   public TabControl ToolsTabs { get; }
   public ToggleDialog ToggleDialog { get; }
+  public IMediaItemVM MediaItem { get; }
   public ISegmentVM Segment { get; }
 
   public event EventHandler AppClosingEvent;
