@@ -47,19 +47,57 @@
           <RowDefinition Height="Auto"/>
           <RowDefinition Height="Auto"/>
           <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Year:" Grid.Row="0" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
-        <mhc:RangeSlider Range="{Binding Year}" Grid.Row="0" Grid.Column="1"/>
+        <TextBlock Text="Title:" Grid.Row="0" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <TextBox
+          Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+          Grid.Row="0"
+          Grid.Column="1"
+          Margin="0,8"
+          FontSize="14"
+          Padding="3"/>
 
-        <TextBlock Text="Length:" Grid.Row="1" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
-        <mhc:RangeSlider Range="{Binding Length}" Grid.Row="1" Grid.Column="1"/>
+        <TextBlock Text="Last seen:" Grid.Row="1" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
 
-        <TextBlock Text="Rating:" Grid.Row="2" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
-        <mhc:RangeSlider Range="{Binding Rating}" Grid.Row="2" Grid.Column="1" TickFrequency="0.1"/>
+        <StackPanel
+          Grid.Row="1"
+          Grid.Column="1"
+          Orientation="Horizontal"
+          Margin="0,0,0,8">
+          
+          <TextBox
+            Text="{Binding LastSeen, UpdateSourceTrigger=PropertyChanged}"
+            FontSize="14"
+            Padding="4,0"
+            MinWidth="26"
+            Height="26"
+            HorizontalContentAlignment="Center"
+            Margin="0,0,4,0"/>
 
-        <TextBlock Text="My rating:" Grid.Row="3" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
-        <mhc:RangeSlider Range="{Binding MyRating}" Grid.Row="3" Grid.Column="1" TickFrequency="0.5"/>
+          <ComboBox
+            ItemsSource="{Binding LastSeenTypes}"
+            DisplayMemberPath="Value"
+            SelectedValuePath="Key"
+            SelectedValue="{Binding LastSeenType, Mode=TwoWay}"
+            Height="26"/>
+
+          <TextBlock Text="ago." VerticalAlignment="Bottom" Margin="4"/>
+        </StackPanel>
+
+        <TextBlock Text="Year:" Grid.Row="2" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <mhc:RangeSlider Range="{Binding Year}" Grid.Row="2" Grid.Column="1"/>
+
+        <TextBlock Text="Length:" Grid.Row="3" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <mhc:RangeSlider Range="{Binding Length}" Grid.Row="3" Grid.Column="1"/>
+
+        <TextBlock Text="Rating:" Grid.Row="4" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <mhc:RangeSlider Range="{Binding Rating}" Grid.Row="4" Grid.Column="1" TickFrequency="0.1"/>
+
+        <TextBlock Text="My rating:" Grid.Row="5" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+        <mhc:RangeSlider Range="{Binding MyRating}" Grid.Row="5" Grid.Column="1" TickFrequency="0.5"/>
       </Grid>
 
       <!-- Genres -->

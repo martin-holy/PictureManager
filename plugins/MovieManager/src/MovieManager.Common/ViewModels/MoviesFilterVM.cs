@@ -6,9 +6,25 @@ using System.Linq;
 
 namespace MovieManager.Common.ViewModels;
 
+public enum LastSeenType { Days, Weeks, Months, Years }
+
 public sealed class MoviesFilterVM : ObservableObject {
   private bool _clearing;
+  private string _title;
+  private int _lastSeen;
+  private LastSeenType _lastSeenType = LastSeenType.Years;
+  private int _lastSeenDays;
 
+  public static KeyValuePair<LastSeenType, string>[] LastSeenTypes { get; } = {
+    new(LastSeenType.Days, "Days"),
+    new(LastSeenType.Weeks, "Weeks"),
+    new(LastSeenType.Months, "Months"),
+    new(LastSeenType.Years, "Years")
+  };
+
+  public string Title { get => _title; set { _title = value; OnPropertyChanged(); RaiseFilterChanged(); } }
+  public int LastSeen { get => _lastSeen; set { _lastSeen = value; OnPropertyChanged(); OnLastSeenChanged(); } }
+  public LastSeenType LastSeenType { get => _lastSeenType; set { _lastSeenType = value; OnPropertyChanged(); OnLastSeenChanged(); } }
   public SelectionRange Year { get; } = new();
   public SelectionRange Length { get; } = new();
   public SelectionRange Rating { get; } = new();
@@ -32,8 +48,23 @@ public sealed class MoviesFilterVM : ObservableObject {
 
   private void OnRangeChanged(object sender, EventArgs e) => RaiseFilterChanged();
 
+  private void OnLastSeenChanged() {
+    _lastSeenDays = LastSeenType switch {
+      LastSeenType.Days => _lastSeen,
+      LastSeenType.Weeks => _lastSeen * 7,
+      LastSeenType.Months => _lastSeen * 30,
+      LastSeenType.Years => _lastSeen * 365,
+      _ => 0
+    };
+
+    RaiseFilterChanged();
+  }
+
   private void Clear() {
     _clearing = true;
+    Title = string.Empty;
+    LastSeen = 0;
+    _lastSeenDays = 0;
     Year.SetFullRange();
     Length.SetFullRange();
     Rating.SetFullRange();
@@ -69,6 +100,12 @@ public sealed class MoviesFilterVM : ObservableObject {
   }
 
   public bool Filter(MovieM movie) {
+    if (!string.IsNullOrEmpty(Title) && !movie.Title.Contains(Title, StringComparison.CurrentCultureIgnoreCase)) return false;
+
+    if (_lastSeenDays > 0 && movie.Seen.Count > 0 && movie.Seen.LastOrDefault() is var lastSeen
+        && (DateTime.Today - lastSeen.ToDateTime(TimeOnly.MinValue)).TotalDays < _lastSeenDays)
+      return false;
+
     if (!Year.IsFullRange && !Year.Fits(movie.Year)
         || !Length.IsFullRange && !Length.Fits(movie.Length)
         || !Rating.IsFullRange && !Rating.Fits(movie.Rating)
