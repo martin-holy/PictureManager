@@ -1,5 +1,5 @@
 ﻿using MH.UI.WPF.Controls;
-using System;
+using MH.Utils.BaseClasses;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -19,6 +19,8 @@ public static class Init {
 
     MH.UI.Controls.Dialog.Show = DialogHost.Show;
 
-    MH.Utils.Tasks.Dispatch = (action) => Application.Current.Dispatcher.Invoke(DispatcherPriority.Render, action);
+    MH.Utils.Tasks.Dispatch = action => Application.Current.Dispatcher.Invoke(DispatcherPriority.Render, action);
+
+    CommandManager.RequerySuggested += RelayCommandBase.InvokeCanExecuteChanged;
   }
 }
