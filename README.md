@@ -9,6 +9,8 @@
 - Batch compressing and resizing images and rotating images/videos.
 - Finding image duplicities.
 
+> [Picture Manager Telegram Channel](https://t.me/PictureManager)
+
 ### Screenshots and description is outdated! 🙃
 
 Picture Manager is a simple image and video viewer with the ability of creating clips from video, tagging faces and editing keywords like rating, people, hierarchical keywords, comments and geo names.
