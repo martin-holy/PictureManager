@@ -1,11 +1,9 @@
 ﻿using MH.UI.Controls;
-using MH.Utils.BaseClasses;
 using PictureManager.Common;
 using PictureManager.Common.Dialogs;
 using PictureManager.Windows.WPF.Views;
 using System;
 using System.Windows;
-using System.Windows.Input;
 
 namespace PictureManager.Windows.WPF {
   public partial class App {
@@ -18,9 +16,6 @@ namespace PictureManager.Windows.WPF {
       AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs args) {
         Dialog.Show(new ErrorDialogM((Exception)args.ExceptionObject));
       };
-
-      CommandManager.RequerySuggested += RelayCommand.InvokeCanExecuteChanged;
-      CommandManager.RequerySuggested += AsyncRelayCommand.InvokeCanExecuteChanged;
 
       var splashScreen = new SplashScreenV();
       MainWindow = splashScreen;

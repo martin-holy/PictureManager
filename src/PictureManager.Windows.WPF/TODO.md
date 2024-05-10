@@ -36,6 +36,10 @@
 
                                   *** UPDATE ***
 
+        # MH.UI.WPF
+ - create style for Button using RelayCommandConverter and use it in MovieManagr.ImportVM and MovieManager.MoviesFilterVM
+
+
         # MH.UI
 ## CollectionView
   - don't show expanded root if source is empty
