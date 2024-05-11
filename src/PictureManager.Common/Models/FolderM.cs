@@ -52,9 +52,13 @@ public class FolderM : TreeItem, IEquatable<FolderM>, IFolderM {
     if (value) LoadSubFolders(false);
   }
 
+  public void RemovePlaceHolder() {
+    if (Items.Count == 1 && ReferenceEquals(FolderS.FolderPlaceHolder, Items[0]))
+      Items.Clear();
+  }
+
   public void LoadSubFolders(bool recursive) {
-    // remove placeholder
-    if (Items.Count == 1 && ReferenceEquals(FolderS.FolderPlaceHolder, Items[0])) Items.Clear();
+    RemovePlaceHolder();
 
     if (!Directory.Exists(FullPath)) return;
 

@@ -54,6 +54,7 @@ public sealed class Core : IPluginCore {
   public void AfterInit(IPMCoreS pmCoreS, IPMCoreVM pmCoreVM) {
     S = new(pmCoreS, R);
     VM = new(pmCoreVM, S, R);
+    R.SetFolders();
     R.AttachEvents();
     VM.AttachEvents();
   }

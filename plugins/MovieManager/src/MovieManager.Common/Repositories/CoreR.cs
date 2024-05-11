@@ -34,8 +34,6 @@ public sealed class CoreR : SimpleDB {
     Character = new(this, pmCoreR);
     MovieDetailId = new(this);
     Movie = new(this, pmCoreR);
-
-    SetFolders();
   }
 
   public void AddDataAdapters() {
@@ -56,7 +54,7 @@ public sealed class CoreR : SimpleDB {
     MovieDetailId.ItemDelete(MovieDetailId.All.Single(x => ReferenceEquals(x.Movie, e)));
   }
 
-  private void SetFolders() {
+  public void SetFolders() {
     ActorsFolder = GetFolder(Path.Combine(_core.BaseDir, "actors"));
     ImagesFolder = GetFolder(Path.Combine(_core.BaseDir, "images"));
     PostersFolder = GetFolder(Path.Combine(_core.BaseDir, "posters"));
