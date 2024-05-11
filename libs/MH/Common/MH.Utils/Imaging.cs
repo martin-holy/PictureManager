@@ -15,6 +15,10 @@ public static class Imaging {
   public static ResizeJpgAction ResizeJpg { get; set; }
 
   public static void GetThumbSize(double width, double height, int desiredSize, out int outWidth, out int outHeight) {
+    // don't make the thumb bigger than image it self
+    var bigger = Math.Max(width, height);
+    if (desiredSize > bigger) desiredSize = (int)bigger;
+
     if (width > height) {
       //panorama
       if (width / height > 16.0 / 9.0) {
