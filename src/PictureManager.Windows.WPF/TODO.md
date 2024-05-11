@@ -31,7 +31,6 @@
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
-  - character image tooltip is to big for small images
 
 
                                   *** UPDATE ***
@@ -58,6 +57,7 @@
   - use only one method to get keywords in which will be filtering by current viewer
 ## Segments
   - add button remove selected segments from drawer
+  - SegmentThumbnailSourceConverter update more often
 ## ToggleDialog
   - show selected items on dialog
   - add support for removing GeoName
@@ -73,7 +73,15 @@
     + setting this position in VideoDetail
 ## Settings
   - use WrapPanel and each category is one block
+## StatusBar
+  - limit folder path size
 
+          # Movie Manager
+##
+ - SetPosterCommand
+ - better style for character photo tooltip
+ - add movie poster to movie media items
+ - indicator that character actor doesn't have person
 
                                     *** NEW ***
 ##
@@ -122,7 +130,6 @@
   - incremental search
 ## PersonDetail
   - Comment
-## MovieManager Plug-in
 
                                     *** Code ***
 ##
