@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MH.Utils.Extensions;
@@ -41,44 +40,6 @@ public static class StringExtensions {
   /// </summary>
   public static string Plural(this string s, int count) =>
     string.Format(s, count, count > 1 ? "s" : string.Empty);
-
-  public static Tuple<int, int> GetRangeBetween(this string text, string start, string startEnd, string end, int startIndex = 0,
-    StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
-
-    var sIdx = text.IndexOf(start, startIndex, comparisonType);
-    if (sIdx == -1) return null;
-    sIdx += start.Length;
-
-    if (!string.IsNullOrEmpty(startEnd)) {
-      sIdx = text.IndexOf(startEnd, sIdx, comparisonType);
-      if (sIdx == -1) return null;
-      sIdx += startEnd.Length;
-    }
-
-    var eIdx = text.IndexOf(end, sIdx, comparisonType);
-    if (eIdx == -1) return null;
-
-    return new(sIdx, eIdx);
-  }
-
-  public static List<Tuple<int, int>> GetRangeBetween(this string text, string start, string startEnd, string end, Tuple<int, int> range,
-    StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
-
-    var ranges = new List<Tuple<int, int>>();
-    var startIndex = range.Item1;
-
-    while (true) {
-      var innerRange = text.GetRangeBetween(start, startEnd, end, startIndex, comparisonType);
-      if (innerRange == null || innerRange.Item1 > range.Item2) break;
-      ranges.Add(innerRange);
-      startIndex = innerRange.Item2;
-    }
-
-    return ranges;
-  }
-
-  public static string GetFromRange(this string text, Tuple<int, int> range) =>
-    range == null ? string.Empty : text[range.Item1..range.Item2];
 
   public static bool TryIndexOf(this string text, string value, ref int index,
     StringComparison comparisonType = StringComparison.OrdinalIgnoreCase) {
