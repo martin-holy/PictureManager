@@ -4,6 +4,11 @@
 [B] - Bug fix
 
 Latest:
+ - [N] Movie Manager plug-in
+ - [U] Thumb size for small images
+ - [N] Link to Telegram channel in about dialog
+
+24.04.13.0909:
  - [N] Group People by Folder (from Segments only)
  - [B] Reload FolderKeywords when Viewer is All
  - [B] CollectionView crash in some cases
