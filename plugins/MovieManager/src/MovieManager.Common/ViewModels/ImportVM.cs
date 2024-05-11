@@ -25,7 +25,7 @@ public class ImportVM : ObservableObject {
 
   public ImportVM(ImportS importS) {
     _importS = importS;
-    Progress = new Progress<string>(ProgressCollection.Add);
+    Progress = new Progress<string>(x => ProgressCollection.Insert(0, x));
 
     SearchCommand = new(Search, x => !string.IsNullOrEmpty(x) && !_isSearchInProgress && !_isImportInProgress);
     ImportCommand = new(Import, x => x != null, "IconImport", "Import");
