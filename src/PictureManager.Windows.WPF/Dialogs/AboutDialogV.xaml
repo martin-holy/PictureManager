@@ -20,6 +20,11 @@
           <MouseBinding MouseAction="LeftClick" Command="{Binding OpenHomePageCommand}"/>
         </TextBlock.InputBindings>
       </TextBlock>
+      <TextBlock Text="{Binding TelegramUrl}" Cursor="Hand" Foreground="SteelBlue">
+        <TextBlock.InputBindings>
+          <MouseBinding MouseAction="LeftClick" Command="{Binding OpenTelegramCommand}"/>
+        </TextBlock.InputBindings>
+      </TextBlock>
     </StackPanel>
   </DataTemplate>
 </ResourceDictionary>
