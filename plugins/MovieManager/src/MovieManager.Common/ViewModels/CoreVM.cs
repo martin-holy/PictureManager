@@ -70,9 +70,10 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   }
 
   private void OnActorPersonChanged(object sender, ActorM e) {
-    if (_coreR.Character.All.SingleOrDefault(x =>
-          ReferenceEquals(x.Actor, e) && ReferenceEquals(x.Movie, MovieDetail?.MovieM)) is { } character)
+    foreach (var character in _coreR.Character.All.Where(x =>
+               ReferenceEquals(x.Actor, e) && ReferenceEquals(x.Movie, MovieDetail?.MovieM))) {
       character.OnPropertyChanged(nameof(character.DisplaySegment));
+    }
   }
 
   private void OnMovieImported(object sender, MovieM e) {
