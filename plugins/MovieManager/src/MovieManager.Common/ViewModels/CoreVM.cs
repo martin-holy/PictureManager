@@ -64,9 +64,9 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   public void AttachEvents() {
     _coreR.Actor.ActorPersonChangedEvent += OnActorPersonChanged;
-    _coreR.Movie.ItemCreatedEvent += OnMovieCreated;
     _coreR.Movie.ItemDeletedEvent += OnMovieDeleted;
     _coreR.Movie.ItemsDeletedEvent += OnMoviesDeleted;
+    _coreS.Import.MovieImportedEvent += OnMovieImported;
   }
 
   private void OnActorPersonChanged(object sender, ActorM e) {
@@ -75,8 +75,12 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
       character.OnPropertyChanged(nameof(character.DisplaySegment));
   }
 
-  private void OnMovieCreated(object sender, MovieM e) {
-    Movies?.Update(e);
+  private void OnMovieImported(object sender, MovieM e) {
+    if (Movies != null) {
+      e.Poster?.SetThumbSize();
+      Movies.Insert(e);
+    }
+    
     MoviesFilter?.Update(_coreR.Movie.All, _coreR.Genre.All);
   }
 

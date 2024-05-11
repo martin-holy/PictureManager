@@ -14,6 +14,8 @@ public class ImportS {
   private readonly CoreR _coreR;
   private readonly CoreS _coreS;
 
+  public event EventHandler<MovieM> MovieImportedEvent = delegate { }; 
+
   public ImportS(CoreR coreR, CoreS coreS) {
     _coreR = coreR;
     _coreS = coreS;
@@ -41,6 +43,7 @@ public class ImportS {
     await ImportActors(progress, md, movie);
     await ImportImages(progress, md, movie);
     progress.Report($"Importing '{movie.Title}' completed.", true);
+    MovieImportedEvent(this, movie);
   }
 
   private async Task ImportActors(IProgress<string> progress, MovieDetail md, MovieM movie) {
