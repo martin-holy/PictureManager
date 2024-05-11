@@ -54,6 +54,8 @@ public sealed class Core : IPMCore {
     S.AttachEvents();
     VM.AttachEvents();
 
+    R.Folder.Tree.AddDrives();
+
     foreach (var plugin in Plugins) plugin.AfterInit(S, VM);
 
     AttachEvents();
@@ -61,7 +63,6 @@ public sealed class Core : IPMCore {
     R.Keyword.Tree.AutoAddedGroup ??=
       R.CategoryGroup.ItemCreate(R.Keyword.Tree, "Auto Added");
 
-    R.Folder.Tree.AddDrives();
     S.Viewer.SetCurrent(R.Viewer.All.SingleOrDefault(x => x.IsDefault));
     S.Viewer.Current?.UpdateHashSets();
     VM.MainWindow.TreeViewCategories.AddCategories();

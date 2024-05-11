@@ -107,6 +107,7 @@ public class FolderR : TreeDataAdapter<FolderM>, IFolderR {
     if (Tree.Items.GetByName(parts[0], StringComparison.OrdinalIgnoreCase) is not { } folder) return null;
 
     for (int i = 1; i < parts.Length; i++) {
+      ((FolderM)folder).RemovePlaceHolder();
       folder = folder.Items.GetByName(parts[i], StringComparison.OrdinalIgnoreCase)
                ?? ItemCreate(folder, parts[i]);
     }
