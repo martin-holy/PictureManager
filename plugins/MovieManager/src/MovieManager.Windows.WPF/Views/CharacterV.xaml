@@ -41,9 +41,16 @@
             Visibility="{Binding Actor.Image, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}">
 
             <ContentControl.ToolTip>
-              <ContentControl
-                Content="{Binding Actor.Image}"
-                ContentTemplate="{StaticResource PM.T.MediaItemThumb}"/>
+              <ToolTip
+                BorderThickness="2"
+                BorderBrush="Black"
+                ClipToBounds="True"
+                Padding="0">
+
+                <ContentControl
+                  Content="{Binding Actor.Image}"
+                  ContentTemplate="{StaticResource PM.T.MediaItemThumb}"/>
+              </ToolTip>
             </ContentControl.ToolTip>
           </ContentControl>
         </Grid>
