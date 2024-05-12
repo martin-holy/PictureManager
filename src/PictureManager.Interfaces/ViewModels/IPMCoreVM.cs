@@ -17,4 +17,5 @@ public interface IPMCoreVM {
   public bool AnyActive();
   public IMediaItemM[] GetActive();
   public void ScrollToFolder(IFolderM folder);
+  public void OpenMediaItems(IMediaItemM[] items, IMediaItemM item);
 }
