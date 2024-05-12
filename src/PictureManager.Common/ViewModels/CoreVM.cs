@@ -473,4 +473,12 @@ public class CoreVM : ObservableObject, IPMCoreVM {
 
   public void ScrollToFolder(IFolderM folder) =>
     _coreR.Folder.Tree.ScrollTo(folder as FolderM);
+
+  public void OpenMediaItems(IMediaItemM[] items, IMediaItemM item) {
+    if (item is not MediaItemM mi) return;
+    items ??= new[] { item };
+
+    MainWindow.IsInViewMode = true;
+    MediaViewer.SetMediaItems(items.Cast<MediaItemM>().ToList(), mi);
+  }
 }
