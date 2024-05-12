@@ -91,6 +91,11 @@ public class ImportS {
     progress.Report("Downloading the movie poster ...", true);
     var fileName = GetMoviePosterFileName(movie);
     movie.Poster = await DownloadImage(md.Poster, _coreR.PostersFolder, fileName);
+
+    if (movie.Poster != null) {
+      movie.MediaItems ??= [];
+      movie.MediaItems.Add(movie.Poster);
+    }
   }
 
   private async Task<IMediaItemM> DownloadImage(Image image, IFolderM folder, string fileName) {
