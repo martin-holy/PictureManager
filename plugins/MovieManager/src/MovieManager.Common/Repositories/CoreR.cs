@@ -48,6 +48,7 @@ public sealed class CoreR : SimpleDB {
   public void AttachEvents() {
     Movie.ItemDeletedEvent += OnMovieDeleted;
     _pmCoreR.MediaItem.ItemDeletedEvent += OnMediaItemDeleted;
+    _pmCoreR.Segment.ItemDeletedEvent += OnSegmentDeleted;
   }
 
   private void OnMovieDeleted(object sender, MovieM e) {
@@ -58,6 +59,10 @@ public sealed class CoreR : SimpleDB {
   private void OnMediaItemDeleted(object sender, IMediaItemM e) {
     Actor.OnMediaItemDeleted(e);
     Movie.OnMediaItemDeleted(e);
+  }
+
+  private void OnSegmentDeleted(object sender, ISegmentM e) {
+    Character.OnSegmentDeleted(e);
   }
 
   public void SetFolders() {

@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using System.Linq;
+using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
 using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Repositories;
@@ -35,5 +36,12 @@ public class CharacterR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Charac
     if (character == null | segment == null) return;
     character.Segment = segment;
     IsModified = true;
+  }
+
+  public void OnSegmentDeleted(ISegmentM segment) {
+    foreach (var character in All.Where(x => ReferenceEquals(x.Segment, segment))) {
+      character.Segment = null;
+      IsModified = true;
+    }
   }
 }
