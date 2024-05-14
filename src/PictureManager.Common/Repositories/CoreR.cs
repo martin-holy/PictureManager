@@ -37,12 +37,13 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
   public VideoItemsOrderR VideoItemsOrder { get; }
 
   public MediaItemIR MediaItemIR { get; }
+  public PersonIR PersonIR { get; }
   public SegmentIR SegmentIR { get; }
 
   IFolderR IPMCoreR.Folder => Folder;
   IKeywordR IPMCoreR.Keyword => Keyword;
   IInterfaceTableDataAdapter<IMediaItemM> IPMCoreR.MediaItem => MediaItemIR;
-  IRepository<IPersonM> IPMCoreR.Person => Person;
+  IInterfaceTableDataAdapter<IPersonM> IPMCoreR.Person => PersonIR;
   IInterfaceTableDataAdapter<ISegmentM> IPMCoreR.Segment => SegmentIR;
 
   public CoreR() : base("db") {
@@ -66,6 +67,7 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
     VideoItemsOrder = new(this);
 
     MediaItemIR = new(MediaItem);
+    PersonIR = new(Person);
     SegmentIR = new(Segment);
   }
 
@@ -124,6 +126,7 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
     Segment.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
 
     MediaItemIR.AttachEvents();
+    PersonIR.AttachEvents();
     SegmentIR.AttachEvents();
   }
 
