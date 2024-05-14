@@ -1,11 +1,8 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +10,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Repositories;
 
-public sealed class MediaItemR : TableDataAdapter<MediaItemM>, IRepository<IMediaItemM> {
+public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   private readonly CoreR _coreR;
   private static readonly string[] _supportedImageExts = { ".jpg", ".jpeg" };
   private static readonly string[] _supportedVideoExts = { ".mp4" };
@@ -90,22 +87,6 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM>, IRepository<IMedi
     if (_coreR.VideoClip.AllDict.TryGetValue(intId, out var vc)) return vc;
     if (_coreR.VideoImage.AllDict.TryGetValue(intId, out var vi)) return vi;
     return null;
-  }
-
-  IMediaItemM IRepository<IMediaItemM>.GetById(string id, bool nullable) =>
-    GetById(id, nullable);
-
-  List<IMediaItemM> IRepository<IMediaItemM>.Link(string csv) {
-    if (string.IsNullOrEmpty(csv)) return null;
-
-    var items = csv
-      .Split(',')
-      .Select(x => GetById(x))
-      .Where(x => x != null)
-      .Cast<IMediaItemM>()
-      .ToList();
-
-    return items.Count == 0 ? null : items;
   }
 
   public RealMediaItemM ItemCreate(FolderM folder, string fileName) {

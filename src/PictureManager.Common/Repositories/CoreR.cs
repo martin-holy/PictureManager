@@ -1,5 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.Interfaces;
+using PictureManager.Common.InterRepos;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Interfaces.Models;
@@ -35,9 +36,11 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
+  public MediaItemIR MediaItemIR { get; }
+
   IFolderR IPMCoreR.Folder => Folder;
   IKeywordR IPMCoreR.Keyword => Keyword;
-  IRepository<IMediaItemM> IPMCoreR.MediaItem => MediaItem;
+  IInterfaceTableDataAdapter<IMediaItemM> IPMCoreR.MediaItem => MediaItemIR;
   IRepository<IPersonM> IPMCoreR.Person => Person;
   IRepository<ISegmentM> IPMCoreR.Segment => Segment;
 
@@ -60,6 +63,8 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
 
     MediaItemGeoLocation = new(this);
     VideoItemsOrder = new(this);
+
+    MediaItemIR = new(MediaItem);
   }
 
   public void AddDataAdapters() {
@@ -115,6 +120,8 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
     Segment.SegmentsKeywordsChangedEvent += OnSegmentsKeywordsChanged;
     Segment.SegmentPersonChangedEvent += OnSegmentPersonChanged;
     Segment.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
+
+    MediaItemIR.AttachEvents();
   }
 
   private void OnCategoryGroupDeleted(object sender, CategoryGroupM item) {
