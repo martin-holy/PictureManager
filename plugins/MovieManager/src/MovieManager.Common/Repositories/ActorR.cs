@@ -45,4 +45,9 @@ public class ActorR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<ActorM>(co
       IsModified = true;
     }
   }
+
+  public void OnPersonDeleted(IPersonM person) {
+    foreach (var actor in All.Where(x => ReferenceEquals(x.Person, person)))
+      SetPerson(actor, null);
+  }
 }
