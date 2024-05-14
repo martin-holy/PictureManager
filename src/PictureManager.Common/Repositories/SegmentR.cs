@@ -5,8 +5,6 @@ using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.ViewModels.Entities;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +15,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|MediaItemId|PersonId|SegmentBox|Keywords
 /// </summary>
-public class SegmentR : TableDataAdapter<SegmentM>, IRepository<ISegmentM> {
+public class SegmentR : TableDataAdapter<SegmentM> {
   private readonly CoreR _coreR;
   private List<int> _drawerNotAvailable = [];
 
@@ -104,14 +102,8 @@ public class SegmentR : TableDataAdapter<SegmentM>, IRepository<ISegmentM> {
     TableProps.Clear();
   }
 
-  ISegmentM IRepository<ISegmentM>.GetById(string id, bool nullable) =>
-    GetById(id, nullable);
-
   public List<SegmentM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, null, seeker);
-
-  List<ISegmentM> IRepository<ISegmentM>.Link(string csv) =>
-    Link(csv, null)?.Cast<ISegmentM>().ToList();
 
   public SegmentM ItemCreate(double x, double y, int size, MediaItemM mediaItem) =>
     ItemCreate(new(GetNextId(), x, y, size) { MediaItem = mediaItem });
