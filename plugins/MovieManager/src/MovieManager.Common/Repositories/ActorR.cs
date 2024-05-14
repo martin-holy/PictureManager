@@ -3,6 +3,7 @@ using MovieManager.Common.Models;
 using PictureManager.Interfaces.Models;
 using PictureManager.Interfaces.Repositories;
 using System;
+using System.Linq;
 
 namespace MovieManager.Common.Repositories;
 
@@ -36,5 +37,12 @@ public class ActorR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<ActorM>(co
     actor.Person = person;
     IsModified = true;
     ActorPersonChangedEvent(this, actor);
+  }
+
+  public void OnMediaItemDeleted(IMediaItemM mi) {
+    foreach (var actor in All.Where(x => ReferenceEquals(x.Image, mi))) {
+      actor.Image = null;
+      IsModified = true;
+    }
   }
 }

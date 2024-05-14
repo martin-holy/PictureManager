@@ -47,11 +47,17 @@ public sealed class CoreR : SimpleDB {
 
   public void AttachEvents() {
     Movie.ItemDeletedEvent += OnMovieDeleted;
+    _pmCoreR.MediaItem.ItemDeletedEvent += OnMediaItemDeleted;
   }
 
   private void OnMovieDeleted(object sender, MovieM e) {
     Character.ItemsDelete(Character.All.Where(x => ReferenceEquals(x.Movie, e)).ToList());
     MovieDetailId.ItemDelete(MovieDetailId.All.Single(x => ReferenceEquals(x.Movie, e)));
+  }
+
+  private void OnMediaItemDeleted(object sender, IMediaItemM e) {
+    Actor.OnMediaItemDeleted(e);
+    Movie.OnMediaItemDeleted(e);
   }
 
   public void SetFolders() {

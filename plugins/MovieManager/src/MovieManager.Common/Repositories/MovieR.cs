@@ -96,4 +96,16 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
     movie.Seen.Remove(date);
     IsModified = true;
   }
+
+  public void OnMediaItemDeleted(IMediaItemM mi) {
+    foreach (var movie in All.Where(x => ReferenceEquals(x.Poster, mi))) {
+      movie.Poster = null;
+      IsModified = true;
+    }
+
+    foreach (var movie in All.Where(x => x.MediaItems?.Contains(mi) == true)) {
+      movie.MediaItems.Remove(mi);
+      IsModified = true;
+    }
+  }
 }
