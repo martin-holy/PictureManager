@@ -8,5 +8,5 @@ public interface IPMCoreR {
   public IKeywordR Keyword { get; }
   public IInterfaceTableDataAdapter<IMediaItemM> MediaItem { get; }
   public IRepository<IPersonM> Person { get; }
-  public IRepository<ISegmentM> Segment { get; }
+  public IInterfaceTableDataAdapter<ISegmentM> Segment { get; }
 }
