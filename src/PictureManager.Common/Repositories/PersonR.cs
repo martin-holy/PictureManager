@@ -5,8 +5,6 @@ using MH.Utils.Interfaces;
 using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.TreeCategories;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +14,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Segments|Keywords
 /// </summary>
-public class PersonR : TreeDataAdapter<PersonM>, IRepository<IPersonM> {
+public class PersonR : TreeDataAdapter<PersonM> {
   private readonly CoreR _coreR;
   private const string _unknownPersonNamePrefix = "P -";
   private const string _notFoundRecordNamePrefix = "Not found ";
@@ -87,14 +85,8 @@ public class PersonR : TreeDataAdapter<PersonM>, IRepository<IPersonM> {
     }
   }
 
-  IPersonM IRepository<IPersonM>.GetById(string id, bool nullable) =>
-    GetById(id, nullable);
-
   public List<PersonM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
-
-  List<IPersonM> IRepository<IPersonM>.Link(string csv) =>
-    Link(csv, null)?.Cast<IPersonM>().ToList();
 
   public PersonM GetPerson(int id, IDataAdapter seeker) =>
     AllDict.TryGetValue(id, out var person)
