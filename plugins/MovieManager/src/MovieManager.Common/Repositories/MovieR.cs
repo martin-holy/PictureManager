@@ -76,15 +76,12 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
   }
 
   public void AddMediaItems(MovieM movie, IMediaItemM[] mediaItems) {
-    if (movie == null) return;
     movie.MediaItems ??= [];
     movie.MediaItems.AddRange(mediaItems.Except(movie.MediaItems));
     IsModified = true;
   }
 
   public void RemoveMediaItems(MovieM movie, IMediaItemM[] mediaItems) {
-    if (movie?.MediaItems == null) return;
-
     foreach (var mi in mediaItems)
       movie.MediaItems.Remove(mi);
 
@@ -92,13 +89,11 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
   }
 
   public void AddSeenDate(MovieM movie, DateOnly date) {
-    if (movie == null) return;
     movie.Seen.AddInOrder(date, (a, b) => a.CompareTo(b));
     IsModified = true;
   }
 
   public void RemoveSeenDate(MovieM movie, DateOnly date) {
-    if (movie == null) return;
     movie.Seen.Remove(date);
     IsModified = true;
   }
