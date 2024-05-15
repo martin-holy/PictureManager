@@ -41,7 +41,7 @@ public class ImportS {
     movie.DetailId = _coreR.MovieDetailId.ItemCreate(md.DetailId, movie);
     await DownloadMoviePoster(progress, md, movie);
     await ImportActors(progress, md, movie);
-    await ImportImages(progress, md, movie);
+    //await ImportImages(progress, md, movie);
     progress.Report($"Importing '{movie.Title}' completed.", true);
     MovieImportedEvent(this, movie);
   }
@@ -65,7 +65,8 @@ public class ImportS {
     }
   }
 
-  private async Task ImportImages(IProgress<string> progress, MovieDetail md, MovieM movie) {
+  // Images are disabled because of poor content. Random screenshots or not from movie it self.
+  /*private async Task ImportImages(IProgress<string> progress, MovieDetail md, MovieM movie) {
     if (md.Images == null || md.Images.Length == 0 || GetMovieImagesFolder(movie) is not { } imgFolder) return;
 
     progress.Report($"Downloading {md.Images.Length} images ...", true);
@@ -78,7 +79,7 @@ public class ImportS {
       var img = await DownloadImage(di, imgFolder, $"{md.Year} {imgId} {di.Desc}.jpg");
       movie.MediaItems.Add(img);
     }
-  }
+  }*/
 
   private async Task DownloadActorImage(ActorM actor, Image image) {
     if (actor.Image != null) return;
@@ -119,6 +120,6 @@ public class ImportS {
   private static string GetMoviePosterFileName(MovieM movie) =>
     $"{movie.Year}-{movie.DetailId.DetailName}-{movie.DetailId.DetailId}-{movie.Title}.jpg";
 
-  private IFolderM GetMovieImagesFolder(MovieM movie) =>
-    _coreR.GetFolder(Path.Combine(_coreR.ImagesFolder.FullPath, $"{movie.Year} {movie.Title}"));
+  /*private IFolderM GetMovieImagesFolder(MovieM movie) =>
+    _coreR.GetFolder(Path.Combine(_coreR.ImagesFolder.FullPath, $"{movie.Year} {movie.Title}"));*/
 }

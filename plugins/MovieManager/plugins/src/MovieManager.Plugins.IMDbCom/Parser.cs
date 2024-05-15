@@ -43,7 +43,7 @@ public static class Parser {
   private const string _s = "s";
   private const string _seconds = "seconds";
   private const string _text = "text";
-  private const string _titleMainImages = "titleMainImages";
+  //private const string _titleMainImages = "titleMainImages";
   private const string _titleText = "titleText";
   private const string _titleType = "titleType";
   private const string _url = "url";
@@ -105,6 +105,7 @@ public static class Parser {
         || !pageProps.TryGetProperty(_aboveTheFoldData, out var dataA)
         || !pageProps.TryGetProperty(_mainColumnData, out var dataB)) return null;
 
+    // Images are disabled because of poor content. Random screenshots or not from movie it self.
     var md = new MovieDetail {
       DetailId = new (dataA.TryGetString(_id), Core.IdName),
       Type = dataA.TryGetString(_titleType, _text),
@@ -118,7 +119,7 @@ public static class Parser {
       Poster = dataA.TryGetObject(_primaryImage, ParseImage),
       Genres = dataA.TryGetArray(_genres, _genres, x => x.TryGetString(_text)),
       Plot = dataA.TryGetString(_plot, _plotText, _plainText)?.ReplaceNewLineChars(" "),
-      Images = dataB.TryGetArray(_titleMainImages, _edges, x => x.TryGetObject(_node, ParseImage)),
+      //Images = dataB.TryGetArray(_titleMainImages, _edges, x => x.TryGetObject(_node, ParseImage)),
       Cast = dataB.TryGetArray(_cast, _edges, x => x.TryGetObject(_node, ParseCast))
     };
 
