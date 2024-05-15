@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MovieManager.Common.Models;
 using MovieManager.Plugins.Common.Models;
@@ -12,9 +13,11 @@ using System.Linq;
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
-/// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|Seen|Poster|MediaItems|Plot
+/// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|Seen|Poster|MediaItems|Keywords|Plot
 /// </summary>
-public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 13) {
+public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 14) {
+  public event EventHandler<MovieM[]> MoviesKeywordsChangedEvent = delegate { };
+
   public override MovieM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]) {
       Year = csv[2].IntParseOrDefault(0),
@@ -24,7 +27,7 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
       MyRating = csv[6].IntParseOrDefault(0) / 10.0,
       MPAA = string.IsNullOrEmpty(csv[8]) ? null : csv[8],
       Seen = string.IsNullOrEmpty(csv[9]) ? [] : new ObservableCollection<DateOnly>(csv[9].Split(',').Select(x => DateOnly.ParseExact(x, "yyyyMMdd", CultureInfo.InvariantCulture))),
-      Plot = string.IsNullOrEmpty(csv[12]) ? null : csv[12]
+      Plot = string.IsNullOrEmpty(csv[13]) ? null : csv[13]
     };
 
   public override string ToCsv(MovieM item) =>
@@ -41,6 +44,7 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
       item.Seen.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv(),
       item.Poster?.GetHashCode().ToString(),
       item.MediaItems?.ToHashCodes().ToCsv(),
+      item.Keywords?.ToHashCodes().ToCsv(),
       item.Plot);
 
   public override void LinkReferences() {
@@ -48,6 +52,7 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
       item.Genres = coreR.Genre.LinkList(csv[7], null, null);
       item.Poster = pmCoreR.MediaItem.GetById(csv[10], true);
       item.MediaItems = pmCoreR.MediaItem.Link(csv[11]);
+      item.Keywords = pmCoreR.Keyword.Link(csv[12]);
     }
   }
 
@@ -107,5 +112,17 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
       movie.MediaItems.Remove(mi);
       IsModified = true;
     }
+  }
+
+  public void OnKeywordDeleted(IKeywordM keyword) =>
+    ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
+
+  public void ToggleKeyword(MovieM[] movies, IKeywordM keyword) {
+    foreach (var movie in movies) {
+      movie.Keywords = movie.Keywords.Toggle(keyword);
+      IsModified = true;
+    }
+
+    MoviesKeywordsChangedEvent(this, movies);
   }
 }

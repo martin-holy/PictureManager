@@ -118,4 +118,9 @@ public sealed class MovieDetailVM : ObservableObject {
     _coreR.Movie.RemoveSeenDate(MovieM, date);
     OnPropertyChanged(nameof(LastSeenDate));
   }
+
+  public void UpdateDisplayKeywordsIfContains(MovieM[] items) {
+    if (MovieM != null && items.Contains(MovieM))
+      MovieM.OnPropertyChanged(nameof(MovieM.DisplayKeywords));
+  }
 }

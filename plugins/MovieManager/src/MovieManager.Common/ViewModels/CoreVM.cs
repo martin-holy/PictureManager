@@ -66,6 +66,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     _coreR.Actor.ActorPersonChangedEvent += OnActorPersonChanged;
     _coreR.Movie.ItemDeletedEvent += OnMovieDeleted;
     _coreR.Movie.ItemsDeletedEvent += OnMoviesDeleted;
+    _coreR.Movie.MoviesKeywordsChangedEvent += OnMoviesKeywordsChanged;
     _coreS.Import.MovieImportedEvent += OnMovieImported;
   }
 
@@ -93,6 +94,10 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   private void OnMoviesDeleted(object sender, IList<MovieM> e) {
     Movies?.Remove([.. e]);
     MoviesFilter?.Update(_coreR.Movie.All, _coreR.Genre.All);
+  }
+
+  private void OnMoviesKeywordsChanged(object sender, MovieM[] items) {
+    MovieDetail?.UpdateDisplayKeywordsIfContains(items);
   }
 
   private void OnAppClosing(object sender, EventArgs e) {
@@ -160,12 +165,19 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     var sts = PMCoreVM.ToggleDialog.SourceTypes;
     var ttActor = new ToggleDialogTargetType<ActorM>(
       "IconPeople",
-      _ => Core.S.Actor.Selected.Items.Count == 0 ? [] : [Core.S.Actor.Selected.Items.First()],
+      _ => _coreS.Actor.Selected.Items.Count == 0 ? [] : [_coreS.Actor.Selected.Items[0]],
       _ => "Actor");
+    var ttMovie = new ToggleDialogTargetType<MovieM>(
+      "IconMovieClapper",
+      _ => _coreS.Movie.Selected.Items.Count == 0 ? [] : [.. _coreS.Movie.Selected.Items],
+      "{0} Movie{1}".Plural);
 
     if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(IPersonM))) is { } stPerson) {
       stPerson.Options.Add(new ToggleDialogOption<IPersonM, ActorM>(ttActor,
-        (items, item) => Core.R.Actor.SetPerson(items.First(), item)));
+        (items, item) => _coreR.Actor.SetPerson(items.First(), item)));
     }
+
+    if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(IKeywordM))) is { } stKeyword)
+      stKeyword.Options.Add(new ToggleDialogOption<IKeywordM, MovieM>(ttMovie, _coreR.Movie.ToggleKeyword));
   }
 }

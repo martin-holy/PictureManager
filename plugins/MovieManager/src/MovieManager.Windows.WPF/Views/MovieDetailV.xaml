@@ -46,6 +46,7 @@
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
         <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
 
@@ -224,8 +225,17 @@
         ap:Icon.Data="{StaticResource IconTheaterMasks}"
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"/>
 
+      <!-- Keywords -->
+      <mhc:IconTextBlockItemsControl
+        Grid.Row="3"
+        ItemsSource="{Binding MovieM.DisplayKeywords}"
+        ap:Icon.Data="{StaticResource IconTag}"
+        ap:Icon.Fill="{StaticResource ColorBrushTag}"
+        ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"
+        Visibility="{Binding MovieM.DisplayKeywords, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
+
       <!-- Plot -->
-      <ScrollViewer Grid.Row="3" MaxHeight="100">
+      <ScrollViewer Grid.Row="4" MaxHeight="100">
         <TextBlock
           Text="{Binding MovieM.Plot}"
           TextWrapping="Wrap"
@@ -234,7 +244,7 @@
       </ScrollViewer>
 
       <!-- Characters -->
-      <mhc:CollectionView Grid.Row="4" View="{Binding Characters}"/>
+      <mhc:CollectionView Grid.Row="5" View="{Binding Characters}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

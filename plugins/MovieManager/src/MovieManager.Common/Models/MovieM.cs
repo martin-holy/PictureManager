@@ -1,9 +1,12 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MovieManager.Common.Models;
 
@@ -28,6 +31,7 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public MovieDetailIdM DetailId { get; set; }
 
   public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
+  public IKeywordM[] DisplayKeywords => GetDisplayKeywords();
 
   public string FormatedLength =>
     TimeSpan.FromMinutes(Length).ToString(@"h\:mm");
@@ -38,4 +42,12 @@ public sealed class MovieM : ObservableObject, ISelectable {
   }
 
   public override int GetHashCode() => Id;
+
+  private IKeywordM[] GetDisplayKeywords() =>
+    Keywords?
+      .EmptyIfNull()
+      .SelectMany(x => x.GetThisAndParents())
+      .Distinct()
+      .OrderBy(x => x.GetFullName("/", k => k.Name))
+      .ToArray();
 }

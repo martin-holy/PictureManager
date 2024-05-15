@@ -47,6 +47,7 @@ public sealed class CoreR : SimpleDB {
 
   public void AttachEvents() {
     Movie.ItemDeletedEvent += OnMovieDeleted;
+    _pmCoreR.Keyword.ItemDeletedEvent += OnKeywordDeleted;
     _pmCoreR.MediaItem.ItemDeletedEvent += OnMediaItemDeleted;
     _pmCoreR.Person.ItemDeletedEvent += OnPersonDeleted;
     _pmCoreR.Segment.ItemDeletedEvent += OnSegmentDeleted;
@@ -55,6 +56,10 @@ public sealed class CoreR : SimpleDB {
   private void OnMovieDeleted(object sender, MovieM e) {
     Character.ItemsDelete(Character.All.Where(x => ReferenceEquals(x.Movie, e)).ToList());
     MovieDetailId.ItemDelete(MovieDetailId.All.Single(x => ReferenceEquals(x.Movie, e)));
+  }
+
+  private void OnKeywordDeleted(object sender, IKeywordM e) {
+    Movie.OnKeywordDeleted(e);
   }
 
   private void OnMediaItemDeleted(object sender, IMediaItemM e) {
