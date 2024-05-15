@@ -36,12 +36,13 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
+  public KeywordIR KeywordIR { get; }
   public MediaItemIR MediaItemIR { get; }
   public PersonIR PersonIR { get; }
   public SegmentIR SegmentIR { get; }
 
   IFolderR IPMCoreR.Folder => Folder;
-  IKeywordR IPMCoreR.Keyword => Keyword;
+  IInterfaceTableDataAdapter<IKeywordM> IPMCoreR.Keyword => KeywordIR;
   IInterfaceTableDataAdapter<IMediaItemM> IPMCoreR.MediaItem => MediaItemIR;
   IInterfaceTableDataAdapter<IPersonM> IPMCoreR.Person => PersonIR;
   IInterfaceTableDataAdapter<ISegmentM> IPMCoreR.Segment => SegmentIR;
@@ -66,6 +67,7 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
     MediaItemGeoLocation = new(this);
     VideoItemsOrder = new(this);
 
+    KeywordIR = new(Keyword);
     MediaItemIR = new(MediaItem);
     PersonIR = new(Person);
     SegmentIR = new(Segment);
@@ -125,6 +127,7 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
     Segment.SegmentPersonChangedEvent += OnSegmentPersonChanged;
     Segment.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
 
+    KeywordIR.AttachEvents();
     MediaItemIR.AttachEvents();
     PersonIR.AttachEvents();
     SegmentIR.AttachEvents();
