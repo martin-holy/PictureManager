@@ -31,6 +31,7 @@ public sealed class MovieDetailVM : ObservableObject {
   public RelayCommand SetCharacterSegmentCommand { get; }
   public RelayCommand<ObservableCollection<DateTime>> AddSeenDateCommand { get; }
   public RelayCommand<DateOnly> RemoveSeenDateCommand { get; }
+  public RelayCommand SetPosterCommand { get; }
   public RelayCommand MyRatingChangedCommand { get; }
 
   public MovieDetailVM(IPMCoreVM pmCoreVM, CoreR coreR, CoreS coreS) {
@@ -44,6 +45,7 @@ public sealed class MovieDetailVM : ObservableObject {
     SetCharacterSegmentCommand = new(SetCharacterSegment, CanSetCharacterSegment, "IconSegment", "Set Character Segment");
     AddSeenDateCommand = new(AddSeenDate);
     RemoveSeenDateCommand = new(RemoveSeenDate, Res.IconXCross, "Remove");
+    SetPosterCommand = new(SetPoster, CanSetPoster, "IconImage", "Set Poster");
     MyRatingChangedCommand = new(() => _coreR.Movie.IsModified = true);
   }
 
@@ -73,6 +75,15 @@ public sealed class MovieDetailVM : ObservableObject {
   private bool CanAddMediaItems() {
     var mis = _pmCoreVM.GetActive();
     return mis.Length > 0 && (MovieM.MediaItems == null || mis.Any(x => !MovieM.MediaItems.Contains(x)));
+  }
+
+  private void SetPoster() {
+    _coreR.Movie.SetPoster(MovieM, _pmCoreVM.GetActive()[0]);
+  }
+
+  private bool CanSetPoster() {
+    var mis = _pmCoreVM.GetActive();
+    return mis.Length > 0 && !ReferenceEquals(mis[0], MovieM.Poster);
   }
 
   private void RemoveMediaItems() {

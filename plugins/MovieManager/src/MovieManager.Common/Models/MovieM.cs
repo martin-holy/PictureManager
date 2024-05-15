@@ -13,6 +13,7 @@ namespace MovieManager.Common.Models;
 public sealed class MovieM : ObservableObject, ISelectable {
   private bool _isSelected;
   private double _myRating;
+  private IMediaItemM _poster;
 
   public int Id { get; }
   public string Title { get; set; }
@@ -26,7 +27,7 @@ public sealed class MovieM : ObservableObject, ISelectable {
   public ObservableCollection<DateOnly> Seen { get; set; } = [];
   public string MPAA { get; set; }
   public string Plot { get; set; }
-  public IMediaItemM Poster { get; set; }
+  public IMediaItemM Poster { get => _poster; set { _poster = value; OnPropertyChanged(); } }
   public List<IMediaItemM> MediaItems { get; set; }
   public MovieDetailIdM DetailId { get; set; }
 

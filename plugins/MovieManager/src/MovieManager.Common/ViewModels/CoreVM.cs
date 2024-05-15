@@ -67,6 +67,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     _coreR.Movie.ItemDeletedEvent += OnMovieDeleted;
     _coreR.Movie.ItemsDeletedEvent += OnMoviesDeleted;
     _coreR.Movie.MoviesKeywordsChangedEvent += OnMoviesKeywordsChanged;
+    _coreR.Movie.PosterChangedEvent += OnMoviePosterChanged;
     _coreS.Import.MovieImportedEvent += OnMovieImported;
   }
 
@@ -98,6 +99,10 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   private void OnMoviesKeywordsChanged(object sender, MovieM[] items) {
     MovieDetail?.UpdateDisplayKeywordsIfContains(items);
+  }
+
+  private void OnMoviePosterChanged(object sender, MovieM e) {
+    Movies?.ReWrapAll();
   }
 
   private void OnAppClosing(object sender, EventArgs e) {

@@ -79,6 +79,7 @@
             <MenuItem Command="{Binding RemoveMediaItemsCommand}"/>
             <MenuItem Command="{Binding ViewMediaItemsCommand}"/>
             <MenuItem Command="{Binding SetCharacterSegmentCommand}"/>
+            <MenuItem Command="{Binding SetPosterCommand}"/>
           </MenuItem>
         </Menu>
 

@@ -17,6 +17,7 @@ namespace MovieManager.Common.Repositories;
 /// </summary>
 public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 14) {
   public event EventHandler<MovieM[]> MoviesKeywordsChangedEvent = delegate { };
+  public event EventHandler<MovieM> PosterChangedEvent = delegate { };
 
   public override MovieM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]) {
@@ -100,6 +101,13 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
     if (movie == null) return;
     movie.Seen.Remove(date);
     IsModified = true;
+  }
+
+  public void SetPoster(MovieM movie, IMediaItemM mi) {
+    movie.Poster = mi;
+    AddMediaItems(movie, [mi]);
+    IsModified = true;
+    PosterChangedEvent(this, movie);
   }
 
   public void OnMediaItemDeleted(IMediaItemM mi) {
