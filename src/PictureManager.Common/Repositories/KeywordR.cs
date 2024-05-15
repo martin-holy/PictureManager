@@ -3,8 +3,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.TreeCategories;
-using PictureManager.Interfaces.Repositories;
-using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +12,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordR : TreeDataAdapter<KeywordM>, IKeywordR {
+public class KeywordR : TreeDataAdapter<KeywordM> {
   private readonly CoreR _coreR;
   private const string _notFoundRecordNamePrefix = "Not found ";
 
@@ -56,14 +54,8 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IKeywordR {
       .SingleOrDefault(x => x.Name.Equals("Auto Added"));
   }
 
-  IKeywordM IRepository<IKeywordM>.GetById(string id, bool nullable) =>
-    GetById(id, nullable);
-
   public List<KeywordM> Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
-
-  List<IKeywordM> IRepository<IKeywordM>.Link(string csv) =>
-    Link(csv, null)?.Cast<IKeywordM>().ToList();
 
   private KeywordM GetNotFoundRecord(int notFoundId) {
     var id = GetNextId();
@@ -107,15 +99,9 @@ public class KeywordR : TreeDataAdapter<KeywordM>, IKeywordR {
       ?? items.FirstOrDefault();
   }
 
-  IKeywordM IKeywordR.GetByFullPath(string fullPath, IEnumerable<ITreeItem> src, ITreeItem rootForNew) =>
-    GetByFullPath(fullPath, src, rootForNew);
-
   public void MoveGroupItemsToRoot(CategoryGroupM group) {
     if (group.Category != Category.Keywords) return;
     foreach (var item in group.Items.ToArray())
       ItemMove(item, Tree, false);
   }
-
-  public ITreeItem GetCategoryGroup(string name) =>
-    Tree.Items.GetByName(name) ?? _coreR.CategoryGroup.ItemCreate(Tree, name);
 }
