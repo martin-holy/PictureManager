@@ -1,5 +1,7 @@
-﻿namespace PictureManager.Interfaces.Models;
+﻿using MH.Utils.Interfaces;
 
-public interface IKeywordM {
+namespace PictureManager.Interfaces.Models;
+
+public interface IKeywordM : ITreeItem {
   public int Id { get; }
 }
