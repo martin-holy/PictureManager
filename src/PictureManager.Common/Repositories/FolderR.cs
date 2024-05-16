@@ -4,8 +4,6 @@ using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.Services;
 using PictureManager.Common.TreeCategories;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +14,7 @@ namespace PictureManager.Common.Repositories;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class FolderR : TreeDataAdapter<FolderM>, IFolderR {
+public class FolderR : TreeDataAdapter<FolderM> {
   public FoldersTreeCategory Tree { get; }
 
   public FolderR(CoreR coreR) : base(coreR, "Folders", 3) {
@@ -98,8 +96,6 @@ public class FolderR : TreeDataAdapter<FolderM>, IFolderR {
     if (Directory.Exists(path)) CoreR.FileOperationDelete([path], true, false);
     if (Directory.Exists(cachePath)) Directory.Delete(cachePath, true);
   }
-
-  IFolderM IFolderR.GetFolder(string folderPath) => GetFolder(folderPath);
 
   public FolderM GetFolder(string folderPath) {
     if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return null;

@@ -7,8 +7,6 @@ using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Services;
 using PictureManager.Common.Utils;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.ViewModels;
 using System;
 using System.IO;
 using System.Linq;
@@ -16,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.ViewModels.Entities;
 
-public sealed class MediaItemVM : ObservableObject, IMediaItemVM {
+public sealed class MediaItemVM : ObservableObject {
   private readonly CoreVM _coreVM;
   private readonly MediaItemS _s;
   private MediaItemM _current;
@@ -157,6 +155,6 @@ public sealed class MediaItemVM : ObservableObject, IMediaItemVM {
       mi.SetInfoBox(true);
   }
 
-  public Task ViewMediaItems(IMediaItemM[] items, string name) =>
-    Views.ViewMediaItems(items.Cast<MediaItemM>().ToArray(), name);
+  public Task ViewMediaItems(MediaItemM[] items, string name) =>
+    Views.ViewMediaItems(items, name);
 }

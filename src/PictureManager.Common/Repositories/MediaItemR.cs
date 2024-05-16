@@ -89,6 +89,18 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     return null;
   }
 
+  public List<MediaItemM> Link(string csv) {
+    if (string.IsNullOrEmpty(csv)) return null;
+
+    var items = csv
+      .Split(',')
+      .Select(x => GetById(x))
+      .Where(x => x != null)
+      .ToList();
+
+    return items.Count == 0 ? null : items;
+  }
+
   public RealMediaItemM ItemCreate(FolderM folder, string fileName) {
     if (_supportedImageExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
       return _coreR.Image.ItemCreate(folder, fileName);

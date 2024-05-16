@@ -3,7 +3,6 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models.MediaItems;
-using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,7 +10,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Models;
 
-public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable, IHaveKeywords, ISegmentM {
+public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable, IHaveKeywords {
   private bool _isSelected;
 
   #region DB Properties
@@ -91,10 +90,6 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
   public static bool operator ==(SegmentM a, SegmentM b) => a?.Equals(b) ?? b is null;
   public static bool operator !=(SegmentM a, SegmentM b) => !(a == b);
   #endregion IEquatable implementation
-
-  #region ISegmentM implementation
-  IPersonM ISegmentM.Person => Person;
-  #endregion
 
   public string ToMsRect() =>
     string.Join(", ",

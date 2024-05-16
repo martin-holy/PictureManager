@@ -5,14 +5,12 @@ using PictureManager.Common.Dialogs;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Services;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Common.Services;
 
-public sealed class SegmentS : ObservableObject, ISegmentS {
+public sealed class SegmentS : ObservableObject {
   public SegmentR DataAdapter { get; set; }
   public SegmentRectS Rect { get; }
   public Selecting<SegmentM> Selected { get; } = new();
@@ -125,7 +123,4 @@ public sealed class SegmentS : ObservableObject, ISegmentS {
 
     return new[] { segment.MediaItem };
   }
-
-  public ISegmentM[] GetSelected() =>
-    Selected.Items.Cast<ISegmentM>().ToArray();
 }

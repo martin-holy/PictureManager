@@ -25,9 +25,6 @@
     <ProjectReference Include="..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj">
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\PictureManager.Interfaces\PictureManager.Interfaces.csproj">
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
 
 </Project>
