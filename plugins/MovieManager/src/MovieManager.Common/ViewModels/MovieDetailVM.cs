@@ -7,16 +7,17 @@ using MovieManager.Common.CollectionViews;
 using MovieManager.Common.Models;
 using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
-using PictureManager.Interfaces.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using PictureManager.Common.Models.MediaItems;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.ViewModels;
 
 public sealed class MovieDetailVM : ObservableObject {
-  private readonly IPMCoreVM _pmCoreVM;
+  private readonly PM.ViewModels.CoreVM _pmCoreVM;
   private readonly CoreR _coreR;
   private readonly CoreS _coreS;
   private MovieM _movieM;
@@ -34,7 +35,7 @@ public sealed class MovieDetailVM : ObservableObject {
   public RelayCommand SetPosterCommand { get; }
   public RelayCommand MyRatingChangedCommand { get; }
 
-  public MovieDetailVM(IPMCoreVM pmCoreVM, CoreR coreR, CoreS coreS) {
+  public MovieDetailVM(PM.ViewModels.CoreVM pmCoreVM, CoreR coreR, CoreS coreS) {
     _pmCoreVM = pmCoreVM;
     _coreR = coreR;
     _coreS = coreS;
@@ -62,7 +63,7 @@ public sealed class MovieDetailVM : ObservableObject {
   }
 
   private void AddMediaItems() {
-    var mis = _pmCoreVM.GetActive();
+    var mis = _pmCoreVM.GetActive<MediaItemM>();
     if (Dialog.Show(new MessageDialog(
           "Adding Media items to Movie",
           "Do you really want to add {0} Media item{1} to Movie?".Plural(mis.Length),
@@ -73,21 +74,21 @@ public sealed class MovieDetailVM : ObservableObject {
   }
 
   private bool CanAddMediaItems() {
-    var mis = _pmCoreVM.GetActive();
+    var mis = _pmCoreVM.GetActive<MediaItemM>();
     return mis.Length > 0 && (MovieM.MediaItems == null || mis.Any(x => !MovieM.MediaItems.Contains(x)));
   }
 
   private void SetPoster() {
-    _coreR.Movie.SetPoster(MovieM, _pmCoreVM.GetActive()[0]);
+    _coreR.Movie.SetPoster(MovieM, _pmCoreVM.GetActive<MediaItemM>()[0]);
   }
 
   private bool CanSetPoster() {
-    var mis = _pmCoreVM.GetActive();
+    var mis = _pmCoreVM.GetActive<MediaItemM>();
     return mis.Length > 0 && !ReferenceEquals(mis[0], MovieM.Poster);
   }
 
   private void RemoveMediaItems() {
-    var mis = _pmCoreVM.GetActive().Intersect(MovieM.MediaItems).ToArray();
+    var mis = _pmCoreVM.GetActive<MediaItemM>().Intersect(MovieM.MediaItems).ToArray();
     if (Dialog.Show(new MessageDialog(
           "Removing Media items from Movie",
           "Do you really want to remove {0} Media item{1} from Movie?".Plural(mis.Length),
@@ -98,22 +99,22 @@ public sealed class MovieDetailVM : ObservableObject {
   }
 
   private bool CanRemoveMediaItems() =>
-    MovieM.MediaItems?.Count > 0 && _pmCoreVM.GetActive().Any(MovieM.MediaItems.Contains);
+    MovieM.MediaItems?.Count > 0 && _pmCoreVM.GetActive<MediaItemM>().Any(MovieM.MediaItems.Contains);
 
   private Task ViewMediaItems() =>
     _pmCoreVM.MediaItem.ViewMediaItems([.. MovieM.MediaItems], MovieM.Title);
 
   private void SetCharacterSegment() {
     if (_coreS.Character.Selected.Items.FirstOrDefault() is not { } character) return;
-    _coreR.Character.SetSegment(character, _coreS.PMCoreS.Segment.GetSelected().FirstOrDefault());
+    _coreR.Character.SetSegment(character, _coreS.PMCoreS.Segment.Selected.Items.FirstOrDefault());
     character.OnPropertyChanged(nameof(character.DisplaySegment));
   }
 
   private bool CanSetCharacterSegment() {
-    var segments = _coreS.PMCoreS.Segment.GetSelected();
+    var segments = _coreS.PMCoreS.Segment.Selected.Items;
     var characters = _coreS.Character.Selected.Items;
 
-    return segments.Length == 1
+    return segments.Count == 1
            && segments[0].Person != null
            && characters.Count == 1
            && ReferenceEquals(segments[0].Person, characters[0].Actor.Person);

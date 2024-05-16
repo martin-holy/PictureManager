@@ -1,16 +1,17 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Interfaces.Models;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System.Linq;
 
 namespace MovieManager.Common.Models;
 
 public class CharacterM : ListItem {
-  private ISegmentM _segment;
+  private SegmentM _segment;
 
   public int Id { get; }
   public ActorM Actor { get; set; }
   public MovieM Movie { get; set; }
-  public ISegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
+  public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
 
   public CharacterM(int id, string name) {
     Id = id;
@@ -19,7 +20,7 @@ public class CharacterM : ListItem {
 
   public override int GetHashCode() => Id;
 
-  public ISegmentM DisplaySegment {
+  public SegmentM DisplaySegment {
     get {
       if (Segment != null) return Segment;
       if (Actor?.Person == null) return null;

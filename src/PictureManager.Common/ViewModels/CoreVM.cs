@@ -12,8 +12,6 @@ using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels.Entities;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.ViewModels;
 
-public class CoreVM : ObservableObject, IPMCoreVM {
+public class CoreVM : ObservableObject {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
@@ -49,9 +47,6 @@ public class CoreVM : ObservableObject, IPMCoreVM {
   public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
   public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
   public static IVideoFrameSaver VideoFrameSaver { get; set; }
-
-  IMediaItemVM IPMCoreVM.MediaItem => MediaItem;
-  ISegmentVM IPMCoreVM.Segment => Segment;
 
   public event EventHandler AppClosingEvent = delegate { };
 
@@ -112,9 +107,6 @@ public class CoreVM : ObservableObject, IPMCoreVM {
       : MainWindow.IsInViewMode
         ? MediaItem.Current is T current ? new[] { current } : Array.Empty<T>()
         : MediaItem.Views.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
-
-  public bool AnyActive() => AnyActive<MediaItemM>();
-  public IMediaItemM[] GetActive() => GetActive<MediaItemM>().Cast<IMediaItemM>().ToArray();
 
   public void AttachEvents() {
     MainTabs.PropertyChanged += OnMainTabsPropertyChanged;
@@ -471,14 +463,10 @@ public class CoreVM : ObservableObject, IPMCoreVM {
     ToggleDialog.SourceTypes.Add(stRating);
   }
 
-  public void ScrollToFolder(IFolderM folder) =>
-    _coreR.Folder.Tree.ScrollTo(folder as FolderM);
-
-  public void OpenMediaItems(IMediaItemM[] items, IMediaItemM item) {
-    if (item is not MediaItemM mi) return;
+  public void OpenMediaItems(MediaItemM[] items, MediaItemM item) {
     items ??= new[] { item };
 
     MainWindow.IsInViewMode = true;
-    MediaViewer.SetMediaItems(items.Cast<MediaItemM>().ToList(), mi);
+    MediaViewer.SetMediaItems(items.ToList(), item);
   }
 }

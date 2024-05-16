@@ -1,11 +1,9 @@
 using MH.Utils;
 using MH.Utils.Extensions;
+using PictureManager.Common.Interfaces.Plugin;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
 using PictureManager.Common.ViewModels;
-using PictureManager.Interfaces;
-using PictureManager.Interfaces.Plugin;
-using PictureManager.Interfaces.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common;
 
-public sealed class Core : IPMCore {
+public sealed class Core {
   private static Core _inst;
   private static readonly object _lock = new();
   public static Core Inst { get { lock (_lock) { return _inst ??= new(); } } }
@@ -24,8 +22,6 @@ public sealed class Core : IPMCore {
   public static CoreVM VM { get; private set; }
   public static Settings Settings { get; } = Settings.Load();
   public List<IPluginCore> Plugins { get; } = [];
-
-  IPMSettings IPMCore.Settings => Settings;
 
   private Core() {
     Tasks.SetUiTaskScheduler();

@@ -1,16 +1,16 @@
-﻿using System;
-using MH.UI.Controls;
+﻿using MH.UI.Controls;
 using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MovieManager.Common.Models;
 using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Plugin;
-using PictureManager.Interfaces.ViewModels;
+using PictureManager.Common.Interfaces.Plugin;
+using PictureManager.Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.ViewModels;
 
@@ -18,7 +18,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
-  public IPMCoreVM PMCoreVM { get; }
+  public PM.ViewModels.CoreVM PMCoreVM { get; }
   public string PluginIcon => "IconMovieClapper";
   public string PluginTitle => "Movie Manager";
 
@@ -36,7 +36,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public RelayCommand SaveDbCommand { get; }
   public RelayCommand ScrollToRootFolderCommand { get; }
 
-  public CoreVM(IPMCoreVM pmCoreVM, CoreS coreS, CoreR coreR) {
+  public CoreVM(PM.ViewModels.CoreVM pmCoreVM, CoreS coreS, CoreR coreR) {
     PMCoreVM = pmCoreVM;
     _coreS = coreS;
     _coreR = coreR;
@@ -50,7 +50,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
     OpenMoviesFilterCommand = new(OpenMoviesFilter, "IconFilter", "Movies filter");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
-    ScrollToRootFolderCommand = new(() => PMCoreVM.ScrollToFolder(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
+    ScrollToRootFolderCommand = new(() => _coreR.PMCoreR.Folder.Tree.ScrollTo(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
 
     MainMenuCommands = [
       DeleteSelectedMoviesCommand,
@@ -177,12 +177,12 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
       _ => _coreS.Movie.Selected.Items.Count == 0 ? [] : [.. _coreS.Movie.Selected.Items],
       "{0} Movie{1}".Plural);
 
-    if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(IPersonM))) is { } stPerson) {
-      stPerson.Options.Add(new ToggleDialogOption<IPersonM, ActorM>(ttActor,
+    if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(PersonM))) is { } stPerson) {
+      stPerson.Options.Add(new ToggleDialogOption<PersonM, ActorM>(ttActor,
         (items, item) => _coreR.Actor.SetPerson(items.First(), item)));
     }
 
-    if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(IKeywordM))) is { } stKeyword)
-      stKeyword.Options.Add(new ToggleDialogOption<IKeywordM, MovieM>(ttMovie, _coreR.Movie.ToggleKeyword));
+    if (sts.SingleOrDefault(x => x.Type.IsAssignableTo(typeof(KeywordM))) is { } stKeyword)
+      stKeyword.Options.Add(new ToggleDialogOption<KeywordM, MovieM>(ttMovie, _coreR.Movie.ToggleKeyword));
   }
 }

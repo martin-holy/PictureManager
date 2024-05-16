@@ -21,8 +21,8 @@
     <ProjectReference Include="..\..\..\..\libs\MH\Common\MH.Utils\MH.Utils.csproj">
       <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\src\PictureManager.Interfaces\PictureManager.Interfaces.csproj">
-      <Private>false</Private>
+    <ProjectReference Include="..\..\..\..\src\PictureManager.Common\PictureManager.Common.csproj">
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\src\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj">
       <Private>False</Private>

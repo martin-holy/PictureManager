@@ -3,7 +3,8 @@ using MH.Utils.Extensions;
 using MovieManager.Common.Models;
 using MovieManager.Common.Repositories;
 using MovieManager.Plugins.Common.Models;
-using PictureManager.Interfaces.Models;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -99,7 +100,7 @@ public class ImportS {
     }
   }
 
-  private async Task<IMediaItemM> DownloadImage(Image image, IFolderM folder, string fileName) {
+  private async Task<MediaItemM> DownloadImage(Image image, FolderM folder, string fileName) {
     if (image == null || string.IsNullOrEmpty(image.Url)) return null;
     var filePath = Path.Combine(folder.FullPath, fileName);
     try {

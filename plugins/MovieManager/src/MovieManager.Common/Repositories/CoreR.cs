@@ -1,15 +1,16 @@
 ﻿using MH.Utils;
 using MovieManager.Common.Models;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.IO;
 using System.Linq;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.Repositories;
 
 public sealed class CoreR : SimpleDB {
-  private readonly IPMCoreR _pmCoreR;
+  public readonly PM.Repositories.CoreR PMCoreR;
   private readonly Core _core;
 
   public ActorR Actor { get; }
@@ -19,13 +20,13 @@ public sealed class CoreR : SimpleDB {
   public MovieDetailIdR MovieDetailId { get; }
   public MovieR Movie { get; }
 
-  public IFolderM ActorsFolder { get; set; }
-  public IFolderM ImagesFolder { get; set; }
-  public IFolderM PostersFolder { get; set; }
-  public IFolderM RootFolder { get; set; }
+  public FolderM ActorsFolder { get; set; }
+  public FolderM ImagesFolder { get; set; }
+  public FolderM PostersFolder { get; set; }
+  public FolderM RootFolder { get; set; }
 
-  public CoreR(IPMCoreR pmCoreR, Core core) : base(Path.Combine(core.BaseDir, "db")) {
-    _pmCoreR = pmCoreR;
+  public CoreR(PM.Repositories.CoreR pmCoreR, Core core) : base(Path.Combine(core.BaseDir, "db")) {
+    PMCoreR = pmCoreR;
     _core = core;
 
     Actor = new(this, pmCoreR);
@@ -47,10 +48,10 @@ public sealed class CoreR : SimpleDB {
 
   public void AttachEvents() {
     Movie.ItemDeletedEvent += OnMovieDeleted;
-    _pmCoreR.Keyword.ItemDeletedEvent += OnKeywordDeleted;
-    _pmCoreR.MediaItem.ItemDeletedEvent += OnMediaItemDeleted;
-    _pmCoreR.Person.ItemDeletedEvent += OnPersonDeleted;
-    _pmCoreR.Segment.ItemDeletedEvent += OnSegmentDeleted;
+    PMCoreR.Keyword.ItemDeletedEvent += OnKeywordDeleted;
+    PMCoreR.MediaItem.ItemDeletedEvent += OnMediaItemDeleted;
+    PMCoreR.Person.ItemDeletedEvent += OnPersonDeleted;
+    PMCoreR.Segment.ItemDeletedEvent += OnSegmentDeleted;
   }
 
   private void OnMovieDeleted(object sender, MovieM e) {
@@ -58,20 +59,20 @@ public sealed class CoreR : SimpleDB {
     MovieDetailId.ItemDelete(MovieDetailId.All.Single(x => ReferenceEquals(x.Movie, e)));
   }
 
-  private void OnKeywordDeleted(object sender, IKeywordM e) {
+  private void OnKeywordDeleted(object sender, KeywordM e) {
     Movie.OnKeywordDeleted(e);
   }
 
-  private void OnMediaItemDeleted(object sender, IMediaItemM e) {
+  private void OnMediaItemDeleted(object sender, MediaItemM e) {
     Actor.OnMediaItemDeleted(e);
     Movie.OnMediaItemDeleted(e);
   }
 
-  private void OnPersonDeleted(object sender, IPersonM e) {
+  private void OnPersonDeleted(object sender, PersonM e) {
     Actor.OnPersonDeleted(e);
   }
 
-  private void OnSegmentDeleted(object sender, ISegmentM e) {
+  private void OnSegmentDeleted(object sender, SegmentM e) {
     Character.OnSegmentDeleted(e);
   }
 
@@ -82,13 +83,13 @@ public sealed class CoreR : SimpleDB {
     RootFolder = GetFolder(_core.BaseDir);
   }
 
-  public IFolderM GetFolder(string path) {
+  public FolderM GetFolder(string path) {
     if (Directory.Exists(path))
-      return _pmCoreR.Folder.GetFolder(path);
+      return PMCoreR.Folder.GetFolder(path);
 
     try {
       Directory.CreateDirectory(path!);
-      return _pmCoreR.Folder.GetFolder(path);
+      return PMCoreR.Folder.GetFolder(path);
     }
     catch (Exception ex) {
       Log.Error(ex);

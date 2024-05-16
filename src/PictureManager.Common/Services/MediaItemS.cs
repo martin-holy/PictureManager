@@ -5,8 +5,6 @@ using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Utils;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Services;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.Services;
 
-public sealed class MediaItemS(MediaItemR r) : ObservableObject, IMediaItemS {
+public sealed class MediaItemS(MediaItemR r) : ObservableObject {
   public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
 
   public void DeleteFromDrive(MediaItemM[] items) =>
@@ -53,9 +51,8 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject, IMediaItemS {
     r.Modify(mi);
   }
 
-  IMediaItemM IMediaItemS.GetMediaItem(IFolderM folder, string fileName) {
-    var f = (FolderM)folder;
-    var mi = f.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
-    return mi != null ? mi : CopyMoveU.CreateMediaItemAndReadMetadata(f, fileName);
+  public MediaItemM GetMediaItem(FolderM folder, string fileName) {
+    var mi = folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
+    return mi != null ? mi : CopyMoveU.CreateMediaItemAndReadMetadata(folder, fileName);
   }
 }

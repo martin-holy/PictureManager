@@ -1,15 +1,15 @@
-﻿using System.Linq;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
+using PictureManager.Common.Models;
+using System.Linq;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: Id|Name|Actor|Movie|Segment
 /// </summary>
-public class CharacterR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<CharacterM>(coreR, "Characters", 5) {
+public class CharacterR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<CharacterM>(coreR, "Characters", 5) {
   public override CharacterM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1]);
 
@@ -32,13 +32,13 @@ public class CharacterR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Charac
   public CharacterM ItemCreate(string name, ActorM actor, MovieM movie) =>
     ItemCreate(new(GetNextId(), name) { Actor = actor, Movie = movie });
 
-  public void SetSegment(CharacterM character, ISegmentM segment) {
+  public void SetSegment(CharacterM character, SegmentM segment) {
     if (character == null | segment == null) return;
     character.Segment = segment;
     IsModified = true;
   }
 
-  public void OnSegmentDeleted(ISegmentM segment) {
+  public void OnSegmentDeleted(SegmentM segment) {
     foreach (var character in All.Where(x => ReferenceEquals(x.Segment, segment))) {
       character.Segment = null;
       IsModified = true;

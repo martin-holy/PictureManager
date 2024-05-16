@@ -1,7 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common.Interfaces;
-using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace PictureManager.Common.Models;
 /// <summary>
 /// DB fields: ID|Name|Segment|Keywords
 /// </summary>
-public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords, IPersonM {
+public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
   #region IEquatable implementation
   public bool Equals(PersonM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as PersonM);
@@ -30,8 +29,6 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords, IPer
   public KeywordM[] DisplayKeywords => Keywords?.GetKeywords().OrderBy(x => x.FullName).ToArray();
   public bool IsUnknown { get => Bits[BitsMasks.IsUnknown]; set { Bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }
   public List<SegmentM> Segments { get; set; }
-
-  ISegmentM IPersonM.Segment => Segment;
 
   public PersonM() { }
 

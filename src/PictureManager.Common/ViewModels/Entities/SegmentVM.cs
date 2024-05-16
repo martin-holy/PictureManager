@@ -7,12 +7,11 @@ using PictureManager.Common.Interfaces;
 using PictureManager.Common.Models;
 using PictureManager.Common.Repositories;
 using PictureManager.Common.Services;
-using PictureManager.Interfaces.ViewModels;
 using System.Linq;
 
 namespace PictureManager.Common.ViewModels.Entities;
 
-public sealed class SegmentVM : ObservableObject, ISegmentVM {
+public sealed class SegmentVM : ObservableObject {
   private readonly CoreVM _coreVM;
   private readonly SegmentS _s;
   private readonly SegmentR _r;

@@ -1,16 +1,17 @@
 ﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Linq;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: Id|Name|Person|Image
 /// </summary>
-public class ActorR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 4) {
+public class ActorR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 4) {
   public event EventHandler<ActorM> ActorPersonChangedEvent = delegate { };
     
   public override ActorM FromCsv(string[] csv) =>
@@ -33,20 +34,20 @@ public class ActorR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<ActorM>(co
   public ActorM ItemCreate(string name) =>
     ItemCreate(new ActorM(GetNextId(), name));
 
-  public void SetPerson(ActorM actor, IPersonM person) {
+  public void SetPerson(ActorM actor, PersonM person) {
     actor.Person = person;
     IsModified = true;
     ActorPersonChangedEvent(this, actor);
   }
 
-  public void OnMediaItemDeleted(IMediaItemM mi) {
+  public void OnMediaItemDeleted(MediaItemM mi) {
     foreach (var actor in All.Where(x => ReferenceEquals(x.Image, mi))) {
       actor.Image = null;
       IsModified = true;
     }
   }
 
-  public void OnPersonDeleted(IPersonM person) {
+  public void OnPersonDeleted(PersonM person) {
     foreach (var actor in All.Where(x => ReferenceEquals(x.Person, person)))
       SetPerson(actor, null);
   }

@@ -3,7 +3,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Interfaces;
-using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace PictureManager.Common.Models;
 /// <summary>
 /// DB fields: ID|Name|Parent
 /// </summary>
-public class KeywordM : TreeItem, IEquatable<KeywordM>, IKeywordM {
+public class KeywordM : TreeItem, IEquatable<KeywordM> {
   #region IEquatable implementation
   public bool Equals(KeywordM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as KeywordM);

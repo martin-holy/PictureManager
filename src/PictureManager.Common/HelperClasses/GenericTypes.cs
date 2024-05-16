@@ -1,4 +1,4 @@
-﻿using PictureManager.Interfaces.Plugin;
+﻿using PictureManager.Common.Interfaces.Plugin;
 using System;
 using System.Collections.Generic;
 

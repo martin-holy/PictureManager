@@ -3,19 +3,20 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MovieManager.Common.Models;
 using MovieManager.Plugins.Common.Models;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.Repositories;
 
 /// <summary>
 /// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|Seen|Poster|MediaItems|Keywords|Plot
 /// </summary>
-public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 14) {
+public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 14) {
   public event EventHandler<MovieM[]> MoviesKeywordsChangedEvent = delegate { };
   public event EventHandler<MovieM> PosterChangedEvent = delegate { };
 
@@ -53,7 +54,7 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
       item.Genres = coreR.Genre.LinkList(csv[7], null, null);
       item.Poster = pmCoreR.MediaItem.GetById(csv[10], true);
       item.MediaItems = pmCoreR.MediaItem.Link(csv[11]);
-      item.Keywords = pmCoreR.Keyword.Link(csv[12]);
+      item.Keywords = pmCoreR.Keyword.Link(csv[12], this);
     }
   }
 
@@ -75,13 +76,13 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
     return item;
   }
 
-  public void AddMediaItems(MovieM movie, IMediaItemM[] mediaItems) {
+  public void AddMediaItems(MovieM movie, MediaItemM[] mediaItems) {
     movie.MediaItems ??= [];
     movie.MediaItems.AddRange(mediaItems.Except(movie.MediaItems));
     IsModified = true;
   }
 
-  public void RemoveMediaItems(MovieM movie, IMediaItemM[] mediaItems) {
+  public void RemoveMediaItems(MovieM movie, MediaItemM[] mediaItems) {
     foreach (var mi in mediaItems)
       movie.MediaItems.Remove(mi);
 
@@ -98,14 +99,14 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
     IsModified = true;
   }
 
-  public void SetPoster(MovieM movie, IMediaItemM mi) {
+  public void SetPoster(MovieM movie, MediaItemM mi) {
     movie.Poster = mi;
     AddMediaItems(movie, [mi]);
     IsModified = true;
     PosterChangedEvent(this, movie);
   }
 
-  public void OnMediaItemDeleted(IMediaItemM mi) {
+  public void OnMediaItemDeleted(MediaItemM mi) {
     foreach (var movie in All.Where(x => ReferenceEquals(x.Poster, mi))) {
       movie.Poster = null;
       IsModified = true;
@@ -117,10 +118,10 @@ public sealed class MovieR(CoreR coreR, IPMCoreR pmCoreR) : TableDataAdapter<Mov
     }
   }
 
-  public void OnKeywordDeleted(IKeywordM keyword) =>
+  public void OnKeywordDeleted(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
-  public void ToggleKeyword(MovieM[] movies, IKeywordM keyword) {
+  public void ToggleKeyword(MovieM[] movies, KeywordM keyword) {
     foreach (var movie in movies) {
       movie.Keywords = movie.Keywords.Toggle(keyword);
       IsModified = true;

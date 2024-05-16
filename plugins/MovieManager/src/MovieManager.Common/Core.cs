@@ -3,15 +3,12 @@ using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
 using MovieManager.Common.ViewModels;
 using MovieManager.Plugins.Common.Interfaces;
-using PictureManager.Interfaces;
-using PictureManager.Interfaces.Plugin;
-using PictureManager.Interfaces.Repositories;
-using PictureManager.Interfaces.Services;
-using PictureManager.Interfaces.ViewModels;
+using PictureManager.Common.Interfaces.Plugin;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common;
 
@@ -19,7 +16,7 @@ public sealed class Core : IPluginCore {
   public string Name => "MovieManager";
   public string BaseDir { get; }
   public string PluginsDir { get; }
-  public static IPMCore PMCore { get; private set; }
+  public static PM.Core PMCore { get; private set; }
   public static Core Inst { get; private set; }
   public static CoreR R { get; private set; }
   public static CoreS S { get; private set; }
@@ -35,7 +32,7 @@ public sealed class Core : IPluginCore {
     PluginsDir = Path.Combine(BaseDir, "plugins");
   }
 
-  public Task InitAsync(IPMCore pmCore, IPMCoreR pmCoreR, IProgress<string> progress) {
+  public Task InitAsync(PM.Core pmCore, PM.Repositories.CoreR pmCoreR, IProgress<string> progress) {
     PMCore = pmCore;
     R = new(pmCoreR, this);
 
@@ -51,7 +48,7 @@ public sealed class Core : IPluginCore {
     });
   }
 
-  public void AfterInit(IPMCoreS pmCoreS, IPMCoreVM pmCoreVM) {
+  public void AfterInit(PM.Services.CoreS pmCoreS, PM.ViewModels.CoreVM pmCoreVM) {
     S = new(pmCoreS, R);
     VM = new(pmCoreVM, S, R);
     R.SetFolders();

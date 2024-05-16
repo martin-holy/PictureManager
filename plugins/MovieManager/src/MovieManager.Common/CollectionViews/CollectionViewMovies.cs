@@ -1,9 +1,11 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
+using PictureManager.Common.CollectionViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.CollectionViews;
 
@@ -14,19 +16,23 @@ public class CollectionViewMovies : CollectionView<MovieM> {
   }
 
   public override int GetItemSize(MovieM item, bool getWidth) {
-    var scale = Core.PMCore.Settings.MediaItem.MediaItemThumbScale;
+    var scale = PM.Core.Settings.MediaItem.MediaItemThumbScale;
 
     if (item.Poster != null)
       return (int)((getWidth ? item.Poster.ThumbWidth : item.Poster.ThumbHeight) * scale);
 
-    var h = Core.PMCore.Settings.MediaItem.ThumbSize * scale;
+    var h = PM.Core.Settings.MediaItem.ThumbSize * scale;
     var w = h / 1.5;
     
     return getWidth ? (int)w : (int)h;
   }
 
-  public override IEnumerable<GroupByItem<MovieM>> GetGroupByItems(IEnumerable<MovieM> source) =>
-    Enumerable.Empty<GroupByItem<MovieM>>();
+  public override IEnumerable<GroupByItem<MovieM>> GetGroupByItems(IEnumerable<MovieM> source) {
+    var src = source.ToArray();
+    var top = new List<GroupByItem<MovieM>> { GroupByItems.GetKeywordsInGroup(src) };
+
+    return top;
+  }
 
   public override int SortCompare(MovieM itemA, MovieM itemB) =>
     string.Compare(itemA.Title, itemB.Title, StringComparison.CurrentCultureIgnoreCase);

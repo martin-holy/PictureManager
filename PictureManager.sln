@@ -26,8 +26,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Windows.WPF"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.Common", "plugins\MovieManager\plugins\src\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj", "{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Interfaces", "src\PictureManager.Interfaces\PictureManager.Interfaces.csproj", "{DB292AF4-06A9-41EE-9E28-974E69743328}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.IMDbCom", "plugins\MovieManager\plugins\src\MovieManager.Plugins.IMDbCom\MovieManager.Plugins.IMDbCom.csproj", "{962A7AA4-9675-4B5D-8288-A0363CD49F85}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.FDbCz", "plugins\MovieManager\plugins\src\MovieManager.Plugins.FDbCz\MovieManager.Plugins.FDbCz.csproj", "{3BD81866-D369-4CC6-BA47-42B214643AD6}"
@@ -70,10 +68,6 @@ Global
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB292AF4-06A9-41EE-9E28-974E69743328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB292AF4-06A9-41EE-9E28-974E69743328}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB292AF4-06A9-41EE-9E28-974E69743328}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB292AF4-06A9-41EE-9E28-974E69743328}.Release|Any CPU.Build.0 = Release|Any CPU
 		{962A7AA4-9675-4B5D-8288-A0363CD49F85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{962A7AA4-9675-4B5D-8288-A0363CD49F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{962A7AA4-9675-4B5D-8288-A0363CD49F85}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,13 +1,14 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Interfaces.Models;
+using PictureManager.Common.Models;
+using PictureManager.Common.Models.MediaItems;
 
 namespace MovieManager.Common.Models;
 
 public class ActorM : ListItem {
   public int Id { get; }
-  public IPersonM Person { get; set; }
+  public PersonM Person { get; set; }
   public ActorDetailIdM DetailId { get; set; }
-  public IMediaItemM Image { get; set; }
+  public MediaItemM Image { get; set; }
 
   public ActorM(int id, string name) {
     Id = id;

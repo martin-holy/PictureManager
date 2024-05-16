@@ -3,14 +3,13 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Interfaces;
-using PictureManager.Interfaces.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Common.Models.MediaItems;
 
-public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords, IMediaItemM {
+public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords {
   #region IEquatable implementation
   public bool Equals(MediaItemM other) => Id == other?.Id;
   public override bool Equals(object obj) => Equals(obj as MediaItemM);
@@ -22,10 +21,6 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
   #region ISelectable implementation
   private bool _isSelected;
   public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-  #endregion
-
-  #region IMediaItemM implementation
-  IEnumerable<ISegmentM> IMediaItemM.GetSegments() => GetSegments();
   #endregion
 
   public int Id { get; } = id;

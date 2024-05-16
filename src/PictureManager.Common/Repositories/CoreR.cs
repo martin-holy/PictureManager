@@ -1,10 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.Interfaces;
-using PictureManager.Common.InterRepos;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
-using PictureManager.Interfaces.Models;
-using PictureManager.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +9,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Repositories;
 
-public sealed class CoreR : SimpleDB, IPMCoreR {
+public sealed class CoreR : SimpleDB {
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
   public bool IsCopyMoveInProgress { get; set; }
@@ -36,17 +33,6 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
-  public KeywordIR KeywordIR { get; }
-  public MediaItemIR MediaItemIR { get; }
-  public PersonIR PersonIR { get; }
-  public SegmentIR SegmentIR { get; }
-
-  IFolderR IPMCoreR.Folder => Folder;
-  IInterfaceTableDataAdapter<IKeywordM> IPMCoreR.Keyword => KeywordIR;
-  IInterfaceTableDataAdapter<IMediaItemM> IPMCoreR.MediaItem => MediaItemIR;
-  IInterfaceTableDataAdapter<IPersonM> IPMCoreR.Person => PersonIR;
-  IInterfaceTableDataAdapter<ISegmentM> IPMCoreR.Segment => SegmentIR;
-
   public CoreR() : base("db") {
     CategoryGroup = new(this);
     FavoriteFolder = new(this);
@@ -66,11 +52,6 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
 
     MediaItemGeoLocation = new(this);
     VideoItemsOrder = new(this);
-
-    KeywordIR = new(Keyword);
-    MediaItemIR = new(MediaItem);
-    PersonIR = new(Person);
-    SegmentIR = new(Segment);
   }
 
   public void AddDataAdapters() {
@@ -126,11 +107,6 @@ public sealed class CoreR : SimpleDB, IPMCoreR {
     Segment.SegmentsKeywordsChangedEvent += OnSegmentsKeywordsChanged;
     Segment.SegmentPersonChangedEvent += OnSegmentPersonChanged;
     Segment.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
-
-    KeywordIR.AttachEvents();
-    MediaItemIR.AttachEvents();
-    PersonIR.AttachEvents();
-    SegmentIR.AttachEvents();
   }
 
   private void OnCategoryGroupDeleted(object sender, CategoryGroupM item) {
