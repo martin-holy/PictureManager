@@ -5,7 +5,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
+  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type vme:PersonDetailVM}">
     <DataTemplate.Resources>
@@ -26,7 +27,7 @@
       </Grid.RowDefinitions>
 
       <!-- Heather -->
-      <Grid Grid.Row="0" Background="#88000000" Margin="0,0,0,5">
+      <Grid Grid.Row="0" Background="{StaticResource MH.Brushes.Black55}" Margin="0,0,0,5">
         <TextBlock
           Text="{Binding PersonM.Name}"
           Foreground="{StaticResource MH.Brushes.Text}"
@@ -36,8 +37,7 @@
           VerticalAlignment="Center"/>
 
         <Path
-          Style="{StaticResource MH.Styles.Icon}"
-          Effect="{StaticResource MH.Effects.DropShadow}"
+          Style="{StaticResource MH.Styles.IconWithShadow}"
           Data="{StaticResource IconPeople}"
           Fill="{StaticResource ColorBrushPeople}"
           HorizontalAlignment="Left"
@@ -50,36 +50,13 @@
       </StackPanel>
 
       <!-- Keywords -->
-      <DockPanel
+      <mhc:IconTextBlockItemsControl
         Grid.Row="2"
-        x:Name="dpKeywords"
-        Margin="4,0,0,0"
-        VerticalAlignment="Center"
-        Visibility="Collapsed">
-        
-        <Path
-          Style="{StaticResource MH.Styles.Icon}"
-          Effect="{StaticResource MH.Effects.DropShadow}"
-          Data="{StaticResource IconTag}"
-          Fill="{StaticResource ColorBrushTag}"
-          Margin="0,0,4,0"/>
-
-        <ItemsControl ItemsSource="{Binding PersonM.DisplayKeywords}">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <WrapPanel Orientation="Horizontal"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Border Style="{StaticResource SBorderText}">
-                <TextBlock Text="{Binding Name}" Style="{StaticResource STextBlock}"/>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </DockPanel>
+        ItemsSource="{Binding PersonM.DisplayKeywords}"
+        ap:Icon.Data="{StaticResource IconTag}"
+        ap:Icon.Fill="{StaticResource ColorBrushTag}"
+        ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"
+        Visibility="{Binding PersonM.DisplayKeywords, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
       <!-- Top Segments -->
       <mhc:CollectionView
@@ -99,11 +76,5 @@
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>
 
     </Grid>
-
-    <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding PersonM.DisplayKeywords, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
-        <Setter TargetName="dpKeywords" Property="Visibility" Value="Visible"/>
-      </DataTrigger>
-    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>
