@@ -19,7 +19,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   private readonly CoreR _coreR;
 
   public PM.ViewModels.CoreVM PMCoreVM { get; }
-  public string PluginIcon => "IconMovieClapper";
+  public string PluginIcon => MH.UI.Res.IconMovieClapper;
   public string PluginTitle => "Movie Manager";
 
   public ImportVM Import { get; private set; }
@@ -45,12 +45,12 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
     InitToggleDialog();
 
-    DeleteSelectedMoviesCommand = new(DeleteSelectedMovies, () => _coreS.Movie.Selected.Items.Count > 0, "IconXCross", "Delete selected Movies");
-    ImportMoviesCommand = new(OpenImportMovies, "IconImport", "Import");
-    OpenMoviesCommand = new(OpenMovies, "IconMovieClapper", "Movies");
-    OpenMoviesFilterCommand = new(OpenMoviesFilter, "IconFilter", "Movies filter");
-    SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, "IconDatabase", "Save changes");
-    ScrollToRootFolderCommand = new(() => _coreR.PMCoreR.Folder.Tree.ScrollTo(_coreR.RootFolder), "IconFolder", "Scroll to root folder");
+    DeleteSelectedMoviesCommand = new(DeleteSelectedMovies, () => _coreS.Movie.Selected.Items.Count > 0, MH.UI.Res.IconXCross, "Delete selected Movies");
+    ImportMoviesCommand = new(OpenImportMovies, PM.Res.IconImport, "Import");
+    OpenMoviesCommand = new(OpenMovies, MH.UI.Res.IconMovieClapper, "Movies");
+    OpenMoviesFilterCommand = new(OpenMoviesFilter, PM.Res.IconFilter, "Movies filter");
+    SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, PM.Res.IconDatabase, "Save changes");
+    ScrollToRootFolderCommand = new(() => _coreR.PMCoreR.Folder.Tree.ScrollTo(_coreR.RootFolder), PM.Res.IconFolder, "Scroll to root folder");
 
     MainMenuCommands = [
       DeleteSelectedMoviesCommand,
@@ -110,7 +110,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
         Dialog.Show(new MessageDialog(
           "Database changes",
           "There are some changes in Movie Manager database.\nDo you want to save them?",
-          "IconDatabase",
+          PM.Res.IconDatabase,
           true)) == 1)
       _coreR.SaveAllTables();
 
@@ -121,14 +121,14 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     if (Dialog.Show(new MessageDialog(
           "Delete Movies",
           "Do you really want to delete {0} Movie{1}?".Plural(_coreS.Movie.Selected.Items.Count),
-          "IconMovieClapper",
+          MH.UI.Res.IconMovieClapper,
           true)) == 1)
       _coreR.Movie.ItemsDelete(_coreS.Movie.Selected.Items);
   }
 
   private void OpenImportMovies() {
     Import ??= new(_coreS.Import);
-    PMCoreVM.MainTabs.Activate("IconImport", "Import", Import);
+    PMCoreVM.MainTabs.Activate(PM.Res.IconImport, "Import", Import);
   }
 
   private void OpenMovies() {
@@ -136,7 +136,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     Movies.Open(MoviesFilter == null
       ? _coreR.Movie.All
       : _coreR.Movie.All.Where(MoviesFilter.Filter));
-    PMCoreVM.MainTabs.Activate("IconMovieClapper", "Movies", Movies);
+    PMCoreVM.MainTabs.Activate(MH.UI.Res.IconMovieClapper, "Movies", Movies);
   }
 
   private void OpenMoviesFilter() {
@@ -146,7 +146,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     }
     
     MoviesFilter.Update(_coreR.Movie.All, _coreR.Genre.All);
-    PMCoreVM.ToolsTabs.Activate("IconFilter", "Movies filter", MoviesFilter);
+    PMCoreVM.ToolsTabs.Activate(PM.Res.IconFilter, "Movies filter", MoviesFilter);
   }
 
   private void OnMoviesFilterChanged(object sender, EventArgs e) {
@@ -163,17 +163,17 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
     MovieDetail ??= new(PMCoreVM, _coreR, _coreS);
     MovieDetail.Reload(movie);
-    PMCoreVM.ToolsTabs.Activate("IconMovieClapper", "Movie", MovieDetail);
+    PMCoreVM.ToolsTabs.Activate(MH.UI.Res.IconMovieClapper, "Movie", MovieDetail);
   }
 
   private void InitToggleDialog() {
     var sts = PMCoreVM.ToggleDialog.SourceTypes;
     var ttActor = new ToggleDialogTargetType<ActorM>(
-      "IconPeople",
+      PM.Res.IconPeople,
       _ => _coreS.Actor.Selected.Items.Count == 0 ? [] : [_coreS.Actor.Selected.Items[0]],
       _ => "Actor");
     var ttMovie = new ToggleDialogTargetType<MovieM>(
-      "IconMovieClapper",
+      MH.UI.Res.IconMovieClapper,
       _ => _coreS.Movie.Selected.Items.Count == 0 ? [] : [.. _coreS.Movie.Selected.Items],
       "{0} Movie{1}".Plural);
 

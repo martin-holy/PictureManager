@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.ViewModels;
 
@@ -28,7 +29,7 @@ public class ImportVM : ObservableObject {
     Progress = new Progress<string>(x => ProgressCollection.Insert(0, x));
 
     SearchCommand = new(Search, x => !string.IsNullOrEmpty(x) && !_isSearchInProgress && !_isImportInProgress);
-    ImportCommand = new(Import, x => x != null, "IconImport", "Import");
+    ImportCommand = new(Import, x => x != null, PM.Res.IconImport, "Import");
     CancelCommand = new(Cancel, () => _isImportInProgress);
   }
 

@@ -40,13 +40,13 @@ public sealed class MovieDetailVM : ObservableObject {
     _coreR = coreR;
     _coreS = coreS;
 
-    AddMediaItemsCommand = new(AddMediaItems, CanAddMediaItems, "IconImageMultiple", "Add Media items");
-    RemoveMediaItemsCommand = new(RemoveMediaItems, CanRemoveMediaItems, "IconImageMultiple", "Remove Media items");
-    ViewMediaItemsCommand = new(ViewMediaItems, () => MovieM.MediaItems?.Count > 0, "IconImageMultiple", "View Media items");
-    SetCharacterSegmentCommand = new(SetCharacterSegment, CanSetCharacterSegment, "IconSegment", "Set Character Segment");
+    AddMediaItemsCommand = new(AddMediaItems, CanAddMediaItems, PM.Res.IconImageMultiple, "Add Media items");
+    RemoveMediaItemsCommand = new(RemoveMediaItems, CanRemoveMediaItems, PM.Res.IconImageMultiple, "Remove Media items");
+    ViewMediaItemsCommand = new(ViewMediaItems, () => MovieM.MediaItems?.Count > 0, PM.Res.IconImageMultiple, "View Media items");
+    SetCharacterSegmentCommand = new(SetCharacterSegment, CanSetCharacterSegment, PM.Res.IconSegment, "Set Character Segment");
     AddSeenDateCommand = new(AddSeenDate);
     RemoveSeenDateCommand = new(RemoveSeenDate, Res.IconXCross, "Remove");
-    SetPosterCommand = new(SetPoster, CanSetPoster, "IconImage", "Set Poster");
+    SetPosterCommand = new(SetPoster, CanSetPoster, Res.IconImage, "Set Poster");
     MyRatingChangedCommand = new(() => _coreR.Movie.IsModified = true);
   }
 
@@ -67,7 +67,7 @@ public sealed class MovieDetailVM : ObservableObject {
     if (Dialog.Show(new MessageDialog(
           "Adding Media items to Movie",
           "Do you really want to add {0} Media item{1} to Movie?".Plural(mis.Length),
-          "IconMovieClapper",
+          Res.IconMovieClapper,
           true)) != 1) return;
 
     _coreR.Movie.AddMediaItems(MovieM, mis);
@@ -92,7 +92,7 @@ public sealed class MovieDetailVM : ObservableObject {
     if (Dialog.Show(new MessageDialog(
           "Removing Media items from Movie",
           "Do you really want to remove {0} Media item{1} from Movie?".Plural(mis.Length),
-          "IconMovieClapper",
+          Res.IconMovieClapper,
           true)) != 1) return;
 
     _coreR.Movie.RemoveMediaItems(MovieM, mis);

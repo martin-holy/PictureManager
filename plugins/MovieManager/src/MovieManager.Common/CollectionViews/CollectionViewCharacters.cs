@@ -3,12 +3,13 @@ using MH.Utils.BaseClasses;
 using MovieManager.Common.Models;
 using System;
 using System.Collections.Generic;
+using PM = PictureManager.Common;
 
 namespace MovieManager.Common.CollectionViews;
 
 public class CollectionViewCharacters : CollectionView<CharacterM> {
   public CollectionViewCharacters() {
-    Icon = "IconPeople";
+    Icon = PM.Res.IconPeople;
     Name = "Characters";
   }
 

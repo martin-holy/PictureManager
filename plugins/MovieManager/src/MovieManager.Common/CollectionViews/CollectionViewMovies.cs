@@ -11,7 +11,7 @@ namespace MovieManager.Common.CollectionViews;
 
 public class CollectionViewMovies : CollectionView<MovieM> {
   public CollectionViewMovies() {
-    Icon = "IconMovieClapper";
+    Icon = MH.UI.Res.IconMovieClapper;
     Name = "Movies";
   }
 
