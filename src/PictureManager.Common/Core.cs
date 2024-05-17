@@ -69,6 +69,7 @@ public sealed class Core {
   }
 
   private async Task LoadPlugins(IProgress<string> progress) {
+    if (!Directory.Exists("plugins")) return;
     progress.Report("Loading Picture Manager plugins ...");
 
     try {
