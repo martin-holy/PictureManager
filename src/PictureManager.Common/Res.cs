@@ -32,6 +32,7 @@ namespace PictureManager.Common {
     public const string IconFolderPuzzle = "IconFolderPuzzle";
     public const string IconFolderStar = "IconFolderStar";
     public const string IconImageMultiple = "IconImageMultiple";
+    public const string IconImport = "IconImport";
     public const string IconInformation = "IconInformation";
     public const string IconLocationCheckin = "IconLocationCheckin";
     public const string IconMagnify = "IconMagnify";
