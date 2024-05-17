@@ -5,6 +5,7 @@ using MovieManager.Plugins.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using PM = PictureManager.Common;
 
@@ -15,6 +16,7 @@ public class ImportVM : ObservableObject {
   private readonly List<string> _searchQueue = [];
   private bool _isSearchInProgress;
   private bool _isImportInProgress;
+  private CancellationTokenSource _cts;
 
   public ObservableCollection<SearchResult> SearchResults { get; } = [];
   public ObservableCollection<string> ProgressCollection { get; } = [];
@@ -22,7 +24,7 @@ public class ImportVM : ObservableObject {
 
   public AsyncRelayCommand<string> SearchCommand { get; }
   public AsyncRelayCommand<SearchResult> ImportCommand { get; }
-  public RelayCommand CancelCommand { get; }
+  public AsyncRelayCommand CancelCommand { get; }
 
   public ImportVM(ImportS importS) {
     _importS = importS;
@@ -47,16 +49,25 @@ public class ImportVM : ObservableObject {
   private async Task Import(SearchResult result) {
     SearchResults.Clear();
     _isImportInProgress = true;
-    await _importS.ImportMovie(result, Progress);
+
+    _cts = new();
+    try {
+      await _importS.ImportMovie(result, Progress, _cts.Token);
+    }
+    catch (OperationCanceledException) { }
+    finally {
+      _cts.Dispose();
+      _cts = null;
+    }
+
     _isImportInProgress = false;
     Progress.Report(string.Empty);
 
     await SearchQueue();
   }
 
-  private void Cancel() {
-    // TODO send cancel to ImportMovie method
-  }
+  private Task Cancel() =>
+    _cts?.CancelAsync();
 
   private async Task SearchQueue() {
     SearchResults.Clear();

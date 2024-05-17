@@ -7,6 +7,7 @@ using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MovieManager.Common.Services;
@@ -22,7 +23,7 @@ public class ImportS {
     _coreS = coreS;
   }
 
-  public async Task ImportMovie(SearchResult result, IProgress<string> progress) {
+  public async Task ImportMovie(SearchResult result, IProgress<string> progress, CancellationToken token) {
     if (result == null) return;
     progress.Report($"Importing '{result.Name}' ...", true);
 
@@ -38,19 +39,21 @@ public class ImportS {
       return;
     }
 
+    if (token.IsCancellationRequested) return;
     movie = _coreR.Movie.ItemCreate(md);
     movie.DetailId = _coreR.MovieDetailId.ItemCreate(md.DetailId, movie);
     await DownloadMoviePoster(progress, md, movie);
-    await ImportActors(progress, md, movie);
+    await ImportActors(progress, md, movie, token);
     //await ImportImages(progress, md, movie);
     progress.Report($"Importing '{movie.Title}' completed.", true);
     MovieImportedEvent(this, movie);
   }
 
-  private async Task ImportActors(IProgress<string> progress, MovieDetail md, MovieM movie) {
+  private async Task ImportActors(IProgress<string> progress, MovieDetail md, MovieM movie, CancellationToken token) {
     progress.Report($"Importing {md.Cast.Length} actors ...", true);
 
     foreach (var cast in md.Cast) {
+      if (token.IsCancellationRequested) break;
       progress.Report($"{cast.Actor.Name} ({string.Join(", ", cast.Characters)})", true);
       var actor = _coreR.ActorDetailId.GetActor(cast.Actor.DetailId);
 
