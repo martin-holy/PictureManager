@@ -80,7 +80,8 @@
           <!-- Plugins Menu -->
           <ContentPresenter
             Content="{Binding Inst.Plugins, Mode=OneTime}"
-            ContentTemplate="{StaticResource Views.PluginsMenuV}"/>
+            ContentTemplate="{StaticResource Views.PluginsMenuV}"
+            Visibility="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
           <!-- Viewers -->
           <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}"/>
