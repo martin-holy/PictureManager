@@ -21,7 +21,7 @@ public sealed class CoreR : SimpleDB {
   public MovieR Movie { get; }
 
   public FolderM ActorsFolder { get; set; }
-  public FolderM ImagesFolder { get; set; }
+  //public FolderM ImagesFolder { get; set; }
   public FolderM PostersFolder { get; set; }
   public FolderM RootFolder { get; set; }
 
@@ -78,7 +78,7 @@ public sealed class CoreR : SimpleDB {
 
   public void SetFolders() {
     ActorsFolder = GetFolder(Path.Combine(_core.BaseDir, "actors"));
-    ImagesFolder = GetFolder(Path.Combine(_core.BaseDir, "images"));
+    //ImagesFolder = GetFolder(Path.Combine(_core.BaseDir, "images"));
     PostersFolder = GetFolder(Path.Combine(_core.BaseDir, "posters"));
     RootFolder = GetFolder(_core.BaseDir);
   }
