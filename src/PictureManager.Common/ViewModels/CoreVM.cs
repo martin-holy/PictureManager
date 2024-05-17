@@ -314,8 +314,8 @@ public class CoreVM : ObservableObject {
     if (_coreR.Changes > 0 &&
         Dialog.Show(new MessageDialog(
           "Database changes",
-          "There are some changes in database. Do you want to save them?",
-          MH.UI.Res.IconQuestion,
+          "There are some changes in Picture Manager database.\nDo you want to save them?",
+          Res.IconDatabase,
           true)) == 1)
       _coreR.SaveAllTables();
 
