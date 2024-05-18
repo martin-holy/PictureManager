@@ -2,6 +2,7 @@
 using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using MovieManager.Common.Models;
 using MovieManager.Common.Repositories;
 using MovieManager.Common.Services;
@@ -69,6 +70,8 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     _coreR.Movie.MoviesKeywordsChangedEvent += OnMoviesKeywordsChanged;
     _coreR.Movie.PosterChangedEvent += OnMoviePosterChanged;
     _coreS.Import.MovieImportedEvent += OnMovieImported;
+
+    PMCoreVM.MainTabs.TabClosedEvent += OnMainTabsTabClosed;
   }
 
   private void OnActorPersonChanged(object sender, ActorM e) {
@@ -103,6 +106,14 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   private void OnMoviePosterChanged(object sender, MovieM e) {
     Movies?.ReWrapAll();
+  }
+
+  private void OnMainTabsTabClosed(IListItem tab) {
+    switch (tab.Data) {
+      case MoviesVM:
+        _coreS.Movie.Selected.DeselectAll();
+        break;
+    }
   }
 
   private void OnAppClosing(object sender, EventArgs e) {
