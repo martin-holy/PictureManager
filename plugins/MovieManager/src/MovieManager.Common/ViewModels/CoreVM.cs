@@ -72,6 +72,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     _coreS.Import.MovieImportedEvent += OnMovieImported;
 
     PMCoreVM.MainTabs.TabClosedEvent += OnMainTabsTabClosed;
+    PMCoreVM.ToolsTabs.TabClosedEvent += OnToolsTabsTabClosed;
   }
 
   private void OnActorPersonChanged(object sender, ActorM e) {
@@ -96,7 +97,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   }
 
   private void OnMoviesDeleted(object sender, IList<MovieM> e) {
-    Movies?.Remove([.. e]);
+    Movies?.Remove(e.ToArray());
     MoviesFilter?.Update(_coreR.Movie.All, _coreR.Genre.All);
   }
 
@@ -109,10 +110,14 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   }
 
   private void OnMainTabsTabClosed(IListItem tab) {
-    switch (tab.Data) {
-      case MoviesVM:
-        _coreS.Movie.Selected.DeselectAll();
-        break;
+    if (tab.Data is MoviesVM) 
+      _coreS.Movie.Selected.DeselectAll();
+  }
+
+  private void OnToolsTabsTabClosed(IListItem tab) {
+    if (tab.Data is MovieDetailVM) {
+      _coreS.Actor.Selected.DeselectAll();
+      _coreS.Character.Selected.DeselectAll();
     }
   }
 
