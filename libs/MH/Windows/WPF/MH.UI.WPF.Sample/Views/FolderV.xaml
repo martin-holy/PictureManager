@@ -1,0 +1,30 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
+  xmlns:m="clr-namespace:MH.UI.WPF.Sample.Models">
+    
+  <DataTemplate DataType="{x:Type m:FolderM}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <Path
+        Style="{StaticResource MH.Styles.Icon}"
+        Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
+        Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
+               ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
+        HorizontalAlignment="Center"/>
+
+      <TextBlock
+        Text="{Binding Name}"
+        Grid.Column="1"
+        VerticalAlignment="Center"
+        Margin="5,0,0,0"
+        FontSize="14"/>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

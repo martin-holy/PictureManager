@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\MH.UI\MH.UI.csproj" />
+    <ProjectReference Include="..\..\..\Common\MH.Utils\MH.Utils.csproj" />
+    <ProjectReference Include="..\MH.UI.WPF\MH.UI.WPF.csproj" />
+  </ItemGroup>
+
+</Project>

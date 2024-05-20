@@ -1,0 +1,9 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vml="clr-namespace:MH.UI.WPF.Sample.ViewModels.Layout">
+    
+  <DataTemplate DataType="{x:Type vml:StatusBarVM}">
+    <TextBlock Text="Status bar"/>
+  </DataTemplate>
+</ResourceDictionary>

@@ -1,0 +1,96 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:vmc="clr-namespace:MH.UI.WPF.Sample.ViewModels.Controls">
+
+  <DataTemplate DataType="{x:Type vmc:SlidersVM}">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <!--Popup-->
+      <mhc:PopupSlider
+        Grid.Row="0"
+        Grid.Column="0"
+        Grid.ColumnSpan="3"
+        Minimum="0.2"
+        Maximum="2"
+        TickFrequency="0.1"
+        SmallChange="0.1"
+        LargeChange="0.2"
+        Value="{Binding PopupSliderValue, Mode=TwoWay}">
+        <mhc:PopupSlider.Content>
+          <mhc:IconTextButton
+            ToolTip="Image scale"
+            ap:Icon.Data="{StaticResource IconImage}"
+            ap:Text.Text="{Binding PopupSliderValue, StringFormat={}{0:G2}}"/>
+        </mhc:PopupSlider.Content>
+      </mhc:PopupSlider>
+
+      <!--Horizontal-->
+      <Slider
+        Grid.Row="1"
+        Grid.Column="0"
+        Grid.ColumnSpan="3"
+        Value="3"
+        Margin="0,5"
+        TickPlacement="BottomRight"/>
+
+      <Slider
+        Grid.Row="2"
+        Grid.Column="0"
+        Grid.ColumnSpan="3"
+        Value="6"
+        Margin="0,5"
+        TickPlacement="Both"
+        IsSelectionRangeEnabled="True"/>
+
+      <mhc:RangeSlider
+        Grid.Row="3"
+        Grid.Column="0"
+        Grid.ColumnSpan="3"
+        Range="{Binding SelRangeA}"
+        TickFrequency="0.1"/>
+
+      <!--Vertical-->
+      <Slider
+        Grid.Row="4"
+        Grid.Column="0"
+        Orientation="Vertical"
+        Value="3"
+        Margin="5,0"
+        TickPlacement="Both"
+        IsSelectionRangeEnabled="True"
+        HorizontalAlignment="Center"/>
+
+      <Slider
+        Grid.Row="4"
+        Grid.Column="1"
+        Orientation="Vertical"
+        Value="6"
+        Margin="5,0"
+        TickPlacement="TopLeft"
+        HorizontalAlignment="Center"/>
+
+      <mhc:RangeSlider
+        Grid.Row="4"
+        Grid.Column="2"
+        Range="{Binding SelRangeB}"
+        Orientation="Vertical"
+        HorizontalAlignment="Center"/>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

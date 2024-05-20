@@ -1,0 +1,48 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:vmc="clr-namespace:MH.UI.WPF.Sample.ViewModels.Controls">
+
+  <DataTemplate DataType="{x:Type vmc:ButtonsVM}">
+    <StackPanel Orientation="Vertical">
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Margin="5">
+          <CheckBox IsChecked="{x:Null}" Content="Sample"/>
+          <CheckBox IsChecked="False" Content="Sample"/>
+          <CheckBox IsChecked="True" Content="Sample"/>
+          <CheckBox IsChecked="True"/>
+        </StackPanel>
+
+        <StackPanel Margin="5">
+          <RadioButton IsChecked="{x:Null}" Content="Sample"/>
+          <RadioButton IsChecked="False" Content="Sample"/>
+          <RadioButton IsChecked="True" Content="Sample"/>
+          <RadioButton IsChecked="True"/>
+        </StackPanel>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <Button
+          Content="Sample"
+          Margin="5"
+          Padding="10,5"/>
+
+        <ToggleButton
+          Content="Sample"
+          Margin="5"
+          Padding="10,5"
+          IsChecked="True"/>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <mhc:IconButton ap:Icon.Data="{StaticResource IconImage}"/>
+        <mhc:IconTextButton ap:Icon.Data="{StaticResource IconImage}" ap:Text.Text="23"/>
+        <mhc:IconToggleButton ap:Icon.Data="{StaticResource IconImage}" IsChecked="True"/>
+      </StackPanel>
+
+    </StackPanel>
+  </DataTemplate>
+</ResourceDictionary>
