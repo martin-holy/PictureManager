@@ -35,7 +35,6 @@
         <TextBox
           x:Name="tbAnswer"
           MinWidth="300"
-          Padding="5"
           Margin="5"
           Text="{Binding Answer, UpdateSourceTrigger=PropertyChanged}"
           ToolTip="{Binding ErrorMessage}"
