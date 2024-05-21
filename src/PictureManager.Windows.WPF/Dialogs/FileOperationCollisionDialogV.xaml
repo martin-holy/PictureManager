@@ -138,7 +138,6 @@
           Margin="4,6"
           HorizontalAlignment="Stretch"
           VerticalAlignment="Center"
-          Height="24"
           ToolTip="{x:Null}"/>
       </Grid>
     </Grid>
