@@ -72,8 +72,6 @@
         <TextBlock Grid.Column="2" Text="Height:" TextAlignment="Right"/>
         <TextBox
           Grid.Column="3"
-          FontSize="16"
-          Height="30"
           Text="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideo.Height, Mode=TwoWay}"/>
       </Grid>
 

@@ -9,7 +9,6 @@
         Text="{Binding Content}"
         VerticalAlignment="Top"
         IsReadOnly="True"
-        FontSize="14"
         BorderThickness="0"/>
     </ScrollViewer>
   </DataTemplate>

@@ -20,8 +20,7 @@
       <TextBox
         x:Name="search"
         Grid.Row="0"
-        Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-        FontSize="16"/>
+        Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
 
       <mhc:IconButton
         Command="{Binding CloseCommand}"
