@@ -5,12 +5,9 @@
 
   <DataTemplate DataType="{x:Type vmc:TextsVM}">
     <StackPanel Orientation="Vertical">
-
-      <TextBox Text="TextBox" Margin="5"/>
-      <TextBox Text="TextBox" Margin="5" IsInactiveSelectionHighlightEnabled="True"/>
-
-      <TextBlock Text="TextBlock" Margin="5"/>
-
+      <TextBox Text="TextBox" Margin="4"/>
+      <TextBox Text="TextBox" Margin="4" IsInactiveSelectionHighlightEnabled="True"/>
+      <TextBlock Text="TextBlock" Margin="4"/>
       <Label Content="Label"/>
     </StackPanel>
   </DataTemplate>

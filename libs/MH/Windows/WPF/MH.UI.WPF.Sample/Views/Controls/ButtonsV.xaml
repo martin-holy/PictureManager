@@ -6,43 +6,67 @@
   xmlns:vmc="clr-namespace:MH.UI.WPF.Sample.ViewModels.Controls">
 
   <DataTemplate DataType="{x:Type vmc:ButtonsVM}">
-    <StackPanel Orientation="Vertical">
+    <Grid HorizontalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
 
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-        <StackPanel Margin="5">
-          <CheckBox IsChecked="{x:Null}" Content="Sample"/>
-          <CheckBox IsChecked="False" Content="Sample"/>
-          <CheckBox IsChecked="True" Content="Sample"/>
-          <CheckBox IsChecked="True"/>
-        </StackPanel>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
 
-        <StackPanel Margin="5">
-          <RadioButton IsChecked="{x:Null}" Content="Sample"/>
-          <RadioButton IsChecked="False" Content="Sample"/>
-          <RadioButton IsChecked="True" Content="Sample"/>
-          <RadioButton IsChecked="True"/>
-        </StackPanel>
+      <StackPanel
+        Margin="5"
+        Grid.Row="0"
+        Grid.Column="0">
+
+        <CheckBox IsChecked="{x:Null}" Content="Sample"/>
+        <CheckBox IsChecked="False" Content="Sample"/>
+        <CheckBox IsChecked="True" Content="Sample"/>
+        <CheckBox IsChecked="True"/>
       </StackPanel>
 
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-        <Button
-          Content="Sample"
-          Margin="5"
-          Padding="10,5"/>
+      <StackPanel
+        Margin="5"
+        Grid.Row="0"
+        Grid.Column="1">
 
-        <ToggleButton
-          Content="Sample"
-          Margin="5"
-          Padding="10,5"
-          IsChecked="True"/>
+        <RadioButton IsChecked="{x:Null}" Content="Sample"/>
+        <RadioButton IsChecked="False" Content="Sample"/>
+        <RadioButton IsChecked="True" Content="Sample"/>
+        <RadioButton IsChecked="True"/>
       </StackPanel>
 
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+      <Button
+        Grid.Row="1"
+        Grid.Column="0"
+        Content="Sample"
+        Margin="5"
+        Padding="10,5"/>
+
+      <ToggleButton
+        Grid.Row="1"
+        Grid.Column="1"
+        Content="Sample"
+        Margin="5"
+        Padding="10,5"
+        IsChecked="True"/>
+
+      <StackPanel
+        Grid.Row="2"
+        Grid.Column="0"
+        Grid.ColumnSpan="2"
+        Orientation="Horizontal"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Top">
+
         <mhc:IconButton ap:Icon.Data="{StaticResource IconImage}"/>
         <mhc:IconTextButton ap:Icon.Data="{StaticResource IconImage}" ap:Text.Text="23"/>
         <mhc:IconToggleButton ap:Icon.Data="{StaticResource IconImage}" IsChecked="True"/>
       </StackPanel>
-
-    </StackPanel>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>

@@ -13,14 +13,12 @@
 
       <ComboBox
         ItemsSource="{Binding ListData}"
-        Height="20"
-        Margin="5"/>
+        Margin="4"/>
 
       <ComboBox
         ItemsSource="{Binding ListData}"
-        Height="20"
         IsEditable="True"
-        Margin="5"
+        Margin="4"
         Grid.Row="1"/>
 
       <ListBox
@@ -28,7 +26,8 @@
         IsEnabled="{Binding IsChecked, ElementName=chbEnabled}"
         ScrollViewer.HorizontalScrollBarVisibility="Visible"
         ScrollViewer.VerticalScrollBarVisibility="Visible"
-        Grid.Row="2"/>
+        Grid.Row="2"
+        Margin="4"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>
