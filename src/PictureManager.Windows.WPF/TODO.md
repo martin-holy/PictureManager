@@ -78,10 +78,6 @@
 
           # Movie Manager
 ##
- - SetPosterCommand
- - better style for character photo tooltip
- - add movie poster to movie media items
- - indicator that character actor doesn't have person
 
                                     *** NEW ***
 ##
