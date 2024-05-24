@@ -3,12 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:u="clr-namespace:MH.UI.WPF.Utils"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
-
-  <ResourceDictionary.MergedDictionaries>
-    <u:CachedResourceDictionary Source="../../Brushes.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
 
   <Style x:Key="MH.Styles.Controls.IconTextBlockButton" TargetType="{x:Type c:IconTextBlockButton}">
     <Setter Property="Margin" Value="2"/>
@@ -16,19 +11,18 @@
     <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
     <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Brushes.Text}"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
-    <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type c:IconTextBlockButton}">
-          <c:IconTextBlock
-            Margin="0"
-            Background="{TemplateBinding Background}"
-            Foreground="{TemplateBinding Foreground}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            ap:Text.Text="{Binding Path=(ap:Text.Text), RelativeSource={RelativeSource TemplatedParent}}"
-            ap:Icon.Data="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
-            ap:Icon.Fill="{Binding Path=(ap:Icon.Fill), RelativeSource={RelativeSource TemplatedParent}}"
-            ap:Icon.Size="{Binding Path=(ap:Icon.Size), RelativeSource={RelativeSource TemplatedParent}}"/>
+          <Border Background="{TemplateBinding Background}" CornerRadius="3">
+            <c:IconTextBlock
+              Margin="0,0,2,0"
+              Foreground="{TemplateBinding Foreground}"
+              ap:Text.Text="{Binding Path=(ap:Text.Text), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Icon.Data="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Icon.Fill="{Binding Path=(ap:Icon.Fill), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Icon.Size="{Binding Path=(ap:Icon.Size), RelativeSource={RelativeSource TemplatedParent}}"/>
+          </Border>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
