@@ -41,13 +41,15 @@ public class RelayCommandConverter : BaseMultiConverter {
     if (string.IsNullOrEmpty(rc.Text)) return;
 
     switch (fe) {
-      case Button b:
-        if (fe is not DialogButton)
-          b.ToolTip ??= rc.Text;
-
+      case IconButton:
+      case IconTextButton:
+      case IconTextBlockButton:
+      case IconToggleButton:
+        ((Button)fe).ToolTip ??= rc.Text;
+        break;
+      case Button:
         if (!fe.HasAttachedProperty(Text.TextProperty) || fe.GetValue(Text.TextProperty) == null)
           fe.SetValue(Text.TextProperty, rc.Text);
-
         break;
       case MenuItem mi: mi.Header ??= rc.Text; break;
     }
