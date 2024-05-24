@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 
 namespace MH.UI.WPF.Extensions;
@@ -18,8 +17,7 @@ public static class DependencyObjectExtensions {
   }
 
   public static bool HasAttachedProperty(this DependencyObject obj, DependencyProperty property) =>
-    (TypeDescriptor.GetProperties(obj).Find(property.Name, false) as DependencyPropertyDescriptor)
-    ?.DependencyProperty == property;
+    DependencyPropertyHelper.GetValueSource(obj, property).BaseValueSource != BaseValueSource.Default;
 
   public static T TryFindParent<T>(this DependencyObject child) where T : DependencyObject {
     while (true) {
