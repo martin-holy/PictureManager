@@ -131,7 +131,6 @@
             ToolTip="Last seen"
             ap:Icon.Data="{StaticResource IconEye}"
             ap:Text.Text="{Binding LastSeenDate}"
-            BorderThickness="0"
             Cursor="Hand">
 
             <b:Interaction.Triggers>
@@ -185,16 +184,14 @@
           Grid.Column="2"
           ToolTip="Length"
           ap:Icon.Data="{StaticResource IconClock}"
-          ap:Text.Text="{Binding MovieM.FormatedLength}"
-          BorderThickness="0"/>
+          ap:Text.Text="{Binding MovieM.FormatedLength}"/>
 
         <!-- Rating -->
         <mhc:IconTextBlock
           Grid.Column="3"
           ToolTip="Rating"
           ap:Icon.Data="{StaticResource IconStar}"
-          ap:Text.Text="{Binding MovieM.Rating}"
-          BorderThickness="0"/>
+          ap:Text.Text="{Binding MovieM.Rating}"/>
 
         <!-- MyRating -->
         <mhc:PopupSlider
