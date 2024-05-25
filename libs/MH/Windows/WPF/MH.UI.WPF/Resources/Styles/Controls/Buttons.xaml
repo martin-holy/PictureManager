@@ -42,7 +42,6 @@
 
             <ContentPresenter
               RecognizesAccessKey="True"
-              Margin="{TemplateBinding Padding}"
               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
               Focusable="False"/>
@@ -91,11 +90,44 @@
             DataContext="{Binding RelativeSource={RelativeSource AncestorType=Button}}"
             Background="{Binding Background}"
             Foreground="{Binding Foreground}"
+            Margin="{Binding Padding}"
             ap:Text.Text="{Binding Path=(ap:Text.Text)}"
             ap:Icon.Data="{Binding Path=(ap:Icon.Data)}"
             ap:Icon.Fill="{Binding Path=(ap:Icon.Fill)}"
             ap:Icon.Size="{Binding Path=(ap:Icon.Size)}"/>
         </DataTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="MH.S.Controls.SlimButton" TargetType="{x:Type c:SlimButton}" BasedOn="{StaticResource MH.S.Controls.Button}">
+    <Setter Property="Margin" Value="2"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="MinWidth" Value="0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="ContentTemplate" Value="{x:Null}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type c:SlimButton}">
+          <Border Background="{TemplateBinding Background}" CornerRadius="3">
+            <c:IconTextBlock
+              Margin="0,0,2,0"
+              Foreground="{TemplateBinding Foreground}"
+              ap:Text.Text="{Binding Path=(ap:Text.Text), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Icon.Data="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Icon.Fill="{Binding Path=(ap:Icon.Fill), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Icon.Size="{Binding Path=(ap:Icon.Size), RelativeSource={RelativeSource TemplatedParent}}"/>
+          </Border>
+
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Background" Value="{StaticResource MH.Button.MouseOver.Background}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter Property="Background" Value="{StaticResource MH.Button.Pressed.Background}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
       </Setter.Value>
     </Setter>
   </Style>
