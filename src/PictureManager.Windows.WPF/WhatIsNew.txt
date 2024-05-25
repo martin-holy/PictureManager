@@ -4,6 +4,11 @@
 [B] - Bug fix
 
 Latest:
+ - [U] Deselect Movies when Movies tab closes
+ - [U] Deselect Actor and Character when MovieDetail tab closes
+ - [U] TextBox style
+
+24.05.17.1705:
  - [N] Movie Manager plug-in
  - [U] Thumb size for small images
  - [N] Link to Telegram channel in about dialog
