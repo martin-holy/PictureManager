@@ -8,7 +8,7 @@ public class IconTextBlock : Control;
 
 public class IconButton : Button;
 public class IconTextButton : Button;
-public class IconTextBlockButton : Button;
+public class SlimButton : Button;
 public class IconToggleButton : ToggleButton;
 
 public class IconTextBlockItemsControl : ItemsControl;

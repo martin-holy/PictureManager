@@ -43,7 +43,7 @@ public class RelayCommandConverter : BaseMultiConverter {
     switch (fe) {
       case IconButton:
       case IconTextButton:
-      case IconTextBlockButton:
+      case SlimButton:
       case IconToggleButton:
         ((Button)fe).ToolTip ??= rc.Text;
         break;
