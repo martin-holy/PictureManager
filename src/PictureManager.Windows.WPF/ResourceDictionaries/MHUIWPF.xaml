@@ -30,9 +30,9 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconText.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Buttons.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextButton.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconToggleButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockItemsControl.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
@@ -84,7 +84,7 @@
   <Style TargetType="{x:Type mhc:IconTextBlock}" BasedOn="{StaticResource MH.S.Controls.IconTextBlock}"/>
   <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}"/>
   <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.Styles.Controls.IconTextButton}"/>
-  <Style TargetType="{x:Type mhc:IconTextBlockButton}" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockButton}"/>
+  <Style TargetType="{x:Type mhc:SlimButton}" BasedOn="{StaticResource MH.S.Controls.SlimButton}"/>
   <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.Styles.Controls.IconToggleButton}"/>
   <Style TargetType="{x:Type mhc:IconTextBlockItemsControl}" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockItemsControl}"/>
   <Style TargetType="{x:Type mhc:PopupSlider}" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>

@@ -202,7 +202,7 @@
           Value="{Binding MovieM.MyRating, Mode=TwoWay}">
 
           <mhc:PopupSlider.Content>
-            <mhc:IconTextBlockButton
+            <mhc:SlimButton
               ToolTip="My rating"
               ap:Icon.Data="{StaticResource IconStar}"
               ap:Text.Text="{Binding MovieM.MyRating, StringFormat={}{0:G2}}"/>
