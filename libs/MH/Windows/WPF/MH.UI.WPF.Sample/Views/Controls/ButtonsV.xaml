@@ -10,6 +10,8 @@
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
         <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
 
@@ -43,20 +45,20 @@
       <Button
         Grid.Row="1"
         Grid.Column="0"
-        Content="Sample"
-        Margin="5"
-        Padding="10,5"/>
+        Command="{Binding DialogButtonWithIconCommand}"/>
 
       <ToggleButton
         Grid.Row="1"
         Grid.Column="1"
         Content="Sample"
         Margin="5"
-        Padding="10,5"
         IsChecked="True"/>
 
+      <Button Grid.Row="2" Grid.Column="0" Content="Sample" ContentTemplate="{x:Null}"/>
+      <Button Grid.Row="2" Grid.Column="1" Command="{Binding DialogButtonWithoutIconCommand}"/>
+
       <StackPanel
-        Grid.Row="2"
+        Grid.Row="3"
         Grid.Column="0"
         Grid.ColumnSpan="2"
         Orientation="Horizontal"
@@ -65,6 +67,7 @@
 
         <mhc:IconButton ap:Icon.Data="{StaticResource IconImage}"/>
         <mhc:IconTextButton ap:Icon.Data="{StaticResource IconImage}" ap:Text.Text="23"/>
+        <mhc:SlimButton ToolTip="Sample" ap:Icon.Data="{StaticResource IconImage}" ap:Text.Text="Sample"/>
         <mhc:IconToggleButton ap:Icon.Data="{StaticResource IconImage}" IsChecked="True"/>
       </StackPanel>
     </Grid>
