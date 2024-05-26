@@ -1,5 +1,4 @@
-﻿using MH.UI.WPF.AttachedProperties;
-using MH.UI.WPF.Controls;
+﻿using MH.UI.WPF.Controls;
 using MH.UI.WPF.Extensions;
 using MH.Utils.BaseClasses;
 using System.Windows;
@@ -7,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using AP = MH.UI.WPF.AttachedProperties;
 
 namespace MH.UI.WPF.Converters;
 
@@ -28,8 +28,8 @@ public class RelayCommandConverter : BaseMultiConverter {
 
     switch (fe) {
       case Button:
-        if (!fe.HasAttachedProperty(Icon.DataProperty) || fe.GetValue(Icon.DataProperty) == null)
-          fe.SetValue(Icon.DataProperty, ResourceConverter.Inst.Convert(rc.Icon, null));
+        if (!fe.HasAttachedProperty(AP.Icon.DataProperty) || fe.GetValue(AP.Icon.DataProperty) == null)
+          fe.SetValue(AP.Icon.DataProperty, ResourceConverter.Inst.Convert(rc.Icon, null));
         break;
       case MenuItem mi:
         mi.Icon ??= GetIcon(rc.Icon);
@@ -48,8 +48,8 @@ public class RelayCommandConverter : BaseMultiConverter {
         ((Button)fe).ToolTip ??= rc.Text;
         break;
       case Button:
-        if (!fe.HasAttachedProperty(Text.TextProperty) || fe.GetValue(Text.TextProperty) == null)
-          fe.SetValue(Text.TextProperty, rc.Text);
+        if (!fe.HasAttachedProperty(AP.Text.TextProperty) || fe.GetValue(AP.Text.TextProperty) == null)
+          fe.SetValue(AP.Text.TextProperty, rc.Text);
         break;
       case MenuItem mi: mi.Header ??= rc.Text; break;
     }
