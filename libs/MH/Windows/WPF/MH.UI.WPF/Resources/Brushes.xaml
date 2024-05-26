@@ -41,7 +41,27 @@
   <Color x:Key="Gray7">#BDBDBD</Color>
   <Color x:Key="Gray8">#D8D8D8</Color>
   <Color x:Key="Gray9">#EEEEEE</Color>
- 
+
+  <Color x:Key="Dark1">#1A252525</Color>
+  <Color x:Key="Dark2">#33252525</Color>
+  <Color x:Key="Dark3">#4D252525</Color>
+  <Color x:Key="Dark4">#66252525</Color>
+  <Color x:Key="Dark5">#80252525</Color>
+  <Color x:Key="Dark6">#99252525</Color>
+  <Color x:Key="Dark7">#B3252525</Color>
+  <Color x:Key="Dark8">#CC252525</Color>
+  <Color x:Key="Dark9">#E6252525</Color>
+
+  <Color x:Key="Light1">#1AFFFFFF</Color>
+  <Color x:Key="Light2">#33FFFFFF</Color>
+  <Color x:Key="Light3">#4DFFFFFF</Color>
+  <Color x:Key="Light4">#66FFFFFF</Color>
+  <Color x:Key="Light5">#80FFFFFF</Color>
+  <Color x:Key="Light6">#99FFFFFF</Color>
+  <Color x:Key="Light7">#B3FFFFFF</Color>
+  <Color x:Key="Light8">#CCFFFFFF</Color>
+  <Color x:Key="Light9">#E6FFFFFF</Color>
+
   <SolidColorBrush x:Key="MH.Brushes.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Foreground" Color="{StaticResource ForegroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Text" Color="{StaticResource TextColor}"/>
@@ -85,8 +105,11 @@
   <SolidColorBrush x:Key="MH.Control.Highlight.Background" Color="#3D26A0DA"/>
   <SolidColorBrush x:Key="MH.Control.Highlight.Border" Color="#FF26A0DA"/>
 
-  <SolidColorBrush x:Key="MH.Button.MouseOver.Background" Color="{StaticResource White20}"/>
-  <SolidColorBrush x:Key="MH.Button.Pressed.Background" Color="{StaticResource White30}"/>
+  <!-- Button -->
+  <SolidColorBrush x:Key="MH.Button.Background" Color="{StaticResource Gray3}"/>
+  <SolidColorBrush x:Key="MH.Button.Hover.Background" Color="{StaticResource Light2}"/>
+  <SolidColorBrush x:Key="MH.Button.Pressed.Background" Color="{StaticResource Light3}"/>
+  <SolidColorBrush x:Key="MH.Button.MouseOver.Background" Color="{StaticResource White20}"/> <!-- TODO delete later -->
 
   <!-- ComboBox -->
   <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="{StaticResource GrayColor2}"/>
