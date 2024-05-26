@@ -4,7 +4,7 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
-  <Style x:Key="MH.S.Controls.IconTextBlock" TargetType="{x:Type c:IconTextBlock}">
+  <Style x:Key="MH.S.IconTextBlock" TargetType="{x:Type c:IconTextBlock}">
     <Setter Property="Margin" Value="2"/>
     <Setter Property="Background" Value="{StaticResource MH.Brushes.Background}"/>
     <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
@@ -45,6 +45,9 @@
             </Trigger>
             <DataTrigger Binding="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource Self}}" Value="{x:Null}">
               <Setter TargetName="icon" Property="Visibility" Value="Collapsed"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=(ap:Text.Text), RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+              <Setter TargetName="text" Property="Visibility" Value="Collapsed"/>
             </DataTrigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
