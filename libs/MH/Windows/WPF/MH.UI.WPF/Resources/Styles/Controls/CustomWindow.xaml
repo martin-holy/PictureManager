@@ -34,11 +34,12 @@
     <Setter Property="BorderBrush" Value="{StaticResource MH.Brushes.Accent}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="FontSize" Value="{StaticResource MH.FontSize}"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="UseLayoutRounding" Value="True"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type mhc:CustomWindow}">
           <Border
-            x:Name="border"
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}">
@@ -47,12 +48,6 @@
               <ContentPresenter/>
             </AdornerDecorator>
           </Border>
-
-          <ControlTemplate.Triggers>
-            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Self}}" Value="Maximized">
-              <Setter TargetName="border" Property="BorderThickness" Value="0"/>
-            </DataTrigger>
-          </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -65,6 +60,9 @@
         </MultiDataTrigger.Conditions>
         <Setter Property="Template" Value="{StaticResource CustomWindowResizeTemplateKey}"/>
       </MultiDataTrigger>
+      <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Self}}" Value="Maximized">
+        <Setter Property="BorderThickness" Value="0"/>
+      </DataTrigger>
     </Style.Triggers>
   </Style>
 </ResourceDictionary>
