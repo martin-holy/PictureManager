@@ -16,51 +16,48 @@
     <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Border.CornerRadius" Value="3"/>
-    <Setter Property="ap:Button.ShowBorder" Value="True"/>
-    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Padding" Value="1"/>
     <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Control.Static.Text}"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
+    <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ButtonBase}">
-          <Grid>
-            <Border
-              x:Name="border"
-              BorderThickness="{TemplateBinding BorderThickness}"
-              Background="{TemplateBinding Background}"
-              BorderBrush="{TemplateBinding BorderBrush}"
-              CornerRadius="{TemplateBinding Border.CornerRadius}"/>
+          <Border
+            x:Name="border"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            CornerRadius="{TemplateBinding Border.CornerRadius}">
 
-            <Border
-              x:Name="overlayer"
-              BorderThickness="{TemplateBinding BorderThickness}"
-              CornerRadius="{TemplateBinding Border.CornerRadius}"/>
-
-            <ContentPresenter
-              RecognizesAccessKey="True"
-              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-              Focusable="False"/>
-          </Grid>
+            <c:IconTextBlock
+              DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+              Focusable="False"
+              Foreground="{Binding Foreground}"
+              Margin="{Binding Padding}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              ap:Text.Text="{Binding Path=(ap:Text.Text)}"
+              ap:Icon.Data="{Binding Path=(ap:Icon.Data)}"
+              ap:Icon.Fill="{Binding Path=(ap:Icon.Fill)}"
+              ap:Icon.Size="{Binding Path=(ap:Icon.Size)}"/>
+          </Border>
 
           <ControlTemplate.Triggers>
-            <Trigger Property="ap:Button.ShowBorder" Value="False">
-              <Setter TargetName="border" Property="Visibility" Value="Collapsed"/>
-            </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="overlayer" Property="Background" Value="{StaticResource MH.Button.Hover.Background}"/>
-            </Trigger>
-            <Trigger Property="IsPressed" Value="True">
-              <Setter TargetName="overlayer" Property="Background" Value="{StaticResource MH.Button.Pressed.Background}"/>
+              <Setter TargetName="border" Property="Background" Value="{StaticResource MH.Button.Hover.Background}"/>
             </Trigger>
             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-              <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+              <Setter TargetName="border" Property="Background" Value="{StaticResource MH.Button.Hover.Background}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="border" Property="Background" Value="{StaticResource MH.Button.Pressed.Background}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
               <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
+              <Setter Property="Effect" Value="{x:Null}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -84,40 +81,23 @@
     <Setter Property="MinWidth" Value="60"/>
     <Setter Property="MinHeight" Value="30"/>
     <Setter Property="Margin" Value="5"/>
-    <Setter Property="ContentTemplate">
-      <Setter.Value>
-        <DataTemplate DataType="Button">
-          <c:IconTextBlock
-            DataContext="{Binding RelativeSource={RelativeSource AncestorType=Button}}"
-            Background="{Binding Background}"
-            Foreground="{Binding Foreground}"
-            Margin="{Binding Padding}"
-            ap:Text.Text="{Binding Path=(ap:Text.Text)}"
-            ap:Icon.Data="{Binding Path=(ap:Icon.Data)}"
-            ap:Icon.Fill="{Binding Path=(ap:Icon.Fill)}"
-            ap:Icon.Size="{Binding Path=(ap:Icon.Size)}"/>
-        </DataTemplate>
-      </Setter.Value>
-    </Setter>
   </Style>
 
-  <Style x:Key="MH.S.SlimButton" TargetType="{x:Type c:SlimButton}" BasedOn="{StaticResource MH.S.Button}">
+  <Style x:Key="MH.S.SlimButton" TargetType="{x:Type c:SlimButton}" BasedOn="{StaticResource MH.S.ButtonBase}">
     <Setter Property="Margin" Value="2"/>
     <Setter Property="Padding" Value="2,0,2,0"/>
-    <Setter Property="MinWidth" Value="0"/>
-    <Setter Property="MinHeight" Value="0"/>
-    <Setter Property="ap:Button.ShowBorder" Value="False"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
   </Style>
 
-  <Style x:Key="MH.S.IconButton" TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.S.Button}">
+  <Style x:Key="MH.S.IconButton" TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.S.ButtonBase}">
     <Setter Property="Margin" Value="2"/>
     <Setter Property="Padding" Value="0"/>
     <Setter Property="Width" Value="26"/>
     <Setter Property="Height" Value="26"/>
-    <Setter Property="MinWidth" Value="0"/>
-    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="ap:Icon.Size" Value="19"/>
-    <Setter Property="ap:Button.ShowBorder" Value="False"/>
   </Style>
     
 </ResourceDictionary>

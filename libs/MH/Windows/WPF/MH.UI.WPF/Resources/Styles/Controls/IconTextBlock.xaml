@@ -6,7 +6,6 @@
 
   <Style x:Key="MH.S.IconTextBlock" TargetType="{x:Type c:IconTextBlock}">
     <Setter Property="Margin" Value="2"/>
-    <Setter Property="Background" Value="{StaticResource MH.Brushes.Background}"/>
     <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
     <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Brushes.Text}"/>
     <Setter Property="ap:Icon.Size" Value="18"/>

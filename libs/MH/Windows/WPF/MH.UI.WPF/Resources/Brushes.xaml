@@ -107,8 +107,8 @@
 
   <!-- Button -->
   <SolidColorBrush x:Key="MH.Button.Background" Color="{StaticResource Gray3}"/>
-  <SolidColorBrush x:Key="MH.Button.Hover.Background" Color="{StaticResource Light2}"/>
-  <SolidColorBrush x:Key="MH.Button.Pressed.Background" Color="{StaticResource Light3}"/>
+  <SolidColorBrush x:Key="MH.Button.Hover.Background" Color="{StaticResource Light3}"/>
+  <SolidColorBrush x:Key="MH.Button.Pressed.Background" Color="{StaticResource Light5}"/>
   <SolidColorBrush x:Key="MH.Button.MouseOver.Background" Color="{StaticResource White20}"/> <!-- TODO delete later -->
 
   <!-- ComboBox -->
