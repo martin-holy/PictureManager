@@ -16,7 +16,7 @@
   <Color x:Key="BackgroundColor">#FF252525</Color>
   <Color x:Key="ForegroundColor">#FFFFFFFF</Color>
   <Color x:Key="DisabledBorderColor">#696969</Color>
-  <Color x:Key="DisabledForegroundColor">#A0A0A0</Color>
+  <Color x:Key="DisabledForegroundColor">#7F7F7F</Color>
   
   <Color x:Key="TextColor">#FFFFFFFF</Color>
   <Color x:Key="Highlight">#FF00589F</Color>
@@ -116,6 +116,7 @@
   <SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="{StaticResource GrayColor1}"/>
   
   <SolidColorBrush x:Key="ToggleButton.Checked.Background" Color="{x:Static SystemParameters.WindowGlassColor}"/>
+  <SolidColorBrush x:Key="IconToggleButton.Unchecked.Fill" Color="{StaticResource Light7}"/>
 
   <SolidColorBrush x:Key="FocusVisual.Stroke" Color="{StaticResource TextColor}"/>
   

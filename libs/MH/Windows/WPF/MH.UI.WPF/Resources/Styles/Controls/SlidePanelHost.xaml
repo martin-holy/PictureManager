@@ -18,6 +18,7 @@
     x:Key="MH.Res.SlidePanel-PinButton"
     x:Shared="False"
     ap:Icon.Data="{StaticResource IconPin}"
+    ap:Icon.Size="14"
     Width="20"
     Height="20"
     IsThreeState="False"
