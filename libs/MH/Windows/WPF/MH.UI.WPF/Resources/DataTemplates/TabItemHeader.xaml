@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:u="clr-namespace:MH.UI.WPF.Utils">
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties">
 
   <ResourceDictionary.MergedDictionaries>
     <u:CachedResourceDictionary Source="IListItem.xaml"/>
@@ -36,9 +37,7 @@
           Width="18"
           Height="18"
           Margin="0"
-          Padding="4"
-          HorizontalAlignment="Center"
-          VerticalAlignment="Center"/>
+          ap:Icon.Size="12"/>
       </Border>
     </Grid>
 
