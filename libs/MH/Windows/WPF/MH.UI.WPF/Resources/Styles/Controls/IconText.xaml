@@ -60,8 +60,8 @@
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="icon" Property="Opacity" Value="0.3"/>
-              <Setter TargetName="text" Property="Opacity" Value="0.3"/>
+              <Setter TargetName="icon" Property="Fill" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+              <Setter TargetName="text" Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
