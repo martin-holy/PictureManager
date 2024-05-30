@@ -30,6 +30,8 @@ public class RelayCommandConverter : BaseMultiConverter {
       case Button:
         if (!fe.HasAttachedProperty(AP.Icon.DataProperty) || fe.GetValue(AP.Icon.DataProperty) == null)
           fe.SetValue(AP.Icon.DataProperty, ResourceConverter.Inst.Convert(rc.Icon, null));
+        if (!fe.HasAttachedProperty(AP.Icon.FillProperty) || fe.GetValue(AP.Icon.FillProperty) == null)
+          fe.SetValue(AP.Icon.FillProperty, ResourceConverter.Inst.Convert(rc.Icon, Resources.Dictionaries.IconToBrush));
         break;
       case MenuItem mi:
         mi.Icon ??= GetIcon(rc.Icon);
@@ -58,6 +60,7 @@ public class RelayCommandConverter : BaseMultiConverter {
   private static Path GetIcon(string icon) =>
     new() {
       Data = (Geometry)ResourceConverter.Inst.Convert(icon, null),
+      Fill = (Brush)ResourceConverter.Inst.Convert(icon, Resources.Dictionaries.IconToBrush),
       Style = (Style)ResourceConverter.Inst.Convert("MH.Styles.IconWithShadow", null)
     };
 }
