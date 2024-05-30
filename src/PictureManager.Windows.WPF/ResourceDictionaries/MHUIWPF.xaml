@@ -55,9 +55,9 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Templates/All.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MH.Styles.BaseControls.ButtonBase}"/>
+  <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MH.S.Button}"/>
   <Style TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource MH.Styles.BaseControls.RepeatButton}"/>
-  <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.Styles.BaseControls.ToggleButton}"/>
+  <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.S.ToggleButton}"/>
   <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MH.Styles.BaseControls.ComboBox}"/>
   <Style TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource MH.Styles.BaseControls.GridSplitter}"/>
   <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MH.Styles.BaseControls.CheckBox}"/>
@@ -81,11 +81,11 @@
   <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}"/>
   <Style TargetType="{x:Type mhc:CollectionView}" BasedOn="{StaticResource MH.Styles.Controls.CollectionView}"/>
   <Style TargetType="{x:Type mhc:IconText}" BasedOn="{StaticResource MH.Styles.Controls.IconText}"/>
-  <Style TargetType="{x:Type mhc:IconTextBlock}" BasedOn="{StaticResource MH.S.Controls.IconTextBlock}"/>
-  <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}"/>
-  <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.Styles.Controls.IconTextButton}"/>
-  <Style TargetType="{x:Type mhc:SlimButton}" BasedOn="{StaticResource MH.S.Controls.SlimButton}"/>
-  <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.Styles.Controls.IconToggleButton}"/>
+  <Style TargetType="{x:Type mhc:IconTextBlock}" BasedOn="{StaticResource MH.S.IconTextBlock}"/>
+  <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.S.IconButton}"/>
+  <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.S.IconTextButton}"/>
+  <Style TargetType="{x:Type mhc:SlimButton}" BasedOn="{StaticResource MH.S.SlimButton}"/>
+  <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.S.IconToggleButton}"/>
   <Style TargetType="{x:Type mhc:IconTextBlockItemsControl}" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockItemsControl}"/>
   <Style TargetType="{x:Type mhc:PopupSlider}" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
   <Style TargetType="{x:Type mhc:RangeSlider}" BasedOn="{StaticResource MH.Styles.Controls.RangeSlider}"/>

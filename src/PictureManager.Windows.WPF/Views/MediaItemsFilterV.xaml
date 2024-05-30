@@ -6,7 +6,8 @@
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
+  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate x:Key="MediaItemsFilterV" DataType="{x:Type vm:MediaItemsFilterVM}">
     <DataTemplate.Resources>
@@ -105,36 +106,20 @@
                 <ColumnDefinition Width="*"/>
               </Grid.ColumnDefinitions>
 
-              <ToggleButton IsChecked="{Binding ShowImages}">
-                <DockPanel>
-                  <Path
-                    Style="{StaticResource MH.Styles.IconWithShadow}"
-                    Data="{StaticResource IconImage}"
-                    DockPanel.Dock="Left"/>
+              <ToggleButton
+                IsChecked="{Binding ShowImages}"
+                ap:Icon.Data="{StaticResource IconImage}"
+                ap:Text.Text="Image"/>
 
-                  <ContentPresenter Content="Image" Margin="5,0,0,0"/>
-                </DockPanel>
-              </ToggleButton>
-
-              <ToggleButton Grid.Column="1" IsChecked="{Binding ShowVideos}">
-                <DockPanel>
-                  <Path
-                    Style="{StaticResource MH.Styles.IconWithShadow}"
-                    Data="{StaticResource IconMovieClapper}"
-                    DockPanel.Dock="Left"
-                    Margin="0,0,5,0"/>
-
-                  <ContentPresenter Content="Video" Margin="5,0,0,0"/>
-                </DockPanel>
-              </ToggleButton>
+              <ToggleButton
+                Grid.Column="1" 
+                IsChecked="{Binding ShowVideos}"
+                ap:Icon.Data="{StaticResource IconMovieClapper}"
+                ap:Text.Text="Video"/>
 
               <Button
                 Grid.Column="2"
-                Width="60"
-                Height="30"
-                Margin="5"
                 HorizontalAlignment="Right"
-                Content="Clear"
                 Command="{Binding ClearCommand}"/>
             </Grid>
 
