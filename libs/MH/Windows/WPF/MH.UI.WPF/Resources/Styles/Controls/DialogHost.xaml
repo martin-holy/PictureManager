@@ -44,7 +44,6 @@
 
           <TextBlock
             Text="{Binding Path=Content.(uic:Dialog.Title)}"
-            FontWeight="Bold"
             VerticalAlignment="Center"/>
         </StackPanel>
 
@@ -58,16 +57,11 @@
       </Grid>
 
       <DockPanel>
-        <ItemsControl
-          DockPanel.Dock="Bottom"
-          ItemsSource="{Binding Content.Buttons}">
+        <ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding Content.Buttons}">
 
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <StackPanel
-                Orientation="Horizontal"
-                HorizontalAlignment="Right"
-                Margin="5"/>
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
 
@@ -77,40 +71,9 @@
                 IsDefault="{Binding IsDefault}"
                 IsCancel="{Binding IsCancel}"
                 Command="{Binding Command}"
-                CommandParameter="{Binding Path=DataContext.(mhc:DialogHost.Content), ElementName=root}">
-
-                <Button.Content>
-                  <DockPanel>
-                    <Path
-                      DockPanel.Dock="Left"
-                      Style="{StaticResource MH.Styles.Icon}"
-                      Effect="{StaticResource MH.Effects.DropShadow}"
-                      Margin="5,5,0,5"
-                      Width="16"
-                      Height="16"
-                      Data="{Binding Command.Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
-                      Fill="{Binding Command.Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
-                             ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
-                      Visibility="{Binding Command.Icon, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
-
-                    <TextBlock
-                      Text="{Binding Command.Text}"
-                      VerticalAlignment="Center"
-                      Margin="10,0,10,0"
-                      FontSize="13"/>
-                  </DockPanel>
-                </Button.Content>
-              </Button>
+                CommandParameter="{Binding Path=DataContext.(mhc:DialogHost.Content), ElementName=root}"/>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
-
-          <ItemsControl.ItemContainerStyle>
-            <Style>
-              <Setter Property="Control.MinWidth" Value="60"/>
-              <Setter Property="Control.MinHeight" Value="30"/>
-              <Setter Property="Control.Margin" Value="5"/>
-            </Style>
-          </ItemsControl.ItemContainerStyle>
         </ItemsControl>
 
         <ContentPresenter
