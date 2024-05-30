@@ -36,7 +36,6 @@
                                   *** UPDATE ***
 
         # MH.UI.WPF
- - create style for Button using RelayCommandConverter and use it in MovieManagr.ImportVM and MovieManager.MoviesFilterVM
 
 
         # MH.UI
@@ -78,6 +77,7 @@
 
           # Movie Manager
 ##
+  - transparent background for SeenWhen button on MovieDetail
 
                                     *** NEW ***
 ##
