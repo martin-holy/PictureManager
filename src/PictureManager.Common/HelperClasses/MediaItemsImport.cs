@@ -25,7 +25,7 @@ public sealed class MediaItemsImport : ObservableObject {
 
   public MediaItemsImport() {
     _progress = new Progress<int>(x => DoneCount += x);
-    CancelCommand = new(CancelImport);
+    CancelCommand = new(CancelImport, null, "Cancel");
   }
 
   public async Task Import(List<MediaItemMetadata> items) {

@@ -53,11 +53,7 @@
 
         <Button
           Grid.Row="2"
-          Content="Cancel"
           Command="{Binding Import.CancelCommand}"
-          Margin="5"
-          MinWidth="60"
-          MinHeight="30"
           HorizontalAlignment="Right"/>
       </Grid>
 

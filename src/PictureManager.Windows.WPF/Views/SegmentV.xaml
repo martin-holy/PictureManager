@@ -9,7 +9,8 @@
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
+  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:SegmentM}">
     <DataTemplate.Resources>
@@ -148,7 +149,8 @@
           CommandParameter="{Binding Person}"
           DockPanel.Dock="Right"
           Width="20"
-          Height="20"/>
+          Height="20"
+          ap:Icon.Size="13"/>
 
         <!-- Same Person Button -->
         <StackPanel
@@ -171,7 +173,8 @@
           <mhc:IconButton
             Command="vme:SegmentVM.SetSelectedAsSamePersonCommand"
             Width="20"
-            Height="20"/>
+            Height="20"
+            ap:Icon.Size="13"/>
         </StackPanel>
       </DockPanel>
     </Grid>

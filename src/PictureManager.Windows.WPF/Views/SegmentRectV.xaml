@@ -5,7 +5,8 @@
   xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
-  xmlns:vmWin="clr-namespace:PictureManager.Windows.WPF.ViewModels">
+  xmlns:vmWin="clr-namespace:PictureManager.Windows.WPF.ViewModels"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:SegmentRectM}">
     <Border
@@ -47,6 +48,7 @@
           CommandParameter="{Binding}"
           Width="16"
           Height="16"
+          ap:Icon.Size="10"
           VerticalAlignment="Top"
           HorizontalAlignment="Right"
           Margin="2"

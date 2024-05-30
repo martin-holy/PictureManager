@@ -7,10 +7,14 @@ namespace PictureManager.Common.Dialogs;
 public sealed class RotationDialogM : Dialog {
   private static RotationDialogM _inst;
 
-  public RelayCommand<Orientation> RotationCommand { get; }
+  public RelayCommand Rotate90Command { get; }
+  public RelayCommand Rotate180Command { get; }
+  public RelayCommand Rotate270Command { get; }
 
   public RotationDialogM() : base("Rotation", Res.IconImageMultiple) {
-    RotationCommand = new(o => Result = (int)o);
+    Rotate90Command = new(() => Result = (int)Orientation.Rotate90, Res.IconRotateLeft);
+    Rotate180Command = new(() => Result = (int)Orientation.Rotate180, Res.IconRotateClockwise);
+    Rotate270Command = new(() => Result = (int)Orientation.Rotate270, Res.IconRotateRight);
   }
 
   public static bool Open(out Orientation rotation) {

@@ -40,6 +40,9 @@ namespace PictureManager.Common {
     public const string IconPeople = "IconPeople";
     public const string IconPeopleMultiple = "IconPeopleMultiple";
     public const string IconPlus = "IconPlus";
+    public const string IconRotateClockwise = "IconRotateClockwise";
+    public const string IconRotateLeft = "IconRotateLeft";
+    public const string IconRotateRight = "IconRotateRight";
     public const string IconRuler = "IconRuler";
     public const string IconSave = "IconSave";
     public const string IconSegment = "IconSegment";

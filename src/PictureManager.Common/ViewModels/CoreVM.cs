@@ -52,7 +52,7 @@ public class CoreVM : ObservableObject {
 
   public static RelayCommand AppClosingCommand { get; set; }
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");
-  public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialogM()), null, "Open log");
+  public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialogM()), Res.IconSort, "Open log");
   public static RelayCommand OpenSegmentsMatchingCommand { get; set; }
   public static RelayCommand OpenSettingsCommand { get; set; }
   public static RelayCommand SaveDbCommand { get; set; }

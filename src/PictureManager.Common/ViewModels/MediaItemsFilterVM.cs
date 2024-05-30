@@ -31,7 +31,7 @@ public sealed class MediaItemsFilterVM : ObservableObject {
     Height.ChangedEvent += delegate { OnFilterChanged(); };
     Width.ChangedEvent += delegate { OnFilterChanged(); };
     Size.ChangedEvent += delegate { OnFilterChanged(); };
-    ClearCommand = new(Clear);
+    ClearCommand = new(Clear, null, "Clear");
   }
 
   private void OnFilterChanged() {
