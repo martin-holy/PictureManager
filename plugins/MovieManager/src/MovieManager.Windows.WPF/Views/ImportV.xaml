@@ -66,19 +66,16 @@
 
         <Button
           Grid.Column="1"
-          Content="Search"
           Command="{Binding SearchCommand}"
           CommandParameter="{Binding Text, ElementName=search}"/>
 
         <Button
           Grid.Column="2"
-          Content="Import"
           Command="{Binding ImportCommand}"
           CommandParameter="{Binding Path=SelectedItem, ElementName=result}"/>
 
         <Button
           Grid.Column="3"
-          Content="Cancel"
           Command="{Binding CancelCommand}"/>
       </Grid>
 

@@ -107,15 +107,11 @@
           <mhc:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
 
           <!-- Log Button -->
-          <Button
+          <mhc:IconTextButton
             Background="Red"
             Command="vm:CoreVM.OpenLogCommand"
-            Height="24"
-            Margin="2 0 2 0"
-            Visibility="{Binding Path=(mhu:Log.Items).Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
-
-            <TextBlock Text="{Binding Path=(mhu:Log.Items).Count, StringFormat='Log {0}'}"/>
-          </Button>
+            ap:Text.Text="{Binding Path=(mhu:Log.Items).Count}"
+            Visibility="{Binding Path=(mhu:Log.Items).Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
           <Separator/>
 

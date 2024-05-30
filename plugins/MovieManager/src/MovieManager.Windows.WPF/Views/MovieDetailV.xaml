@@ -33,9 +33,7 @@
             Width="18"
             Height="18"
             Margin="4,0,0,0"
-            Padding="4"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"/>
+            ap:Icon.Size="12"/>
         </Grid>
       </DataTemplate>
     </DataTemplate.Resources>

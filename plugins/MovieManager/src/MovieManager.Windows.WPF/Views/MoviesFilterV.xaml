@@ -150,12 +150,8 @@
 
       <Button
         Grid.Row="2"
-        Width="60"
-        Height="30"
-        Margin="5"
         HorizontalAlignment="Right"
         VerticalAlignment="Top"
-        Content="Clear"
         Command="{Binding ClearCommand}"/>
     </Grid>
   </DataTemplate>

@@ -4,7 +4,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
+  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate x:Key="PM.Views.MainTabsV" DataType="{x:Type mhuic:TabControl}">
     <DataTemplate.Resources>
@@ -27,10 +28,9 @@
           <mhc:Slot.Content>
             <mhc:IconButton
               Command="vm:MediaItemsViewsVM.AddViewCommand"
+              ap:Icon.Size="13"
               Width="24"
-              Height="24"
-              Padding="6"
-              HorizontalAlignment="Center"/>
+              Height="24"/>
           </mhc:Slot.Content>
         </mhc:Slot>
       </mhc:Slots.List>

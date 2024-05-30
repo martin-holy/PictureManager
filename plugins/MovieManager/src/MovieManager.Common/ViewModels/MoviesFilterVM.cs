@@ -41,7 +41,7 @@ public sealed class MoviesFilterVM : ObservableObject {
     Rating.ChangedEvent += OnRangeChanged;
     MyRating.ChangedEvent += OnRangeChanged;
 
-    ClearCommand = new(Clear);
+    ClearCommand = new(Clear, null, "Clear");
   }
 
   private void RaiseFilterChanged() => FilterChangedEvent(this, EventArgs.Empty);
