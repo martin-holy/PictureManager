@@ -6,7 +6,6 @@
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
   
   <ResourceDictionary.MergedDictionaries>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ButtonBase.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ComboBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/GridSplitter.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/CheckBox.xaml"/>
@@ -31,9 +30,6 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconText.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Buttons.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconButton.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextButton.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconToggleButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockItemsControl.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
@@ -56,7 +52,6 @@
   </ResourceDictionary.MergedDictionaries>
 
   <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MH.S.Button}"/>
-  <Style TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource MH.Styles.BaseControls.RepeatButton}"/>
   <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.S.ToggleButton}"/>
   <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MH.Styles.BaseControls.ComboBox}"/>
   <Style TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource MH.Styles.BaseControls.GridSplitter}"/>
