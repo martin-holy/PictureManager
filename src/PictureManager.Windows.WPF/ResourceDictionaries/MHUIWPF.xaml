@@ -27,7 +27,6 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CollectionView.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CustomWindow.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconText.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Buttons.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockItemsControl.xaml"/>
@@ -75,7 +74,6 @@
 
   <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}"/>
   <Style TargetType="{x:Type mhc:CollectionView}" BasedOn="{StaticResource MH.Styles.Controls.CollectionView}"/>
-  <Style TargetType="{x:Type mhc:IconText}" BasedOn="{StaticResource MH.Styles.Controls.IconText}"/>
   <Style TargetType="{x:Type mhc:IconTextBlock}" BasedOn="{StaticResource MH.S.IconTextBlock}"/>
   <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.S.IconButton}"/>
   <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.S.IconTextButton}"/>
