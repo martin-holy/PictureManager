@@ -11,7 +11,7 @@
     <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Border.CornerRadius" Value="3"/>
-    <Setter Property="Padding" Value="1,1,2,1"/>
+    <Setter Property="Padding" Value="4,0,4,0"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
     <Setter Property="ap:Icon.Shadow" Value="True"/>
     <Setter Property="ap:Text.Shadow" Value="False"/>
