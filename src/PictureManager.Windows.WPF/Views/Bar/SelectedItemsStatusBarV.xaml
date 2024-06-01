@@ -7,9 +7,33 @@
 
   <DataTemplate x:Key="PM.Views.SelectedItemsStatusBarV" DataType="{x:Type pmd:Core}">
     <DataTemplate.Resources>
-      <Style TargetType="mhc:IconText" BasedOn="{StaticResource {x:Type mhc:IconText}}">
-        <Setter Property="Background" Value="{StaticResource MH.Brushes.Black55}"/>
-        <Setter Property="Margin" Value="1"/>
+      <Style TargetType="ContentControl">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ContentControl">
+              <Border
+                Background="{StaticResource MH.Brushes.Black55}"
+                CornerRadius="3"
+                BorderThickness="1"
+                BorderBrush="Black"
+                Margin="1">
+
+                <mhc:IconTextBlock
+                  Focusable="False"
+                  DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                  ap:Icon.Data="{Binding Path=(ap:Icon.Data)}"
+                  ap:Icon.Size="15"
+                  ap:Text.Text="{Binding Path=(ap:Text.Text)}"
+                  ap:Text.Shadow="True"
+                  Compact="True"
+                  Margin="0"
+                  Width="24"
+                  Height="24"/>
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
       </Style>
     </DataTemplate.Resources>
 
@@ -28,15 +52,14 @@
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <mhc:IconText
+        <ContentControl
           ap:Text.Text="{Binding VM.MediaItem.Views.Current.Selected.Items.Count, FallbackValue=0}"
           ap:Icon.Data="{StaticResource IconImage}"/>
-        <mhc:IconText
+        <ContentControl
           Grid.Column="1"
-          Margin="0,1,0,1"
           ap:Text.Text="{Binding S.Person.Selected.Items.Count}"
           ap:Icon.Data="{StaticResource IconPeople}"/>
-        <mhc:IconText
+        <ContentControl
           Grid.Column="2"
           ap:Text.Text="{Binding S.Segment.Selected.Items.Count}"
           ap:Icon.Data="{StaticResource IconSegment}"/>
