@@ -29,8 +29,8 @@
             <mhc:IconButton
               Command="vm:MediaItemsViewsVM.AddViewCommand"
               ap:Icon.Size="13"
-              Width="24"
-              Height="24"/>
+              Width="20"
+              Height="20"/>
           </mhc:Slot.Content>
         </mhc:Slot>
       </mhc:Slots.List>
