@@ -10,6 +10,8 @@ public static class Icon {
     "Fill", typeof(Brush), typeof(Icon));
   public static readonly DependencyProperty SizeProperty = DependencyProperty.RegisterAttached(
     "Size", typeof(double), typeof(Icon));
+  public static readonly DependencyProperty ShadowProperty = DependencyProperty.RegisterAttached(
+    "Shadow", typeof(bool), typeof(Icon));
 
   public static PathGeometry GetData(DependencyObject d) => (PathGeometry)d.GetValue(DataProperty);
   public static void SetData(DependencyObject d, PathGeometry value) => d.SetValue(DataProperty, value);
@@ -17,4 +19,6 @@ public static class Icon {
   public static void SetFill(DependencyObject d, Brush value) => d.SetValue(FillProperty, value);
   public static double GetSize(DependencyObject d) => (double)d.GetValue(SizeProperty);
   public static void SetSize(DependencyObject d, double value) => d.SetValue(SizeProperty, value);
+  public static bool GetShadow(DependencyObject d) => (bool)d.GetValue(ShadowProperty);
+  public static void SetShadow(DependencyObject d, bool value) => d.SetValue(ShadowProperty, value);
 }

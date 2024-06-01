@@ -13,7 +13,8 @@
     <Setter Property="Border.CornerRadius" Value="3"/>
     <Setter Property="Padding" Value="1,1,2,1"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
-    <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+    <Setter Property="ap:Icon.Shadow" Value="True"/>
+    <Setter Property="ap:Text.Shadow" Value="False"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Template">
       <Setter.Value>
@@ -37,9 +38,11 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 ap:Text.Text="{Binding Path=(ap:Text.Text)}"
+                ap:Text.Shadow="{Binding Path=(ap:Text.Shadow)}"
                 ap:Icon.Data="{Binding Path=(ap:Icon.Data)}"
                 ap:Icon.Fill="{Binding Path=(ap:Icon.Fill)}"
-                ap:Icon.Size="{Binding Path=(ap:Icon.Size)}"/>
+                ap:Icon.Size="{Binding Path=(ap:Icon.Size)}"
+                ap:Icon.Shadow="{Binding Path=(ap:Icon.Shadow)}"/>
             </Border>
           </Border>
         </ControlTemplate>
@@ -113,6 +116,7 @@
     <Setter Property="Padding" Value="2,0,2,0"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="ap:Text.Shadow" Value="True"/>
   </Style>
 
   <Style x:Key="MH.S.IconButton" TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.S.ButtonBase}">
