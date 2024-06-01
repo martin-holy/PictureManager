@@ -10,8 +10,6 @@
   Title="MH UI WPF Sample Application"
   CanResize="True"
   CanFullScreen="True"
-  UseLayoutRounding="True"
-  SnapsToDevicePixels="True"
   Height="420"
   Width="820"
   WindowStartupLocation="CenterScreen">

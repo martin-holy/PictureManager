@@ -16,10 +16,9 @@
           <mhc:Slot.Content>
             <mhc:IconButton
               ap:Icon.Data="{StaticResource IconBug}"
+              ap:Icon.Size="15"
               Width="24"
-              Height="24"
-              Padding="6"
-              HorizontalAlignment="Center"/>
+              Height="24"/>
           </mhc:Slot.Content>
         </mhc:Slot>
       </mhc:Slots.List>

@@ -11,7 +11,6 @@
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
         <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
 
@@ -20,49 +19,41 @@
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
 
-      <StackPanel
-        Margin="5"
-        Grid.Row="0"
-        Grid.Column="0">
-
+      <StackPanel Margin="5" Grid.Row="0" Grid.Column="0">
         <CheckBox IsChecked="{x:Null}" Content="Sample"/>
         <CheckBox IsChecked="False" Content="Sample"/>
         <CheckBox IsChecked="True" Content="Sample"/>
         <CheckBox IsChecked="True"/>
       </StackPanel>
 
-      <StackPanel
-        Margin="5"
-        Grid.Row="0"
-        Grid.Column="1">
-
+      <StackPanel Margin="5" Grid.Row="0" Grid.Column="1">
         <RadioButton IsChecked="{x:Null}" Content="Sample"/>
         <RadioButton IsChecked="False" Content="Sample"/>
         <RadioButton IsChecked="True" Content="Sample"/>
         <RadioButton IsChecked="True"/>
       </StackPanel>
 
-      <Button
-        Grid.Row="1"
-        Grid.Column="0"
-        Command="{Binding DialogButtonWithIconCommand}"/>
+      <Button Grid.Row="1" Grid.Column="0" Command="{Binding DialogButtonWithIconCommand}"/>
+      <Button Grid.Row="1" Grid.Column="1" Command="{Binding DialogButtonWithoutIconCommand}"/>
 
       <ToggleButton
-        Grid.Row="1"
-        Grid.Column="1"
-        Content="Sample"
-        Margin="5"
+        Grid.Row="2"
+        Grid.Column="0"
+        ap:Text.Text="Sample"
+        ap:Icon.Data="{StaticResource IconImage}"
         IsChecked="True"/>
 
-      <Button Grid.Row="2" Grid.Column="0" Content="Sample" ContentTemplate="{x:Null}"/>
-      <Button Grid.Row="2" Grid.Column="1" Command="{Binding DialogButtonWithoutIconCommand}"/>
+      <ToggleButton
+        Grid.Row="2"
+        Grid.Column="1"
+        ap:Text.Text="Sample"
+        IsChecked="True"/>
 
       <StackPanel
         Grid.Row="3"
         Grid.Column="0"
         Grid.ColumnSpan="2"
         Orientation="Horizontal"
-        HorizontalAlignment="Center"
         VerticalAlignment="Top">
 
         <mhc:IconButton ap:Icon.Data="{StaticResource IconImage}"/>
