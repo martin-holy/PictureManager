@@ -61,24 +61,15 @@
                   <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <mhc:IconButton
-                  Command="{Binding TreeViewSearch.OpenCommand}"
-                  Width="28"
-                  Height="28"/>
-
-                <ContentPresenter
-                  Grid.Column="1"
-                  Content="{StaticResource MH.Res.SlidePanel-PinButton}"/>
+                <mhc:IconButton Command="{Binding TreeViewSearch.OpenCommand}"/>
+                <ContentPresenter Grid.Column="1" Content="{StaticResource MH.Res.SlidePanel-PinButton}"/>
               </Grid>
             </mhc:Slot.Content>
           </mhc:Slot>
         </mhc:Slots.List>
       </TabControl>
 
-      <ContentPresenter
-        x:Name="Search"
-        Content="{Binding TreeViewSearch}"
-        Visibility="Collapsed"/>
+      <ContentPresenter x:Name="Search" Content="{Binding TreeViewSearch}" Visibility="Collapsed"/>
     </Grid>
 
     <DataTemplate.Triggers>
