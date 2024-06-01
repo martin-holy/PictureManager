@@ -35,14 +35,13 @@
                 Focusable="False"
                 Foreground="{Binding Foreground}"
                 Margin="{Binding Padding}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 ap:Text.Text="{Binding Path=(ap:Text.Text)}"
                 ap:Text.Shadow="{Binding Path=(ap:Text.Shadow)}"
                 ap:Icon.Data="{Binding Path=(ap:Icon.Data)}"
                 ap:Icon.Fill="{Binding Path=(ap:Icon.Fill)}"
                 ap:Icon.Size="{Binding Path=(ap:Icon.Size)}"
-                ap:Icon.Shadow="{Binding Path=(ap:Icon.Shadow)}"/>
+                ap:Icon.Shadow="{Binding Path=(ap:Icon.Shadow)}"
+                Compact="{Binding Path=(c:IconTextBlock.Compact)}"/>
             </Border>
           </Border>
         </ControlTemplate>
@@ -62,7 +61,6 @@
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
         <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
-        <Setter Property="Effect" Value="{x:Null}"/>
       </Trigger>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
@@ -79,24 +77,13 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="MH.S.Button" TargetType="Button" BasedOn="{StaticResource MH.S.ButtonBase}">
+  <Style x:Key="MH.S.DialogButtonBase" TargetType="ButtonBase" BasedOn="{StaticResource MH.S.ButtonBase}">
     <Setter Property="MinWidth" Value="60"/>
     <Setter Property="MinHeight" Value="30"/>
     <Setter Property="Margin" Value="5"/>
   </Style>
 
-  <Style x:Key="MH.S.ToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource MH.S.ButtonBase}">
-    <Setter Property="MinWidth" Value="60"/>
-    <Setter Property="MinHeight" Value="30"/>
-    <Setter Property="Margin" Value="5"/>
-    <Style.Triggers>
-      <Trigger Property="IsChecked" Value="True">
-        <Setter Property="Background" Value="{StaticResource ToggleButton.Checked.Background}"/>
-      </Trigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="MH.S.IconToggleButton" TargetType="{x:Type c:IconToggleButton}" BasedOn="{StaticResource MH.S.ButtonBase}">
+  <Style x:Key="MH.S.IconButtonBase" TargetType="ButtonBase" BasedOn="{StaticResource MH.S.ButtonBase}">
     <Setter Property="Margin" Value="2"/>
     <Setter Property="Padding" Value="0"/>
     <Setter Property="Width" Value="26"/>
@@ -104,6 +91,19 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="ap:Icon.Size" Value="19"/>
+  </Style>
+
+  <Style x:Key="MH.S.Button" TargetType="Button" BasedOn="{StaticResource MH.S.DialogButtonBase}"/>
+
+  <Style x:Key="MH.S.ToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource MH.S.DialogButtonBase}">
+    <Style.Triggers>
+      <Trigger Property="IsChecked" Value="True">
+        <Setter Property="Background" Value="{StaticResource ToggleButton.Checked.Background}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  <!--TODO ToggleButtons IsChecked style-->
+  <Style x:Key="MH.S.IconToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource MH.S.IconButtonBase}">
     <Style.Triggers>
       <Trigger Property="IsChecked" Value="False">
         <Setter Property="ap:Icon.Fill" Value="{StaticResource IconToggleButton.Unchecked.Fill}"/>
@@ -119,54 +119,12 @@
     <Setter Property="ap:Text.Shadow" Value="True"/>
   </Style>
 
-  <Style x:Key="MH.S.IconButton" TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.S.ButtonBase}">
-    <Setter Property="Margin" Value="2"/>
-    <Setter Property="Padding" Value="0"/>
-    <Setter Property="Width" Value="26"/>
-    <Setter Property="Height" Value="26"/>
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="ap:Icon.Size" Value="19"/>
-  </Style>
+  <Style x:Key="MH.S.IconButton" TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.S.IconButtonBase}"/>
 
-  <Style x:Key="MH.S.IconTextButton" TargetType="{x:Type c:IconTextButton}" BasedOn="{StaticResource MH.S.ButtonBase}">
-    <Setter Property="Margin" Value="2"/>
-    <Setter Property="Padding" Value="0"/>
-    <Setter Property="Width" Value="26"/>
-    <Setter Property="Height" Value="26"/>
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="ButtonBase">
-          <Border
-            DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            CornerRadius="{TemplateBinding Border.CornerRadius}">
-
-            <Border
-              BorderThickness="0"
-              Background="{Binding Path=(ap:Button.OverLayer)}"
-              CornerRadius="{TemplateBinding Border.CornerRadius}">
-
-              <c:IconText
-                Focusable="False"
-                Margin="0"
-                Width="{TemplateBinding Width}"
-                Height="{TemplateBinding Height}"
-                Background="Transparent"
-                Foreground="{TemplateBinding Foreground}"
-                BorderThickness="{TemplateBinding BorderThickness}"
-                ap:Text.Text="{Binding Path=(ap:Text.Text)}"
-                ap:Icon.Data="{Binding Path=(ap:Icon.Data)}"
-                ap:Icon.Fill="{Binding Path=(ap:Icon.Fill)}"/>
-            </Border>
-          </Border>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
+  <Style x:Key="MH.S.IconTextButton" TargetType="{x:Type c:IconTextButton}" BasedOn="{StaticResource MH.S.IconButtonBase}">
+    <Setter Property="c:IconTextBlock.Compact" Value="True"/>
+    <Setter Property="ap:Icon.Size" Value="15"/>
+    <Setter Property="ap:Text.Shadow" Value="True"/>
   </Style>
     
 </ResourceDictionary>

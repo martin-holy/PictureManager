@@ -1,10 +1,15 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 namespace MH.UI.WPF.Controls;
 
-public class IconText : Control;
-public class IconTextBlock : Control;
+public class IconTextBlock : Control {
+  public static readonly DependencyProperty CompactProperty = DependencyProperty.Register(
+    nameof(Compact), typeof(bool), typeof(IconTextBlock));
+
+  public bool Compact { get => (bool)GetValue(CompactProperty); set => SetValue(CompactProperty, value); }
+}
 
 public class IconButton : Button;
 public class IconTextButton : Button;

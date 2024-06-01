@@ -7,6 +7,8 @@
   <Style x:Key="MH.S.IconTextBlock" TargetType="{x:Type c:IconTextBlock}">
     <Setter Property="Margin" Value="2"/>
     <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Brushes.Text}"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
     <Setter Property="ap:Icon.Shadow" Value="True"/>
@@ -14,10 +16,10 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type c:IconTextBlock}">
-          <Grid VerticalAlignment="Center" DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+          <Grid DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto"/>
-              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto" x:Name="col1"/>
+              <ColumnDefinition Width="*" x:Name="col2"/>
             </Grid.ColumnDefinitions>
 
             <Path
@@ -38,6 +40,25 @@
           </Grid>
 
           <ControlTemplate.Triggers>
+            <Trigger Property="Compact" Value="True">
+              <Setter Property="HorizontalAlignment" Value="Stretch"/>
+              <Setter Property="VerticalAlignment" Value="Stretch"/>
+              <Setter Property="FontSize" Value="10"/>
+              <Setter Property="FontWeight" Value="Bold"/>
+
+              <Setter TargetName="col1" Property="Width" Value="*"/>
+              <Setter TargetName="col2" Property="Width" Value="Auto"/>
+
+              <Setter TargetName="icon" Property="Margin" Value="2,2,0,0"/>
+              <Setter TargetName="icon" Property="HorizontalAlignment" Value="Left"/>
+              <Setter TargetName="icon" Property="VerticalAlignment" Value="Top"/>
+
+              <Setter TargetName="text" Property="Grid.Column" Value="0"/>
+              <Setter TargetName="text" Property="Margin" Value="0,0,2,-1"/>
+              <Setter TargetName="text" Property="HorizontalAlignment" Value="Right"/>
+              <Setter TargetName="text" Property="VerticalAlignment" Value="Bottom"/>
+            </Trigger>
+
             <Trigger Property="IsEnabled" Value="False">
               <Setter TargetName="icon" Property="Fill" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
               <Setter TargetName="text" Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
