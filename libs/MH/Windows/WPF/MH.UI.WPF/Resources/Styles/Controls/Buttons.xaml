@@ -71,7 +71,7 @@
         </DataTrigger.Binding>
         <Setter Property="Tag" Value="{x:Null}"/>
       </DataTrigger>
-      <DataTrigger Binding="{Binding Path=(ap:Icon.Fill)}" Value="{x:Null}">
+      <DataTrigger Binding="{Binding Path=(ap:Icon.Fill), RelativeSource={RelativeSource TemplatedParent}}" Value="{x:Null}">
         <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Control.Static.Text}"/>
       </DataTrigger>
     </Style.Triggers>
@@ -102,7 +102,7 @@
       </Trigger>
     </Style.Triggers>
   </Style>
-  <!--TODO ToggleButtons IsChecked style-->
+
   <Style x:Key="MH.S.IconToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource MH.S.IconButtonBase}">
     <Style.Triggers>
       <Trigger Property="IsChecked" Value="False">
