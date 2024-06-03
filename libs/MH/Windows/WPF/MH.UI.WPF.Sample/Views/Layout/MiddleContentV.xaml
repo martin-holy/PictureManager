@@ -6,22 +6,14 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type vml:MiddleContentVM}">
-    <TabControl
-      Style="{StaticResource MH.Styles.BaseControls.TabControl-Slot}"
-      TabStripPlacement="Left"
-      SelectedIndex="0">
+    <TabControl/>
+  </DataTemplate>
 
-      <mhc:Slots.List>
-        <mhc:Slot Name="TabStripSlot" Placement="Top">
-          <mhc:Slot.Content>
-            <mhc:IconButton
-              ap:Icon.Data="{StaticResource IconBug}"
-              ap:Icon.Size="15"
-              Width="24"
-              Height="24"/>
-          </mhc:Slot.Content>
-        </mhc:Slot>
-      </mhc:Slots.List>
-    </TabControl>
+  <DataTemplate DataType="{x:Type vml:MiddleContentSlotVM}">
+    <mhc:IconButton
+      ap:Icon.Data="{StaticResource IconBug}"
+      ap:Icon.Size="15"
+      Width="24"
+      Height="24"/>
   </DataTemplate>
 </ResourceDictionary>

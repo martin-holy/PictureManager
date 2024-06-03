@@ -67,7 +67,7 @@
           <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ContentPresenter Content="{StaticResource MH.Res.SlidePanel-PinButton}"/>
+        <ContentPresenter Content="{Binding SlidePanelPinButton}"/>
 
         <ContentPresenter
           Grid.Column="1"

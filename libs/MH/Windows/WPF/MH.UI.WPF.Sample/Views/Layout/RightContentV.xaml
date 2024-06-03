@@ -20,20 +20,9 @@
         <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
 
-      <ContentPresenter
-        Content="{Binding SelectedFolder}"
-        Grid.Row="0"
-        Margin="4,0,0,0"/>
-
-      <ContentPresenter
-        Content="{StaticResource MH.Res.SlidePanel-PinButton}"
-        HorizontalAlignment="Right"
-        Grid.Row="0"/>
-
-      <ContentPresenter
-        Content="{Binding FolderTreeView}"
-        Grid.Row="1"/>
+      <ContentPresenter Content="{Binding SelectedFolder}" Grid.Row="0" Margin="4,0,0,0"/>
+      <ContentPresenter Content="{Binding SlidePanelPinButton}" Grid.Row="0" HorizontalAlignment="Right"/>
+      <ContentPresenter Content="{Binding FolderTreeView}" Grid.Row="1"/>
     </Grid>
   </DataTemplate>
-    
 </ResourceDictionary>

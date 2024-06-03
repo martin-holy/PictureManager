@@ -15,7 +15,7 @@ public class MainWindowVM : ObservableObject {
   private bool _areControlsEnabled = true;
 
   public SlidePanelsGrid SlidePanelsGrid { get; }
-  public LeftContentVM LeftContent { get; } = new() { CanCloseTabs = true };
+  public LeftContentVM LeftContent { get; } = new();
   public ToolBarVM ToolBar { get; } = new();
   public RightContentVM RightContent { get; } = new();
   public StatusBarVM StatusBar { get; }
