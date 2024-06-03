@@ -1,3 +1,8 @@
-﻿namespace PictureManager.Common.ViewModels;
+﻿using MH.UI.Controls;
+using MH.Utils.BaseClasses;
 
-public class ToolBarVM;
+namespace PictureManager.Common.ViewModels;
+
+public class ToolBarVM : ObservableObject {
+  public SlidePanelPinButton SlidePanelPinButton { get; } = new();
+}

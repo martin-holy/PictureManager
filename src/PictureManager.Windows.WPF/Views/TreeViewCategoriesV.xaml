@@ -34,7 +34,7 @@
             Height="24"/>
         </DataTemplate>
 
-        <Style x:Key="TabItem-BigIcon" TargetType="{x:Type TabItem}" BasedOn="{StaticResource MH.Styles.BaseControls.TabItem}">
+        <Style x:Key="TabItem-BigIcon" TargetType="{x:Type TabItem}" BasedOn="{StaticResource MH.S.TabItem}">
           <Setter Property="HeaderTemplate" Value="{StaticResource BigIcon}"/>
         </Style>
       </ResourceDictionary>
@@ -47,28 +47,7 @@
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
-      <TabControl
-        x:Name="Tabs"
-        Style="{StaticResource MH.Styles.BaseControls.TabControl-Slot}"
-        ItemContainerStyle="{StaticResource TabItem-BigIcon}">
-
-        <mhc:Slots.List>
-          <mhc:Slot Name="TabStripSlot" Placement="Right">
-            <mhc:Slot.Content>
-              <Grid>
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition/>
-                  <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <mhc:IconButton Command="{Binding TreeViewSearch.OpenCommand}"/>
-                <ContentPresenter Grid.Column="1" Content="{StaticResource MH.Res.SlidePanel-PinButton}"/>
-              </Grid>
-            </mhc:Slot.Content>
-          </mhc:Slot>
-        </mhc:Slots.List>
-      </TabControl>
-
+      <TabControl x:Name="Tabs" ItemContainerStyle="{StaticResource TabItem-BigIcon}"/>
       <ContentPresenter x:Name="Search" Content="{Binding TreeViewSearch}" Visibility="Collapsed"/>
     </Grid>
 
@@ -82,5 +61,17 @@
         <Setter TargetName="Search" Property="Visibility" Value="Visible"/>
       </DataTrigger>
     </DataTemplate.Triggers>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type vm:TreeViewCategoriesSlotVM}">
+    <Grid DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=TabControl}}">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+      </Grid.ColumnDefinitions>
+
+      <mhc:IconButton Command="{Binding Path=(vm:TreeViewCategoriesVM.TreeViewSearch).(vm:TreeViewSearchVM.OpenCommand)}"/>
+      <ContentPresenter Grid.Column="1" Content="{Binding Path=(vm:TreeViewCategoriesVM.SlidePanelPinButton)}"/>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>

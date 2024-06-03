@@ -34,7 +34,7 @@ public class CoreVM : ObservableObject {
   public ViewerVM Viewer { get; }
 
   public ImageComparerVM ImageComparer { get; } = new();
-  public TabControl MainTabs { get; } = new() { CanCloseTabs = true };
+  public MainTabsVM MainTabs { get; } = new();
   public MainWindowVM MainWindow { get; }
   public MediaViewerVM MediaViewer { get; } = new();
   public PeopleVM People { get; set; }
