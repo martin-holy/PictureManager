@@ -7,13 +7,15 @@ namespace MH.UI.Controls;
 
 public class TabControl : ObservableObject {
   private IListItem _selected;
-  private double _tabsSize;
   private bool _canCloseTabs;
+  private double _maxTabSize;
 
   public ObservableCollection<IListItem> Tabs { get; } = [];
+  public TabStrip TabStrip { get; set; } = new();
   public IListItem Selected { get => _selected; set { _selected = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
-  public double TabMaxSize { get => _tabsSize / Tabs.Count; set { _tabsSize = value; OnPropertyChanged(); } }
   public bool CanCloseTabs { get => _canCloseTabs; set { _canCloseTabs = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
+  //TODO delete this when the rewrite is done
+  public double MaxTabSize { get => _maxTabSize; set { _maxTabSize = value; OnPropertyChanged(); } }
 
   public RelayCommand<IListItem> CloseTabCommand { get; }
 
@@ -23,8 +25,10 @@ public class TabControl : ObservableObject {
   public TabControl() {
     CloseTabCommand = new(Close, Res.IconXCross, "Close");
 
-    Tabs.CollectionChanged += (_, _) =>
-      OnPropertyChanged(nameof(TabMaxSize));
+    Tabs.CollectionChanged += (_, _) => {
+      TabStrip.UpdateMaxTabSize(Tabs.Count);
+      OnPropertyChanged(nameof(MaxTabSize));
+    };
   }
 
   public void Activate(string icon, string name, object data) {
@@ -55,7 +59,7 @@ public class TabControl : ObservableObject {
     Close(GetTabByData(data));
 
   public void Close(IListItem tab) {
-    if (tab == null) return;
+    if (tab == null || !CanCloseTabs) return;
 
     Tabs.Remove(tab);
 
@@ -67,4 +71,11 @@ public class TabControl : ObservableObject {
 
   public IListItem GetTabByData(object data) =>
     Tabs.FirstOrDefault(x => ReferenceEquals(x.Data, data));
+
+  public void UpdateMaxTabSize(double? width, double? height) {
+    TabStrip.UpdateMaxTabSize(width, height, Tabs.Count);
+
+    if (width is { } w && height is { } h)
+      MaxTabSize = TabStrip.Placement is Dock.Top or Dock.Bottom ? w : h;
+  }
 }
