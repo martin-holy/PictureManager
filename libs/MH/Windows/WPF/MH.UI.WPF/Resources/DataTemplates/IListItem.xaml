@@ -1,11 +1,35 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
   xmlns:res="clr-namespace:MH.UI.WPF.Resources"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
+  xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
 
-  <DataTemplate x:Key="MH.DataTemplates.IListItem" DataType="{x:Type mhuInt:IListItem}">
+  <DataTemplate x:Key="MH.DT.IListItem" DataType="{x:Type uInt:IListItem}">
+    <c:IconTextBlock
+      x:Name="itb"
+      Focusable="False"
+      ap:Text.Text="{Binding Name}"
+      ap:Text.Shadow="{Binding Path=(ap:Text.Shadow), RelativeSource={RelativeSource TemplatedParent}}"
+      ap:Icon.Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
+      ap:Icon.Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
+                     ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
+      ap:Icon.Shadow="{Binding Path=(ap:Icon.Shadow), RelativeSource={RelativeSource TemplatedParent}}"
+      Compact="{Binding Path=(c:IconTextBlock.Compact), RelativeSource={RelativeSource TemplatedParent}}"/>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding IsIconHidden}" Value="True">
+        <Setter TargetName="itb" Property="ap:Icon.Data" Value="{x:Null}"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding IsNameHidden}" Value="True">
+        <Setter TargetName="itb" Property="ap:Text.Text" Value="{x:Null}"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
+
+  <DataTemplate x:Key="MH.DataTemplates.IListItem" DataType="{x:Type uInt:IListItem}">
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto"/>
@@ -15,8 +39,8 @@
       <Path
         x:Name="icon"
         Style="{StaticResource MH.Styles.Icon}"
-        Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
-        Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
+        Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
+        Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
                ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
 
       <TextBlock
@@ -39,7 +63,7 @@
     </DataTemplate.Triggers>
   </DataTemplate>
 
-  <DataTemplate x:Key="MH.DT.IListItem.Border.RoundDarker" DataType="{x:Type mhuInt:IListItem}">
+  <DataTemplate x:Key="MH.DT.IListItem.Border.RoundDarker" DataType="{x:Type uInt:IListItem}">
     <Border Style="{StaticResource MH.S.Border.RoundDarker}">
       <ContentPresenter
         Content="{Binding}"
