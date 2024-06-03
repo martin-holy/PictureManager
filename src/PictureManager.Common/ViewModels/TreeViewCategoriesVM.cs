@@ -10,13 +10,21 @@ using System.Collections.Generic;
 
 namespace PictureManager.Common.ViewModels;
 
+public sealed class TreeViewCategoriesSlotVM;
+
 public sealed class TreeViewCategoriesVM : TabControl {
   public TreeViewSearchVM TreeViewSearch { get; }
   public Dictionary<object, int> MarkedTags { get; } = new();
   public RatingsTreeCategory RatingsTreeCategory { get; } = new();
+  public SlidePanelPinButton SlidePanelPinButton { get; } = new();
 
   public TreeViewCategoriesVM() {
     TreeViewSearch = new(this);
+    TabStrip = new() {
+      Placement = Dock.Top,
+      Slot = new TreeViewCategoriesSlotVM(),
+      SlotPlacement = Dock.Right
+    };
   }
 
   public void AddCategories() {
