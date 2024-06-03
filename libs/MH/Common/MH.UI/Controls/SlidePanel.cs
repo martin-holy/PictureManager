@@ -3,6 +3,8 @@ using System;
 
 namespace MH.UI.Controls;
 
+public sealed class SlidePanelPinButton;
+
 public class SlidePanel : ObservableObject {
   private bool _canOpen = true;
   private bool _isOpen;

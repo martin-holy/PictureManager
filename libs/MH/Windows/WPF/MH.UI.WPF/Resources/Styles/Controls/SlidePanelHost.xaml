@@ -2,7 +2,8 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
-  xmlns:c="clr-namespace:MH.UI.WPF.Controls">
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls"
+  xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI">
 
   <Style x:Key="MH.Styles.Controls.SlidePanelHost" TargetType="{x:Type c:SlidePanelHost}">
     <Setter Property="Template">
@@ -14,14 +15,14 @@
     </Setter>
   </Style>
 
-  <c:IconToggleButton
-    x:Key="MH.Res.SlidePanel-PinButton"
-    x:Shared="False"
-    ap:Icon.Data="{StaticResource IconPin}"
-    ap:Icon.Size="14"
-    Width="20"
-    Height="20"
-    IsThreeState="False"
-    IsChecked="{Binding SlidePanel.IsPinned, RelativeSource={RelativeSource AncestorType=c:SlidePanelHost}, FallbackValue=False}"
-    ToolTip="Pin panel"/>
+  <DataTemplate DataType="{x:Type uic:SlidePanelPinButton}">
+    <c:IconToggleButton
+      ap:Icon.Data="{StaticResource IconPin}"
+      ap:Icon.Size="14"
+      Width="20"
+      Height="20"
+      IsThreeState="False"
+      IsChecked="{Binding SlidePanel.IsPinned, RelativeSource={RelativeSource AncestorType=c:SlidePanelHost}, FallbackValue=False}"
+      ToolTip="Pin panel"/>
+  </DataTemplate>
 </ResourceDictionary>
