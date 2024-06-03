@@ -240,7 +240,7 @@
           <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ContentPresenter Content="{StaticResource MH.Res.SlidePanel-PinButton}"/>
+        <ContentPresenter Content="{Binding VM.MainWindow.ToolBar.SlidePanelPinButton}"/>
 
         <ContentPresenter
           Grid.Column="1"

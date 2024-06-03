@@ -134,6 +134,12 @@
   - replace Contains with ReferenceEquals
   - use IconTextBlockItemsControl
   - don't do CreateDirectory in FolderR.ItemCreate. it can throw exception
+  - replace MH.UI.Controls.Position with MH.UI.Controls.Dock
+  - remove old IListItem style
+  - use IconTextBlock for TreeViewCategories tab icons
+  - set Icon.Fill in IconTextBlock Trigger if is not set
+  - add scrollbar for TabPanel
+  - FocusVisualStyle on SlidePanelsGridHost should not be null but set to Focusable = false
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
 ## ProgressBarAsyncDialog
