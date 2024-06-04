@@ -5,6 +5,7 @@ using PictureManager.Common.Dialogs;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,6 +15,7 @@ public sealed class SegmentS : ObservableObject {
   public SegmentR DataAdapter { get; set; }
   public SegmentRectS Rect { get; }
   public Selecting<SegmentM> Selected { get; } = new();
+  public static Action<SegmentM, string> ExportSegment { get; set; }
 
   public bool CanSetAsSamePerson {
     get {

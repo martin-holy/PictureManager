@@ -30,6 +30,7 @@
         <wpfu:CachedResourceDictionary Source="Dialogs/AboutDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/CompressDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/ErrorDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/ExportSegmentsDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/FileOperationCollisionDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/FileOperationDialogV.xaml"/>
         <wpfu:CachedResourceDictionary Source="Dialogs/FolderBrowserDialogV.xaml"/>
