@@ -1,7 +1,10 @@
 ﻿using MH.UI.WPF.Extensions;
 using MH.Utils;
+using PictureManager.Common;
+using PictureManager.Common.Models;
 using System;
 using System.IO;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -46,5 +49,11 @@ public static class Imaging {
     var encoder = new JpegBitmapEncoder { QualityLevel = quality };
     encoder.Frames.Add(BitmapFrame.Create(output, null, metadata, null));
     encoder.Save(destFileStream);
+  }
+
+  public static void ExportSegment(SegmentM segment, string dest) {
+    var filePath = segment.MediaItem.FilePath;
+    var rect = new Int32Rect((int)segment.X, (int)segment.Y, (int)segment.Size, (int)segment.Size);
+    BitmapSourceExtensions.Create(filePath, rect).SaveAsJpeg(dest, Core.Settings.Common.JpegQuality);
   }
 }

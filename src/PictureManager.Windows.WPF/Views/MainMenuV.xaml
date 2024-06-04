@@ -44,6 +44,13 @@
           <MenuItem Command="vm:MediaItemsViewsVM.ShuffleCommand"/>
         </MenuItem>
 
+        <MenuItem Header="Segments">
+          <MenuItem.Icon>
+            <Path Data="{StaticResource IconSegment}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+          </MenuItem.Icon>
+          <MenuItem Command="vm:CoreVM.ExportSegmentsCommand"/>
+        </MenuItem>
+
         <MenuItem Command="vm:CoreVM.OpenSettingsCommand"/>
         <MenuItem Command="vm:WhatIsNewVM.OpenCommand"/>
         <MenuItem Command="vm:CoreVM.OpenAboutCommand"/>

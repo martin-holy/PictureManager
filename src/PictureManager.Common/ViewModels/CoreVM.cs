@@ -51,6 +51,7 @@ public class CoreVM : ObservableObject {
   public event EventHandler AppClosingEvent = delegate { };
 
   public static RelayCommand AppClosingCommand { get; set; }
+  public static RelayCommand ExportSegmentsCommand { get; set; }
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");
   public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialogM()), Res.IconSort, "Open log");
   public static RelayCommand OpenSegmentsMatchingCommand { get; set; }
@@ -83,6 +84,7 @@ public class CoreVM : ObservableObject {
     InitToggleDialog();
 
     AppClosingCommand = new(AppClosing);
+    ExportSegmentsCommand = new(ExportSegments, () => _coreS.Segment.Selected.Items.Count > 0, Res.IconSegment, "Export Segments");
     OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
     OpenSegmentsMatchingCommand = new(() => OpenSegmentsMatching(null), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
@@ -321,6 +323,9 @@ public class CoreVM : ObservableObject {
 
     _coreR.BackUp();
   }
+
+  private void ExportSegments() =>
+    Dialog.Show(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.ToArray()));
 
   private static void OpenSettings() =>
     Core.VM.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
