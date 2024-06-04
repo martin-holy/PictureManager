@@ -1,0 +1,55 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
+
+  <DataTemplate DataType="{x:Type md:ExportSegmentsDialog}">
+    <DataTemplate.Resources>
+      <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5"/>
+      </Style>
+    </DataTemplate.Resources>
+
+    <Grid Margin="5" Width="515">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <TextBlock Text="Export to:" Grid.Row="0" Grid.Column="0"/>
+      <DockPanel Grid.Row="0" Grid.Column="1">
+        <mhc:IconButton
+          Command="{Binding OpenFolderBrowserCommand}"
+          ap:Icon.Fill="{StaticResource ColorBrushFolder}"
+          VerticalAlignment="Center"
+          DockPanel.Dock="Right"/>
+
+        <ComboBox ItemsSource="{Binding DirPaths}" Text="{Binding DestDir}" Height="30"/>
+      </DockPanel>
+
+      <TextBlock
+        Grid.Column="0"
+        Grid.Row="1"
+        Grid.ColumnSpan="2"
+        Text="{Binding FileName}"/>
+
+      <ProgressBar
+        Grid.Column="0"
+        Grid.Row="2"
+        Grid.ColumnSpan="2"
+        Maximum="{Binding ProgressMax}"
+        Value="{Binding ProgressValue}"
+        Height="20"
+        Margin="5"/>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

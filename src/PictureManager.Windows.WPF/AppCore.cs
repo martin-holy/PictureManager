@@ -36,6 +36,7 @@ public sealed class AppCore : ObservableObject {
     CoreVM.UiDetailVideo = new MediaPlayer();
     CoreVM.VideoFrameSaver = new VideoFrameSaver();
 
+    SegmentS.ExportSegment = Utils.Imaging.ExportSegment;
     SegmentVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
     MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
   }
