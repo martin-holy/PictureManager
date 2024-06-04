@@ -33,7 +33,7 @@
           VerticalAlignment="Center"
           DockPanel.Dock="Right"/>
 
-        <ComboBox ItemsSource="{Binding DirPaths}" Text="{Binding DestDir}" Height="30"/>
+        <ComboBox ItemsSource="{Binding DirPaths}" Text="{Binding DestDir}"/>
       </DockPanel>
 
       <TextBlock

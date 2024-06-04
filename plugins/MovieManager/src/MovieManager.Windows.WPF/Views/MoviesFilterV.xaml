@@ -70,14 +70,13 @@
             Text="{Binding LastSeen, UpdateSourceTrigger=PropertyChanged}"
             MinWidth="24"
             HorizontalContentAlignment="Center"
-            Margin="0,0,4,0"/>
+            Margin="0,1,4,0"/>
 
           <ComboBox
             ItemsSource="{Binding LastSeenTypes}"
             DisplayMemberPath="Value"
             SelectedValuePath="Key"
-            SelectedValue="{Binding LastSeenType, Mode=TwoWay}"
-            Height="24"/>
+            SelectedValue="{Binding LastSeenType, Mode=TwoWay}"/>
 
           <TextBlock Text="ago." VerticalAlignment="Bottom" Margin="4"/>
         </StackPanel>

@@ -6,7 +6,6 @@
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
   
   <ResourceDictionary.MergedDictionaries>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ComboBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/GridSplitter.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/CheckBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Label.xaml"/>
@@ -23,6 +22,7 @@
 
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CatTreeView.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CollectionView.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ComboBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CustomWindow.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
@@ -51,7 +51,7 @@
 
   <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MH.S.Button}"/>
   <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.S.ToggleButton}"/>
-  <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MH.Styles.BaseControls.ComboBox}"/>
+  <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MH.S.ComboBox}"/>
   <Style TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource MH.Styles.BaseControls.GridSplitter}"/>
   <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MH.Styles.BaseControls.CheckBox}"/>
   <Style TargetType="{x:Type Label}" BasedOn="{StaticResource MH.Styles.BaseControls.Label}"/>

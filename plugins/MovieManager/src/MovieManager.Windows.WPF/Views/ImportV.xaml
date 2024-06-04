@@ -61,7 +61,6 @@
           ItemsSource="{Binding ImportPlugins, Source={x:Static common:Core.Inst}}"
           SelectedItem="{Binding ImportPlugin, Source={x:Static common:Core.Inst}}"
           DisplayMemberPath="Name"
-          Height="30"
           VerticalContentAlignment="Center"/>
 
         <Button
