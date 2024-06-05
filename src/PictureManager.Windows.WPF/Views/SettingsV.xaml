@@ -163,6 +163,18 @@
               Value="{Binding MediaItem.VideoItemThumbScale, Mode=TwoWay}"/>
           </x:Array>
         </ContentControl>
+
+        <!-- Segment -->
+        <Border Style="{StaticResource PM.Settings.Group}">
+          <TextBlock Text="Segment" Style="{StaticResource PM.Settings.GroupText}"/>
+        </Border>
+
+        <ContentControl Style="{StaticResource PM.Settings.SettingItem}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding Segment.GroupSize, StringFormat='Group size: {0}'}"/>
+            <Slider Minimum="100" Maximum="1000" TickFrequency="50" Value="{Binding Segment.GroupSize, Mode=TwoWay}"/>
+          </x:Array>
+        </ContentControl>
       </StackPanel>
     </ScrollViewer>
   </DataTemplate>
