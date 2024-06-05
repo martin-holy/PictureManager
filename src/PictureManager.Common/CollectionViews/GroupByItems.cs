@@ -15,6 +15,7 @@ namespace PictureManager.Common.CollectionViews;
 public static class GroupByItems {
   private static readonly ListItem _dateGroup = new(Res.IconCalendar, "Date");
   private static readonly ListItem _peopleGroupsGroup = new(Res.IconPeopleMultiple, "Groups");
+  private static readonly ListItem _segmentSizeGroup = new(Res.IconRuler, "Size");
 
   private static readonly Dictionary<string, string> _mediaItemsDates = new();
   private static readonly Dictionary<string, string> _dateFormats =
@@ -42,6 +43,23 @@ public static class GroupByItems {
         yield return new(new DateM(Res.IconCalendar, value, key), GroupMediaItemByDate);
     }
   }
+
+  public static GroupByItem<SegmentM> GetSegmentSizesInGroup(IEnumerable<SegmentM> items) =>
+    items
+      .GetSegmentSizes()
+      .InGroup(_segmentSizeGroup, GroupSegmentBySize);
+
+  public static IEnumerable<GroupByItem<SegmentM>> GetSegmentSizes(this IEnumerable<SegmentM> items) =>
+    items
+      .GroupBy(x => (int)(x.Size / Core.Settings.Segment.GroupSize))
+      .Distinct()
+      .OrderBy(x => x.Key)
+      .Select(x => {
+        var min = x.Key * Core.Settings.Segment.GroupSize + 1;
+        var max = min + Core.Settings.Segment.GroupSize - 1;
+        var text = max.ToString();
+        return new GroupByItem<SegmentM>(new SizeM(Res.IconRuler, text, min, max), GroupSegmentBySize);
+      });
 
   public static IEnumerable<GroupByItem<T>> GetFolders<T>(IEnumerable<T> items)
     where T : MediaItemM =>
@@ -155,6 +173,10 @@ public static class GroupByItems {
   private static bool GroupByPerson(this SegmentM item, object parameter) =>
     ReferenceEquals(parameter, Core.R.Person.Tree) || 
     GroupByPerson(item.Person, parameter);
+
+  private static bool GroupSegmentBySize(SegmentM item, object parameter) =>
+    ReferenceEquals(parameter, _segmentSizeGroup) ||
+    (parameter is SizeM size && size.Fits((int)item.Size));
 
   private static bool GroupByKeyword(IEnumerable<KeywordM> items, object parameter) =>
     ReferenceEquals(parameter, Core.R.Keyword.Tree) ||

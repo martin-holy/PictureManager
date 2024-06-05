@@ -20,6 +20,7 @@ public sealed class Settings {
   public GeoNameSettings GeoName { get; set; }
   public ImagesToVideoSettings ImagesToVideo { get; set; }
   public MediaItemSettings MediaItem { get; set; }
+  public SegmentSettings Segment { get; set; }
 
   public void Save() {
     try {
@@ -35,7 +36,13 @@ public sealed class Settings {
   public static Settings Load() {
     if (!File.Exists(_filePath)) return CreateNew();
     try {
-      return JsonSerializer.Deserialize<Settings>(File.ReadAllText(_filePath)).Init();
+      var set = JsonSerializer.Deserialize<Settings>(File.ReadAllText(_filePath));
+      set.Common ??= new();
+      set.GeoName ??= new();
+      set.ImagesToVideo ??= new();
+      set.MediaItem ??= new();
+      set.Segment ??= new();
+      return set.Init();
     }
     catch (Exception ex) {
       Log.Error(ex);
@@ -58,11 +65,12 @@ public sealed class Settings {
       Common = new(),
       GeoName = new(),
       ImagesToVideo = new(),
-      MediaItem = new()
+      MediaItem = new(),
+      Segment = new()
     }.Init();
 
   public Settings Init() {
-    AttachEvents(new ObservableObject[] { Common, GeoName, ImagesToVideo, MediaItem });
+    AttachEvents(new ObservableObject[] { Common, GeoName, ImagesToVideo, MediaItem, Segment });
     return this;
   }
 
@@ -118,4 +126,10 @@ public sealed class MediaItemSettings : ObservableObject {
   public bool ScrollExactlyToMediaItem { get => _scrollExactlyToMediaItem; set { _scrollExactlyToMediaItem = value; OnPropertyChanged(); } }
   public int ThumbSize { get => _thumbSize; set { _thumbSize = value; OnPropertyChanged(); } }
   public double VideoItemThumbScale { get => _videoItemThumbScale; set { _videoItemThumbScale = value; OnPropertyChanged(); } }
+}
+
+public sealed class SegmentSettings : ObservableObject {
+  private int _groupSize = 250;
+
+  public int GroupSize { get => _groupSize; set { _groupSize = value; OnPropertyChanged(); } }
 }
