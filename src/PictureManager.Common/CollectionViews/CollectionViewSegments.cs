@@ -25,6 +25,7 @@ public class CollectionViewSegments : CollectionView<SegmentM> {
     top.AddRange(GroupByItems.GetGeoNames(src));
     top.Add(GroupByItems.GetKeywordsInGroup(src));
     top.Add(GroupByItems.GetPeopleInGroup(src));
+    top.Add(GroupByItems.GetSegmentSizesInGroup(src));
 
     return top;
   }
