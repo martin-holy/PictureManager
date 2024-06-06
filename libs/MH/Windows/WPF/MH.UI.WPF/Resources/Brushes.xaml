@@ -65,7 +65,7 @@
   <SolidColorBrush x:Key="MH.Brushes.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Foreground" Color="{StaticResource ForegroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Text" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="MH.Brushes.Accent" Color="{StaticResource Accent}"/>
+  <SolidColorBrush x:Key="MH.Brushes.Accent" Color="{x:Static SystemParameters.WindowGlassColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Black25" Color="{StaticResource Black25}"/>
   <SolidColorBrush x:Key="MH.Brushes.Black55" Color="{StaticResource Black55}"/>
 
