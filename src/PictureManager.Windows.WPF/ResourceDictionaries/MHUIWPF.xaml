@@ -9,7 +9,6 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/GridSplitter.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/CheckBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Label.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ListBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/RadioButton.xaml"/>
@@ -28,6 +27,7 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Buttons.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockItemsControl.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ListBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
@@ -52,11 +52,12 @@
   <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MH.S.Button}"/>
   <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.S.ToggleButton}"/>
   <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MH.S.ComboBox}"/>
+  <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
   <Style TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource MH.Styles.BaseControls.GridSplitter}"/>
   <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MH.Styles.BaseControls.CheckBox}"/>
   <Style TargetType="{x:Type Label}" BasedOn="{StaticResource MH.Styles.BaseControls.Label}"/>
-  <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MH.Styles.BaseControls.ListBox}"/>
-  <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MH.Styles.BaseControls.ListBoxItem}"/>
+  <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MH.S.ListBox}"/>
+  <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
   <Style TargetType="{x:Type ContextMenu}" BasedOn="{StaticResource MH.Styles.BaseControls.ContextMenu}"/>
   <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource MH.Styles.BaseControls.Menu}"/>
   <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}"/>
