@@ -8,6 +8,6 @@ public class ListsVM : ObservableObject {
 
   public ListsVM() {
     for (var i = 0; i < 30; i++)
-      ListData.Add($"List item {i}");
+      ListData.Add($"Sample list item {i}");
   }
 }
