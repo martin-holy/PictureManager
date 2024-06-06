@@ -16,6 +16,10 @@
 
         # Picture Manager
   - read only drives and creating thumbnails
+  - reload drives on viewer change
+  - add multilevel keyword to person => delete sub keyword => person doesn't have keyword displayed but Load people by keyword works
+    after app restart is ok
+  - changing selection in Viewer detail works only with mouse. with keyboard selection works only visually
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
 ## Video Items (VideoImage and VideoClip)
@@ -39,6 +43,8 @@
 
 
         # MH.UI
+  - FolderPicker control with combobox with used folders from settings and button to open FolderBrowserDialogM
+    + static command to open FolderBrowserDialogM
 ## CollectionView
   - don't show expanded root if source is empty
 
@@ -140,6 +146,7 @@
   - set Icon.Fill in IconTextBlock Trigger if is not set
   - add scrollbar for TabPanel
   - FocusVisualStyle on SlidePanelsGridHost should not be null but set to Focusable = false
+  - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
 ## ProgressBarAsyncDialog
