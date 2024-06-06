@@ -8,6 +8,12 @@ Latest:
  - [U] Deselect Actor and Character when MovieDetail tab closes
  - [U] TextBox style
  - [U] Buttons styles
+ - [U] TabControl style
+ - [N] Export selected Segments to folder
+ - [U] ComboBox style
+ - [N] Group Segments by size
+ - [U] ListBox and ComboBox style
+ - [U] TextBlock and TextBoxBase styles
 
 24.05.17.1705:
  - [N] Movie Manager plug-in
