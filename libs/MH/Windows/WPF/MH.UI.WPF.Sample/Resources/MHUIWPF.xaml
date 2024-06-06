@@ -15,8 +15,6 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollBar.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollViewer.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Slider.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/TextBlock.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/TextBoxBase.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ToolTip.xaml"/>
 
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CatTreeView.xaml"/>
@@ -35,6 +33,8 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelHost.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelsGridHost.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TabControl.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TextBlock.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TextBoxBase.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/WindowButtons.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ZoomAndPan.xaml"/>
 
@@ -68,8 +68,8 @@
   <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource MH.Styles.BaseControls.Slider}"/>
   <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource MH.S.TabControl}"/>
   <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MH.S.TabItem}"/>
-  <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MH.Styles.BaseControls.TextBlock}"/>
-  <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MH.Styles.BaseControls.TextBoxBase}"/>
+  <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MH.S.TextBlock}"/>
+  <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MH.S.TextBoxBase}"/>
   <Style TargetType="{x:Type ToolTip}" BasedOn="{StaticResource MH.Styles.BaseControls.ToolTip}"/>
 
   <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}"/>
