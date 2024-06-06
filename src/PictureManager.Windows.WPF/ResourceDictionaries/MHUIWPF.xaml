@@ -7,7 +7,6 @@
   
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/GridSplitter.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/CheckBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Label.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
@@ -22,6 +21,7 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ComboBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CustomWindow.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CheckBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Buttons.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockItemsControl.xaml"/>
@@ -49,43 +49,44 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Templates/All.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MH.S.Button}"/>
-  <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.S.ToggleButton}"/>
-  <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MH.S.ComboBox}"/>
-  <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
-  <Style TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource MH.Styles.BaseControls.GridSplitter}"/>
-  <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MH.Styles.BaseControls.CheckBox}"/>
-  <Style TargetType="{x:Type Label}" BasedOn="{StaticResource MH.Styles.BaseControls.Label}"/>
-  <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MH.S.ListBox}"/>
-  <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
-  <Style TargetType="{x:Type ContextMenu}" BasedOn="{StaticResource MH.Styles.BaseControls.ContextMenu}"/>
-  <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource MH.Styles.BaseControls.Menu}"/>
-  <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}"/>
-  <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource MH.Styles.BaseControls.ProgressBar}"/>
-  <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource MH.Styles.BaseControls.RadioButton}"/>
-  <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollBar}"/>
-  <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollViewer}"/>
-  <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource MH.Styles.BaseControls.Slider}"/>
-  <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource MH.S.TabControl}"/>
-  <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MH.S.TabItem}"/>
-  <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MH.S.TextBlock}"/>
-  <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MH.S.TextBoxBase}"/>
-  <Style TargetType="{x:Type ToolTip}" BasedOn="{StaticResource MH.Styles.BaseControls.ToolTip}"/>
+  <Style TargetType="Button" BasedOn="{StaticResource MH.S.Button}"/>
+  <Style TargetType="ToggleButton" BasedOn="{StaticResource MH.S.ToggleButton}"/>
+  <Style TargetType="ComboBox" BasedOn="{StaticResource MH.S.ComboBox}"/>
+  <Style TargetType="ComboBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
+  <Style TargetType="GridSplitter" BasedOn="{StaticResource MH.Styles.BaseControls.GridSplitter}"/>
+  <Style TargetType="CheckBox" BasedOn="{StaticResource MH.S.CheckBox}"/>
+  <Style TargetType="Label" BasedOn="{StaticResource MH.Styles.BaseControls.Label}"/>
+  <Style TargetType="ListBox" BasedOn="{StaticResource MH.S.ListBox}"/>
+  <Style TargetType="ListBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
+  <Style TargetType="ContextMenu" BasedOn="{StaticResource MH.Styles.BaseControls.ContextMenu}"/>
+  <Style TargetType="Menu" BasedOn="{StaticResource MH.Styles.BaseControls.Menu}"/>
+  <Style TargetType="MenuItem" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}"/>
+  <Style TargetType="ProgressBar" BasedOn="{StaticResource MH.Styles.BaseControls.ProgressBar}"/>
+  <Style TargetType="RadioButton" BasedOn="{StaticResource MH.Styles.BaseControls.RadioButton}"/>
+  <Style TargetType="ScrollBar" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollBar}"/>
+  <Style TargetType="ScrollViewer" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollViewer}"/>
+  <Style TargetType="Slider" BasedOn="{StaticResource MH.Styles.BaseControls.Slider}"/>
+  <Style TargetType="TabControl" BasedOn="{StaticResource MH.S.TabControl}"/>
+  <Style TargetType="TabItem" BasedOn="{StaticResource MH.S.TabItem}"/>
+  <Style TargetType="TextBlock" BasedOn="{StaticResource MH.S.TextBlock}"/>
+  <Style TargetType="TextBox" BasedOn="{StaticResource MH.S.TextBoxBase}"/>
+  <Style TargetType="ToolTip" BasedOn="{StaticResource MH.Styles.BaseControls.ToolTip}"/>
 
-  <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}"/>
-  <Style TargetType="{x:Type mhc:CollectionView}" BasedOn="{StaticResource MH.Styles.Controls.CollectionView}"/>
-  <Style TargetType="{x:Type mhc:IconTextBlock}" BasedOn="{StaticResource MH.S.IconTextBlock}"/>
-  <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.S.IconButton}"/>
-  <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.S.IconTextButton}"/>
-  <Style TargetType="{x:Type mhc:SlimButton}" BasedOn="{StaticResource MH.S.SlimButton}"/>
-  <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.S.IconToggleButton}"/>
-  <Style TargetType="{x:Type mhc:IconTextBlockItemsControl}" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockItemsControl}"/>
-  <Style TargetType="{x:Type mhc:PopupSlider}" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
-  <Style TargetType="{x:Type mhc:RangeSlider}" BasedOn="{StaticResource MH.Styles.Controls.RangeSlider}"/>
-  <Style TargetType="{x:Type mhc:ScrollViewerExt}" BasedOn="{StaticResource MH.Styles.Controls.ScrollViewerExt}"/>
-  <Style TargetType="{x:Type mhc:SlidePanelHost}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelHost}"/>
-  <Style TargetType="{x:Type mhc:SlidePanelsGridHost}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGridHost}"/>
-  <Style TargetType="{x:Type mhc:ZoomAndPan}" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPan}"/>
+  <Style TargetType="mhc:CatTreeView" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}"/>
+  <Style TargetType="mhc:CollectionView" BasedOn="{StaticResource MH.Styles.Controls.CollectionView}"/>
+  <Style TargetType="mhc:IconTextBlock" BasedOn="{StaticResource MH.S.IconTextBlock}"/>
+  <Style TargetType="mhc:IconButton" BasedOn="{StaticResource MH.S.IconButton}"/>
+  <Style TargetType="mhc:IconTextButton" BasedOn="{StaticResource MH.S.IconTextButton}"/>
+  <Style TargetType="mhc:SlimButton" BasedOn="{StaticResource MH.S.SlimButton}"/>
+  <Style TargetType="mhc:IconToggleButton" BasedOn="{StaticResource MH.S.IconToggleButton}"/>
+  <Style TargetType="mhc:IconTextBlockItemsControl" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockItemsControl}"/>
+  <Style TargetType="mhc:PopupSlider" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
+  <Style TargetType="mhc:RangeSlider" BasedOn="{StaticResource MH.Styles.Controls.RangeSlider}"/>
+  <Style TargetType="mhc:ScrollViewerExt" BasedOn="{StaticResource MH.Styles.Controls.ScrollViewerExt}"/>
+  <Style TargetType="mhc:SlidePanelHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelHost}"/>
+  <Style TargetType="mhc:SlidePanelsGridHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGridHost}"/>
+  <Style TargetType="mhc:TreeViewBase" BasedOn="{StaticResource MH.Styles.Controls.TreeViewBase}"/>
+  <Style TargetType="mhc:ZoomAndPan" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPan}"/>
 
   <wpfu:KeyDataTemplateSelector x:Key="MH.Styles.Controls.DialogHost.DialogTemplateSelector">
     <wpfu:KeyDataTemplateSelector.Keys>
