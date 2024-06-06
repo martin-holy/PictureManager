@@ -4,14 +4,14 @@
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
-    <u:CachedResourceDictionary Source="../BaseControls/TextBoxBase.xaml"/>
+    <u:CachedResourceDictionary Source="TextBoxBase.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <Style x:Key="MH.S.ComboBox-Editable-TextBox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MH.Styles.BaseControls.TextBoxBase}">
+  <Style x:Key="MH.S.ComboBox-Editable-TextBox" TargetType="TextBox" BasedOn="{StaticResource MH.S.TextBoxBase}">
     <Setter Property="Visibility" Value="Collapsed"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type TextBox}">
+        <ControlTemplate TargetType="TextBox">
           <ScrollViewer
             x:Name="PART_ContentHost"
             Focusable="False"
@@ -23,13 +23,13 @@
     </Setter>
   </Style>
 
-  <Style x:Key="MH.S.ComboBox-ToggleButton" TargetType="{x:Type ToggleButton}">
+  <Style x:Key="MH.S.ComboBox-ToggleButton" TargetType="ToggleButton">
     <Setter Property="IsTabStop" Value="False"/>
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="ClickMode" Value="Press"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type ToggleButton}">
+        <ControlTemplate TargetType="ToggleButton">
           <Border
             x:Name="root"
             Background="{TemplateBinding Background}"
@@ -51,11 +51,9 @@
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="arrow" Property="Fill" Value="{StaticResource ComboBox.MouseOver.Glyph}"/>
-              <Setter TargetName="root" Property="Background" Value="{StaticResource MH.Control.MouseOver.Background}"/>
-              <Setter TargetName="root" Property="BorderBrush" Value="{StaticResource MH.Control.MouseOver.Border}"/>
+              <Setter TargetName="root" Property="BorderBrush" Value="{StaticResource MH.Control.Hover.Border}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-              <Setter TargetName="root" Property="Background" Value="{StaticResource MH.Control.Pressed.Background}"/>
               <Setter TargetName="root" Property="BorderBrush" Value="{StaticResource MH.Control.Pressed.Border}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
@@ -67,7 +65,7 @@
     </Setter>
   </Style>
 
-  <ControlTemplate x:Key="MH.CT.ComboBox" TargetType="{x:Type ComboBox}">
+  <ControlTemplate x:Key="MH.CT.ComboBox" TargetType="ComboBox">
     <Grid x:Name="templateRoot">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
@@ -133,14 +131,20 @@
         <Setter TargetName="contentPresenter" Property="Visibility" Value="Collapsed"/>
         <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
       </Trigger>
+      <Trigger SourceName="PART_EditableTextBox" Property="IsMouseOver" Value="True">
+        <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Hover.Border}"/>
+      </Trigger>
+      <Trigger SourceName="PART_EditableTextBox" Property="IsKeyboardFocused" Value="True">
+        <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Focus.Border}"/>
+      </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <Style x:Key="MH.S.ComboBox" TargetType="{x:Type ComboBox}">
+  <Style x:Key="MH.S.ComboBox" TargetType="ComboBox">
     <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
     <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
     <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
-    <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
@@ -154,10 +158,10 @@
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Padding" Value="3,1,1,1"/>
       </Trigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
-        <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+      <Trigger Property="IsKeyboardFocused" Value="True">
+        <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Focus.Border}"/>
       </Trigger>
+      <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="IsGrouping" Value="True"/>
