@@ -10,7 +10,7 @@
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
-    <u:CachedResourceDictionary Source="../BaseControls/TextBlock.xaml"/>
+    <u:CachedResourceDictionary Source="../Controls/TextBlock.xaml"/>
     <u:CachedResourceDictionary Source="PopupSlider.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
