@@ -8,9 +8,7 @@
     <Setter Property="TextTrimming" Value="None"/>
 
     <Style.Triggers>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
-      </Trigger>
+      <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
     </Style.Triggers>
   </Style>
 </ResourceDictionary>

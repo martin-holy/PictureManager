@@ -58,10 +58,7 @@
       <Trigger Property="IsPressed" Value="True">
         <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.Button.Pressed.Background}"/>
       </Trigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
-      </Trigger>
+      <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
           <MultiBinding Converter="{x:Static conv:RelayCommandConverter.Inst}">

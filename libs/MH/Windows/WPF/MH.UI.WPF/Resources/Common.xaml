@@ -4,5 +4,10 @@
   xmlns:system="clr-namespace:System;assembly=System.Runtime">
 
   <system:Double x:Key="MH.FontSize">14</system:Double>
+
+  <Trigger x:Key="MH.Trigger.Control-Disabled" Property="Control.IsEnabled" Value="False">
+    <Setter Property="Control.BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
+    <Setter Property="Control.Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+  </Trigger>
     
 </ResourceDictionary>
