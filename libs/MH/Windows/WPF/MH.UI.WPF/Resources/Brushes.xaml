@@ -74,6 +74,9 @@
   <SolidColorBrush x:Key="MH.Control.Static.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Control.Static.Foreground" Color="{StaticResource ForegroundColor}"/>
 
+  <SolidColorBrush x:Key="MH.Control.Hover.Border" Color="{StaticResource GrayColor1}"/>
+  <SolidColorBrush x:Key="MH.Control.Focus.Border" Color="{StaticResource GrayColor1}"/>
+
   <SolidColorBrush x:Key="MH.Control.Disabled.Border" Color="{StaticResource DisabledBorderColor}"/>
   <SolidColorBrush x:Key="MH.Control.Disabled.Foreground" Color="{StaticResource DisabledForegroundColor}"/>
 
@@ -109,7 +112,6 @@
   <SolidColorBrush x:Key="MH.Button.Background" Color="{StaticResource Gray3}"/>
   <SolidColorBrush x:Key="MH.Button.Hover.Background" Color="{StaticResource Light3}"/>
   <SolidColorBrush x:Key="MH.Button.Pressed.Background" Color="{StaticResource Light5}"/>
-  <SolidColorBrush x:Key="MH.Button.MouseOver.Background" Color="{StaticResource White20}"/> <!-- TODO delete later -->
 
   <!-- ComboBox -->
   <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="{StaticResource GrayColor2}"/>
@@ -178,11 +180,6 @@
   <SolidColorBrush x:Key="TabItem.MouseOver.Foreground" Color="{StaticResource GrayColor1}"/>
   <SolidColorBrush x:Key="TabItem.Selected.Foreground" Color="{x:Static SystemParameters.WindowGlassColor}"/>
 
-  <SolidColorBrush x:Key="TextBox.Static.Background" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="TextBox.Static.Border" Color="{StaticResource GrayColor2}"/>
-  <SolidColorBrush x:Key="TextBox.Static.Foreground" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="{StaticResource GrayColor1}"/>
-  <SolidColorBrush x:Key="TextBox.Focus.Border" Color="{StaticResource GrayColor1}"/>
   <SolidColorBrush x:Key="TextBox.InactiveSelectionHighlight" Color="{StaticResource GrayColor2}"/>
 
   <SolidColorBrush x:Key="ToolTip.Background" Color="{StaticResource BackgroundColor}"/>

@@ -4,19 +4,19 @@
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
-    <u:CachedResourceDictionary Source="Menu.xaml"/>
+    <u:CachedResourceDictionary Source="../BaseControls/Menu.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <ContextMenu x:Key="MH.Styles.BaseControls.ContextMenuTextBox" Style="{StaticResource MH.Styles.BaseControls.ContextMenu}">
+  <ContextMenu x:Key="MH.S.TextBoxBase-ContextMenu" Style="{StaticResource MH.Styles.BaseControls.ContextMenu}">
     <MenuItem Command="ApplicationCommands.Cut" Style="{DynamicResource MH.Styles.BaseControls.MenuItem}"/>
     <MenuItem Command="ApplicationCommands.Copy" Style="{DynamicResource MH.Styles.BaseControls.MenuItem}"/>
     <MenuItem Command="ApplicationCommands.Paste" Style="{DynamicResource MH.Styles.BaseControls.MenuItem}"/>
   </ContextMenu>
 
-  <Style x:Key="MH.Styles.BaseControls.TextBoxBase" TargetType="{x:Type TextBoxBase}">
-    <Setter Property="Background" Value="{StaticResource TextBox.Static.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource TextBox.Static.Border}"/>
-    <Setter Property="Foreground" Value="{StaticResource TextBox.Static.Foreground}"/>
+  <Style x:Key="MH.S.TextBoxBase" TargetType="TextBoxBase">
+    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Padding" Value="2"/>
     <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
@@ -27,15 +27,14 @@
     <Setter Property="AllowDrop" Value="True"/>
     <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
     <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="ContextMenu" Value="{StaticResource MH.Styles.BaseControls.ContextMenuTextBox}"/>
+    <Setter Property="ContextMenu" Value="{StaticResource MH.S.TextBoxBase-ContextMenu}"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type TextBoxBase}">
+        <ControlTemplate TargetType="TextBoxBase">
           <Border
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            SnapsToDevicePixels="True">
+            BorderThickness="{TemplateBinding BorderThickness}">
 
             <ScrollViewer
               x:Name="PART_ContentHost"
@@ -45,14 +44,12 @@
           </Border>
 
           <ControlTemplate.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Opacity" Value="0.4"/>
-            </Trigger>
+            <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource TextBox.MouseOver.Border}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Hover.Border}"/>
             </Trigger>
             <Trigger Property="IsKeyboardFocused" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource TextBox.Focus.Border}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Focus.Border}"/>
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
