@@ -310,9 +310,7 @@
     </Setter>
 
     <Style.Triggers>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
-      </Trigger>
+      <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
     </Style.Triggers>
   </Style>
 
