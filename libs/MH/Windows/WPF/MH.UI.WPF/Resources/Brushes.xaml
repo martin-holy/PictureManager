@@ -122,8 +122,6 @@
 
   <SolidColorBrush x:Key="FocusVisual.Stroke" Color="{StaticResource TextColor}"/>
 
-  <SolidColorBrush x:Key="Label.Foreground" Color="{StaticResource TextColor}"/>
-
   <SolidColorBrush x:Key="Menu.Static.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="Menu.Static.Border" Color="#FF999999"/>
   <SolidColorBrush x:Key="Menu.Static.Foreground" Color="{StaticResource TextColor}"/>
