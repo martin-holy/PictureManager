@@ -119,10 +119,10 @@ public class ImportS {
   }
 
   private static string GetActorImageFileName(ActorM actor) =>
-    $"{actor.DetailId.DetailName}-{actor.DetailId.DetailId}-{actor.Name}.jpg";
+    $"{actor.DetailId.DetailName}-{actor.DetailId.DetailId}-{IOExtensions.CleanFileName(actor.Name)}.jpg";
 
   private static string GetMoviePosterFileName(MovieM movie) =>
-    $"{movie.Year}-{movie.DetailId.DetailName}-{movie.DetailId.DetailId}-{movie.Title}.jpg";
+    $"{movie.Year}-{movie.DetailId.DetailName}-{movie.DetailId.DetailId}-{IOExtensions.CleanFileName(movie.Title)}.jpg";
 
   /*private IFolderM GetMovieImagesFolder(MovieM movie) =>
     _coreR.GetFolder(Path.Combine(_coreR.ImagesFolder.FullPath, $"{movie.Year} {movie.Title}"));*/
