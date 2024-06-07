@@ -6,7 +6,6 @@
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
   
   <ResourceDictionary.MergedDictionaries>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Label.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollBar.xaml"/>
@@ -24,6 +23,7 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Buttons.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockItemsControl.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Label.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ListBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>

@@ -4,6 +4,9 @@
 [B] - Bug fix
 
 Latest:
+ - [U] Label style
+
+24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
  - [U] Deselect Actor and Character when MovieDetail tab closes
  - [U] TextBox style
