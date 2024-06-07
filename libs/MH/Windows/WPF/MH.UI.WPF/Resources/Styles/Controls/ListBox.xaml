@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties">
 
   <Style x:Key="MH.S.ListBox" TargetType="ListBox">
     <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
@@ -22,7 +23,14 @@
             BorderThickness="{TemplateBinding BorderThickness}"
             Padding="1">
             
-            <ScrollViewer Padding="{TemplateBinding Padding}" Focusable="False">
+            <ScrollViewer
+              Padding="{TemplateBinding Padding}"
+              Focusable="False"
+              ap:Slot.LeftContent="{Binding Path=(ap:Slot.LeftContent), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Slot.TopContent="{Binding Path=(ap:Slot.TopContent), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Slot.RightContent="{Binding Path=(ap:Slot.RightContent), RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Slot.BottomContent="{Binding Path=(ap:Slot.BottomContent), RelativeSource={RelativeSource TemplatedParent}}">
+
               <ItemsPresenter/>
             </ScrollViewer>
           </Border>
