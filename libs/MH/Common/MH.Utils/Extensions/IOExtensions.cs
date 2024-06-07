@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MH.Utils.Extensions;
 
@@ -46,5 +47,11 @@ public static class IOExtensions {
     }
 
     return $"{doubleSize:0.##} {sizes[order]}";
+  }
+
+  public static string CleanFileName(string fileName) {
+    var invalidChars = new string(Path.GetInvalidFileNameChars());
+    var invalidRegex = $"[{Regex.Escape(invalidChars)}]";
+    return Regex.Replace(fileName, invalidRegex, string.Empty);
   }
 }
