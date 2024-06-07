@@ -10,7 +10,6 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Label.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/RadioButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollBar.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollViewer.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Slider.xaml"/>
@@ -28,6 +27,7 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ListBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RadioButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollViewerExt.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelHost.xaml"/>
@@ -62,7 +62,7 @@
   <Style TargetType="Menu" BasedOn="{StaticResource MH.Styles.BaseControls.Menu}"/>
   <Style TargetType="MenuItem" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}"/>
   <Style TargetType="ProgressBar" BasedOn="{StaticResource MH.Styles.BaseControls.ProgressBar}"/>
-  <Style TargetType="RadioButton" BasedOn="{StaticResource MH.Styles.BaseControls.RadioButton}"/>
+  <Style TargetType="RadioButton" BasedOn="{StaticResource MH.S.RadioButton}"/>
   <Style TargetType="ScrollBar" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollBar}"/>
   <Style TargetType="ScrollViewer" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollViewer}"/>
   <Style TargetType="Slider" BasedOn="{StaticResource MH.Styles.BaseControls.Slider}"/>
