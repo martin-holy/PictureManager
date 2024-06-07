@@ -121,12 +121,6 @@
   <SolidColorBrush x:Key="IconToggleButton.Unchecked.Fill" Color="{StaticResource Light7}"/>
 
   <SolidColorBrush x:Key="FocusVisual.Stroke" Color="{StaticResource TextColor}"/>
-  
-  <SolidColorBrush x:Key="OptionMark.Static.Background" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="OptionMark.Static.Border" Color="{StaticResource GrayColor3}"/>
-  <SolidColorBrush x:Key="OptionMark.Static.Foreground" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="OptionMark.Static.Glyph" Color="{x:Static SystemParameters.WindowGlassColor}"/>
-  <SolidColorBrush x:Key="OptionMark.MouseOver.Border" Color="{StaticResource GrayColor2}"/>
 
   <SolidColorBrush x:Key="Label.Foreground" Color="{StaticResource TextColor}"/>
 

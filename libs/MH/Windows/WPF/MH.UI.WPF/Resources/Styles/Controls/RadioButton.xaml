@@ -2,15 +2,16 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <Style x:Key="MH.Styles.BaseControls.RadioButton" TargetType="{x:Type RadioButton}">
-    <Setter Property="Foreground" Value="{StaticResource OptionMark.Static.Foreground}"/>
-    <Setter Property="Background" Value="{StaticResource OptionMark.Static.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource OptionMark.Static.Border}"/>
+  <Style x:Key="MH.S.RadioButton" TargetType="RadioButton">
+    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type RadioButton}">
+        <ControlTemplate TargetType="RadioButton">
           <Grid Background="Transparent">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="Auto"/>
@@ -18,7 +19,6 @@
             </Grid.ColumnDefinitions>
 
             <Border
-              x:Name="border"
               Margin="1"
               Width="18"
               Height="18"
@@ -31,10 +31,10 @@
 
               <Ellipse
                 x:Name="optionMark"
-                Opacity="0"
                 Width="10"
                 Height="10"
-                Fill="{StaticResource OptionMark.Static.Glyph}"/>
+                Visibility="Collapsed"
+                Fill="{StaticResource MH.Brushes.Accent}"/>
             </Border>
 
             <ContentPresenter
@@ -50,18 +50,20 @@
             <Trigger Property="HasContent" Value="True">
               <Setter Property="Padding" Value="4,0,0,0"/>
             </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Opacity" Value="0.4"/>
-            </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource OptionMark.MouseOver.Border}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Hover.Border}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Focus.Border}"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="optionMark" Property="Opacity" Value="1"/>
+              <Setter TargetName="optionMark" Property="Visibility" Value="Visible"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="{x:Null}">
+              <Setter TargetName="optionMark" Property="Visibility" Value="Visible"/>
               <Setter TargetName="optionMark" Property="Opacity" Value="0.5"/>
             </Trigger>
+            <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
           </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>

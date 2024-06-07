@@ -69,6 +69,7 @@
             </Trigger>
             <Trigger Property="IsChecked" Value="{x:Null}">
               <Setter TargetName="indeterminateMark" Property="Visibility" Value="Visible"/>
+              <Setter TargetName="indeterminateMark" Property="Opacity" Value="0.5"/>
             </Trigger>
             <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
           </ControlTemplate.Triggers>
