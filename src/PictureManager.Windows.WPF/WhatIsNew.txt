@@ -14,6 +14,11 @@ Latest:
  - [N] Group Segments by size
  - [U] ListBox and ComboBox style
  - [U] TextBlock and TextBoxBase styles
+ - [U] CheckBox style
+ - [U] Accent color set to SystemParameters.WindowGlassColor
+ - [B] Movie import: poster file name with invalid characters
+ - [U] RadioButton style
+ - [U] GridSplitter style
 
 24.05.17.1705:
  - [N] Movie Manager plug-in
