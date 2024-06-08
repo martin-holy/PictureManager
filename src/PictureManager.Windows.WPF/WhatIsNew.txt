@@ -5,6 +5,8 @@
 
 Latest:
  - [U] Label style
+ - [U] ScrollViewer style
+ - [U] ScrollBar style
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
