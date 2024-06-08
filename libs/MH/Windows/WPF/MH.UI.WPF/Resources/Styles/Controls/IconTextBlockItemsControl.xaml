@@ -64,7 +64,7 @@
                   Width="{Binding ActualWidth,
                     ElementName=scrollViewer,
                     Converter={x:Static mhConv:CalcNumberConverter.Subtract},
-                    ConverterParameter={StaticResource ScrollBar.Width}}"/>
+                    ConverterParameter={StaticResource ScrollBar.Size}}"/>
               </ScrollViewer>
             </Grid>
           </Border>

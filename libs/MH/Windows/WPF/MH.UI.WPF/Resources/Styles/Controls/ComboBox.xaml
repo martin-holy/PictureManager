@@ -69,7 +69,7 @@
     <Grid x:Name="templateRoot">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
-        <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/>
+        <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Size}" Width="0"/>
       </Grid.ColumnDefinitions>
 
       <Popup
