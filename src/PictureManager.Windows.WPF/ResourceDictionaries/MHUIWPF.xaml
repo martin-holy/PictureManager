@@ -8,8 +8,6 @@
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollBar.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollViewer.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Slider.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ToolTip.xaml"/>
 
@@ -29,7 +27,8 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RadioButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollViewerExt.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollBar.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollViewer.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelHost.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelsGridHost.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TabControl.xaml"/>
@@ -55,7 +54,7 @@
   <Style TargetType="ComboBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
   <Style TargetType="GridSplitter" BasedOn="{StaticResource MH.S.GridSplitter}"/>
   <Style TargetType="CheckBox" BasedOn="{StaticResource MH.S.CheckBox}"/>
-  <Style TargetType="Label" BasedOn="{StaticResource MH.Styles.BaseControls.Label}"/>
+  <Style TargetType="Label" BasedOn="{StaticResource MH.S.Label}"/>
   <Style TargetType="ListBox" BasedOn="{StaticResource MH.S.ListBox}"/>
   <Style TargetType="ListBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
   <Style TargetType="ContextMenu" BasedOn="{StaticResource MH.Styles.BaseControls.ContextMenu}"/>
@@ -63,8 +62,8 @@
   <Style TargetType="MenuItem" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}"/>
   <Style TargetType="ProgressBar" BasedOn="{StaticResource MH.Styles.BaseControls.ProgressBar}"/>
   <Style TargetType="RadioButton" BasedOn="{StaticResource MH.S.RadioButton}"/>
-  <Style TargetType="ScrollBar" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollBar}"/>
-  <Style TargetType="ScrollViewer" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollViewer}"/>
+  <Style TargetType="ScrollBar" BasedOn="{StaticResource MH.S.ScrollBar}"/>
+  <Style TargetType="ScrollViewer" BasedOn="{StaticResource MH.S.ScrollViewer}"/>
   <Style TargetType="Slider" BasedOn="{StaticResource MH.Styles.BaseControls.Slider}"/>
   <Style TargetType="TabControl" BasedOn="{StaticResource MH.S.TabControl}"/>
   <Style TargetType="TabItem" BasedOn="{StaticResource MH.S.TabItem}"/>
@@ -82,7 +81,6 @@
   <Style TargetType="mhc:IconTextBlockItemsControl" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockItemsControl}"/>
   <Style TargetType="mhc:PopupSlider" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
   <Style TargetType="mhc:RangeSlider" BasedOn="{StaticResource MH.Styles.Controls.RangeSlider}"/>
-  <Style TargetType="mhc:ScrollViewerExt" BasedOn="{StaticResource MH.Styles.Controls.ScrollViewerExt}"/>
   <Style TargetType="mhc:SlidePanelHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelHost}"/>
   <Style TargetType="mhc:SlidePanelsGridHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGridHost}"/>
   <Style TargetType="mhc:TreeViewBase" BasedOn="{StaticResource MH.Styles.Controls.TreeViewBase}"/>
