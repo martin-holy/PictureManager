@@ -40,7 +40,8 @@
                                   *** UPDATE ***
 
         # MH.UI.WPF
-
+  - RangeSlider - change values by keyboard
+  - PopupSlider - close Slider using keyboard
 
         # MH.UI
   - FolderPicker control with combobox with used folders from settings and button to open FolderBrowserDialogM
