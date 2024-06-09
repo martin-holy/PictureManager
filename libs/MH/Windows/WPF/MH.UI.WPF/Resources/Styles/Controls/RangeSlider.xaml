@@ -4,7 +4,7 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
-  <ControlTemplate x:Key="SliderThumb" TargetType="{x:Type Thumb}">
+  <ControlTemplate x:Key="MH.CT.RangeSlider-Thumb" TargetType="Thumb">
     <Rectangle
       x:Name="grip"
       RadiusX="2"
@@ -25,7 +25,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="RangeSliderTemplate" TargetType="{x:Type c:RangeSlider}">
+  <ControlTemplate x:Key="MH.CT.RangeSlider" TargetType="c:RangeSlider">
     <Border
       x:Name="root"
       BorderBrush="{TemplateBinding BorderBrush}"
@@ -33,8 +33,7 @@
       Background="{TemplateBinding Background}" 
       Width="{TemplateBinding Width}"
       Height="{TemplateBinding Height}"
-      Padding="5,0,5,10"
-      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+      Padding="5,0,5,10">
 
       <Grid>
         <Grid.RowDefinitions>
@@ -71,8 +70,6 @@
             x:Name="PART_StartArea"
             Grid.Column="0"
             Height="4"
-            BorderThickness="1"
-            BorderBrush="{StaticResource SliderThumb.Track.Border}"
             Background="{StaticResource Slider-Track.Static.Background}"
             IsHitTestVisible="False"/>
 
@@ -87,8 +84,6 @@
             x:Name="PART_EndArea"
             Grid.Column="2"
             Height="4"
-            BorderThickness="1"
-            BorderBrush="{StaticResource SliderThumb.Track.Border}"
             Background="{StaticResource Slider-Track.Static.Background}"
             IsHitTestVisible="False"/>
 
@@ -96,29 +91,32 @@
             x:Name="PART_StartThumb"
             Grid.Column="0"
             HorizontalAlignment="Right"
-            Template="{StaticResource SliderThumb}"/>
+            Template="{StaticResource MH.CT.RangeSlider-Thumb}"/>
 
           <Thumb
             x:Name="PART_EndThumb"
             Grid.Column="2"
             HorizontalAlignment="Left"
-            Template="{StaticResource SliderThumb}"/>
+            Template="{StaticResource MH.CT.RangeSlider-Thumb}"/>
         </Grid>
       </Grid>
     </Border>
+
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter TargetName="PART_StartArea" Property="Background" Value="{StaticResource Slider-Track.Disabled.Background}"/>
+        <Setter TargetName="PART_SelectedArea" Property="Background" Value="{StaticResource MH.Control.Disabled.Accent}"/>
+        <Setter TargetName="PART_EndArea" Property="Background" Value="{StaticResource Slider-Track.Disabled.Background}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <Style x:Key="MH.Styles.Controls.RangeSlider" TargetType="{x:Type c:RangeSlider}">
-    <Style.Resources>
-      <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Foreground" Value="{StaticResource Slider-Thumb.Hover.Background}"/>
-      </Style>
-    </Style.Resources>
-    <Setter Property="SnapsToDevicePixels" Value="True"/>
+  <Style x:Key="MH.S.RangeSlider" TargetType="c:RangeSlider">
     <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
     <Setter Property="Height" Value="40"/>
-    <Setter Property="Template" Value="{StaticResource RangeSliderTemplate}"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Template" Value="{StaticResource MH.CT.RangeSlider}"/>
     <Style.Triggers>
       <Trigger Property="Orientation" Value="Vertical">
         <Setter Property="FrameworkElement.LayoutTransform">
@@ -127,9 +125,7 @@
           </Setter.Value>
         </Setter>
       </Trigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
-      </Trigger>
+      <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
     </Style.Triggers>
   </Style>
 </ResourceDictionary>

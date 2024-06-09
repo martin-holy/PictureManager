@@ -160,8 +160,6 @@
   <SolidColorBrush x:Key="Slider-Track.Disabled.Background" Color="{StaticResource Gray3}"/>
   <SolidColorBrush x:Key="Slider-Track.Selection.Background" Color="{x:Static SystemParameters.WindowGlassColor}"/>
 
-  <SolidColorBrush x:Key="SliderThumb.Track.Border" Color="{StaticResource GrayColor2}"/>
-
   <SolidColorBrush x:Key="TabItem.Static.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="TabItem.Static.Foreground" Color="{StaticResource GrayColor2}"/>
   <SolidColorBrush x:Key="TabItem.MouseOver.Foreground" Color="{StaticResource GrayColor1}"/>
