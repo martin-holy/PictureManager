@@ -1,0 +1,215 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils">
+
+  <ResourceDictionary.MergedDictionaries>
+    <u:CachedResourceDictionary Source="../BaseControls/Common.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
+
+  <ControlTemplate x:Key="MH.CT.Slider-Thumb" TargetType="{x:Type Thumb}">
+    <Rectangle
+      x:Name="grip"
+      RadiusX="2"
+      RadiusY="2"
+      Width="{TemplateBinding Width}"
+      Height="{TemplateBinding Height}"
+      Fill="{StaticResource Slider-Thumb.Static.Background}"
+      Stroke="{StaticResource Slider-Thumb.Static.Border}"/>
+
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider-Thumb.Hover.Background}"/>
+      </Trigger>
+      <Trigger Property="IsDragging" Value="True">
+        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider-Thumb.Pressed.Background}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <ControlTemplate x:Key="MH.CT.Slider-Horizontal" TargetType="Slider">
+    <Border
+      Background="{TemplateBinding Background}"
+      BorderBrush="{TemplateBinding BorderBrush}"
+      BorderThickness="{TemplateBinding BorderThickness}">
+      
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TickBar
+          x:Name="topTick"
+          Grid.Row="0"
+          Height="4"
+          Placement="Top"
+          Visibility="Collapsed"
+          Margin="0,0,0,2"
+          Fill="{TemplateBinding Foreground}"/>
+
+        <TickBar
+          x:Name="bottomTick"
+          Grid.Row="2"
+          Height="4"
+          Placement="Bottom"
+          Visibility="Collapsed"
+          Margin="0,2,0,0"
+          Fill="{TemplateBinding Foreground}"/>
+
+        <Border
+          x:Name="trackBackground"
+          Grid.Row="1"
+          Height="4"
+          Margin="5,0"
+          VerticalAlignment="Center"
+          Background="{StaticResource Slider-Track.Static.Background}">
+
+          <Canvas Margin="-5,0">
+            <Rectangle
+              x:Name="PART_SelectionRange"
+              Height="4"
+              Fill="{StaticResource Slider-Track.Selection.Background}"/>
+          </Canvas>
+        </Border>
+
+        <Track x:Name="PART_Track" Grid.Row="1">
+          <Track.DecreaseRepeatButton>
+            <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource RepeatButtonTransparent}"/>
+          </Track.DecreaseRepeatButton>
+          <Track.Thumb>
+            <Thumb
+              x:Name="Thumb"
+              OverridesDefaultStyle="True"
+              Focusable="False"
+              VerticalAlignment="Center"
+              Template="{StaticResource MH.CT.Slider-Thumb}"
+              Width="10"
+              Height="20"/>
+          </Track.Thumb>
+          <Track.IncreaseRepeatButton>
+            <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource RepeatButtonTransparent}"/>
+          </Track.IncreaseRepeatButton>
+        </Track>
+      </Grid>
+    </Border>
+    
+    <ControlTemplate.Triggers>
+      <Trigger Property="TickPlacement" Value="TopLeft">
+        <Setter TargetName="topTick" Property="Visibility" Value="Visible"/>
+      </Trigger>
+      <Trigger Property="TickPlacement" Value="BottomRight">
+        <Setter TargetName="bottomTick" Property="Visibility" Value="Visible"/>
+      </Trigger>
+      <Trigger Property="TickPlacement" Value="Both">
+        <Setter TargetName="topTick" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="bottomTick" Property="Visibility" Value="Visible"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter TargetName="trackBackground" Property="Background" Value="{StaticResource Slider-Track.Disabled.Background}"/>
+        <Setter TargetName="PART_SelectionRange" Property="Fill" Value="{StaticResource MH.Control.Disabled.Accent}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <ControlTemplate x:Key="MH.CT.Slider-Vertical" TargetType="{x:Type Slider}">
+    <Border 
+      Background="{TemplateBinding Background}"
+      BorderBrush="{TemplateBinding BorderBrush}"
+      BorderThickness="{TemplateBinding BorderThickness}">
+      
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition MinWidth="{TemplateBinding MinWidth}" Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <TickBar
+          x:Name="leftTick"
+          Grid.Column="0"
+          Placement="Left"
+          Visibility="Collapsed"
+          Width="4"
+          Margin="0,0,2,0"
+          Fill="{TemplateBinding Foreground}"/>
+
+        <TickBar
+          x:Name="rightTick"
+          Grid.Column="2"
+          Placement="Right"
+          Visibility="Collapsed"
+          Width="4"
+          Margin="2,0,0,0"
+          Fill="{TemplateBinding Foreground}"/>
+
+        <Border
+          x:Name="trackBackground"
+          Grid.Column="1"
+          HorizontalAlignment="Center"
+          Margin="0,5"
+          Width="4"
+          Background="{StaticResource Slider-Track.Static.Background}">
+
+          <Canvas Margin="0,-5">
+            <Rectangle
+              x:Name="PART_SelectionRange"
+              Width="4"
+              Fill="{StaticResource Slider-Track.Selection.Background}"/>
+          </Canvas>
+        </Border>
+
+        <Track x:Name="PART_Track" Grid.Column="1">
+          <Track.DecreaseRepeatButton>
+            <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource RepeatButtonTransparent}"/>
+          </Track.DecreaseRepeatButton>
+          <Track.Thumb>
+            <Thumb 
+              OverridesDefaultStyle="True"
+              Focusable="False"
+              VerticalAlignment="Top"
+              Width="20"
+              Height="10"
+              Template="{StaticResource MH.CT.Slider-Thumb}"/>
+          </Track.Thumb>
+          <Track.IncreaseRepeatButton>
+            <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource RepeatButtonTransparent}"/>
+          </Track.IncreaseRepeatButton>
+        </Track>
+      </Grid>
+    </Border>
+    
+    <ControlTemplate.Triggers>
+      <Trigger Property="TickPlacement" Value="TopLeft">
+        <Setter TargetName="leftTick" Property="Visibility" Value="Visible"/>
+      </Trigger>
+      <Trigger Property="TickPlacement" Value="BottomRight">
+        <Setter TargetName="rightTick" Property="Visibility" Value="Visible"/>
+      </Trigger>
+      <Trigger Property="TickPlacement" Value="Both">
+        <Setter TargetName="leftTick" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="rightTick" Property="Visibility" Value="Visible"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter TargetName="trackBackground" Property="Background" Value="{StaticResource Slider-Track.Disabled.Background}"/>
+        <Setter TargetName="PART_SelectionRange" Property="Fill" Value="{StaticResource MH.Control.Disabled.Accent}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <Style x:Key="MH.S.Slider" TargetType="Slider">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource Slider.Static.Foreground}"/>
+    <Setter Property="SelectionStart" Value="{Binding Minimum, RelativeSource={RelativeSource Self}}"/>
+    <Setter Property="SelectionEnd" Value="{Binding Value, RelativeSource={RelativeSource Self}}"/>
+    <Setter Property="Template" Value="{StaticResource MH.CT.Slider-Horizontal}"/>
+    <Style.Triggers>
+      <Trigger Property="Orientation" Value="Vertical">
+        <Setter Property="Template" Value="{StaticResource MH.CT.Slider-Vertical}"/>
+      </Trigger>
+      <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
+    </Style.Triggers>
+  </Style>
+</ResourceDictionary>

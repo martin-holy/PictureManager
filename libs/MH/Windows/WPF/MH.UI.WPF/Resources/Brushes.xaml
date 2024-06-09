@@ -3,13 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
-  <!--SystemColors override-->
-  <!--<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Red"/>-->
-
-  <!--TODO
-    dat vsude ControlIsNotEnabledOpacity <- spante, nastavovat barvu
-    bila na scrollbaru je moc, dat tam neco tmavsiho
-  -->
   <sys:Double x:Key="ControlIsNotEnabledOpacity">0.4</sys:Double>
 
   <Color x:Key="BorderColor">#A0A0A0</Color>
@@ -79,6 +72,7 @@
 
   <SolidColorBrush x:Key="MH.Control.Disabled.Border" Color="{StaticResource DisabledBorderColor}"/>
   <SolidColorBrush x:Key="MH.Control.Disabled.Foreground" Color="{StaticResource DisabledForegroundColor}"/>
+  <SolidColorBrush x:Key="MH.Control.Disabled.Accent" Color="{StaticResource DisabledForegroundColor}"/>
 
   <SolidColorBrush x:Key="MH.Item.Disabled.Border" Color="{StaticResource DisabledBorderColor}"/>
   <SolidColorBrush x:Key="MH.Item.Disabled.Foreground" Color="{StaticResource DisabledForegroundColor}"/>
@@ -157,14 +151,16 @@
   <SolidColorBrush x:Key="ScrollBar.Pressed.Glyph" Color="{StaticResource Gray8}"/>
   <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="{StaticResource Gray8}"/>
 
-  <SolidColorBrush x:Key="Slider.Foreground" Color="{StaticResource GrayColor1}"/>
-  <SolidColorBrush x:Key="SliderThumb.Static.Background" Color="{StaticResource GrayColor3}"/>
-  <SolidColorBrush x:Key="SliderThumb.Static.Border" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="SliderThumb.MouseOver.Background" Color="{StaticResource GrayColor2}"/>
-  <SolidColorBrush x:Key="SliderThumb.Pressed.Background" Color="{StaticResource GrayColor3}"/>
-  <SolidColorBrush x:Key="SliderThumb.Track.Background" Color="{StaticResource GrayColor2}"/>
+  <SolidColorBrush x:Key="Slider.Static.Foreground" Color="{StaticResource Gray9}"/>
+  <SolidColorBrush x:Key="Slider-Thumb.Static.Background" Color="{StaticResource Gray4}"/>
+  <SolidColorBrush x:Key="Slider-Thumb.Static.Border" Color="{StaticResource BackgroundColor}"/>
+  <SolidColorBrush x:Key="Slider-Thumb.Hover.Background" Color="{StaticResource Gray6}"/>
+  <SolidColorBrush x:Key="Slider-Thumb.Pressed.Background" Color="{StaticResource Gray8}"/>
+  <SolidColorBrush x:Key="Slider-Track.Static.Background" Color="{StaticResource Gray6}"/>
+  <SolidColorBrush x:Key="Slider-Track.Disabled.Background" Color="{StaticResource Gray3}"/>
+  <SolidColorBrush x:Key="Slider-Track.Selection.Background" Color="{x:Static SystemParameters.WindowGlassColor}"/>
+
   <SolidColorBrush x:Key="SliderThumb.Track.Border" Color="{StaticResource GrayColor2}"/>
-  <SolidColorBrush x:Key="SliderThumb.Track.Selection.Background" Color="{x:Static SystemParameters.WindowGlassColor}"/>
 
   <SolidColorBrush x:Key="TabItem.Static.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="TabItem.Static.Foreground" Color="{StaticResource GrayColor2}"/>

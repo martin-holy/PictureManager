@@ -12,15 +12,15 @@
       Margin="-5,0"
       Width="10"
       Height="20"
-      Fill="{StaticResource SliderThumb.Static.Background}"
-      Stroke="{StaticResource SliderThumb.Static.Border}"/>
+      Fill="{StaticResource Slider-Thumb.Static.Background}"
+      Stroke="{StaticResource Slider-Thumb.Static.Border}"/>
 
     <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
+        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider-Thumb.Hover.Background}"/>
       </Trigger>
       <Trigger Property="IsDragging" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource SliderThumb.Pressed.Background}"/>
+        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider-Thumb.Pressed.Background}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -73,14 +73,14 @@
             Height="4"
             BorderThickness="1"
             BorderBrush="{StaticResource SliderThumb.Track.Border}"
-            Background="{StaticResource SliderThumb.Track.Background}"
+            Background="{StaticResource Slider-Track.Static.Background}"
             IsHitTestVisible="False"/>
 
           <Border
             x:Name="PART_SelectedArea"
             Grid.Column="1"
             Height="4"
-            Background="{StaticResource SliderThumb.Track.Selection.Background}"
+            Background="{StaticResource Slider-Track.Selection.Background}"
             IsHitTestVisible="False"/>
 
           <Border
@@ -89,7 +89,7 @@
             Height="4"
             BorderThickness="1"
             BorderBrush="{StaticResource SliderThumb.Track.Border}"
-            Background="{StaticResource SliderThumb.Track.Background}"
+            Background="{StaticResource Slider-Track.Static.Background}"
             IsHitTestVisible="False"/>
 
           <Thumb
@@ -112,7 +112,7 @@
     <Style.Resources>
       <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Foreground" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
+        <Setter Property="Foreground" Value="{StaticResource Slider-Thumb.Hover.Background}"/>
       </Style>
     </Style.Resources>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
