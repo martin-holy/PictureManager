@@ -80,7 +80,7 @@
   <Style TargetType="mhc:IconToggleButton" BasedOn="{StaticResource MH.S.IconToggleButton}"/>
   <Style TargetType="mhc:IconTextBlockItemsControl" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockItemsControl}"/>
   <Style TargetType="mhc:PopupSlider" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
-  <Style TargetType="mhc:RangeSlider" BasedOn="{StaticResource MH.Styles.Controls.RangeSlider}"/>
+  <Style TargetType="mhc:RangeSlider" BasedOn="{StaticResource MH.S.RangeSlider}"/>
   <Style TargetType="mhc:SlidePanelHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelHost}"/>
   <Style TargetType="mhc:SlidePanelsGridHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGridHost}"/>
   <Style TargetType="mhc:TreeViewBase" BasedOn="{StaticResource MH.Styles.Controls.TreeViewBase}"/>
