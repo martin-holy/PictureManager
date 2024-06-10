@@ -166,9 +166,4 @@
   <SolidColorBrush x:Key="TabItem.Selected.Foreground" Color="{x:Static SystemParameters.WindowGlassColor}"/>
 
   <SolidColorBrush x:Key="TextBox.InactiveSelectionHighlight" Color="{StaticResource GrayColor2}"/>
-
-  <SolidColorBrush x:Key="ToolTip.Background" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="ToolTip.Border" Color="{StaticResource GrayColor2}"/>
-  <SolidColorBrush x:Key="ToolTip.Foreground" Color="{StaticResource TextColor}"/>
-
 </ResourceDictionary>
