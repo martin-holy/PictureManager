@@ -8,7 +8,6 @@
   <ResourceDictionary.MergedDictionaries>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ToolTip.xaml"/>
 
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CatTreeView.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CollectionView.xaml"/>
@@ -34,6 +33,7 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TabControl.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TextBlock.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TextBoxBase.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ToolTip.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/WindowButtons.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ZoomAndPan.xaml"/>
 
@@ -69,7 +69,7 @@
   <Style TargetType="TabItem" BasedOn="{StaticResource MH.S.TabItem}"/>
   <Style TargetType="TextBlock" BasedOn="{StaticResource MH.S.TextBlock}"/>
   <Style TargetType="TextBox" BasedOn="{StaticResource MH.S.TextBoxBase}"/>
-  <Style TargetType="ToolTip" BasedOn="{StaticResource MH.Styles.BaseControls.ToolTip}"/>
+  <Style TargetType="ToolTip" BasedOn="{StaticResource MH.S.ToolTip}"/>
 
   <Style TargetType="mhc:CatTreeView" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}"/>
   <Style TargetType="mhc:CollectionView" BasedOn="{StaticResource MH.Styles.Controls.CollectionView}"/>
