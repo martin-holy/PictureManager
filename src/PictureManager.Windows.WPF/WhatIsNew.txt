@@ -9,6 +9,7 @@ Latest:
  - [U] ScrollBar style
  - [U] Slider style
  - [U] RangeSlider style
+ - [U] ToolTip style
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
