@@ -49,6 +49,8 @@
   <Color x:Key="Light8">#CCFFFFFF</Color>
   <Color x:Key="Light9">#E6FFFFFF</Color>
 
+  <SolidColorBrush x:Key="MH.Brush.Accent" Color="{DynamicResource MH.Color.Accent}"/>
+
   <SolidColorBrush x:Key="MH.Brushes.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Foreground" Color="{StaticResource ForegroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Text" Color="{StaticResource TextColor}"/>
@@ -70,19 +72,17 @@
 
   <SolidColorBrush x:Key="MH.Item.Disabled.Border" Color="{StaticResource DisabledBorderColor}"/>
   <SolidColorBrush x:Key="MH.Item.Disabled.Foreground" Color="{StaticResource DisabledForegroundColor}"/>
-  <SolidColorBrush x:Key="MH.Item.Hover.Border" Color="#A826A0DA"/>
-  <SolidColorBrush x:Key="MH.Item.Hover.Background" Color="#1F26A0DA"/>
+
+  <SolidColorBrush x:Key="MH.Item.Hover.Border" Color="{DynamicResource MH.Color.Accent9}"/>
+  <SolidColorBrush x:Key="MH.Item.Hover.Background" Color="{DynamicResource MH.Color.Accent2}"/>
   <SolidColorBrush x:Key="MH.Item.Hover.Foreground" Color="{StaticResource GrayColor1}"/>
-  <SolidColorBrush x:Key="MH.Item.Selected.Border" Color="#254250"/>
-  <SolidColorBrush x:Key="MH.Item.Selected.Background" Color="#254250"/>
+  <SolidColorBrush x:Key="MH.Item.Selected.Border" Color="{DynamicResource MH.Color.Accent-Dark}"/>
+  <SolidColorBrush x:Key="MH.Item.Selected.Background" Color="{DynamicResource MH.Color.Accent-Dark}"/>
   <SolidColorBrush x:Key="MH.Item.Selected.Foreground" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="MH.Item.SelectedHover.Border" Color="#99006CD9"/>
-  <SolidColorBrush x:Key="MH.Item.SelectedHover.Background" Color="#1E4D70"/>
-  <SolidColorBrush x:Key="MH.Item.SelectedNoFocus.Border" Color="#254250"/>
-  <SolidColorBrush x:Key="MH.Item.SelectedNoFocus.Background" Color="#254250"/>
-  <SolidColorBrush x:Key="MH.Item.Focus.Border" Color="#FF26A0DA"/>
-  <SolidColorBrush x:Key="MH.Item.HoverFocus.Border" Color="#FF26A0DA"/>
-  <SolidColorBrush x:Key="MH.Item.HoverFocus.Background" Color="#5426A0DA"/>
+  <SolidColorBrush x:Key="MH.Item.SelectedHover.Border" Color="{DynamicResource MH.Color.Accent9}"/>
+  <SolidColorBrush x:Key="MH.Item.SelectedHover.Background" Color="{DynamicResource MH.Color.Accent7}"/>
+  <SolidColorBrush x:Key="MH.Item.SelectedNoFocus.Border" Color="{DynamicResource MH.Color.Accent-Dark}"/>
+  <SolidColorBrush x:Key="MH.Item.SelectedNoFocus.Background" Color="{DynamicResource MH.Color.Accent-Dark}"/>
 
   <SolidColorBrush x:Key="MH.Control.Static.Text" Color="{StaticResource TextColor}"/>
   <SolidColorBrush x:Key="MH.Control.MouseOver.Background" Color="{StaticResource BackgroundColor}"/>
