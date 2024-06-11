@@ -13,7 +13,7 @@
   Background="#FF252525"
   Foreground="White"
   BorderThickness="1"
-  BorderBrush="Black">
+  BorderBrush="{DynamicResource MH.Brush.Accent}">
   
   <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=v:SplashScreenV}}">
     <Grid.RowDefinitions>
