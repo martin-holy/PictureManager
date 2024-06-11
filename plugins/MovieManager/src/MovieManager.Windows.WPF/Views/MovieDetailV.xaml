@@ -58,19 +58,14 @@
         <!-- Menu -->
         <Menu
           Grid.Row="0"
-          Height="30"
-          Width="30"
           HorizontalAlignment="Left"
           VerticalAlignment="Center"
           Background="Transparent"
           Margin="4">
 
-          <MenuItem Padding="0" Height="30" Width="30">
+          <MenuItem Padding="6,2,-2,2">
             <MenuItem.Icon>
-              <Path
-                Data="{StaticResource IconThreeBars}"
-                Style="{StaticResource MH.Styles.IconWithShadow}"
-                Margin="2,0,0,0"/>
+              <Path Data="{StaticResource IconThreeBars}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
             </MenuItem.Icon>
 
             <MenuItem Command="{Binding AddMediaItemsCommand}"/>

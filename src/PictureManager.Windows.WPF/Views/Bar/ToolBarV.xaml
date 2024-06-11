@@ -81,10 +81,11 @@
           <ContentPresenter
             Content="{Binding Inst.Plugins, Mode=OneTime}"
             ContentTemplate="{StaticResource Views.PluginsMenuV}"
+            VerticalAlignment="Center"
             Visibility="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
           <!-- Viewers -->
-          <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}"/>
+          <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}" VerticalAlignment="Center"/>
 
           <Separator/>
 
