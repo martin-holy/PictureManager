@@ -17,6 +17,8 @@ namespace PictureManager.Windows.WPF {
         Dialog.Show(new ErrorDialogM((Exception)args.ExceptionObject));
       };
 
+      MH.UI.WPF.Utils.ColorHelper.AddColorsToResources();
+
       var splashScreen = new SplashScreenV();
       MainWindow = splashScreen;
       MainWindow.Show();

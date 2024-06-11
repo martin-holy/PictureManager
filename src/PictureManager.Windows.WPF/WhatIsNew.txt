@@ -11,6 +11,7 @@ Latest:
  - [U] RangeSlider style
  - [U] ToolTip style
  - [U] Menu style
+ - [U] ProgressBar style
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
