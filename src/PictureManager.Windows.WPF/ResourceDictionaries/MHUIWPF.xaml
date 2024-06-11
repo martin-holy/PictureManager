@@ -6,7 +6,6 @@
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
   
   <ResourceDictionary.MergedDictionaries>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
 
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CatTreeView.xaml"/>
@@ -22,6 +21,7 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Label.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ListBox.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RadioButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
@@ -57,9 +57,9 @@
   <Style TargetType="Label" BasedOn="{StaticResource MH.S.Label}"/>
   <Style TargetType="ListBox" BasedOn="{StaticResource MH.S.ListBox}"/>
   <Style TargetType="ListBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
-  <Style TargetType="ContextMenu" BasedOn="{StaticResource MH.Styles.BaseControls.ContextMenu}"/>
-  <Style TargetType="Menu" BasedOn="{StaticResource MH.Styles.BaseControls.Menu}"/>
-  <Style TargetType="MenuItem" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}"/>
+  <Style TargetType="ContextMenu" BasedOn="{StaticResource MH.S.ContextMenu}"/>
+  <Style TargetType="Menu" BasedOn="{StaticResource MH.S.Menu}"/>
+  <Style TargetType="MenuItem" BasedOn="{StaticResource MH.S.MenuItem}"/>
   <Style TargetType="ProgressBar" BasedOn="{StaticResource MH.Styles.BaseControls.ProgressBar}"/>
   <Style TargetType="RadioButton" BasedOn="{StaticResource MH.S.RadioButton}"/>
   <Style TargetType="ScrollBar" BasedOn="{StaticResource MH.S.ScrollBar}"/>
