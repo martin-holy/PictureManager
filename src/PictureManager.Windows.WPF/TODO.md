@@ -32,6 +32,8 @@
 ## SegmentsMatching
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
+## Segments
+  - segment can by drawn out of bounds on video. thumb recreating is not working. segment is probably in error cache
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
@@ -64,10 +66,12 @@
 ## Segments
   - add button remove selected segments from drawer
   - SegmentThumbnailSourceConverter update more often
+  - hide segments in MediaViewer on video when time is not set to clip, videoImage or video start
 ## ToggleDialog
   - show selected items on dialog
   - add support for removing GeoName
   - add support for removing Person on Segment
+  - make it bigger
 ## MediaItems
   - save to file only metadata visible for viewer
 ## MediaItemsView
@@ -77,6 +81,7 @@
 ## Video
   - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
     + setting this position in VideoDetail
+  - keep last video in VideoDetail when leaving MediaItemsView
 ## Settings
   - use WrapPanel and each category is one block
 ## StatusBar
