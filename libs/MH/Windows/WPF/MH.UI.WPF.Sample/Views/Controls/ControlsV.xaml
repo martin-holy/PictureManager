@@ -52,9 +52,11 @@
             DockPanel.Dock="Left"
             Content="IsIndeterminate"/>
           <ProgressBar
-            Value="30"
+            Value="80"
+            Width="350"
             Height="20"
             Margin="5"
+            HorizontalAlignment="Left"
             IsIndeterminate="{Binding IsChecked, ElementName=chbIsIndeterminate}"/>
         </DockPanel>
       </Grid>

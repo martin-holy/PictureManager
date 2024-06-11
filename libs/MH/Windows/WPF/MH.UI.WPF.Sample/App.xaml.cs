@@ -10,6 +10,8 @@ public partial class App {
   protected override async void OnStartup(StartupEventArgs e) {
     base.OnStartup(e);
 
+    Utils.ColorHelper.AddColorsToResources();
+
     var splashScreen = new SplashScreenV();
     MainWindow = splashScreen;
     MainWindow.Show();
