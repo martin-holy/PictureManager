@@ -28,37 +28,105 @@
         </StackPanel>
 
         <Menu VerticalAlignment="Center" Margin="5,0,0,0">
+          <MenuItem Header="Enabled" IsCheckable="True" IsChecked="{Binding VM.MainWindow.AreControlsEnabled, Source={x:Static s:App.Core}}"/>
           <MenuItem Header="Dialogs" DataContext="{Binding VM.MainWindow, Source={x:Static s:App.Core}}">
             <MenuItem Command="{Binding OpenMessageDialogCommand}"/>
             <MenuItem Command="{Binding OpenInputDialogCommand}"/>
             <!--<MenuItem Command="{Binding OpenProgressBarDialogCommand}"/>-->
           </MenuItem>
           <MenuItem Header="Left Content" DataContext="{Binding VM.MainWindow, Source={x:Static s:App.Core}}">
+            <MenuItem.Icon>
+              <Path Data="{StaticResource IconGroup}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+            </MenuItem.Icon>
             <MenuItem Command="{Binding OpenButtonsTabCommand}"/>
             <MenuItem Command="{Binding OpenListsTabCommand}"/>
             <MenuItem Command="{Binding OpenSlidersTabCommand}"/>
             <MenuItem Command="{Binding OpenTextsTabCommand}"/>
           </MenuItem>
           <MenuItem Header="Menu">
-            <MenuItem Header="Item 1"/>
-            <MenuItem Header="Item 2"/>
+            <MenuItem Header="Item 1" Command="{Binding SampleImageCommand}" InputGestureText="CTRL+K"/>
+            <MenuItem Header="Item 2" Command="{Binding SampleVideoCommand}" IsEnabled="False"/>
+            <MenuItem Header="Checkable" IsCheckable="True" IsChecked="{Binding CheckedMenuItem}"/>
             <Separator/>
             <CheckBox IsChecked="True" Content="Test"/>
             <MenuItem Header="Item 3">
-              <MenuItem Header="Item 1"/>
-              <MenuItem Header="Item 2"/>
+              <MenuItem.Icon>
+                <Path Data="{StaticResource IconBug}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+              </MenuItem.Icon>
+              <MenuItem Header="Item 1" InputGestureText="CTRL+K"/>
+              <MenuItem Header="Item 2" IsEnabled="False" IsChecked="True">
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+              </MenuItem>
               <MenuItem Header="Item 3">
+                <MenuItem Header="Item 1 with longer name"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3 with longer name" InputGestureText="CTRL+K"/>
+              </MenuItem>
+              <MenuItem Header="Item 4">
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2" InputGestureText="CTRL+K"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
+                <MenuItem Header="Item 1"/>
+                <MenuItem Header="Item 2"/>
+                <MenuItem Header="Item 3"/>
                 <MenuItem Header="Item 1"/>
                 <MenuItem Header="Item 2"/>
                 <MenuItem Header="Item 3"/>
               </MenuItem>
             </MenuItem>
           </MenuItem>
+          <MenuItem Padding="6,2,-2,2">
+            <MenuItem.Icon>
+              <Path Data="{StaticResource IconGroup}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+            </MenuItem.Icon>
+            <MenuItem Header="Item 1 with longer name"/>
+            <MenuItem Header="Item 2"/>
+            <MenuItem Header="Item 3 with longer name" InputGestureText="CTRL+K"/>
+          </MenuItem>
         </Menu>
-
-        <CheckBox
-          IsChecked="{Binding VM.MainWindow.AreControlsEnabled, Source={x:Static s:App.Core}}"
-          Content="Enabled"/>
       </StackPanel>
 
       <Grid HorizontalAlignment="Right">
