@@ -6,18 +6,9 @@
 
   <DataTemplate x:Key="Views.PluginsMenuV" DataType="{x:Static pmhc:GenericTypes.ListOfIPluginCore}">
     <Menu Background="Transparent">
-      <MenuItem
-        ItemsSource="{Binding}"
-        Padding="0"
-        Background="Transparent"
-        Height="30"
-        Width="30">
-
+      <MenuItem ItemsSource="{Binding}" Padding="6,2,-2,2">
         <MenuItem.Icon>
-          <Path
-            Margin="2,0,0,0"
-            Data="{StaticResource IconPuzzle}"
-            Style="{StaticResource MH.Styles.IconWithShadow}"/>
+          <Path Data="{StaticResource IconPuzzle}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
         </MenuItem.Icon>
 
         <MenuItem.ItemContainerStyle>

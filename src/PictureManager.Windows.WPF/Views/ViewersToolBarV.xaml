@@ -7,12 +7,7 @@
 
   <DataTemplate x:Key="Views.ViewersToolBarV">
     <Menu Background="Transparent">
-      <MenuItem
-        x:Name="root"
-        Height="30"
-        Background="Transparent"
-        Header="{Binding S.Viewer.Current.Name, Source={x:Static pm:App.Core}}">
-
+      <MenuItem x:Name="root" Header="{Binding S.Viewer.Current.Name, Source={x:Static pm:App.Core}}">
         <MenuItem.Icon>
           <Path Data="{StaticResource IconEye}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
         </MenuItem.Icon>
@@ -35,9 +30,6 @@
     </Menu>
 
     <DataTemplate.Triggers>
-      <Trigger SourceName="root" Property="IsHighlighted" Value="True">
-        <Setter TargetName="root" Property="Background" Value="{StaticResource ColorBrushBackground}"/>
-      </Trigger>
       <DataTrigger Binding="{Binding S.Viewer.Current, Source={x:Static pm:App.Core}}" Value="{x:Null}">
         <Setter TargetName="root" Property="Header" Value="All"/>
       </DataTrigger>
