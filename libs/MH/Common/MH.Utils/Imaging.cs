@@ -179,4 +179,67 @@ public static class Imaging {
 
     return diff;
   }
+
+  public static void RgbToHsl(double r, double g, double b, out double h, out double s, out double l) {
+    r /= 255.0;
+    g /= 255.0;
+    b /= 255.0;
+
+    var max = Math.Max(r, Math.Max(g, b));
+    var min = Math.Min(r, Math.Min(g, b));
+    var delta = max - min;
+
+    // Lightness
+    l = ((max + min) / 2.0) * 240;
+
+    if (delta == 0) {
+      // Grey, no chroma
+      h = 0;
+      s = 0;
+      return;
+    }
+
+    // Saturation
+    s = (l < 120 ? delta / (max + min) : delta / (2.0 - max - min)) * 240;
+
+    // Hue
+    if (r == max) h = (g - b) / delta;
+    else if (g == max) h = 2.0 + (b - r) / delta;
+    else h = 4.0 + (r - g) / delta;
+
+    h *= 40; // Convert hue to 0-239 range
+    if (h < 0) h += 240;
+  }
+
+  public static void HslToRgb(double h, double s, double l, out byte r, out byte g, out byte b) {
+    h = (h / 239.0) * 360;
+    s /= 240.0;
+    l /= 240.0;
+
+    double dr, dg, db;
+
+    if (s == 0) {
+      dr = dg = db = l; // Achromatic
+    } else {
+      double q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      double p = 2 * l - q;
+
+      dr = HueToRgb(p, q, h / 360 + 1 / 3.0);
+      dg = HueToRgb(p, q, h / 360);
+      db = HueToRgb(p, q, h / 360 - 1 / 3.0);
+    }
+
+    r = (byte)(dr * 255);
+    g = (byte)(dg * 255);
+    b = (byte)(db * 255);
+  }
+
+  public static double HueToRgb(double p, double q, double t) {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6.0) return p + (q - p) * 6 * t;
+    if (t < 1 / 2.0) return q;
+    if (t < 2 / 3.0) return p + (q - p) * (2 / 3.0 - t) * 6;
+    return p;
+  }
 }
