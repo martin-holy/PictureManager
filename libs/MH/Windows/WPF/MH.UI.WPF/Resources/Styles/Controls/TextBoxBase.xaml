@@ -4,13 +4,13 @@
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
-    <u:CachedResourceDictionary Source="../BaseControls/Menu.xaml"/>
+    <u:CachedResourceDictionary Source="Menu.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <ContextMenu x:Key="MH.S.TextBoxBase-ContextMenu" Style="{StaticResource MH.Styles.BaseControls.ContextMenu}">
-    <MenuItem Command="ApplicationCommands.Cut" Style="{DynamicResource MH.Styles.BaseControls.MenuItem}"/>
-    <MenuItem Command="ApplicationCommands.Copy" Style="{DynamicResource MH.Styles.BaseControls.MenuItem}"/>
-    <MenuItem Command="ApplicationCommands.Paste" Style="{DynamicResource MH.Styles.BaseControls.MenuItem}"/>
+  <ContextMenu x:Key="MH.S.TextBoxBase-ContextMenu" Style="{StaticResource MH.S.ContextMenu}">
+    <MenuItem Command="ApplicationCommands.Cut" Style="{DynamicResource MH.S.MenuItem}"/>
+    <MenuItem Command="ApplicationCommands.Copy" Style="{DynamicResource MH.S.MenuItem}"/>
+    <MenuItem Command="ApplicationCommands.Paste" Style="{DynamicResource MH.S.MenuItem}"/>
   </ContextMenu>
 
   <Style x:Key="MH.S.TextBoxBase" TargetType="TextBoxBase">
