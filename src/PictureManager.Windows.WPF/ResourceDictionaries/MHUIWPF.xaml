@@ -6,8 +6,6 @@
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
   
   <ResourceDictionary.MergedDictionaries>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
-
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CatTreeView.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CollectionView.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ComboBox.xaml"/>
@@ -23,6 +21,7 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Menu.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ProgressBar.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RadioButton.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollBar.xaml"/>
@@ -60,7 +59,7 @@
   <Style TargetType="ContextMenu" BasedOn="{StaticResource MH.S.ContextMenu}"/>
   <Style TargetType="Menu" BasedOn="{StaticResource MH.S.Menu}"/>
   <Style TargetType="MenuItem" BasedOn="{StaticResource MH.S.MenuItem}"/>
-  <Style TargetType="ProgressBar" BasedOn="{StaticResource MH.Styles.BaseControls.ProgressBar}"/>
+  <Style TargetType="ProgressBar" BasedOn="{StaticResource MH.S.ProgressBar}"/>
   <Style TargetType="RadioButton" BasedOn="{StaticResource MH.S.RadioButton}"/>
   <Style TargetType="ScrollBar" BasedOn="{StaticResource MH.S.ScrollBar}"/>
   <Style TargetType="ScrollViewer" BasedOn="{StaticResource MH.S.ScrollViewer}"/>
