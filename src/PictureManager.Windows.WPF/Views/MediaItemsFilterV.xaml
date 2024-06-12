@@ -94,7 +94,7 @@
           BorderThickness="1"
           SnapsToDevicePixels="True"
           BorderBrush="{StaticResource MH.B.Accent}"
-          Background="{StaticResource ColorBrushBackground}">
+          Background="{StaticResource MH.B.C.Static.Ba}">
           
           <DockPanel>
             <!-- Media Types and Clear -->
@@ -140,7 +140,7 @@
                   <Border
                     DockPanel.Dock="Top"
                     Margin="2,0"
-                    Background="{StaticResource DisplayFilterAndBrush}">
+                    Background="{StaticResource PM.B.And}">
                     <TextBlock Text="And" Style="{StaticResource AndOrNotText}"/>
                   </Border>
                   <ItemsControl ItemsSource="{Binding FilterAnd}"/>
@@ -150,7 +150,7 @@
                   <Border
                     DockPanel.Dock="Top"
                     Margin="2,0"
-                    Background="{StaticResource DisplayFilterOrBrush}">
+                    Background="{StaticResource PM.B.Or}">
                     <TextBlock Text="Or" Style="{StaticResource AndOrNotText}"/>
                   </Border>
                   <ItemsControl ItemsSource="{Binding FilterOr}"/>
@@ -160,7 +160,7 @@
                   <Border
                     DockPanel.Dock="Top"
                     Margin="2,0"
-                    Background="{StaticResource DisplayFilterNotBrush}">
+                    Background="{StaticResource PM.B.Not}">
                     <TextBlock Text="Not" Style="{StaticResource AndOrNotText}"/>
                   </Border>
                   <ItemsControl ItemsSource="{Binding FilterNot}"/>

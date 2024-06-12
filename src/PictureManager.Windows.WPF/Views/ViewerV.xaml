@@ -76,7 +76,7 @@
           <Path
             Style="{StaticResource MH.Styles.Icon}"
             Data="{StaticResource IconTag}"
-            Fill="{StaticResource ColorBrushTag}"/>
+            Fill="{StaticResource PM.B.Tag}"/>
 
           <TextBlock
             Text="{Binding Name}"
@@ -98,7 +98,7 @@
           <StackPanel Style="{StaticResource _header}">
             <Path
               Data="{StaticResource IconFolder}"
-              Fill="{StaticResource ColorBrushFolder}"
+              Fill="{StaticResource PM.B.Folder}"
               Style="{StaticResource _headerIcon}"/>
 
             <TextBlock
@@ -136,7 +136,7 @@
           <StackPanel Style="{StaticResource _header}">
             <Path
               Data="{StaticResource IconFolder}"
-              Fill="{StaticResource ColorBrushFolder}"
+              Fill="{StaticResource PM.B.Folder}"
               Style="{StaticResource _headerIcon}"/>
 
             <TextBlock
@@ -174,7 +174,6 @@
           <StackPanel Style="{StaticResource _header}">
             <Path
               Data="{StaticResource IconGroup}"
-              Fill="{StaticResource ColorBrushWhite}"
               Style="{StaticResource _headerIcon}"/>
 
             <TextBlock
@@ -220,7 +219,7 @@
           <StackPanel Style="{StaticResource _header}">
             <Path
               Data="{StaticResource IconTagLabel}"
-              Fill="{StaticResource ColorBrushTag}"
+              Fill="{StaticResource PM.B.Tag}"
               Style="{StaticResource _headerIcon}"/>
 
             <TextBlock Style="{StaticResource _headerText}" Text="Excluded Keywords"/>

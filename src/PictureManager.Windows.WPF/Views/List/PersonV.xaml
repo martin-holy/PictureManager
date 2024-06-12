@@ -12,7 +12,7 @@
         DockPanel.Dock="Left"
         Style="{StaticResource MH.Styles.Icon}"
         Data="{StaticResource IconPeople}"
-        Fill="{StaticResource ColorBrushPeople}"/>
+        Fill="{StaticResource PM.B.People}"/>
 
       <TextBlock
         Style="{StaticResource PM.Styles.TextBlockBase}"
