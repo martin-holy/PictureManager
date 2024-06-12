@@ -9,7 +9,7 @@
     <Setter Property="SmallChange" Value="1"/>
     <Setter Property="LargeChange" Value="10"/>
     <Setter Property="IsSnapToTickEnabled" Value="True"/>
-    <Setter Property="Background" Value="{StaticResource MH.Brushes.Background}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="c:PopupSlider">

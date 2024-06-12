@@ -3,9 +3,9 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <Style x:Key="MH.S.RadioButton" TargetType="RadioButton">
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
-    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Static.Bo}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -34,7 +34,7 @@
                 Width="10"
                 Height="10"
                 Visibility="Collapsed"
-                Fill="{StaticResource MH.Brushes.Accent}"/>
+                Fill="{StaticResource MH.B.Accent}"/>
             </Border>
 
             <ContentPresenter
@@ -51,10 +51,10 @@
               <Setter Property="Padding" Value="4,0,0,0"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Hover.Border}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Hover.Bo}"/>
             </Trigger>
             <Trigger Property="IsKeyboardFocused" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Focus.Border}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Focus.Bo}"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
               <Setter TargetName="optionMark" Property="Visibility" Value="Visible"/>

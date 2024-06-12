@@ -5,7 +5,7 @@
   <Style x:Key="MH.S.Border.RoundDarker" TargetType="Border">
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="BorderBrush" Value="Black"/>
-    <Setter Property="Background" Value="{StaticResource MH.Brushes.Black25}"/>
+    <Setter Property="Background" Value="{DynamicResource MH.B.Black2}"/>
     <Setter Property="Padding" Value="2,0,2,2"/>
     <Setter Property="CornerRadius" Value="5"/>
     <Setter Property="Margin" Value="1"/>

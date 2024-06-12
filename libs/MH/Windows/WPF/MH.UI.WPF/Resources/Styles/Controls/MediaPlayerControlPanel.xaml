@@ -210,15 +210,15 @@
       </DataTrigger>
 
       <Trigger SourceName="navPanel" Property="IsMouseOver" Value="True">
-        <Setter TargetName="navPanel" Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
+        <Setter TargetName="navPanel" Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
       </Trigger>
 
       <Trigger SourceName="playTypePanel" Property="IsMouseOver" Value="True">
-        <Setter TargetName="playTypePanel" Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
+        <Setter TargetName="playTypePanel" Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
       </Trigger>
 
       <Trigger SourceName="markersPanel" Property="IsMouseOver" Value="True">
-        <Setter TargetName="markersPanel" Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
+        <Setter TargetName="markersPanel" Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
       </Trigger>
     </DataTemplate.Triggers>
   </DataTemplate>

@@ -13,10 +13,10 @@
 
   <Style x:Key="MH.Styles.Controls.IconTextBlockItemsControl" TargetType="{x:Type c:IconTextBlockItemsControl}">
     <Setter Property="Margin" Value="2"/>
-    <Setter Property="Background" Value="{StaticResource MH.Brushes.Background}"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Brushes.Text}"/>
+    <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
 
     <Setter Property="ItemsPanel">

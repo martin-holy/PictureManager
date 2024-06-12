@@ -3,141 +3,99 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
-  <!-- MH.Color.Accent and MH.Color.Accent1-9 generated in code -->
-  <!-- MH.Color.Black and MH.Color.Black1-9 generated in code -->
-  <!-- MH.Color.White and MH.Color.White1-9 generated in code -->
+  <!-- Colors generated in code
+    MH.Color.Accent, MH.Color.Accent-Dark and MH.Color.Accent1-9
+    MH.Color.Black and MH.Color.Black1-9
+    MH.Color.White and MH.Color.White1-9
+  -->
+  <!-- Brushes generated in code
+    MH.B.Accent, MH.B.Accent-Dark and MH.B.Accent1-9
+    MH.B.Black and MH.B.Black1-9
+    MH.B.White and MH.B.White1-9
+  -->
 
-  <sys:Double x:Key="ControlIsNotEnabledOpacity">0.4</sys:Double>
+  <Color x:Key="MH.Color.Gray1">#0F0F0F</Color>
+  <Color x:Key="MH.Color.Gray2">#252525</Color>
+  <Color x:Key="MH.Color.Gray3">#414141</Color>
+  <Color x:Key="MH.Color.Gray4">#5F5F5F</Color>
+  <Color x:Key="MH.Color.Gray5">#7F7F7F</Color>
+  <Color x:Key="MH.Color.Gray6">#9E9E9E</Color>
+  <Color x:Key="MH.Color.Gray7">#BDBDBD</Color>
+  <Color x:Key="MH.Color.Gray8">#D8D8D8</Color>
+  <Color x:Key="MH.Color.Gray9">#EEEEEE</Color>
 
-  <Color x:Key="BorderColor">#A0A0A0</Color>
-  <Color x:Key="BackgroundColor">#FF252525</Color>
-  <Color x:Key="ForegroundColor">#FFFFFFFF</Color>
-  <Color x:Key="DisabledBorderColor">#696969</Color>
-  <Color x:Key="DisabledForegroundColor">#7F7F7F</Color>
-  
-  <Color x:Key="TextColor">#FFFFFFFF</Color>
-  <Color x:Key="Highlight">#FF00589F</Color>
-  <Color x:Key="Accent">#0063B1</Color>
-  <Color x:Key="Accent3">#660078D7</Color>
-  <Color x:Key="GrayColor1">#F0F0F0</Color>
-  <Color x:Key="GrayColor2">#A0A0A0</Color>
-  <Color x:Key="GrayColor3">#696969</Color>
-  <Color x:Key="GrayColor5">#FFB9B9B9</Color>
-  <Color x:Key="GrayColor6">#FFCCCCCC</Color>
-  <Color x:Key="White20">#33FFFFFF</Color>
-  <Color x:Key="White30">#4CFFFFFF</Color>
-  <Color x:Key="Black25">#40000000</Color>
-  <Color x:Key="Black55">#8C000000</Color>
+  <SolidColorBrush x:Key="MH.B.Gray1" Color="{StaticResource MH.Color.Gray1}"/>
+  <SolidColorBrush x:Key="MH.B.Gray2" Color="{StaticResource MH.Color.Gray2}"/>
+  <SolidColorBrush x:Key="MH.B.Gray3" Color="{StaticResource MH.Color.Gray3}"/>
+  <SolidColorBrush x:Key="MH.B.Gray4" Color="{StaticResource MH.Color.Gray4}"/>
+  <SolidColorBrush x:Key="MH.B.Gray5" Color="{StaticResource MH.Color.Gray5}"/>
+  <SolidColorBrush x:Key="MH.B.Gray6" Color="{StaticResource MH.Color.Gray6}"/>
+  <SolidColorBrush x:Key="MH.B.Gray7" Color="{StaticResource MH.Color.Gray7}"/>
+  <SolidColorBrush x:Key="MH.B.Gray8" Color="{StaticResource MH.Color.Gray8}"/>
+  <SolidColorBrush x:Key="MH.B.Gray9" Color="{StaticResource MH.Color.Gray9}"/>
 
-  <Color x:Key="Gray1">#0F0F0F</Color>
-  <Color x:Key="Gray2">#252525</Color>
-  <Color x:Key="Gray3">#414141</Color>
-  <Color x:Key="Gray4">#5F5F5F</Color>
-  <Color x:Key="Gray5">#7F7F7F</Color>
-  <Color x:Key="Gray6">#9E9E9E</Color>
-  <Color x:Key="Gray7">#BDBDBD</Color>
-  <Color x:Key="Gray8">#D8D8D8</Color>
-  <Color x:Key="Gray9">#EEEEEE</Color>
-
-  <Color x:Key="Light1">#1AFFFFFF</Color>
-  <Color x:Key="Light2">#33FFFFFF</Color>
-  <Color x:Key="Light3">#4DFFFFFF</Color>
-  <Color x:Key="Light4">#66FFFFFF</Color>
-  <Color x:Key="Light5">#80FFFFFF</Color>
-  <Color x:Key="Light6">#99FFFFFF</Color>
-  <Color x:Key="Light7">#B3FFFFFF</Color>
-  <Color x:Key="Light8">#CCFFFFFF</Color>
-  <Color x:Key="Light9">#E6FFFFFF</Color>
-
-  <SolidColorBrush x:Key="MH.Brush.Accent" Color="{DynamicResource MH.Color.Accent}"/>
-
-  <SolidColorBrush x:Key="MH.Brushes.Background" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="MH.Brushes.Foreground" Color="{StaticResource ForegroundColor}"/>
-  <SolidColorBrush x:Key="MH.Brushes.Text" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="MH.Brushes.Accent" Color="{x:Static SystemParameters.WindowGlassColor}"/>
-  <SolidColorBrush x:Key="MH.Brushes.Black25" Color="{StaticResource Black25}"/>
-  <SolidColorBrush x:Key="MH.Brushes.Black55" Color="{StaticResource Black55}"/>
+  <SolidColorBrush x:Key="MH.B.Accent" Color="{DynamicResource MH.Color.Accent}"/>
+  <SolidColorBrush x:Key="MH.B.FocusVisual.Stroke" Color="{StaticResource MH.Color.Gray9}"/>
 
   <!-- Control -->
-  <SolidColorBrush x:Key="MH.Control.Static.Border" Color="{StaticResource BorderColor}"/>
-  <SolidColorBrush x:Key="MH.Control.Static.Background" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="MH.Control.Static.Foreground" Color="{StaticResource ForegroundColor}"/>
+  <SolidColorBrush x:Key="MH.B.C.Static.Ba" Color="{StaticResource MH.Color.Gray2}"/>
+  <SolidColorBrush x:Key="MH.B.C.Static.Bo" Color="{StaticResource MH.Color.Gray6}"/>
+  <SolidColorBrush x:Key="MH.B.C.Static.Fo" Color="{StaticResource MH.Color.Gray9}"/>
+  <SolidColorBrush x:Key="MH.B.C.Hover.Bo" Color="{StaticResource MH.Color.Gray9}"/>
+  <SolidColorBrush x:Key="MH.B.C.Focus.Bo" Color="{StaticResource MH.Color.Gray9}"/>
+  <SolidColorBrush x:Key="MH.B.C.Disabled.Bo" Color="{StaticResource MH.Color.Gray4}"/>
+  <SolidColorBrush x:Key="MH.B.C.Disabled.Fo" Color="{StaticResource MH.Color.Gray5}"/>
+  <SolidColorBrush x:Key="MH.B.C.Disabled.Accent" Color="{StaticResource MH.Color.Gray5}"/>
 
-  <SolidColorBrush x:Key="MH.Control.Hover.Border" Color="{StaticResource GrayColor1}"/>
-  <SolidColorBrush x:Key="MH.Control.Focus.Border" Color="{StaticResource GrayColor1}"/>
-
-  <SolidColorBrush x:Key="MH.Control.Disabled.Border" Color="{StaticResource DisabledBorderColor}"/>
-  <SolidColorBrush x:Key="MH.Control.Disabled.Foreground" Color="{StaticResource DisabledForegroundColor}"/>
-  <SolidColorBrush x:Key="MH.Control.Disabled.Accent" Color="{StaticResource DisabledForegroundColor}"/>
-
-  <SolidColorBrush x:Key="MH.Item.Disabled.Border" Color="{StaticResource DisabledBorderColor}"/>
-  <SolidColorBrush x:Key="MH.Item.Disabled.Foreground" Color="{StaticResource DisabledForegroundColor}"/>
-
-  <SolidColorBrush x:Key="MH.Item.Hover.Border" Color="{DynamicResource MH.Color.Accent9}"/>
-  <SolidColorBrush x:Key="MH.Item.Hover.Background" Color="{DynamicResource MH.Color.Accent2}"/>
-  <SolidColorBrush x:Key="MH.Item.Hover.Foreground" Color="{StaticResource GrayColor1}"/>
-  <SolidColorBrush x:Key="MH.Item.Selected.Border" Color="{DynamicResource MH.Color.Accent-Dark}"/>
-  <SolidColorBrush x:Key="MH.Item.Selected.Background" Color="{DynamicResource MH.Color.Accent-Dark}"/>
-  <SolidColorBrush x:Key="MH.Item.Selected.Foreground" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="MH.Item.SelectedHover.Border" Color="{DynamicResource MH.Color.Accent9}"/>
-  <SolidColorBrush x:Key="MH.Item.SelectedHover.Background" Color="{DynamicResource MH.Color.Accent7}"/>
-  <SolidColorBrush x:Key="MH.Item.SelectedNoFocus.Border" Color="{DynamicResource MH.Color.Accent-Dark}"/>
-  <SolidColorBrush x:Key="MH.Item.SelectedNoFocus.Background" Color="{DynamicResource MH.Color.Accent-Dark}"/>
-
-  <SolidColorBrush x:Key="MH.Control.Static.Text" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="MH.Control.MouseOver.Background" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="MH.Control.MouseOver.Border" Color="{StaticResource GrayColor1}"/>
-  <SolidColorBrush x:Key="MH.Control.MouseOver.Text" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="MH.Control.Pressed.Background" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="MH.Control.Pressed.Border" Color="{StaticResource GrayColor2}"/>
-  <SolidColorBrush x:Key="MH.Control.Pressed.Text" Color="{StaticResource TextColor}"/>
-  <SolidColorBrush x:Key="MH.Control.Selected.Background" Color="#3D26A0DA"/>
-  <SolidColorBrush x:Key="MH.Control.Selected.Border" Color="#FF26A0DA"/>
-  <SolidColorBrush x:Key="MH.Control.Highlight.Background" Color="#3D26A0DA"/>
-  <SolidColorBrush x:Key="MH.Control.Highlight.Border" Color="#FF26A0DA"/>
+  <!-- Item -->
+  <SolidColorBrush x:Key="MH.B.I.Hover.Ba" Color="{DynamicResource MH.Color.Accent2}"/>
+  <SolidColorBrush x:Key="MH.B.I.Hover.Bo" Color="{DynamicResource MH.Color.Accent9}"/>
+  <SolidColorBrush x:Key="MH.B.I.Selected.Ba" Color="{DynamicResource MH.Color.Accent-Dark}"/>
+  <SolidColorBrush x:Key="MH.B.I.Selected.Bo" Color="{DynamicResource MH.Color.Accent-Dark}"/>
+  <SolidColorBrush x:Key="MH.B.I.SelectedHover.Ba" Color="{DynamicResource MH.Color.Accent7}"/>
+  <SolidColorBrush x:Key="MH.B.I.SelectedHover.Bo" Color="{DynamicResource MH.Color.Accent9}"/>
+  <SolidColorBrush x:Key="MH.B.I.SelectedNoFocus.Ba" Color="{DynamicResource MH.Color.Accent-Dark}"/>
+  <SolidColorBrush x:Key="MH.B.I.SelectedNoFocus.Bo" Color="{DynamicResource MH.Color.Accent-Dark}"/>
 
   <!-- Button -->
-  <SolidColorBrush x:Key="MH.Button.Background" Color="{StaticResource Gray3}"/>
-  <SolidColorBrush x:Key="MH.Button.Hover.Background" Color="{StaticResource Light3}"/>
-  <SolidColorBrush x:Key="MH.Button.Pressed.Background" Color="{StaticResource Light5}"/>
+  <SolidColorBrush x:Key="MH.B.Button.Static.Ba" Color="{StaticResource MH.Color.Gray3}"/>
+  <SolidColorBrush x:Key="MH.B.Button.Hover.Ba" Color="{DynamicResource MH.Color.White3}"/>
+  <SolidColorBrush x:Key="MH.B.Button.Pressed.Ba" Color="{DynamicResource MH.Color.White5}"/>
 
   <!-- ComboBox -->
-  <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="{StaticResource GrayColor2}"/>
-  <SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="{StaticResource GrayColor1}"/>
+  <SolidColorBrush x:Key="MH.B.ComboBox.Static.Glyph" Color="{StaticResource MH.Color.Gray6}"/>
+  <SolidColorBrush x:Key="MH.B.ComboBox.Hover.Glyph" Color="{StaticResource MH.Color.Gray9}"/>
   
-  <SolidColorBrush x:Key="ToggleButton.Checked.Background" Color="{x:Static SystemParameters.WindowGlassColor}"/>
-  <SolidColorBrush x:Key="IconToggleButton.Unchecked.Fill" Color="{StaticResource Light7}"/>
+  <!-- ToggleButton -->
+  <SolidColorBrush x:Key="MH.B.ToggleButton.Checked.Ba" Color="{DynamicResource MH.Color.Accent}"/>
+  <SolidColorBrush x:Key="MH.B.IconToggleButton.Unchecked.Fill" Color="{DynamicResource MH.Color.White7}"/>
 
-  <SolidColorBrush x:Key="FocusVisual.Stroke" Color="{StaticResource TextColor}"/>
-
-  <LinearGradientBrush x:Key="MH.Brush.ProgressBar-Progress" StartPoint="1.002,0.5" EndPoint="0.001,0.5">
+  <!-- ProgressBar -->
+  <LinearGradientBrush x:Key="MH.B.ProgressBar-Progress" StartPoint="1.002,0.5" EndPoint="0.001,0.5">
     <GradientStop Offset="0" Color="{DynamicResource MH.Color.Accent}"/>
     <GradientStop Offset="1" Color="{DynamicResource MH.Color.Accent2}"/>
   </LinearGradientBrush>
 
+  <!-- ScrollBar -->
   <sys:Double x:Key="ScrollBar.Size">14</sys:Double>
-  <SolidColorBrush x:Key="ScrollBar.Disabled.Glyph" Color="{StaticResource Gray3}"/>
-  <SolidColorBrush x:Key="ScrollBar.Disabled.Thumb" Color="{StaticResource Gray3}"/>
-  <SolidColorBrush x:Key="ScrollBar.Static.Glyph" Color="{StaticResource Gray3}"/>
-  <SolidColorBrush x:Key="ScrollBar.Static.Thumb" Color="{StaticResource Gray3}"/>
-  <SolidColorBrush x:Key="ScrollBar.Hover.Glyph" Color="{StaticResource Gray6}"/>
-  <SolidColorBrush x:Key="ScrollBar.Hover.Thumb" Color="{StaticResource Gray6}"/>
-  <SolidColorBrush x:Key="ScrollBar.Pressed.Glyph" Color="{StaticResource Gray8}"/>
-  <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="{StaticResource Gray8}"/>
+  <SolidColorBrush x:Key="MH.B.ScrollBar.Static.Glyph" Color="{StaticResource MH.Color.Gray3}"/>
+  <SolidColorBrush x:Key="MH.B.ScrollBar.Static.Thumb" Color="{StaticResource MH.Color.Gray3}"/>
+  <SolidColorBrush x:Key="MH.B.ScrollBar.Hover.Glyph" Color="{StaticResource MH.Color.Gray6}"/>
+  <SolidColorBrush x:Key="MH.B.ScrollBar.Hover.Thumb" Color="{StaticResource MH.Color.Gray6}"/>
+  <SolidColorBrush x:Key="MH.B.ScrollBar.Pressed.Glyph" Color="{StaticResource MH.Color.Gray8}"/>
+  <SolidColorBrush x:Key="MH.B.ScrollBar.Pressed.Thumb" Color="{StaticResource MH.Color.Gray8}"/>
+  <SolidColorBrush x:Key="MH.B.ScrollBar.Disabled.Glyph" Color="{StaticResource MH.Color.Gray3}"/>
+  <SolidColorBrush x:Key="MH.B.ScrollBar.Disabled.Thumb" Color="{StaticResource MH.Color.Gray3}"/>
 
-  <SolidColorBrush x:Key="Slider.Static.Foreground" Color="{StaticResource Gray9}"/>
-  <SolidColorBrush x:Key="Slider-Thumb.Static.Background" Color="{StaticResource Gray4}"/>
-  <SolidColorBrush x:Key="Slider-Thumb.Static.Border" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="Slider-Thumb.Hover.Background" Color="{StaticResource Gray6}"/>
-  <SolidColorBrush x:Key="Slider-Thumb.Pressed.Background" Color="{StaticResource Gray8}"/>
-  <SolidColorBrush x:Key="Slider-Track.Static.Background" Color="{StaticResource Gray6}"/>
-  <SolidColorBrush x:Key="Slider-Track.Disabled.Background" Color="{StaticResource Gray3}"/>
-  <SolidColorBrush x:Key="Slider-Track.Selection.Background" Color="{x:Static SystemParameters.WindowGlassColor}"/>
+  <!-- Slider -->
+  <SolidColorBrush x:Key="MH.B.Slider.Static.Fo" Color="{StaticResource MH.Color.Gray9}"/>
+  <SolidColorBrush x:Key="MH.B.Slider-Thumb.Static.Ba" Color="{StaticResource MH.Color.Gray4}"/>
+  <SolidColorBrush x:Key="MH.B.Slider-Thumb.Static.Bo" Color="{StaticResource MH.Color.Gray2}"/>
+  <SolidColorBrush x:Key="MH.B.Slider-Thumb.Hover.Ba" Color="{StaticResource MH.Color.Gray6}"/>
+  <SolidColorBrush x:Key="MH.B.Slider-Thumb.Pressed.Ba" Color="{StaticResource MH.Color.Gray8}"/>
+  <SolidColorBrush x:Key="MH.B.Slider-Track.Static.Ba" Color="{StaticResource MH.Color.Gray6}"/>
+  <SolidColorBrush x:Key="MH.B.Slider-Track.Selection.Ba" Color="{DynamicResource MH.Color.Accent}"/>
+  <SolidColorBrush x:Key="MH.B.Slider-Track.Disabled.Ba" Color="{StaticResource MH.Color.Gray3}"/>
 
-  <SolidColorBrush x:Key="TabItem.Static.Background" Color="{StaticResource BackgroundColor}"/>
-  <SolidColorBrush x:Key="TabItem.Static.Foreground" Color="{StaticResource GrayColor2}"/>
-  <SolidColorBrush x:Key="TabItem.MouseOver.Foreground" Color="{StaticResource GrayColor1}"/>
-  <SolidColorBrush x:Key="TabItem.Selected.Foreground" Color="{x:Static SystemParameters.WindowGlassColor}"/>
-
-  <SolidColorBrush x:Key="TextBox.InactiveSelectionHighlight" Color="{StaticResource GrayColor2}"/>
+  <SolidColorBrush x:Key="TextBox.InactiveSelectionHighlight" Color="{StaticResource MH.Color.Gray6}"/>
 </ResourceDictionary>

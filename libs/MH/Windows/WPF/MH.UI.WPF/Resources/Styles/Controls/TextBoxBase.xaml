@@ -14,9 +14,9 @@
   </ContextMenu>
 
   <Style x:Key="MH.S.TextBoxBase" TargetType="TextBoxBase">
-    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Static.Bo}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Padding" Value="2"/>
     <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
@@ -46,10 +46,10 @@
           <ControlTemplate.Triggers>
             <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Hover.Border}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Hover.Bo}"/>
             </Trigger>
             <Trigger Property="IsKeyboardFocused" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Focus.Border}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Focus.Bo}"/>
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>

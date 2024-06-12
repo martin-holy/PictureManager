@@ -4,10 +4,10 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties">
 
   <Style x:Key="MH.S.ListBox" TargetType="ListBox">
-    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Static.Bo}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
@@ -38,7 +38,7 @@
           <ControlTemplate.Triggers>
             <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.MouseOver.Border}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Hover.Bo}"/>
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -77,43 +77,43 @@
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Foreground" Value="{StaticResource MH.Item.Disabled.Foreground}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.B.C.Disabled.Fo}"/>
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
-              <Setter Property="Background" Value="{StaticResource MH.Item.Selected.Background}"/>
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Selected.Border}"/>
+              <Setter Property="Background" Value="{StaticResource MH.B.I.Selected.Ba}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Selected.Bo}"/>
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="IsSelected" Value="True"/>
                 <Condition Property="IsMouseOver" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter Property="Background" Value="{StaticResource MH.Item.SelectedHover.Background}"/>
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.SelectedHover.Border}"/>
+              <Setter Property="Background" Value="{StaticResource MH.B.I.SelectedHover.Ba}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.SelectedHover.Bo}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="IsSelected" Value="False"/>
                 <Condition Property="IsMouseOver" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Hover.Border}"/>
+              <Setter Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="IsSelected" Value="True"/>
                 <Condition Property="IsKeyboardFocused" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter Property="Background" Value="{StaticResource MH.Item.SelectedHover.Background}"/>
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.SelectedHover.Border}"/>
+              <Setter Property="Background" Value="{StaticResource MH.B.I.SelectedHover.Ba}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.SelectedHover.Bo}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="IsSelected" Value="False"/>
                 <Condition Property="IsKeyboardFocused" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Hover.Border}"/>
+              <Setter Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
             </MultiTrigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

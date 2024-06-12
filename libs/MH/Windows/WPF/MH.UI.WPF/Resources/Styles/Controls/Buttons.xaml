@@ -6,9 +6,9 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
   <Style x:Key="MH.S.ButtonBase" TargetType="ButtonBase">
-    <Setter Property="Background" Value="{StaticResource MH.Button.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.Button.Static.Ba}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Static.Bo}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Border.CornerRadius" Value="3"/>
     <Setter Property="Padding" Value="4,0,4,0"/>
@@ -50,13 +50,13 @@
 
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.Button.Hover.Background}"/>
+        <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.B.Button.Hover.Ba}"/>
       </Trigger>
       <Trigger Property="IsKeyboardFocusWithin" Value="True">
-        <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.Button.Hover.Background}"/>
+        <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.B.Button.Hover.Ba}"/>
       </Trigger>
       <Trigger Property="IsPressed" Value="True">
-        <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.Button.Pressed.Background}"/>
+        <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.B.Button.Pressed.Ba}"/>
       </Trigger>
       <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
       <DataTrigger Value="True">
@@ -69,7 +69,7 @@
         <Setter Property="Tag" Value="{x:Null}"/>
       </DataTrigger>
       <DataTrigger Binding="{Binding Path=(ap:Icon.Fill), RelativeSource={RelativeSource TemplatedParent}}" Value="{x:Null}">
-        <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Control.Static.Text}"/>
+        <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
       </DataTrigger>
     </Style.Triggers>
   </Style>
@@ -95,7 +95,7 @@
   <Style x:Key="MH.S.ToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource MH.S.DialogButtonBase}">
     <Style.Triggers>
       <Trigger Property="IsChecked" Value="True">
-        <Setter Property="Background" Value="{StaticResource ToggleButton.Checked.Background}"/>
+        <Setter Property="Background" Value="{StaticResource MH.B.ToggleButton.Checked.Ba}"/>
       </Trigger>
     </Style.Triggers>
   </Style>
@@ -103,7 +103,7 @@
   <Style x:Key="MH.S.IconToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource MH.S.IconButtonBase}">
     <Style.Triggers>
       <Trigger Property="IsChecked" Value="False">
-        <Setter Property="ap:Icon.Fill" Value="{StaticResource IconToggleButton.Unchecked.Fill}"/>
+        <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.B.IconToggleButton.Unchecked.Fill}"/>
       </Trigger>
     </Style.Triggers>
   </Style>

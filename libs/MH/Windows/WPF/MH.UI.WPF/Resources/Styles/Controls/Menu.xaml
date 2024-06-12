@@ -89,20 +89,20 @@
 
   <Style x:Key="MH.S.MenuItem-Checkmark" TargetType="Path">
     <Setter Property="Data" Value="{StaticResource Checkmark}"/>
-    <Setter Property="Fill" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="Width" Value="10"/>
     <Setter Property="Height" Value="10"/>
     <Setter Property="Stretch" Value="Uniform"/>
     <Style.Triggers>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Fill" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+        <Setter Property="Fill" Value="{StaticResource MH.B.C.Disabled.Fo}"/>
       </Trigger>
     </Style.Triggers>
   </Style>
 
   <Style x:Key="MH.S.MenuItem-CheckmarkPanel" TargetType="Border">
-    <Setter Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Hover.Border}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Width" Value="22"/>
     <Setter Property="Height" Value="22"/>
@@ -118,7 +118,7 @@
   </Style>
 
   <Style x:Key="MH.S.MenuItem-VerticalSeparator" TargetType="Rectangle">
-    <Setter Property="Fill" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="HorizontalAlignment" Value="Left"/>
     <Setter Property="Margin" Value="29,2,0,2"/>
     <Setter Property="Width" Value="1"/>
@@ -206,8 +206,8 @@
 
           <Border
             x:Name="SubMenuBorder"
-            Background="{StaticResource MH.Control.Static.Background}"
-            BorderBrush="{StaticResource MH.Control.Static.Border}"
+            Background="{StaticResource MH.B.C.Static.Ba}"
+            BorderBrush="{StaticResource MH.B.C.Static.Bo}"
             BorderThickness="1"
             Padding="2">
 
@@ -289,7 +289,7 @@
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="Icon" Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
+        <Setter TargetName="Icon" Property="Opacity" Value="0.4"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -322,7 +322,7 @@
           x:Name="RightArrow"
           Grid.Column="2"
           Data="{StaticResource RightArrow}"
-          Fill="{StaticResource MH.Control.Static.Foreground}"
+          Fill="{StaticResource MH.B.C.Static.Fo}"
           HorizontalAlignment="Right"
           Margin="6,2"
           VerticalAlignment="Center"/>
@@ -340,8 +340,8 @@
           
           <Border
             x:Name="SubMenuBorder"
-            Background="{StaticResource MH.Control.Static.Background}"
-            BorderBrush="{StaticResource MH.Control.Static.Border}"
+            Background="{StaticResource MH.B.C.Static.Ba}"
+            BorderBrush="{StaticResource MH.B.C.Static.Bo}"
             BorderThickness="1"
             Padding="2">
             
@@ -366,15 +366,15 @@
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="RightArrow" Property="Fill" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
-        <Setter TargetName="Icon" Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
+        <Setter TargetName="RightArrow" Property="Fill" Value="{StaticResource MH.B.C.Disabled.Fo}"/>
+        <Setter TargetName="Icon" Property="Opacity" Value="0.4"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
   <Style x:Key="MH.S.Menu" TargetType="Menu">
-    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="FontSize" Value="{StaticResource MH.FontSize}"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Template">
@@ -399,7 +399,7 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
     <Setter Property="Height" Value="26"/>
     <Setter Property="Padding" Value="12,2,6,2"/>
@@ -417,11 +417,11 @@
         <Setter Property="Template" Value="{DynamicResource MH.CT.MenuItem-SubmenuHeader}"/>
       </Trigger>
       <Trigger Property="IsHighlighted" Value="True">
-        <Setter Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Hover.Border}"/>
+        <Setter Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+        <Setter Property="Foreground" Value="{StaticResource MH.B.C.Disabled.Fo}"/>
       </Trigger>
       <Trigger Property="IsSuspendingPopupAnimation" Value="True">
         <Setter Property="Popup.PopupAnimation" Value="None"/>
@@ -439,10 +439,10 @@
   </Style>
 
   <Style x:Key="MH.S.ContextMenu" TargetType="ContextMenu">
-    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Static.Bo}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="FontSize" Value="{StaticResource MH.FontSize}"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Grid.IsSharedSizeScope" Value="True"/>

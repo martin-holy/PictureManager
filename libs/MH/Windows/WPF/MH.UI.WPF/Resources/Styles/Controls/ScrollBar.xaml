@@ -9,7 +9,7 @@
 
   <Style x:Key="MH.S.ScrollBar-Button" TargetType="RepeatButton">
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Foreground" Value="{DynamicResource ScrollBar.Static.Glyph}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.ScrollBar.Static.Glyph}"/>
     <Setter Property="Height" Value="{StaticResource ScrollBar.Size}"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
     <Setter Property="Interval" Value="50"/>
@@ -32,13 +32,13 @@
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="Foreground" Value="{DynamicResource ScrollBar.Hover.Glyph}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.B.ScrollBar.Hover.Glyph}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-              <Setter Property="Foreground" Value="{DynamicResource ScrollBar.Pressed.Glyph}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.B.ScrollBar.Pressed.Glyph}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Foreground" Value="{DynamicResource ScrollBar.Disabled.Glyph}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.B.ScrollBar.Disabled.Glyph}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -47,7 +47,7 @@
   </Style>
 
   <Style x:Key="MH.S.ScrollBar-Thumb" TargetType="Thumb">
-    <Setter Property="Foreground" Value="{DynamicResource ScrollBar.Static.Thumb}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.ScrollBar.Static.Thumb}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
@@ -59,13 +59,13 @@
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="Foreground" Value="{DynamicResource ScrollBar.Hover.Thumb}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.B.ScrollBar.Hover.Thumb}"/>
             </Trigger>
             <Trigger Property="IsDragging" Value="True">
-              <Setter Property="Foreground" Value="{DynamicResource ScrollBar.Pressed.Thumb}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.B.ScrollBar.Pressed.Thumb}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Foreground" Value="{DynamicResource ScrollBar.Disabled.Thumb}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.B.ScrollBar.Disabled.Thumb}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

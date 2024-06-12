@@ -14,8 +14,7 @@
         Text="{Binding Name}"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
-        Margin="4,0,4,0"
-        Foreground="{StaticResource MH.Control.Static.Text}"/>
+        Margin="4,0,4,0"/>
     </Border>
   </DataTemplate>
 </ResourceDictionary>

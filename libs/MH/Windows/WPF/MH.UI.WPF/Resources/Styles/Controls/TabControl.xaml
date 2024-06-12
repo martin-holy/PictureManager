@@ -16,8 +16,8 @@
     <Setter Property="Border.CornerRadius" Value="3"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Background" Value="{StaticResource TabItem.Static.Background}"/>
-    <Setter Property="Foreground" Value="{StaticResource TabItem.Static.Foreground}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
     <Setter Property="Padding" Value="4"/>
     <Setter Property="MaxWidth" Value="{Binding Path=DataContext.(uic:TabControl.TabStrip).(uic:TabStrip.MaxTabWidth), RelativeSource={RelativeSource AncestorType=TabControl}}"/>
@@ -66,7 +66,7 @@
 
               <Border
                 x:Name="btnClose"
-                Background="{StaticResource MH.Item.Selected.Background}"
+                Background="{StaticResource MH.B.I.Selected.Ba}"
                 Visibility="Collapsed"
                 Width="22"
                 Height="22"
@@ -90,14 +90,12 @@
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Hover.Border}"/>
-              <Setter Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
-              <Setter Property="Foreground" Value="{StaticResource MH.Item.Hover.Foreground}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
+              <Setter Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
-              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Selected.Border}"/>
-              <Setter Property="Background" Value="{StaticResource MH.Item.Selected.Background}"/>
-              <Setter Property="Foreground" Value="{StaticResource MH.Item.Selected.Foreground}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Selected.Bo}"/>
+              <Setter Property="Background" Value="{StaticResource MH.B.I.Selected.Ba}"/>
             </Trigger>
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
@@ -113,7 +111,7 @@
   </Style>
 
   <Style x:Key="MH.S.TabControl" TargetType="TabControl">
-    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="TabStripPlacement" Value="{Binding Path=(uic:TabControl.TabStrip).(uic:TabStrip.Placement), Converter={x:Static conv:DockConverter.Inst}}"/>
     <Setter Property="ItemsSource" Value="{Binding Path=(uic:TabControl.Tabs)}"/>

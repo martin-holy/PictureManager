@@ -14,7 +14,7 @@
         <ControlTemplate>
           <Rectangle
             StrokeThickness="1"
-            Stroke="{StaticResource FocusVisual.Stroke}"
+            Stroke="{StaticResource MH.B.FocusVisual.Stroke}"
             StrokeDashArray="1 2"
             SnapsToDevicePixels="True"/>
         </ControlTemplate>
@@ -61,14 +61,14 @@
               VerticalAlignment="Bottom"
               Data="{StaticResource TreeArrow}" 
               Fill="Transparent"
-              Stroke="{StaticResource MH.Control.Static.Text}"
+              Stroke="{StaticResource MH.B.C.Static.Fo}"
               Stretch="Uniform">
             </Path>
           </Border>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="path" Property="Fill" Value="{StaticResource MH.Control.Static.Text}"/>
+              <Setter TargetName="path" Property="Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
               <Setter TargetName="path" Property="RenderTransform">
                 <Setter.Value>
                   <RotateTransform Angle="45" CenterX="2" CenterY="6"/>
@@ -76,8 +76,8 @@
               </Setter>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="path" Property="Fill" Value="{StaticResource MH.Brushes.Accent}"/>
-              <Setter TargetName="path" Property="Stroke" Value="{StaticResource MH.Brushes.Accent}"/>
+              <Setter TargetName="path" Property="Fill" Value="{StaticResource MH.B.Accent}"/>
+              <Setter TargetName="path" Property="Stroke" Value="{StaticResource MH.B.Accent}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -91,9 +91,9 @@
   </Style>
 
   <Style x:Key="MH.Styles.Controls.TreeViewItemLite" TargetType="TreeViewItem">
-    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Text}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="MinHeight" Value="25"/>
     <Setter Property="Padding" Value="0"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -160,7 +160,7 @@
               x:Name="Border"
               BorderBrush="Transparent" 
               BorderThickness="1" 
-              Background="{StaticResource MH.Control.Static.Background}"
+              Background="{StaticResource MH.B.C.Static.Ba}"
               FocusVisualStyle="{x:Null}"
               MinHeight="25">
 
@@ -214,12 +214,12 @@
                 <Condition Binding="{Binding IsSelected}" Value="True"/>
                 <Condition Binding="{Binding TreeView.ShowTreeItemSelection, RelativeSource={RelativeSource AncestorType=mhc:TreeViewBase}}" Value="True"/>
               </MultiDataTrigger.Conditions>
-              <Setter TargetName="Border" Property="Background" Value="{StaticResource MH.Item.SelectedNoFocus.Background}"/>
-              <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource MH.Item.SelectedNoFocus.Border}"/>
+              <Setter TargetName="Border" Property="Background" Value="{StaticResource MH.B.I.SelectedNoFocus.Ba}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource MH.B.I.SelectedNoFocus.Bo}"/>
             </MultiDataTrigger>
             <Trigger SourceName="Border" Property="IsMouseOver" Value="True">
-              <Setter TargetName="Border" Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
-              <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource MH.Item.Hover.Border}"/>
+              <Setter TargetName="Border" Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
             </Trigger>
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
@@ -227,8 +227,8 @@
                 <Condition Binding="{Binding IsSelected}" Value="True"/>
                 <Condition Binding="{Binding TreeView.ShowTreeItemSelection, RelativeSource={RelativeSource AncestorType=mhc:TreeViewBase}}" Value="True"/>
               </MultiDataTrigger.Conditions>
-              <Setter TargetName="Border" Property="Background" Value="{StaticResource MH.Item.SelectedHover.Background}"/>
-              <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource MH.Item.SelectedHover.Border}"/>
+              <Setter TargetName="Border" Property="Background" Value="{StaticResource MH.B.I.SelectedHover.Ba}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource MH.B.I.SelectedHover.Bo}"/>
             </MultiDataTrigger>
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
@@ -267,8 +267,8 @@
   </Grid>
 
   <Style x:Key="MH.Styles.Controls.TreeViewBase" TargetType="mhc:TreeViewBase">
-    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
+    <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Static.Bo}"/>
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     <Setter Property="VerticalContentAlignment" Value="Stretch"/>

@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <Style x:Key="MH.S.TextBlock" TargetType="TextBlock">
-    <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="TextWrapping" Value="NoWrap"/>
     <Setter Property="TextTrimming" Value="None"/>
 

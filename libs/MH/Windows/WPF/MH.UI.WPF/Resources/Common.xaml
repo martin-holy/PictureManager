@@ -6,8 +6,8 @@
   <system:Double x:Key="MH.FontSize">14</system:Double>
 
   <Trigger x:Key="MH.Trigger.Control-Disabled" Property="Control.IsEnabled" Value="False">
-    <Setter Property="Control.BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
-    <Setter Property="Control.Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+    <Setter Property="Control.BorderBrush" Value="{StaticResource MH.B.C.Disabled.Bo}"/>
+    <Setter Property="Control.Foreground" Value="{StaticResource MH.B.C.Disabled.Fo}"/>
   </Trigger>
     
 </ResourceDictionary>

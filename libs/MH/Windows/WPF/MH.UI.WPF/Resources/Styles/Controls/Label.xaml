@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <Style x:Key="MH.S.Label" TargetType="Label">
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="Padding" Value="5"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>

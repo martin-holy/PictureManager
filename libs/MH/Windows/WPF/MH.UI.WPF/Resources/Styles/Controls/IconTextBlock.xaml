@@ -6,10 +6,10 @@
 
   <Style x:Key="MH.S.IconTextBlock" TargetType="{x:Type c:IconTextBlock}">
     <Setter Property="Margin" Value="2"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
-    <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.Brushes.Text}"/>
+    <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
     <Setter Property="ap:Icon.Shadow" Value="True"/>
     <Setter Property="ap:Text.Shadow" Value="True"/>
@@ -60,8 +60,8 @@
             </Trigger>
 
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="icon" Property="Fill" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
-              <Setter TargetName="text" Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+              <Setter TargetName="icon" Property="Fill" Value="{StaticResource MH.B.C.Disabled.Fo}"/>
+              <Setter TargetName="text" Property="Foreground" Value="{StaticResource MH.B.C.Disabled.Fo}"/>
             </Trigger>
             <DataTrigger Binding="{Binding Path=(ap:Icon.Data), RelativeSource={RelativeSource Self}}" Value="{x:Null}">
               <Setter TargetName="icon" Property="Visibility" Value="Collapsed"/>

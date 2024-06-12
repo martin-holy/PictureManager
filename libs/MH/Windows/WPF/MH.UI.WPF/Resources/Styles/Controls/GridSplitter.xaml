@@ -6,7 +6,7 @@
     <Setter Property="Control.Template">
       <Setter.Value>
         <ControlTemplate>
-          <Rectangle Fill="{StaticResource MH.Brushes.Foreground}" Opacity="0.5"/>
+          <Rectangle Fill="{DynamicResource MH.B.White5}"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -20,8 +20,7 @@
     <Setter Property="VerticalAlignment" Value="Stretch"/>
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter Property="Background" Value="{StaticResource MH.Brushes.Foreground}"/>
-        <Setter Property="Opacity" Value="0.5"/>
+        <Setter Property="Background" Value="{DynamicResource MH.B.White5}"/>
       </Trigger>
     </Style.Triggers>
   </Style>

@@ -21,18 +21,18 @@
             RadiusY="2"
             Width="{TemplateBinding Width}"
             Height="{TemplateBinding Height}"
-            Fill="{StaticResource Slider-Thumb.Static.Background}"
-            Stroke="{StaticResource Slider-Thumb.Static.Border}"/>
+            Fill="{StaticResource MH.B.Slider-Thumb.Static.Ba}"
+            Stroke="{StaticResource MH.B.Slider-Thumb.Static.Bo}"/>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider-Thumb.Hover.Background}"/>
+              <Setter TargetName="grip" Property="Fill" Value="{StaticResource MH.B.Slider-Thumb.Hover.Ba}"/>
             </Trigger>
             <Trigger Property="IsDragging" Value="True">
-              <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider-Thumb.Pressed.Background}"/>
+              <Setter TargetName="grip" Property="Fill" Value="{StaticResource MH.B.Slider-Thumb.Pressed.Ba}"/>
             </Trigger>
             <DataTrigger Value="True" Binding="{Binding IsKeyboardFocused, RelativeSource={RelativeSource AncestorType=Slider}}">
-              <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider-Thumb.Hover.Background}"/>
+              <Setter TargetName="grip" Property="Fill" Value="{StaticResource MH.B.Slider-Thumb.Hover.Ba}"/>
             </DataTrigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -77,13 +77,13 @@
           Height="4"
           Margin="5,0"
           VerticalAlignment="Center"
-          Background="{StaticResource Slider-Track.Static.Background}">
+          Background="{StaticResource MH.B.Slider-Track.Static.Ba}">
 
           <Canvas Margin="-5,0">
             <Rectangle
               x:Name="PART_SelectionRange"
               Height="4"
-              Fill="{StaticResource Slider-Track.Selection.Background}"/>
+              Fill="{StaticResource MH.B.Slider-Track.Selection.Ba}"/>
           </Canvas>
         </Border>
 
@@ -113,8 +113,8 @@
         <Setter TargetName="bottomTick" Property="Visibility" Value="Visible"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="trackBackground" Property="Background" Value="{StaticResource Slider-Track.Disabled.Background}"/>
-        <Setter TargetName="PART_SelectionRange" Property="Fill" Value="{StaticResource MH.Control.Disabled.Accent}"/>
+        <Setter TargetName="trackBackground" Property="Background" Value="{StaticResource MH.B.Slider-Track.Disabled.Ba}"/>
+        <Setter TargetName="PART_SelectionRange" Property="Fill" Value="{StaticResource MH.B.C.Disabled.Accent}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -156,13 +156,13 @@
           HorizontalAlignment="Center"
           Margin="0,5"
           Width="4"
-          Background="{StaticResource Slider-Track.Static.Background}">
+          Background="{StaticResource MH.B.Slider-Track.Static.Ba}">
 
           <Canvas Margin="0,-5">
             <Rectangle
               x:Name="PART_SelectionRange"
               Width="4"
-              Fill="{StaticResource Slider-Track.Selection.Background}"/>
+              Fill="{StaticResource MH.B.Slider-Track.Selection.Ba}"/>
           </Canvas>
         </Border>
 
@@ -192,8 +192,8 @@
         <Setter TargetName="rightTick" Property="Visibility" Value="Visible"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="trackBackground" Property="Background" Value="{StaticResource Slider-Track.Disabled.Background}"/>
-        <Setter TargetName="PART_SelectionRange" Property="Fill" Value="{StaticResource MH.Control.Disabled.Accent}"/>
+        <Setter TargetName="trackBackground" Property="Background" Value="{StaticResource MH.B.Slider-Track.Disabled.Ba}"/>
+        <Setter TargetName="PART_SelectionRange" Property="Fill" Value="{StaticResource MH.B.C.Disabled.Accent}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -201,7 +201,7 @@
   <Style x:Key="MH.S.Slider" TargetType="Slider">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="Foreground" Value="{StaticResource Slider.Static.Foreground}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.Slider.Static.Fo}"/>
     <Setter Property="SelectionStart" Value="{Binding Minimum, RelativeSource={RelativeSource Self}}"/>
     <Setter Property="SelectionEnd" Value="{Binding Value, RelativeSource={RelativeSource Self}}"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
