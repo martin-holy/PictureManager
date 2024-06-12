@@ -49,7 +49,7 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Grid Background="{StaticResource MH.Brushes.Black25}">
+    <Grid Background="{DynamicResource MH.B.Black2}">
       <Grid.InputBindings>
         <MouseBinding
           MouseAction="LeftClick"

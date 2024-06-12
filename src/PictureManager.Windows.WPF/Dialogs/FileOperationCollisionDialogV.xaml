@@ -25,7 +25,7 @@
 
         <Style TargetType="Rectangle" x:Key="InfoBackground">
           <Setter Property="Margin" Value="0,2"/>
-          <Setter Property="Fill" Value="{StaticResource MH.Brushes.Black25}"/>
+          <Setter Property="Fill" Value="{DynamicResource MH.B.Black2}"/>
           <Setter Property="Stroke" Value="Black"/>
           <Setter Property="StrokeThickness" Value="1"/>
         </Style>
@@ -39,7 +39,7 @@
 
         <Style TargetType="Path" x:Key="UnknownFilePath">
           <Setter Property="Data" Value="{StaticResource IconFileSolid}"/>
-          <Setter Property="Fill" Value="{StaticResource MH.Brushes.Foreground}"/>
+          <Setter Property="Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
           <Setter Property="Margin" Value="10"/>
           <Setter Property="Stretch" Value="Uniform"/>
           <Setter Property="HorizontalAlignment" Value="Center"/>

@@ -40,7 +40,7 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <Grid Background="{StaticResource MH.Control.Static.Background}">
+    <Grid Background="{StaticResource MH.B.C.Static.Ba}">
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="MouseLeave">
           <b:InvokeCommandAction Command="{Binding TreeViewSearch.CloseCommand}"/>

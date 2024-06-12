@@ -31,7 +31,7 @@
         <Grid Width="180">
           <Grid.Background>
             <LinearGradientBrush>
-              <GradientStop Offset="0" Color="{StaticResource Highlight}"/>
+              <GradientStop Offset="0" Color="{DynamicResource MH.Color.Accent}"/>
               <GradientStop Offset="1" Color="Transparent"/>
             </LinearGradientBrush>
           </Grid.Background>
