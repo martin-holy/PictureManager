@@ -114,7 +114,7 @@
       <Border
         x:Name="selectionBorder"
         BorderThickness="2"
-        BorderBrush="{DynamicResource AccentColorBrush}"
+        BorderBrush="{DynamicResource MH.B.Accent}"
         Margin="0"
         Visibility="Hidden">
 
@@ -126,7 +126,7 @@
           StrokeThickness="1"
           HorizontalAlignment="Right"
           VerticalAlignment="Bottom"
-          Fill="{DynamicResource AccentColorBrush}"/>
+          Fill="{DynamicResource MH.B.Accent9}"/>
       </Border>
     </Grid>
 
