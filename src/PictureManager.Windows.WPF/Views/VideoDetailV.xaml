@@ -17,7 +17,7 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
     
-    <Grid x:Name="root" Background="{StaticResource ColorBrushBackground}">
+    <Grid x:Name="root" Background="{StaticResource MH.B.C.Static.Ba}">
       <Grid.RowDefinitions>
         <RowDefinition Height="200" x:Name="rowPlayer"/>
         <RowDefinition Height="3"/>

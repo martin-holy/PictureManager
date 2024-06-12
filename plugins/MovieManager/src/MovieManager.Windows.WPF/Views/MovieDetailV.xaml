@@ -221,7 +221,7 @@
         Grid.Row="3"
         ItemsSource="{Binding MovieM.DisplayKeywords}"
         ap:Icon.Data="{StaticResource IconTag}"
-        ap:Icon.Fill="{StaticResource ColorBrushTag}"
+        ap:Icon.Fill="{StaticResource PM.B.Tag}"
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"
         Visibility="{Binding MovieM.DisplayKeywords, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 

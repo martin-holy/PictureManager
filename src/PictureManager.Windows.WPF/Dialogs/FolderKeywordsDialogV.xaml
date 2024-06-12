@@ -27,7 +27,7 @@
             <Path
               Style="{StaticResource MH.Styles.Icon}"
               Data="{StaticResource IconFolder}"
-              Fill="{StaticResource ColorBrushFolder}"/>
+              Fill="{StaticResource PM.B.Folder}"/>
             
             <TextBlock Text="{Binding FullPath}" Margin="5,0,0,0"/>
           </StackPanel>
