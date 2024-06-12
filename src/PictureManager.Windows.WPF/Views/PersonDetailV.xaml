@@ -38,7 +38,7 @@
         <Path
           Style="{StaticResource MH.Styles.IconWithShadow}"
           Data="{StaticResource IconPeople}"
-          Fill="{StaticResource ColorBrushPeople}"
+          Fill="{StaticResource PM.B.People}"
           HorizontalAlignment="Left"
           Margin="6,0"/>
       </Grid>
@@ -53,7 +53,7 @@
         Grid.Row="2"
         ItemsSource="{Binding PersonM.DisplayKeywords}"
         ap:Icon.Data="{StaticResource IconTag}"
-        ap:Icon.Fill="{StaticResource ColorBrushTag}"
+        ap:Icon.Fill="{StaticResource PM.B.Tag}"
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"
         Visibility="{Binding PersonM.DisplayKeywords, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 

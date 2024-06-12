@@ -174,7 +174,7 @@
           ToolTip="{Binding Core.VM.MediaItem.Current.FilePath}">
 
           <StackPanel>
-            <Path Data="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}"/>
+            <Path Data="{StaticResource IconFolder}" Fill="{StaticResource PM.B.Folder}"/>
             <ItemsControl ItemsSource="{Binding FilePath}"/>
           </StackPanel>
         </Border>
@@ -200,7 +200,7 @@
           Visibility="Collapsed">
 
           <StackPanel>
-            <Path Data="{StaticResource IconPeople}" Fill="{StaticResource ColorBrushPeople}"/>
+            <Path Data="{StaticResource IconPeople}" Fill="{StaticResource PM.B.People}"/>
 
             <ItemsControl ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayPeople}">
               <ItemsControl.ItemsPanel>
@@ -234,7 +234,7 @@
           Visibility="Collapsed">
 
           <StackPanel>
-            <Path Data="{StaticResource IconTag}" Fill="{StaticResource ColorBrushTag}"/>
+            <Path Data="{StaticResource IconTag}" Fill="{StaticResource PM.B.Tag}"/>
             <ItemsControl ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayKeywords}"/>
           </StackPanel>
         </Border>

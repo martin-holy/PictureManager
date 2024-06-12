@@ -51,7 +51,7 @@
       <DockPanel Grid.Row="1" Grid.Column="1">
         <mhc:IconButton
           Command="{Binding OpenFolderBrowserCommand}"
-          ap:Icon.Fill="{StaticResource ColorBrushFolder}"
+          ap:Icon.Fill="{StaticResource PM.B.Folder}"
           VerticalAlignment="Center"
           DockPanel.Dock="Right"/>
 

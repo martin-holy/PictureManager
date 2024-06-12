@@ -42,7 +42,7 @@
       Value="5,0" />
     <Setter
       Property="Background"
-      Value="{DynamicResource AccentColorBrush4}" />
+      Value="{DynamicResource MH.B.Accent-Dark}" />
 
     <Setter Property="Text">
       <Setter.Value>
