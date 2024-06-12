@@ -27,10 +27,9 @@
       </Grid.RowDefinitions>
 
       <!-- Heather -->
-      <Grid Grid.Row="0" Background="{StaticResource MH.Brushes.Black55}" Margin="0,0,0,5">
+      <Grid Grid.Row="0" Background="{DynamicResource MH.B.Black5}" Margin="0,0,0,5">
         <TextBlock
           Text="{Binding PersonM.Name}"
-          Foreground="{StaticResource MH.Brushes.Text}"
           FontSize="20"
           Padding="4"
           HorizontalAlignment="Center"

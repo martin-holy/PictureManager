@@ -13,7 +13,7 @@
       <Expander
         Header="Detail"
         IsExpanded="False"
-        Foreground="{StaticResource MH.Brushes.Text}">
+        Foreground="{StaticResource MH.B.C.Static.Fo}">
 
         <TextBox
           Text="{Binding Detail}"

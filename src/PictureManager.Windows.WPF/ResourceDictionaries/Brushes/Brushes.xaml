@@ -2,8 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <Color x:Key="WhiteColor">#FFFFFFFF</Color>
-  <Color x:Key="White20Color">#33FFFFFF</Color>
-  <Color x:Key="White30Color">#4CFFFFFF</Color>
   <Color x:Key="BlackColor">#FF252525</Color>
   <Color x:Key="TransparentColor">#00000000</Color>
 
@@ -41,8 +39,6 @@
 
   <SolidColorBrush x:Key="TextBrush" Color="{StaticResource WhiteColor}" />
   <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource WhiteColor}" />
-  <SolidColorBrush x:Key="White20Brush" Color="{StaticResource White20Color}" />
-  <SolidColorBrush x:Key="White30Brush" Color="{StaticResource White30Color}" />
   <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource BlackColor}" />
   <SolidColorBrush x:Key="TransparentBrush" Color="{StaticResource TransparentColor}" />
 

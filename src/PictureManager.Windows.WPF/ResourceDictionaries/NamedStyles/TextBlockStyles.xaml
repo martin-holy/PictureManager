@@ -21,7 +21,7 @@
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="Margin" Value="5,0,5,0"/>
     <Setter Property="FontSize" Value="14"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Text}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
   </Style>
 
   <Style

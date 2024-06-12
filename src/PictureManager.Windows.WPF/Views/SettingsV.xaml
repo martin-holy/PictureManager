@@ -12,7 +12,7 @@
       </Style>
 
       <Style x:Key="PM.Settings.Group" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource MH.Brushes.Black25}"/>
+        <Setter Property="Background" Value="{DynamicResource MH.B.Black2}"/>
         <Setter Property="Padding" Value="4"/>
         <Setter Property="CornerRadius" Value="3"/>
         <Setter Property="Margin" Value="0,10,0,0"/>
@@ -63,7 +63,7 @@
 
               <ControlTemplate.Triggers>
                 <Trigger SourceName="root" Property="IsMouseOver" Value="True">
-                  <Setter TargetName="root" Property="Background" Value="{StaticResource MH.Brushes.Black25}"/>
+                  <Setter TargetName="root" Property="Background" Value="{DynamicResource MH.B.Black2}"/>
                 </Trigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>

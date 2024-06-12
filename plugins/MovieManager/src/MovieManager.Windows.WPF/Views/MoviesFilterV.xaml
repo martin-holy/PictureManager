@@ -98,7 +98,7 @@
       <Border
         Grid.Row="1"
         BorderThickness="1"
-        BorderBrush="{StaticResource MH.Control.Static.Border}"
+        BorderBrush="{StaticResource MH.B.C.Static.Bo}"
         Margin="4">
 
         <Grid>
@@ -111,9 +111,9 @@
           <Border
             Padding="0,0,5,0"
             BorderThickness="0,0,0,1"
-            BorderBrush="{StaticResource MH.Control.Static.Border}">
+            BorderBrush="{StaticResource MH.B.C.Static.Bo}">
 
-            <Grid Background="{StaticResource MH.Brushes.Black25}">
+            <Grid Background="{StaticResource MH.B.Gray1}">
               <Grid.Resources>
                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
                   <Setter Property="HorizontalAlignment" Value="Center"/>
