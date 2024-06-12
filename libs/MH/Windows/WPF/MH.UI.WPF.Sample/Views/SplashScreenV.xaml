@@ -12,7 +12,7 @@
   Background="#FF252525"
   Foreground="White"
   BorderThickness="1"
-  BorderBrush="{DynamicResource MH.Brush.Accent}"
+  BorderBrush="{DynamicResource MH.B.Accent}"
   DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
   <Grid>
