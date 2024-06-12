@@ -13,7 +13,7 @@
           <Setter.Value>
             <ControlTemplate TargetType="ContentControl">
               <Border
-                Background="{StaticResource MH.Brushes.Black55}"
+                Background="{DynamicResource MH.B.Black5}"
                 CornerRadius="3"
                 BorderThickness="1"
                 BorderBrush="Black"
@@ -43,7 +43,7 @@
       Margin="1,0,0,0"
       CornerRadius="3"
       VerticalAlignment="Center"
-      Background="{StaticResource MH.Brushes.Accent}">
+      Background="{StaticResource MH.B.Accent}">
 
       <Grid>
         <Grid.ColumnDefinitions>
