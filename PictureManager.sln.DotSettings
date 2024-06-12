@@ -13,6 +13,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=MH_002ES_002E/@EntryIndexedValue">MH.S.</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=MH_002ET_002EI/@EntryIndexedValue">MH.T.I</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=PM_002E/@EntryIndexedValue">PM.</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=PM_002EB_002E/@EntryIndexedValue">PM.B.</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=PM_002ET_002E/@EntryIndexedValue">PM.T.</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Checkin/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Flyout/@EntryIndexedValue">True</s:Boolean>
