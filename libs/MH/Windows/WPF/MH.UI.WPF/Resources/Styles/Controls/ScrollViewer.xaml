@@ -38,7 +38,8 @@
               <ContentPresenter
                 Grid.Row="0"
                 VerticalAlignment="Top"
-                Content="{Binding Path=(ap:Slot.TopContent), RelativeSource={RelativeSource TemplatedParent}}"/>
+                Content="{Binding Path=(ap:Slot.TopContent), RelativeSource={RelativeSource TemplatedParent}}"
+                ContentTemplate="{Binding Path=(ap:Slot.TopContentTemplate), RelativeSource={RelativeSource TemplatedParent}}"/>
 
               <ScrollBar
                 Name="PART_VerticalScrollBar"
@@ -51,7 +52,8 @@
 
               <ContentPresenter
                 Grid.Row="2"
-                Content="{Binding Path=(ap:Slot.BottomContent), RelativeSource={RelativeSource TemplatedParent}}"/>
+                Content="{Binding Path=(ap:Slot.BottomContent), RelativeSource={RelativeSource TemplatedParent}}"
+                ContentTemplate="{Binding Path=(ap:Slot.BottomContentTemplate), RelativeSource={RelativeSource TemplatedParent}}"/>
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="0">
@@ -63,7 +65,8 @@
 
               <ContentPresenter
                 Grid.Column="0"
-                Content="{Binding Path=(ap:Slot.LeftContent), RelativeSource={RelativeSource TemplatedParent}}"/>
+                Content="{Binding Path=(ap:Slot.LeftContent), RelativeSource={RelativeSource TemplatedParent}}"
+                ContentTemplate="{Binding Path=(ap:Slot.LeftContentTemplate), RelativeSource={RelativeSource TemplatedParent}}"/>
 
               <ScrollBar
                 Name="PART_HorizontalScrollBar"
@@ -77,7 +80,8 @@
 
               <ContentPresenter
                 Grid.Column="2"
-                Content="{Binding Path=(ap:Slot.RightContent), RelativeSource={RelativeSource TemplatedParent}}"/>
+                Content="{Binding Path=(ap:Slot.RightContent), RelativeSource={RelativeSource TemplatedParent}}"
+                ContentTemplate="{Binding Path=(ap:Slot.RightContentTemplate), RelativeSource={RelativeSource TemplatedParent}}"/>
             </Grid>
           </Grid>
         </ControlTemplate>

@@ -246,25 +246,27 @@
     </Setter>
   </Style>
 
-  <Grid x:Key="MH.C.TreeView-ScrollButtons">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-    </Grid.RowDefinitions>
+  <DataTemplate x:Key="MH.DT.TreeView-ScrollButtons" DataType="{x:Type uiInt:ITreeView}">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
 
-    <RepeatButton
-      Command="{Binding Path=(uiInt:ITreeView.ScrollLevelUpCommand)}"
-      Content="M30,0 60,30 0,30z"
-      ToolTip="Scroll one level up"
-      Style="{DynamicResource MH.S.ScrollBar-Button}"/>
+      <RepeatButton
+        Command="{Binding ScrollLevelUpCommand}"
+        Content="M30,0 60,30 0,30z"
+        ToolTip="Scroll one level up"
+        Style="{DynamicResource MH.S.ScrollBar-Button}"/>
 
-    <RepeatButton
-      Command="{Binding Path=(uiInt:ITreeView.ScrollSiblingUpCommand)}"
-      Content="M30,0 60,30 0,30z"
-      ToolTip="Scroll one sibling up"
-      Grid.Row="1"
-      Style="{DynamicResource MH.S.ScrollBar-Button}"/>
-  </Grid>
+      <RepeatButton
+        Command="{Binding ScrollSiblingUpCommand}"
+        Content="M30,0 60,30 0,30z"
+        ToolTip="Scroll one sibling up"
+        Grid.Row="1"
+        Style="{DynamicResource MH.S.ScrollBar-Button}"/>
+    </Grid>
+  </DataTemplate>
 
   <Style x:Key="MH.Styles.Controls.TreeViewBase" TargetType="mhc:TreeViewBase">
     <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
@@ -298,17 +300,12 @@
           <ScrollViewer
             x:Name="PART_ScrollViewer"
             Focusable="False"
-            Padding="{TemplateBinding Padding}" 
-            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+            Padding="{TemplateBinding Padding}"
+            ap:Slot.TopContent="{Binding TreeView, RelativeSource={RelativeSource TemplatedParent}}"
+            ap:Slot.TopContentTemplate="{StaticResource MH.DT.TreeView-ScrollButtons}">
 
             <ItemsPresenter/>
           </ScrollViewer>
-
-          <ControlTemplate.Triggers>
-            <Trigger SourceName="PART_ScrollViewer" Property="ComputedVerticalScrollBarVisibility" Value="Visible">
-              <Setter TargetName="PART_ScrollViewer" Property="ap:Slot.TopContent" Value="{StaticResource MH.C.TreeView-ScrollButtons}"/>
-            </Trigger>
-          </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
