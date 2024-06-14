@@ -59,6 +59,8 @@
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
+  - unified ProgressBar height
+  - don't show MediaItemsFilter if MediaItemsView is not active
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
 ## Keywords
@@ -86,6 +88,10 @@
   - use WrapPanel and each category is one block
 ## StatusBar
   - limit folder path size
+## PersonDetail
+  - activate new person after people merge instead of closing tab
+## PersonMerge
+  - show selected person name on merge dialog
 
           # Movie Manager
 ##
@@ -134,6 +140,7 @@
     - disable/enable available
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
   - filter for segment resolution
+  - create multiple views of segments like media items views
 ## GroupByDialog
   - incremental search
 ## PersonDetail
