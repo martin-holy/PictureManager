@@ -12,6 +12,8 @@ Latest:
  - [U] ToolTip style
  - [U] Menu style
  - [U] ProgressBar style
+ - [U] SplashScreen border color[N]
+ - [N] UI colors based on Windows accent color
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
