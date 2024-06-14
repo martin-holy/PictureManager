@@ -108,7 +108,9 @@
         BorderThickness="2"
         BorderBrush="Black"
         Margin="1">
-        <ContentPresenter Content="{Binding}"/>
+        <ContentPresenter
+          Content="{Binding}"
+          ContentTemplate="{Binding InnerItemTemplate, RelativeSource={RelativeSource AncestorType=wpfc:CollectionView}}"/>
       </Border>
 
       <Border

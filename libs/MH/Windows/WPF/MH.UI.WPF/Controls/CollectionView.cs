@@ -17,9 +17,17 @@ public class CollectionView : TreeViewBase {
   public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
     nameof(View), typeof(ICollectionView), typeof(CollectionView), new(ViewChanged));
 
+  public static readonly DependencyProperty InnerItemTemplateProperty = DependencyProperty.Register(
+    nameof(InnerItemTemplate), typeof(DataTemplate), typeof(CollectionView));
+
   public ICollectionView View {
     get => (ICollectionView)GetValue(ViewProperty);
     set => SetValue(ViewProperty, value);
+  }
+
+  public DataTemplate InnerItemTemplate {
+    get => (DataTemplate)GetValue(InnerItemTemplateProperty);
+    set => SetValue(InnerItemTemplateProperty, value);
   }
 
   public static GroupByDialogDataTemplateSelector GroupByDialogDataTemplateSelector { get; } = new();
