@@ -20,50 +20,49 @@
         <wpfu:CachedResourceDictionary Source="/Resources/Icons.xaml"/>
 
         <!-- MH.UI.WPF -->
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Border.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Common.xaml"/><!-- keep this first -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Border.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Buttons.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/CustomWindow.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/DialogHost.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/GridSplitter.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/CheckBox.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Icon.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/IconTextBlock.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/IconTextBlockItemsControl.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Label.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ListBox.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/MediaPlayerControlPanel.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Menu.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/PopupSlider.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ProgressBar.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/RadioButton.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/RangeSlider.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ScrollBar.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ScrollViewer.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/SlidePanelHost.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/SlidePanelsGridHost.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Slider.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TabControl.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TextBlock.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TextBoxBase.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ToolTip.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TreeViewBase.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/WindowButtons.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ZoomAndPan.xaml"/>
 
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Common.xaml"/><!-- keep this first -->
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Buttons.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CatTreeView.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CollectionView.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CustomWindow.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/GridSplitter.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CheckBox.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockItemsControl.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Label.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ListBox.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Menu.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ProgressBar.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RadioButton.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollBar.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollViewer.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelHost.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelsGridHost.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Slider.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TabControl.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TextBlock.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TextBoxBase.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ToolTip.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TreeViewBase.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/WindowButtons.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ZoomAndPan.xaml"/>
-
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ComboBox.xaml"/><!-- Depends on: TextBoxBase -->
-
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/Dialogs/ToggleDialog.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/GroupByDialog.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/InputDialog.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/MessageDialog.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/ProgressBarDialog.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ComboBox.xaml"/><!-- Depends on: TextBoxBase -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/CatTreeView.xaml"/><!-- Depends on: TreeViewBase -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/CollectionView.xaml"/><!-- Depends on: TreeViewBase -->
 
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IListItem.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Templates/IHaveName.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IHaveName.xaml"/>
+
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/GroupByDialog.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/InputDialog.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/MessageDialog.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/ProgressBarDialog.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/ToggleDialog.xaml"/>
 
         <!-- Sample app -->
         <ResourceDictionary Source="/Views/Controls/ControlsV.xaml"/>
