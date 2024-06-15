@@ -35,13 +35,13 @@
                   Stretch="Uniform"
                   Margin="1,1,1,2"
                   Visibility="Collapsed"
-                  Fill="{StaticResource MH.B.Accent}"/>
+                  Fill="{DynamicResource MH.B.Accent}"/>
                 
                 <Rectangle
                   x:Name="indeterminateMark"
                   Margin="3"
                   Visibility="Collapsed"
-                  Fill="{StaticResource MH.B.Accent}"/>
+                  Fill="{DynamicResource MH.B.Accent}"/>
               </Grid>
             </Border>
             

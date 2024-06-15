@@ -26,7 +26,7 @@
       </Grid.RowDefinitions>
 
       <wpfc:TreeViewBase
-        Style="{StaticResource MH.Styles.Controls.TreeViewBase}"
+        Style="{DynamicResource MH.S.TreeViewBase}"
         TreeView="{Binding TreeView}"
         ItemTemplate="{StaticResource DialogTreeItem}"/>
       

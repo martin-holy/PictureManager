@@ -4,7 +4,7 @@
   xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
 
   <DataTemplate x:Key="MH.T.IHaveName.Border.RoundDarker" DataType="{x:Type mhuInt:IHaveName}">
-    <Border Style="{StaticResource MH.S.Border.RoundDarker}">
+    <Border Style="{DynamicResource MH.S.Border.RoundDarker}">
       <TextBlock
         Text="{Binding Name}"
         HorizontalAlignment="Center"

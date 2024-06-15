@@ -9,7 +9,7 @@
   <Geometry x:Key="RightArrow">M 0,0 4,3.5 0,7 Z</Geometry>
   <Geometry x:Key="Checkmark">F1 M 10.0,1.2 L 4.7,9.1 L 4.5,9.1 L 0,5.2 L 1.3,3.5 L 4.3,6.1L 8.3,0 L 10.0,1.2 Z</Geometry>
   
-  <Style x:Key="MH.S.Menu-ScrollButton" TargetType="RepeatButton">
+  <Style x:Key="MH.S.Menu.ScrollButton" TargetType="RepeatButton">
     <Setter Property="ClickMode" Value="Hover"/>
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
@@ -23,7 +23,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="MH.S.Menu-ScrollViewer" TargetType="ScrollViewer">
+  <Style x:Key="MH.S.Menu.ScrollViewer" TargetType="ScrollViewer">
     <Setter Property="HorizontalScrollBarVisibility" Value="Hidden"/>
     <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
     <Setter Property="Template">
@@ -38,7 +38,7 @@
             
             <RepeatButton
               Grid.Row="0"
-              Style="{StaticResource MH.S.Menu-ScrollButton}"
+              Style="{StaticResource MH.S.Menu.ScrollButton}"
               Command="ScrollBar.LineUpCommand"
               CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}">
 
@@ -63,7 +63,7 @@
             
             <RepeatButton
               Grid.Row="2"
-              Style="{StaticResource MH.S.Menu-ScrollButton}"
+              Style="{StaticResource MH.S.Menu.ScrollButton}"
               Command="ScrollBar.LineDownCommand"
               CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}">
 
@@ -87,7 +87,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="MH.S.MenuItem-Checkmark" TargetType="Path">
+  <Style x:Key="MH.S.MenuItem.Checkmark" TargetType="Path">
     <Setter Property="Data" Value="{StaticResource Checkmark}"/>
     <Setter Property="Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="Width" Value="10"/>
@@ -100,7 +100,7 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="MH.S.MenuItem-CheckmarkPanel" TargetType="Border">
+  <Style x:Key="MH.S.MenuItem.CheckmarkPanel" TargetType="Border">
     <Setter Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
     <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
     <Setter Property="BorderThickness" Value="1"/>
@@ -117,14 +117,14 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="MH.S.MenuItem-VerticalSeparator" TargetType="Rectangle">
+  <Style x:Key="MH.S.MenuItem.VerticalSeparator" TargetType="Rectangle">
     <Setter Property="Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="HorizontalAlignment" Value="Left"/>
     <Setter Property="Margin" Value="29,2,0,2"/>
     <Setter Property="Width" Value="1"/>
   </Style>
 
-  <ControlTemplate x:Key="MH.CT.MenuItem-TopLevelItem" TargetType="MenuItem">
+  <ControlTemplate x:Key="MH.CT.MenuItem.TopLevelItem" TargetType="MenuItem">
     <Border
       x:Name="templateRoot"
       Background="{TemplateBinding Background}"
@@ -142,12 +142,12 @@
         <Border
           x:Name="GlyphPanel"
           Grid.Column="0"
-          Style="{StaticResource MH.S.MenuItem-CheckmarkPanel}"
+          Style="{StaticResource MH.S.MenuItem.CheckmarkPanel}"
           BorderThickness="{TemplateBinding BorderThickness}"
           Margin="1,0,0,0"
           Visibility="Collapsed">
   
-          <Path x:Name="Glyph" Style="{StaticResource MH.S.MenuItem-Checkmark}"/>
+          <Path x:Name="Glyph" Style="{StaticResource MH.S.MenuItem.Checkmark}"/>
         </Border>
         
         <ContentPresenter
@@ -171,7 +171,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="MH.CT.MenuItem-TopLevelHeader" TargetType="MenuItem">
+  <ControlTemplate x:Key="MH.CT.MenuItem.TopLevelHeader" TargetType="MenuItem">
     <Border
       x:Name="templateRoot"
       Background="{TemplateBinding Background}"
@@ -211,9 +211,9 @@
             BorderThickness="1"
             Padding="2">
 
-            <ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource MH.S.Menu-ScrollViewer}">
+            <ScrollViewer x:Name="SubMenuScrollViewer" Style="{StaticResource MH.S.Menu.ScrollViewer}">
               <Grid RenderOptions.ClearTypeHint="Enabled">
-                <Rectangle Style="{StaticResource MH.S.MenuItem-VerticalSeparator}"/>
+                <Rectangle Style="{StaticResource MH.S.MenuItem.VerticalSeparator}"/>
 
                 <ItemsPresenter
                   x:Name="ItemsPresenter"
@@ -234,7 +234,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="MH.CT.MenuItem-SubmenuItem" TargetType="MenuItem">
+  <ControlTemplate x:Key="MH.CT.MenuItem.SubmenuItem" TargetType="MenuItem">
     <Border
       x:Name="templateRoot"
       Background="{TemplateBinding Background}"
@@ -253,11 +253,11 @@
         <Border
           x:Name="GlyphPanel"
           Grid.Column="0"
-          Style="{StaticResource MH.S.MenuItem-CheckmarkPanel}"
+          Style="{StaticResource MH.S.MenuItem.CheckmarkPanel}"
           BorderThickness="{TemplateBinding BorderThickness}"
           Visibility="Collapsed">
           
-          <Path x:Name="Glyph" Style="{StaticResource MH.S.MenuItem-Checkmark}"/>
+          <Path x:Name="Glyph" Style="{StaticResource MH.S.MenuItem.Checkmark}"/>
         </Border>
         
         <ContentPresenter
@@ -294,7 +294,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="MH.CT.MenuItem-SubmenuHeader" TargetType="MenuItem">
+  <ControlTemplate x:Key="MH.CT.MenuItem.SubmenuHeader" TargetType="MenuItem">
     <Border
       x:Name="templateRoot"
       Background="{TemplateBinding Background}"
@@ -345,9 +345,9 @@
             BorderThickness="1"
             Padding="2">
             
-            <ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource MH.S.Menu-ScrollViewer}">
+            <ScrollViewer x:Name="SubMenuScrollViewer" Style="{StaticResource MH.S.Menu.ScrollViewer}">
               <Grid RenderOptions.ClearTypeHint="Enabled">
-                <Rectangle Style="{StaticResource MH.S.MenuItem-VerticalSeparator}"/>
+                <Rectangle Style="{StaticResource MH.S.MenuItem.VerticalSeparator}"/>
                 
                 <ItemsPresenter
                   x:Name="ItemsPresenter"
@@ -403,18 +403,18 @@
     <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
     <Setter Property="Height" Value="26"/>
     <Setter Property="Padding" Value="12,2,6,2"/>
-    <Setter Property="Template" Value="{DynamicResource MH.CT.MenuItem-SubmenuItem}"/>
+    <Setter Property="Template" Value="{StaticResource MH.CT.MenuItem.SubmenuItem}"/>
     <Style.Triggers>
       <Trigger Property="Role" Value="TopLevelHeader">
-        <Setter Property="Template" Value="{DynamicResource MH.CT.MenuItem-TopLevelHeader}"/>
+        <Setter Property="Template" Value="{StaticResource MH.CT.MenuItem.TopLevelHeader}"/>
         <Setter Property="Padding" Value="6,2"/>
       </Trigger>
       <Trigger Property="Role" Value="TopLevelItem">
-        <Setter Property="Template" Value="{DynamicResource MH.CT.MenuItem-TopLevelItem}"/>
+        <Setter Property="Template" Value="{StaticResource MH.CT.MenuItem.TopLevelItem}"/>
         <Setter Property="Padding" Value="6,2"/>
       </Trigger>
       <Trigger Property="Role" Value="SubmenuHeader">
-        <Setter Property="Template" Value="{DynamicResource MH.CT.MenuItem-SubmenuHeader}"/>
+        <Setter Property="Template" Value="{StaticResource MH.CT.MenuItem.SubmenuHeader}"/>
       </Trigger>
       <Trigger Property="IsHighlighted" Value="True">
         <Setter Property="Background" Value="{StaticResource MH.B.I.Hover.Ba}"/>
@@ -457,9 +457,9 @@
             BorderThickness="{TemplateBinding BorderThickness}"
             Padding="2">
 
-            <ScrollViewer Name="ContextMenuScrollViewer" Style="{DynamicResource MH.S.Menu-ScrollViewer}">
+            <ScrollViewer Name="ContextMenuScrollViewer" Style="{StaticResource MH.S.Menu.ScrollViewer}">
               <Grid RenderOptions.ClearTypeHint="Enabled">
-                <Rectangle Style="{StaticResource MH.S.MenuItem-VerticalSeparator}"/>
+                <Rectangle Style="{StaticResource MH.S.MenuItem.VerticalSeparator}"/>
 
                 <ItemsPresenter
                   x:Name="ItemsPresenter"

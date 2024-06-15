@@ -9,7 +9,7 @@
     <DockPanel>
       <Path
         DockPanel.Dock="Left"
-        Style="{StaticResource MH.Styles.Icon}"
+        Style="{DynamicResource MH.Styles.Icon}"
         Effect="{StaticResource MH.Effects.DropShadow}"
         Width="32"
         Height="32"

@@ -24,8 +24,8 @@
   <Style
     x:Key="MH.Styles.Controls.CollectionView"
     TargetType="wpfc:CollectionView"
-    BasedOn="{StaticResource MH.Styles.Controls.TreeViewBase}">
-    <Setter Property="ItemContainerStyle" Value="{StaticResource MH.Styles.Controls.TreeViewItemLite}"/>
+    BasedOn="{StaticResource MH.S.TreeViewBase}">
+    <Setter Property="ItemContainerStyle" Value="{DynamicResource MH.S.TreeViewItem.Lite}"/>
     <Setter Property="ItemTemplateSelector" Value="{StaticResource KeyDataTemplateSelector}"/>
   </Style>
 
@@ -53,7 +53,7 @@
         <ToggleButton
           x:Name="expander"
           Grid.Column="0"
-          Style="{StaticResource MH.Styles.Controls.TreeExpandCollapseToggle}"
+          Style="{DynamicResource MH.S.ToggleButton.TreeExpandCollapse}"
           IsChecked="{Binding IsExpanded, Mode=TwoWay}"/>
 
         <wpfc:IconButton

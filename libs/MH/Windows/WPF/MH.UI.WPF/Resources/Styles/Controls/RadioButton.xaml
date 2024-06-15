@@ -34,7 +34,7 @@
                 Width="10"
                 Height="10"
                 Visibility="Collapsed"
-                Fill="{StaticResource MH.B.Accent}"/>
+                Fill="{DynamicResource MH.B.Accent}"/>
             </Border>
 
             <ContentPresenter

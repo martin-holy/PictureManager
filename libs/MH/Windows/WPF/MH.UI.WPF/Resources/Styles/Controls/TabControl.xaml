@@ -27,7 +27,7 @@
         <DataTemplate>
           <ContentPresenter
             Content="{Binding}"
-            ContentTemplate="{StaticResource MH.DT.IListItem}"
+            ContentTemplate="{DynamicResource MH.DT.IListItem}"
             ap:Icon.Shadow="True"
             ap:Text.Shadow="True"/>
         </DataTemplate>

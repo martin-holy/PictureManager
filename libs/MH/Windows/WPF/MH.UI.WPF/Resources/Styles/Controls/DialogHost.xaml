@@ -25,7 +25,7 @@
           mhc:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType={x:Type mhc:CustomWindow}}}">
 
           <Path
-            Style="{StaticResource MH.Styles.Icon}"
+            Style="{DynamicResource MH.Styles.Icon}"
             Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="4,0,6,2"
             Data="{Binding Path=Content.(uic:Dialog.Icon),
@@ -42,7 +42,7 @@
         <Button
           ToolTip="Close"
           Content="&#xE106;"
-          Style="{StaticResource MH.Styles.Controls.WindowButtonClose}"
+          Style="{DynamicResource MH.Styles.Controls.WindowButtonClose}"
           HorizontalAlignment="Right"
           Command="uic:Dialog.CloseCommand"
           CommandParameter="{Binding Path=DataContext.(mhc:DialogHost.Content), ElementName=root}"/>

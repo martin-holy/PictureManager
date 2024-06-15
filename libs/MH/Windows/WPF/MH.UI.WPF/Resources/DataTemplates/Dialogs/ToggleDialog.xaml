@@ -25,7 +25,7 @@
           HorizontalAlignment="Left"
           Margin="0,4,4,4"
           Content="{Binding Item}"
-          ContentTemplate="{StaticResource MH.DT.IListItem.Border.RoundDarker}"/>
+          ContentTemplate="{DynamicResource MH.DT.IListItem.Border.RoundDarker}"/>
 
         <TextBlock
           Grid.Row="1"

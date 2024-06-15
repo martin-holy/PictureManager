@@ -36,7 +36,7 @@
             <Grid>
               <Grid Name="IndeterminateRoot" Visibility="Collapsed">
                 <Rectangle
-                  Fill="{DynamicResource MH.B.ProgressBar-Progress}"
+                  Fill="{DynamicResource MH.B.ProgressBar.Progress}"
                   Opacity="1"
                   RenderTransformOrigin="0.5,0.5"
                   StrokeThickness="0"/>
@@ -63,7 +63,7 @@
               <Border
                 x:Name="PART_Indicator"
                 HorizontalAlignment="Left"
-                Background="{DynamicResource MH.B.ProgressBar-Progress}"/>
+                Background="{DynamicResource MH.B.ProgressBar.Progress}"/>
             </Grid>
           </Border>
 

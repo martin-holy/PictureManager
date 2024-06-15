@@ -38,7 +38,7 @@
 
       <Path
         x:Name="icon"
-        Style="{StaticResource MH.Styles.Icon}"
+        Style="{DynamicResource MH.Styles.Icon}"
         Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
         Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
                ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
@@ -64,7 +64,7 @@
   </DataTemplate>
 
   <DataTemplate x:Key="MH.DT.IListItem.Border.RoundDarker" DataType="{x:Type uInt:IListItem}">
-    <Border Style="{StaticResource MH.S.Border.RoundDarker}">
+    <Border Style="{DynamicResource MH.S.Border.RoundDarker}">
       <ContentPresenter
         Content="{Binding}"
         ContentTemplate="{StaticResource MH.DataTemplates.IListItem}"/>

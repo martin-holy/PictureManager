@@ -31,7 +31,7 @@
     <Setter Property="MinWidth" Value="250"/>
     <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
     <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource MH.B.Accent}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource MH.B.Accent}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="FontSize" Value="{StaticResource MH.FontSize}"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
