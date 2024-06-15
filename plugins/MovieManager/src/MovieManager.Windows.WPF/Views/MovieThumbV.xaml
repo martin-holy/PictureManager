@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:MovieManager.Common.Models;assembly=MovieManager.Common">
     
-  <DataTemplate DataType="{x:Type m:MovieM}">
+  <DataTemplate x:Key="MM.Views.MovieV.Thumb" DataType="{x:Type m:MovieM}">
     <Grid Background="Transparent">
       <TextBlock
         Text="{Binding Title}"
@@ -14,7 +14,7 @@
 
       <ContentControl
         Content="{Binding Poster}"
-        ContentTemplate="{StaticResource PM.T.MediaItemThumb.Fill}"/>
+        ContentTemplate="{StaticResource PM.Views.MediaItemM.Thumb-Fill}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

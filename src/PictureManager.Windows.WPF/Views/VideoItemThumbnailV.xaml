@@ -5,7 +5,7 @@
   xmlns:mim="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate DataType="{x:Type mim:VideoItemM}">
+  <DataTemplate x:Key="PM.Views.VideoItemV.Thumb" DataType="{x:Type mim:VideoItemM}">
     <Grid x:Name="root" Background="Transparent">
       <Image Stretch="Fill">
         <Image.Source>

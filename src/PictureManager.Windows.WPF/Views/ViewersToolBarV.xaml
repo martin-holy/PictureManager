@@ -20,7 +20,7 @@
         </MenuItem.ItemsSource>
 
         <MenuItem.ItemContainerStyle>
-          <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+          <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MH.S.MenuItem}">
             <Setter Property="Header" Value="{Binding Path=(m:ViewerM.Name)}"/>
             <Setter Property="Command" Value="vme:ViewerVM.ChangeCurrentCommand"/>
             <Setter Property="CommandParameter" Value="{Binding}"/>

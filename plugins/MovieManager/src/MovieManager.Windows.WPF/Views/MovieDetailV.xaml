@@ -9,11 +9,6 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
-  <ResourceDictionary.MergedDictionaries>
-    <mhu:CachedResourceDictionary Source="../Resources/Icons.xaml"/>
-    <mhu:CachedResourceDictionary Source="CharacterV.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
-
   <DataTemplate DataType="{x:Type vm:MovieDetailVM}">
     <DataTemplate.Resources>
       <DataTemplate x:Key="_listBoxSeenDate" DataType="{x:Type sys:DateOnly}">
@@ -213,7 +208,7 @@
       <mhc:IconTextBlockItemsControl
         Grid.Row="2"
         ItemsSource="{Binding MovieM.Genres}"
-        ap:Icon.Data="{StaticResource IconTheaterMasks}"
+        ap:Icon.Data="{DynamicResource IconTheaterMasks}"
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"/>
 
       <!-- Keywords -->
@@ -235,7 +230,10 @@
       </ScrollViewer>
 
       <!-- Characters -->
-      <mhc:CollectionView Grid.Row="5" View="{Binding Characters}"/>
+      <mhc:CollectionView
+        Grid.Row="5"
+        View="{Binding Characters}"
+        InnerItemTemplate="{DynamicResource MM.Views.CharacterV}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

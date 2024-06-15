@@ -8,15 +8,6 @@
   xmlns:pm="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type vm:SegmentsMatchingVM}">
-    <DataTemplate.Resources>
-      <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="PersonThumbnailV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="SegmentV.xaml" />
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-    
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition
@@ -28,11 +19,16 @@
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
       
-      <mhc:CollectionView View="{Binding CvPeople}"/>
+      <mhc:CollectionView
+        View="{Binding CvPeople}"
+        InnerItemTemplate="{StaticResource PM.Views.PersonV.Thumb}"/>
+
       <GridSplitter Grid.Column="1"/>
+
       <mhc:CollectionView
         Grid.Column="2"
         View="{Binding CvSegments}"
+        InnerItemTemplate="{StaticResource PM.Views.SegmentV}"
         wpfu:DragDropHelper.IsDragEnabled="True"
         wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
     </Grid>

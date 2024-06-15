@@ -2,16 +2,11 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type md:FileOperationCollisionDialogM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="../Views/MediaItemThumbnailLiteV.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-
         <Style TargetType="TextBlock" x:Key="InfoText">
           <Setter Property="VerticalAlignment" Value="Center"/>
           <Setter Property="Margin" Value="4"/>
@@ -67,12 +62,14 @@
       <!-- Source Thumbnail -->
       <ContentControl
         Content="{Binding SrcMediaItem, TargetNullValue={StaticResource UnknownFile1}}"
+        ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"
         ToolTip="{Binding SrcPath}"
         Grid.Column="0"/>
 
       <!-- Destination Thumbnail -->
       <ContentControl
         Content="{Binding DestMediaItem, TargetNullValue={StaticResource UnknownFile2}}"
+        ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"
         ToolTip="{Binding DestPath}"
         Grid.Column="2"/>
 

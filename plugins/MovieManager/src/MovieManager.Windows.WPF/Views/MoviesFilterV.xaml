@@ -6,7 +6,7 @@
 
   <DataTemplate DataType="{x:Type vm:MoviesFilterVM}">
     <DataTemplate.Resources>
-      <Style x:Key="SizeTexts" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+      <Style x:Key="SizeTexts" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MH.S.TextBlock}">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
       </Style>
