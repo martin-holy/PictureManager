@@ -27,11 +27,11 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
   public override void OnItemSelected(object o) {
     // SHIFT key => recursive
     // MBL => show, MBL+ctrl => and, MBL+alt => hide
-    if (o is not ITreeItem item) return;
+    if (o is not FolderM && o is not FolderKeywordM) return;
     if (Core.VM.MediaViewer.IsVisible)
       Core.VM.MainWindow.IsInViewMode = false;
 
-    _ = Core.VM.MediaItem.Views.LoadByFolder(item);
+    _ = Core.VM.MediaItem.Views.LoadByFolder((ITreeItem)o);
   }
 
   public override bool CanDrop(object src, ITreeItem dest) {
