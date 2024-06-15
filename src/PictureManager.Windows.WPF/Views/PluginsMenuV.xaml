@@ -4,7 +4,7 @@
   xmlns:pmhc="clr-namespace:PictureManager.Common.HelperClasses;assembly=PictureManager.Common"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate x:Key="Views.PluginsMenuV" DataType="{x:Static pmhc:GenericTypes.ListOfIPluginCore}">
+  <DataTemplate x:Key="MH.Views.PluginsMenuV" DataType="{x:Static pmhc:GenericTypes.ListOfIPluginCore}">
     <Menu Background="Transparent">
       <MenuItem ItemsSource="{Binding}" Padding="6,2,-2,2">
         <MenuItem.Icon>
@@ -12,7 +12,7 @@
         </MenuItem.Icon>
 
         <MenuItem.ItemContainerStyle>
-          <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+          <Style TargetType="MenuItem" BasedOn="{StaticResource MH.S.MenuItem}">
             <Setter Property="Header" Value="{Binding VM.PluginTitle}"/>
             <Setter Property="ItemsSource" Value="{Binding VM.MainMenuCommands}"/>
             <Setter Property="Icon">
@@ -24,7 +24,7 @@
             </Setter>
             <Setter Property="ItemContainerStyle">
               <Setter.Value>
-                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                <Style TargetType="MenuItem" BasedOn="{StaticResource MH.S.MenuItem}">
                   <Setter Property="Command" Value="{Binding}"/>
                 </Style>
               </Setter.Value>

@@ -6,22 +6,12 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
-  <DataTemplate DataType="{x:Type m:SegmentM}">
-    <DataTemplate.Resources>
-      <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="MediaItemThumbnailLiteV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="SegmentLiteV.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-
+  <DataTemplate x:Key="PM.Views.SegmentV" DataType="{x:Type m:SegmentM}">
     <Grid x:Name="root" Background="Transparent">
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="ToolTipOpening">
@@ -36,7 +26,7 @@
           <DockPanel>
             <Grid DockPanel.Dock="Top">
               <!-- Thumbnail -->
-              <ContentPresenter Content="{Binding MediaItem}"/>
+              <ContentPresenter Content="{Binding MediaItem}" ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"/>
 
               <!-- Segments Rects -->
               <ItemsControl
@@ -101,7 +91,7 @@
               <ItemsControl
                 ItemsSource="{Binding Person.TopSegments}"
                 Visibility="{Binding Person.TopSegments, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
-                ItemTemplate="{StaticResource PM.Views.SegmentLiteV}">
+                ItemTemplate="{StaticResource PM.Views.SegmentV.Lite}">
 
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>

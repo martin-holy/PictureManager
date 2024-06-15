@@ -2,18 +2,9 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate DataType="{x:Type m:PersonM}">
-    <DataTemplate.Resources>
-      <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="SegmentV.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-
+  <DataTemplate x:Key="PM.Views.PersonV.Thumb" DataType="{x:Type m:PersonM}">
     <Grid>
       <Grid
         ToolTip="{Binding Name}"
@@ -30,6 +21,7 @@
 
       <ContentControl
         Content="{Binding Segment}"
+        ContentTemplate="{StaticResource PM.Views.SegmentV}"
         Visibility="{Binding Segment, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
     </Grid>
   </DataTemplate>

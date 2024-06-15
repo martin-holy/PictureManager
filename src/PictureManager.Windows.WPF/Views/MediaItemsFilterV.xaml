@@ -59,16 +59,15 @@
         <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
       </Style>
 
-      <Style x:Key="SizeTexts" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+      <Style x:Key="SizeTexts" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MH.S.TextBlock}">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
       </Style>
 
-      <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
+      <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.S.ToggleButton}">
         <Setter Property="IsThreeState" Value="False"/>
         <Setter Property="Height" Value="30"/>
         <Setter Property="Width" Value="80"/>
-        <Setter Property="Margin" Value="5"/>
       </Style>
     </DataTemplate.Resources>
 

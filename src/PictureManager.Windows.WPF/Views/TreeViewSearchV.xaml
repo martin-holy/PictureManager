@@ -2,14 +2,9 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
-
-  <ResourceDictionary.MergedDictionaries>
-    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IListItem.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type vm:TreeViewSearchVM}">
     <Grid Margin="4,7,4,4">

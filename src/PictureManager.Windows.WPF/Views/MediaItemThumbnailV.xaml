@@ -8,7 +8,7 @@
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate DataType="{x:Type mim:MediaItemM}">
+  <DataTemplate x:Key="PM.Views.MediaItemV.Thumb" DataType="{x:Type mim:MediaItemM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <sys:Double x:Key="ThumbnailInfoMinSize">170.0</sys:Double>

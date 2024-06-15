@@ -4,23 +4,12 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.Utils;assembly=MH.Utils"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type vm:ToolBarVM}">
-    <DataTemplate.Resources>
-      <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="../MediaItemsFilterV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="../PluginsMenuV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="../ViewersToolBarV.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-
     <Grid Height="30" Background="Transparent" DataContext="{x:Static pm:App.Core}">
       <StackPanel
         Orientation="Horizontal"
@@ -80,7 +69,7 @@
           <!-- Plugins Menu -->
           <ContentPresenter
             Content="{Binding Inst.Plugins, Mode=OneTime}"
-            ContentTemplate="{StaticResource Views.PluginsMenuV}"
+            ContentTemplate="{StaticResource MH.Views.PluginsMenuV}"
             VerticalAlignment="Center"
             Visibility="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 

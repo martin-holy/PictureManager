@@ -6,16 +6,9 @@
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type vm:SegmentsDrawerVM}">
-    <DataTemplate.Resources>
-      <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <mhu:CachedResourceDictionary Source="SegmentV.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-
     <mhc:CollectionView
       View="{Binding}"
+      InnerItemTemplate="{StaticResource PM.Views.SegmentV}"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.IsDropEnabled="True"
       mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

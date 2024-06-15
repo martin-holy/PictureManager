@@ -6,12 +6,7 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
   xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
-
-  <ResourceDictionary.MergedDictionaries>
-    <wpfu:CachedResourceDictionary Source="SegmentLiteV.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent">
@@ -92,7 +87,7 @@
             <ToolTip BorderThickness="0" Padding="0">
               <ContentPresenter
                 Content="{Binding Path=(m:PersonM.Segment)}"
-                ContentTemplate="{StaticResource PM.Views.SegmentLiteV}"/>
+                ContentTemplate="{StaticResource PM.Views.SegmentV.Lite}"/>
             </ToolTip>
           </Setter.Value>
         </Setter>
