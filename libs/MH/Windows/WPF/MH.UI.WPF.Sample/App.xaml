@@ -2,25 +2,78 @@
   x:Class="MH.UI.WPF.Sample.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime">
   
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTypes.xaml"/>
+        <!-- MH.UI.WPF - No Dependencies -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTypes.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Brushes.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Effects.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Icons.xaml"/>
 
+        <!-- Sample app - No Dependencies -->
         <wpfu:CachedResourceDictionary Source="/Resources/Brushes.xaml"/>
         <wpfu:CachedResourceDictionary Source="/Resources/Icons.xaml"/>
 
-        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Common.xaml"/>
-        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
-        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Common.xaml"/>
-        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Brushes.xaml"/>
-        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Effects.xaml"/>
-        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Icons.xaml"/>
+        <!-- MH.UI.WPF - Depends on something that doesn't have any dependencies (Brush, Effect, ...) -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Common.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Common.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Border.xaml"/>
 
-        <wpfu:CachedResourceDictionary Source="/Resources/MHUIWPF.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CatTreeView.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CollectionView.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CustomWindow.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/GridSplitter.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CheckBox.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlock.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Buttons.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextBlockItemsControl.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Label.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ListBox.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Menu.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ProgressBar.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RadioButton.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollViewer.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelHost.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelsGridHost.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TextBlock.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ToolTip.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/WindowButtons.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ZoomAndPan.xaml"/>
 
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/GroupByDialog.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/ProgressBarDialog.xaml"/>
+
+        <!-- Depends on something that does have dependencies -->
+        <!-- Depends on: Icon -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IListItem.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/InputDialog.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Dialogs/MessageDialog.xaml"/>
+        <!-- Depends on: Menu -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TextBoxBase.xaml"/><!-- Dependants: ComboBox -->
+        <!-- Depends on: TextBoxBase -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ComboBox.xaml"/>
+        <!-- Depends on: Icon, WindowButtons -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
+        <!-- Depends on: TextBlock, PopupSlider -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MediaPlayerControlPanel.xaml"/>
+        <!-- Depends on: RepeatButtonTransparent in Common -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ScrollBar.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/Slider.xaml"/>
+        <!-- Depends on: IListItem -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TabControl.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/Dialogs/ToggleDialog.xaml"/>
+        <!-- Depends on: Border -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Templates/IHaveName.xaml"/>
+
+        <!-- Sample app -->
         <ResourceDictionary Source="/Views/Controls/ControlsV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/ButtonsV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/ListsV.xaml"/>
@@ -34,6 +87,53 @@
         <ResourceDictionary Source="/Views/Layout/ToolBarV.xaml"/>
         <ResourceDictionary Source="/Views/FolderV.xaml"/>
       </ResourceDictionary.MergedDictionaries>
+
+      <Style TargetType="Button" BasedOn="{StaticResource MH.S.Button}"/>
+      <Style TargetType="ToggleButton" BasedOn="{StaticResource MH.S.ToggleButton}"/>
+      <Style TargetType="ComboBox" BasedOn="{StaticResource MH.S.ComboBox}"/>
+      <Style TargetType="ComboBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
+      <Style TargetType="GridSplitter" BasedOn="{StaticResource MH.S.GridSplitter}"/>
+      <Style TargetType="CheckBox" BasedOn="{StaticResource MH.S.CheckBox}"/>
+      <Style TargetType="Label" BasedOn="{StaticResource MH.S.Label}"/>
+      <Style TargetType="ListBox" BasedOn="{StaticResource MH.S.ListBox}"/>
+      <Style TargetType="ListBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}"/>
+      <Style TargetType="ContextMenu" BasedOn="{StaticResource MH.S.ContextMenu}"/>
+      <Style TargetType="Menu" BasedOn="{StaticResource MH.S.Menu}"/>
+      <Style TargetType="MenuItem" BasedOn="{StaticResource MH.S.MenuItem}"/>
+      <Style TargetType="ProgressBar" BasedOn="{StaticResource MH.S.ProgressBar}"/>
+      <Style TargetType="RadioButton" BasedOn="{StaticResource MH.S.RadioButton}"/>
+      <Style TargetType="ScrollBar" BasedOn="{StaticResource MH.S.ScrollBar}"/>
+      <Style TargetType="ScrollViewer" BasedOn="{StaticResource MH.S.ScrollViewer}"/>
+      <Style TargetType="Slider" BasedOn="{StaticResource MH.S.Slider}"/>
+      <Style TargetType="TabControl" BasedOn="{StaticResource MH.S.TabControl}"/>
+      <Style TargetType="TabItem" BasedOn="{StaticResource MH.S.TabItem}"/>
+      <Style TargetType="TextBlock" BasedOn="{StaticResource MH.S.TextBlock}"/>
+      <Style TargetType="TextBox" BasedOn="{StaticResource MH.S.TextBoxBase}"/>
+      <Style TargetType="ToolTip" BasedOn="{StaticResource MH.S.ToolTip}"/>
+
+      <Style TargetType="mhc:CatTreeView" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}"/>
+      <Style TargetType="mhc:CollectionView" BasedOn="{StaticResource MH.Styles.Controls.CollectionView}"/>
+      <Style TargetType="mhc:IconTextBlock" BasedOn="{StaticResource MH.S.IconTextBlock}"/>
+      <Style TargetType="mhc:IconButton" BasedOn="{StaticResource MH.S.IconButton}"/>
+      <Style TargetType="mhc:IconTextButton" BasedOn="{StaticResource MH.S.IconTextButton}"/>
+      <Style TargetType="mhc:SlimButton" BasedOn="{StaticResource MH.S.SlimButton}"/>
+      <Style TargetType="mhc:IconToggleButton" BasedOn="{StaticResource MH.S.IconToggleButton}"/>
+      <Style TargetType="mhc:IconTextBlockItemsControl" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockItemsControl}"/>
+      <Style TargetType="mhc:PopupSlider" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
+      <Style TargetType="mhc:RangeSlider" BasedOn="{StaticResource MH.S.RangeSlider}"/>
+      <Style TargetType="mhc:SlidePanelHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelHost}"/>
+      <Style TargetType="mhc:SlidePanelsGridHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGridHost}"/>
+      <Style TargetType="mhc:TreeViewBase" BasedOn="{StaticResource MH.Styles.Controls.TreeViewBase}"/>
+      <Style TargetType="mhc:ZoomAndPan" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPan}"/>
+
+      <wpfu:KeyDataTemplateSelector x:Key="MH.Styles.Controls.DialogHost.DialogTemplateSelector">
+        <wpfu:KeyDataTemplateSelector.Keys>
+          <x:Array Type="{x:Type sys:String}">
+            <sys:String>MH.UI.Dialogs.GroupByDialog`1</sys:String>
+          </x:Array>
+        </wpfu:KeyDataTemplateSelector.Keys>
+      </wpfu:KeyDataTemplateSelector>
+
     </ResourceDictionary>
   </Application.Resources>
 </Application>

@@ -3,13 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:uid="clr-namespace:MH.UI.Dialogs;assembly=MH.UI"
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
-  xmlns:u="clr-namespace:MH.UI.WPF.Utils"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
-
-  <ResourceDictionary.MergedDictionaries>
-    <u:CachedResourceDictionary Source="../../Effects.xaml"/>
-    <u:CachedResourceDictionary Source="../Icon.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type uid:MessageDialog}">
     <DockPanel>

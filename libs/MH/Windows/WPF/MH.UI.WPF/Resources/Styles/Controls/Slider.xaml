@@ -3,10 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
-  <ResourceDictionary.MergedDictionaries>
-    <u:CachedResourceDictionary Source="../BaseControls/Common.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
-
   <Style x:Key="MH.S.Slider-Thumb" TargetType="Thumb">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="VerticalAlignment" Value="Center"/>

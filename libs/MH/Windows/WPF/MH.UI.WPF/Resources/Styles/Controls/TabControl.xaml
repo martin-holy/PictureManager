@@ -4,13 +4,8 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
-  xmlns:u="clr-namespace:MH.UI.WPF.Utils"
   xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
-
-  <ResourceDictionary.MergedDictionaries>
-    <u:CachedResourceDictionary Source="../../DataTemplates/IListItem.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
 
   <Style x:Key="MH.S.TabItem" TargetType="{x:Type TabItem}">
     <Setter Property="Border.CornerRadius" Value="3"/>
