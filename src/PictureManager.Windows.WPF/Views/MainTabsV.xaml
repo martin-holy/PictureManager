@@ -2,22 +2,10 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate x:Key="PM.Views.MainTabsV" DataType="{x:Type vm:MainTabsVM}">
-    <DataTemplate.Resources>
-      <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="MediaItemsViewV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="PeopleV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="SegmentsMatchingV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="ViewerV.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-
     <TabControl/>
   </DataTemplate>
 

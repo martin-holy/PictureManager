@@ -6,14 +6,9 @@
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vmWin="clr-namespace:PictureManager.Windows.WPF.ViewModels"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
-
-  <ResourceDictionary.MergedDictionaries>
-    <wpfu:CachedResourceDictionary Source="SegmentsRectsV.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type vm:MediaViewerVM}">
     <Grid

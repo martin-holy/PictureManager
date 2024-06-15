@@ -4,7 +4,7 @@
   xmlns:mim="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters">
 
-  <DataTemplate DataType="{x:Type mim:MediaItemM}">
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Lite" DataType="{x:Type mim:MediaItemM}">
     <Border
       Width="{Binding ThumbWidth}"
       Height="{Binding ThumbHeight}"

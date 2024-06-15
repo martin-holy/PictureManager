@@ -9,9 +9,13 @@ using PictureManager.Common.ViewModels.Entities;
 using PictureManager.Windows.WPF.Converters;
 using PictureManager.Windows.WPF.ShellStuff;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Resources;
 using System.Windows;
 
 namespace PictureManager.Windows.WPF;
@@ -78,10 +82,21 @@ public sealed class AppCore : ObservableObject {
       try {
         var asmName = $"{plugin.Name}.Windows.WPF";
         var pluginPath = Path.GetFullPath(Path.Combine("plugins", plugin.Name, $"{asmName}.dll"));
-        var uri = new Uri($"/{asmName};component/resources/main.xaml", UriKind.Relative);
-        Assembly.LoadFrom(pluginPath);
-        if (Application.LoadComponent(uri) as ResourceDictionary is not { } dict) continue;
-        Application.Current.Resources.MergedDictionaries.Add(dict);
+        var assembly = Assembly.LoadFrom(pluginPath);
+        var resourceManager = new ResourceManager($"{asmName}.g", assembly);
+
+        if (resourceManager.GetResourceSet(CultureInfo.CurrentCulture, true, true) is not { } resourceSet) continue;
+
+        var uris = resourceSet.Cast<DictionaryEntry>()
+          .Select(x => x.Key.ToString())
+          .Where(x => x != null && (x.StartsWith("resources/") || x.StartsWith("views/")) && x.EndsWith(".baml"))
+          .Select(x => new Uri($"/{asmName};component/{x.Replace(".baml", ".xaml")}", UriKind.Relative))
+          .ToArray();
+        
+        foreach (var uri in uris) {
+          if (Application.LoadComponent(uri) is ResourceDictionary dict)
+            Application.Current.Resources.MergedDictionaries.Add(dict);
+        }
       }
       catch (Exception ex) {
         Log.Error(ex);

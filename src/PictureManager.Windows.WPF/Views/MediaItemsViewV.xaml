@@ -6,14 +6,6 @@
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type vm:MediaItemsViewVM}">
-    <DataTemplate.Resources>
-      <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="MediaItemThumbnailV.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-
     <Grid>
       <TextBlock
         x:Name="loading"
@@ -58,6 +50,7 @@
       <mhc:CollectionView
         x:Name="view"
         View="{Binding}"
+        InnerItemTemplate="{StaticResource PM.Views.MediaItemV.Thumb}"
         VirtualizingPanel.CacheLength="1"
         wpfu:DragDropHelper.IsDragEnabled="True"
         wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

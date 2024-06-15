@@ -9,14 +9,6 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type vme:PersonDetailVM}">
-    <DataTemplate.Resources>
-      <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <mhu:CachedResourceDictionary Source="SegmentV.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
@@ -61,6 +53,7 @@
       <mhc:CollectionView
         Grid.Row="3"
         View="{Binding TopSegments}"
+        InnerItemTemplate="{StaticResource PM.Views.SegmentV}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.IsDropEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"
@@ -71,6 +64,7 @@
       <mhc:CollectionView
         Grid.Row="4"
         View="{Binding AllSegments}"
+        InnerItemTemplate="{StaticResource PM.Views.SegmentV}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>
 

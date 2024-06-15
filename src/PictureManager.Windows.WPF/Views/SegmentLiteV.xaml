@@ -5,7 +5,7 @@
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
   xmlns:pm="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
 
-  <DataTemplate x:Key="PM.Views.SegmentLiteV" DataType="{x:Type m:SegmentM}">
+  <DataTemplate x:Key="PM.Views.SegmentV.Lite" DataType="{x:Type m:SegmentM}">
     <Border
       BorderThickness="1"
       BorderBrush="Black"
