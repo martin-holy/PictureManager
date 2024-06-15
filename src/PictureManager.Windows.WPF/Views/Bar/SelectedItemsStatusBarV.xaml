@@ -43,7 +43,7 @@
       Margin="1,0,0,0"
       CornerRadius="3"
       VerticalAlignment="Center"
-      Background="{StaticResource MH.B.Accent}">
+      Background="{DynamicResource MH.B.Accent}">
 
       <Grid>
         <Grid.ColumnDefinitions>
