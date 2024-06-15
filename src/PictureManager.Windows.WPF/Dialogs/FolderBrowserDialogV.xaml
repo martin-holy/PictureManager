@@ -9,7 +9,7 @@
   <DataTemplate DataType="{x:Type md:FolderBrowserDialogM}">
     <mhc:TreeViewBase
       x:Name="tree"
-      Style="{StaticResource MH.Styles.Controls.TreeViewBase}"
+      Style="{StaticResource MH.S.TreeViewBase}"
       TreeView="{Binding TreeView}"
       Width="300"
       Height="500"
