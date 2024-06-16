@@ -1,32 +1,28 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:wpfc="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:uid="clr-namespace:MH.UI.Dialogs;assembly=MH.UI"
-  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls"
+  xmlns:dlg="clr-namespace:MH.UI.Dialogs;assembly=MH.UI"
+  xmlns:ubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
 
-  <DataTemplate x:Key="MH.UI.Dialogs.GroupByDialog`1" DataType="{x:Type uid:GroupByDialog`1}">
+  <DataTemplate x:Key="MH.UI.Dialogs.GroupByDialog`1" DataType="{x:Type dlg:GroupByDialog`1}">
     <DataTemplate.Resources>
-      <HierarchicalDataTemplate
-        DataType="{x:Type mhubc:TreeItem}"
-        x:Key="DialogTreeItem"
-        ItemsSource="{Binding Items}">
-
+      <HierarchicalDataTemplate x:Key="DialogTreeItem" DataType="{x:Type ubc:TreeItem}" ItemsSource="{Binding Items}">
         <ContentPresenter
           Content="{Binding Data}"
-          ContentTemplateSelector="{Binding Source={x:Static wpfc:CollectionView.GroupByDialogDataTemplateSelector}}"/>
+          ContentTemplateSelector="{Binding Source={x:Static c:CollectionView.GroupByDialogDataTemplateSelector}}"/>
       </HierarchicalDataTemplate>
     </DataTemplate.Resources>
 
-    <Grid>
+    <Grid MinHeight="360">
       <Grid.RowDefinitions>
-        <RowDefinition Height="300"/>
-        <RowDefinition/>
-        <RowDefinition/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
 
-      <wpfc:TreeViewBase
-        Style="{DynamicResource MH.S.TreeViewBase}"
+      <c:TreeViewBase
+        Style="{StaticResource MH.S.TreeViewBase}"
         TreeView="{Binding TreeView}"
         ItemTemplate="{StaticResource DialogTreeItem}"/>
       
