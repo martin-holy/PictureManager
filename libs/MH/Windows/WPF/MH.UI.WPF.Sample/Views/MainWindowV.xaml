@@ -5,7 +5,7 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:s="clr-namespace:MH.UI.WPF.Sample"
   DataContext="{Binding VM.MainWindow, Source={x:Static s:App.Core}}"
-  Style="{StaticResource MH.Styles.Controls.CustomWindow}"
+  Style="{StaticResource MH.S.CustomWindow}"
   IsFullScreen="{Binding IsFullScreen, Mode=TwoWay}"
   Title="MH UI WPF Sample Application"
   CanResize="True"
