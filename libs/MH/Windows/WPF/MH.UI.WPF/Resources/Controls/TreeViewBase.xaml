@@ -260,6 +260,13 @@
 
             <ItemsPresenter/>
           </ScrollViewer>
+
+          <ControlTemplate.Triggers>
+            <Trigger SourceName="PART_ScrollViewer" Property="ComputedVerticalScrollBarVisibility" Value="Collapsed">
+              <Setter TargetName="PART_ScrollViewer" Property="ap:Slot.TopContent" Value="{x:Null}"/>
+              <Setter TargetName="PART_ScrollViewer" Property="ap:Slot.TopContentTemplate" Value="{x:Null}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
