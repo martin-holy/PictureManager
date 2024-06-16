@@ -235,7 +235,7 @@
         <ContentPresenter
           Grid.Column="1"
           Content="{Binding RelativeSource={RelativeSource AncestorType=mhc:CustomWindow}}"
-          ContentTemplate="{StaticResource MH.Styles.Controls.WindowButtons}"/>
+          ContentTemplate="{StaticResource MH.DT.CustomWindow.Buttons}"/>
       </Grid>
     </Grid>
   </DataTemplate>
