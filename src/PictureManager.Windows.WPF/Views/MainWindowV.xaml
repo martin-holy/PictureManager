@@ -8,14 +8,12 @@
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
   DataContext="{Binding VM.MainWindow, Source={x:Static pm:App.Core}}"
-  Style="{StaticResource MH.Styles.Controls.CustomWindow}"
+  Style="{StaticResource MH.S.CustomWindow}"
   IsFullScreen="{Binding IsFullScreen, Mode=TwoWay}"
   Title="Picture Manager"
   WindowState="Maximized"
   CanResize="True"
-  CanFullScreen="True"
-  UseLayoutRounding="True"
-  SnapsToDevicePixels="True">
+  CanFullScreen="True">
 
   <Window.InputBindings>
     <KeyBinding Modifiers="Control" Key="R" Command="vm:CoreVM.RotateMediaItemsCommand"/>
