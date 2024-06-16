@@ -37,7 +37,7 @@
         Grid.Row="2"
         x:Name="controlPanel"
         Content="{Binding MediaPlayer}"
-        ContentTemplate="{StaticResource MH.Styles.Controls.MediaPlayerControlPanel}"/>
+        ContentTemplate="{StaticResource MH.S.MediaPlayer.ControlPanel}"/>
 
       <mhc:CollectionView
         Grid.Row="3"
