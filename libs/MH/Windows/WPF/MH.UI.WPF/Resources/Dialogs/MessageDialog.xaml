@@ -6,7 +6,7 @@
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
   <DataTemplate DataType="{x:Type dlg:MessageDialog}">
-    <DockPanel MinWidth="300">
+    <DockPanel MinWidth="300" Margin="0,10,0,10">
       <Path
         DockPanel.Dock="Left"
         Style="{StaticResource MH.S.Icon.Shadow}"
@@ -20,7 +20,7 @@
       <TextBlock
         Text="{Binding Message}"
         VerticalAlignment="Center"
-        Margin="0,0,10,0"/>
+        Margin="5,5,10,5"/>
     </DockPanel>
   </DataTemplate>
 </ResourceDictionary>

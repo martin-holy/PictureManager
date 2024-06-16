@@ -7,7 +7,7 @@
   xmlns:bhv="clr-namespace:MH.UI.WPF.Behaviors">
 
   <DataTemplate DataType="{x:Type dlg:InputDialog}">
-    <Grid VerticalAlignment="Center" MinWidth="300">
+    <Grid VerticalAlignment="Center" MinWidth="300" Margin="0,10,0,10">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
@@ -33,13 +33,13 @@
         Grid.Column="1"
         Text="{Binding Message}"
         VerticalAlignment="Center"
-        Margin="5,15,5,5"/>
+        Margin="5"/>
 
       <TextBox
         x:Name="tbAnswer"
         Grid.Row="1"
         Grid.Column="1"
-        Margin="5"
+        Margin="5,5,10,5"
         Text="{Binding Answer, UpdateSourceTrigger=PropertyChanged}"
         ToolTip="{Binding ErrorMessage}"
         bhv:KeyboardFocus.On="{Binding ElementName=tbAnswer}"/>
