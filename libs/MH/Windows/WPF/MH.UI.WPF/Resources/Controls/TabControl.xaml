@@ -13,7 +13,7 @@
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
     <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
-    <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Padding" Value="4"/>
     <Setter Property="MaxWidth" Value="{Binding Path=DataContext.(uic:TabControl.TabStrip).(uic:TabStrip.MaxTabWidth), RelativeSource={RelativeSource AncestorType=TabControl}}"/>
     <Setter Property="MaxHeight" Value="{Binding Path=DataContext.(uic:TabControl.TabStrip).(uic:TabStrip.MaxTabHeight), RelativeSource={RelativeSource AncestorType=TabControl}}"/>
