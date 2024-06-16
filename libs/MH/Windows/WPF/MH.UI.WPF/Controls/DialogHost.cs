@@ -23,10 +23,10 @@ public class DialogHost : ObservableObject {
       ShowInTaskbar = false,
       CanResize = true,
       SizeToContent = SizeToContent.WidthAndHeight,
-      Style = Application.Current.FindResource("MH.Styles.Controls.CustomWindow") as Style
+      Style = Application.Current.FindResource("MH.S.CustomWindow") as Style
     };
 
-    DialogTemplateSelector = Application.Current.FindResource("MH.Styles.Controls.DialogHost.DialogTemplateSelector") as DataTemplateSelector;
+    DialogTemplateSelector = Application.Current.FindResource("MH.S.DialogHost.DialogTemplateSelector") as DataTemplateSelector;
 
     content.PropertyChanged += (_, e) => {
       if (e.Is(nameof(content.Result)))

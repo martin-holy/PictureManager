@@ -117,7 +117,7 @@
       <Style TargetType="mhc:TreeViewBase" BasedOn="{StaticResource MH.S.TreeViewBase}"/>
       <Style TargetType="mhc:ZoomAndPan" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPan}"/>
 
-      <wpfu:KeyDataTemplateSelector x:Key="MH.Styles.Controls.DialogHost.DialogTemplateSelector">
+      <wpfu:KeyDataTemplateSelector x:Key="MH.S.DialogHost.DialogTemplateSelector">
         <wpfu:KeyDataTemplateSelector.Keys>
           <x:Array Type="{x:Type sys:String}">
             <sys:String>MH.UI.Dialogs.GroupByDialog`1</sys:String>
