@@ -3,10 +3,10 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
-  <Style x:Key="MH.Styles.Controls.ZoomAndPan" TargetType="{x:Type c:ZoomAndPan}">
+  <Style x:Key="MH.S.ZoomAndPan" TargetType="c:ZoomAndPan">
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type c:ZoomAndPan}">
+        <ControlTemplate TargetType="c:ZoomAndPan">
           <Canvas
             x:Name="PART_Canvas"
             DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">

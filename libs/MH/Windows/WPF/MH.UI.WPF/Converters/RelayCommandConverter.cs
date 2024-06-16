@@ -61,6 +61,6 @@ public class RelayCommandConverter : BaseMultiConverter {
     new() {
       Data = (Geometry)ResourceConverter.Inst.Convert(icon, null),
       Fill = (Brush)ResourceConverter.Inst.Convert(icon, Resources.Dictionaries.IconToBrush),
-      Style = (Style)ResourceConverter.Inst.Convert("MH.Styles.IconWithShadow", null)
+      Style = (Style)ResourceConverter.Inst.Convert("MH.S.Icon.Shadow", null)
     };
 }

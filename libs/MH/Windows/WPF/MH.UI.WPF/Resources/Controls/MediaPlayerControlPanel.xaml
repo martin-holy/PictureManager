@@ -8,7 +8,7 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
-  <DataTemplate x:Key="MH.Styles.Controls.MediaPlayerControlPanel" DataType="uic:MediaPlayer">
+  <DataTemplate x:Key="MH.S.MediaPlayer.ControlPanel" DataType="uic:MediaPlayer">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition/>

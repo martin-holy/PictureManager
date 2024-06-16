@@ -4,7 +4,7 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
-  <ControlTemplate x:Key="MH.CT.RangeSlider-Thumb" TargetType="Thumb">
+  <ControlTemplate x:Key="MH.CT.RangeSlider.Thumb" TargetType="Thumb">
     <Rectangle
       x:Name="grip"
       RadiusX="2"
@@ -91,13 +91,13 @@
             x:Name="PART_StartThumb"
             Grid.Column="0"
             HorizontalAlignment="Right"
-            Template="{StaticResource MH.CT.RangeSlider-Thumb}"/>
+            Template="{StaticResource MH.CT.RangeSlider.Thumb}"/>
 
           <Thumb
             x:Name="PART_EndThumb"
             Grid.Column="2"
             HorizontalAlignment="Left"
-            Template="{StaticResource MH.CT.RangeSlider-Thumb}"/>
+            Template="{StaticResource MH.CT.RangeSlider.Thumb}"/>
         </Grid>
       </Grid>
     </Border>

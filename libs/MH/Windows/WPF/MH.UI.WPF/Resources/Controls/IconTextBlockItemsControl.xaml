@@ -5,7 +5,7 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
 
-  <Style x:Key="MH.Styles.Controls.IconTextBlockItemsControl" TargetType="{x:Type c:IconTextBlockItemsControl}">
+  <Style x:Key="MH.S.IconTextBlockItemsControl" TargetType="{x:Type c:IconTextBlockItemsControl}">
     <Setter Property="Margin" Value="2"/>
     <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
     <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>

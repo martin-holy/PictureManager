@@ -5,10 +5,10 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI">
 
-  <Style x:Key="MH.Styles.Controls.SlidePanelHost" TargetType="{x:Type c:SlidePanelHost}">
+  <Style x:Key="MH.S.SlidePanelHost" TargetType="c:SlidePanelHost">
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type c:SlidePanelHost}">
+        <ControlTemplate TargetType="c:SlidePanelHost">
           <ContentPresenter Content="{Binding SlidePanel.Content, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
         </ControlTemplate>
       </Setter.Value>

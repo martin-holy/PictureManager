@@ -35,7 +35,7 @@
     </Setter>
   </Style>
 
-  <ControlTemplate x:Key="MH.CT.Slider-Horizontal" TargetType="Slider">
+  <ControlTemplate x:Key="MH.CT.Slider.Horizontal" TargetType="Slider">
     <Border
       Background="{TemplateBinding Background}"
       BorderBrush="{TemplateBinding BorderBrush}"
@@ -114,7 +114,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="MH.CT.Slider-Vertical" TargetType="{x:Type Slider}">
+  <ControlTemplate x:Key="MH.CT.Slider.Vertical" TargetType="{x:Type Slider}">
     <Border 
       Background="{TemplateBinding Background}"
       BorderBrush="{TemplateBinding BorderBrush}"
@@ -200,10 +200,10 @@
     <Setter Property="SelectionStart" Value="{Binding Minimum, RelativeSource={RelativeSource Self}}"/>
     <Setter Property="SelectionEnd" Value="{Binding Value, RelativeSource={RelativeSource Self}}"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-    <Setter Property="Template" Value="{StaticResource MH.CT.Slider-Horizontal}"/>
+    <Setter Property="Template" Value="{StaticResource MH.CT.Slider.Horizontal}"/>
     <Style.Triggers>
       <Trigger Property="Orientation" Value="Vertical">
-        <Setter Property="Template" Value="{StaticResource MH.CT.Slider-Vertical}"/>
+        <Setter Property="Template" Value="{StaticResource MH.CT.Slider.Vertical}"/>
       </Trigger>
       <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
     </Style.Triggers>

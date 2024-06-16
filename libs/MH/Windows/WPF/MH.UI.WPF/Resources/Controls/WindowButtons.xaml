@@ -3,21 +3,19 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls">
 
-  <Style x:Key="MH.Styles.Controls.WindowButton" TargetType="{x:Type Button}">
+  <Style x:Key="MH.S.Button.Window" TargetType="Button">
     <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="FontSize" Value="14"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type Button}">
-          <Grid
-            Background="{TemplateBinding Background}"
-            Width="44"
-            Height="30">
-
+        <ControlTemplate TargetType="Button">
+          <Grid Background="{TemplateBinding Background}" Width="44" Height="30">
             <TextBlock
               Text="{TemplateBinding Content}"
               FontFamily="Segoe MDL2 Assets"
-              Foreground="#D6D6D6"
+              Foreground="{TemplateBinding Foreground}"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"/>
           </Grid>
@@ -26,26 +24,32 @@
     </Setter>
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter Property="Background" Value="#40FFFFFF"/>
+        <Setter Property="Background" Value="{StaticResource MH.B.Button.Hover.Ba}"/>
+      </Trigger>
+      <Trigger Property="IsKeyboardFocusWithin" Value="True">
+        <Setter Property="Background" Value="{StaticResource MH.B.Button.Hover.Ba}"/>
       </Trigger>
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="MH.Styles.Controls.WindowButtonClose" TargetType="{x:Type Button}" BasedOn="{StaticResource MH.Styles.Controls.WindowButton}">
+  <Style x:Key="MH.S.Button.Window.Close" TargetType="Button" BasedOn="{StaticResource MH.S.Button.Window}">
     <Setter Property="FontSize" Value="12"/>
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
         <Setter Property="Background" Value="#E81123"/>
       </Trigger>
+      <Trigger Property="IsKeyboardFocusWithin" Value="True">
+        <Setter Property="Background" Value="#E81123"/>
+      </Trigger>
     </Style.Triggers>
   </Style>
 
-  <DataTemplate x:Key="MH.Styles.Controls.WindowButtons" DataType="{x:Type mhc:CustomWindow}">
+  <DataTemplate x:Key="MH.DT.CustomWindow.Buttons" DataType="{x:Type mhc:CustomWindow}">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
       <Button
         ToolTip="Minimize"
         Content="&#xE949;"
-        Style="{StaticResource MH.Styles.Controls.WindowButton}"
+        Style="{StaticResource MH.S.Button.Window}"
         Command="mhc:CustomWindow.MinimizeWindowCommand"
         CommandParameter="{Binding}"/>
 
@@ -53,7 +57,7 @@
         x:Name="btnFullScreen"
         ToolTip="Full screen"
         Content="&#xE2B4;"
-        Style="{StaticResource MH.Styles.Controls.WindowButton}"
+        Style="{StaticResource MH.S.Button.Window}"
         Command="mhc:CustomWindow.ToggleFullScreenCommand"
         CommandParameter="{Binding}"/>
 
@@ -62,7 +66,7 @@
         ToolTip="Restore"
         Content="&#xE923;"
         FontSize="12"
-        Style="{StaticResource MH.Styles.Controls.WindowButton}"
+        Style="{StaticResource MH.S.Button.Window}"
         Command="mhc:CustomWindow.RestoreWindowCommand"
         CommandParameter="{Binding}"/>
 
@@ -71,14 +75,14 @@
         ToolTip="Maximize"
         Content="&#xE922;"
         FontSize="12"
-        Style="{StaticResource MH.Styles.Controls.WindowButton}"
+        Style="{StaticResource MH.S.Button.Window}"
         Command="mhc:CustomWindow.MaximizeWindowCommand"
         CommandParameter="{Binding}"/>
 
       <Button
         ToolTip="Close"
         Content="&#xE106;"
-        Style="{StaticResource MH.Styles.Controls.WindowButtonClose}"
+        Style="{StaticResource MH.S.Button.Window.Close}"
         Command="mhc:CustomWindow.CloseWindowCommand"
         CommandParameter="{Binding}"/>
     </StackPanel>

@@ -4,11 +4,11 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
-  <Style x:Key="MH.Styles.Controls.SlidePanelsGridHost" TargetType="{x:Type c:SlidePanelsGridHost}">
+  <Style x:Key="MH.S.SlidePanelsGridHost" TargetType="c:SlidePanelsGridHost">
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type c:SlidePanelsGridHost}">
+        <ControlTemplate TargetType="c:SlidePanelsGridHost">
           <Grid Background="Transparent" ClipToBounds="True" DataContext="{Binding SlidePanelsGrid, RelativeSource={RelativeSource TemplatedParent}}">
             <Grid>
               <Grid.RowDefinitions>

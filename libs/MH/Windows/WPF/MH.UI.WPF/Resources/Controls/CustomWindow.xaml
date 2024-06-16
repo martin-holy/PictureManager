@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
-  <ControlTemplate x:Key="MH.CT.CustomWindow.Resize" TargetType="{x:Type c:CustomWindow}">
+  <ControlTemplate x:Key="MH.CT.CustomWindow.Resize" TargetType="c:CustomWindow">
     <Grid>
       <Border
         x:Name="PART_ResizeBorder"
@@ -23,7 +23,7 @@
     </Grid>
   </ControlTemplate>
 
-  <Style x:Key="MH.S.CustomWindow" TargetType="{x:Type c:CustomWindow}">
+  <Style x:Key="MH.S.CustomWindow" TargetType="c:CustomWindow">
     <Setter Property="WindowStyle" Value="None"/>
     <Setter Property="ResizeMode" Value="NoResize"/>
     <Setter Property="AllowsTransparency" Value="True"/>
@@ -38,7 +38,7 @@
     <Setter Property="UseLayoutRounding" Value="True"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type c:CustomWindow}">
+        <ControlTemplate TargetType="c:CustomWindow">
           <Border
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"

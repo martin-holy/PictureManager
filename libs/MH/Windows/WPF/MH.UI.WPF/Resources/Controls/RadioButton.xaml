@@ -61,7 +61,7 @@
             </Trigger>
             <Trigger Property="IsChecked" Value="{x:Null}">
               <Setter TargetName="optionMark" Property="Visibility" Value="Visible"/>
-              <Setter TargetName="optionMark" Property="Opacity" Value="0.5"/>
+              <Setter TargetName="optionMark" Property="Fill" Value="{DynamicResource MH.B.Accent4}"/>
             </Trigger>
             <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
           </ControlTemplate.Triggers>
