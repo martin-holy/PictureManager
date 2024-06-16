@@ -8,7 +8,7 @@
     <Menu Background="Transparent">
       <MenuItem ItemsSource="{Binding}" Padding="6,2,-2,2">
         <MenuItem.Icon>
-          <Path Data="{StaticResource IconPuzzle}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+          <Path Data="{StaticResource IconPuzzle}" Style="{StaticResource MH.S.Icon.Shadow}"/>
         </MenuItem.Icon>
 
         <MenuItem.ItemContainerStyle>
@@ -19,7 +19,7 @@
               <Setter.Value>
                 <Path
                   Data="{Binding VM.PluginIcon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
-                  Style="{StaticResource MH.Styles.IconWithShadow}"/>
+                  Style="{StaticResource MH.S.Icon.Shadow}"/>
               </Setter.Value>
             </Setter>
             <Setter Property="ItemContainerStyle">

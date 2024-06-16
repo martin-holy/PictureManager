@@ -98,7 +98,7 @@
 
     <MenuItem Header="GeoLocation">
       <MenuItem.Icon>
-        <Path Data="{StaticResource IconLocationCheckin}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+        <Path Data="{StaticResource IconLocationCheckin}" Style="{StaticResource MH.S.Icon.Shadow}"/>
       </MenuItem.Icon>
       <MenuItem Command="vm:CoreVM.GetGeoNamesFromWebCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="vm:CoreVM.ReadGeoLocationFromFilesCommand" CommandParameter="{Binding}"/>
@@ -106,7 +106,7 @@
 
     <MenuItem Header="Media Items">
       <MenuItem.Icon>
-        <Path Data="{StaticResource IconImageMultiple}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+        <Path Data="{StaticResource IconImageMultiple}" Style="{StaticResource MH.S.Icon.Shadow}"/>
       </MenuItem.Icon>
       <MenuItem Command="vm:CoreVM.CompressImagesCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="vm:MediaItemsViewsVM.RebuildThumbnailsCommand" CommandParameter="{Binding}"/>

@@ -25,7 +25,7 @@
         <DataTemplate>
           <StackPanel Orientation="Horizontal" Background="Transparent">
             <Path
-              Style="{StaticResource MH.Styles.Icon}"
+              Style="{StaticResource MH.S.Icon}"
               Data="{StaticResource IconFolder}"
               Fill="{StaticResource PM.B.Folder}"/>
             

@@ -22,7 +22,7 @@
 
           <StackPanel Orientation="Horizontal" Background="Transparent">
             <Path
-              Style="{StaticResource MH.Styles.Icon}"
+              Style="{StaticResource MH.S.Icon}"
               Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
               Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
                      ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"

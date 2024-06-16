@@ -29,7 +29,7 @@
       <Path
         x:Name="icon"
         Grid.Column="0"
-        Style="{StaticResource MH.Styles.Icon}"
+        Style="{StaticResource MH.S.Icon}"
         Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
         Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
                ConverterParameter={x:Static pmd:Res.IconToBrushDic}}"/>

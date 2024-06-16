@@ -9,7 +9,7 @@
     <Menu Background="Transparent">
       <MenuItem x:Name="root" Header="{Binding S.Viewer.Current.Name, Source={x:Static pm:App.Core}}">
         <MenuItem.Icon>
-          <Path Data="{StaticResource IconEye}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+          <Path Data="{StaticResource IconEye}" Style="{StaticResource MH.S.Icon.Shadow}"/>
         </MenuItem.Icon>
 
         <MenuItem.ItemsSource>
