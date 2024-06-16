@@ -157,13 +157,13 @@
       <Style TargetType="mhc:IconTextButton" BasedOn="{StaticResource MH.S.IconTextButton}"/>
       <Style TargetType="mhc:SlimButton" BasedOn="{StaticResource MH.S.SlimButton}"/>
       <Style TargetType="mhc:IconToggleButton" BasedOn="{StaticResource MH.S.IconToggleButton}"/>
-      <Style TargetType="mhc:IconTextBlockItemsControl" BasedOn="{StaticResource MH.Styles.Controls.IconTextBlockItemsControl}"/>
-      <Style TargetType="mhc:PopupSlider" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
+      <Style TargetType="mhc:IconTextBlockItemsControl" BasedOn="{StaticResource MH.S.IconTextBlockItemsControl}"/>
+      <Style TargetType="mhc:PopupSlider" BasedOn="{StaticResource MH.S.PopupSlider}"/>
       <Style TargetType="mhc:RangeSlider" BasedOn="{StaticResource MH.S.RangeSlider}"/>
-      <Style TargetType="mhc:SlidePanelHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelHost}"/>
-      <Style TargetType="mhc:SlidePanelsGridHost" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGridHost}"/>
+      <Style TargetType="mhc:SlidePanelHost" BasedOn="{StaticResource MH.S.SlidePanelHost}"/>
+      <Style TargetType="mhc:SlidePanelsGridHost" BasedOn="{StaticResource MH.S.SlidePanelsGridHost}"/>
       <Style TargetType="mhc:TreeViewBase" BasedOn="{StaticResource MH.S.TreeViewBase}"/>
-      <Style TargetType="mhc:ZoomAndPan" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPan}"/>
+      <Style TargetType="mhc:ZoomAndPan" BasedOn="{StaticResource MH.S.ZoomAndPan}"/>
 
       <wpfu:KeyDataTemplateSelector x:Key="MH.S.DialogHost.DialogTemplateSelector">
         <wpfu:KeyDataTemplateSelector.Keys>
