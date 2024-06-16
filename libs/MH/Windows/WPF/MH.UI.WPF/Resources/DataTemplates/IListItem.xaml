@@ -38,7 +38,7 @@
 
       <Path
         x:Name="icon"
-        Style="{DynamicResource MH.Styles.Icon}"
+        Style="{DynamicResource MH.S.Icon}"
         Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
         Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
                ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>

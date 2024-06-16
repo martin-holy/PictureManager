@@ -10,7 +10,7 @@
     <DockPanel>
       <Path
         DockPanel.Dock="Left"
-        Style="{StaticResource MH.Styles.Icon}"
+        Style="{StaticResource MH.S.Icon}"
         Effect="{StaticResource MH.Effects.DropShadow}"
         Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
         Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},

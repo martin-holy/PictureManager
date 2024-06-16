@@ -30,7 +30,7 @@
 
         <Path
           Grid.Column="0"
-          Style="{DynamicResource MH.Styles.IconWithShadow}"
+          Style="{DynamicResource MH.S.Icon.Shadow}"
           Margin="4,0,6,2"
           Data="{Binding Path=Content.(uic:Dialog.Icon),
                  Converter={x:Static conv:ResourceConverter.Inst}}"

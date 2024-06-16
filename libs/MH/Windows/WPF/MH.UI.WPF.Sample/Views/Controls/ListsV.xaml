@@ -32,7 +32,7 @@
 
         <ap:Slot.TopContent>
           <Path
-            Style="{StaticResource MH.Styles.IconWithShadow}"
+            Style="{StaticResource MH.S.Icon.Shadow}"
             Data="{StaticResource IconBug}"
             Width="12"
             Height="12"/>
