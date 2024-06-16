@@ -19,7 +19,7 @@
           </Grid.ColumnDefinitions>
 
           <Path
-            Style="{StaticResource MH.Styles.Icon}"
+            Style="{StaticResource MH.S.Icon}"
             Data="{Binding Icon,
                    Converter={x:Static mhConv:ResourceConverter.Inst}}"
             Fill="{Binding Icon,
@@ -180,7 +180,7 @@
       </Popup>
 
       <Path
-        Style="{StaticResource MH.Styles.IconWithShadow}"
+        Style="{StaticResource MH.S.Icon.Shadow}"
         Data="{StaticResource IconFilter}"
         Margin="2"/>
 

@@ -27,7 +27,7 @@
           Visibility="{Binding DisplaySegment, Converter={x:Static mhConv:VisibilityConverter.AllToCollapsed}}">
 
           <Path
-            Style="{StaticResource MH.Styles.Icon}"
+            Style="{StaticResource MH.S.Icon}"
             Data="{StaticResource IconPeople}"
             Width="40"
             Height="40"

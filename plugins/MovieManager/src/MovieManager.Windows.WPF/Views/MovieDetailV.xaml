@@ -60,7 +60,7 @@
 
           <MenuItem Padding="6,2,-2,2">
             <MenuItem.Icon>
-              <Path Data="{StaticResource IconThreeBars}" Style="{StaticResource MH.Styles.IconWithShadow}"/>
+              <Path Data="{StaticResource IconThreeBars}" Style="{StaticResource MH.S.Icon.Shadow}"/>
             </MenuItem.Icon>
 
             <MenuItem Command="{Binding AddMediaItemsCommand}"/>
