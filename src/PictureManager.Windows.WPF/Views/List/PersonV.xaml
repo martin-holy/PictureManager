@@ -10,7 +10,7 @@
     <DockPanel>
       <Path
         DockPanel.Dock="Left"
-        Style="{StaticResource MH.Styles.Icon}"
+        Style="{StaticResource MH.S.Icon}"
         Data="{StaticResource IconPeople}"
         Fill="{StaticResource PM.B.People}"/>
 

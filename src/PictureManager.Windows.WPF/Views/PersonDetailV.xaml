@@ -28,7 +28,7 @@
           VerticalAlignment="Center"/>
 
         <Path
-          Style="{StaticResource MH.Styles.IconWithShadow}"
+          Style="{StaticResource MH.S.Icon.Shadow}"
           Data="{StaticResource IconPeople}"
           Fill="{StaticResource PM.B.People}"
           HorizontalAlignment="Left"

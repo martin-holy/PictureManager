@@ -33,7 +33,7 @@
             <Style TargetType="{x:Type StackPanel}">
               <Setter Property="Orientation" Value="Horizontal"/>
             </Style>
-            <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
+            <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.S.Icon}">
               <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
             </Style>
             <Style TargetType="{x:Type Border}" BasedOn="{StaticResource SBorderText}"/>
@@ -140,7 +140,7 @@
                 <DataTemplate>
                   <Path
                     Data="{StaticResource IconStar}"
-                    Style="{StaticResource MH.Styles.Icon}"
+                    Style="{StaticResource MH.S.Icon}"
                     Effect="{StaticResource MH.Effects.DropShadow}"/>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -158,7 +158,7 @@
           Visibility="Collapsed">
           <Path
             Data="{StaticResource IconLocationCheckin}"
-            Style="{StaticResource MH.Styles.Icon}"
+            Style="{StaticResource MH.S.Icon}"
             Effect="{StaticResource MH.Effects.DropShadow}"/>
         </Border>
 

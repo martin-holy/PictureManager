@@ -15,7 +15,7 @@
       </Grid.ColumnDefinitions>
 
       <Grid.Resources>
-        <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
+        <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.S.Icon}">
           <Setter Property="Data" Value="{StaticResource IconStar}"/>
         </Style>
       </Grid.Resources>

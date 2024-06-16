@@ -117,7 +117,7 @@
       <!-- No Person Icon -->
       <Path
         x:Name="noPersonIcon"
-        Style="{StaticResource MH.Styles.Icon}"
+        Style="{StaticResource MH.S.Icon}"
         Data="{StaticResource IconPeople}"
         Effect="{StaticResource MH.Effects.DropShadow}"
         Fill="Red"

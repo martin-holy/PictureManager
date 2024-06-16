@@ -37,7 +37,7 @@
         <!-- Move Point -->
         <Path
           x:Name="PART_MovePoint"
-          Style="{StaticResource MH.Styles.Icon}"
+          Style="{StaticResource MH.S.Icon}"
           Width="12"
           Height="12"
           Data="{StaticResource IconDot}"/>

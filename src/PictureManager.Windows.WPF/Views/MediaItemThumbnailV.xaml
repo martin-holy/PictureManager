@@ -41,7 +41,7 @@
       <!-- Video over layer -->
       <Path
         x:Name="vidOverlayer"
-        Style="{StaticResource MH.Styles.IconWithShadow}"
+        Style="{StaticResource MH.S.Icon.Shadow}"
         Data="{StaticResource IconPlayCircle}"
         Width="40"
         Height="40"
@@ -52,7 +52,7 @@
       <!-- Video Clips over layer -->
       <Path
         x:Name="vidClipsOverlayer"
-        Style="{StaticResource MH.Styles.IconWithShadow}"
+        Style="{StaticResource MH.S.Icon.Shadow}"
         Data="{StaticResource IconImageMultiple}"
         Width="20"
         Height="20"

@@ -34,7 +34,7 @@
             
             <!-- App Icon -->
             <Path
-              Style="{StaticResource MH.Styles.Icon}"
+              Style="{StaticResource MH.S.Icon}"
               Data="{StaticResource IconImage}"
               Effect="{StaticResource MH.Effects.DropShadow}"
               Margin="5 -1 0 0"
@@ -80,7 +80,7 @@
 
           <!-- Media Items Count -->
           <Path
-            Style="{StaticResource MH.Styles.Icon}"
+            Style="{StaticResource MH.S.Icon}"
             Data="{StaticResource IconImageMultiple}"
             Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="3 0 0 0"/>
