@@ -50,7 +50,7 @@
       <mhc:CollectionView
         x:Name="view"
         View="{Binding}"
-        InnerItemTemplate="{StaticResource PM.Views.MediaItemV.Thumb}"
+        InnerItemTemplate="{StaticResource PM.DT.MediaItem.Thumb-Full}"
         VirtualizingPanel.CacheLength="1"
         wpfu:DragDropHelper.IsDragEnabled="True"
         wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

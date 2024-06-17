@@ -2,13 +2,60 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-  xmlns:mim="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
+  xmlns:mmi="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
   xmlns:vm="clr-namespace:PictureManager.Windows.WPF.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate x:Key="PM.Views.MediaItemV.Thumb" DataType="{x:Type mim:MediaItemM}">
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb" DataType="{x:Type mmi:MediaItemM}">
+    <Image Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Image.Source>
+        <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
+          <Binding Path="FilePathCache" IsAsync="True"/>
+          <Binding/>
+        </MultiBinding>
+      </Image.Source>
+    </Image>
+  </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Fill" DataType="{x:Type mmi:MediaItemM}">
+    <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Image.Source>
+        <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
+          <Binding Path="FilePathCache" IsAsync="True"/>
+          <Binding/>
+        </MultiBinding>
+      </Image.Source>
+    </Image>
+  </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Lite" DataType="{x:Type mmi:MediaItemM}">
+    <Border
+      Width="{Binding ThumbWidth}"
+      Height="{Binding ThumbHeight}"
+      BorderThickness="2"
+      BorderBrush="Black"
+      ClipToBounds="True">
+
+      <Grid>
+        <Image Stretch="Fill">
+          <Image.Source>
+            <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
+              <Binding Path="FilePathCache" IsAsync="True"/>
+              <Binding/>
+            </MultiBinding>
+          </Image.Source>
+        </Image>
+
+        <ItemsControl
+          ItemsSource="{Binding InfoBoxThumb}"
+          Style="{StaticResource InfoBoxThumbStyle}"/>
+      </Grid>
+    </Border>
+  </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Full" DataType="{x:Type mmi:MediaItemM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <sys:Double x:Key="ThumbnailInfoMinSize">170.0</sys:Double>
@@ -80,16 +127,16 @@
         <MultiDataTrigger.Conditions>
           <Condition
             Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
-                      ConverterParameter={x:Type mim:VideoM}}"
+                      ConverterParameter={x:Type mmi:VideoM}}"
             Value="True"/>
-          <Condition Binding="{Binding Path=(mim:VideoM.HasVideoItems)}" Value="True"/>
+          <Condition Binding="{Binding Path=(mmi:VideoM.HasVideoItems)}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="vidClipsOverlayer" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
       
       <DataTrigger
         Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
-                  ConverterParameter={x:Type mim:VideoM}}"
+                  ConverterParameter={x:Type mmi:VideoM}}"
         Value="True">
         <Setter TargetName="vidOverlayer" Property="Visibility" Value="Visible"/>
       </DataTrigger>
