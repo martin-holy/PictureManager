@@ -21,7 +21,7 @@
 
       <ContentControl
         Content="{Binding Segment}"
-        ContentTemplate="{StaticResource PM.Views.SegmentV}"
+        ContentTemplate="{DynamicResource PM.Views.SegmentV}"
         Visibility="{Binding Segment, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
     </Grid>
   </DataTemplate>
