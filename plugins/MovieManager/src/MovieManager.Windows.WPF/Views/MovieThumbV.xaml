@@ -14,7 +14,7 @@
 
       <ContentControl
         Content="{Binding Poster}"
-        ContentTemplate="{StaticResource PM.Views.MediaItemM.Thumb-Fill}"/>
+        ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Fill}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

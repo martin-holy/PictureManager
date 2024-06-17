@@ -37,7 +37,7 @@
           <!--Show Actor image if available-->
           <ContentControl
             Content="{Binding Actor.Image}"
-            ContentTemplate="{StaticResource PM.Views.MediaItemM.Thumb}"
+            ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb}"
             Visibility="{Binding Actor.Image, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}">
 
             <ContentControl.ToolTip>
@@ -49,7 +49,7 @@
 
                 <ContentControl
                   Content="{Binding Actor.Image}"
-                  ContentTemplate="{StaticResource PM.Views.MediaItemM.Thumb}"/>
+                  ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb}"/>
               </ToolTip>
             </ContentControl.ToolTip>
           </ContentControl>
