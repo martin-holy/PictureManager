@@ -44,8 +44,6 @@
         # MH.UI.WPF
   - RangeSlider - change values by keyboard
   - PopupSlider - close Slider using keyboard
-  - ScrollBar - hide scroll buttons when scroll bar is not visible
-  - TabItem - remove FocusVisualStyle
 
         # MH.UI
   - FolderPicker control with combobox with used folders from settings and button to open FolderBrowserDialogM
@@ -75,7 +73,6 @@
   - show selected items on dialog
   - add support for removing GeoName
   - add support for removing Person on Segment
-  - make it bigger
 ## MediaItems
   - save to file only metadata visible for viewer
 ## MediaItemsView
