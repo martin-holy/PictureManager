@@ -62,14 +62,14 @@
       <!-- Source Thumbnail -->
       <ContentControl
         Content="{Binding SrcMediaItem, TargetNullValue={StaticResource UnknownFile1}}"
-        ContentTemplate="{DynamicResource PM.DT.MediaItem.Thumb-Lite}"
+        ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"
         ToolTip="{Binding SrcPath}"
         Grid.Column="0"/>
 
       <!-- Destination Thumbnail -->
       <ContentControl
         Content="{Binding DestMediaItem, TargetNullValue={StaticResource UnknownFile2}}"
-        ContentTemplate="{DynamicResource PM.DT.MediaItem.Thumb-Lite}"
+        ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"
         ToolTip="{Binding DestPath}"
         Grid.Column="2"/>
 

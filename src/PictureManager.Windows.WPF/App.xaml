@@ -70,9 +70,7 @@
         <ResourceDictionary Source="/ResourceDictionaries/NamedStyles/TextBlockStyles.xaml"/>
         <ResourceDictionary Source="/Views/Styles/InfoBoxThumbStyle.xaml"/>
 
-        <ResourceDictionary Source="/Views/Entities/MediaItemBaseV.xaml"/>
-        <ResourceDictionary Source="/Views/Entities/MediaItemThumbnailLiteV.xaml"/>
-        <ResourceDictionary Source="/Views/Entities/MediaItemThumbnailV.xaml"/>
+        <ResourceDictionary Source="/Views/Entities/MediaItemV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/PersonDetailV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/PersonThumbnailV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/PersonV.xaml"/>
