@@ -16,8 +16,8 @@
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Icons.xaml"/>
 
         <!-- Sample app -->
-        <wpfu:CachedResourceDictionary Source="/Resources/Brushes.xaml"/>
-        <wpfu:CachedResourceDictionary Source="/Resources/Icons.xaml"/>
+        <ResourceDictionary Source="/Resources/Brushes.xaml"/>
+        <ResourceDictionary Source="/Resources/Icons.xaml"/>
 
         <!-- MH.UI.WPF -->
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Common.xaml"/><!-- keep this first -->
@@ -66,6 +66,7 @@
 
         <!-- Sample app -->
         <ResourceDictionary Source="/Views/Controls/ControlsV.xaml"/>
+        <ResourceDictionary Source="/Views/Controls/FolderTreeViewV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/ButtonsV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/ListsV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/SlidersV.xaml"/>
