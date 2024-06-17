@@ -46,14 +46,14 @@
         ItemsSource="{Binding PersonM.DisplayKeywords}"
         ap:Icon.Data="{StaticResource IconTag}"
         ap:Icon.Fill="{StaticResource PM.B.Tag}"
-        ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"
+        ItemTemplate="{DynamicResource MH.T.IHaveName.Border.RoundDarker}"
         Visibility="{Binding PersonM.DisplayKeywords, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
       <!-- Top Segments -->
       <mhc:CollectionView
         Grid.Row="3"
         View="{Binding TopSegments}"
-        InnerItemTemplate="{StaticResource PM.Views.SegmentV}"
+        InnerItemTemplate="{DynamicResource PM.Views.SegmentV}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.IsDropEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"
@@ -64,7 +64,7 @@
       <mhc:CollectionView
         Grid.Row="4"
         View="{Binding AllSegments}"
-        InnerItemTemplate="{StaticResource PM.Views.SegmentV}"
+        InnerItemTemplate="{DynamicResource PM.Views.SegmentV}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>
 

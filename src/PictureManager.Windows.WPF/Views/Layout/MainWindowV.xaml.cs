@@ -1,7 +1,7 @@
 ﻿using PictureManager.Common;
 using PictureManager.Windows.WPF.ViewModels;
 
-namespace PictureManager.Windows.WPF.Views;
+namespace PictureManager.Windows.WPF.Views.Layout;
 
 public partial class MainWindowV {
   public MainWindowV() {

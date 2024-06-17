@@ -26,7 +26,7 @@
           <DockPanel>
             <Grid DockPanel.Dock="Top">
               <!-- Thumbnail -->
-              <ContentPresenter Content="{Binding MediaItem}" ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"/>
+              <ContentPresenter Content="{Binding MediaItem}" ContentTemplate="{DynamicResource PM.DT.MediaItem.Thumb-Lite}"/>
 
               <!-- Segments Rects -->
               <ItemsControl
@@ -91,7 +91,7 @@
               <ItemsControl
                 ItemsSource="{Binding Person.TopSegments}"
                 Visibility="{Binding Person.TopSegments, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
-                ItemTemplate="{StaticResource PM.Views.SegmentV.Lite}">
+                ItemTemplate="{DynamicResource PM.Views.SegmentV.Lite}">
 
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
