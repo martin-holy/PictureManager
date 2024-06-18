@@ -14,9 +14,9 @@
       </HierarchicalDataTemplate>
     </DataTemplate.Resources>
 
-    <Grid MinHeight="360">
+    <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition Height="*"/>
+        <RowDefinition Height="300"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
