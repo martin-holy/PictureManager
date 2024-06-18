@@ -108,7 +108,8 @@
 
         <ContentPresenter
           Content="{Binding}"
-          ContentTemplate="{Binding InnerItemTemplate, RelativeSource={RelativeSource AncestorType=c:CollectionView}}"/>
+          ContentTemplate="{Binding RelativeSource={RelativeSource Self},
+                            Converter={x:Static conv:CollectionViewItemTemplateConverter.Inst}}"/>
       </Border>
 
       <Border

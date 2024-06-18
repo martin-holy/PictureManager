@@ -2,6 +2,7 @@
 using MH.UI.WPF.Extensions;
 using MH.Utils.BaseClasses;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -31,6 +32,7 @@ public class CollectionView : TreeViewBase {
   }
 
   public static GroupByDialogDataTemplateSelector GroupByDialogDataTemplateSelector { get; } = new();
+  public static Dictionary<object, DataTemplate> InnerItemTemplates { get; } = new();
 
   public static RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; } = new(OpenItem);
   public static RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; } = new(SelectItem);
@@ -46,6 +48,9 @@ public class CollectionView : TreeViewBase {
         View.SetExpanded(btn.DataContext);
       }
     };
+
+    InnerItemTemplates[this] = InnerItemTemplate;
+    Unloaded += (_, _) => InnerItemTemplates.Remove(this);
   }
 
   private static void OpenItem(MouseButtonEventArgs e) {
@@ -96,6 +101,7 @@ public class CollectionView : TreeViewBase {
   private static void ViewChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
     if (d is not CollectionView view) return;
     view.TreeView = view.View;
+    view.View.UIView = view;
   }
 
   private static object GetDataContext(object source) {

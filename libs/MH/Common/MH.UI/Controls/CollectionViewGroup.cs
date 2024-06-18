@@ -20,6 +20,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
   private double _width;
 
   public CollectionView<T> View { get; set; }
+  public object UIView => View.UIView;
   public List<T> Source { get; }
   public int SourceCount => Source.Count;
   public IEnumerable<CollectionViewGroup<T>> Groups => Items.OfType<CollectionViewGroup<T>>();
