@@ -71,8 +71,6 @@
         <ResourceDictionary Source="/Views/Styles/InfoBoxThumbStyle.xaml"/>
 
         <ResourceDictionary Source="/Views/Entities/MediaItemV.xaml"/>
-        <ResourceDictionary Source="/Views/Entities/PersonDetailV.xaml"/>
-        <ResourceDictionary Source="/Views/Entities/PersonThumbnailV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/PersonV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/RatingTreeV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/RatingV.xaml"/>
@@ -104,6 +102,7 @@
         <ResourceDictionary Source="/Views/Sections/MediaViewerV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/PeopleToolsTabV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/PeopleV.xaml"/>
+        <ResourceDictionary Source="/Views/Sections/PersonDetailV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/PluginsMenuV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/SegmentsDrawerV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/SegmentsMatchingV.xaml"/>
