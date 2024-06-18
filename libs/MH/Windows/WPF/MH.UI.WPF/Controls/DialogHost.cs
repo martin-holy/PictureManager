@@ -21,7 +21,7 @@ public class DialogHost : ObservableObject {
       Owner = owner,
       WindowStartupLocation = WindowStartupLocation.CenterOwner,
       ShowInTaskbar = false,
-      CanResize = true,
+      CanResize = false,
       SizeToContent = SizeToContent.WidthAndHeight,
       Style = Application.Current.FindResource("MH.S.CustomWindow") as Style
     };
