@@ -5,6 +5,6 @@
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type vm:PeopleToolsTabVM}">
-    <mhc:CollectionView View="{Binding}" InnerItemTemplate="{StaticResource PM.Views.PersonV.Thumb}"/>
+    <mhc:CollectionView View="{Binding}" InnerItemTemplate="{StaticResource PM.DT.Person.Thumb}"/>
   </DataTemplate>
 </ResourceDictionary>
