@@ -21,7 +21,7 @@
       
       <mhc:CollectionView
         View="{Binding CvPeople}"
-        InnerItemTemplate="{StaticResource PM.Views.PersonV.Thumb}"/>
+        InnerItemTemplate="{StaticResource PM.DT.Person.Thumb}"/>
 
       <GridSplitter Grid.Column="1"/>
 
