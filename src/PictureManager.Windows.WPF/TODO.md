@@ -6,6 +6,8 @@
   - resize stretch
 ## MediaPlayer
   - TimelinePosition changes but video not after changing TimelinePosition with buttons
+## TabControl
+  - TabItem.MaxHeight when last tab is closed is int.MinValue
 
         # Picture Manager - Need Help
 ## VideoPlayer
@@ -17,6 +19,7 @@
         # Picture Manager
   - read only drives and creating thumbnails
   - reload drives on viewer change
+  - new external drive is added to DB but is not shown in the tree
   - add multilevel keyword to person => delete sub keyword => person doesn't have keyword displayed but Load people by keyword works
     after app restart is ok
   - changing selection in Viewer detail works only with mouse. with keyboard selection works only visually
