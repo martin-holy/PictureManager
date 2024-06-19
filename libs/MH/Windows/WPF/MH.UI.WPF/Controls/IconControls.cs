@@ -4,11 +4,17 @@ using System.Windows.Controls.Primitives;
 
 namespace MH.UI.WPF.Controls;
 
+public enum IconTextBlockShadow { None, Icon, Text, Both };
+
 public class IconTextBlock : Control {
   public static readonly DependencyProperty CompactProperty = DependencyProperty.Register(
     nameof(Compact), typeof(bool), typeof(IconTextBlock));
 
+  public static readonly DependencyProperty ShadowProperty = DependencyProperty.Register(
+    nameof(Shadow), typeof(IconTextBlockShadow), typeof(IconTextBlock));
+
   public bool Compact { get => (bool)GetValue(CompactProperty); set => SetValue(CompactProperty, value); }
+  public IconTextBlockShadow Shadow { get => (IconTextBlockShadow)GetValue(ShadowProperty); set => SetValue(ShadowProperty, value); }
 }
 
 public class IconButton : Button;
