@@ -8,17 +8,17 @@ public static class Icon {
     "Data", typeof(PathGeometry), typeof(Icon));
   public static readonly DependencyProperty FillProperty = DependencyProperty.RegisterAttached(
     "Fill", typeof(Brush), typeof(Icon));
+  public static readonly DependencyProperty ResProperty = DependencyProperty.RegisterAttached(
+    "Res", typeof(string), typeof(Icon));
   public static readonly DependencyProperty SizeProperty = DependencyProperty.RegisterAttached(
     "Size", typeof(double), typeof(Icon));
-  public static readonly DependencyProperty ShadowProperty = DependencyProperty.RegisterAttached(
-    "Shadow", typeof(bool), typeof(Icon));
 
   public static PathGeometry GetData(DependencyObject d) => (PathGeometry)d.GetValue(DataProperty);
   public static void SetData(DependencyObject d, PathGeometry value) => d.SetValue(DataProperty, value);
   public static Brush GetFill(DependencyObject d) => (Brush)d.GetValue(FillProperty);
   public static void SetFill(DependencyObject d, Brush value) => d.SetValue(FillProperty, value);
+  public static string GetRes(DependencyObject d) => (string)d.GetValue(ResProperty);
+  public static void SetRes(DependencyObject d, string value) => d.SetValue(ResProperty, value);
   public static double GetSize(DependencyObject d) => (double)d.GetValue(SizeProperty);
   public static void SetSize(DependencyObject d, double value) => d.SetValue(SizeProperty, value);
-  public static bool GetShadow(DependencyObject d) => (bool)d.GetValue(ShadowProperty);
-  public static void SetShadow(DependencyObject d, bool value) => d.SetValue(ShadowProperty, value);
 }
