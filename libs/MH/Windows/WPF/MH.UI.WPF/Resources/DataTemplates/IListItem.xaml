@@ -10,13 +10,12 @@
   <DataTemplate x:Key="MH.DT.IListItem" DataType="{x:Type uInt:IListItem}">
     <c:IconTextBlock
       x:Name="itb"
-      Focusable="False"
+      Shadow="{Binding Path=(c:IconTextBlock.Shadow), RelativeSource={RelativeSource TemplatedParent}}"
       ap:Text.Text="{Binding Name}"
-      ap:Text.Shadow="{Binding Path=(ap:Text.Shadow), RelativeSource={RelativeSource TemplatedParent}}"
+      ap:Icon.Res="{Binding Path=(ap:Icon.Res), RelativeSource={RelativeSource TemplatedParent}}"
       ap:Icon.Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
       ap:Icon.Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
                      ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
-      ap:Icon.Shadow="{Binding Path=(ap:Icon.Shadow), RelativeSource={RelativeSource TemplatedParent}}"
       Compact="{Binding Path=(c:IconTextBlock.Compact), RelativeSource={RelativeSource TemplatedParent}}"/>
 
     <DataTemplate.Triggers>

@@ -25,11 +25,13 @@
     <Setter Property="HeaderTemplate">
       <Setter.Value>
         <DataTemplate>
-          <ContentPresenter
-            Content="{Binding}"
-            ContentTemplate="{DynamicResource MH.DT.IListItem}"
-            ap:Icon.Shadow="True"
-            ap:Text.Shadow="True"/>
+          <ContentPresenter Content="{Binding}" ContentTemplate="{DynamicResource MH.DT.IListItem}">
+            <ContentPresenter.Style>
+              <Style TargetType="ContentPresenter">
+                <Setter Property="c:IconTextBlock.Shadow" Value="Both"/>
+              </Style>
+            </ContentPresenter.Style>
+          </ContentPresenter>
         </DataTemplate>
       </Setter.Value>
     </Setter>
