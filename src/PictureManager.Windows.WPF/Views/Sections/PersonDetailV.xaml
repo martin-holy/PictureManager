@@ -53,7 +53,7 @@
       <mhc:CollectionView
         Grid.Row="3"
         View="{Binding TopSegments}"
-        InnerItemTemplate="{DynamicResource PM.Views.SegmentV}"
+        InnerItemTemplate="{DynamicResource PM.DT.Segment}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.IsDropEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"
@@ -64,7 +64,7 @@
       <mhc:CollectionView
         Grid.Row="4"
         View="{Binding AllSegments}"
-        InnerItemTemplate="{DynamicResource PM.Views.SegmentV}"
+        InnerItemTemplate="{DynamicResource PM.DT.Segment}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>
 

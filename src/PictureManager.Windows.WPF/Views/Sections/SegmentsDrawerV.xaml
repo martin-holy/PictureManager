@@ -8,7 +8,7 @@
   <DataTemplate DataType="{x:Type vm:SegmentsDrawerVM}">
     <mhc:CollectionView
       View="{Binding}"
-      InnerItemTemplate="{StaticResource PM.Views.SegmentV}"
+      InnerItemTemplate="{StaticResource PM.DT.Segment}"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.IsDropEnabled="True"
       mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

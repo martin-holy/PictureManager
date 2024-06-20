@@ -23,7 +23,7 @@
 
       <ContentControl
         Content="{Binding Segment}"
-        ContentTemplate="{DynamicResource PM.Views.SegmentV}"
+        ContentTemplate="{DynamicResource PM.DT.Segment}"
         Visibility="{Binding Segment, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
     </Grid>
   </DataTemplate>
@@ -42,7 +42,7 @@
         <Setter Property="ToolTip">
           <Setter.Value>
             <ToolTip BorderThickness="0" Padding="0">
-              <ContentPresenter Content="{Binding Segment}" ContentTemplate="{DynamicResource PM.Views.SegmentV.Lite}"/>
+              <ContentPresenter Content="{Binding Segment}" ContentTemplate="{DynamicResource PM.DT.Segment.Lite}"/>
             </ToolTip>
           </Setter.Value>
         </Setter>

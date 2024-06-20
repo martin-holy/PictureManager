@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:models="clr-namespace:MovieManager.Common.Models;assembly=MovieManager.Common"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:mm="clr-namespace:MovieManager.Common;assembly=MovieManager.Common">
+  xmlns:pmvme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
 
   <DataTemplate x:Key="MM.Views.CharacterV" DataType="{x:Type models:CharacterM}">
     <Grid Background="Transparent">
@@ -18,8 +18,8 @@
 
       <Grid
         Grid.RowSpan="2"
-        Width="{Binding PMCoreVM.Segment.SegmentUiSize, Source={x:Static mm:Core.VM}}"
-        Height="{Binding PMCoreVM.Segment.SegmentUiSize, Source={x:Static mm:Core.VM}}">
+        Width="{Binding Source={x:Static pmvme:SegmentVM.SegmentUiSize}}"
+        Height="{Binding Source={x:Static pmvme:SegmentVM.SegmentUiSize}}">
 
         <!--Show Actor image or empty icon if Segment is not available-->
         <Grid
@@ -57,7 +57,7 @@
 
         <ContentControl
           Content="{Binding DisplaySegment}"
-          ContentTemplate="{StaticResource PM.Views.SegmentV}"
+          ContentTemplate="{StaticResource PM.DT.Segment}"
           Visibility="{Binding DisplaySegment, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}"/>
       </Grid>
 

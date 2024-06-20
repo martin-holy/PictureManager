@@ -3,15 +3,116 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
-  <DataTemplate x:Key="PM.Views.SegmentV" DataType="{x:Type m:SegmentM}">
+  <DataTemplate x:Key="PM.DT.Segment.Lite" DataType="{x:Type m:SegmentM}">
+    <Border BorderThickness="1" BorderBrush="Black" Margin="1">
+      <Image
+        Stretch="Fill"
+        Width="{Binding Source={x:Static vme:SegmentVM.SegmentUiSize}}"
+        Height="{Binding Source={x:Static vme:SegmentVM.SegmentUiSize}}">
+
+        <Image.Source>
+          <MultiBinding Converter="{x:Static pmConv:SegmentThumbnailSourceConverter.Inst}">
+            <Binding Path="FilePathCache" IsAsync="True"/>
+            <Binding/>
+          </MultiBinding>
+        </Image.Source>
+      </Image>
+    </Border>
+  </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.Segment.ToolTip" DataType="{x:Type m:SegmentM}">
+    <Grid MaxWidth="{Binding MediaItem.ThumbWidth}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+      
+      <!-- MediaItem Thumbnail with Segments Rects -->
+      <Grid>
+        <ContentPresenter Content="{Binding MediaItem}" ContentTemplate="{DynamicResource PM.DT.MediaItem.Thumb-Lite}"/>
+
+        <ItemsControl
+          ItemsSource="{Binding VM.Segment.Rect.SegmentToolTipRects, Source={x:Static pm:App.Core}}">
+
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <Canvas/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+
+          <ItemsControl.ItemContainerStyle>
+            <Style TargetType="{x:Type ContentPresenter}">
+              <Setter Property="Canvas.Left" Value="{Binding Item1, Mode=OneTime}"/>
+              <Setter Property="Canvas.Top" Value="{Binding Item2, Mode=OneTime}"/>
+            </Style>
+          </ItemsControl.ItemContainerStyle>
+
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Rectangle
+                x:Name="rect"
+                Width="{Binding Item3, Mode=OneTime}"
+                Height="{Binding Item3, Mode=OneTime}" 
+                StrokeThickness="1"
+                Stroke="White"
+                Effect="{StaticResource MH.Effects.DropShadow}"/>
+
+              <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Item4, Mode=OneTime}" Value="True">
+                  <Setter TargetName="rect" Property="Stroke" Value="LimeGreen"/>
+                </DataTrigger>
+              </DataTemplate.Triggers>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock
+          Text="{Binding MediaItem.FileName}"
+          MaxWidth="{Binding MediaItem.ThumbWidth}"
+          VerticalAlignment="Bottom"
+          HorizontalAlignment="Center"
+          Margin="0,0,0,4"
+          TextWrapping="Wrap"
+          Effect="{StaticResource MH.Effects.DropShadow}"/>
+      </Grid>
+
+      <!-- Name -->
+      <Border
+        Grid.Row="1"
+        BorderThickness="1"
+        BorderBrush="Black"
+        Background="{DynamicResource MH.B.Black5}"
+        Visibility="{Binding Person, Converter={x:Static conv:AllToVisibilityConverter.Inst}}">
+
+        <TextBlock Text="{Binding Person.Name}" FontSize="18" Margin="5,2"/>
+      </Border>
+
+      <!-- TopSegments -->
+      <ItemsControl
+        Grid.Row="2"
+        ItemsSource="{Binding Person.TopSegments}"
+        Visibility="{Binding Person.TopSegments, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"
+        ItemTemplate="{DynamicResource PM.DT.Segment.Lite}">
+
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+    </Grid>
+  </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.Segment" DataType="{x:Type m:SegmentM}">
     <Grid x:Name="root" Background="Transparent">
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="ToolTipOpening">
@@ -23,85 +124,7 @@
 
       <Grid.ToolTip>
         <ToolTip Padding="0" BorderThickness="0">
-          <DockPanel>
-            <Grid DockPanel.Dock="Top">
-              <!-- Thumbnail -->
-              <ContentPresenter Content="{Binding MediaItem}" ContentTemplate="{DynamicResource PM.DT.MediaItem.Thumb-Lite}"/>
-
-              <!-- Segments Rects -->
-              <ItemsControl
-                ItemsSource="{Binding VM.Segment.Rect.SegmentToolTipRects, Source={x:Static pm:App.Core}}">
-
-                <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <Canvas/>
-                  </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemContainerStyle>
-                  <Style TargetType="{x:Type ContentPresenter}">
-                    <Setter Property="Canvas.Left" Value="{Binding Item1, Mode=OneTime}"/>
-                    <Setter Property="Canvas.Top" Value="{Binding Item2, Mode=OneTime}"/>
-                  </Style>
-                </ItemsControl.ItemContainerStyle>
-
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate>
-                    <Rectangle
-                      x:Name="rect"
-                      Width="{Binding Item3, Mode=OneTime}"
-                      Height="{Binding Item3, Mode=OneTime}" 
-                      StrokeThickness="1"
-                      Stroke="White"
-                      Effect="{StaticResource MH.Effects.DropShadow}"/>
-
-                    <DataTemplate.Triggers>
-                      <DataTrigger Binding="{Binding Item4, Mode=OneTime}" Value="True">
-                        <Setter TargetName="rect" Property="Stroke" Value="LimeGreen"/>
-                      </DataTrigger>
-                    </DataTemplate.Triggers>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-
-              <TextBlock
-                Text="{Binding MediaItem.FileName}"
-                MaxWidth="{Binding MediaItem.ThumbWidth}"
-                VerticalAlignment="Bottom"
-                HorizontalAlignment="Center"
-                Margin="0,0,0,4"
-                TextWrapping="Wrap"
-                Effect="{StaticResource MH.Effects.DropShadow}"/>
-            </Grid>
-
-            <!-- Name and TopSegments -->
-            <StackPanel Orientation="Vertical" MaxWidth="{Binding MediaItem.ThumbWidth}">
-              <Border
-                BorderThickness="1"
-                BorderBrush="Black"
-                Background="#88000000"
-                Visibility="{Binding Person, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
-
-                <TextBlock
-                  FontSize="18"
-                  Margin="5,2"
-                  Text="{Binding Person.Name}"/>
-              </Border>
-
-              <ItemsControl
-                ItemsSource="{Binding Person.TopSegments}"
-                Visibility="{Binding Person.TopSegments, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
-                ItemTemplate="{DynamicResource PM.Views.SegmentV.Lite}">
-
-                <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
-                  </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-              </ItemsControl>
-
-            </StackPanel>
-          </DockPanel>
+          <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PM.DT.Segment.ToolTip}"/>
         </ToolTip>
       </Grid.ToolTip>
 
@@ -114,68 +137,64 @@
         </Image.Source>
       </Image>
 
-      <!-- No Person Icon -->
       <Path
-        x:Name="noPersonIcon"
-        Style="{StaticResource MH.S.Icon}"
+        x:Name="iconNoPerson"
+        Style="{StaticResource MH.S.Icon.Shadow}"
         Data="{StaticResource IconPeople}"
-        Effect="{StaticResource MH.Effects.DropShadow}"
         Fill="Red"
         Margin="5"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
-        Visibility="Hidden"/>
+        Visibility="Collapsed"/>
 
-      <!-- Buttons -->
-      <DockPanel
-        x:Name="buttons"
-        VerticalAlignment="Top"
-        Visibility="Hidden">
+      <Grid x:Name="buttons" VerticalAlignment="Top" Visibility="Collapsed">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- Open Person Detail Control -->
-        <mhc:IconButton
-          x:Name="personDetailBtn"
+        <Border
+          x:Name="boSelectedCount"
+          Grid.Column="0"
+          Style="{StaticResource MH.S.Border.RoundDarker}"
+          Background="{DynamicResource MH.B.Accent}"
+          Visibility="Collapsed">
+
+          <TextBlock
+            HorizontalAlignment="Center"
+            Effect="{StaticResource MH.Effects.DropShadow}"
+            Text="{Binding S.Segment.Selected.Items.Count, Source={x:Static pm:App.Core}}"/>
+        </Border>
+
+        <c:IconButton
+          x:Name="btnSamePerson"
+          Grid.Column="1"
+          Command="vme:SegmentVM.SetSelectedAsSamePersonCommand"
+          Width="20"
+          Height="20"
+          ap:Icon.Size="13"
+          Visibility="Collapsed"/>
+
+        <c:IconButton
+          x:Name="btnPersonDetail"
+          Grid.Column="2"
           Command="vm:ToolsTabsVM.OpenPersonTabCommand"
           CommandParameter="{Binding Person}"
-          DockPanel.Dock="Right"
+          HorizontalAlignment="Right"
           Width="20"
           Height="20"
           ap:Icon.Size="13"/>
-
-        <!-- Same Person Button -->
-        <StackPanel
-          x:Name="samePersonBtn"
-          Orientation="Horizontal"
-          Visibility="Hidden">
-
-          <Border
-            Style="{StaticResource SBorderGroup}"
-            Background="#1181B1"
-            VerticalAlignment="Center"
-            Margin="1,1,2,0">
-
-            <TextBlock
-              Style="{StaticResource STextBlock}"
-              Text="{Binding S.Segment.Selected.Items.Count,
-                     Source={x:Static pm:App.Core}}"/>
-          </Border>
-
-          <mhc:IconButton
-            Command="vme:SegmentVM.SetSelectedAsSamePersonCommand"
-            Width="20"
-            Height="20"
-            ap:Icon.Size="13"/>
-        </StackPanel>
-      </DockPanel>
+      </Grid>
     </Grid>
 
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding Person}" Value="{x:Null}">
-        <Setter TargetName="noPersonIcon" Property="Visibility" Value="Visible"/>
-        <Setter TargetName="personDetailBtn" Property="Visibility" Value="Collapsed"/>
+        <Setter TargetName="iconNoPerson" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="btnPersonDetail" Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
       <Trigger SourceName="root" Property="IsMouseOver" Value="True">
-        <Setter TargetName="noPersonIcon" Property="Visibility" Value="Hidden"/>
+        <Setter TargetName="iconNoPerson" Property="Visibility" Value="Collapsed"/>
         <Setter TargetName="buttons" Property="Visibility" Value="Visible"/>
       </Trigger>
       <MultiDataTrigger>
@@ -184,10 +203,11 @@
           <Condition
              Binding="{Binding S.Segment.CanSetAsSamePerson,
                        Source={x:Static pm:App.Core},
-                       Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
+                       Converter={x:Static conv:AllToBoolConverter.Inst}}"
              Value="True"/>
         </MultiDataTrigger.Conditions>
-        <Setter TargetName="samePersonBtn" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="boSelectedCount" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="btnSamePerson" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>

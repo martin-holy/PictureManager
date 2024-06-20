@@ -17,7 +17,7 @@ public sealed class SegmentVM : ObservableObject {
   private readonly SegmentR _r;
 
   public static int SegmentSize { get; set; } = 100;
-  public int SegmentUiSize { get; set; }
+  public static int SegmentUiSize { get; set; }
   public int SegmentUiFullWidth { get; set; }
   public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; }
 

@@ -28,7 +28,7 @@
       <mhc:CollectionView
         Grid.Column="2"
         View="{Binding CvSegments}"
-        InnerItemTemplate="{StaticResource PM.Views.SegmentV}"
+        InnerItemTemplate="{StaticResource PM.DT.Segment}"
         wpfu:DragDropHelper.IsDragEnabled="True"
         wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
     </Grid>
