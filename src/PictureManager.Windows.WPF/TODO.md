@@ -23,6 +23,7 @@
   - add multilevel keyword to person => delete sub keyword => person doesn't have keyword displayed but Load people by keyword works
     after app restart is ok
   - changing selection in Viewer detail works only with mouse. with keyboard selection works only visually
+  - CatTreeView search: show ToolTip on whole item
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
 ## Video Items (VideoImage and VideoClip)
@@ -162,6 +163,7 @@
   - add scrollbar for TabPanel
   - FocusVisualStyle on SlidePanelsGridHost should not be null but set to Focusable = false
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
+  - ToBoolConverter where Inst is IsNotNull, IsStringEmpty, IsCollectionEmpty, ...
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
 ## ProgressBarAsyncDialog
