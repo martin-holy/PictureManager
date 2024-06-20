@@ -39,6 +39,7 @@
               <Path Data="{StaticResource IconGroup}" Style="{StaticResource MH.S.Icon.Shadow}"/>
             </MenuItem.Icon>
             <MenuItem Command="{Binding OpenButtonsTabCommand}"/>
+            <MenuItem Command="{Binding OpenColorsTabCommand}"/>
             <MenuItem Command="{Binding OpenListsTabCommand}"/>
             <MenuItem Command="{Binding OpenSlidersTabCommand}"/>
             <MenuItem Command="{Binding OpenTextsTabCommand}"/>

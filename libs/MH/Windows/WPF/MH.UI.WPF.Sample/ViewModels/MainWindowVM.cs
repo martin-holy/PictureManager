@@ -23,6 +23,7 @@ public class MainWindowVM : ObservableObject {
 
   public ControlsVM Controls { get; } = new();
   public ButtonsVM Buttons { get; } = new();
+  public ColorsVM Colors { get; } = new();
   public ListsVM Lists { get; } = new();
   public SlidersVM Sliders { get; } = new();
   public TextsVM Texts { get; } = new();
@@ -57,6 +58,7 @@ public class MainWindowVM : ObservableObject {
 
   public RelayCommand OpenControlsTabCommand { get; }
   public RelayCommand OpenButtonsTabCommand { get; }
+  public RelayCommand OpenColorsTabCommand { get; }
   public RelayCommand OpenListsTabCommand { get; }
   public RelayCommand OpenSlidersTabCommand { get; }
   public RelayCommand OpenTextsTabCommand { get; }
@@ -83,6 +85,7 @@ public class MainWindowVM : ObservableObject {
     OpenControlsTabCommand = new(OpenControlsTab, Icons.Bug, "Controls");
 
     OpenButtonsTabCommand = new(OpenButtonsTab, Icons.Bug, "Buttons");
+    OpenColorsTabCommand = new(OpenColorsTab, Icons.Bug, "Colors");
     OpenListsTabCommand = new(OpenListsTab, Icons.Bug, "Lists");
     OpenSlidersTabCommand = new(OpenSlidersTab, Icons.Bug, "Sliders");
     OpenTextsTabCommand = new(OpenTextsTab, Icons.Bug, "Texts");
@@ -125,6 +128,7 @@ public class MainWindowVM : ObservableObject {
   private void OpenControlsTab() => MiddleContent.Activate(Icons.Bug, "Controls", Controls);
 
   private void OpenButtonsTab() => LeftContent.Activate(Icons.Bug, "Buttons", Buttons);
+  private void OpenColorsTab() => LeftContent.Activate(Icons.Bug, "Colors", Colors);
   private void OpenListsTab() => LeftContent.Activate(Icons.Bug, "Lists", Lists);
   private void OpenSlidersTab() => LeftContent.Activate(Icons.Bug, "Sliders", Sliders);
   private void OpenTextsTab() => LeftContent.Activate(Icons.Bug, "Texts", Texts);
@@ -135,6 +139,7 @@ public class MainWindowVM : ObservableObject {
 
   private void InitLeftContent() {
     OpenButtonsTab();
+    OpenColorsTab();
     OpenListsTab();
     OpenSlidersTab();
     OpenTextsTab();

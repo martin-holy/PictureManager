@@ -68,6 +68,7 @@
         <ResourceDictionary Source="/Views/Controls/ControlsV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/FolderTreeViewV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/ButtonsV.xaml"/>
+        <ResourceDictionary Source="/Views/Controls/ColorsV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/ListsV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/SlidersV.xaml"/>
         <ResourceDictionary Source="/Views/Controls/TextsV.xaml"/>
