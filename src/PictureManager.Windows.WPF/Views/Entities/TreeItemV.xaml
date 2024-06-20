@@ -87,7 +87,7 @@
             <ToolTip BorderThickness="0" Padding="0">
               <ContentPresenter
                 Content="{Binding Path=(m:PersonM.Segment)}"
-                ContentTemplate="{DynamicResource PM.Views.SegmentV.Lite}"/>
+                ContentTemplate="{DynamicResource PM.DT.Segment.Lite}"/>
             </ToolTip>
           </Setter.Value>
         </Setter>
