@@ -101,7 +101,8 @@ public class CollectionView : TreeViewBase {
   private static void ViewChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
     if (d is not CollectionView view) return;
     view.TreeView = view.View;
-    view.View.UIView = view;
+    if (view.View != null)
+      view.View.UIView = view;
   }
 
   private static object GetDataContext(object source) {
