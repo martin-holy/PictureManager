@@ -1,12 +1,31 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
+  xmlns:res="clr-namespace:MH.UI.WPF.Resources"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
   <Style x:Key="MH.S.Icon" TargetType="Path">
     <Setter Property="Width" Value="18"/>
     <Setter Property="Height" Value="18"/>
     <Setter Property="Stretch" Value="Uniform"/>
     <Setter Property="Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
+    <Style.Triggers>
+      <DataTrigger
+        Value="True"
+        Binding="{Binding Path=(ap:Icon.Res), RelativeSource=
+                 {RelativeSource Self}, Converter={x:Static conv:AllToBoolConverter.Inst}}">
+        <Setter
+          Property="Data"
+          Value="{Binding Path=(ap:Icon.Res), RelativeSource=
+                 {RelativeSource Self}, Converter={x:Static conv:ResourceConverter.Inst}}"/>
+        <Setter
+          Property="Fill"
+          Value="{Binding Path=(ap:Icon.Res), RelativeSource=
+                 {RelativeSource Self}, Converter={x:Static conv:ResourceConverter.Inst},
+                  ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
+      </DataTrigger>
+    </Style.Triggers>
   </Style>
 
   <Style x:Key="MH.S.Icon.Shadow" TargetType="Path" BasedOn="{StaticResource MH.S.Icon}">
