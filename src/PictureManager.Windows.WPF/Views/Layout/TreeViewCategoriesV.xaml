@@ -5,9 +5,11 @@
   xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
   xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
   xmlns:mhui="clr-namespace:MH.UI;assembly=MH.UI"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
+  xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters">
 
   <DataTemplate DataType="{x:Type vm:TreeViewCategoriesVM}">
     <DataTemplate.Resources>
@@ -19,8 +21,8 @@
         <DataTemplate x:Key="BigIcon" DataType="{x:Type mhuInt:IListItem}">
           <Path
             Style="{StaticResource MH.S.Icon}"
-            Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
-            Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
+            Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
+            Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
                    ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
             Width="24"
             Height="24"/>
@@ -66,4 +68,32 @@
       <ContentPresenter Grid.Column="1" Content="{Binding Path=(vm:TreeViewCategoriesVM.SlidePanelPinButton)}"/>
     </Grid>
   </DataTemplate>
+
+  <Style x:Key="PM.S.MarkedTagsCount" TargetType="TextBlock">
+    <Setter Property="Visibility" Value="Visible"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Margin" Value="5,0,0,0"/>
+    <Setter Property="Padding" Value="5,0"/>
+    <Setter Property="Background" Value="{DynamicResource MH.B.Accent-Dark}"/>
+    <Setter Property="Text">
+      <Setter.Value>
+        <MultiBinding Converter="{x:Static pmConv:MarkedTagsItemsCountConverter.Inst}">
+          <Binding
+            Path="VM.MainWindow.TreeViewCategories.MarkedTags"
+            Source="{x:Static pm:App.Core}" />
+          <Binding/>
+        </MultiBinding>
+      </Setter.Value>
+    </Setter>
+
+    <Style.Triggers>
+      <DataTrigger
+        Binding="{Binding Text,
+                Converter={x:Static conv:AllToBoolConverter.Inst},
+                RelativeSource={RelativeSource Self}}"
+        Value="False">
+        <Setter Property="Visibility" Value="Collapsed"/>
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
 </ResourceDictionary>

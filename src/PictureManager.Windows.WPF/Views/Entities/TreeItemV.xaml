@@ -6,7 +6,8 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
   xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent">
@@ -16,7 +17,6 @@
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
 
-      <!-- Attach ContextMenu -->
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
           <b:ChangePropertyAction
@@ -30,9 +30,7 @@
         x:Name="icon"
         Grid.Column="0"
         Style="{StaticResource MH.S.Icon}"
-        Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
-        Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
-               ConverterParameter={x:Static pmd:Res.IconToBrushDic}}"/>
+        ap:Icon.Res="{Binding Icon}"/>
       
       <TextBlock
         x:Name="name"
@@ -44,7 +42,7 @@
       
       <TextBlock
         Grid.Column="2"
-        Style="{StaticResource TreeItemKeywordsPicCount}"/>
+        Style="{DynamicResource PM.S.MarkedTagsCount}"/>
     </Grid>
 
     <HierarchicalDataTemplate.Triggers>

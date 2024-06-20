@@ -52,7 +52,7 @@
         </Grid.ColumnDefinitions>
 
         <ContentPresenter Content="{Binding Rating}"/>
-        <TextBlock Grid.Column="1" Style="{StaticResource TreeItemKeywordsPicCount}"/>
+        <TextBlock Grid.Column="1" Style="{DynamicResource PM.S.MarkedTagsCount}"/>
       </Grid>
     </Grid>
   </HierarchicalDataTemplate>
