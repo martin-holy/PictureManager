@@ -73,7 +73,6 @@
         <ResourceDictionary Source="/Views/Entities/MediaItemV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/PersonV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/RatingV.xaml"/>
-        <ResourceDictionary Source="/Views/Entities/SegmentLiteV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/SegmentRectV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/SegmentV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/TreeItemV.xaml"/>
