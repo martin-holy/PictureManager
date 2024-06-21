@@ -37,8 +37,7 @@
         Grid.Column="1"
         Text="{Binding Name}"
         VerticalAlignment="Center"
-        Margin="5,0,0,0"
-        FontSize="14"/>
+        Margin="5,0,0,0"/>
       
       <TextBlock
         Grid.Column="2"
