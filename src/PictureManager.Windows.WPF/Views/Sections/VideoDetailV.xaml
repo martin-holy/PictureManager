@@ -42,7 +42,7 @@
       <mhc:CollectionView
         Grid.Row="3"
         View="{Binding CurrentVideoItems}"
-        InnerItemTemplate="{DynamicResource PM.Views.VideoItemV.Thumb}"/>
+        InnerItemTemplate="{DynamicResource PM.DT.VideoItem.Thumb}"/>
     </Grid>
 
     <DataTemplate.Triggers>
