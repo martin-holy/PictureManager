@@ -13,7 +13,7 @@
       <!-- Main Tabs -->
       <ContentPresenter
         Content="{Binding VM.MainTabs}"
-        ContentTemplate="{StaticResource PM.Views.MainTabsV}"
+        ContentTemplate="{StaticResource PM.DT.MainTabs}"
         Visibility="{Binding VM.MediaViewer.IsVisible,
                  Source={x:Static pm:App.Core},
                  Converter={x:Static mhConv:AllToVisibilityConverter.Inst}, 
