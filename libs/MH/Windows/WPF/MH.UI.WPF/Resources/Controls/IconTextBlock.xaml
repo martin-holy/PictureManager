@@ -9,9 +9,12 @@
   <Style x:Key="MH.S.IconTextBlock" TargetType="{x:Type c:IconTextBlock}">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Margin" Value="2"/>
+    <Setter Property="Padding" Value="2"/>
     <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Shadow" Value="Both"/>
     <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
@@ -33,7 +36,7 @@
               Fill="{Binding Path=(ap:Icon.Fill)}"
               Width="{Binding Path=(ap:Icon.Size)}"
               Height="{Binding Path=(ap:Icon.Size)}"
-              Margin="2"
+              Margin="{Binding Padding}"
               Stretch="Uniform"/>
 
             <TextBlock
@@ -41,7 +44,9 @@
               Grid.Column="1"
               Text="{Binding Path=(ap:Text.Text)}"
               Foreground="{TemplateBinding Foreground}"
-              Margin="2"/>
+              Margin="{Binding Padding}"
+              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
           </Grid>
 
           <ControlTemplate.Triggers>
