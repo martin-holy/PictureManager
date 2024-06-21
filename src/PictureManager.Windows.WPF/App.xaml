@@ -76,7 +76,7 @@
         <ResourceDictionary Source="/Views/Entities/SegmentRectV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/SegmentV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/TreeItemV.xaml"/>
-        <ResourceDictionary Source="/Views/Entities/VideoItemThumbnailV.xaml"/>
+        <ResourceDictionary Source="/Views/Entities/VideoItemV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/ViewerV.xaml"/>
 
         <ResourceDictionary Source="/Views/Dialogs/AboutDialogV.xaml"/>
