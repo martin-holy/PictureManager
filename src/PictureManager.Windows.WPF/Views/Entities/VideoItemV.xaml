@@ -2,10 +2,10 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
-  xmlns:mim="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:mmi="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate x:Key="PM.Views.VideoItemV.Thumb" DataType="{x:Type mim:VideoItemM}">
+  <DataTemplate x:Key="PM.DT.VideoItem.Thumb" DataType="{x:Type mmi:VideoItemM}">
     <Grid x:Name="root" Background="Transparent">
       <Image Stretch="Fill">
         <Image.Source>
@@ -25,18 +25,18 @@
     <DataTemplate.Triggers>
       <DataTrigger
         Binding="{Binding 
-                  Converter={x:Static mhConv:DataTypeConverter.Inst},
-                  ConverterParameter={x:Type mim:VideoClipM}}" Value="True">
+                  Converter={x:Static conv:DataTypeConverter.Inst},
+                  ConverterParameter={x:Type mmi:VideoClipM}}" Value="True">
         <Setter
           TargetName="tbDuration"
           Property="Text"
-          Value="{Binding Path=(mim:VideoClipM.Duration),
-                  Converter={x:Static mhConv:TimeFormatConverter.Inst},
+          Value="{Binding Path=(mmi:VideoClipM.Duration),
+                  Converter={x:Static conv:TimeFormatConverter.Inst},
                   ConverterParameter=duration}"/>
         <Setter TargetName="tbDuration" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding Comment, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
+      <DataTrigger Binding="{Binding Comment, Converter={x:Static conv:AllToBoolConverter.Inst}}" Value="True">
         <Setter TargetName="root" Property="ToolTip" Value="{Binding Comment}"/>
       </DataTrigger>
     </DataTemplate.Triggers>
