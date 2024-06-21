@@ -76,7 +76,6 @@
         <ResourceDictionary Source="/Views/Entities/SegmentRectV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/SegmentV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/TreeItemV.xaml"/>
-        <ResourceDictionary Source="/Views/Entities/VideoDetailV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/VideoItemThumbnailV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/ViewerV.xaml"/>
 
@@ -108,6 +107,7 @@
         <ResourceDictionary Source="/Views/Sections/SettingsV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/TitleProgressBarV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/TreeViewSearchV.xaml"/>
+        <ResourceDictionary Source="/Views/Sections/VideoDetailV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/ViewersToolBarV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/WhatIsNewV.xaml"/>
 
