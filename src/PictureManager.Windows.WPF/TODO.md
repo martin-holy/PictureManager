@@ -38,6 +38,7 @@
     maybe set focus on mouse enter
 ## Segments
   - segment can by drawn out of bounds on video. thumb recreating is not working. segment is probably in error cache
+  - export segments is without orientation
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
