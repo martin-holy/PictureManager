@@ -1,7 +1,10 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:res="clr-namespace:MH.UI.WPF.Resources">
 
   <sys:Double x:Key="MH.FontSize">14</sys:Double>
 
@@ -9,6 +12,22 @@
     <Setter Property="Control.BorderBrush" Value="{StaticResource MH.B.C.Disabled.Bo}"/>
     <Setter Property="Control.Foreground" Value="{StaticResource MH.B.C.Disabled.Fo}"/>
   </Trigger>
+
+  <DataTrigger
+    x:Key="MH.Trigger.IconResToDataAndFill"
+    Value="True"
+    Binding="{Binding Path=(ap:Icon.Res), RelativeSource=
+             {RelativeSource Self}, Converter={x:Static conv:AllToBoolConverter.Inst}}">
+    <Setter
+      Property="ap:Icon.Data"
+      Value="{Binding Path=(ap:Icon.Res), RelativeSource=
+             {RelativeSource Self}, Converter={x:Static conv:ResourceConverter.Inst}}"/>
+    <Setter
+      Property="ap:Icon.Fill"
+      Value="{Binding Path=(ap:Icon.Res), RelativeSource=
+             {RelativeSource Self}, Converter={x:Static conv:ResourceConverter.Inst},
+              ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
+  </DataTrigger>
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
     <Setter Property="Control.Template">
