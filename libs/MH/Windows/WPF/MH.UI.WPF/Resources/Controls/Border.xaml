@@ -11,4 +11,8 @@
     <Setter Property="Margin" Value="1"/>
     <Setter Property="MinWidth" Value="24"/>
   </Style>
+
+  <Style x:Key="MH.S.Border.RoundDark" TargetType="Border" BasedOn="{StaticResource MH.S.Border.RoundDarker}">
+    <Setter Property="Background" Value="{DynamicResource MH.B.Black5}"/>
+  </Style>
 </ResourceDictionary>
