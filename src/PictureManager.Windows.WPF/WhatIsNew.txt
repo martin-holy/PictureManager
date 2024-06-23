@@ -16,6 +16,7 @@ Latest:
  - [N] UI colors based on Windows accent color
  - [U] Viewer style
  - [B] Crash when selecting FolderKeywords category
+ - [U] Rating style on StatusBar
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
