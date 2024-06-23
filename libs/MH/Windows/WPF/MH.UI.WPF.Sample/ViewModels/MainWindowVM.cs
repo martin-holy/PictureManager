@@ -24,6 +24,7 @@ public class MainWindowVM : ObservableObject {
   public ControlsVM Controls { get; } = new();
   public ButtonsVM Buttons { get; } = new();
   public ColorsVM Colors { get; } = new();
+  public IconTextVM IconText { get; } = new();
   public ListsVM Lists { get; } = new();
   public SlidersVM Sliders { get; } = new();
   public TextsVM Texts { get; } = new();
@@ -140,6 +141,7 @@ public class MainWindowVM : ObservableObject {
   private void InitLeftContent() {
     OpenButtonsTab();
     OpenColorsTab();
+    LeftContent.Activate(Icons.Bug, "IconText", IconText);
     OpenListsTab();
     OpenSlidersTab();
     OpenTextsTab();

@@ -15,8 +15,8 @@
       <c:IconTextBlock ap:Icon.Res="IconBug" ap:Text.Text="Sample" Margin="2" Shadow="Icon"/>
       <c:IconTextBlock ap:Icon.Res="IconBug" ap:Text.Text="Sample" Margin="2" Shadow="Text"/>
       <c:IconTextBlock ap:Icon.Res="IconBug" ap:Text.Text="Sample" Margin="2"/>
-      <c:IconTextBlock ap:Icon.Res="IconBug" ap:Text.Text="Sample" Margin="2" Shadow="None" Style="{StaticResource MH.S.IconTextBlock.Borders}"/>
-      <c:IconTextBlock ap:Icon.Res="IconBug" ap:Text.Text="Sample" Margin="2" Style="{StaticResource MH.S.IconTextBlock.Borders}"/>
+      <c:IconTextBlock ap:Icon.Res="IconBug" ap:Text.Text="Sample" Margin="2" Shadow="None" Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"/>
+      <c:IconTextBlock ap:Icon.Res="IconBug" ap:Text.Text="Sample" Margin="2" Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"/>
     </StackPanel>
   </DataTemplate>
 </ResourceDictionary>
