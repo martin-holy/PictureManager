@@ -3,44 +3,26 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
+  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type vm:StatusBarVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        <Style x:Key="_itemsControlStyle" TargetType="{x:Type ItemsControl}">
-          <Setter Property="ItemsPanel">
-            <Setter.Value>
-              <ItemsPanelTemplate>
-                <WrapPanel Orientation="Horizontal"/>
-              </ItemsPanelTemplate>
-            </Setter.Value>
-          </Setter>
+        <DataTemplate x:Key="_person" DataType="{x:Type m:PersonM}">
+          <Border Style="{StaticResource MH.S.Border.RoundDark}" Cursor="Hand">
+            <Border.InputBindings>
+              <MouseBinding
+                MouseAction="LeftClick"
+                Command="vm:ToolsTabsVM.OpenPersonTabCommand"
+                CommandParameter="{Binding}"/>
+            </Border.InputBindings>
 
-          <Setter Property="ItemTemplate">
-            <Setter.Value>
-              <DataTemplate>
-                <Border Style="{StaticResource SBorderText}">
-                  <TextBlock Text="{Binding}" Style="{StaticResource STextBlock}"/>
-                </Border>
-              </DataTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-
-        <Style x:Key="_infoGroup" TargetType="{x:Type Border}" BasedOn="{StaticResource SBorderGroup}">
-          <Style.Resources>
-            <Style TargetType="{x:Type StackPanel}">
-              <Setter Property="Orientation" Value="Horizontal"/>
-            </Style>
-            <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.S.Icon}">
-              <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
-            </Style>
-            <Style TargetType="{x:Type Border}" BasedOn="{StaticResource SBorderText}"/>
-            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource STextBlock}"/>
-            <Style TargetType="{x:Type ItemsControl}" BasedOn="{StaticResource _itemsControlStyle}"/>
-          </Style.Resources>
-        </Style>
+            <TextBlock Text="{Binding Name}"/>
+          </Border>
+        </DataTemplate>
       </ResourceDictionary>
     </DataTemplate.Resources>
 
@@ -60,195 +42,104 @@
           ContentTemplate="{StaticResource PM.Views.SelectedItemsStatusBarV}"/>
 
         <!-- PositionSlashCount -->
-        <Border
-          Style="{StaticResource _infoGroup}"
-          Visibility="{Binding IsCountVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
-          <StackPanel Orientation="Horizontal">
-            <Path Data="{StaticResource IconImageMultiple}"/>
-
-            <Border>
-              <TextBlock
-                x:Name="tbPositionSlashCount"
-                Style="{StaticResource STextBlock}"
-                Text="{Binding Core.VM.MediaItem.Views.Current.PositionSlashCount}"/>
-            </Border>
-          </StackPanel>
-        </Border>
+        <c:IconTextBlock
+          x:Name="tbPositionSlashCount"
+          Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
+          ap:Icon.Res="IconImageMultiple"
+          ap:Text.Text="{Binding Core.VM.MediaItem.Views.Current.PositionSlashCount}"
+          Visibility="{Binding IsCountVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
         <!-- Dimension -->
-        <Border
-          Style="{StaticResource _infoGroup}"
+        <c:IconTextBlock
+          ap:Icon.Res="IconRuler"
           Visibility="{Binding Core.VM.MediaItem.Current, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
-          <StackPanel>
-            <Path Data="{StaticResource IconRuler}"/>
-
-            <Border>
-              <TextBlock>
-                <TextBlock.Text>
+          <c:IconTextBlock.Style>
+            <Style TargetType="c:IconTextBlock" BasedOn="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}">
+              <Setter Property="ap:Text.Text">
+                <Setter.Value>
                   <MultiBinding StringFormat="{}{0}x{1}">
                     <Binding Path="Core.VM.MediaItem.Current.Width"/>
                     <Binding Path="Core.VM.MediaItem.Current.Height"/>
                   </MultiBinding>
-                </TextBlock.Text>
-              </TextBlock>
-            </Border>
-          </StackPanel>
-        </Border>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </c:IconTextBlock.Style>
+        </c:IconTextBlock>
 
         <!-- File Size -->
-        <Border
-          Style="{StaticResource _infoGroup}"
-          Visibility="{Binding FileSize, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
-          <StackPanel>
-            <Path Data="{StaticResource IconPageUpload}"/>
-
-            <Border>
-              <TextBlock Text="{Binding FileSize}"/>
-            </Border>
-          </StackPanel>
-        </Border>
+        <c:IconTextBlock
+          Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
+          ap:Icon.Res="IconPageUpload"
+          ap:Text.Text="{Binding FileSize}"
+          Visibility="{Binding FileSize, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
         <!-- ImageActualZoom -->
-        <Border
-          Style="{StaticResource _infoGroup}"
-          Visibility="{Binding Core.VM.MediaViewer.IsVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
-          <StackPanel>
-            <Path Data="{StaticResource IconMagnify}"/>
-
-            <Border>
-              <TextBlock Text="{Binding Core.VM.MediaViewer.ActualZoom, StringFormat={}{0:####}%}"/>
-            </Border>
-          </StackPanel>
-        </Border>
+        <c:IconTextBlock
+          Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
+          ap:Icon.Res="IconMagnify"
+          ap:Text.Text="{Binding Core.VM.MediaViewer.ActualZoom, StringFormat={}{0:####}%}"
+          Visibility="{Binding Core.VM.MediaViewer.IsVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
         <!-- Rating -->
-        <Border
-          Style="{StaticResource SBorderGroup}"
-          Margin="2,0,2,0"
-          VerticalAlignment="Center"
-          Visibility="{Binding Rating.Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
-          <Border Margin="0">
-            <ItemsControl ItemsSource="{Binding Rating}">
-
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <StackPanel Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <Path
-                    Data="{StaticResource IconStar}"
-                    Style="{StaticResource MH.S.Icon}"
-                    Effect="{StaticResource MH.Effects.DropShadow}"/>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </Border>
-        </Border>
+        <c:IconTextBlock
+          Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
+          TextBorderStyle="{x:Null}"
+          ap:Icon.Res="IconStar"
+          ap:Text.Text="{Binding Rating.Count}"
+          Compact="True"
+          Padding="0"
+          Width="28"
+          Height="28"
+          Visibility="{Binding Rating.Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
         <!-- GeoName -->
-        <Border
+        <c:IconTextBlock
           x:Name="boGeoName"
+          Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
+          ap:Icon.Res="IconLocationCheckin"
           ToolTip="{Binding Core.VM.MediaItem.CurrentGeoName.FullName}"
-          Style="{StaticResource SBorderGroup}"
-          Margin="1,2,1,0"
-          Padding="4"
-          Visibility="Collapsed">
-          <Path
-            Data="{StaticResource IconLocationCheckin}"
-            Style="{StaticResource MH.S.Icon}"
-            Effect="{StaticResource MH.Effects.DropShadow}"/>
-        </Border>
+          Visibility="Collapsed"/>
 
         <!-- FilePath -->
-        <Border
-          Style="{StaticResource _infoGroup}"
+        <c:IconTextBlockItemsControl
+          Style="{StaticResource MH.S.IconTextBlockItemsControl.Borders.RoundDark}"
+          ItemsSource="{Binding FilePath}"
+          ap:Icon.Res="IconFolder"
           Visibility="{Binding FilePath, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"
-          ToolTip="{Binding Core.VM.MediaItem.Current.FilePath}">
-
-          <StackPanel>
-            <Path Data="{StaticResource IconFolder}" Fill="{StaticResource PM.B.Folder}"/>
-            <ItemsControl ItemsSource="{Binding FilePath}"/>
-          </StackPanel>
-        </Border>
+          ToolTip="{Binding Core.VM.MediaItem.Current.FilePath}"/>
 
         <!-- DateAndTime -->
-        <Border
-          Style="{StaticResource _infoGroup}"
-          Visibility="{Binding DateAndTime, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
-
-          <StackPanel>
-            <Path Data="{StaticResource IconCalendar}"/>
-
-            <Border>
-              <TextBlock Text="{Binding DateAndTime}"/>
-            </Border>
-          </StackPanel>
-        </Border>
+        <c:IconTextBlock
+          Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
+          ap:Icon.Res="IconCalendar"
+          ap:Text.Text="{Binding DateAndTime}"
+          Visibility="{Binding DateAndTime, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
 
         <!-- People -->
-        <Border
-          x:Name="boPeople"
-          Style="{StaticResource _infoGroup}"
-          Visibility="Collapsed">
-
-          <StackPanel>
-            <Path Data="{StaticResource IconPeople}" Fill="{StaticResource PM.B.People}"/>
-
-            <ItemsControl ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayPeople}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <Border Style="{StaticResource SBorderText}" Cursor="Hand">
-                    <Border.InputBindings>
-                      <MouseBinding
-                        MouseAction="LeftClick"
-                        Command="vm:ToolsTabsVM.OpenPersonTabCommand"
-                        CommandParameter="{Binding}"/>
-                    </Border.InputBindings>
-
-                    <TextBlock Text="{Binding Name}" Style="{StaticResource STextBlock}"/>
-                  </Border>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </StackPanel>
-        </Border>
+        <c:IconTextBlockItemsControl
+          x:Name="people"
+          Style="{StaticResource MH.S.IconTextBlockItemsControl.Borders.RoundDark}"
+          ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayPeople}"
+          ItemTemplate="{StaticResource _person}"
+          ap:Icon.Res="IconPeople"
+          Visibility="Collapsed"/>
 
         <!-- Keywords -->
-        <Border
-          x:Name="boKeywords"
-          Style="{StaticResource _infoGroup}"
-          Visibility="Collapsed">
-
-          <StackPanel>
-            <Path Data="{StaticResource IconTag}" Fill="{StaticResource PM.B.Tag}"/>
-            <ItemsControl ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayKeywords}"/>
-          </StackPanel>
-        </Border>
+        <c:IconTextBlockItemsControl
+          x:Name="keywords"
+          Style="{StaticResource MH.S.IconTextBlockItemsControl.Borders.RoundDark}"
+          ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayKeywords}"
+          ap:Icon.Res="IconTag"
+          Visibility="Collapsed"/>
 
         <!-- Comment -->
-        <Border
-          x:Name="boComment"
-          Style="{StaticResource _infoGroup}"
-          Visibility="Collapsed">
-
-          <StackPanel>
-            <Path Data="{StaticResource IconNotification}"/>
-
-            <Border>
-              <TextBlock Text="{Binding Core.VM.MediaItem.Current.Comment}"/>
-            </Border>
-          </StackPanel>
-        </Border>
-
+        <c:IconTextBlock
+          x:Name="comment"
+          Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
+          ap:Icon.Res="IconNotification"
+          ap:Text.Text="{Binding Core.VM.MediaItem.Current.Comment}"
+          Visibility="Collapsed"/>
       </WrapPanel>
     </Grid>
 
@@ -257,7 +148,7 @@
       <DataTrigger Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="True">
         <Setter
           TargetName="tbPositionSlashCount"
-          Property="Text"
+          Property="ap:Text.Text"
           Value="{Binding Core.VM.MediaViewer.PositionSlashCount}"/>
       </DataTrigger>
 
@@ -266,7 +157,7 @@
       </DataTrigger>
 
       <DataTrigger Binding="{Binding Core.VM.MediaItem.Current.DisplayPeople, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
-        <Setter TargetName="boPeople" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="people" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
       <MultiDataTrigger>
@@ -274,7 +165,7 @@
           <Condition Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="True"/>
           <Condition Binding="{Binding Core.VM.MediaItem.Current.DisplayKeywords, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
         </MultiDataTrigger.Conditions>
-        <Setter TargetName="boKeywords" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="keywords" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
 
       <MultiDataTrigger>
@@ -282,7 +173,7 @@
           <Condition Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="True"/>
           <Condition Binding="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True"/>
         </MultiDataTrigger.Conditions>
-        <Setter TargetName="boComment" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="comment" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
