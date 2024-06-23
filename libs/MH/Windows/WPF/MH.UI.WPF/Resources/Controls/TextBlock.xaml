@@ -11,4 +11,16 @@
       <StaticResource ResourceKey="MH.Trigger.Control-Disabled"/>
     </Style.Triggers>
   </Style>
+
+  <DataTemplate x:Key="MH.DT.TextBlock.Border.RoundDarker">
+    <Border Style="{DynamicResource MH.S.Border.RoundDarker}">
+      <TextBlock Text="{Binding}"/>
+    </Border>
+  </DataTemplate>
+
+  <DataTemplate x:Key="MH.DT.TextBlock.Border.RoundDark">
+    <Border Style="{DynamicResource MH.S.Border.RoundDark}">
+      <TextBlock Text="{Binding}"/>
+    </Border>
+  </DataTemplate>
 </ResourceDictionary>
