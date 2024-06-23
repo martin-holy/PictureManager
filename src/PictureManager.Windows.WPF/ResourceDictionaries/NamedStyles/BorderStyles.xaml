@@ -13,9 +13,4 @@
     <Setter Property="Margin" Value="1"/>
     <Setter Property="MinWidth" Value="24" />
   </Style>
-
-  <!-- SBorderGroup -->
-  <Style x:Key="SBorderGroup" TargetType="Border" BasedOn="{StaticResource SBorderText}">
-    <Setter Property="Padding" Value="2" />
-  </Style>
 </ResourceDictionary>
