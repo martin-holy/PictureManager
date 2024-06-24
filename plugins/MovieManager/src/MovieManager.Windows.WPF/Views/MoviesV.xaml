@@ -5,7 +5,7 @@
   xmlns:vm="clr-namespace:MovieManager.Common.ViewModels;assembly=MovieManager.Common">
 
   <DataTemplate DataType="{x:Type vm:MoviesVM}">
-    <mhc:CollectionView View="{Binding}" InnerItemTemplate="{DynamicResource MM.Views.MovieV.Thumb}">
+    <mhc:CollectionView View="{Binding}" InnerItemTemplate="{DynamicResource MM.DT.Movie.Thumb}">
       <mhc:CollectionView.ItemsPanel>
         <ItemsPanelTemplate>
           <mhc:VirtualizingSingleItemScrollStackPanel/>

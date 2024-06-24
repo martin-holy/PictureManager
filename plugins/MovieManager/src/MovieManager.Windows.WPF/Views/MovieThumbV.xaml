@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:MovieManager.Common.Models;assembly=MovieManager.Common">
     
-  <DataTemplate x:Key="MM.Views.MovieV.Thumb" DataType="{x:Type m:MovieM}">
+  <DataTemplate x:Key="MM.DT.Movie.Thumb" DataType="{x:Type m:MovieM}">
     <Grid Background="Transparent">
       <TextBlock
         Text="{Binding Title}"
