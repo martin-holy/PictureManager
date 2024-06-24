@@ -80,8 +80,6 @@
         Grid.Column="0"
         Grid.Row="2"
         Grid.ColumnSpan="2"
-        Height="20"
-        Margin="5"
         IsIndeterminate="True"
         Visibility="{Binding IsBusy,
                      Converter={x:Static mhConv:AllToVisibilityConverter.Inst},

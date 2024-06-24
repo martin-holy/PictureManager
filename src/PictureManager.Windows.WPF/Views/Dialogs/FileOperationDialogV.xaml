@@ -10,7 +10,7 @@
       </Style>
     </DataTemplate.Resources>
 
-    <StackPanel Margin="5" Width="500">
+    <StackPanel Margin="5,5,5,0" Width="500">
       <Grid VerticalAlignment="Center">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto"/>
@@ -33,8 +33,6 @@
       </Grid>
 
       <ProgressBar
-        Height="16"
-        Margin="5,5,5,0"
         IsIndeterminate="{Binding IsIndeterminate}"
         Value="{Binding ProgressValue}"/>
     </StackPanel>

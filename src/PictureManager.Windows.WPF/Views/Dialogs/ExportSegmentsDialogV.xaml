@@ -46,9 +46,7 @@
         Grid.Row="2"
         Grid.ColumnSpan="2"
         Maximum="{Binding ProgressMax}"
-        Value="{Binding ProgressValue}"
-        Height="20"
-        Margin="5"/>
+        Value="{Binding ProgressValue}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

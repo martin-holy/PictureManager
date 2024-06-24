@@ -11,6 +11,7 @@
       
       <ProgressBar
         Background="Transparent"
+        Margin="0"
         Height="15"
         BorderThickness="0"
         Value="{Binding ValueA}"
@@ -19,6 +20,7 @@
 
       <ProgressBar
         Background="Transparent"
+        Margin="0"
         Height="15"
         BorderThickness="0"
         Value="{Binding ValueB}"
