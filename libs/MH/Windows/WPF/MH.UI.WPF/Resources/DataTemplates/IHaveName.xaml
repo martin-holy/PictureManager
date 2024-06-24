@@ -5,11 +5,7 @@
 
   <DataTemplate x:Key="MH.T.IHaveName.Border.RoundDarker" DataType="{x:Type mhuInt:IHaveName}">
     <Border Style="{DynamicResource MH.S.Border.RoundDarker}">
-      <TextBlock
-        Text="{Binding Name}"
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center"
-        Margin="4,0,4,0"/>
+      <TextBlock Text="{Binding Name}"/>
     </Border>
   </DataTemplate>
 </ResourceDictionary>
