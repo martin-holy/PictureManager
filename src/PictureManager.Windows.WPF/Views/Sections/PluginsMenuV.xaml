@@ -2,9 +2,9 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pmhc="clr-namespace:PictureManager.Common.HelperClasses;assembly=PictureManager.Common"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate x:Key="MH.Views.PluginsMenuV" DataType="{x:Static pmhc:GenericTypes.ListOfIPluginCore}">
+  <DataTemplate x:Key="MH.DT.PluginsMenu" DataType="{x:Static pmhc:GenericTypes.ListOfIPluginCore}">
     <Menu Background="Transparent">
       <MenuItem ItemsSource="{Binding}" Padding="6,2,-2,2">
         <MenuItem.Icon>
@@ -18,7 +18,7 @@
             <Setter Property="Icon">
               <Setter.Value>
                 <Path
-                  Data="{Binding VM.PluginIcon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
+                  Data="{Binding VM.PluginIcon, Converter={x:Static conv:ResourceConverter.Inst}}"
                   Style="{StaticResource MH.S.Icon.Shadow}"/>
               </Setter.Value>
             </Setter>
