@@ -28,6 +28,7 @@
 
         <Style x:Key="TabItem-BigIcon" TargetType="{x:Type TabItem}" BasedOn="{StaticResource MH.S.TabItem}">
           <Setter Property="HeaderTemplate" Value="{StaticResource BigIcon}"/>
+          <Setter Property="Padding" Value="4"/>
         </Style>
       </ResourceDictionary>
     </DataTemplate.Resources>
