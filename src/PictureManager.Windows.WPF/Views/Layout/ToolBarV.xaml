@@ -67,7 +67,7 @@
           <!-- Plugins Menu -->
           <ContentPresenter
             Content="{Binding Inst.Plugins, Mode=OneTime}"
-            ContentTemplate="{StaticResource MH.Views.PluginsMenuV}"
+            ContentTemplate="{StaticResource MH.DT.PluginsMenu}"
             VerticalAlignment="Center"
             Visibility="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
 
