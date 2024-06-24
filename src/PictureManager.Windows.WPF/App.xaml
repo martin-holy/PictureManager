@@ -16,8 +16,8 @@
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Icons.xaml"/>
 
         <!-- Picture Manager -->
-        <ResourceDictionary Source="/ResourceDictionaries/Brushes/Brushes.xaml"/>
-        <ResourceDictionary Source="/ResourceDictionaries/Icons.xaml"/>
+        <ResourceDictionary Source="/Resources/Brushes.xaml"/>
+        <ResourceDictionary Source="/Resources/Icons.xaml"/>
 
         <!-- MH.UI.WPF -->
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/Common.xaml"/><!-- keep this first -->
