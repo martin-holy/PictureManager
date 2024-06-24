@@ -2,7 +2,9 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common">
+  xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type md:FolderKeywordsDialogM}">
     <ListBox
@@ -23,14 +25,11 @@
 
       <ListBox.ItemTemplate>
         <DataTemplate>
-          <StackPanel Orientation="Horizontal" Background="Transparent">
-            <Path
-              Style="{StaticResource MH.S.Icon}"
-              Data="{StaticResource IconFolder}"
-              Fill="{StaticResource PM.B.Folder}"/>
-            
-            <TextBlock Text="{Binding FullPath}" Margin="5,0,0,0"/>
-          </StackPanel>
+          <c:IconTextBlock
+            Shadow="None"
+            HorizontalAlignment="Left"
+            ap:Icon.Res="IconFolder"
+            ap:Text.Text="{Binding FullPath}"/>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>
