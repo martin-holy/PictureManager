@@ -4,7 +4,7 @@
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
 
-  <DataTemplate x:Key="Views.MainMenu">
+  <DataTemplate x:Key="PM.DT.MainMenu">
     <Menu Background="Transparent">
       <MenuItem Padding="6,2,-2,2">
         <MenuItem.Icon>
