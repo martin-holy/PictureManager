@@ -22,7 +22,7 @@ public sealed class TabStrip : ObservableObject {
   public double Size { get => _size; set { _size = value; OnPropertyChanged(); } }
 
   public void UpdateMaxTabSize(int tabsCount) {
-    if (!JustifyTabSize) {
+    if (tabsCount == 0 || !JustifyTabSize) {
       ResetMaxTabSize();
       return;
     }
