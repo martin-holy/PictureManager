@@ -17,7 +17,6 @@
 
         <!-- Picture Manager -->
         <ResourceDictionary Source="/ResourceDictionaries/Brushes/Brushes.xaml"/>
-        <ResourceDictionary Source="/ResourceDictionaries/Fonts/Fonts.xaml"/>
         <ResourceDictionary Source="/ResourceDictionaries/Icons.xaml"/>
 
         <!-- MH.UI.WPF -->
