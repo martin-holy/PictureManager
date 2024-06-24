@@ -1,13 +1,12 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
   xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type md:FolderBrowserDialogM}">
-    <mhc:TreeViewBase
+    <c:TreeViewBase
       x:Name="tree"
       Style="{StaticResource MH.S.TreeViewBase}"
       TreeView="{Binding TreeView}"
@@ -15,7 +14,7 @@
       Height="500"
       Padding="0,5,0,0">
 
-      <mhc:TreeViewBase.ItemTemplate>
+      <c:TreeViewBase.ItemTemplate>
         <HierarchicalDataTemplate
           DataType="{x:Type md:FolderTreeViewItem}"
           ItemsSource="{Binding Items}">
@@ -23,15 +22,16 @@
           <StackPanel Orientation="Horizontal" Background="Transparent">
             <Path
               Style="{StaticResource MH.S.Icon}"
-              Data="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst}}"
-              Fill="{Binding Icon, Converter={x:Static mhConv:ResourceConverter.Inst},
-                     ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
+              ap:Icon.Res="{Binding Icon}"
               HorizontalAlignment="Center"/>
 
-            <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Name}"/>
+            <TextBlock
+              Text="{Binding Name}"
+              VerticalAlignment="Center"
+              Margin="5,0,0,0"/>
           </StackPanel>
         </HierarchicalDataTemplate>
-      </mhc:TreeViewBase.ItemTemplate>
-    </mhc:TreeViewBase>
+      </c:TreeViewBase.ItemTemplate>
+    </c:TreeViewBase>
   </DataTemplate>
 </ResourceDictionary>
