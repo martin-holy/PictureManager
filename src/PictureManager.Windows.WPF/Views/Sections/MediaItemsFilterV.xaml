@@ -2,44 +2,18 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
-  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
-  <DataTemplate x:Key="MediaItemsFilterV" DataType="{x:Type vm:MediaItemsFilterVM}">
+  <DataTemplate x:Key="PM.DT.MediaItemsFilter" DataType="{x:Type vm:MediaItemsFilterVM}">
     <DataTemplate.Resources>
-      <DataTemplate DataType="{x:Type mhubc:TreeItem}">
-        <Grid Margin="0,4,0,4">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-          </Grid.ColumnDefinitions>
-
-          <Path
-            Style="{StaticResource MH.S.Icon}"
-            Data="{Binding Icon,
-                   Converter={x:Static mhConv:ResourceConverter.Inst}}"
-            Fill="{Binding Icon,
-                   Converter={x:Static mhConv:ResourceConverter.Inst},
-                   ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
-
-          <TextBlock
-            Grid.Column="1"
-            Text="{Binding Name}"
-            VerticalAlignment="Center"
-            Margin="5,0,0,0"
-            FontSize="14"/>
-        </Grid>
-      </DataTemplate>
-
-      <Style TargetType="{x:Type ItemsControl}">
+      <Style TargetType="ItemsControl">
+        <Setter Property="ItemTemplate" Value="{StaticResource MH.DT.IListItem}"/>
         <Setter Property="ItemContainerStyle">
           <Setter.Value>
             <Style>
-              <Setter Property="Control.Margin" Value="5"/>
+              <Setter Property="Control.HorizontalAlignment" Value="Left"/>
             </Style>
           </Setter.Value>
         </Setter>
@@ -52,22 +26,16 @@
         </Setter>
       </Style>
 
-      <Style x:Key="AndOrNotText" TargetType="{x:Type TextBlock}">
+      <Style x:Key="AndOrNotText" TargetType="TextBlock">
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="Margin" Value="2"/>
         <Setter Property="Height" Value="20"/>
         <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
       </Style>
 
-      <Style x:Key="SizeTexts" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MH.S.TextBlock}">
+      <Style x:Key="SizeTexts" TargetType="TextBlock" BasedOn="{StaticResource MH.S.TextBlock}">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
-      </Style>
-
-      <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.S.ToggleButton}">
-        <Setter Property="IsThreeState" Value="False"/>
-        <Setter Property="Height" Value="30"/>
-        <Setter Property="Width" Value="80"/>
       </Style>
     </DataTemplate.Resources>
 
@@ -167,13 +135,13 @@
               </UniformGrid>
 
               <TextBlock Text="Height:" Grid.Row="1" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
-              <mhc:RangeSlider Range="{Binding Height}" Grid.Row="1" Grid.Column="1"/>
+              <c:RangeSlider Range="{Binding Height}" Grid.Row="1" Grid.Column="1"/>
 
               <TextBlock Text="Width:" Grid.Row="2" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
-              <mhc:RangeSlider Range="{Binding Width}" Grid.Row="2" Grid.Column="1"/>
+              <c:RangeSlider Range="{Binding Width}" Grid.Row="2" Grid.Column="1"/>
 
               <TextBlock Text="Size Mpx:" Grid.Row="3" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
-              <mhc:RangeSlider Range="{Binding Size}" Grid.Row="3" Grid.Column="1" TickFrequency="0.1"/>
+              <c:RangeSlider Range="{Binding Size}" Grid.Row="3" Grid.Column="1" TickFrequency="0.1"/>
             </Grid>
           </DockPanel>
         </Border>

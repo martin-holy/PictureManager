@@ -84,7 +84,7 @@
           <!-- Filters Panel -->
           <ContentPresenter
             Content="{Binding VM.MediaItem.Views.Current.Filter}"
-            ContentTemplate="{StaticResource MediaItemsFilterV}"/>
+            ContentTemplate="{StaticResource PM.DT.MediaItemsFilter}"/>
 
           <c:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
 
