@@ -6,10 +6,7 @@
   <DataTemplate DataType="{x:Type uid:ProgressBarDialog}">
     <DockPanel Margin="5" Height="110" Width="550">
       <Grid DockPanel.Dock="Bottom">
-        <ProgressBar
-          Height="20"
-          Margin="5"
-          Value="{Binding IntProgress}"/>
+        <ProgressBar Value="{Binding IntProgress}"/>
 
         <TextBlock
           Text="{Binding StringProgress}"
