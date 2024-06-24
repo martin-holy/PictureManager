@@ -39,7 +39,7 @@
         <ContentPresenter
           Height="32"
           Content="{Binding Core}"
-          ContentTemplate="{StaticResource PM.Views.SelectedItemsStatusBarV}"/>
+          ContentTemplate="{StaticResource PM.DT.SelectedItemsStatusBar}"/>
 
         <!-- PositionSlashCount -->
         <c:IconTextBlock
