@@ -32,7 +32,8 @@
         x:Name="result"
         Grid.Row="1"
         MaxHeight="400"
-        ItemsSource="{Binding SearchResult}">
+        ItemsSource="{Binding SearchResult}"
+        ItemTemplate="{StaticResource MH.DataTemplates.IListItem}">
 
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="MouseLeftButtonUp">
@@ -42,15 +43,11 @@
           </b:EventTrigger>
         </b:Interaction.Triggers>
 
-        <ListBox.ItemTemplate>
-          <DataTemplate>
-            <ContentControl
-              Background="Transparent"
-              ToolTip="{Binding ToolTip}"
-              Content="{Binding}"
-              ContentTemplate="{StaticResource MH.DataTemplates.IListItem}"/>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
+        <ListBox.ItemContainerStyle>
+          <Style TargetType="FrameworkElement">
+            <Setter Property="ToolTip" Value="{Binding ToolTip}"/>
+          </Style>
+        </ListBox.ItemContainerStyle>
       </ListBox>
     </Grid>
 
