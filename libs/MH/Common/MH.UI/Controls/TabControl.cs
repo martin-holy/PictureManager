@@ -8,14 +8,11 @@ namespace MH.UI.Controls;
 public class TabControl : ObservableObject {
   private IListItem _selected;
   private bool _canCloseTabs;
-  private double _maxTabSize;
 
   public ObservableCollection<IListItem> Tabs { get; } = [];
   public TabStrip TabStrip { get; set; } = new();
   public IListItem Selected { get => _selected; set { _selected = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
   public bool CanCloseTabs { get => _canCloseTabs; set { _canCloseTabs = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
-  //TODO delete this when the rewrite is done
-  public double MaxTabSize { get => _maxTabSize; set { _maxTabSize = value; OnPropertyChanged(); } }
 
   public RelayCommand<IListItem> CloseTabCommand { get; }
 
@@ -25,10 +22,7 @@ public class TabControl : ObservableObject {
   public TabControl() {
     CloseTabCommand = new(Close, Res.IconXCross, "Close");
 
-    Tabs.CollectionChanged += (_, _) => {
-      TabStrip.UpdateMaxTabSize(Tabs.Count);
-      OnPropertyChanged(nameof(MaxTabSize));
-    };
+    Tabs.CollectionChanged += (_, _) => TabStrip.UpdateMaxTabSize(Tabs.Count);
   }
 
   public void Activate(string icon, string name, object data) {
@@ -74,8 +68,5 @@ public class TabControl : ObservableObject {
 
   public void UpdateMaxTabSize(double? width, double? height) {
     TabStrip.UpdateMaxTabSize(width, height, Tabs.Count);
-
-    if (width is { } w && height is { } h)
-      MaxTabSize = TabStrip.Placement is Dock.Top or Dock.Bottom ? w : h;
   }
 }
