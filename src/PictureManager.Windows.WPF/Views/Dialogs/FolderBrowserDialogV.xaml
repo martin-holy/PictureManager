@@ -19,17 +19,11 @@
           DataType="{x:Type md:FolderTreeViewItem}"
           ItemsSource="{Binding Items}">
 
-          <StackPanel Orientation="Horizontal" Background="Transparent">
-            <Path
-              Style="{StaticResource MH.S.Icon}"
-              ap:Icon.Res="{Binding Icon}"
-              HorizontalAlignment="Center"/>
-
-            <TextBlock
-              Text="{Binding Name}"
-              VerticalAlignment="Center"
-              Margin="5,0,0,0"/>
-          </StackPanel>
+          <c:IconTextBlock
+            Shadow="None"
+            HorizontalAlignment="Left"
+            ap:Icon.Res="{Binding Icon}"
+            ap:Text.Text="{Binding Name}"/>
         </HierarchicalDataTemplate>
       </c:TreeViewBase.ItemTemplate>
     </c:TreeViewBase>
