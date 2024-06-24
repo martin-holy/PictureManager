@@ -66,9 +66,6 @@
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/ToggleDialog.xaml"/>
 
         <!-- Picture Manager -->
-        <ResourceDictionary Source="/ResourceDictionaries/NamedStyles/BorderStyles.xaml"/>
-        <ResourceDictionary Source="/Views/Styles/InfoBoxThumbStyle.xaml"/>
-
         <ResourceDictionary Source="/Views/Entities/MediaItemV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/PersonV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/RatingV.xaml"/>
