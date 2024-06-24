@@ -10,8 +10,8 @@
   WindowStartupLocation="CenterScreen" 
   ResizeMode="NoResize"
   ShowInTaskbar="False"
-  Background="#FF252525"
-  Foreground="White"
+  Background="{StaticResource MH.B.C.Static.Ba}"
+  Foreground="{StaticResource MH.B.C.Static.Fo}"
   BorderThickness="1"
   BorderBrush="{DynamicResource MH.B.Accent}">
   
@@ -31,20 +31,9 @@
       HorizontalAlignment="Center"
       VerticalAlignment="Center"/>
     
-    <TextBlock
-      Grid.Row="1"
-      Text="{Binding Version}"
-      HorizontalAlignment="Center"/>
-    
-    <TextBlock
-      Grid.Row="2"
-      Text="{Binding Message}"
-      HorizontalAlignment="Center"/>
-    
-    <ProgressBar
-      Grid.Row="3"
-      IsIndeterminate="True"
-      Margin="4,0"
-      Height="10"/>
+    <TextBlock Grid.Row="1" Text="{Binding Version}" HorizontalAlignment="Center"/>
+    <TextBlock Grid.Row="2" Text="{Binding Message}" HorizontalAlignment="Center"/>
+
+    <ProgressBar Grid.Row="3" IsIndeterminate="True" Margin="4,0" Height="10"/>
   </Grid>
 </Window>
