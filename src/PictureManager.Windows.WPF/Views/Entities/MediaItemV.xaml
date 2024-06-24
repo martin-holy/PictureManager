@@ -6,7 +6,31 @@
   xmlns:vm="clr-namespace:PictureManager.Windows.WPF.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+
+  <Style x:Key="PM.S.ItemsControl.MediaItem.ThumbInfo" TargetType="ItemsControl">
+    <Setter Property="Margin" Value="2"/>
+    <Setter Property="ItemTemplate" Value="{StaticResource MH.DT.TextBlock.Border.RoundDark}"/>
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="ItemContainerStyle">
+      <Setter.Value>
+        <Style>
+          <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+        </Style>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+        <Setter Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
 
   <DataTemplate x:Key="PM.DT.MediaItem.Thumb" DataType="{x:Type mmi:MediaItemM}">
     <Image Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -50,7 +74,7 @@
 
         <ItemsControl
           ItemsSource="{Binding InfoBoxThumb}"
-          Style="{StaticResource InfoBoxThumbStyle}"/>
+          Style="{StaticResource PM.S.ItemsControl.MediaItem.ThumbInfo}"/>
       </Grid>
     </Border>
   </DataTemplate>
@@ -112,12 +136,12 @@
       <ItemsControl
         x:Name="info"
         ItemsSource="{Binding InfoBoxThumb}"
-        Style="{StaticResource InfoBoxThumbStyle}"/>
+        Style="{StaticResource PM.S.ItemsControl.MediaItem.ThumbInfo}"/>
     </Grid>
     
     <DataTemplate.Triggers>
       <DataTrigger Value="True" Binding="{Binding ActualWidth, ElementName=border,
-        Converter={x:Static mhConv:DoubleEqualityConverter.IsLessThan},
+        Converter={x:Static conv:DoubleEqualityConverter.IsLessThan},
         ConverterParameter={StaticResource ThumbnailInfoMinSize}}">
 
         <Setter TargetName="info" Property="Visibility" Value="Hidden"/>
@@ -126,7 +150,7 @@
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition
-            Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
+            Binding="{Binding Converter={x:Static conv:DataTypeConverter.Inst},
                       ConverterParameter={x:Type mmi:VideoM}}"
             Value="True"/>
           <Condition Binding="{Binding Path=(mmi:VideoM.HasVideoItems)}" Value="True"/>
@@ -135,7 +159,7 @@
       </MultiDataTrigger>
       
       <DataTrigger
-        Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
+        Binding="{Binding Converter={x:Static conv:DataTypeConverter.Inst},
                   ConverterParameter={x:Type mmi:VideoM}}"
         Value="True">
         <Setter TargetName="vidOverlayer" Property="Visibility" Value="Visible"/>
