@@ -5,7 +5,7 @@
 
   <DataTemplate DataType="{x:Type md:RotationDialogM}">
     <DataTemplate.Resources>
-      <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+      <Style TargetType="Button" BasedOn="{StaticResource MH.S.ButtonBase}">
         <Setter Property="MinWidth" Value="60"/>
         <Setter Property="MinHeight" Value="60"/>
         <Setter Property="Margin" Value="5"/>
