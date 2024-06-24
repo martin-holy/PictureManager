@@ -50,7 +50,7 @@
 
           <!-- Main Menu -->
           <ContentPresenter
-            ContentTemplate="{StaticResource Views.MainMenu}"
+            ContentTemplate="{StaticResource PM.DT.MainMenu}"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"/>
         </Grid>
