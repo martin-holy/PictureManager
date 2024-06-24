@@ -5,7 +5,7 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
 
-  <DataTemplate x:Key="PM.Views.SelectedItemsStatusBarV" DataType="{x:Type pmd:Core}">
+  <DataTemplate x:Key="PM.DT.SelectedItemsStatusBar" DataType="{x:Type pmd:Core}">
     <DataTemplate.Resources>
       <Style TargetType="ContentControl">
         <Setter Property="Focusable" Value="False"/>
