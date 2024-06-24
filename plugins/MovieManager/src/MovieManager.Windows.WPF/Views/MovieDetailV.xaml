@@ -3,9 +3,9 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:MovieManager.Common.ViewModels;assembly=MovieManager.Common"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
@@ -18,8 +18,8 @@
             <ColumnDefinition Width="Auto"/>
           </Grid.ColumnDefinitions>
 
-          <TextBlock Text="{mhu:CultureAwareBinding StringFormat=d}"/>
-          <mhc:IconButton
+          <TextBlock Text="{u:CultureAwareBinding StringFormat=d}"/>
+          <c:IconButton
             Grid.Column="1"
             Command="{Binding
                       Path=DataContext.(vm:MovieDetailVM.RemoveSeenDateCommand),
@@ -104,7 +104,7 @@
           ToolTip="MPAA"
           Style="{StaticResource MH.S.Border.RoundDarker}"
           VerticalAlignment="Center"
-          Visibility="{Binding MovieM.MPAA, Converter={x:Static mhConv:VisibilityConverter.AllToVisible}}">
+          Visibility="{Binding MovieM.MPAA, Converter={x:Static conv:VisibilityConverter.AllToVisible}}">
           
           <TextBlock
             Text="{Binding MovieM.MPAA}"
@@ -114,7 +114,7 @@
 
         <!-- Seen dates -->
         <Grid Grid.Column="1">
-          <mhc:IconTextBlock
+          <c:IconTextBlock
             x:Name="seenDate"
             ToolTip="Last seen"
             ap:Icon.Data="{StaticResource IconEye}"
@@ -126,7 +126,7 @@
                 <b:ChangePropertyAction TargetName="seenPopup" PropertyName="IsOpen" Value="True"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
-          </mhc:IconTextBlock>
+          </c:IconTextBlock>
 
           <Popup
             x:Name="seenPopup"
@@ -142,7 +142,7 @@
                 <RowDefinition Height="*"/>
               </Grid.RowDefinitions>
 
-              <mhc:CalendarExt
+              <c:CalendarExt
                 x:Name="seenCalendar"
                 Background="{StaticResource MH.B.C.Static.Ba}"
                 BorderThickness="0"
@@ -155,70 +155,69 @@
                       CommandParameter="{Binding SelectedDates, ElementName=seenCalendar}"/>
                   </b:EventTrigger>
                 </b:Interaction.Triggers>
-              </mhc:CalendarExt>
+              </c:CalendarExt>
 
               <ListBox
                 Grid.Row="1"
                 ItemsSource="{Binding MovieM.Seen}"
                 ItemTemplate="{StaticResource _listBoxSeenDate}"
                 Margin="4,0,4,4"
-                Visibility="{Binding MovieM.Seen.Count, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
+                Visibility="{Binding MovieM.Seen.Count, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
             </Grid>
           </Popup>
         </Grid>
 
         <!-- Length -->
-        <mhc:IconTextBlock
+        <c:IconTextBlock
           Grid.Column="2"
           ToolTip="Length"
           ap:Icon.Data="{StaticResource IconClock}"
           ap:Text.Text="{Binding MovieM.FormatedLength}"/>
 
         <!-- Rating -->
-        <mhc:IconTextBlock
+        <c:IconTextBlock
           Grid.Column="3"
           ToolTip="Rating"
           ap:Icon.Data="{StaticResource IconStar}"
           ap:Text.Text="{Binding MovieM.Rating}"/>
 
         <!-- MyRating -->
-        <mhc:PopupSlider
+        <c:PopupSlider
           Grid.Column="4"
           Maximum="10"
           TickFrequency="0.5"
           HorizontalAlignment="Left"
           Value="{Binding MovieM.MyRating, Mode=TwoWay}">
 
-          <mhc:PopupSlider.Content>
-            <mhc:SlimButton
+          <c:PopupSlider.Content>
+            <c:SlimButton
               ToolTip="My rating"
               ap:Icon.Data="{StaticResource IconStar}"
               ap:Text.Text="{Binding MovieM.MyRating, StringFormat={}{0:G2}}"/>
-          </mhc:PopupSlider.Content>
+          </c:PopupSlider.Content>
 
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="PopupClosedEvent">
               <b:InvokeCommandAction Command="{Binding MyRatingChangedCommand}"/>
             </b:EventTrigger>
           </b:Interaction.Triggers>
-        </mhc:PopupSlider>
+        </c:PopupSlider>
       </Grid>
 
       <!-- Genres -->
-      <mhc:IconTextBlockItemsControl
+      <c:IconTextBlockItemsControl
         Grid.Row="2"
         ItemsSource="{Binding MovieM.Genres}"
         ap:Icon.Data="{DynamicResource IconTheaterMasks}"
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"/>
 
       <!-- Keywords -->
-      <mhc:IconTextBlockItemsControl
+      <c:IconTextBlockItemsControl
         Grid.Row="3"
         ItemsSource="{Binding MovieM.DisplayKeywords}"
-        ap:Icon.Data="{StaticResource IconTag}"
-        ap:Icon.Fill="{StaticResource PM.B.Tag}"
+        ap:Icon.Res="IconTag"
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"
-        Visibility="{Binding MovieM.DisplayKeywords, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}"/>
+        Visibility="{Binding MovieM.DisplayKeywords, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
 
       <!-- Plot -->
       <ScrollViewer Grid.Row="4" MaxHeight="100">
@@ -230,7 +229,7 @@
       </ScrollViewer>
 
       <!-- Characters -->
-      <mhc:CollectionView
+      <c:CollectionView
         Grid.Row="5"
         View="{Binding Characters}"
         InnerItemTemplate="{DynamicResource MM.Views.CharacterV}"/>
