@@ -14,13 +14,17 @@
 
   <DataTemplate x:Key="MH.DT.TextBlock.Border.RoundDarker">
     <Border Style="{DynamicResource MH.S.Border.RoundDarker}">
-      <TextBlock Text="{Binding}"/>
+      <TextBlock
+        Text="{Binding}"
+        TextWrapping="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"/>
     </Border>
   </DataTemplate>
 
   <DataTemplate x:Key="MH.DT.TextBlock.Border.RoundDark">
     <Border Style="{DynamicResource MH.S.Border.RoundDark}">
-      <TextBlock Text="{Binding}"/>
+      <TextBlock
+        Text="{Binding}"
+        TextWrapping="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"/>
     </Border>
   </DataTemplate>
 </ResourceDictionary>
