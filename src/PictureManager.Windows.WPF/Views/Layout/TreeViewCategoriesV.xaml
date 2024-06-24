@@ -1,29 +1,27 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
-  xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
-  xmlns:mhui="clr-namespace:MH.UI;assembly=MH.UI"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
+  xmlns:ui="clr-namespace:MH.UI;assembly=MH.UI"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
-  xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters">
+  xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type vm:TreeViewCategoriesVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        <DataTemplate DataType="{x:Static mhui:GenericTypes.TreeViewOfITreeItem}">
-          <mhc:CatTreeView TreeView="{Binding}"/>
+        <DataTemplate DataType="{x:Static ui:GenericTypes.TreeViewOfITreeItem}">
+          <c:CatTreeView TreeView="{Binding}"/>
         </DataTemplate>
 
-        <DataTemplate x:Key="BigIcon" DataType="{x:Type mhuInt:IListItem}">
+        <DataTemplate x:Key="BigIcon" DataType="{x:Type uInt:IListItem}">
           <Path
-            Style="{StaticResource MH.S.Icon}"
-            Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
-            Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
-                   ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
+            Style="{StaticResource MH.S.Icon.Shadow}"
+            ap:Icon.Res="{Binding Icon}"
             Width="24"
             Height="24"/>
         </DataTemplate>
@@ -64,7 +62,7 @@
         <ColumnDefinition/>
       </Grid.ColumnDefinitions>
 
-      <mhc:IconButton Command="{Binding Path=(vm:TreeViewCategoriesVM.TreeViewSearch).(vm:TreeViewSearchVM.OpenCommand)}"/>
+      <c:IconButton Command="{Binding Path=(vm:TreeViewCategoriesVM.TreeViewSearch).(vm:TreeViewSearchVM.OpenCommand)}"/>
       <ContentPresenter Grid.Column="1" Content="{Binding Path=(vm:TreeViewCategoriesVM.SlidePanelPinButton)}"/>
     </Grid>
   </DataTemplate>
