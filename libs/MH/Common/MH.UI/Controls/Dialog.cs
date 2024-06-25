@@ -24,11 +24,11 @@ public class Dialog : ObservableObject {
     }
   }
 
-  public static RelayCommand<Dialog> CancelCommand { get; } = new(x => x.Result = 0, Res.IconXCross, "Cancel");
-  public static RelayCommand<Dialog> CloseCommand { get; } = new(x => x.Result = 0, Res.IconXCross, "Close");
-  public static RelayCommand<Dialog> NoCommand { get; } = new(x => x.Result = 0, Res.IconXCross, "No");
-  public static RelayCommand<Dialog> OkCommand { get; } = new(x => x.Result = 1, Res.IconCheckMark, "Ok");
-  public static RelayCommand<Dialog> YesCommand { get; } = new(x => x.Result = 1, Res.IconCheckMark, "Yes");
+  public static RelayCommand<Dialog> CancelCommand { get; } = new(x => x.Result = 0, null, "Cancel");
+  public static RelayCommand<Dialog> CloseCommand { get; } = new(x => x.Result = 0, null, "Close");
+  public static RelayCommand<Dialog> NoCommand { get; } = new(x => x.Result = 0, null, "No");
+  public static RelayCommand<Dialog> OkCommand { get; } = new(x => x.Result = 1, null, "Ok");
+  public static RelayCommand<Dialog> YesCommand { get; } = new(x => x.Result = 1, null, "Yes");
 
   public Dialog(string title, string icon) {
     Title = title;
