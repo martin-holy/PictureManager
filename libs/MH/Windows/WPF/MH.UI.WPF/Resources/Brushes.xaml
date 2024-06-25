@@ -34,6 +34,10 @@
   <SolidColorBrush x:Key="MH.B.Gray8" Color="{StaticResource MH.Color.Gray8}"/>
   <SolidColorBrush x:Key="MH.B.Gray9" Color="{StaticResource MH.Color.Gray9}"/>
 
+  <SolidColorBrush x:Key="MH.B.Log.Info" Color="#FF1A98FF"/>
+  <SolidColorBrush x:Key="MH.B.Log.Warning" Color="#FFFFC01A"/>
+  <SolidColorBrush x:Key="MH.B.Log.Error" Color="#FFDE573A"/>
+
   <SolidColorBrush x:Key="MH.B.FocusVisual.Stroke" Color="{StaticResource MH.Color.Gray9}"/>
 
   <!-- Control -->
