@@ -11,6 +11,7 @@
         <RowDefinition Height="100"/>
         <RowDefinition Height="3"/>
         <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
 
       <ListBox
@@ -32,11 +33,21 @@
         VerticalScrollBarVisibility="Auto"
         HorizontalScrollBarVisibility="Auto"
         Text="{Binding ElementName=listBoxLog, Path=SelectedItem.(bc:LogItem.Detail), Mode=OneWay}"/>
+
+      <CheckBox
+        x:Name="wrap"
+        Grid.Row="3"
+        Content="Wrap text"
+        IsChecked="True"
+        HorizontalAlignment="Left"/>
     </Grid>
 
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding Path=SelectedItem, ElementName=listBoxLog}" Value="{x:Null}">
         <Setter TargetName="text" Property="BorderThickness" Value="0"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding Path=IsChecked, ElementName=wrap}" Value="False">
+        <Setter TargetName="text" Property="TextWrapping" Value="NoWrap"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
