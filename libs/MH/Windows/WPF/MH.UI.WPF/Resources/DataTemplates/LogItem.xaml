@@ -1,0 +1,29 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:bc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
+    
+  <DataTemplate x:Key="MH.DT.LogItem" DataType="{x:Type bc:LogItem}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <Rectangle x:Name="rect" Width="10" Height="20" Fill="Transparent"/>
+      <TextBlock Grid.Column="1" Text="{Binding Title, Mode=OneWay}" Margin="4,0,0,0"/>
+    </Grid>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding Level}" Value="{x:Static bc:LogLevel.Info}">
+        <Setter TargetName="rect" Property="Fill" Value="{StaticResource MH.B.Log.Info}"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding Level}" Value="{x:Static bc:LogLevel.Warning}">
+        <Setter TargetName="rect" Property="Fill" Value="{StaticResource MH.B.Log.Warning}"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding Level}" Value="{x:Static bc:LogLevel.Error}">
+        <Setter TargetName="rect" Property="Fill" Value="{StaticResource MH.B.Log.Error}"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
+</ResourceDictionary>
