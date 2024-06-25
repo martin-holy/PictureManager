@@ -115,7 +115,7 @@ public sealed class CoreR : SimpleDB {
   }
 
   private void OnFolderCreated(object sender, FolderM item) {
-    FolderKeyword.LoadIfContains((FolderM)item.Parent);
+    FolderKeyword.LoadIfContains(item.Parent as FolderM);
   }
 
   private void OnFolderRenamed(object sender, FolderM item) {

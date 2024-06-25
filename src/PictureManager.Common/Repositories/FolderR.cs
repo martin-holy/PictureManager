@@ -84,10 +84,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
   }
 
   public DriveM AddDrive(ITreeItem parent, string name, string sn) {
-    var item = new DriveM(GetNextId(), name, parent, sn);
-    IsModified = true;
-    All.Add(item);
-    return item;
+    return (DriveM)TreeItemCreate(new DriveM(GetNextId(), name, parent, sn));
   }
 
   public static void DeleteFromDrive(FolderM item) {

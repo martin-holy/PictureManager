@@ -42,7 +42,7 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
   }
 
   public void LoadIfContains(FolderM folder) {
-    if (All.Contains(folder) || folder.FolderKeyword != null)
+    if (folder != null && (All.Contains(folder) || folder.FolderKeyword != null))
       Reload();
   }
 

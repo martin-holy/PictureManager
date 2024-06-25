@@ -110,7 +110,6 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
       if (Items.Cast<DriveM>().SingleOrDefault(x => x.SerialNumber.Equals(drive.Value, StringComparison.OrdinalIgnoreCase)) is
           not { } item) {
         item = Core.R.Folder.AddDrive(this, drive.Key, drive.Value);
-        Items.Add(item);
       }
 
       item.IsAccessible = di.IsReady;
