@@ -90,7 +90,6 @@
 
           <!-- Log Button -->
           <c:IconTextButton
-            Background="Red"
             Command="vm:CoreVM.OpenLogCommand"
             ap:Text.Text="{Binding Path=(u:Log.Items).Count}"
             Visibility="{Binding Path=(u:Log.Items).Count, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
