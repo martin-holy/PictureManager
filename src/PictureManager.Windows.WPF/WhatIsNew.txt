@@ -4,19 +4,15 @@
 [B] - Bug fix
 
 Latest:
- - [U] Label style
- - [U] ScrollViewer style
- - [U] ScrollBar style
- - [U] Slider style
- - [U] RangeSlider style
- - [U] ToolTip style
- - [U] Menu style
- - [U] ProgressBar style
+ - [U] Controls styles
  - [U] SplashScreen border color
  - [N] UI colors based on Windows accent color
  - [U] Viewer style
  - [B] Crash when selecting FolderKeywords category
  - [U] Rating style on StatusBar
+ - [B] CatTreeView search: show ToolTip on whole item
+ - [U] LogDialog view
+ - [N] Show message when a new drive is detected when app starts
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
