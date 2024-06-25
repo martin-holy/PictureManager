@@ -32,7 +32,6 @@
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
 ## Segments
-  - segment can by drawn out of bounds on video. thumb recreating is not working. segment is probably in error cache
   - export segments is without orientation
 
           # Movie Manager
