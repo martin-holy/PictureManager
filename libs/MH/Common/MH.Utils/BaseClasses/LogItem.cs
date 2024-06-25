@@ -1,11 +1,9 @@
-﻿namespace MH.Utils.BaseClasses {
-  public class LogItem {
-    public string Title { get; set; }
-    public string Detail { get; set; }
+﻿namespace MH.Utils.BaseClasses;
 
-    public LogItem(string title, string detail) {
-      Title = title;
-      Detail = detail;
-    }
-  }
+public enum LogLevel { Info, Warning, Error }
+
+public class LogItem(LogLevel level, string title, string detail) {
+  public LogLevel Level { get; } = level;
+  public string Title { get; } = title;
+  public string Detail { get; } = detail;
 }
