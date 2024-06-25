@@ -13,6 +13,10 @@ Latest:
  - [B] CatTreeView search: show ToolTip on whole item
  - [U] LogDialog view
  - [N] Show message when a new drive is detected when app starts
+ - [N] Wrap text message CheckBox on LogDialog
+ - [U] Shadow on button text
+ - [U] Icons on dialog buttons removed
+ - [B] Segment position out of video bounds
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
