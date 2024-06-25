@@ -6,8 +6,6 @@
   - resize stretch
 ## MediaPlayer
   - TimelinePosition changes but video not after changing TimelinePosition with buttons
-## TabControl
-  - TabItem.MaxHeight when last tab is closed is int.MinValue
 
         # Picture Manager - Need Help
 ## VideoPlayer
@@ -18,12 +16,9 @@
 
         # Picture Manager
   - read only drives and creating thumbnails
-  - reload drives on viewer change
-  - new external drive is added to DB but is not shown in the tree
   - add multilevel keyword to person => delete sub keyword => person doesn't have keyword displayed but Load people by keyword works
     after app restart is ok
   - changing selection in Viewer detail works only with mouse. with keyboard selection works only visually
-  - CatTreeView search: show ToolTip on whole item
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
 ## Video Items (VideoImage and VideoClip)
@@ -64,7 +59,6 @@
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
-  - unified ProgressBar height
   - don't show MediaItemsFilter if MediaItemsView is not active
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
@@ -154,17 +148,14 @@
 ##
   - Find generic way to create and open tab from Command
   - OneToManyMultiDataAdapter do it without reference to CoreR
-  - replace Contains with ReferenceEquals
-  - use IconTextBlockItemsControl
   - don't do CreateDirectory in FolderR.ItemCreate. it can throw exception
   - replace MH.UI.Controls.Position with MH.UI.Controls.Dock
   - remove old IListItem style
-  - use IconTextBlock for TreeViewCategories tab icons
-  - set Icon.Fill in IconTextBlock Trigger if is not set
   - add scrollbar for TabPanel
   - FocusVisualStyle on SlidePanelsGridHost should not be null but set to Focusable = false
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
   - ToBoolConverter where Inst is IsNotNull, IsStringEmpty, IsCollectionEmpty, ...
+  - IHaveName is applied only to GenreM but the DataTemplate is used for KeywordM as well
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
 ## ProgressBarAsyncDialog
