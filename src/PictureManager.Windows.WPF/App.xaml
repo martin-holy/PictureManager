@@ -57,6 +57,7 @@
 
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IListItem.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IHaveName.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/LogItem.xaml"/>
 
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/GroupByDialog.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/InputDialog.xaml"/>
