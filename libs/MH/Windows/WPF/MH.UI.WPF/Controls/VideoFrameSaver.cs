@@ -129,7 +129,28 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     var rect = new Int32Rect(_frame.X, _frame.Y, _frame.Width, _frame.Height);
     if (!rect.HasArea) return bmp;
     if (ActualWidth >= Width && ActualHeight >= Height) return bmp.Crop(rect);
-    return bmp.Crop(rect.Scale(ActualWidth / Width));
+    rect = ValidateRect(bmp, rect.Scale(ActualWidth / Width), _frame);
+    return bmp.Crop(rect);
+  }
+
+  private static Int32Rect ValidateRect(BitmapSource bmp, Int32Rect rect, VfsFrame frame) {
+    var xDiff = (int)bmp.Width - rect.X - rect.Width;
+    var yDiff = (int)bmp.Height - rect.Y - rect.Height;
+
+    if (rect.X >= 0 && rect.Y >= 0 && xDiff >= 0 && yDiff >= 0) return rect;
+
+    if (rect.X < 0) rect.X = 0;
+    if (rect.Y < 0) rect.Y = 0;
+    if (xDiff < 0) rect.Width += xDiff;
+    if (yDiff < 0) rect.Height += yDiff;
+    if (rect.Width > rect.Height) rect.Width = rect.Height;
+    if (rect.Height > rect.Width) rect.Height = rect.Width;
+
+    Log.Warning(
+      "VideoFrameSaver: Segment position corrected",
+      $"Segment position was corrected because it was out of video bounds.\n{frame.FilePath}");
+
+    return rect;
   }
 
   private long GetHash() {
