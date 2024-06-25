@@ -12,7 +12,7 @@
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Border.CornerRadius" Value="3"/>
     <Setter Property="Padding" Value="2,0,2,0"/>
-    <Setter Property="c:IconTextBlock.Shadow" Value="Icon"/>
+    <Setter Property="c:IconTextBlock.Shadow" Value="Both"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Template">
@@ -110,14 +110,12 @@
     <Setter Property="Margin" Value="2"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="c:IconTextBlock.Shadow" Value="Both"/>
   </Style>
 
   <Style x:Key="MH.S.IconButton" TargetType="{x:Type c:IconButton}" BasedOn="{StaticResource MH.S.IconButtonBase}"/>
 
   <Style x:Key="MH.S.IconTextButton" TargetType="{x:Type c:IconTextButton}" BasedOn="{StaticResource MH.S.IconButtonBase}">
     <Setter Property="c:IconTextBlock.Compact" Value="True"/>
-    <Setter Property="c:IconTextBlock.Shadow" Value="Both"/>
     <Setter Property="ap:Icon.Size" Value="15"/>
   </Style>
     
