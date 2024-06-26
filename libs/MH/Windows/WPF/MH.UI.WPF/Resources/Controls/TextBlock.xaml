@@ -12,21 +12,21 @@
     </Style.Triggers>
   </Style>
 
+  <Style x:Key="MH.TextBlock.Border" TargetType="TextBlock">
+    <Setter Property="Text" Value="{Binding}"/>
+    <Setter Property="TextWrapping" Value="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+  </Style>
+
   <DataTemplate x:Key="MH.DT.TextBlock.Border.RoundDarker">
     <Border Style="{DynamicResource MH.S.Border.RoundDarker}">
-      <TextBlock
-        Text="{Binding}"
-        TextWrapping="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"
-        HorizontalAlignment="Center"/>
+      <TextBlock Style="{StaticResource MH.TextBlock.Border}"/>
     </Border>
   </DataTemplate>
 
   <DataTemplate x:Key="MH.DT.TextBlock.Border.RoundDark">
     <Border Style="{DynamicResource MH.S.Border.RoundDark}">
-      <TextBlock
-        Text="{Binding}"
-        TextWrapping="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"
-        HorizontalAlignment="Center"/>
+      <TextBlock Style="{StaticResource MH.TextBlock.Border}"/>
     </Border>
   </DataTemplate>
 </ResourceDictionary>
