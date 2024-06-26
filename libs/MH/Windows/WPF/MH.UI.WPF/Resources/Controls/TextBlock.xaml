@@ -16,7 +16,8 @@
     <Border Style="{DynamicResource MH.S.Border.RoundDarker}">
       <TextBlock
         Text="{Binding}"
-        TextWrapping="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"/>
+        TextWrapping="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"
+        HorizontalAlignment="Center"/>
     </Border>
   </DataTemplate>
 
@@ -24,7 +25,8 @@
     <Border Style="{DynamicResource MH.S.Border.RoundDark}">
       <TextBlock
         Text="{Binding}"
-        TextWrapping="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"/>
+        TextWrapping="{Binding Path=(TextBlock.TextWrapping), RelativeSource={RelativeSource TemplatedParent}}"
+        HorizontalAlignment="Center"/>
     </Border>
   </DataTemplate>
 </ResourceDictionary>
