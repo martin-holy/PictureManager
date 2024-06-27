@@ -81,11 +81,6 @@
             ap:Icon.Data="{StaticResource IconImageMultiple}"
             ap:Text.Text="{Binding VM.MediaItem.ItemsCount}"/>
 
-          <!-- Filters Panel -->
-          <ContentPresenter
-            Content="{Binding VM.MediaItem.Views.Current.Filter}"
-            ContentTemplate="{StaticResource PM.DT.MediaItemsFilter}"/>
-
           <c:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
 
           <!-- Log Button -->
@@ -172,6 +167,11 @@
             </StackPanel.Style>
 
             <Separator/>
+
+            <!-- Filters Panel -->
+            <ContentPresenter
+              Content="{Binding VM.MediaItem.Views.Current.Filter}"
+              ContentTemplate="{StaticResource PM.DT.MediaItemsFilter}"/>
 
             <!-- Thumbnails scale -->
             <c:PopupSlider
