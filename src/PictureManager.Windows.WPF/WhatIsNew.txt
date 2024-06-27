@@ -17,6 +17,11 @@ Latest:
  - [U] Shadow on button text
  - [U] Icons on dialog buttons removed
  - [B] Segment position out of video bounds
+ - [U] Message about disabled GeoNames in settings changed to warning
+ - [U] Copy/Move dialog message format
+ - [U] MediaItems filter ToolBar icon moved
+ - [B] Export Segments on rotated images
+ - [B] Allow export only segments on images
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
