@@ -84,7 +84,7 @@ public class CoreVM : ObservableObject {
     InitToggleDialog();
 
     AppClosingCommand = new(AppClosing);
-    ExportSegmentsCommand = new(ExportSegments, () => _coreS.Segment.Selected.Items.Count > 0, Res.IconSegment, "Export Segments");
+    ExportSegmentsCommand = new(ExportSegments, () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export Segments");
     OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
     OpenSegmentsMatchingCommand = new(() => OpenSegmentsMatching(null), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
@@ -325,7 +325,7 @@ public class CoreVM : ObservableObject {
   }
 
   private void ExportSegments() =>
-    Dialog.Show(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.ToArray()));
+    Dialog.Show(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray()));
 
   private static void OpenSettings() =>
     Core.VM.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
