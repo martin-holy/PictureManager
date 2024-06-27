@@ -1,5 +1,6 @@
 ﻿using MH.UI.WPF.Extensions;
 using MH.Utils;
+using MH.Utils.Extensions;
 using PictureManager.Common;
 using PictureManager.Common.Models;
 using System;
@@ -54,6 +55,9 @@ public static class Imaging {
   public static void ExportSegment(SegmentM segment, string dest) {
     var filePath = segment.MediaItem.FilePath;
     var rect = new Int32Rect((int)segment.X, (int)segment.Y, (int)segment.Size, (int)segment.Size);
-    BitmapSourceExtensions.Create(filePath, rect).SaveAsJpeg(dest, Core.Settings.Common.JpegQuality);
+    var angle = segment.MediaItem.Orientation.SwapRotateIf(true).ToAngle();
+    var bmp = BitmapSourceExtensions.Create(filePath, rect);
+    if (angle > 0) bmp = bmp.Rotate(angle);
+    bmp.SaveAsJpeg(dest, Core.Settings.Common.JpegQuality);
   }
 }
