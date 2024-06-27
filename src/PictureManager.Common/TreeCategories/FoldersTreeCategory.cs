@@ -75,7 +75,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
       case FolderM srcData: // Folder
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} folder",
-              $"Do you really want to {(copy ? "copy" : "move")} folder '{srcData.Name}' to '{dest.Name}'?",
+              $"Do you really want to {(copy ? "copy" : "move")} folder\n'{srcData.Name}' to '{dest.Name}'?",
               MH.UI.Res.IconQuestion,
               true)) != 1)
           return;
@@ -86,10 +86,10 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
 
       case string[]: // MediaItems
         var items = Core.VM.MediaItem.Views.Current.Selected.Items.OfType<RealMediaItemM>().ToArray();
-        // TODO mi rewrite (don't do anything if count is 0)
+        if (items.Length == 0) return;
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} media items",
-              $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Length)} to '{dest.Name}'?",
+              $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Length)} to\n'{dest.Name}'?",
               MH.UI.Res.IconQuestion,
               true)) != 1)
           return;
