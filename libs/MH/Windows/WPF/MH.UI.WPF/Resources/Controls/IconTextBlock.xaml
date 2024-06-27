@@ -122,7 +122,7 @@
   <Style x:Key="MH.S.IconTextBlock.Borders.RoundDark" TargetType="c:IconTextBlock" BasedOn="{StaticResource MH.S.IconTextBlock}">
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Background" Value="{DynamicResource MH.B.Black5}"/>
-    <Setter Property="Padding" Value="2"/>
+    <Setter Property="Padding" Value="1"/>
     <Setter Property="TextBorderStyle" Value="{DynamicResource MH.S.Border.RoundDark}"/>
   </Style>
 </ResourceDictionary>
