@@ -55,7 +55,7 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
     if (!Core.Settings.GeoName.LoadFromWeb) {
       if (!_webLoadDisabled) {
         _webLoadDisabled = true;
-        Log.Error("Load GeoNames from web is disabled.", "Enable it in the settings.");
+        Log.Warning("Load GeoNames from web is disabled.", "Enable it in the settings.");
       }
 
       return null;
