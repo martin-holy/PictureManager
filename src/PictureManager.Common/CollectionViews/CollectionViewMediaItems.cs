@@ -11,21 +11,21 @@ namespace PictureManager.Common.CollectionViews;
 public class CollectionViewMediaItems : CollectionView<MediaItemM> {
   private double _thumbScale;
 
-  public double ThumbScale {
-    get => _thumbScale;
-    set {
-      _thumbScale = value;
-      if (Root != null) ReWrapAll();
-      OnPropertyChanged();
-    }
-  }
-
+  public double ThumbScale { get => _thumbScale; set { _thumbScale = value; OnPropertyChanged(); } }
   public Selecting<MediaItemM> Selected { get; } = new();
+
+  public RelayCommand ThumbScaleChangedCommand { get; }
 
   public CollectionViewMediaItems(double thumbScale) {
     Icon = Res.IconImageMultiple;
     Name = "Media Items";
     ThumbScale = thumbScale;
+
+    ThumbScaleChangedCommand = new(OnThumbScaleChanged);
+  }
+
+  private void OnThumbScaleChanged() {
+    if (Root != null) ReWrapAll();
   }
 
   public override IEnumerable<GroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
