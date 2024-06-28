@@ -31,8 +31,6 @@
 ## SegmentsMatching
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
-## Segments
-  - export segments is without orientation
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
@@ -58,7 +56,6 @@
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
-  - don't show MediaItemsFilter if MediaItemsView is not active
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
 ## Keywords
@@ -76,7 +73,6 @@
 ## MediaItemsView
   - use Filter on MediaItem type in LoadByTag GetItems
   - open items from group or all with default sort or all sorted by groups or ...?
-  - use PopupClosedEvent on thumbs scale
 ## Video
   - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
     + setting this position in VideoDetail
@@ -90,9 +86,6 @@
 ## PersonMerge
   - show selected person name on merge dialog
 
-          # Movie Manager
-##
-  - transparent background for SeenWhen button on MovieDetail
 
                                     *** NEW ***
 ##
@@ -101,6 +94,7 @@
     if the point is more away from the slider => change value is smaller
     and if is closer => change value is bigger
     (or zooming time line)
+  - Reload Drives (change DB to be able to load Folders, MediaItems and Segments from one drive after initial load was finished)
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
     so I can choice how to display filtered data: in MediaItemsView or MediaViewer
