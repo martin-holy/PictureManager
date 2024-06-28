@@ -41,6 +41,7 @@ public static class Res {
   public const string IconPeople = "IconPeople";
   public const string IconPeopleMultiple = "IconPeopleMultiple";
   public const string IconPlus = "IconPlus";
+  public const string IconRandom = "IconRandom";
   public const string IconRotateClockwise = "IconRotateClockwise";
   public const string IconRotateLeft = "IconRotateLeft";
   public const string IconRotateRight = "IconRotateRight";
