@@ -22,6 +22,12 @@ Latest:
  - [U] MediaItems filter ToolBar icon moved
  - [B] Export Segments on rotated images
  - [B] Allow export only segments on images
+ - [U] Change MediaItems thumb size on mouse release
+ - [U] CompressDialog title
+ - [B] Update MediaItemGeoLocation on MediaItem move to another drive
+ - [U] Icon for shuffle MediaItems
+ - [N] Sort MediaItemsView command
+ - [N] Shuffle and Sort MediaItems commands in ToolBar
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
