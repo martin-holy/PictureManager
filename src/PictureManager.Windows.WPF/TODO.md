@@ -1,5 +1,7 @@
                                 *** BUGS ***
         # MH.UI.WPF
+## TreeViewBase
+  - Mouse scroll up when some items are collapsed (ListItem.IsHidden) is not possible. ScrollBar is working
 ## Custom Window
   - minimize window will break full screen mode
 ## ErrorDialog
@@ -17,7 +19,7 @@
         # Picture Manager
   - read only drives and creating thumbnails
   - add multilevel keyword to person => delete sub keyword => person doesn't have keyword displayed but Load people by keyword works
-    after app restart is ok
+    after app restart is OK
   - changing selection in Viewer detail works only with mouse. with keyboard selection works only visually
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
@@ -43,7 +45,7 @@
   - PopupSlider - close Slider using keyboard
 
         # MH.UI
-  - FolderPicker control with combobox with used folders from settings and button to open FolderBrowserDialogM
+  - FolderPicker control with ComboBox with used folders from settings and button to open FolderBrowserDialogM
     + static command to open FolderBrowserDialogM
 ## CollectionView
   - don't show expanded root if source is empty
@@ -56,6 +58,7 @@
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
+  - don't show favorites to folders that Viewer can't see
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
 ## Keywords
@@ -115,7 +118,7 @@
   - import/export
   - export to mp4 (FFMPEG)
 ## MediaViewer
-  - func to zoom to segment
+  - zoom to segment
 ## ThumbnailsGrid
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
   - TimeLine for thumbnails showing dates and number of day from first date in folder
@@ -149,6 +152,7 @@
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
   - ToBoolConverter where Inst is IsNotNull, IsStringEmpty, IsCollectionEmpty, ...
   - IHaveName is applied only to GenreM but the DataTemplate is used for KeywordM as well
+  - replace KeyDataTemplateSelector with TypeDataTemplateSelector
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
 ## ProgressBarAsyncDialog
