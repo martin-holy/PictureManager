@@ -369,9 +369,15 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   }
 
   private void MediaItemMove(RealMediaItemM item, FolderM folder) {
+    if (item.GeoLocation != null && MoveToAnotherDrive(item, folder))
+      coreR.MediaItemGeoLocation.IsModified = true;
+
     item.Folder.MediaItems.Remove(item);
     item.Folder = folder;
     item.Folder.MediaItems.Add(item);
     coreR.MediaItem.ModifyOnlyDA(item);
   }
+
+  private static bool MoveToAnotherDrive(RealMediaItemM item, FolderM folder) =>
+    !ReferenceEquals(Tree.GetParentOf<DriveM>(item.Folder), Tree.GetParentOf<DriveM>(folder));
 }
