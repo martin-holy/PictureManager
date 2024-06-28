@@ -72,7 +72,8 @@
               IsDefault="{Binding IsDefault}"
               IsCancel="{Binding IsCancel}"
               Command="{Binding Command}"
-              CommandParameter="{Binding Path=DataContext.(c:DialogHost.Content), ElementName=root}"/>
+              CommandParameter="{Binding Path=DataContext.(c:DialogHost.Content), ElementName=root}"
+              TabIndex="99"/>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
