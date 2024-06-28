@@ -196,6 +196,12 @@
               </b:Interaction.Triggers>
             </c:PopupSlider>
 
+            <!-- Shuffle -->
+            <c:IconButton Command="vm:MediaItemsViewsVM.ShuffleCommand"/>
+
+            <!-- Sort -->
+            <c:IconButton Command="vm:MediaItemsViewsVM.SortCommand"/>
+
             <!-- View Selected -->
             <c:IconButton Command="vme:MediaItemVM.ViewSelectedCommand"/>
 
