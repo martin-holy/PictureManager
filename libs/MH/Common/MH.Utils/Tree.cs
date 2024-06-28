@@ -49,6 +49,9 @@ public static class Tree {
     return items;
   }
 
+  /// <summary>
+  /// Returns index of the item in the expanded tree. Hidden items are not counted.
+  /// </summary>
   public static int GetIndex(this ITreeItem item, ITreeItem parent) {
     int index = 0;
     bool found = false;
@@ -56,7 +59,9 @@ public static class Tree {
     return found ? index : -1;
   }
 
-  // TODO do not count hidden items
+  /// <summary>
+  /// Returns index of the item in the expanded tree. Hidden items are not counted.
+  /// </summary>
   public static void GetIndex(ITreeItem item, ITreeItem parent, ref int index, ref bool found) {
     if (ReferenceEquals(item, parent)) {
       found = true;
@@ -66,6 +71,7 @@ public static class Tree {
     if (parent.Items == null) return;
 
     foreach (var pItem in parent.Items) {
+      if (pItem.IsHidden) continue;
       index++;
       if (ReferenceEquals(item, pItem)) {
         found = true;
