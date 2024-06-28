@@ -39,6 +39,7 @@
           <MenuItem Command="vm:CoreVM.OpenSegmentsMatchingCommand"/>
           <MenuItem Command="vm:MediaItemsViewsVM.ViewModifiedCommand"/>
           <MenuItem Command="vm:MediaItemsViewsVM.ShuffleCommand"/>
+          <MenuItem Command="vm:MediaItemsViewsVM.SortCommand"/>
         </MenuItem>
 
         <MenuItem Header="Segments">
