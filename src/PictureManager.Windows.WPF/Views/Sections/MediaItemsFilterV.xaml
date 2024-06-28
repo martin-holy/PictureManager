@@ -4,12 +4,23 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
+
+  <!--It can be IListItem or RatingM (RatingM DataTemplate doesn't have key)-->
+  <u:TypeDataTemplateSelector x:Key="PM.DTS.MediaItemsFilter">
+    <u:TypeDataTemplateSelector.TemplateMappings>
+      <x:Array Type="{x:Type u:TypeTemplateMapping}">
+        <u:TypeTemplateMapping Type="uInt:IListItem" TemplateKey="MH.DT.IListItem"/>
+      </x:Array>
+    </u:TypeDataTemplateSelector.TemplateMappings>
+  </u:TypeDataTemplateSelector>
 
   <DataTemplate x:Key="PM.DT.MediaItemsFilter" DataType="{x:Type vm:MediaItemsFilterVM}">
     <DataTemplate.Resources>
       <Style TargetType="ItemsControl">
-        <Setter Property="ItemTemplate" Value="{StaticResource MH.DT.IListItem}"/>
+        <Setter Property="ItemTemplateSelector" Value="{StaticResource PM.DTS.MediaItemsFilter}"/>
         <Setter Property="ItemContainerStyle">
           <Setter.Value>
             <Style>
