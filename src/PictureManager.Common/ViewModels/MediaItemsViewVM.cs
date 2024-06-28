@@ -125,8 +125,10 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     SoftLoad(LoadedItems, false, true);
   }
 
-  // TODO sort
-  public static IEnumerable<MediaItemM> Sort(IEnumerable<MediaItemM> items) =>
+  public void Sort() =>
+    SoftLoad(LoadedItems, true, true);
+
+  public static IEnumerable<MediaItemM> GetSorted(IEnumerable<MediaItemM> items) =>
     items.OrderBy(x => x.FileName);
 
   private MediaItemM GetItemToScrollTo() =>
@@ -175,7 +177,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
 
     return Import.Import(newItems).ContinueWith(delegate {
       var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
-      AddMediaItems(Sort(toLoad.Except(notImported)).ToList(), and, hide);
+      AddMediaItems(GetSorted(toLoad.Except(notImported)).ToList(), and, hide);
       Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
       AfterLoad();
       IsLoading = false;
@@ -216,7 +218,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       : toLoad;
 
     toLoad = sort
-      ? Sort(toLoad)
+      ? GetSorted(toLoad)
       : toLoad;
 
     FilteredItems.AddRange(toLoad);
@@ -237,7 +239,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     var skip = items
       .Where(x => !foldersSet.Contains(x.Folder));
 
-    AddMediaItems(Sort(items.Except(skip)).ToList());
+    AddMediaItems(GetSorted(items.Except(skip)).ToList());
     Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
     AfterLoad();
     IsLoading = false;

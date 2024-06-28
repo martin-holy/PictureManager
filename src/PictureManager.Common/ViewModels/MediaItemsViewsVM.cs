@@ -24,6 +24,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public static RelayCommand CopyPathsCommand { get; set; }
   public static RelayCommand<object> LoadByTagCommand { get; set; }
   public static RelayCommand ShuffleCommand { get; set; }
+  public static RelayCommand SortCommand { get; set; }
   public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; }
   public static RelayCommand ViewModifiedCommand { get; set; }
 
@@ -40,6 +41,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     ShuffleCommand = new(
       () => Current.Shuffle(),
       () => Current?.FilteredItems.Count > 0, Res.IconRandom, "Shuffle");
+    SortCommand = new(
+      () => Current.Sort(),
+      () => Current?.FilteredItems.Count > 0, Res.IconSort, "Sort");
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.FilteredItems.Count > 0, null, "Rebuild Thumbnails");
