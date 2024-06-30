@@ -28,6 +28,8 @@ Latest:
  - [U] Icon for shuffle MediaItems
  - [N] Sort MediaItemsView command
  - [N] Shuffle and Sort MediaItems commands in ToolBar
+ - [U] Dialog TabIndex
+ - [U] Favorite folders visibility based on Viewer
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
