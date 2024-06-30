@@ -11,7 +11,7 @@
       <Grid
         ToolTip="{Binding Name}"
         Background="Transparent"
-        Visibility="{Binding Segment, Converter={x:Static conv:VisibilityConverter.AllToCollapsed}}">
+        Visibility="{Binding Segment, Converter={x:Static conv:VisibilityConverter.NotNullToCollapsed}}">
 
         <Path
           Style="{StaticResource MH.S.Icon}"
@@ -24,7 +24,7 @@
       <ContentControl
         Content="{Binding Segment}"
         ContentTemplate="{DynamicResource PM.DT.Segment}"
-        Visibility="{Binding Segment, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
+        Visibility="{Binding Segment, Converter={x:Static conv:VisibilityConverter.NullToCollapsed}}"/>
     </Grid>
   </DataTemplate>
 
