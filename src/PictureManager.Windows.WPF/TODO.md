@@ -58,7 +58,6 @@
         # Picture Manager
 ##
   - Rethink hierarchical keywords moving
-  - don't show favorites to folders that Viewer can't see
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
 ## Keywords
@@ -84,8 +83,6 @@
   - use WrapPanel and each category is one block
 ## StatusBar
   - limit folder path size
-## PersonDetail
-  - activate new person after people merge instead of closing tab
 ## PersonMerge
   - show selected person name on merge dialog
 
@@ -119,6 +116,7 @@
   - export to mp4 (FFMPEG)
 ## MediaViewer
   - zoom to segment
+  - highlight segment on mouse hover over person on StatusBar even if it is not visible
 ## ThumbnailsGrid
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
   - TimeLine for thumbnails showing dates and number of day from first date in folder
@@ -133,7 +131,6 @@
     - sort like in the tree
     - disable/enable available
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
-  - filter for segment resolution
   - create multiple views of segments like media items views
 ## GroupByDialog
   - incremental search
