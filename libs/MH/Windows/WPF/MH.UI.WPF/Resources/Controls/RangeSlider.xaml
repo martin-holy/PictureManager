@@ -51,11 +51,11 @@
           <TextBlock
             Text="{Binding Range.Start}"
             HorizontalAlignment="Center"
-            Visibility="{Binding Range.IsOnMin, Converter={x:Static conv:VisibilityConverter.AllToHidden}}"/>
+            Visibility="{Binding Range.IsOnMin, Converter={x:Static conv:VisibilityConverter.TrueToHidden}}"/>
           <TextBlock
             Text="{Binding Range.End}"
             HorizontalAlignment="Center"
-            Visibility="{Binding Range.IsOnMax, Converter={x:Static conv:VisibilityConverter.AllToHidden}}"/>
+            Visibility="{Binding Range.IsOnMax, Converter={x:Static conv:VisibilityConverter.TrueToHidden}}"/>
           <TextBlock Text="{Binding Range.Max}" HorizontalAlignment="Right"/>
         </UniformGrid>
 

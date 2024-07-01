@@ -26,9 +26,9 @@
                   <ColumnDefinition Width="{Binding PanelRightGridWidth, Mode=TwoWay, Converter={x:Static conv:GridLengthConverter.Inst}}"/>
                 </Grid.ColumnDefinitions>
 
-                <GridSplitter Grid.Column="1" Visibility="{Binding PanelLeft.IsPinned, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
+                <GridSplitter Grid.Column="1" Visibility="{Binding PanelLeft.IsPinned, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
                 <ContentPresenter Grid.Column="2" Content="{Binding PanelMiddle}"/>
-                <GridSplitter Grid.Column="3" Visibility="{Binding PanelRight.IsPinned, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
+                <GridSplitter Grid.Column="3" Visibility="{Binding PanelRight.IsPinned, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
               </Grid>
 
               <c:SlidePanelHost
