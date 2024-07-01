@@ -125,10 +125,10 @@
             <Grid>
               <c:IconButton
                 Command="vm:PresentationPanelVM.StartPresentationCommand"
-                Visibility="{Binding IsRunning, Converter={x:Static conv:VisibilityConverter.AllToCollapsed}}"/>
+                Visibility="{Binding IsRunning, Converter={x:Static conv:VisibilityConverter.FalseToVisible}}"/>
               <c:IconButton
                 Command="vm:PresentationPanelVM.StopPresentationCommand"
-                Visibility="{Binding IsRunning, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
+                Visibility="{Binding IsRunning, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
             </Grid>
 
             <!-- Interval -->
