@@ -7,7 +7,7 @@
   <DataTemplate DataType="{x:Type vm:TitleProgressBarVM}">
     <StackPanel
       Orientation="Vertical"
-      Visibility="{Binding IsVisible, Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+      Visibility="{Binding IsVisible, Converter={x:Static mhConv:VisibilityConverter.TrueToVisible}}">
       
       <ProgressBar
         Background="Transparent"

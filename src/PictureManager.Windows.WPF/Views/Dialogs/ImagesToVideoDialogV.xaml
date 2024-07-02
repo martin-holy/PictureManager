@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
   xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type md:ImagesToVideoDialogM}">
     <DataTemplate.Resources>
@@ -81,9 +81,7 @@
         Grid.Row="2"
         Grid.ColumnSpan="2"
         IsIndeterminate="True"
-        Visibility="{Binding IsBusy,
-                     Converter={x:Static mhConv:AllToVisibilityConverter.Inst},
-                     ConverterParameter={StaticResource True}}"/>
+        Visibility="{Binding IsBusy, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

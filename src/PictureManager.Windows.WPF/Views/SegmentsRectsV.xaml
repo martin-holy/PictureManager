@@ -3,13 +3,13 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:PictureManager.Windows.WPF.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type vm:SegmentRectVM}">
     <ItemsControl
       ItemsSource="{Binding SegmentRectS.MediaItemSegmentsRects}"
       Visibility="{Binding SegmentRectS.AreVisible,
-                   Converter={x:Static mhConv:AllToVisibilityConverter.Inst}}">
+                   Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
 
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
