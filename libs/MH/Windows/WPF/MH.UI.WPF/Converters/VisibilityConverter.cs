@@ -1,9 +1,10 @@
-﻿using System.Windows;
+﻿using System.Collections;
+using System.Windows;
 using System.Windows.Data;
 
 namespace MH.UI.WPF.Converters;
 
-public enum CheckFor { NotNull, Null, True, False, All }
+public enum CheckFor { NotNull, Null, True, False, NotEmpty, NullOrEmpty, All }
 
 public class VisibilityConverter : BaseConverter {
   private static VisibilityConverter _allToCollapsed;
@@ -19,6 +20,8 @@ public class VisibilityConverter : BaseConverter {
   private static VisibilityConverter _falseToVisible;
   private static VisibilityConverter _trueToHidden;
   private static VisibilityConverter _falseToHidden;
+  private static VisibilityConverter _notEmptyToVisible;
+  private static VisibilityConverter _nullOrEmptyToVisible;
 
   public static VisibilityConverter AllToCollapsed => _allToCollapsed ??= new() { CheckFor = CheckFor.All, ToCollapsed = true };
   public static VisibilityConverter AllToHidden => _allToHidden ??= new() { CheckFor = CheckFor.All, ToHidden = true };
@@ -33,6 +36,8 @@ public class VisibilityConverter : BaseConverter {
   public static VisibilityConverter FalseToVisible => _falseToVisible ??= new() { CheckFor = CheckFor.False, ToVisible = true };
   public static VisibilityConverter TrueToHidden => _trueToHidden ??= new() { CheckFor = CheckFor.True, ToHidden = true };
   public static VisibilityConverter FalseToHidden => _falseToHidden ??= new() { CheckFor = CheckFor.False, ToHidden = true };
+  public static VisibilityConverter NotEmptyToVisible => _notEmptyToVisible ??= new() { CheckFor = CheckFor.NotEmpty, ToVisible = true };
+  public static VisibilityConverter NullOrEmptyToVisible => _nullOrEmptyToVisible ??= new() { CheckFor = CheckFor.NullOrEmpty, ToVisible = true };
 
   public CheckFor CheckFor { get; init; }
 
@@ -46,6 +51,8 @@ public class VisibilityConverter : BaseConverter {
       CheckFor.Null => GetFor(value == null),
       CheckFor.True => GetFor(value is true),
       CheckFor.False => GetFor(value is false),
+      CheckFor.NotEmpty => GetFor(value is IList { Count: > 0 }),
+      CheckFor.NullOrEmpty => GetFor(value is null or IList { Count: 0 }),
       CheckFor.All => GetFor(AllToBoolConverter.AllToBool(value, parameter)),
       _ => Binding.DoNothing
     };
