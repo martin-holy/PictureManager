@@ -17,7 +17,6 @@
       </Setter.Value>
     </Setter>
   </Style>
-
   <Style x:Key="MH.S.ComboBox.ToggleButton" TargetType="ToggleButton">
     <Setter Property="IsTabStop" Value="False"/>
     <Setter Property="Focusable" Value="False"/>
@@ -139,12 +138,25 @@
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="MaxDropDownHeight" Value="400"/>
+    <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+    <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+    <Setter Property="VirtualizingPanel.ScrollUnit" Value="Item"/>
+    <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Item"/>
+    <Setter Property="VirtualizingPanel.CacheLength" Value="3"/>
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
     <Setter Property="Padding" Value="6,3,5,3"/>
     <Setter Property="Template" Value="{StaticResource MH.CT.ComboBox}"/>
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <VirtualizingStackPanel/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
     <Style.Triggers>
       <Trigger Property="IsEditable" Value="True">
         <Setter Property="IsTabStop" Value="False"/>
