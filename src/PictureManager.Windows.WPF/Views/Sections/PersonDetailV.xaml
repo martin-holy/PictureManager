@@ -46,7 +46,7 @@
         ap:Icon.Res="IconTag"
         ItemsSource="{Binding PersonM.DisplayKeywords}"
         ItemTemplate="{DynamicResource MH.T.IHaveName.Border.RoundDarker}"
-        Visibility="{Binding PersonM.DisplayKeywords, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
+        Visibility="{Binding PersonM.DisplayKeywords, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
 
       <!-- Top Segments -->
       <c:CollectionView

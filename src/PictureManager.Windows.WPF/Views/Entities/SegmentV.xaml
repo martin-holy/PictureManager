@@ -91,7 +91,7 @@
         BorderThickness="1"
         BorderBrush="Black"
         Background="{DynamicResource MH.B.Black5}"
-        Visibility="{Binding Person, Converter={x:Static conv:AllToVisibilityConverter.Inst}}">
+        Visibility="{Binding Person, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}">
 
         <TextBlock Text="{Binding Person.Name}" FontSize="18" Margin="5,2"/>
       </Border>
@@ -100,7 +100,7 @@
       <ItemsControl
         Grid.Row="2"
         ItemsSource="{Binding Person.TopSegments}"
-        Visibility="{Binding Person.TopSegments, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"
+        Visibility="{Binding Person.TopSegments, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"
         ItemTemplate="{DynamicResource PM.DT.Segment.Lite}">
 
         <ItemsControl.ItemsPanel>
