@@ -158,11 +158,11 @@
               </c:CalendarExt>
 
               <ListBox
+                x:Name="seenDates"
                 Grid.Row="1"
                 ItemsSource="{Binding MovieM.Seen}"
                 ItemTemplate="{StaticResource _listBoxSeenDate}"
-                Margin="4,0,4,4"
-                Visibility="{Binding MovieM.Seen.Count, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
+                Margin="4,0,4,4"/>
             </Grid>
           </Popup>
         </Grid>
@@ -217,7 +217,7 @@
         ItemsSource="{Binding MovieM.DisplayKeywords}"
         ap:Icon.Res="IconTag"
         ItemTemplate="{StaticResource MH.T.IHaveName.Border.RoundDarker}"
-        Visibility="{Binding MovieM.DisplayKeywords, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
+        Visibility="{Binding MovieM.DisplayKeywords, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
 
       <!-- Plot -->
       <ScrollViewer Grid.Row="4" MaxHeight="100">
@@ -234,5 +234,11 @@
         View="{Binding Characters}"
         InnerItemTemplate="{DynamicResource MM.Views.CharacterV}"/>
     </Grid>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding MovieM.Seen.Count}" Value="0">
+        <Setter TargetName="seenDates" Property="Visibility" Value="Collapsed"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>
