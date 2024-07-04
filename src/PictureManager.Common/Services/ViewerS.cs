@@ -43,6 +43,12 @@ public sealed class ViewerS(CoreR coreR) : ObservableObject {
   public bool CanViewerSee(FolderM folder) =>
     Current?.CanSee(folder) != false;
 
+  public bool CanViewerSee(PersonM person) =>
+    Current?.CanSee(person) != false;
+
+  public bool CanViewerSee(KeywordM keyword) =>
+    Current?.CanSee(keyword) != false;
+
   public bool CanViewerSeeContentOf(FolderM folder) =>
     Current?.CanSeeContentOf(folder) != false;
 

@@ -45,19 +45,16 @@ public sealed class TreeViewSearchVM : ObservableObject {
     SearchResult.Clear();
     if (SearchText.Equals(string.Empty)) return;
 
-    void AddToSearchResult(IEnumerable<TreeViewSearchItemM> items) {
-      foreach (var searchItem in items.OrderBy(x => x.Name))
-        SearchResult.Add(searchItem);
-    }
-
     // People
     AddToSearchResult(Core.R.Person.All
-      .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
+      .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
+                  && Core.S.Viewer.CanViewerSee(x))
       .Select(x => new TreeViewSearchItemM(Res.IconPeople, x.Name, x, (x.Parent as CategoryGroupM)?.Name, Core.R.Person.Tree)));
 
     // Keywords
     AddToSearchResult(Core.R.Keyword.All
-      .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
+      .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
+                  && Core.S.Viewer.CanViewerSee(x))
       .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x, x.FullName, Core.R.Keyword.Tree)));
 
     // GeoNames
@@ -77,5 +74,10 @@ public sealed class TreeViewSearchVM : ObservableObject {
                   && x.Folders.All(f => Core.S.Viewer.CanViewerSee(f)))
       .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, Core.R.FolderKeyword.Tree)));
     AddToSearchResult(result);
+  }
+
+  private void AddToSearchResult(IEnumerable<TreeViewSearchItemM> items) {
+    foreach (var searchItem in items.OrderBy(x => x.Name))
+      SearchResult.Add(searchItem);
   }
 }
