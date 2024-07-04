@@ -377,9 +377,12 @@ public class CoreVM : ObservableObject {
         var mi = _coreR.Video.ItemCreate(folder, fileName);
         var mim = new MediaItemMetadata(mi);
         MediaItemS.ReadMetadata(mim, false);
-        mi.SetThumbSize();
-        MediaItem.Views.Current.LoadedItems.Add(mi);
-        MediaItem.Views.Current.SoftLoad(MediaItem.Views.Current.LoadedItems, true, true);
+        if (mim.Success)
+          mim.FindRefs().ContinueWith(delegate {
+            mi.SetThumbSize();
+            MediaItem.Views.Current.LoadedItems.Add(mi);
+            MediaItem.Views.Current.SoftLoad(MediaItem.Views.Current.LoadedItems, true, true);
+          }, Tasks.UiTaskScheduler);
       })
     );
   }
