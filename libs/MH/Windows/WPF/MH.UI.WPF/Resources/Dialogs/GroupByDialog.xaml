@@ -10,7 +10,8 @@
       <HierarchicalDataTemplate x:Key="DialogTreeItem" DataType="{x:Type ubc:TreeItem}" ItemsSource="{Binding Items}">
         <ContentPresenter
           Content="{Binding Data}"
-          ContentTemplateSelector="{Binding Source={x:Static c:CollectionView.GroupByDialogDataTemplateSelector}}"/>
+          ContentTemplateSelector="{Binding Source={x:Static c:CollectionView.GroupByDialogDataTemplateSelector}}"
+          HorizontalAlignment="Left"/>
       </HierarchicalDataTemplate>
     </DataTemplate.Resources>
 
