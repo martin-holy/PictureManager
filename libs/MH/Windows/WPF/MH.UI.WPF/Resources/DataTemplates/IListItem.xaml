@@ -27,46 +27,4 @@
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
-
-  <DataTemplate x:Key="MH.DataTemplates.IListItem" DataType="{x:Type uInt:IListItem}">
-    <Grid>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="*"/>
-      </Grid.ColumnDefinitions>
-
-      <Path
-        x:Name="icon"
-        Style="{DynamicResource MH.S.Icon}"
-        Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
-        Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
-               ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"/>
-
-      <TextBlock
-        x:Name="name"
-        Text="{Binding Name}"
-        Grid.Column="1"
-        VerticalAlignment="Center"
-        Margin="5,0,5,0"
-        FontSize="14"
-        Foreground="{StaticResource MH.B.C.Static.Fo}"/>
-    </Grid>
-
-    <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding IsIconHidden}" Value="True">
-        <Setter TargetName="icon" Property="Visibility" Value="Collapsed"/>
-      </DataTrigger>
-      <DataTrigger Binding="{Binding IsNameHidden}" Value="True">
-        <Setter TargetName="name" Property="Visibility" Value="Collapsed"/>
-      </DataTrigger>
-    </DataTemplate.Triggers>
-  </DataTemplate>
-
-  <DataTemplate x:Key="MH.DT.IListItem.Border.RoundDarker" DataType="{x:Type uInt:IListItem}">
-    <Border Style="{DynamicResource MH.S.Border.RoundDarker}">
-      <ContentPresenter
-        Content="{Binding}"
-        ContentTemplate="{StaticResource MH.DataTemplates.IListItem}"/>
-    </Border>
-  </DataTemplate>
 </ResourceDictionary>
