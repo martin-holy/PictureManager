@@ -29,6 +29,7 @@ public sealed class TreeViewSearchVM : ObservableObject {
   }
 
   private void NavigateTo(TreeViewSearchItemM item) {
+    if (item == null && SearchResult.Count > 0) item = SearchResult[0];
     if (item == null) return;
     _tvc.Select(item.Category.TreeView);
     item.Category.TreeView.ScrollTo((ITreeItem)item.Data);
