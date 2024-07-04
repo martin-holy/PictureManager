@@ -20,8 +20,7 @@
           <Border
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            Padding="1">
+            BorderThickness="{TemplateBinding BorderThickness}">
             
             <ScrollViewer
               Padding="{TemplateBinding Padding}"
