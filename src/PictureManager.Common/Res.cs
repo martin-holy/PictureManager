@@ -104,7 +104,7 @@ public static class Res {
   public static string TypeToGroupByDialogTemplateKey(object o) =>
     o switch {
       PersonM => "PM.DT.Person.ListItem",
-      IListItem => "MH.DataTemplates.IListItem",
+      IListItem => "MH.DT.IListItem",
       _ => null
     };
 }
