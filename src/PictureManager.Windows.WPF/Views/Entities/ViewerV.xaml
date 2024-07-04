@@ -25,6 +25,7 @@
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="Padding" Value="6"/>
         <Setter Property="Margin" Value="0"/>
+        <Setter Property="Border.CornerRadius" Value="0"/>
       </Style>
 
       <DataTemplate DataType="{x:Type bc:TreeItem}">
