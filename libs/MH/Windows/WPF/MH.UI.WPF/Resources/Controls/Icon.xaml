@@ -9,7 +9,7 @@
     <Setter Property="Width" Value="18"/>
     <Setter Property="Height" Value="18"/>
     <Setter Property="Stretch" Value="Uniform"/>
-    <Setter Property="Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
+    <Setter Property="Fill" Value="{DynamicResource MH.B.White}"/>
     <Style.Triggers>
       <DataTrigger
         Value="True"

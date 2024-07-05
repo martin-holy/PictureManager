@@ -67,7 +67,7 @@
         <Setter Property="Tag" Value="{x:Null}"/>
       </DataTrigger>
       <DataTrigger Binding="{Binding Path=(ap:Icon.Fill), RelativeSource={RelativeSource TemplatedParent}}" Value="{x:Null}">
-        <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
+        <Setter Property="ap:Icon.Fill" Value="{DynamicResource MH.B.White}"/>
       </DataTrigger>
     </Style.Triggers>
   </Style>
