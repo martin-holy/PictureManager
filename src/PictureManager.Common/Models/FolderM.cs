@@ -14,16 +14,20 @@ namespace PictureManager.Common.Models;
 
 public class FolderM : TreeItem, IEquatable<FolderM> {
   #region IEquatable implementation
-  public bool Equals(FolderM other) => Id == other?.Id;
-  public override bool Equals(object obj) => Equals(obj as FolderM);
+  public bool Equals(FolderM? other) => Id == other?.Id;
+  public override bool Equals(object? obj) => Equals(obj as FolderM);
   public override int GetHashCode() => Id;
-  public static bool operator ==(FolderM a, FolderM b) => a?.Equals(b) ?? b is null;
-  public static bool operator !=(FolderM a, FolderM b) => !(a == b);
+  public static bool operator ==(FolderM? a, FolderM? b) {
+    if (ReferenceEquals(a, b)) return true;
+    if (a is null || b is null) return false;
+    return a.Equals(b);
+  }
+  public static bool operator !=(FolderM? a, FolderM? b) => !(a == b);
   #endregion
 
   public int Id { get; }
   public List<RealMediaItemM> MediaItems { get; } = [];
-  public FolderKeywordM FolderKeyword { get; set; }
+  public FolderKeywordM? FolderKeyword { get; set; }
   public bool IsAccessible { get; set; }
   public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
   public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath);
@@ -34,13 +38,11 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
     Parent = parent;
   }
 
-  public FolderM GetByName(string name) =>
+  public FolderM? GetByName(string name) =>
     Items.GetByName(name, StringComparison.OrdinalIgnoreCase) as FolderM;
 
   public IEnumerable<FolderKeywordM> GetFolderKeywords() =>
-    FolderKeyword == null
-      ? Enumerable.Empty<FolderKeywordM>()
-      : FolderKeyword.GetThisAndParents();
+    FolderKeyword == null ? [] : FolderKeyword.GetThisAndParents();
 
   public IEnumerable<RealMediaItemM> GetMediaItems(bool recursive) =>
     recursive
