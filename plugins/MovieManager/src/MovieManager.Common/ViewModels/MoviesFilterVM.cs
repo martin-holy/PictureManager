@@ -2,6 +2,7 @@
 using MovieManager.Common.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace MovieManager.Common.ViewModels;
@@ -29,7 +30,7 @@ public sealed class MoviesFilterVM : ObservableObject {
   public SelectionRange Length { get; } = new();
   public SelectionRange Rating { get; } = new();
   public SelectionRange MyRating { get; } = new();
-  public List<GenreFilterVM> Genres { get; } = [];
+  public ObservableCollection<GenreFilterVM> Genres { get; } = [];
 
   public event EventHandler FilterChangedEvent = delegate { };
 
@@ -69,7 +70,7 @@ public sealed class MoviesFilterVM : ObservableObject {
     Length.SetFullRange();
     Rating.SetFullRange();
     MyRating.SetFullRange();
-    Genres.ForEach(x => x.Reset());
+    foreach (var genre in Genres) genre.Reset();
     _clearing = false;
 
     RaiseFilterChanged();
