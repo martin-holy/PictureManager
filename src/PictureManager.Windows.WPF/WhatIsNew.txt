@@ -33,6 +33,8 @@ Latest:
  - [U] TreeViewSearch keyboard support (Escape, Enter, Tab, Up, Down)
  - [U] Filter out People and Keywords not visible for Viewer from TreeViewSearch result
  - [B] Read video metadata after is created from images
+ - [B] Import movies: buttons accessibility after import
+ - [B] MoviesFilter: filter by genre after import/delete
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
