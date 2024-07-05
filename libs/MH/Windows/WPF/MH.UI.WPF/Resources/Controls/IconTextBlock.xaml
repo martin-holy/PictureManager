@@ -18,7 +18,7 @@
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Shadow" Value="Both"/>
-    <Setter Property="ap:Icon.Fill" Value="{StaticResource MH.B.C.Static.Fo}"/>
+    <Setter Property="ap:Icon.Fill" Value="{DynamicResource MH.B.White}"/>
     <Setter Property="ap:Icon.Size" Value="18"/>
     <Setter Property="Template">
       <Setter.Value>
