@@ -63,6 +63,7 @@ public class ImportVM : ObservableObject {
     Progress.Report(string.Empty);
 
     await SearchQueue();
+    RelayCommandBase.InvokeCanExecuteChanged(null, EventArgs.Empty);
   }
 
   private Task Cancel() =>
