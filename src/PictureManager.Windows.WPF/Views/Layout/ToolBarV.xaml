@@ -70,7 +70,7 @@
             Content="{Binding Inst.Plugins, Mode=OneTime}"
             ContentTemplate="{StaticResource MH.DT.PluginsMenu}"
             VerticalAlignment="Center"
-            Visibility="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
+            Visibility="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
 
           <!-- Viewers -->
           <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}" VerticalAlignment="Center"/>
@@ -88,7 +88,7 @@
           <c:IconTextButton
             Command="vm:CoreVM.OpenLogCommand"
             ap:Text.Text="{Binding Path=(u:Log.Items).Count}"
-            Visibility="{Binding Path=(u:Log.Items).Count, Converter={x:Static conv:AllToVisibilityConverter.Inst}}"/>
+            Visibility="{Binding Path=(u:Log.Items).Count, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
 
           <Separator/>
 
@@ -117,7 +117,7 @@
             VerticalAlignment="Center"
             Orientation="Horizontal"
             DataContext="{Binding VM.MediaViewer.PresentationPanel}"
-            Visibility="{Binding VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static conv:AllToVisibilityConverter.Inst}}">
+            Visibility="{Binding VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
 
             <Separator/>
             
