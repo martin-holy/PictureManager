@@ -31,7 +31,8 @@
 
         <TextBlock
           Text="{Binding Path=Import.Count, StringFormat='Importing {0} new items ...'}"
-          FontSize="18"/>
+          FontSize="18"
+          Margin="6,0,0,0"/>
 
         <ProgressBar
           Grid.Row="1"
