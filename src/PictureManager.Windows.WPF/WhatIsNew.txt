@@ -35,6 +35,7 @@ Latest:
  - [B] Read video metadata after is created from images
  - [B] Import movies: buttons accessibility after import
  - [B] MoviesFilter: filter by genre after import/delete
+ - [B] MediaItems not visible after import
 
 24.06.07.0707:
  - [U] Deselect Movies when Movies tab closes
