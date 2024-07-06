@@ -5,10 +5,10 @@ using System.Linq;
 namespace MH.Utils.BaseClasses;
 
 public class TreeItem : ListItem, ITreeItem {
-  private ITreeItem _parent;
+  private ITreeItem? _parent;
 
-  public ITreeItem Parent { get => _parent; set { _parent = value; OnPropertyChanged(); } }
-  public ExtObservableCollection<ITreeItem> Items { get; set; } = new();
+  public ITreeItem? Parent { get => _parent; set { _parent = value; OnPropertyChanged(); } }
+  public ExtObservableCollection<ITreeItem> Items { get; } = [];
   public bool IsExpanded {
     get => Bits[BitsMasks.IsExpanded];
     set {
