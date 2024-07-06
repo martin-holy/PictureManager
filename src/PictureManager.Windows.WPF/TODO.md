@@ -143,7 +143,6 @@
   - OneToManyMultiDataAdapter do it without reference to CoreR
   - don't do CreateDirectory in FolderR.ItemCreate. it can throw exception
   - replace MH.UI.Controls.Position with MH.UI.Controls.Dock
-  - remove old IListItem style
   - add scrollbar for TabPanel
   - FocusVisualStyle on SlidePanelsGridHost should not be null but set to Focusable = false
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
@@ -152,6 +151,7 @@
   - replace KeyDataTemplateSelector with TypeDataTemplateSelector
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
+  - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
 ## ProgressBarAsyncDialog
   - do Init and Start in constructor
 
