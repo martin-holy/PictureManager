@@ -18,19 +18,24 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
   protected virtual void OnItemRenamed(T item) { }
 
   public virtual T TreeItemCreate(T item) {
-    Tree.SetInOrder(item.Parent.Items, item, x => x.Name);
+    if (item.Parent != null)
+      Tree.SetInOrder(item.Parent.Items, item, x => x.Name);
+
     return ItemCreate(item);
   }
 
   public virtual void ItemRename(ITreeItem item, string name) {
     item.Name = name;
-    Tree.SetInOrder(item.Parent.Items, item, x => x.Name);
+
+    if (item.Parent != null)
+      Tree.SetInOrder(item.Parent.Items, item, x => x.Name);
+    
     IsModified = true;
     RaiseItemRenamed((T)item);
     OnItemRenamed((T)item);
   }
 
-  public virtual string ValidateNewItemName(ITreeItem parent, string name) =>
+  public virtual string? ValidateNewItemName(ITreeItem parent, string name) =>
     All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
       ? $"{name} item already exists!"
       : null;

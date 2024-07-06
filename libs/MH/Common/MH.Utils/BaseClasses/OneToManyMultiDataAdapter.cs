@@ -7,7 +7,7 @@ using System.Linq;
 namespace MH.Utils.BaseClasses;
 
 public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, List<TB>>>, IRelationDataAdapter where TA : class where TB : class {
-  public new Dictionary<TA, List<TB>> All { get; set; }
+  public new Dictionary<TA, List<TB>> All { get; } = [];
   public TableDataAdapter<TA> KeyDataAdapter { get; set; }
   //public IDataAdapter<TB>[] ValueDataAdapters { get; set; }
 
@@ -17,18 +17,13 @@ public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, Li
     //ValueDataAdapters = daB;
 
     KeyDataAdapter.ItemDeletedEvent += (_, e) => {
-      if (All != null && All.TryGetValue(e, out var b))
+      if (All.TryGetValue(e, out var b))
         ItemDelete(new(e, b));
     };
   }
 
-  public override void Load() {
-    All = new();
-    base.Load();
-  }
-
   public override KeyValuePair<TA, List<TB>> FromCsv(string[] csv) =>
-    new(KeyDataAdapter.GetById(csv[0]), GetByIds(csv[1]));
+    new(KeyDataAdapter.GetById(csv[0])!, GetByIds(csv[1]));
 
   public override string ToCsv(KeyValuePair<TA, List<TB>> item) =>
     string.Join("|", item.Key.GetHashCode().ToString(), item.Value.ToHashCodes().ToCsv());
@@ -56,12 +51,13 @@ public class OneToManyMultiDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, Li
     OnItemsDeleted(this, items);
   }
 
-  public virtual TB GetValueById(string id) => throw new NotImplementedException();
+  public virtual TB? GetValueById(string id) => throw new NotImplementedException();
 
   public List<TB> GetByIds(string ids) =>
     ids
       .Split(',')
       .Select(GetValueById)
       .Where(x => x != null)
+      .Select(x => x!)
       .ToList();
 }

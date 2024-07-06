@@ -8,7 +8,7 @@ namespace MH.Utils.BaseClasses;
 
 public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : class {
   private bool _areTablePropsModified;
-  private Dictionary<int, int> _notFoundIds;
+  private Dictionary<int, int>? _notFoundIds;
 
   public bool AreTablePropsModified {
     get => _areTablePropsModified;
@@ -21,8 +21,8 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
 
   public string TablePropsFilePath { get; }
   public Dictionary<string, string> TableProps { get; } = new();
-  public Dictionary<int, T> AllDict { get; set; }
-  public List<(T, string[])> AllCsv { get; set; }
+  public Dictionary<int, T> AllDict { get; } = [];
+  public List<(T, string[])> AllCsv { get; } = [];
 
   public TableDataAdapter(SimpleDB db, string name, int propsCount) : base(db, name, propsCount) {
     TablePropsFilePath = Path.Combine("db", $"{name}_props.csv");
@@ -31,16 +31,10 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
   public virtual void PropsToCsv() { }
   public virtual void LinkReferences() { }
 
-  public override void Load() {
-    AllDict = new();
-    AllCsv = new();
-    base.Load();
-  }
-
   public void Clear() {
     All = AllDict.Values.ToHashSet();
-    AllDict = null;
-    AllCsv = null;
+    AllDict.Clear();
+    AllCsv.Clear();
   }
 
   public override void AddItem(T item, string[] props) {
@@ -65,7 +59,7 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
       AreTablePropsModified = false;
   }
 
-  public static List<TI> IdToRecord<TI>(string csv, Dictionary<int, TI> source, Func<int, TI> resolveNotFound) {
+  public static List<TI>? IdToRecord<TI>(string csv, Dictionary<int, TI> source, Func<int, TI?> resolveNotFound) {
     if (string.IsNullOrEmpty(csv)) return null;
 
     var items = csv
@@ -73,6 +67,7 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
       .Select(int.Parse)
       .Select(x => source.TryGetValue(x, out var rec) ? rec : resolveNotFound(x))
       .Where(x => x != null)
+      .Select(x => x!)
       .ToList();
 
     return items.Count == 0 ? null : items;
@@ -81,7 +76,7 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
   /// <summary>
   /// Returns List of found records and List of not found Ids
   /// </summary>
-  public static Tuple<List<TI>, List<int>> IdsToRecords<TI>(string csv, Dictionary<int, TI> source) {
+  public static Tuple<List<TI>, List<int>>? IdsToRecords<TI>(string csv, Dictionary<int, TI> source) {
     if (string.IsNullOrEmpty(csv)) return null;
     var found = new List<TI>();
     var notFound = new List<int>();
@@ -95,10 +90,10 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
     return new(found, notFound);
   }
 
-  public List<T> LinkList(string csv, Func<int, T> getNotFoundRecord, IDataAdapter seeker) =>
-    IdToRecord(csv, AllDict, notFoundId => ResolveNotFoundRecord(notFoundId, getNotFoundRecord, seeker));
+  public List<T>? LinkList(string csv, Func<int, T> getNotFoundRecord, IDataAdapter seeker) =>
+    IdToRecord<T>(csv, AllDict, notFoundId => ResolveNotFoundRecord(notFoundId, getNotFoundRecord, seeker));
 
-  public T ResolveNotFoundRecord(int notFoundId, Func<int, T> getNotFoundRecord, IDataAdapter seeker) {
+  public T? ResolveNotFoundRecord(int notFoundId, Func<int, T>? getNotFoundRecord, IDataAdapter seeker) {
     if (getNotFoundRecord == null) return null;
     _notFoundIds ??= new();
     seeker.IsModified = true;
@@ -112,6 +107,6 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
     return item;
   }
 
-  public virtual T GetById(string id, bool nullable = false) =>
+  public virtual T? GetById(string id, bool nullable = false) =>
     nullable && string.IsNullOrEmpty(id) ? null : AllDict[int.Parse(id)];
 }

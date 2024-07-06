@@ -14,7 +14,7 @@ public class OneToOneDataAdapter<TA, TB> : DataAdapter<KeyValuePair<TA, TB>>, IR
   }
 
   public override KeyValuePair<TA, TB> FromCsv(string[] csv) =>
-    new(DataAdapterA.GetById(csv[0]), DataAdapterB.GetById(csv[1]));
+    new(DataAdapterA.GetById(csv[0])!, DataAdapterB.GetById(csv[1])!);
 
   public override string ToCsv(KeyValuePair<TA, TB> item) =>
     string.Join("|", item.Key.GetHashCode().ToString(), item.Value.GetHashCode().ToString());

@@ -9,7 +9,7 @@ namespace MH.Utils.BaseClasses;
 
 public class DataAdapter : IDataAdapter {
   private bool _isModified;
-  protected string CurrentVolumeSerialNumber;
+  protected string? CurrentVolumeSerialNumber;
 
   public SimpleDB DB { get; }
   public string Name { get; }
@@ -47,7 +47,7 @@ public class DataAdapter : IDataAdapter {
 }
 
 public class DataAdapter<T> : DataAdapter {
-  public HashSet<T> All { get; set; }
+  public HashSet<T> All { get; set; } = [];
 
   public event EventHandler<T> ItemCreatedEvent = delegate { };
   public event EventHandler<T> ItemUpdatedEvent = delegate { };
@@ -146,7 +146,7 @@ public class DataAdapter<T> : DataAdapter {
     RaiseItemDeleted(item);
   }
 
-  public virtual void ItemsDelete(IList<T> items) {
+  public virtual void ItemsDelete(IList<T>? items) {
     if (items == null || items.Count == 0) return;
     foreach (var item in items) ItemDelete(item, false);
     RaiseItemsDeleted(items);
