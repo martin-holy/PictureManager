@@ -179,6 +179,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
       AddMediaItems(GetSorted(toLoad.Except(notImported)).ToList(), and, hide);
       Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
+      if (newItems.Count > 0) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
       AfterLoad();
       IsLoading = false;
     }, Tasks.UiTaskScheduler);
