@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MH.Utils.Extensions;
 
 public static class ListExtensions {
-  private static Random _random;
+  private static Random? _random;
   public static void Shuffle<T>(this IList<T> list) {
     _random ??= new();
 
@@ -47,12 +47,12 @@ public static class ListExtensions {
     list.Insert(newIndex, item);
   }
 
-  public static List<T> NullIfEmpty<T>(this List<T> list) =>
+  public static List<T>? NullIfEmpty<T>(this List<T> list) =>
     list.Count == 0 ? null : list;
 
-  public static List<T> Toggle<T>(this List<T> list, T item, bool nullIfEmpty) {
+  public static List<T>? Toggle<T>(this List<T>? list, T item, bool nullIfEmpty) {
     if (list == null) {
-      list = new() { item };
+      list = [item];
       return list;
     }
 
@@ -65,7 +65,7 @@ public static class ListExtensions {
     return list;
   }
 
-  public static T GetNextOrPreviousItem<T>(this IList<T> items, IList<T> selected) {
+  public static T? GetNextOrPreviousItem<T>(this IList<T>? items, IList<T>? selected) {
     if (items == null) return default;
     if (selected == null) return default;
     if (selected.Count == 0) return default;
@@ -79,7 +79,7 @@ public static class ListExtensions {
       : default;
   }
 
-  public static T Pop<T>(this IList<T> list) {
+  public static T? Pop<T>(this IList<T>? list) {
     if (list == null || list.Count == 0) return default;
     var first = list[0];
     list.RemoveAt(0);
