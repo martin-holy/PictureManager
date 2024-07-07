@@ -11,8 +11,8 @@ public static class Imaging {
   public delegate byte[] GetBitmapHashPixelsFunc(string filePath, int bytes);
   public delegate void ResizeJpgAction(string src, string dest, int px, bool withMetadata, bool withThumbnail, int quality);
     
-  public static GetBitmapHashPixelsFunc GetBitmapHashPixels { get; set; }
-  public static ResizeJpgAction ResizeJpg { get; set; }
+  public static GetBitmapHashPixelsFunc GetBitmapHashPixels { get; set; } = null!;
+  public static ResizeJpgAction ResizeJpg { get; set; } = null!;
 
   public static void GetThumbSize(double width, double height, int desiredSize, out int outWidth, out int outHeight) {
     // don't make the thumb bigger than image it self
