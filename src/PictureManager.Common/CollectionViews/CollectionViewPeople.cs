@@ -7,12 +7,7 @@ using System.Linq;
 
 namespace PictureManager.Common.CollectionViews;
 
-public class CollectionViewPeople : CollectionView<PersonM> {
-  public CollectionViewPeople() {
-    Icon = Res.IconPeopleMultiple;
-    Name = "People";
-  }
-
+public class CollectionViewPeople() : CollectionView<PersonM>(Res.IconPeopleMultiple, "People") {
   public override IEnumerable<GroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
     var src = source.ToArray();
     var top = new List<GroupByItem<PersonM>>();
