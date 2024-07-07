@@ -5,8 +5,8 @@ namespace MH.Utils;
 
 public class StringRange {
   public string StartString { get; init; }
-  public string StartEndString { get; init; }
-  public string EndString { get; init; }
+  public string? StartEndString { get; init; }
+  public string? EndString { get; init; }
   public int Start { get; private set; }
   public int End { get; private set; }
   public StringComparison ComparisonType { get; init; } = StringComparison.OrdinalIgnoreCase;
@@ -26,7 +26,7 @@ public class StringRange {
     EndString = endString;
   }
 
-  public IEnumerable<StringRange> AsEnumerable(string text, StringRange innerRange) {
+  public IEnumerable<StringRange?> AsEnumerable(string text, StringRange innerRange) {
     var idx = Start;
     return AsEnumerable(() => innerRange.From(text, ref idx, End));
   }
@@ -44,16 +44,16 @@ public class StringRange {
   public string AsString(string text) =>
     text[Start..End];
 
-  public StringRange From(string text, ref int searchStart, int searchEnd = -1) {
+  public StringRange? From(string text, ref int searchStart, int searchEnd = -1) {
     if (!Found(text, searchStart, searchEnd)) return null;
     searchStart = Start;
     return this;
   }
 
-  public StringRange From(string text, int searchStart, int searchEnd = -1) =>
+  public StringRange? From(string text, int searchStart, int searchEnd = -1) =>
     Found(text, searchStart, searchEnd) ? this : null;
 
-  public StringRange From(string text, StringRange range) =>
+  public StringRange? From(string text, StringRange range) =>
     Found(text, range.Start, range.End) ? this : null;
 
   public bool Found(string text, int searchStart, int searchEnd = -1) {
