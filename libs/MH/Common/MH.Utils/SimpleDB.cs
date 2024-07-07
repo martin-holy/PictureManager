@@ -194,11 +194,10 @@ public class SimpleDB : ObservableObject {
     if (!File.Exists(filePath)) return;
 
     var newFilePath = filePath + "_tmpFile";
-    string line;
     using var sr = new StreamReader(filePath, Encoding.UTF8);
     using var sw = new StreamWriter(newFilePath, false, Encoding.UTF8, 65536);
 
-    while ((line = sr.ReadLine()) != null)
+    while (sr.ReadLine() is { } line)
       sw.WriteLine(migrateRecord(line));
 
     sr.Close();
