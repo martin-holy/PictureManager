@@ -11,17 +11,17 @@ using System.Linq;
 namespace MH.UI.Controls;
 
 public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : class, ISelectable {
-  private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
+  private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = [];
   private readonly GroupByDialog<T> _groupByDialog = new();
   private readonly HashSet<T> _pendingRemove = [];
   private readonly HashSet<T> _pendingUpdate = [];
 
-  public CollectionViewGroup<T> Root { get; set; }
-  public T TopItem { get; set; }
-  public T LastSelectedItem { get; set; }
-  public CollectionViewGroup<T> TopGroup { get; set; }
-  public CollectionViewRow<T> LastSelectedRow { get; set; }
-  public object UIView { get; set; }
+  public CollectionViewGroup<T>? Root { get; set; }
+  public T? TopItem { get; set; }
+  public T? LastSelectedItem { get; set; }
+  public CollectionViewGroup<T>? TopGroup { get; set; }
+  public CollectionViewRow<T>? LastSelectedRow { get; set; }
+  public object? UIView { get; set; }
   public bool AddInOrder { get; set; } = true;
   public bool CanOpen { get; set; } = true;
   public bool CanSelect { get; set; } = true;
@@ -35,7 +35,9 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   public event EventHandler<ObjectEventArgs<T>> ItemOpenedEvent = delegate { };
   public event EventHandler<SelectionEventArgs<T>> ItemSelectedEvent = delegate { };
 
-  protected CollectionView() {
+  protected CollectionView(string icon, string name) {
+    Icon = icon;
+    Name = name;
     OpenGroupByDialogCommand = new(OpenGroupByDialog, null, "Group by");
   }
 
@@ -59,16 +61,14 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     if (!IsMultiSelect) { isCtrlOn = false; isShiftOn = false; }
     LastSelectedItem = i;
     LastSelectedRow = r;
-    var args = new SelectionEventArgs<T>(((CollectionViewGroup<T>)r.Parent).Source, i, isCtrlOn, isShiftOn);
+    var args = new SelectionEventArgs<T>(((CollectionViewGroup<T>)r.Parent!).Source, i, isCtrlOn, isShiftOn);
     RaiseItemSelected(args);
     OnItemSelected(args);
   }
 
-  public void Reload(List<T> source, GroupMode groupMode, GroupByItem<T>[] groupByItems, bool expandAll, bool removeEmpty = true) {
-    var root = new CollectionViewGroup<T>(source) {
-      View = this,
+  public void Reload(List<T> source, GroupMode groupMode, GroupByItem<T>[]? groupByItems, bool expandAll, bool removeEmpty = true) {
+    var root = new CollectionViewGroup<T>(this, source, new(new ListItem(Icon, Name, this), null)) {
       IsGroupingRoot = true,
-      GroupedBy = new(new ListItem(Icon, Name, this), null),
       IsGroupBy = groupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive,
       IsThenBy = groupMode is GroupMode.ThenBy or GroupMode.ThenByRecursive,
       IsRecursive = groupMode is GroupMode.GroupByRecursive or GroupMode.ThenByRecursive,
@@ -86,32 +86,33 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     });
 
     _groupByItemsRoots.Clear();
-    _groupByItemsRoots.Add(Root);
+    _groupByItemsRoots.Add(Root!);
   }
 
   public void ReWrapAll() {
+    if (Root == null) return;
     UpdateRoot(Root, _ => CollectionViewGroup<T>.ReWrapAll(Root));
     ScrollTo(TopGroup, TopItem);
   }
 
   public void ReWrapAll(IEnumerable<T> items) {
-    if (Root.Source.Intersect(items).Any()) ReWrapAll();
+    if (Root?.Source.Intersect(items).Any() == true) ReWrapAll();
   }
 
   public void Insert(T item) =>
-    Insert(new[] { item });
+    Insert([item]);
 
   public void Insert(T[] items) =>
     ReGroupItems(items, false, false);
 
   public void Update(T item) =>
-    Update(new[] { item });
+    Update([item]);
 
   public void Update(T[] items) =>
     ReGroupItems(items, false, true);
 
   public void Remove(T item) =>
-    Remove(new[] { item });
+    Remove([item]);
 
   public void Remove(T[] items) =>
     ReGroupItems(items, true, true);
@@ -123,7 +124,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     _pendingUpdate.Clear();
   }
 
-  private void ReGroupItems(T[] items, bool remove, bool ifContains) {
+  private void ReGroupItems(T[]? items, bool remove, bool ifContains) {
     if (Root == null || items == null || items.Length == 0) return;
 
     if (!IsVisible && remove) {
@@ -155,11 +156,11 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     RemoveEmptyGroups(Root, toReWrap);
   }
 
-  public void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
+  public void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>>? toReWrap) {
     var removedGroups = new List<CollectionViewGroup<T>>();
     toReWrap ??= new HashSet<CollectionViewGroup<T>>();
     CollectionViewGroup<T>.RemoveEmptyGroups(group, toReWrap, removedGroups);
-    if (removedGroups.Contains(TopGroup)) TopGroup = null;
+    if (TopGroup != null && removedGroups.Contains(TopGroup)) TopGroup = null;
     if (toReWrap.Count == 0) return;
     foreach (var g in toReWrap) g.ReWrap();
     if (toReWrap.Any(x => x.IsFullyExpanded()))
@@ -173,7 +174,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   }
 
   public void SetExpanded(object group) {
-    if (group is not CollectionViewGroup<T> g) return;
+    if (Root == null || group is not CollectionViewGroup<T> g) return;
       
     UpdateRoot(Root, _ => g.SetExpanded<CollectionViewGroup<T>>(g.IsExpanded));
     TopItem = default;
@@ -181,8 +182,8 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     ScrollTo(TopGroup, TopItem);
   }
 
-  private void OpenGroupByDialog(CollectionViewGroup<T> group) {
-    if (_groupByDialog.Open(group, GetGroupByItems(group.Source)))
+  private void OpenGroupByDialog(CollectionViewGroup<T>? group) {
+    if (group != null && _groupByDialog.Open(group, GetGroupByItems(group.Source)))
       _groupByItemsRoots.Add(group);
   }
 
@@ -196,26 +197,26 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     if (group != null)
       TopGroup = group;
     else if (row != null) {
-      TopGroup = (CollectionViewGroup<T>)row.Parent;
+      TopGroup = (CollectionViewGroup<T>)row.Parent!;
       if (row.Leaves.Count > 0)
         TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Leaves[0]);
     }
   }
 
-  public void ScrollTo(CollectionViewGroup<T> group, T item, bool exactly = true) {
-    if (group == null && item == null) return;
+  public void ScrollTo(CollectionViewGroup<T>? group, T? item, bool exactly = true) {
+    if (Root == null || (group == null && item == null)) return;
 
-    CollectionViewRow<T> row = default;
+    CollectionViewRow<T>? row = default;
 
     if (item != null)
-      CollectionViewGroup<T>.FindItem(group, item, ref group, ref row);
+      CollectionViewGroup<T>.FindItem(group ?? Root, item, ref group, ref row);
 
     TopGroup = group;
     TopItem = item;
-    ScrollTo(row != null ? row : group, exactly);
+    ScrollTo(row != null ? row : group ?? Root, exactly);
   }
 
-  public T SelectFirstItem() {
+  public T? SelectFirstItem() {
     if ((Root?.GetNextBranchEndOfType() ?? Root) is not { } group) return default;
     if (group.GetItemByIndex(0) is not { } item) return default;
     if (group.GetRowWithItem(item) is not { } row) return default;
@@ -223,22 +224,22 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     return item;
   }
 
-  public T SelectNextItem(bool inGroup, bool first) {
-    if (LastSelectedItem == null || LastSelectedRow == null) first = true;
-    if (first) return SelectFirstItem();
+  public T? SelectNextItem(bool inGroup, bool first) {
+    if (first || LastSelectedItem == null || LastSelectedRow == null) return SelectFirstItem();
     if (LastSelectedRow.Parent is not CollectionViewGroup<T> group) return default;
     var index = group.Source.IndexOf(LastSelectedItem);
     var item = group.GetItemByIndex(index + 1);
+    CollectionViewGroup<T>? itemGroup = group;
 
     if (item == null)
       if (inGroup) item = group.Source[0];
       else {
-        group = group.GetNextBranchEndOfType();
-        if (group != null)
-          item = group.GetItemByIndex(0);
+        itemGroup = group.GetNextBranchEndOfType();
+        if (itemGroup != null)
+          item = itemGroup.GetItemByIndex(0);
       }
 
-    if (item == null || group.GetRowWithItem(item) is not { } row) return default;
+    if (item == null || itemGroup?.GetRowWithItem(item) is not { } row) return default;
     SelectItem(row, item, false, false);
     return item;
   }

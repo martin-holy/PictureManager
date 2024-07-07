@@ -8,15 +8,15 @@ using System.Linq;
 
 namespace MH.UI.Controls;
 
-public class GroupByItem<T>(IListItem data, Func<T, object, bool> fit) : TreeItem(null, data) {
+public class GroupByItem<T>(IListItem data, Func<T, object, bool>? fit) : TreeItem(null, data) {
   public bool IsGroup { get; set; }
 
-  public GroupByItem(IListItem data, IEnumerable<ITreeItem> items, Func<T, object, bool> fit) : this(data, fit) {
+  public GroupByItem(IListItem data, IEnumerable<ITreeItem> items, Func<T, object, bool>? fit) : this(data, fit) {
     AddItems(items);
   }
 
   public bool Fit(T item) =>
-    fit(item, Data);
+    fit?.Invoke(item, Data!) ?? true;
 
   // TODO remove items as well
   public void Update(GroupByItem<T>[] items) {

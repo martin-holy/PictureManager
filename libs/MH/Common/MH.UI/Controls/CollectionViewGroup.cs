@@ -19,13 +19,13 @@ public enum GroupMode {
 public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : class, ISelectable {
   private double _width;
 
-  public CollectionView<T> View { get; set; }
-  public object UIView => View.UIView;
+  public CollectionView<T> View { get; }
+  public object? UIView => View.UIView;
   public List<T> Source { get; }
   public int SourceCount => Source.Count;
   public IEnumerable<CollectionViewGroup<T>> Groups => Items.OfType<CollectionViewGroup<T>>();
-  public GroupByItem<T>[] GroupByItems { get; set; }
-  public GroupByItem<T> GroupedBy { get; set; }
+  public GroupByItem<T>[]? GroupByItems { get; set; }
+  public GroupByItem<T>? GroupedBy { get; }
   public double Width { get => _width; set => SetWidth(value); }
   public bool IsGroupingRoot { get; set; }
   public bool IsRecursive { get; set; }
@@ -33,15 +33,15 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
   public bool IsThenBy { get; set; }
   public bool IsReWrapPending { get; set; } = true;
 
-  public CollectionViewGroup(List<T> source) {
+  public CollectionViewGroup(CollectionView<T> view, List<T> source, GroupByItem<T>? groupedBy) {
+    View = view;
     Source = source;
+    GroupedBy = groupedBy;
     OnPropertyChanged(nameof(SourceCount));
   }
 
-  public CollectionViewGroup(CollectionViewGroup<T> parent, GroupByItem<T> groupedBy, List<T> source) : this (source) {
-    GroupedBy = groupedBy;
+  public CollectionViewGroup(CollectionViewGroup<T> parent, GroupByItem<T>? groupedBy, List<T> source) : this (parent.View, source, groupedBy) {
     Parent = parent;
-    View = parent.View;
     IsRecursive = parent.IsRecursive;
     IsGroupBy = parent.IsGroupBy;
     IsThenBy = parent.IsThenBy;
@@ -49,10 +49,10 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
     GroupByItems = parent.GetGroupByItemsForSubGroup();
   }
 
-  private GroupByItem<T>[] GetGroupByItemsForSubGroup() {
+  private GroupByItem<T>[]? GetGroupByItemsForSubGroup() {
     if (GroupByItems == null || !IsThenBy)
       return null;
-    if (IsRecursive && !IsGroupingRoot && GroupedBy?.Items?.Count > 0)
+    if (IsRecursive && !IsGroupingRoot && GroupedBy?.Items.Count > 0)
       return GroupByItems.ToArray();
     if (GroupByItems.Length > 1)
       return GroupByItems[1..];
@@ -60,16 +60,16 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
     return null;
   }
 
-  private GroupByItem<T>[] GetGroupByItemsForGrouping() {
-    GroupByItem<T>[] groupByItems = null;
+  private GroupByItem<T>[]? GetGroupByItemsForGrouping() {
+    GroupByItem<T>[]? groupByItems = null;
 
-    if (GroupByItems != null && (IsGroupingRoot || GroupedBy is null or { Items: { Count: 0 } })) {
+    if (GroupByItems != null && (IsGroupingRoot || GroupedBy is null or { Items.Count: 0 })) {
       if (IsGroupBy)
         groupByItems = GroupByItems.ToArray();
       else if (IsThenBy && GroupByItems.Length > 0)
-        groupByItems = new[] { GroupByItems[0] };
+        groupByItems = [GroupByItems[0]];
     }
-    else if (IsRecursive && !IsGroupingRoot && GroupedBy?.Items?.Count > 0)
+    else if (IsRecursive && !IsGroupingRoot && GroupedBy?.Items.Count > 0)
       groupByItems = GroupedBy.Items.Cast<GroupByItem<T>>().ToArray();
 
     return groupByItems;
@@ -81,21 +81,21 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
     if (groupByItems == null) return;
 
     // first item reserved for empty group
-    var newGroups = new CollectionViewGroup<T>[groupByItems.Length + 1];
+    var newGroups = new CollectionViewGroup<T>?[groupByItems.Length + 1];
 
     foreach (var item in Source) {
       var fit = false;
 
       for (int i = 0; i < groupByItems.Length; i++) {
         if (!groupByItems[i].Fit(item)) continue;
-        newGroups[i + 1] ??= new(this, groupByItems[i], new());
-        newGroups[i + 1].Source.Add(item);
+        newGroups[i + 1] ??= new(this, groupByItems[i], []);
+        newGroups[i + 1]!.Source.Add(item);
         fit = true;
       }
 
       if (fit) continue;
-      newGroups[0] ??= new(this, null, new());
-      newGroups[0].Source.Add(item);
+      newGroups[0] ??= new(this, null, []);
+      newGroups[0]!.Source.Add(item);
     }
 
     foreach (var newGroup in newGroups) {
@@ -105,7 +105,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
     }
   }
 
-  public static void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap, List<CollectionViewGroup<T>> removedGroups) {
+  public static void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>>? toReWrap, List<CollectionViewGroup<T>>? removedGroups) {
     // go down the tree first
     var subGroups = group.Groups.ToArray();
 
@@ -118,18 +118,19 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
 
     // and then up the tree and check if is group empty
     var removed = false;
+    CollectionViewGroup<T>? g = group;
     while (true) {
-      if (group == null) break;
+      if (g == null) break;
 
-      if (group.IsEmpty()) {
-        group.Parent?.Items.Remove(group);
-        removedGroups?.Add(group);
+      if (g.IsEmpty()) {
+        g.Parent?.Items.Remove(g);
+        removedGroups?.Add(g);
         removed = true;
       }
       else if (removed)
-        toReWrap?.Add(group);
+        toReWrap?.Add(g);
 
-      group = group.Parent as CollectionViewGroup<T>;
+      g = g.Parent as CollectionViewGroup<T>;
     }
   }
 
@@ -324,7 +325,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
     yield return Source.GetRange(index, Source.Count - index);
   }
 
-  public static bool FindItem(CollectionViewGroup<T> parent, T item, ref CollectionViewGroup<T> group, ref CollectionViewRow<T> row) {
+  public static bool FindItem(CollectionViewGroup<T> parent, T item, ref CollectionViewGroup<T>? group, ref CollectionViewRow<T>? row) {
     if (!parent.Source.Contains(item)) return false;
     parent.IsExpanded = true;
 
@@ -352,9 +353,9 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
     OnPropertyChanged(nameof(SourceCount));
   }
 
-  public T GetItemByIndex(int index) =>
+  public T? GetItemByIndex(int index) =>
     Source.Count > index ? Source[index] : default;
 
-  public CollectionViewRow<T> GetRowWithItem(T item) =>
+  public CollectionViewRow<T>? GetRowWithItem(T item) =>
     Items.OfType<CollectionViewRow<T>>().FirstOrDefault(row => row.Leaves.Contains(item));
 }
