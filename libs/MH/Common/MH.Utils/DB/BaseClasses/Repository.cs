@@ -49,7 +49,7 @@ public class Repository<T> : Repository {
     RaiseItemDeleted(item);
   }
 
-  public virtual void ItemsDelete(IList<T> items) {
+  public virtual void ItemsDelete(IList<T>? items) {
     if (items == null || items.Count == 0) return;
     foreach (var item in items) ItemDelete(item, false);
     RaiseItemsDeleted(items);
@@ -86,17 +86,17 @@ public class Repository<T, TI> : Repository<T>, IRepository<TI> {
 
   protected override void RaiseItemCreated(T item) {
     base.RaiseItemCreated(item);
-    ItemCreatedIEvent(this, (TI)(object)item);
+    ItemCreatedIEvent(this, (TI)(object)item!);
   }
 
   protected override void RaiseItemUpdated(T item) {
     base.RaiseItemUpdated(item);
-    ItemUpdatedIEvent(this, (TI)(object)item);
+    ItemUpdatedIEvent(this, (TI)(object)item!);
   }
 
   protected override void RaiseItemDeleted(T item) {
     base.RaiseItemDeleted(item);
-    ItemDeletedIEvent(this, (TI)(object)item);
+    ItemDeletedIEvent(this, (TI)(object)item!);
   }
 
   protected override void RaiseItemsDeleted(IList<T> items) {
