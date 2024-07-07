@@ -7,12 +7,7 @@ using System.Linq;
 
 namespace PictureManager.Common.CollectionViews;
 
-public class CollectionViewSegments : CollectionView<SegmentM> {
-  public CollectionViewSegments() {
-    Icon = Res.IconSegment;
-    Name = "Segments";
-  }
-
+public class CollectionViewSegments() : CollectionView<SegmentM>(Res.IconSegment, "Segments") {
   public void Reload(List<SegmentM> source, GroupMode groupMode, GroupByItem<SegmentM>[] groupByItems, bool expandAll, string rootTitle, bool removeEmpty = true) {
     Name = rootTitle;
     Reload(source, groupMode, groupByItems, expandAll, removeEmpty);

@@ -16,11 +16,8 @@ public class CollectionViewMediaItems : CollectionView<MediaItemM> {
 
   public RelayCommand ThumbScaleChangedCommand { get; }
 
-  public CollectionViewMediaItems(double thumbScale) {
-    Icon = Res.IconImageMultiple;
-    Name = "Media Items";
+  public CollectionViewMediaItems(double thumbScale) : base(Res.IconImageMultiple, "Media Items") {
     ThumbScale = thumbScale;
-
     ThumbScaleChangedCommand = new(OnThumbScaleChanged);
   }
 

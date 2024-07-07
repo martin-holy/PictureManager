@@ -9,12 +9,7 @@ using PM = PictureManager.Common;
 
 namespace MovieManager.Common.CollectionViews;
 
-public class CollectionViewMovies : CollectionView<MovieM> {
-  public CollectionViewMovies() {
-    Icon = MH.UI.Res.IconMovieClapper;
-    Name = "Movies";
-  }
-
+public class CollectionViewMovies() : CollectionView<MovieM>(MH.UI.Res.IconMovieClapper, "Movies") {
   public override int GetItemSize(MovieM item, bool getWidth) {
     var scale = PM.Core.Settings.MediaItem.MediaItemThumbScale;
 
