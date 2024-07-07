@@ -6,12 +6,12 @@ using System.Runtime.Loader;
 namespace MH.Utils;
 
 public static class Plugin {
-  public static T LoadPlugin<T>(string path) {
+  public static T? LoadPlugin<T>(string path) {
     var asm = Assembly.LoadFrom(path);
     var targetType = typeof(T);
     var pluginType = asm.GetTypes().FirstOrDefault(targetType.IsAssignableFrom);
 
-    return pluginType == null ? default : (T)Activator.CreateInstance(pluginType);
+    return pluginType == null ? default : (T)Activator.CreateInstance(pluginType)!;
   }
 
   // TODO I can't get this to work
@@ -22,7 +22,7 @@ public static class Plugin {
 public class PluginLoadContext(string pluginPath) : AssemblyLoadContext {
   private readonly AssemblyDependencyResolver _resolver = new(pluginPath);
 
-  protected override Assembly Load(AssemblyName name) {
+  protected override Assembly? Load(AssemblyName name) {
     var path = _resolver.ResolveAssemblyToPath(name);
     return path == null ? null : LoadFromAssemblyPath(path);
   }
