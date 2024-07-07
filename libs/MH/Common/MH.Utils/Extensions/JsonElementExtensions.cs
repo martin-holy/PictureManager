@@ -45,23 +45,23 @@ public static class JsonElementExtensions {
     element.TryGetPropertySafe(propName1, out var prop)
       ? prop.TryGetInt32(propName2, ifNull) : ifNull;
 
-  public static T TryGetObject<T>(this JsonElement element, string propName, Func<JsonElement, T> parseElement) =>
+  public static T? TryGetObject<T>(this JsonElement element, string propName, Func<JsonElement, T> parseElement) =>
     element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.Object
       ? parseElement(prop) : default;
 
-  public static T TryGetObject<T>(this JsonElement element, string propName1, string propName2, Func<JsonElement, T> parseElement) =>
+  public static T? TryGetObject<T>(this JsonElement element, string propName1, string propName2, Func<JsonElement, T> parseElement) =>
     element.TryGetPropertySafe(propName1, out var prop)
       ? prop.TryGetObject(propName2, parseElement) : default;
 
-  public static string TryGetString(this JsonElement element, string propName) =>
+  public static string? TryGetString(this JsonElement element, string propName) =>
     element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.String
       ? prop.GetString() : null;
 
-  public static string TryGetString(this JsonElement element, string propName1, string propName2) =>
+  public static string? TryGetString(this JsonElement element, string propName1, string propName2) =>
     element.TryGetPropertySafe(propName1, out var prop)
       ? prop.TryGetString(propName2) : null;
 
-  public static string TryGetString(this JsonElement element, string propName1, string propName2, string propName3) =>
+  public static string? TryGetString(this JsonElement element, string propName1, string propName2, string propName3) =>
     element.TryGetPropertySafe(propName1, out var prop)
       ? prop.TryGetString(propName2, propName3) : null;
 }
