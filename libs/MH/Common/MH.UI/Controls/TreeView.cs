@@ -9,18 +9,18 @@ using System.Linq;
 namespace MH.UI.Controls;
 
 public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeItem {
-  private ITreeItem _topTreeItem;
+  private ITreeItem? _topTreeItem;
   private bool _isVisible;
 
   public ExtObservableCollection<object> RootHolder { get; } = new();
   public Selecting<T> SelectedTreeItems { get; } = new();
-  public ITreeItem TopTreeItem { get => _topTreeItem; set { _topTreeItem = value; OnTopTreeItemChanged(); } }
+  public ITreeItem? TopTreeItem { get => _topTreeItem; set { _topTreeItem = value; OnTopTreeItemChanged(); } }
   public bool IsVisible { get => _isVisible; set { _isVisible = value; OnIsVisibleChanged(); } }
   // TODO rename and combine with single and multi select
   public bool ShowTreeItemSelection { get; set; }
-  public Action ScrollToTopAction { get; set; }
-  public Action<object[], bool> ScrollToItemsAction { get; set; }
-  public Action<ITreeItem> ExpandRootWhenReadyAction { get; set; }
+  public Action? ScrollToTopAction { get; set; }
+  public Action<object[], bool>? ScrollToItemsAction { get; set; }
+  public Action<ITreeItem>? ExpandRootWhenReadyAction { get; set; }
 
   public RelayCommand ScrollSiblingUpCommand { get; }
   public RelayCommand ScrollLevelUpCommand { get; }
@@ -43,7 +43,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeIte
     if (IsVisible) ScrollTo(TopTreeItem);
   }
 
-  public virtual void OnTreeItemSelected(object o) {
+  public virtual void OnTreeItemSelected(object? o) {
     if (o is not T t) return;
     TreeItemSelectedEvent(this, new(t));
     if (!ShowTreeItemSelection) return;
@@ -52,7 +52,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeIte
 
   public virtual void OnTopTreeItemChanged() { }
 
-  public virtual void ScrollTo(ITreeItem item, bool exactly = true) {
+  public virtual void ScrollTo(ITreeItem? item, bool exactly = true) {
     if (item == null) return;
 
     var branch = item.GetBranch();
@@ -67,7 +67,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeIte
     var expand = false;
     RootHolder.Execute(items => {
       items.Clear();
-      itemsAction?.Invoke(items);
+      itemsAction(items);
       expand = root.IsExpanded;
       if (expand) root.IsExpanded = false;
       items.Add(root);
