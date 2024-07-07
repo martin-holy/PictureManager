@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace MH.Utils;
 
 public static class Tasks {
-  public static TaskScheduler UiTaskScheduler { get; private set; }
+  public static TaskScheduler UiTaskScheduler { get; private set; } = null!;
 
   public static void SetUiTaskScheduler() =>
     UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -21,12 +21,12 @@ public static class Tasks {
     return task;
   }
 
-  public static Action<Action> Dispatch { get; set; }
+  public static Action<Action> Dispatch { get; set; } = null!;
 
   /// <summary>
-  /// Executes the work on background thread and than executes the onSuccess or the onError on UI thread
+  /// Executes the work on background thread and then executes the onSuccess or the onError on UI thread
   /// </summary>
-  public static void DoWork<T>(Func<T> work, Action<T> onSuccess, Action<Exception> onError) {
+  public static void DoWork<T>(Func<T> work, Action<T> onSuccess, Action<Exception?> onError) {
     Task.Run(work).ContinueWith(task => {
       if (task.IsFaulted)
         onError(task.Exception?.InnerException);
