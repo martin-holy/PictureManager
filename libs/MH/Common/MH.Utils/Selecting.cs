@@ -64,7 +64,7 @@ public class Selecting<T> : ObservableObject where T : class, ISelectable {
   public void Select(T item) =>
     Select(null, item, false, false);
 
-  public void Select(List<T> items, T item, bool isCtrlOn, bool isShiftOn) {
+  public void Select(List<T>? items, T item, bool isCtrlOn, bool isShiftOn) {
     // single select
     if (!isCtrlOn && !isShiftOn) {
       DeselectAll();
@@ -105,7 +105,7 @@ public class Selecting<T> : ObservableObject where T : class, ISelectable {
       ItemsChangedEvent(this, Items.ToArray());
   }
 
-  public static TI GetNotSelectedItem<TI>(IList<TI> items, TI item) where TI : ISelectable {
+  public static TI? GetNotSelectedItem<TI>(IList<TI>? items, TI? item) where TI : ISelectable {
     if (items == null || item == null) return default;
     if (!item.IsSelected) return item;
     var index = items.IndexOf(item);
