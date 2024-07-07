@@ -23,11 +23,11 @@ public class TreeItem : ListItem, ITreeItem {
 
   public TreeItem(string icon, string name) : base(icon, name) { }
 
-  public TreeItem(ITreeItem parent) {
+  public TreeItem(ITreeItem? parent) {
     Parent = parent;
   }
 
-  public TreeItem(ITreeItem parent, object data) : this(parent) {
+  public TreeItem(ITreeItem? parent, object data) : this(parent) {
     Data = data;
   }
 
