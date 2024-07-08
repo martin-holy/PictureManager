@@ -17,8 +17,7 @@ namespace PictureManager.Common.TreeCategories;
 
 public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
   public FoldersTreeCategory(FolderR r) :
-    base(Res.IconFolder, "Folders", (int)Category.Folders) {
-    DataAdapter = r;
+    base(Res.IconFolder, "Folders", (int)Category.Folders, r) {
     CanMoveItem = true;
     CanCopyItem = true;
     UseTreeDelete = true;

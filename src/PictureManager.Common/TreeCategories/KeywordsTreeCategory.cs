@@ -10,8 +10,8 @@ namespace PictureManager.Common.TreeCategories;
 public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM> {
   public CategoryGroupM AutoAddedGroup { get; set; }
 
-  public KeywordsTreeCategory(KeywordR r) : base(Res.IconTagLabel, "Keywords", (int)Category.Keywords) {
-    DataAdapter = r;
+  public KeywordsTreeCategory(KeywordR r, CategoryGroupR groupR)
+    : base(Res.IconTagLabel, "Keywords", (int)Category.Keywords, r, groupR) {
     CanMoveItem = true;
     UseTreeDelete = true;
     ScrollToAfterCreate = true;

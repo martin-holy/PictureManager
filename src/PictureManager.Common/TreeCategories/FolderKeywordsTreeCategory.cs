@@ -9,8 +9,7 @@ public sealed class FolderKeywordsTreeCategory : TreeCategory<FolderM> {
   public static RelayCommand<FolderM> SetAsFolderKeywordCommand { get; set; }
 
   public FolderKeywordsTreeCategory(FolderKeywordR r) :
-    base(Res.IconFolderPuzzle, "Folder Keywords", (int)Category.FolderKeywords) {
-    DataAdapter = r;
+    base(Res.IconFolderPuzzle, "Folder Keywords", (int)Category.FolderKeywords, r) {
     SetAsFolderKeywordCommand = new(r.SetAsFolderKeyword, null, "Set as Folder Keyword");
   }
 

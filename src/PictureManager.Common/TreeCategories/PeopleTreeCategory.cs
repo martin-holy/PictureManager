@@ -19,8 +19,8 @@ public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
     set => _unknownGroup = value;
   }
 
-  public PeopleTreeCategory(PersonR r) : base(Res.IconPeopleMultiple, "People", (int)Category.People) {
-    DataAdapter = r;
+  public PeopleTreeCategory(PersonR r, CategoryGroupR groupR)
+    : base(Res.IconPeopleMultiple, "People", (int)Category.People, r, groupR) {
     CanMoveItem = true;
     ScrollToAfterCreate = true;
   }
