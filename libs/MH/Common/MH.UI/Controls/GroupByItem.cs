@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace MH.UI.Controls;
 
-public class GroupByItem<T>(IListItem data, Func<T, object, bool>? fit) : TreeItem(null, data) {
+public class GroupByItem<T>(IListItem data, Func<T, object, bool>? fit) : TreeItem(data) {
   public bool IsGroup { get; set; }
 
   public GroupByItem(IListItem data, IEnumerable<ITreeItem> items, Func<T, object, bool>? fit) : this(data, fit) {
