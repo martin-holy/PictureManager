@@ -19,17 +19,11 @@ public class TreeItem : ListItem, ITreeItem {
     }
   }
     
-  public TreeItem() { }
+  public TreeItem() : base(null, string.Empty) { }
 
-  public TreeItem(string icon, string name) : base(icon, name) { }
+  public TreeItem(string? icon, string name) : base(icon, name) { }
 
-  public TreeItem(ITreeItem? parent) {
-    Parent = parent;
-  }
-
-  public TreeItem(ITreeItem? parent, object data) : this(parent) {
-    Data = data;
-  }
+  public TreeItem(object data) : base(null, string.Empty, data) { }
 
   protected virtual void OnIsExpandedChanged(bool value) { }
 
