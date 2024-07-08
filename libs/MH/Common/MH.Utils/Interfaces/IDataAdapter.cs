@@ -31,5 +31,5 @@ public interface ITreeDataAdapter<T> : ITableDataAdapter where T : class, ITreeI
   public void ItemMove(ITreeItem item, ITreeItem dest, bool aboveDest);
   public void ItemDelete(ITreeItem item);
   public void TreeItemDelete(ITreeItem item);
-  public string? ValidateNewItemName(ITreeItem parent, string name);
+  public string? ValidateNewItemName(ITreeItem parent, string? name);
 }
