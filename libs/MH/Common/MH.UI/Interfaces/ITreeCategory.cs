@@ -19,7 +19,3 @@ public interface ITreeCategory : ITreeItem {
   public bool CanDrop(object src, ITreeItem dest);
   public void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy);
 }
-
-public interface ITreeCategory<TG> : ITreeCategory where TG : class, ITreeItem {
-  public void SetGroupDataAdapter(ITreeDataAdapter<TG> gda);
-}

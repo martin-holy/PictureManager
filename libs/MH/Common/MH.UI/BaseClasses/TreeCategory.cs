@@ -17,22 +17,22 @@ public class TreeCategory : TreeItem, ITreeCategory {
   public TreeView<ITreeItem> TreeView { get; } = new();
 
   public static RelayCommand<ITreeItem> ItemCreateCommand { get; } = new(
-    item => GetCategory(item)?.ItemCreate(item), null, "New");
+    item => GetCategory(item)?.ItemCreate(item!), null, "New");
 
   public static RelayCommand<ITreeItem> ItemRenameCommand { get; } = new(
-    item => GetCategory(item)?.ItemRename(item), null, "Rename");
+    item => GetCategory(item)?.ItemRename(item!), null, "Rename");
 
   public static RelayCommand<ITreeItem> ItemDeleteCommand { get; } = new(
-    item => GetCategory(item)?.ItemDelete(item), null, "Delete");
+    item => GetCategory(item)?.ItemDelete(item!), null, "Delete");
 
   public static RelayCommand<ITreeCategory> GroupCreateCommand { get; } = new(
-    item => GetCategory(item)?.GroupCreate(item), null, "New Group");
+    item => GetCategory(item)?.GroupCreate(item!), null, "New Group");
 
   public static RelayCommand<ITreeGroup> GroupRenameCommand { get; } = new(
-    item => GetCategory(item)?.GroupRename(item), null, "Rename Group");
+    item => GetCategory(item)?.GroupRename(item!), null, "Rename Group");
 
   public static RelayCommand<ITreeGroup> GroupDeleteCommand { get; } = new(
-    item => GetCategory(item)?.GroupDelete(item), null, "Delete Group");
+    item => GetCategory(item)?.GroupDelete(item!), null, "Delete Group");
 
   public TreeCategory(string icon, string name, int id) : base(icon, name) {
     Id = id;
@@ -56,12 +56,12 @@ public class TreeCategory : TreeItem, ITreeCategory {
   public virtual void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy) =>
     throw new NotImplementedException();
 
-  public static bool CanDrop(ITreeItem src, ITreeItem dest) {
+  public static bool CanDrop(ITreeItem? src, ITreeItem? dest) {
     if (src == null || dest == null || ReferenceEquals(src, dest) ||
         ReferenceEquals(src.Parent, dest) || ReferenceEquals(dest.Parent, src) ||
         (src is ITreeGroup && dest is not ITreeGroup)) return false;
 
-    // if src or dest categories are null or they are not equal
+    // if src or dest categories are null, or they are not equal
     if (Tree.GetParentOf<ITreeCategory>(src) is not { } srcCat ||
         Tree.GetParentOf<ITreeCategory>(dest) is not { } destCat ||
         !ReferenceEquals(srcCat, destCat)) return false;
@@ -69,7 +69,7 @@ public class TreeCategory : TreeItem, ITreeCategory {
     return true;
   }
 
-  public static bool GetNewName(bool forItem, string oldName, out string newName, ITreeItem item, Func<ITreeItem, string, string> validator, string icon) {
+  public static bool GetNewName(bool forItem, string? oldName, out string newName, ITreeItem item, Func<ITreeItem, string?, string?> validator, string icon) {
     var action = string.IsNullOrEmpty(oldName) ? "New" : "Rename";
     var target = forItem ? "Item" : "Group";
     var question = string.IsNullOrEmpty(oldName)
@@ -82,25 +82,27 @@ public class TreeCategory : TreeItem, ITreeCategory {
       oldName,
       answer => validator(item, answer));
     var result = Dialog.Show(inputDialog);
-    newName = inputDialog.Answer;
+    newName = inputDialog.Answer ?? string.Empty;
 
     return result == 1;
   }
 
-  private static ITreeCategory GetCategory(ITreeItem item) =>
+  private static ITreeCategory? GetCategory(ITreeItem? item) =>
     Tree.GetParentOf<ITreeCategory>(item);
 }
 
 public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
   public bool ScrollToAfterCreate { get; set; }
-  protected ITreeDataAdapter<TI> DataAdapter { get; set; }
+  protected ITreeDataAdapter<TI> DataAdapter { get; }
 
   public event EventHandler<TreeItemDroppedEventArgs> AfterDropEvent = delegate { };
 
-  public TreeCategory(string icon, string name, int id) : base(icon, name, id) { }
+  public TreeCategory(string icon, string name, int id, ITreeDataAdapter<TI> dataAdapter) : base(icon, name, id) {
+    DataAdapter = dataAdapter;
+  }
 
   public override void ItemCreate(ITreeItem parent) {
-    if (!GetNewName(true, string.Empty, out var newName, parent, DataAdapter.ValidateNewItemName, Icon)) return;
+    if (!GetNewName(true, string.Empty, out var newName, parent, DataAdapter.ValidateNewItemName, Icon!)) return;
 
     try {
       parent.IsExpanded = true;
@@ -113,7 +115,7 @@ public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
   }
 
   public override void ItemRename(ITreeItem item) {
-    if (!GetNewName(true, item.Name, out var newName, item, DataAdapter.ValidateNewItemName, Icon)) return;
+    if (!GetNewName(true, item.Name, out var newName, item, DataAdapter.ValidateNewItemName, Icon!)) return;
 
     try {
       DataAdapter.ItemRename(item, newName);
@@ -133,7 +135,7 @@ public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
         DataAdapter.ItemDelete(item);
 
       // collapse parent if doesn't have any sub items
-      if (item.Parent is { } parent && parent.Items.Count == 0)
+      if (item.Parent is { Items.Count: 0 } parent)
         parent.IsExpanded = false;
     }
     catch (Exception ex) {
@@ -149,7 +151,7 @@ public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
     }
 
     // items
-    if (src is ITreeItem srcItem && dest != null) {
+    if (src is ITreeItem srcItem) {
       if (copy)
         DataAdapter.ItemCopy(srcItem, dest);
       else
@@ -167,19 +169,21 @@ public class TreeCategory<TI> : TreeCategory where TI : class, ITreeItem {
       true)) == 1;
 }
 
-public class TreeCategory<TI, TG> : TreeCategory<TI>, ITreeCategory<TG> where TI : class, ITreeItem where TG : class, ITreeItem  {
+public class TreeCategory<TI, TG> : TreeCategory<TI> where TI : class, ITreeItem where TG : class, ITreeItem  {
   protected ITreeDataAdapter<TG> GroupDataAdapter { get; set; }
 
-  public TreeCategory(string icon, string name, int id) : base(icon, name, id) { }
+  public TreeCategory(string icon, string name, int id, ITreeDataAdapter<TI> da, ITreeDataAdapter<TG> gda) : base(icon, name, id, da) {
+    GroupDataAdapter = gda;
+  }
 
   public override void GroupCreate(ITreeItem parent) {
-    if (!GetNewName(false, string.Empty, out var newName, parent, GroupDataAdapter.ValidateNewItemName, Icon)) return;
+    if (!GetNewName(false, string.Empty, out var newName, parent, GroupDataAdapter.ValidateNewItemName, Icon!)) return;
     
     GroupDataAdapter.ItemCreate(parent, newName);
   }
 
   public override void GroupRename(ITreeGroup group) {
-    if (!GetNewName(false, group.Name, out var newName, group, GroupDataAdapter.ValidateNewItemName, Icon)) return;
+    if (!GetNewName(false, group.Name, out var newName, group, GroupDataAdapter.ValidateNewItemName, Icon!)) return;
 
     GroupDataAdapter.ItemRename(group, newName);
   }
@@ -192,7 +196,4 @@ public class TreeCategory<TI, TG> : TreeCategory<TI>, ITreeCategory<TG> where TI
     
     GroupDataAdapter.ItemDelete(group);
   }
-
-  public void SetGroupDataAdapter(ITreeDataAdapter<TG> gda) =>
-    GroupDataAdapter = gda;
 }
