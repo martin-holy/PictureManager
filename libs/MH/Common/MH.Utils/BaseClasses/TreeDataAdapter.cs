@@ -35,8 +35,8 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
     OnItemRenamed((T)item);
   }
 
-  public virtual string? ValidateNewItemName(ITreeItem parent, string name) =>
-    All.Any(x => name.Equals(x.Name, StringComparison.OrdinalIgnoreCase))
+  public virtual string? ValidateNewItemName(ITreeItem parent, string? name) =>
+    All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
       ? $"{name} item already exists!"
       : null;
 
