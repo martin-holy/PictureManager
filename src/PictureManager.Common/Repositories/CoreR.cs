@@ -41,9 +41,9 @@ public sealed class CoreR : SimpleDB {
     GeoName = new(this);
     GeoLocation = new(this);
     Image = new(this);
-    Keyword = new(this);
+    Keyword = new(this, CategoryGroup);
     MediaItem = new(this);
-    Person = new(this);
+    Person = new(this, CategoryGroup);
     Segment = new(this);
     VideoClip = new(this);
     VideoImage = new(this);

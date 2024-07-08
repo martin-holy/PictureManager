@@ -23,9 +23,9 @@ public class PersonR : TreeDataAdapter<PersonM> {
   public PeopleTreeCategory Tree { get; }
   public event EventHandler<PersonM[]> PersonsKeywordsChangedEvent = delegate { };
 
-  public PersonR(CoreR coreR) : base(coreR, "People", 4) {
+  public PersonR(CoreR coreR, CategoryGroupR cgR) : base(coreR, "People", 4) {
     _coreR = coreR;
-    Tree = new(this);
+    Tree = new(this, cgR);
   }
 
   public IEnumerable<PersonM> GetAll() {

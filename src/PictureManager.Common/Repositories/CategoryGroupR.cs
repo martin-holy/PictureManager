@@ -16,7 +16,7 @@ namespace PictureManager.Common.Repositories;
 /// DB fields: ID|Name|Category|GroupItems
 /// </summary>
 public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR, "CategoryGroups", 4) {
-  private readonly List<ITreeCategory> _categories = [];
+  private readonly List<ITreeItem> _categories = [];
 
   public override void Save() =>
     SaveToSingleFile(_categories.SelectMany(x => x.Items.OfType<CategoryGroupM>()));
@@ -86,8 +86,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
     if (coreR.IsReady) IsModified = true;
   }
 
-  public void AddCategory(ITreeCategory<CategoryGroupM> cat) {
+  public void AddCategory(ITreeItem cat) {
     _categories.Add(cat);
-    cat.SetGroupDataAdapter(this);
   }
 }

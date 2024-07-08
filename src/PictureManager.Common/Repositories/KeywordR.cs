@@ -18,9 +18,9 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
 
   public KeywordsTreeCategory Tree { get; }
 
-  public KeywordR(CoreR coreR) : base(coreR, "Keywords", 3) {
+  public KeywordR(CoreR coreR, CategoryGroupR cgR) : base(coreR, "Keywords", 3) {
     _coreR = coreR;
-    Tree = new(this);
+    Tree = new(this, cgR);
   }
 
   public static IEnumerable<T> GetAll<T>(ITreeItem root) {
