@@ -13,9 +13,8 @@ public class CharacterM : ListItem {
   public MovieM Movie { get; set; }
   public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
 
-  public CharacterM(int id, string name) {
+  public CharacterM(int id, string name) : base(null, name) {
     Id = id;
-    Name = name;
   }
 
   public override int GetHashCode() => Id;

@@ -10,9 +10,8 @@ public class ActorM : ListItem {
   public ActorDetailIdM DetailId { get; set; }
   public MediaItemM Image { get; set; }
 
-  public ActorM(int id, string name) {
+  public ActorM(int id, string name) : base(null, name) {
     Id = id;
-    Name = name;
   }
 
   public override int GetHashCode() => Id;
