@@ -93,7 +93,7 @@ public static class Tree {
     return level;
   }
 
-  public static T? GetParentOf<T>(ITreeItem item) where T : ITreeItem {
+  public static T? GetParentOf<T>(ITreeItem? item) where T : ITreeItem {
     var i = item;
     while (i != null) {
       if (i is T t) return t;
