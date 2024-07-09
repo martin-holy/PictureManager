@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 namespace MH.UI.Dialogs;
 
 public abstract class ProgressBarDialog : Dialog {
-  private string _message;
-  private string _stringProgress;
+  private string? _message;
+  private string? _stringProgress;
   private int _intProgress;
 
   public bool IsCanceled { get; private set; }
-  public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
-  public string StringProgress { get => _stringProgress; set { _stringProgress = value; OnPropertyChanged(); } }
+  public string? Message { get => _message; set { _message = value; OnPropertyChanged(); } }
+  public string? StringProgress { get => _stringProgress; set { _stringProgress = value; OnPropertyChanged(); } }
   public int IntProgress { get => _intProgress; set { _intProgress = value; OnPropertyChanged(); } }
 
   protected ProgressBarDialog(string title, string icon) : base(title, icon) {
-    Buttons = new DialogButton[] { new(CancelCommand, false, true) };
+    Buttons = [new(CancelCommand, false, true)];
   }
 
   public override Task OnResultChanged(int result) {
@@ -35,7 +35,7 @@ public abstract class ProgressBarDialog : Dialog {
 public class ProgressBarSyncDialog : ProgressBarDialog {
   public ProgressBarSyncDialog(string title, string icon) : base(title, icon) { }
 
-  public async Task Init<T>(T[] items, Func<bool> doBeforeLoop, Func<T, Task> action, Func<T, string> customMessage, Action onCompleted) {
+  public async Task Init<T>(T[] items, Func<bool>? doBeforeLoop, Func<T, Task> action, Func<T, string> customMessage, Action? onCompleted) {
     if (doBeforeLoop != null && !doBeforeLoop()) return;
 
     var count = items.Length;
@@ -88,11 +88,10 @@ public class ProgressBarAsyncDialog : ProgressBarDialog {
   public void Start() =>
     _worker.RunWorkerAsync();
 
-  public void Init<T>(T[] items, Func<bool> doBeforeLoop, Action<T> action, Func<T, string> customMessage, Action<object, RunWorkerCompletedEventArgs> onCompleted) {
-    _worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-      if (doBeforeLoop != null && !doBeforeLoop()) return;
+  public void Init<T>(T[] items, Func<bool>? doBeforeLoop, Action<T> action, Func<T, string> customMessage, Action<object?, RunWorkerCompletedEventArgs>? onCompleted) {
+    _worker.DoWork += delegate (object? o, DoWorkEventArgs e) {
+      if ((doBeforeLoop != null && !doBeforeLoop()) || o is not BackgroundWorker worker) return;
 
-      var worker = (BackgroundWorker)o;
       var count = items.Length;
       var done = 0;
 
