@@ -16,10 +16,10 @@ public enum PlayType { Video, Clip, Clips, Group }
 public sealed class MediaPlayer : ObservableObject {
   private const string _zeroTime = "00:00:00";
 
-  private IPlatformSpecificUiMediaPlayer _uiPlayer;
+  private IPlatformSpecificUiMediaPlayer? _uiPlayer;
   private readonly Timer _clipTimer;
   private readonly Timer _timelineTimer;
-  private IVideoItem _currentItem;
+  private IVideoItem? _currentItem;
   private PlayType _playType = PlayType.Video;
   private bool _autoPlay = true;
   private bool _isMuted;
@@ -36,7 +36,7 @@ public sealed class MediaPlayer : ObservableObject {
   private double _timelineSmallChange = 33;
   private double _timelineLargeChange = 1000;
   private double _volume = 0.5;
-  private string _source;
+  private string _source = string.Empty;
 
   public static KeyValuePair<PlayType, string>[] PlayTypes { get; } = {
     new(PlayType.Video, "Video"),
@@ -45,7 +45,7 @@ public sealed class MediaPlayer : ObservableObject {
     new(PlayType.Group, "Group")
   };
 
-  public IVideoItem CurrentItem { get => _currentItem; private set { _currentItem = value; OnPropertyChanged(); } }
+  public IVideoItem? CurrentItem { get => _currentItem; private set { _currentItem = value; OnPropertyChanged(); } }
   public bool AutoPlay { get => _autoPlay; set { _autoPlay = value; OnPropertyChanged(); } }
   public int RepeatForSeconds { get => _repeatForSeconds; set { _repeatForSeconds = value; OnPropertyChanged(); } }
   public double TimelineSmallChange { get => _timelineSmallChange; set { _timelineSmallChange = value; OnPropertyChanged(); } }
@@ -172,10 +172,10 @@ public sealed class MediaPlayer : ObservableObject {
   public RelayCommand TimelineSliderChangeStartedCommand { get; }
   public RelayCommand<PropertyChangedEventArgs<double>> TimelineSliderValueChangedCommand { get; }
 
-  public Func<int, IVideoClip> GetNewClipFunc { get; set; }
-  public Func<int, IVideoImage> GetNewImageFunc { get; set; }
-  public Action<bool, bool> SelectNextItemAction { get; set; }
-  public Action OnItemDeleteAction { get; set; }
+  public Func<int, IVideoClip?>? GetNewClipFunc { get; set; }
+  public Func<int, IVideoImage?>? GetNewImageFunc { get; set; }
+  public Action<bool, bool>? SelectNextItemAction { get; set; }
+  public Action? OnItemDeleteAction { get; set; }
 
   public event EventHandler<ObjectEventArgs<Tuple<IVideoItem, bool>>> MarkerSetEvent = delegate { };
   public event EventHandler RepeatEndedEvent = delegate { };
@@ -207,12 +207,12 @@ public sealed class MediaPlayer : ObservableObject {
   }
 
   ~MediaPlayer() {
-    _clipTimer?.Dispose();
-    _timelineTimer?.Dispose();
+    _clipTimer.Dispose();
+    _timelineTimer.Dispose();
   }
 
-  private void TimelineSliderValueChanged(PropertyChangedEventArgs<double> value) {
-    if (!_isTimelineTimerExecuting)
+  private void TimelineSliderValueChanged(PropertyChangedEventArgs<double>? value) {
+    if (value != null && !_isTimelineTimerExecuting)
       TimelinePosition = value.NewValue;
   }
 
@@ -308,7 +308,7 @@ public sealed class MediaPlayer : ObservableObject {
     _clipTimer.Start();
   }
 
-  public void SetCurrent(IVideoItem item) {
+  public void SetCurrent(IVideoItem? item) {
     CurrentItem = item;
     if (item == null) {
       _clipTimeStart = 0;
@@ -351,7 +351,7 @@ public sealed class MediaPlayer : ObservableObject {
   }
 
   private void SeekTo(bool start) =>
-    TimelinePosition = start ? CurrentItem.TimeStart : ((IVideoClip)CurrentItem).TimeEnd;
+    TimelinePosition = start ? CurrentItem!.TimeStart : ((IVideoClip)CurrentItem!).TimeEnd;
 
   private void SetMarker(bool start) {
     var ms = GetPosition();
@@ -394,7 +394,8 @@ public sealed class MediaPlayer : ObservableObject {
     if (vc?.TimeEnd == 0)
       SetClipMarker(vc, ms, false);
     else {
-      vc = GetNewClipFunc(ms);
+      vc = GetNewClipFunc?.Invoke(ms);
+      if (vc == null) return;
       CurrentItem = vc;
       SetClipMarker(vc, ms, true);
     }
@@ -402,7 +403,8 @@ public sealed class MediaPlayer : ObservableObject {
 
   private void SetNewImage() {
     var ms = GetPosition();
-    var vi = GetNewImageFunc(ms);
+    var vi = GetNewImageFunc?.Invoke(ms);
+    if (vi == null) return;
     CurrentItem = vi;
     SetImageMarker(vi, ms);
   }
@@ -437,7 +439,7 @@ public sealed class MediaPlayer : ObservableObject {
             ? @"m\:ss\.f"
             : @"s\.f\s");
 
-  public void SetView(IPlatformSpecificUiMediaPlayer view) {
+  public void SetView(IPlatformSpecificUiMediaPlayer? view) {
     if (_uiPlayer != null) {
       _uiPlayer.Pause();
       _uiPlayer.Source = null;
