@@ -9,12 +9,12 @@ public class Dialog : ObservableObject {
   private string _title;
   private string _icon;
   private int _result = -1;
-  private DialogButton[] _buttons;
+  private DialogButton[] _buttons = [];
 
   public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
   public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
   public DialogButton[] Buttons { get => _buttons; set { _buttons = value; OnPropertyChanged(); } }
-  public static Func<Dialog, int> Show { get; set; }
+  public static Func<Dialog, int> Show { get; set; } = _ => -1;
 
   public int Result {
     get => _result;
@@ -24,15 +24,19 @@ public class Dialog : ObservableObject {
     }
   }
 
-  public static RelayCommand<Dialog> CancelCommand { get; } = new(x => x.Result = 0, null, "Cancel");
-  public static RelayCommand<Dialog> CloseCommand { get; } = new(x => x.Result = 0, null, "Close");
-  public static RelayCommand<Dialog> NoCommand { get; } = new(x => x.Result = 0, null, "No");
-  public static RelayCommand<Dialog> OkCommand { get; } = new(x => x.Result = 1, null, "Ok");
-  public static RelayCommand<Dialog> YesCommand { get; } = new(x => x.Result = 1, null, "Yes");
+  public static RelayCommand<Dialog> CancelCommand { get; } = new(x => SetResult(x, 0), null, "Cancel");
+  public static RelayCommand<Dialog> CloseCommand { get; } = new(x => SetResult(x, 0), null, "Close");
+  public static RelayCommand<Dialog> NoCommand { get; } = new(x => SetResult(x, 0), null, "No");
+  public static RelayCommand<Dialog> OkCommand { get; } = new(x => SetResult(x, 1), null, "Ok");
+  public static RelayCommand<Dialog> YesCommand { get; } = new(x => SetResult(x, 1), null, "Yes");
 
   public Dialog(string title, string icon) {
-    Title = title;
-    Icon = icon;
+    _title = title;
+    _icon = icon;
+  }
+
+  public static void SetResult(Dialog? dialog, int result) {
+    if (dialog != null) dialog.Result = result;
   }
 
   public RelayCommand SetResult(int result, string icon, string text) =>
