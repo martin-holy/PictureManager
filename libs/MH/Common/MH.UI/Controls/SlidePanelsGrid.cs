@@ -14,10 +14,10 @@ public class SlidePanelsGrid : ObservableObject {
 
   public int ActiveLayout { get => _activeLayout; set => OnActivateLayoutChanged(value); }
   public bool[][] PinLayouts { get; }
-  public SlidePanel PanelLeft { get; }
-  public SlidePanel PanelTop { get; }
-  public SlidePanel PanelRight { get; }
-  public SlidePanel PanelBottom { get; }
+  public SlidePanel? PanelLeft { get; }
+  public SlidePanel? PanelTop { get; }
+  public SlidePanel? PanelRight { get; }
+  public SlidePanel? PanelBottom { get; }
   public object PanelMiddle { get; }
   public double PanelTopGridHeight { get => _panelTopGridHeight; set => SetIfVary(ref _panelTopGridHeight, value); }
   public double PanelBottomGridHeight { get => _panelBottomGridHeight; set => SetIfVary(ref _panelBottomGridHeight, value); }
@@ -38,7 +38,7 @@ public class SlidePanelsGrid : ObservableObject {
     }
   }
 
-  public static RelayCommand<SlidePanel> PinCommand { get; } = new(x => x.IsPinned = !x.IsPinned);
+  public static RelayCommand<SlidePanel> PinCommand { get; } = new(x => x!.IsPinned = !x.IsPinned, x => x != null);
 
   public SlidePanelsGrid(SlidePanel left, SlidePanel top, SlidePanel right, SlidePanel bottom, object middle, bool[][] pinLayouts) {
     PanelLeft = left;
@@ -56,7 +56,7 @@ public class SlidePanelsGrid : ObservableObject {
     InitPanel(PanelBottom);
   }
 
-  private void InitPanel(SlidePanel panel) {
+  private void InitPanel(SlidePanel? panel) {
     if (panel == null) return;
     panel.PropertyChanged += (_, e) => {
       if (!e.Is(nameof(panel.IsPinned))) return;
@@ -84,7 +84,7 @@ public class SlidePanelsGrid : ObservableObject {
   }
 
   public void OnMouseMove(double posX, double posY, double width, double height) {
-    // to stop opening/closing panel by it self in some cases
+    // to stop opening/closing panel by itself in some cases
     if ((posX == 0 && posY == 0) || posX < 0 || posY < 0) return;
     PanelLeft?.OnMouseMove(size => posX > size, posX < 5);
     PanelTop?.OnMouseMove(size => posY > size, posY < 5);
