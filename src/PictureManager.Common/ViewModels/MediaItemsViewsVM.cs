@@ -121,16 +121,12 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   public async void LoadByTag(object item) {
-    var and = Keyboard.IsCtrlOn();
-    var hide = Keyboard.IsAltOn();
+    var and = Keyboard.IsCtrlOn() && Current != null;
     var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn()).OfType<RealMediaItemM>().Cast<MediaItemM>();
 
-    // if CTRL is pressed, add new items to already loaded items
     if (and) items = Current.LoadedItems.Union(items);
-    // if ALT is pressed, remove new items from already loaded items
-    if (hide) items = Current.LoadedItems.Except(items);
 
-    var tabTitle = and || hide
+    var tabTitle = and
       ? null
       : item switch {
         RatingTreeM rating => rating.Rating.Value.ToString(),
@@ -142,12 +138,12 @@ public sealed class MediaItemsViewsVM : ObservableObject {
         _ => string.Empty
       };
 
-    if (and || hide)
+    if (and)
       AddViewIfNotActive(null);
     else
       AddView(tabTitle);
 
-    await Current.LoadByTag(items.ToArray());
+    await Current!.LoadByTag(items.ToArray());
   }
 
   public void SelectAndScrollToCurrentMediaItem() {
