@@ -6,12 +6,12 @@ using System.Linq;
 namespace MH.UI.Controls;
 
 public class TabControl : ObservableObject {
-  private IListItem _selected;
+  private IListItem? _selected;
   private bool _canCloseTabs;
 
   public ObservableCollection<IListItem> Tabs { get; } = [];
   public TabStrip TabStrip { get; set; } = new();
-  public IListItem Selected { get => _selected; set { _selected = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
+  public IListItem? Selected { get => _selected; set { _selected = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
   public bool CanCloseTabs { get => _canCloseTabs; set { _canCloseTabs = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
 
   public RelayCommand<IListItem> CloseTabCommand { get; }
@@ -32,7 +32,7 @@ public class TabControl : ObservableObject {
     else
       Add(icon, name, data);
 
-    TabActivatedEvent(Selected);
+    TabActivatedEvent(Selected!);
   }
 
   public void Add(string icon, string name, object data) =>
@@ -52,7 +52,7 @@ public class TabControl : ObservableObject {
   public void Close(object data) =>
     Close(GetTabByData(data));
 
-  public void Close(IListItem tab) {
+  public void Close(IListItem? tab) {
     if (tab == null || !CanCloseTabs) return;
 
     Tabs.Remove(tab);
@@ -63,7 +63,7 @@ public class TabControl : ObservableObject {
     TabClosedEvent(tab);
   }
 
-  public IListItem GetTabByData(object data) =>
+  public IListItem? GetTabByData(object data) =>
     Tabs.FirstOrDefault(x => ReferenceEquals(x.Data, data));
 
   public void UpdateMaxTabSize(double? width, double? height) {
