@@ -16,13 +16,13 @@ public class TreeViewBase : TreeView {
   private bool _isScrollingTo;
   private bool _resetHScroll;
   private double _resetHOffset;
-  private ScrollViewer _sv;
+  private ScrollViewer _sv = null!;
 
   public static readonly DependencyProperty TreeViewProperty = DependencyProperty.Register(
     nameof(TreeView), typeof(ITreeView), typeof(TreeViewBase));
 
-  public ITreeView TreeView {
-    get => (ITreeView)GetValue(TreeViewProperty);
+  public ITreeView? TreeView {
+    get => (ITreeView?)GetValue(TreeViewProperty);
     set => SetValue(TreeViewProperty, value);
   }
 
@@ -38,20 +38,16 @@ public class TreeViewBase : TreeView {
     _sv = (ScrollViewer)Template.FindName("PART_ScrollViewer", this);
     _sv.IsVisibleChanged += delegate { SetIsVisible(); };
     _sv.ScrollChanged += OnScrollChanged;
-    SetIsVisible();
 
-    if (TreeView == null) return;
+    SetIsVisible();
     SetItemsSource();
-    TreeView.ScrollToTopAction = ScrollToTop;
-    TreeView.ScrollToItemsAction = ScrollToItemsWhenReady;
-    TreeView.ExpandRootWhenReadyAction = ExpandRootWhenReady;
   }
 
   private void SetIsVisible() {
     if (TreeView != null) TreeView.IsVisible = _sv.IsVisible;
   }
 
-  private void OnTreeItemIntoView(RequestBringIntoViewEventArgs e) {
+  private void OnTreeItemIntoView(RequestBringIntoViewEventArgs? e) {
     _resetHScroll = true;
     _resetHOffset = _sv.HorizontalOffset;
   }
@@ -67,6 +63,7 @@ public class TreeViewBase : TreeView {
   }
 
   private void SetItemsSource() {
+    if (TreeView == null) return;
     var expand = false;
     var root = TreeView.RootHolder.FirstOrDefault() as ITreeItem;
     if (root is { IsExpanded: true }) {
@@ -74,11 +71,15 @@ public class TreeViewBase : TreeView {
       root.IsExpanded = false;
     }
     ItemsSource = TreeView.RootHolder;
-    if (expand) ExpandRootWhenReady(root);
+    if (expand) ExpandRootWhenReady(root!);
+
+    TreeView.ScrollToTopAction = ScrollToTop;
+    TreeView.ScrollToItemsAction = ScrollToItemsWhenReady;
+    TreeView.ExpandRootWhenReadyAction = ExpandRootWhenReady;
   }
 
   private void ScrollToTop() {
-    if (_sv == null || _sv.VerticalOffset == 0) return;
+    if (_sv.VerticalOffset == 0) return;
     _sv.ScrollToTop();
     _sv.UpdateLayout();
   }
@@ -107,9 +108,8 @@ public class TreeViewBase : TreeView {
       if (!GetDiff(idxItem, root, out diff) || diff == 0) return;
 
       // if diff wasn't it the view
-      ItemsControl parent = ScrollIntoView(this, items);
-
-      parent?.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => {
+      var parent = ScrollIntoView(this, items);
+      parent.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => {
         if (!GetDiff(idxItem, root, out diff) || diff == 0) return;
         _sv.ScrollToVerticalOffset(_sv.VerticalOffset + diff);
         _sv.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => {
@@ -157,8 +157,8 @@ public class TreeViewBase : TreeView {
     return parent;
   }
 
-  private ITreeItem GetHitTestItem(double x, double y) {
-    ITreeItem outItem = null;
+  private ITreeItem? GetHitTestItem(double x, double y) {
+    ITreeItem? outItem = null;
     VisualTreeHelper.HitTest(_sv, null, e => {
       if (e.VisualHit is not FrameworkElement { DataContext: ITreeItem item })
         return HitTestResultBehavior.Continue;
