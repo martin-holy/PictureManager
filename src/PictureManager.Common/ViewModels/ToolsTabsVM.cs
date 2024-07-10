@@ -12,14 +12,7 @@ public sealed class ToolsTabsVM : TabControl {
   public static RelayCommand<PersonM> OpenPersonTabCommand { get; set; }
   public static RelayCommand OpenPeopleTabCommand { get; set; }
 
-  public ToolsTabsVM() {
-    TabStrip = new() {
-      Placement = Dock.Top,
-      Slot = new SlidePanelPinButton(),
-      SlotPlacement = Dock.Right,
-      JustifyTabSize = true
-    };
-
+  public ToolsTabsVM() : base(new(Dock.Top, Dock.Right, new SlidePanelPinButton()) { JustifyTabSize = true }) {
     OpenPersonTabCommand = new(OpenPersonTab, Res.IconInformation, "Detail");
     OpenPeopleTabCommand = new(() => OpenPeopleTab(null), Res.IconPeopleMultiple, "People");
   }

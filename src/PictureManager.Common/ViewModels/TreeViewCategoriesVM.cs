@@ -18,13 +18,8 @@ public sealed class TreeViewCategoriesVM : TabControl {
   public RatingsTreeCategory RatingsTreeCategory { get; } = new();
   public SlidePanelPinButton SlidePanelPinButton { get; } = new();
 
-  public TreeViewCategoriesVM() {
+  public TreeViewCategoriesVM() : base(new(Dock.Top, Dock.Right, new TreeViewCategoriesSlotVM())) {
     TreeViewSearch = new(this);
-    TabStrip = new() {
-      Placement = Dock.Top,
-      Slot = new TreeViewCategoriesSlotVM(),
-      SlotPlacement = Dock.Right
-    };
   }
 
   public void AddCategories() {

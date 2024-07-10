@@ -5,14 +5,7 @@ namespace PictureManager.Common.ViewModels;
 public sealed class MainTabsSlotVM;
 
 public sealed class MainTabsVM : TabControl {
-  public MainTabsVM() {
+  public MainTabsVM() : base(new(Dock.Left, Dock.Top, new MainTabsSlotVM()) { RotationAngle = 270, JustifyTabSize = true }) {
     CanCloseTabs = true;
-    TabStrip = new() {
-      Placement = Dock.Left,
-      Slot = new MainTabsSlotVM(),
-      SlotPlacement = Dock.Top,
-      RotationAngle = 270,
-      JustifyTabSize = true
-    };
   }
 }
