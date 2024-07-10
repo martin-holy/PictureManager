@@ -4,7 +4,7 @@ public interface ICollectionView : ITreeView {
   public object? UIView { get; set; }
   public bool CanOpen { get; set; }
   public bool CanSelect { get; set; }
-  public void OpenItem(object item);
+  public void OpenItem(object? item);
   public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn);
   public void SetExpanded(object group);
 }

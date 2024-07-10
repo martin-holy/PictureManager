@@ -50,7 +50,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   public virtual void OnItemOpened(T item) { }
   public virtual void OnItemSelected(SelectionEventArgs<T> args) { }
 
-  public void OpenItem(object item) {
+  public void OpenItem(object? item) {
     if (item is not T i) return;
     RaiseItemOpened(i);
     OnItemOpened(i);
