@@ -12,10 +12,10 @@ namespace MH.UI.WPF.Converters;
 
 public class RelayCommandConverter : BaseMultiConverter {
   private static readonly object _lock = new();
-  private static RelayCommandConverter _inst;
+  private static RelayCommandConverter? _inst;
   public static RelayCommandConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  public override object Convert(object[] values, object parameter) {
+  public override object? Convert(object[]? values, object? parameter) {
     if (values is not [FrameworkElement fe, RelayCommandBase rc]) return Binding.DoNothing;
     SetIconData(fe, rc);
     SetText(fe, rc);
@@ -59,8 +59,8 @@ public class RelayCommandConverter : BaseMultiConverter {
 
   private static Path GetIcon(string icon) =>
     new() {
-      Data = (Geometry)ResourceConverter.Inst.Convert(icon, null),
-      Fill = (Brush)ResourceConverter.Inst.Convert(icon, Resources.Dictionaries.IconToBrush),
-      Style = (Style)ResourceConverter.Inst.Convert("MH.S.Icon.Shadow", null)
+      Data = ResourceConverter.Inst.Convert(icon, null) as Geometry,
+      Fill = ResourceConverter.Inst.Convert(icon, Resources.Dictionaries.IconToBrush) as Brush,
+      Style = ResourceConverter.Inst.Convert("MH.S.Icon.Shadow", null) as Style
     };
 }
