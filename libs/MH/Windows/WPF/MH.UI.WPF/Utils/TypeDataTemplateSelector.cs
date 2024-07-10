@@ -6,9 +6,9 @@ using System.Windows.Controls;
 namespace MH.UI.WPF.Utils;
 
 public class TypeDataTemplateSelector : DataTemplateSelector {
-  public TypeTemplateMapping[] TemplateMappings { get; set; }
+  public TypeTemplateMapping[]? TemplateMappings { get; set; }
 
-  public override DataTemplate SelectTemplate(object item, DependencyObject container) {
+  public override DataTemplate? SelectTemplate(object? item, DependencyObject container) {
     if (item == null || TemplateMappings == null || container is not FrameworkElement fe)
       return base.SelectTemplate(item, container);
 
@@ -23,6 +23,6 @@ public class TypeDataTemplateSelector : DataTemplateSelector {
 }
 
 public class TypeTemplateMapping {
-  public Type Type { get; set; }
-  public string TemplateKey { get; set; }
+  public Type Type { get; set; } = null!;
+  public string TemplateKey { get; set; } = null!;
 }
