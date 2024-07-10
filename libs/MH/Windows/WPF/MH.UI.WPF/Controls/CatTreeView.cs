@@ -19,7 +19,7 @@ public class CatTreeView : TreeViewBase {
     DoDropAction = DoDrop;
   }
 
-  private static object CanDrag(object source) {
+  private static object? CanDrag(object source) {
     return source is ITreeCategory
       ? null
       : Tree.GetParentOf<ITreeCategory>(source as ITreeItem) is null
@@ -35,7 +35,7 @@ public class CatTreeView : TreeViewBase {
 
     if (cat?.CanDrop(data, target as ITreeItem) == true) {
       if (target is ITreeGroup) return MH.Utils.DragDropEffects.Move;
-      if (!cat.CanCopyItem && !cat.CanMoveItem) return MH.Utils.DragDropEffects.None;
+      if (cat is { CanCopyItem: false, CanMoveItem: false }) return MH.Utils.DragDropEffects.None;
       if (cat.CanCopyItem && (e.KeyStates & DragDropKeyStates.ControlKey) != 0) return MH.Utils.DragDropEffects.Copy;
       if (cat.CanMoveItem && (e.KeyStates & DragDropKeyStates.ControlKey) == 0) return MH.Utils.DragDropEffects.Move;
     }
