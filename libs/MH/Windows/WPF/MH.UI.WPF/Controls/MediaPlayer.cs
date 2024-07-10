@@ -6,7 +6,7 @@ using UIC = MH.UI.Controls;
 namespace MH.UI.WPF.Controls;
 
 public class MediaPlayer : MediaElement, IPlatformSpecificUiMediaPlayer {
-  public UIC.MediaPlayer ViewModel { get; set; }
+  public UIC.MediaPlayer? ViewModel { get; set; }
 
   public MediaPlayer() {
     LoadedBehavior = MediaState.Manual;
