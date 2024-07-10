@@ -9,7 +9,7 @@ namespace MH.UI.WPF.Controls;
 public class DialogHost : ObservableObject {
   public Dialog Content { get; }
   public CustomWindow Window { get; }
-  public DataTemplateSelector DialogTemplateSelector { get; }
+  public DataTemplateSelector? DialogTemplateSelector { get; }
 
   private DialogHost(Dialog content) {
     var owner = GeoOwner();
@@ -44,5 +44,5 @@ public class DialogHost : ObservableObject {
   private static Window GeoOwner() =>
     Application.Current.Windows[^1]?.Content is DialogHost dh
       ? dh.Window
-      : Application.Current.MainWindow;
+      : Application.Current.MainWindow!;
 }
