@@ -7,15 +7,15 @@ namespace MH.UI.WPF.Converters;
 public enum CheckFor { NotNull, Null, True, False, NotEmpty, NullOrEmpty, Int, All }
 
 public class VisibilityConverter : BaseConverter {
-  private static VisibilityConverter _allToVisible;
-  private static VisibilityConverter _nullToVisible;
-  private static VisibilityConverter _notNullToVisible;
-  private static VisibilityConverter _trueToVisible;
-  private static VisibilityConverter _falseToVisible;
-  private static VisibilityConverter _trueToHidden;
-  private static VisibilityConverter _notEmptyToVisible;
-  private static VisibilityConverter _nullOrEmptyToVisible;
-  private static VisibilityConverter _intToVisible;
+  private static VisibilityConverter? _allToVisible;
+  private static VisibilityConverter? _nullToVisible;
+  private static VisibilityConverter? _notNullToVisible;
+  private static VisibilityConverter? _trueToVisible;
+  private static VisibilityConverter? _falseToVisible;
+  private static VisibilityConverter? _trueToHidden;
+  private static VisibilityConverter? _notEmptyToVisible;
+  private static VisibilityConverter? _nullOrEmptyToVisible;
+  private static VisibilityConverter? _intToVisible;
 
   public static VisibilityConverter AllToVisible => _allToVisible ??= new() { CheckFor = CheckFor.All, ToVisible = true };
   public static VisibilityConverter NullToVisible => _nullToVisible ??= new() { CheckFor = CheckFor.Null, ToVisible = true };
@@ -33,7 +33,7 @@ public class VisibilityConverter : BaseConverter {
   public bool ToHidden { get; init; }
   public bool ToVisible { get; init; }
 
-  public override object Convert(object value, object parameter) =>
+  public override object Convert(object? value, object? parameter) =>
     CheckFor switch {
       CheckFor.NotNull => GetFor(value != null),
       CheckFor.Null => GetFor(value == null),
