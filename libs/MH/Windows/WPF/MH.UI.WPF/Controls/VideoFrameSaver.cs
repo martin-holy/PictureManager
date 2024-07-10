@@ -13,20 +13,20 @@ using System.Windows.Threading;
 namespace MH.UI.WPF.Controls;
 
 /* Not visible parts of the VideoFrameSaver are filed with black color.
-   But there is not problem with hiding VideoFrameSaver behind other controls. */
+   But there is no problem with hiding VideoFrameSaver behind other controls. */
 
 public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   private bool _capture;
   private int _idxVideo;
   private int _idxFrame;
   private long _hash;
-  private VfsVideo[] _videos;
-  private VfsVideo _video;
-  private VfsFrame _frame;
+  private VfsVideo[]? _videos;
+  private VfsVideo? _video;
+  private VfsFrame? _frame;
   private readonly Stopwatch _timeOut = new();
-  private Action<VfsFrame> _onSaveAction;
-  private Action<VfsFrame, Exception> _onErrorAction;
-  private Action _onFinishedAction;
+  private Action<VfsFrame>? _onSaveAction;
+  private Action<VfsFrame, Exception>? _onErrorAction;
+  private Action? _onFinishedAction;
 
   public VideoFrameSaver() {
     LoadedBehavior = MediaState.Manual;
@@ -38,7 +38,7 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     MediaOpened += delegate { OnMediaOpened(); };
   }
 
-  public void Save(VfsVideo[] videos, Action<VfsFrame> onSaveAction, Action<VfsFrame, Exception> onErrorAction, Action onFinishedAction) {
+  public void Save(VfsVideo[] videos, Action<VfsFrame>? onSaveAction, Action<VfsFrame, Exception>? onErrorAction, Action? onFinishedAction) {
     _videos = videos;
     _onSaveAction = onSaveAction;
     _onErrorAction = onErrorAction;
@@ -51,7 +51,7 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   }
 
   private void NextVideo() {
-    if (_idxVideo + 1 > _videos.Length - 1) {
+    if (_idxVideo + 1 > _videos!.Length - 1) {
       CompositionTarget.Rendering -= CompositionTargetOnRendering;
       Source = null;
       _frame = null;
@@ -82,7 +82,7 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   }
 
   private void NextFrame() {
-    if (_idxFrame + 1 > _video.Frames.Count - 1) {
+    if (_idxFrame + 1 > _video!.Frames.Count - 1) {
       _timeOut.Stop();
       NextVideo();
       return;
@@ -103,11 +103,11 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     _capture = true;
   }
 
-  private void CompositionTargetOnRendering(object sender, EventArgs e) {
+  private void CompositionTargetOnRendering(object? sender, EventArgs e) {
     if (!_capture) return;
     var hash = GetHash();
     if (_timeOut.ElapsedMilliseconds > 2000)
-      Log.Error("VideoFrameSaver TimeOut", _frame.FilePath);
+      Log.Error("VideoFrameSaver TimeOut", _frame?.FilePath ?? string.Empty);
     else if (Imaging.CompareHashes(_hash, hash) == 0) return;
     _capture = false;
     _hash = hash;
@@ -116,8 +116,9 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
   }
 
   private void SaveFrame() {
+    if (_frame == null) return;
     try {
-      Crop(this.ToBitmap()).Resize(_frame.Size).SaveAsJpeg(_frame.FilePath, _frame.Quality);
+      Crop(this.ToBitmap(), _frame).Resize(_frame.Size).SaveAsJpeg(_frame.FilePath, _frame.Quality);
       _onSaveAction?.Invoke(_frame);
     }
     catch (Exception ex) {
@@ -125,11 +126,11 @@ public class VideoFrameSaver : MediaElement, IVideoFrameSaver {
     }
   }
 
-  private BitmapSource Crop(BitmapSource bmp) {
-    var rect = new Int32Rect(_frame.X, _frame.Y, _frame.Width, _frame.Height);
+  private BitmapSource Crop(BitmapSource bmp, VfsFrame frame) {
+    var rect = new Int32Rect(frame.X, frame.Y, frame.Width, frame.Height);
     if (!rect.HasArea) return bmp;
     if (ActualWidth >= Width && ActualHeight >= Height) return bmp.Crop(rect);
-    rect = ValidateRect(bmp, rect.Scale(ActualWidth / Width), _frame);
+    rect = ValidateRect(bmp, rect.Scale(ActualWidth / Width), frame);
     return bmp.Crop(rect);
   }
 
