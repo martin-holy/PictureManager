@@ -7,10 +7,10 @@ public class MessageDialog : Dialog {
 
   public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
 
-  public MessageDialog(string title, string message, string icon, bool canCancel, DialogButton[] buttons = null) : base(title, icon) {
-    Message = message;
+  public MessageDialog(string title, string message, string icon, bool canCancel, DialogButton[]? buttons = null) : base(title, icon) {
+    _message = message;
     Buttons = buttons ?? (canCancel
-      ? new DialogButton[] { new(YesCommand, true), new(NoCommand, false, true) }
-      : new DialogButton[] { new(OkCommand, true) });
+      ? [new(YesCommand, true), new(NoCommand, false, true)]
+      : [new(OkCommand, true)]);
   }
 }
