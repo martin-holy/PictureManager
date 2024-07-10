@@ -45,12 +45,12 @@ public static class Imaging {
     var sth = q * rh / pxh; // scale transform Y
 
     var resized = new TransformedBitmap(firstFrame, new ScaleTransform(stw, sth, 0, 0));
-    var metadata = withMetadata ? firstFrame.Metadata?.Clone() as BitmapMetadata : new BitmapMetadata("jpg");
+    var metadata = withMetadata ? firstFrame.Metadata?.Clone() as BitmapMetadata ?? new("jpg") : new("jpg");
     var thumbnail = withThumbnail ? firstFrame.Thumbnail : null;
 
     if (!withMetadata) {
       // even when withMetadata == false, set orientation
-      var orientation = ((BitmapMetadata)firstFrame.Metadata)?.GetQuery("System.Photo.Orientation") ?? (ushort)1;
+      var orientation = (firstFrame.Metadata as BitmapMetadata)?.GetQuery("System.Photo.Orientation") ?? (ushort)1;
       metadata.SetQuery("System.Photo.Orientation", orientation);
     }
 
@@ -66,7 +66,7 @@ public static class Imaging {
     using (Stream destFileStream = File.Open(destFile.FullName, FileMode.Create, FileAccess.ReadWrite))
       encoder.Save(destFileStream);
 
-    // set LastWriteTime to destination file as DateTaken so it can be correctly sorted in mobile apps
+    // set LastWriteTime to destination file as DateTaken, so it can be correctly sorted in mobile apps
     var date = DateTime.MinValue;
 
     // try to first get dateTaken from file name
@@ -76,7 +76,7 @@ public static class Imaging {
 
     // try to get dateTaken from metadata
     if (date == DateTime.MinValue) {
-      var dateTaken = ((BitmapMetadata)firstFrame.Metadata)?.DateTaken;
+      var dateTaken = (firstFrame.Metadata as BitmapMetadata)?.DateTaken;
       DateTime.TryParse(dateTaken, out date);
     }
 
