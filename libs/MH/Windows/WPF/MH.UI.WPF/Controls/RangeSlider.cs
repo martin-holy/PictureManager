@@ -10,11 +10,11 @@ using System.Windows.Input;
 namespace MH.UI.WPF.Controls;
 
 public class RangeSlider : Control {
-  private FrameworkElement _sliderContainer;
-  private FrameworkElement _startArea;
-  private FrameworkElement _selectedArea;
-  private FrameworkElement _endArea;
-  private Thumb _startThumb, _endThumb;
+  private FrameworkElement? _sliderContainer;
+  private FrameworkElement? _startArea;
+  private FrameworkElement? _selectedArea;
+  private FrameworkElement? _endArea;
+  private Thumb? _startThumb, _endThumb;
   private bool _arrangeIsPending;
 
   public static readonly DependencyProperty RangeProperty = DependencyProperty.Register(
@@ -25,7 +25,7 @@ public class RangeSlider : Control {
   public static readonly DependencyProperty TickFrequencyProperty = DependencyProperty.Register(
     nameof(TickFrequency), typeof(double), typeof(RangeSlider), new(1d));
 
-  public SelectionRange Range { get => (SelectionRange)GetValue(RangeProperty); set => SetValue(RangeProperty, value); }
+  public SelectionRange? Range { get => (SelectionRange?)GetValue(RangeProperty); set => SetValue(RangeProperty, value); }
   public Orientation Orientation { get => (Orientation)GetValue(OrientationProperty); set => SetValue(OrientationProperty, value); }
   public double TickFrequency { get => (double)GetValue(TickFrequencyProperty); set => SetValue(TickFrequencyProperty, value); }
 
@@ -69,14 +69,14 @@ public class RangeSlider : Control {
     _startArea.Arrange(rectStart);
     _selectedArea.Arrange(rectSelected);
     _endArea.Arrange(rectEnd);
-    _startThumb.Arrange(rectStart);
-    _endThumb.Arrange(rectEnd);
+    _startThumb?.Arrange(rectStart);
+    _endThumb?.Arrange(rectEnd);
 
     return arrangeSize;
   }
 
   private void OnSliderPreviewMouseDown(object sender, MouseButtonEventArgs e) {
-    if (Range == null || _startThumb.IsMouseOver || _endThumb.IsMouseOver) return;
+    if (Range == null || _startThumb?.IsMouseOver == true || _endThumb?.IsMouseOver == true) return;
 
     var point = e.GetPosition(_sliderContainer);
     if (e.ChangedButton == MouseButton.Left)
@@ -88,9 +88,9 @@ public class RangeSlider : Control {
   }
 
   private void MoveThumbTo(double position, bool start) {
-    double size = _sliderContainer.ActualWidth;
+    double size = _sliderContainer?.ActualWidth ?? double.NaN;
     if (double.IsNaN(size) || !(size > 0)) return;
-    var value = Math.Min(Range.Max, Range.Min + (position / size) * (Range.Max - Range.Min)).RoundTo(TickFrequency);
+    var value = Math.Min(Range!.Max, Range.Min + (position / size) * (Range.Max - Range.Min)).RoundTo(TickFrequency);
         
     if (start) Range.Start = Math.Min(Range.End, value);
     else Range.End = Math.Max(Range.Start, value);
@@ -123,6 +123,6 @@ public class RangeSlider : Control {
     if (e.NewValue is SelectionRange newRange) newRange.PropertyChanged += self.OnAnyRangePropertyChanged;
   }
 
-  private void OnAnyRangePropertyChanged(object sender, PropertyChangedEventArgs e) =>
+  private void OnAnyRangePropertyChanged(object? sender, PropertyChangedEventArgs e) =>
     ArrangeOverride(RenderSize);
 }
