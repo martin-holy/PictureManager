@@ -8,10 +8,10 @@ namespace MH.UI.WPF.Converters;
 
 public class CollectionViewItemSizeConverter : BaseConverter {
   private static readonly object _lock = new();
-  private static CollectionViewItemSizeConverter _inst;
+  private static CollectionViewItemSizeConverter? _inst;
   public static CollectionViewItemSizeConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  public override object Convert(object value, object parameter) {
+  public override object? Convert(object? value, object? parameter) {
     if (value is not FrameworkElement fe
         || fe.TryFindParent<ItemsControl>() is not { DataContext: ITreeItem { Parent: ICollectionViewGroup g } })
       return null;
