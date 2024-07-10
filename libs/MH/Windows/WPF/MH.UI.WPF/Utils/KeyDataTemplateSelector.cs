@@ -2,23 +2,23 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace MH.UI.WPF.Utils {
-  public class KeyDataTemplateSelector : DataTemplateSelector {
-    public object[] Keys { get; set; }
+namespace MH.UI.WPF.Utils;
 
-    public override DataTemplate SelectTemplate(object item, DependencyObject container) {
-      if (item == null || container is not FrameworkElement containerElement)
-        return base.SelectTemplate(item, container);
+public class KeyDataTemplateSelector : DataTemplateSelector {
+  public object[]? Keys { get; set; }
 
-      var type = item.GetType();
-      var typeName = string.Join('.', type.Namespace, type.Name);
+  public override DataTemplate? SelectTemplate(object? item, DependencyObject container) {
+    if (item == null || container is not FrameworkElement containerElement)
+      return base.SelectTemplate(item, container);
 
-      if (!Keys.Contains(typeName))
-        return base.SelectTemplate(item, container);
+    var type = item.GetType();
+    var typeName = string.Join('.', type.Namespace, type.Name);
 
-      var template = containerElement.TryFindResource(typeName) as DataTemplate;
+    if (Keys != null && !Keys.Contains(typeName))
+      return base.SelectTemplate(item, container);
 
-      return template ?? base.SelectTemplate(item, container);
-    }
+    var template = containerElement.TryFindResource(typeName) as DataTemplate;
+
+    return template ?? base.SelectTemplate(item, container);
   }
 }
