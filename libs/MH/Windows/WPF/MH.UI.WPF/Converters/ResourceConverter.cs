@@ -5,10 +5,10 @@ namespace MH.UI.WPF.Converters;
 
 public class ResourceConverter : BaseConverter {
   private static readonly object _lock = new();
-  private static ResourceConverter _inst;
+  private static ResourceConverter? _inst;
   public static ResourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  public override object Convert(object value, object parameter) {
+  public override object? Convert(object? value, object? parameter) {
     value = TryConvertValue(value, parameter);
 
     return value == null
@@ -17,7 +17,7 @@ public class ResourceConverter : BaseConverter {
         ?? DependencyProperty.UnsetValue;
   }
 
-  public static object TryConvertValue(object value, object parameter) {
+  public static object? TryConvertValue(object? value, object? parameter) {
     if (value == null) return null;
     if (parameter is Dictionary<object, object> dict) {
       if (!dict.TryGetValue(value, out var dicValue))
@@ -30,11 +30,11 @@ public class ResourceConverter : BaseConverter {
     return value;
   }
 
-  public static object TryFindResource(ResourceDictionary dictionary, object value) {
+  public static object? TryFindResource(ResourceDictionary dictionary, object value) {
     if (dictionary.Contains(value))
       return dictionary[value];
 
-    object res;
+    object? res;
     foreach (var item in dictionary.Values) {
       if (item is not FrameworkTemplate ft) continue;
       res = TryFindResource(ft.Resources, value);
