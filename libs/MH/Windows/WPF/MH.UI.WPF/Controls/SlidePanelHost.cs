@@ -37,7 +37,7 @@ public class SlidePanelHost : Control {
     if (e.NewValue is ObservableObject newO) newO.PropertyChanged += self.OnAnySlidePanelPropertyChanged;
   }
 
-  private void OnAnySlidePanelPropertyChanged(object sender, PropertyChangedEventArgs e) {
+  private void OnAnySlidePanelPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (!e.Is(nameof(SlidePanel.IsOpen))) return;
     if (SlidePanel.IsOpen)
       _sbOpen.Begin(this);
