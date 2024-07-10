@@ -21,8 +21,8 @@ public class CollectionView : TreeViewBase {
   public static readonly DependencyProperty InnerItemTemplateProperty = DependencyProperty.Register(
     nameof(InnerItemTemplate), typeof(DataTemplate), typeof(CollectionView));
 
-  public ICollectionView View {
-    get => (ICollectionView)GetValue(ViewProperty);
+  public ICollectionView? View {
+    get => (ICollectionView?)GetValue(ViewProperty);
     set => SetValue(ViewProperty, value);
   }
 
@@ -45,7 +45,7 @@ public class CollectionView : TreeViewBase {
     PreviewMouseLeftButtonUp += (_, e) => {
       if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0
           && e.OriginalSource is ToggleButton { Name: "expander" } btn) {
-        View.SetExpanded(btn.DataContext);
+        View?.SetExpanded(btn.DataContext);
       }
     };
 
@@ -53,23 +53,22 @@ public class CollectionView : TreeViewBase {
     Unloaded += (_, _) => InnerItemTemplates.Remove(this);
   }
 
-  private static void OpenItem(MouseButtonEventArgs e) {
-    if (e.ChangedButton != MouseButton.Left
-        || (e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { } cv
-        || !cv.View.CanOpen) return;
+  private static void OpenItem(MouseButtonEventArgs? e) {
+    if (e is not { ChangedButton: MouseButton.Left }
+        || (e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { View.CanOpen: true } cv) return;
 
     cv.OpenItem(GetDataContext(e.OriginalSource));
   }
 
-  public void OpenItem(object item) {
+  public void OpenItem(object? item) {
     var startTime = DateTime.Now;
-    View.OpenItem(item);
+    View?.OpenItem(item);
     _openTime = (DateTime.Now - startTime).TotalMilliseconds;
   }
 
-  private static void SelectItem(MouseButtonEventArgs e) {
-    if ((e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { } cv
-        || !cv.View.CanSelect || cv.DoubleClicking()) return;
+  private static void SelectItem(MouseButtonEventArgs? e) {
+    if ((e?.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { View.CanSelect: true } cv
+        || cv.DoubleClicking()) return;
 
     var item = GetDataContext(e.OriginalSource);
     var row = (e.Source as FrameworkElement)?.DataContext;
@@ -105,8 +104,10 @@ public class CollectionView : TreeViewBase {
       view.View.UIView = view;
   }
 
-  private static object GetDataContext(object source) {
-    if (source is not FrameworkElement fe) return null;
+  private static object? GetDataContext(object source) {
+    FrameworkElement? fe = source as FrameworkElement;
+    if (fe == null) return null;
+
     if (fe.TemplatedParent == null)
       fe = fe.Parent as FrameworkElement;
 
@@ -115,9 +116,9 @@ public class CollectionView : TreeViewBase {
 }
 
 public class GroupByDialogDataTemplateSelector : DataTemplateSelector {
-  public static Func<object, string> TypeToKey { get; set; }
+  public static Func<object, string?>? TypeToKey { get; set; }
 
-  public override DataTemplate SelectTemplate(object item, DependencyObject container) {
+  public override DataTemplate? SelectTemplate(object? item, DependencyObject container) {
     if (item == null || TypeToKey == null)
       return base.SelectTemplate(item, container);
 
