@@ -4,12 +4,12 @@ namespace MH.UI.WPF.Converters;
 
 public class DoubleEqualityConverter : BaseConverter {
   private static readonly object _lock = new();
-  private static DoubleEqualityConverter _isEqual;
-  private static DoubleEqualityConverter _isNotEqual;
-  private static DoubleEqualityConverter _isGreaterThan;
-  private static DoubleEqualityConverter _isGreaterOrEqual;
-  private static DoubleEqualityConverter _isLessThan;
-  private static DoubleEqualityConverter _isLessOrEqual;
+  private static DoubleEqualityConverter? _isEqual;
+  private static DoubleEqualityConverter? _isNotEqual;
+  private static DoubleEqualityConverter? _isGreaterThan;
+  private static DoubleEqualityConverter? _isGreaterOrEqual;
+  private static DoubleEqualityConverter? _isLessThan;
+  private static DoubleEqualityConverter? _isLessOrEqual;
 
   public static DoubleEqualityConverter IsEqual { get {
     lock (_lock) {
@@ -48,7 +48,7 @@ public class DoubleEqualityConverter : BaseConverter {
   public bool DoIsLessThan { get; init; }
   public bool DoIsLessOrEqual { get; init; }
 
-  public override object Convert(object value, object parameter) {
+  public override object? Convert(object? value, object? parameter) {
     if (value is not double v || parameter is not double p)
       return Binding.DoNothing;
 
