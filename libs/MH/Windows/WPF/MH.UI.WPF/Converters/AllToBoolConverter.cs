@@ -4,13 +4,13 @@ namespace MH.UI.WPF.Converters;
 
 public class AllToBoolConverter : BaseConverter {
   private static readonly object _lock = new();
-  private static AllToBoolConverter _inst;
+  private static AllToBoolConverter? _inst;
   public static AllToBoolConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  public override object Convert(object value, object parameter) =>
+  public override object Convert(object? value, object? parameter) =>
     AllToBool(value, parameter);
 
-  public static bool AllToBool(object value, object parameter) {
+  public static bool AllToBool(object? value, object? parameter) {
     if (value == null) return false;
 
     if (parameter != null)
