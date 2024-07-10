@@ -4,7 +4,7 @@ using System.Windows.Media;
 namespace MH.UI.WPF.Extensions;
 
 public static class DependencyObjectExtensions {
-  public static T GetChildOfType<T>(this DependencyObject o) where T : DependencyObject {
+  public static T? GetChildOfType<T>(this DependencyObject? o) where T : DependencyObject {
     if (o == null) return null;
 
     for (var i = 0; i < VisualTreeHelper.GetChildrenCount(o); i++) {
@@ -19,7 +19,7 @@ public static class DependencyObjectExtensions {
   public static bool HasAttachedProperty(this DependencyObject obj, DependencyProperty property) =>
     DependencyPropertyHelper.GetValueSource(obj, property).BaseValueSource != BaseValueSource.Default;
 
-  public static T TryFindParent<T>(this DependencyObject child) where T : DependencyObject {
+  public static T? TryFindParent<T>(this DependencyObject child) where T : DependencyObject {
     while (true) {
       var parent = VisualTreeHelper.GetParent(child);
       if (parent == null) return null;
