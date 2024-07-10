@@ -10,7 +10,7 @@ public class TabControl : ObservableObject {
   private bool _canCloseTabs;
 
   public ObservableCollection<IListItem> Tabs { get; } = [];
-  public TabStrip TabStrip { get; set; } = new();
+  public TabStrip TabStrip { get; set; }
   public IListItem? Selected { get => _selected; set { _selected = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
   public bool CanCloseTabs { get => _canCloseTabs; set { _canCloseTabs = value; OnPropertyChanged(); OnPropertyChanged(nameof(Selected.Data)); } }
 
@@ -19,7 +19,8 @@ public class TabControl : ObservableObject {
   public event DataEventHandler<IListItem> TabActivatedEvent = delegate { };
   public event DataEventHandler<IListItem> TabClosedEvent = delegate { };
 
-  public TabControl() {
+  public TabControl(TabStrip tabStrip) {
+    TabStrip = tabStrip;
     CloseTabCommand = new(Close, Res.IconXCross, "Close");
 
     Tabs.CollectionChanged += (_, _) => TabStrip.UpdateMaxTabSize(Tabs.Count);

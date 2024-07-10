@@ -21,6 +21,12 @@ public sealed class TabStrip : ObservableObject {
   public double MaxTabHeight { get => _maxTabHeight; set { _maxTabHeight = value; OnPropertyChanged(); } }
   public double Size { get => _size; set { _size = value; OnPropertyChanged(); } }
 
+  public TabStrip(Dock placement, Dock slotPlacement, object slot) {
+    _placement = placement;
+    _slotPlacement = slotPlacement;
+    _slot = slot;
+  }
+
   public void UpdateMaxTabSize(int tabsCount) {
     if (tabsCount == 0 || !JustifyTabSize) {
       ResetMaxTabSize();
