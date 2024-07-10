@@ -4,10 +4,10 @@ namespace MH.UI.WPF.Converters;
 
 public class CalcNumberConverter : BaseConverter {
   private static readonly object _lock = new();
-  private static CalcNumberConverter _add;
-  private static CalcNumberConverter _subtract;
-  private static CalcNumberConverter _multiply;
-  private static CalcNumberConverter _divide;
+  private static CalcNumberConverter? _add;
+  private static CalcNumberConverter? _subtract;
+  private static CalcNumberConverter? _multiply;
+  private static CalcNumberConverter? _divide;
 
   public static CalcNumberConverter Add { get {
     lock (_lock) {
@@ -34,7 +34,7 @@ public class CalcNumberConverter : BaseConverter {
   public bool DoMultiply { get; init; }
   public bool DoDivide { get; init; }
 
-  public override object Convert(object value, object parameter) {
+  public override object Convert(object? value, object? parameter) {
     if (value is not double v || parameter is not double p)
       return Binding.DoNothing;
 
