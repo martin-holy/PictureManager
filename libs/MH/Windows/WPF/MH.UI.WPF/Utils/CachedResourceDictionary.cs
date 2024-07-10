@@ -5,7 +5,7 @@ using System.Windows;
 namespace MH.UI.WPF.Utils {
   public class CachedResourceDictionary : ResourceDictionary {
     private static readonly Dictionary<Uri, WeakReference> _cache = new();
-    private Uri _source;
+    private Uri _source = null!;
 
     public new Uri Source {
       get => _source;
@@ -15,7 +15,7 @@ namespace MH.UI.WPF.Utils {
         if (!_cache.TryGetValue(_source, out var weakReference))
           AddToCache();
         else if (weakReference is { IsAlive: true })
-          MergedDictionaries.Add((ResourceDictionary)weakReference.Target);
+          MergedDictionaries.Add((ResourceDictionary)weakReference.Target!);
         else
           AddToCache();
       }
