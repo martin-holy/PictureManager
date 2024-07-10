@@ -15,7 +15,7 @@ public class RelayCommandConverter : BaseMultiConverter {
   private static RelayCommandConverter? _inst;
   public static RelayCommandConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  public override object? Convert(object[]? values, object? parameter) {
+  public override object? Convert(object?[]? values, object? parameter) {
     if (values is not [FrameworkElement fe, RelayCommandBase rc]) return Binding.DoNothing;
     SetIconData(fe, rc);
     SetText(fe, rc);
