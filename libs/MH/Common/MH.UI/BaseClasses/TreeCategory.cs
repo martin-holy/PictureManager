@@ -50,7 +50,7 @@ public class TreeCategory : TreeItem, ITreeCategory {
 
   public virtual void OnItemSelected(object item) { }
 
-  public virtual bool CanDrop(object src, ITreeItem dest) =>
+  public virtual bool CanDrop(object src, ITreeItem? dest) =>
     CanDrop(src as ITreeItem, dest);
 
   public virtual void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy) =>
