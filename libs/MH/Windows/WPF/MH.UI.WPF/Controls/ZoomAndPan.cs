@@ -85,25 +85,25 @@ namespace MH.UI.WPF.Controls {
       set => SetValue(ReScaleToFitProperty, value);
     }
 
-    private Canvas _canvas;
-    private UIElement _content;
-    private TranslateTransform _contentTransform;
+    private Canvas _canvas = null!;
+    private UIElement _content = null!;
+    private TranslateTransform _contentTransform = null!;
     private Point _origin;
     private Point _start;
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
-      _canvas = Template.FindName("PART_Canvas", this) as Canvas;
+      _canvas = (Canvas)GetTemplateChild("PART_Canvas")!;
       _canvas.SizeChanged += Canvas_OnSizeChanged;
       _canvas.MouseMove += Canvas_OnMouseMove;
 
-      _content = Template.FindName("PART_Content", this) as UIElement;
+      _content = (UIElement)GetTemplateChild("PART_Content")!;
       _content.MouseLeftButtonDown += Content_OnMouseLeftButtonDown;
       _content.MouseLeftButtonUp += Content_OnMouseLeftButtonUp;
       _content.MouseWheel += Content_OnMouseWheel;
 
-      _contentTransform = Template.FindName("PART_ContentTransform", this) as TranslateTransform;
+      _contentTransform = (TranslateTransform)GetTemplateChild("PART_ContentTransform")!;
     }
 
     public void IsAnimationOnChanged() {
@@ -149,7 +149,7 @@ namespace MH.UI.WPF.Controls {
     }
 
     public void Stop() {
-      _contentTransform?.BeginAnimation(TranslateTransform.XProperty, null);
+      _contentTransform.BeginAnimation(TranslateTransform.XProperty, null);
     }
 
     private void Canvas_OnSizeChanged(object sender, SizeChangedEventArgs e) =>
