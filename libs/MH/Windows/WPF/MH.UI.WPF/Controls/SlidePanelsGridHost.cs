@@ -23,7 +23,7 @@ public class SlidePanelsGridHost : Control {
     InitPanel(GetTemplateChild("PART_BottomPanel") as SlidePanelHost);
   }
 
-  private void InitPanel(SlidePanelHost host) {
+  private void InitPanel(SlidePanelHost? host) {
     if (host == null) return;
     host.SizeChanged += (_, e) => {
       SlidePanelsGrid.SetPin(host.SlidePanel);
