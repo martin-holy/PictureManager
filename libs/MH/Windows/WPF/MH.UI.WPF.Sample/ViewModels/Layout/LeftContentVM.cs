@@ -3,14 +3,7 @@
 namespace MH.UI.WPF.Sample.ViewModels.Layout;
 
 public class LeftContentVM : TabControl {
-  public LeftContentVM() {
+  public LeftContentVM() : base(new(Dock.Left, Dock.Top, new SlidePanelPinButton()) { JustifyTabSize = true }) {
     CanCloseTabs = true;
-    TabStrip = new() {
-      Placement = Dock.Left,
-      Slot = new SlidePanelPinButton(),
-      SlotPlacement = Dock.Top,
-      RotationAngle = 0,
-      JustifyTabSize = true
-    };
   }
 }

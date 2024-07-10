@@ -4,13 +4,4 @@ namespace MH.UI.WPF.Sample.ViewModels.Layout;
 
 public sealed class MiddleContentSlotVM;
 
-public sealed class MiddleContentVM : TabControl {
-  public MiddleContentVM() {
-    TabStrip = new() {
-      Placement = Dock.Left,
-      Slot = new MiddleContentSlotVM(),
-      SlotPlacement = Dock.Top,
-      RotationAngle = 270
-    };
-  }
-}
+public sealed class MiddleContentVM() : TabControl(new(Dock.Left, Dock.Top, new MiddleContentSlotVM()) { RotationAngle = 270 });
