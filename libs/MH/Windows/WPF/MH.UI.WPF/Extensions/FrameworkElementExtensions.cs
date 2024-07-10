@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 namespace MH.UI.WPF.Extensions;
 
 public static class FrameworkElementExtensions {
-  public static T FindTemplatedParent<T>(this FrameworkElement child) where T : FrameworkElement {
+  public static T? FindTemplatedParent<T>(this FrameworkElement child) where T : FrameworkElement {
     while (true) {
       if (child?.TemplatedParent == null) return null;
       if (child.TemplatedParent is T parent) return parent;
@@ -14,7 +14,7 @@ public static class FrameworkElementExtensions {
     }
   }
 
-  public static T FindThisOrParent<T>(FrameworkElement child, string name) where T : FrameworkElement {
+  public static T? FindThisOrParent<T>(FrameworkElement child, string name) where T : FrameworkElement {
     while (true) {
       if (child == null) return null;
       if (child is T element && element.Name.Equals(name, StringComparison.Ordinal)) return element;
@@ -22,7 +22,7 @@ public static class FrameworkElementExtensions {
     }
   }
 
-  public static FrameworkElement FindTopTemplatedParent(this FrameworkElement child) {
+  public static FrameworkElement? FindTopTemplatedParent(this FrameworkElement? child) {
     var parent = child?.TemplatedParent as FrameworkElement;
     while (true) {
       if (parent == null) return null;
