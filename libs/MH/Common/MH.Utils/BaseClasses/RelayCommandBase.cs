@@ -22,7 +22,7 @@ public abstract class RelayCommandBase {
     Text = text;
   }
 
-  public static void InvokeCanExecuteChanged(object o, EventArgs e) =>
+  public static void InvokeCanExecuteChanged(object? o, EventArgs e) =>
     CanExecuteChangedEvent(o, e);
 
   public virtual bool CanExecute(object? parameter) =>
