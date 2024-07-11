@@ -47,7 +47,7 @@ public class ExtObservableCollection<T> : ObservableCollection<T> {
 
 public static class ExtObservableCollectionExtensions {
   public static ExtObservableCollection<T>? Toggle<T>(this ExtObservableCollection<T>? collection, T item,
-    bool nullIfEmpty) where T : new() {
+    bool nullIfEmpty) {
     if (collection == null) {
       collection = [item];
       return collection;
