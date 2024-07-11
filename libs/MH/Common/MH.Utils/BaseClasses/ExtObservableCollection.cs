@@ -15,7 +15,7 @@ public class ExtObservableCollection<T> : ObservableCollection<T> {
     NotifyChange(NotifyCollectionChangedAction.Reset, null);
   }
 
-  public void AddItems(IList<T>? items, Action<T> itemAction) {
+  public void AddItems(IList<T>? items, Action<T>? itemAction) {
     if (items == null) return;
     foreach (var item in items) {
       itemAction?.Invoke(item);
