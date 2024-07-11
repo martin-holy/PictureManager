@@ -98,11 +98,11 @@ public class MainWindowVM : ObservableObject {
 
   private void AttachEvents() {
     LeftContent.TabActivatedEvent += _ => {
-      SlidePanelsGrid.PanelLeft.IsOpen = true;
+      SlidePanelsGrid.PanelLeft!.IsOpen = true;
     };
 
     LeftContent.Tabs.CollectionChanged += (_, e) => {
-      SlidePanelsGrid.PanelLeft.CanOpen = LeftContent.Tabs.Count > 0;
+      SlidePanelsGrid.PanelLeft!.CanOpen = LeftContent.Tabs.Count > 0;
       if (e.NewItems != null)
         SlidePanelsGrid.PanelLeft.IsOpen = true;
     };
@@ -113,7 +113,7 @@ public class MainWindowVM : ObservableObject {
   }
 
   private void OpenInputDialog() {
-    Func<string, string> validator = answer => string.IsNullOrEmpty(answer) ? "Input is empty" : string.Empty;
+    Func<string?, string?> validator = answer => string.IsNullOrEmpty(answer) ? "Input is empty" : string.Empty;
     var result = Dialog.Show(new InputDialog("Input Dialog", "Sample message", Icons.Tag, "Sample", validator));
   }
 

@@ -10,7 +10,7 @@ namespace MH.UI.WPF.Sample.Models;
 public class FolderM : TreeItem {
   public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
 
-  public FolderM(ITreeItem parent, string name) : base(Icons.Folder, name) {
+  public FolderM(ITreeItem? parent, string name) : base(Icons.Folder, name) {
     Parent = parent;
   }
 
@@ -37,7 +37,7 @@ public class FolderM : TreeItem {
         // add placeholder so the folder can be expanded
         using var enumerator = Directory.EnumerateDirectories(folder.FullPath).GetEnumerator();
         if (enumerator.MoveNext())
-          folder.Items.Add(new FolderM(null, null));
+          folder.Items.Add(new FolderM(null, string.Empty));
 
         // add new Folder to the tree if is Accessible
         Items.Add(folder);

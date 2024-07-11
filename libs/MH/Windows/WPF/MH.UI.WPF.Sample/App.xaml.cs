@@ -4,8 +4,8 @@ using System.Windows;
 namespace MH.UI.WPF.Sample;
 
 public partial class App {
-  public static Core Core { get; private set; }
-  public static CoreUI CoreUI { get; private set; }
+  public static Core Core { get; private set; } = null!;
+  public static CoreUI CoreUI { get; private set; } = null!;
 
   protected override async void OnStartup(StartupEventArgs e) {
     base.OnStartup(e);

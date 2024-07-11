@@ -26,7 +26,7 @@ public class FolderTreeViewVM : TreeView<FolderM> {
       };
 
       // add placeholder so the Drive can be expanded
-      item.Items.Add(new FolderM(null, null));
+      item.Items.Add(new FolderM(null, string.Empty));
 
       RootHolder.Add(item);
     }
