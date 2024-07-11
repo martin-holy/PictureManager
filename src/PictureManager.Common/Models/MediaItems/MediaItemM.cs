@@ -11,11 +11,15 @@ namespace PictureManager.Common.Models.MediaItems;
 
 public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquatable<MediaItemM>, IHaveKeywords {
   #region IEquatable implementation
-  public bool Equals(MediaItemM other) => Id == other?.Id;
-  public override bool Equals(object obj) => Equals(obj as MediaItemM);
+  public bool Equals(MediaItemM? other) => Id == other?.Id;
+  public override bool Equals(object? obj) => Equals(obj as MediaItemM);
   public override int GetHashCode() => Id;
-  public static bool operator ==(MediaItemM a, MediaItemM b) => a?.Equals(b) ?? b is null;
-  public static bool operator !=(MediaItemM a, MediaItemM b) => !(a == b);
+  public static bool operator ==(MediaItemM? a, MediaItemM? b) {
+    if (ReferenceEquals(a, b)) return true;
+    if (a is null || b is null) return false;
+    return a.Equals(b);
+  }
+  public static bool operator !=(MediaItemM? a, MediaItemM? b) => !(a == b);
   #endregion
 
   #region ISelectable implementation
@@ -25,11 +29,11 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
 
   public int Id { get; } = id;
   public int Rating { get; set; }
-  public string Comment { get; set; }
-  public GeoLocationM GeoLocation { get; set; }
-  public List<PersonM> People { get; set; }
-  public List<KeywordM> Keywords { get; set; }
-  public List<SegmentM> Segments { get; set; }
+  public string? Comment { get; set; }
+  public GeoLocationM? GeoLocation { get; set; }
+  public List<PersonM>? People { get; set; }
+  public List<KeywordM>? Keywords { get; set; }
+  public List<SegmentM>? Segments { get; set; }
 
   public abstract FolderM Folder { get; set; }
   public abstract string FileName { get; set; }
@@ -42,27 +46,27 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
   public abstract int ThumbHeight { get; set; }
   public abstract Orientation Orientation { get; set; }
 
-  public ExtObservableCollection<string> InfoBoxThumb { get; set; }
+  public ExtObservableCollection<string>? InfoBoxThumb { get; set; }
 
-  public PersonM[] DisplayPeople =>
+  public PersonM[]? DisplayPeople =>
     GetPeople().OrderBy(x => x.Name).ToArray().NullIfEmpty();
 
-  public string[] DisplayKeywords =>
+  public string[]? DisplayKeywords =>
     GetKeywords().ToStrings(x => x.Name).ToArray().NullIfEmpty();
 
   public IEnumerable<FolderM> GetFolders() =>
     Folder.GetThisAndParents();
 
   public IEnumerable<GeoNameM> GetGeoNames() =>
-    GeoLocation?.GeoName?.GetThisAndParents() ?? Enumerable.Empty<GeoNameM>();
+    GeoLocation?.GeoName?.GetThisAndParents() ?? [];
 
   public virtual IEnumerable<KeywordM> GetKeywords() =>
-    Keywords.GetKeywords();
+    Keywords.EmptyIfNull().GetKeywords();
 
   public virtual IEnumerable<PersonM> GetPeople() =>
     People
       .EmptyIfNull()
-      .Concat(Segments.GetPeople())
+      .Concat(Segments.EmptyIfNull().GetPeople())
       .Distinct();
 
   public IEnumerable<SegmentM> GetSegments() =>
@@ -71,7 +75,7 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
   public virtual void SetInfoBox(bool update = false) {
     if (InfoBoxThumb != null && !update) return;
     InfoBoxThumb?.Clear();
-    InfoBoxThumb = new();
+    InfoBoxThumb = [];
 
     if (Rating != 0)
       InfoBoxThumb.Add(Rating.ToString());
@@ -116,7 +120,7 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
 }
 
 public static class MediaItemExtensions {
-  public static T GetByFileName<T>(this IEnumerable<T> items, string fileName) where T : MediaItemM =>
+  public static T? GetByFileName<T>(this IEnumerable<T> items, string fileName) where T : MediaItemM =>
     items.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
 
   public static IEnumerable<FolderM> GetFolders(this IEnumerable<MediaItemM> items) =>
