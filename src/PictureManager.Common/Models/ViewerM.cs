@@ -14,11 +14,15 @@ namespace PictureManager.Common.Models;
 /// </summary>
 public sealed class ViewerM : TreeItem, IEquatable<ViewerM> {
   #region IEquatable implementation
-  public bool Equals(ViewerM other) => Id == other?.Id;
-  public override bool Equals(object obj) => Equals(obj as ViewerM);
+  public bool Equals(ViewerM? other) => Id == other?.Id;
+  public override bool Equals(object? obj) => Equals(obj as ViewerM);
   public override int GetHashCode() => Id;
-  public static bool operator ==(ViewerM a, ViewerM b) => a?.Equals(b) ?? b is null;
-  public static bool operator !=(ViewerM a, ViewerM b) => !(a == b);
+  public static bool operator ==(ViewerM? a, ViewerM? b) {
+    if (ReferenceEquals(a, b)) return true;
+    if (a is null || b is null) return false;
+    return a.Equals(b);
+  }
+  public static bool operator !=(ViewerM? a, ViewerM? b) => !(a == b);
   #endregion
 
   public int Id { get; }
@@ -28,10 +32,10 @@ public sealed class ViewerM : TreeItem, IEquatable<ViewerM> {
   public ObservableCollection<KeywordM> ExcludedKeywords { get; } = [];
   public HashSet<CategoryGroupM> ExcludedCategoryGroups { get; } = [];
 
-  private HashSet<FolderM> _incFolders;
-  private HashSet<FolderM> _incFoldersTree;
-  private HashSet<FolderM> _excFolders;
-  private HashSet<KeywordM> _excKeywords;
+  private HashSet<FolderM> _incFolders = null!;
+  private HashSet<FolderM> _incFoldersTree = null!;
+  private HashSet<FolderM> _excFolders = null!;
+  private HashSet<KeywordM> _excKeywords = null!;
 
   public ViewerM(int id, string name, ITreeItem parent) : base(Res.IconEye, name) {
     Id = id;
