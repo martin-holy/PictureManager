@@ -13,22 +13,26 @@ namespace PictureManager.Common.Models;
 /// </summary>
 public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
   #region IEquatable implementation
-  public bool Equals(PersonM other) => Id == other?.Id;
-  public override bool Equals(object obj) => Equals(obj as PersonM);
+  public bool Equals(PersonM? other) => Id == other?.Id;
+  public override bool Equals(object? obj) => Equals(obj as PersonM);
   public override int GetHashCode() => Id;
-  public static bool operator ==(PersonM a, PersonM b) => a?.Equals(b) ?? b is null;
-  public static bool operator !=(PersonM a, PersonM b) => !(a == b);
+  public static bool operator ==(PersonM? a, PersonM? b) {
+    if (ReferenceEquals(a, b)) return true;
+    if (a is null || b is null) return false;
+    return a.Equals(b);
+  }
+  public static bool operator !=(PersonM? a, PersonM? b) => !(a == b);
   #endregion
 
-  private SegmentM _segment;
+  private SegmentM? _segment;
 
   public int Id { get; }
-  public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
-  public ExtObservableCollection<SegmentM> TopSegments { get; set; }
-  public List<KeywordM> Keywords { get; set; }
-  public KeywordM[] DisplayKeywords => Keywords?.GetKeywords().OrderBy(x => x.FullName).ToArray();
+  public SegmentM? Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
+  public ExtObservableCollection<SegmentM>? TopSegments { get; set; }
+  public List<KeywordM>? Keywords { get; set; }
+  public KeywordM[] DisplayKeywords => Keywords.EmptyIfNull().GetKeywords().OrderBy(x => x.FullName).ToArray();
   public bool IsUnknown { get => Bits[BitsMasks.IsUnknown]; set { Bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }
-  public List<SegmentM> Segments { get; set; }
+  public List<SegmentM>? Segments { get; set; }
 
   public PersonM() { }
 
