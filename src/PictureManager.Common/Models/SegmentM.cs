@@ -14,15 +14,15 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
   private bool _isSelected;
 
   #region DB Properties
-  private PersonM _person;
+  private PersonM? _person;
   private double _x;
   private double _y;
   private double _size;
 
   public int Id { get; }
-  public MediaItemM MediaItem { get; set; }
-  public PersonM Person { get => _person; set { _person = value; OnPropertyChanged(); } }
-  public List<KeywordM> Keywords { get; set; }
+  public MediaItemM MediaItem { get; set; } = null!;
+  public PersonM? Person { get => _person; set { _person = value; OnPropertyChanged(); } }
+  public List<KeywordM>? Keywords { get; set; }
 
   public double X {
     get => _x;
@@ -30,10 +30,8 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
       _x = value;
 
       // bounds check
-      if (MediaItem != null) {
-        if (value < 0) _x = 0;
-        if (value > MediaItem.Width - Size) _x = MediaItem.Width - Size;
-      }
+      if (value < 0) _x = 0;
+      if (value > MediaItem.Width - Size) _x = MediaItem.Width - Size;
 
       OnPropertyChanged();
     }
@@ -45,10 +43,8 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
       _y = value;
 
       // bounds check
-      if (MediaItem != null) {
-        if (value < 0) _y = 0;
-        if (value > MediaItem.Height - Size) _y = MediaItem.Height - Size;
-      }
+      if (value < 0) _y = 0;
+      if (value > MediaItem.Height - Size) _y = MediaItem.Height - Size;
 
       OnPropertyChanged();
     }
@@ -60,10 +56,8 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
       _size = value;
 
       // bounds check
-      if (MediaItem != null) {
-        var max = Math.Min(MediaItem.Width, MediaItem.Height);
-        _size = value > max ? max : value;
-      }
+      var max = Math.Min(MediaItem.Width, MediaItem.Height);
+      _size = value > max ? max : value;
 
       OnPropertyChanged();
     }
@@ -74,21 +68,23 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
   public string FileNameCache => $"segment_{GetHashCode().ToString()}.jpg";
   public string FilePathCache => IOExtensions.PathCombine(MediaItem.Folder.FullPathCache, FileNameCache);
 
-  public SegmentM() { }
-
   public SegmentM(int id, double x, double y, double size) {
     Id = id;
-    X = x;
-    Y = y;
-    Size = size;
+    _x = x;
+    _y = y;
+    _size = size;
   }
 
   #region IEquatable implementation
-  public bool Equals(SegmentM other) => Id == other?.Id;
-  public override bool Equals(object obj) => Equals(obj as SegmentM);
+  public bool Equals(SegmentM? other) => Id == other?.Id;
+  public override bool Equals(object? obj) => Equals(obj as SegmentM);
   public override int GetHashCode() => Id;
-  public static bool operator ==(SegmentM a, SegmentM b) => a?.Equals(b) ?? b is null;
-  public static bool operator !=(SegmentM a, SegmentM b) => !(a == b);
+  public static bool operator ==(SegmentM? a, SegmentM? b) {
+    if (ReferenceEquals(a, b)) return true;
+    if (a is null || b is null) return false;
+    return a.Equals(b);
+  }
+  public static bool operator !=(SegmentM? a, SegmentM? b) => !(a == b);
   #endregion IEquatable implementation
 
   public string ToMsRect() =>
@@ -120,6 +116,6 @@ public static class SegmentExtensions {
     segments
       .EmptyIfNull()
       .Where(x => x.Person != null)
-      .Select(x => x.Person)
+      .Select(x => x.Person!)
       .Distinct();
 }
