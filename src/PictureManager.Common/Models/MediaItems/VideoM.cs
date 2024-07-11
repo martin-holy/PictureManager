@@ -7,8 +7,8 @@ namespace PictureManager.Common.Models.MediaItems;
 
 public sealed class VideoM(int id, FolderM folder, string fileName) : RealMediaItemM(id, folder, fileName) {
   public bool HasVideoItems => GetVideoItems().Any();
-  public List<VideoClipM> VideoClips { get; set; }
-  public List<VideoImageM> VideoImages { get; set; }
+  public List<VideoClipM>? VideoClips { get; set; }
+  public List<VideoImageM>? VideoImages { get; set; }
 
   public override string FileNameCache(string name) =>
     string.Concat(name, ".jpg");
