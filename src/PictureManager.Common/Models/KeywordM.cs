@@ -14,11 +14,15 @@ namespace PictureManager.Common.Models;
 /// </summary>
 public class KeywordM : TreeItem, IEquatable<KeywordM> {
   #region IEquatable implementation
-  public bool Equals(KeywordM other) => Id == other?.Id;
-  public override bool Equals(object obj) => Equals(obj as KeywordM);
+  public bool Equals(KeywordM? other) => Id == other?.Id;
+  public override bool Equals(object? obj) => Equals(obj as KeywordM);
   public override int GetHashCode() => Id;
-  public static bool operator ==(KeywordM a, KeywordM b) => a?.Equals(b) ?? b is null;
-  public static bool operator !=(KeywordM a, KeywordM b) => !(a == b);
+  public static bool operator ==(KeywordM? a, KeywordM? b) {
+    if (ReferenceEquals(a, b)) return true;
+    if (a is null || b is null) return false;
+    return a.Equals(b);
+  }
+  public static bool operator !=(KeywordM? a, KeywordM? b) => !(a == b);
   #endregion
     
   public int Id { get; }
@@ -32,7 +36,7 @@ public class KeywordM : TreeItem, IEquatable<KeywordM> {
     Parent = parent;
   }
 
-  public bool Toggle<T>(T[] items, Action<T> itemAction, Action changedAction) where T : class, IHaveKeywords {
+  public bool Toggle<T>(T[] items, Action<T> itemAction, Action? changedAction) where T : class, IHaveKeywords {
     if (items.Length == 0) return false;
     foreach (var item in items) {
       item.Keywords = item.Keywords.Toggle(this);
