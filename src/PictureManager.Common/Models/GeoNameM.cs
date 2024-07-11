@@ -10,11 +10,15 @@ namespace PictureManager.Common.Models;
 /// </summary>
 public sealed class GeoNameM : TreeItem, IEquatable<GeoNameM> {
   #region IEquatable implementation
-  public bool Equals(GeoNameM other) => Id == other?.Id;
-  public override bool Equals(object obj) => Equals(obj as GeoNameM);
+  public bool Equals(GeoNameM? other) => Id == other?.Id;
+  public override bool Equals(object? obj) => Equals(obj as GeoNameM);
   public override int GetHashCode() => Id;
-  public static bool operator ==(GeoNameM a, GeoNameM b) => a?.Equals(b) ?? b is null;
-  public static bool operator !=(GeoNameM a, GeoNameM b) => !(a == b);
+  public static bool operator ==(GeoNameM? a, GeoNameM? b) {
+    if (ReferenceEquals(a, b)) return true;
+    if (a is null || b is null) return false;
+    return a.Equals(b);
+  }
+  public static bool operator !=(GeoNameM? a, GeoNameM? b) => !(a == b);
   #endregion
 
   public int Id { get; } // this is GeoNameId not just DB Id
