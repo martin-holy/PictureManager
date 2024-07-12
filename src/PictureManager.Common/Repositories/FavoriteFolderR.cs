@@ -24,7 +24,7 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
     CoreR.GetAsDriveRelated(Tree.Items.Cast<FavoriteFolderM>(), x => x.Folder);
 
   public override FavoriteFolderM FromCsv(string[] csv) =>
-    new(int.Parse(csv[0]), csv[2]);
+    new(int.Parse(csv[0]), csv[2], FolderR.Dummy);
 
   public override string ToCsv(FavoriteFolderM ff) =>
     string.Join("|",
@@ -43,10 +43,7 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
   }
 
   public void ItemCreate(FolderM folder) =>
-    TreeItemCreate(new(GetNextId(), folder.Name) {
-      Parent = Tree,
-      Folder = folder
-    });
+    TreeItemCreate(new(GetNextId(), folder.Name, folder) { Parent = Tree });
 
   public void ItemDeleteByFolder(FolderM folder) {
     if (All.SingleOrDefault(x => ReferenceEquals(x.Folder, folder)) is { } ff)
