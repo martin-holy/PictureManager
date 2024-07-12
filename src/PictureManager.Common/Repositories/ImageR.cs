@@ -22,7 +22,7 @@ public sealed class ImageR : TableDataAdapter<ImageM> {
     CoreR.GetAsDriveRelated(All, x => x.Folder);
 
   public override ImageM FromCsv(string[] csv) =>
-    new(int.Parse(csv[0]), null, csv[2]) {
+    new(int.Parse(csv[0]), FolderR.Dummy, csv[2]) {
       Width = csv[3].IntParseOrDefault(0),
       Height = csv[4].IntParseOrDefault(0),
       Orientation = (Orientation)csv[5].IntParseOrDefault(1),
@@ -47,7 +47,7 @@ public sealed class ImageR : TableDataAdapter<ImageM> {
 
   public override void LinkReferences() {
     foreach (var (mi, csv) in AllCsv) {
-      mi.Folder = _coreR.Folder.GetById(csv[1]);
+      mi.Folder = _coreR.Folder.GetById(csv[1])!;
       mi.Folder.MediaItems.Add(mi);
       mi.People = _coreR.Person.Link(csv[8], this);
       mi.Keywords = _coreR.Keyword.Link(csv[9], this);
