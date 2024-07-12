@@ -36,9 +36,11 @@ public class TreeDataAdapter<T> : TableDataAdapter<T>, ITreeDataAdapter<T> where
   }
 
   public virtual string? ValidateNewItemName(ITreeItem parent, string? name) =>
-    All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-      ? $"{name} item already exists!"
-      : null;
+    string.IsNullOrEmpty(name)
+      ? "The name is empty!"
+      : All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+        ? $"{name} item already exists!"
+        : null;
 
   public virtual void ItemMove(ITreeItem item, ITreeItem dest, bool aboveDest) {
     if (Tree.ItemMove(item, dest, aboveDest))
