@@ -8,7 +8,7 @@ using System.Linq;
 namespace PictureManager.Common.TreeCategories;
 
 public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM> {
-  public CategoryGroupM AutoAddedGroup { get; set; }
+  public CategoryGroupM AutoAddedGroup { get; set; } = null!;
 
   public KeywordsTreeCategory(KeywordR r, CategoryGroupR groupR)
     : base(Res.IconTagLabel, "Keywords", (int)Category.Keywords, r, groupR) {
@@ -20,9 +20,9 @@ public sealed class KeywordsTreeCategory : TreeCategory<KeywordM, CategoryGroupM
   public override void OnItemSelected(object o) =>
     Core.VM.ToggleDialog.Toggle(o as KeywordM);
 
-  public override bool CanDrop(object src, ITreeItem dest) =>
+  public override bool CanDrop(object? src, ITreeItem? dest) =>
     base.CanDrop(src, dest) && src is ITreeItem srcItem &&
-    (!(dest is ITreeGroup ? dest : dest.Parent).Items
+    (!(dest is ITreeGroup ? dest : dest!.Parent!).Items
        .Any(x => x.Name.Equals(srcItem.Name, StringComparison.OrdinalIgnoreCase)) ||
      (dest is not ITreeGroup && ReferenceEquals(srcItem.Parent, dest.Parent)));
 }
