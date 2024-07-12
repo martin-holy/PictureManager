@@ -15,7 +15,7 @@ public sealed class MediaItemGeoLocationR : OneToOneDataAdapter<MediaItemM, GeoL
     CoreR.GetAsDriveRelated(
       DataAdapterA
         .GetAll(x => x.GeoLocation != null)
-        .Select(x => new KeyValuePair<MediaItemM, GeoLocationM>(x, x.GeoLocation)),
+        .Select(x => new KeyValuePair<MediaItemM, GeoLocationM>(x, x.GeoLocation!)),
       x => x.Key.Folder);
 
   public override void AddItem(KeyValuePair<MediaItemM, GeoLocationM> item, string[] props) =>
