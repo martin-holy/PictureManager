@@ -36,7 +36,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
 
   public override FolderM FromCsv(string[] csv) =>
     string.IsNullOrEmpty(csv[2])
-      ? new DriveM(int.Parse(csv[0]), csv[1], null, CurrentVolumeSerialNumber)
+      ? new DriveM(int.Parse(csv[0]), csv[1], null, CurrentVolumeSerialNumber!)
       : new FolderM(int.Parse(csv[0]), csv[1], null);
 
   public override string ToCsv(FolderM folder) =>
@@ -58,7 +58,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
 
   public override void ItemRename(ITreeItem item, string name) {
     var folder = (FolderM)item;
-    var parent = (FolderM)item.Parent;
+    var parent = (FolderM)item.Parent!;
 
     Directory.Move(folder.FullPath, IOExtensions.PathCombine(parent.FullPath, name));
     if (Directory.Exists(folder.FullPathCache))
@@ -67,7 +67,9 @@ public class FolderR : TreeDataAdapter<FolderM> {
     base.ItemRename(item, name);
   }
 
-  public override string ValidateNewItemName(ITreeItem parent, string name) {
+  public override string? ValidateNewItemName(ITreeItem parent, string? name) {
+    if (string.IsNullOrEmpty(name)) return "The name is empty!";
+
     // check if folder already exists
     if (Directory.Exists(IOExtensions.PathCombine(((FolderM)parent).FullPath, name)))
       return "Folder already exists!";
@@ -94,7 +96,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
     if (Directory.Exists(cachePath)) Directory.Delete(cachePath, true);
   }
 
-  public FolderM GetFolder(string folderPath) {
+  public FolderM? GetFolder(string folderPath) {
     if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return null;
     var parts = Path.GetFullPath(folderPath).Split(Path.DirectorySeparatorChar);
     if (Tree.Items.GetByName(parts[0], StringComparison.OrdinalIgnoreCase) is not { } folder) return null;
