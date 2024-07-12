@@ -85,10 +85,10 @@ public class PersonR : TreeDataAdapter<PersonM> {
     }
   }
 
-  public List<PersonM> Link(string csv, IDataAdapter seeker) =>
+  public List<PersonM>? Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
-  public PersonM GetPerson(int id, IDataAdapter seeker) =>
+  public PersonM? GetPerson(int id, IDataAdapter seeker) =>
     AllDict.TryGetValue(id, out var person)
       ? person
       : ResolveNotFoundRecord(id, GetNotFoundRecord, seeker);
@@ -133,11 +133,11 @@ public class PersonR : TreeDataAdapter<PersonM> {
     item.Keywords = null;
   }
 
-  public PersonM GetPerson(string name, bool create) =>
+  public PersonM? GetPerson(string name, bool create) =>
     All.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
     ?? (create ? ItemCreate(Tree, name) : null);
 
-  public void OnSegmentPersonChanged(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
+  public void OnSegmentPersonChanged(SegmentM segment, PersonM? oldPerson, PersonM? newPerson) {
     if (newPerson != null) {
       newPerson.Segment ??= segment;
       newPerson.Segments = newPerson.Segments.Toggle(segment, true);
@@ -156,7 +156,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
                           ?? oldPerson.Segments?.FirstOrDefault();
   }
 
-  public void OnSegmentsPersonChanged(SegmentM[] segments, PersonM person, PersonM[] people) {
+  public void OnSegmentsPersonChanged(SegmentM[] segments, PersonM? person, PersonM[] people) {
     // delete unknown people without segments
     var toDelete = person == null
       ? people
@@ -180,7 +180,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
       person.Keywords = person.Keywords.Toggle(keyword);
 
     IsModified = true;
-    PersonsKeywordsChangedEvent(this, new[] { person });
+    PersonsKeywordsChangedEvent(this, [person]);
   }
 
   public void MoveGroupItemsToRoot(CategoryGroupM group) {
