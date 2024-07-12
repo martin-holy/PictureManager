@@ -54,7 +54,6 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
   }
 
   protected override void OnItemDeleted(object sender, FavoriteFolderM item) {
-    item.Parent.Items.Remove(item);
-    item.Folder = null;
+    item.Parent!.Items.Remove(item);
   }
 }
