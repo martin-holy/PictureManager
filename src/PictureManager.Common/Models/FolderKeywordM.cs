@@ -10,7 +10,7 @@ public sealed class FolderKeywordM : TreeItem {
   public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
   public List<FolderM> Folders { get; } = [];
 
-  public FolderKeywordM(string name, ITreeItem parent) : base(Res.IconFolderPuzzle, name) {
+  public FolderKeywordM(string name, ITreeItem? parent) : base(Res.IconFolderPuzzle, name) {
     Parent = parent;
   }
 
