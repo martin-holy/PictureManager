@@ -41,7 +41,7 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
       AllDict[id] = _coreR.Folder.AllDict[id];
   }
 
-  public void LoadIfContains(FolderM folder) {
+  public void LoadIfContains(FolderM? folder) {
     if (folder != null && (All.Contains(folder) || folder.FolderKeyword != null))
       Reload();
   }
