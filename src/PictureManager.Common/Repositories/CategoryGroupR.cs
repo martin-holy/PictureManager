@@ -39,9 +39,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
     foreach (var (cg, csv) in AllCsv) {
       if (!cat.Id.Equals((int)cg.Category)) continue;
 
-      var items = string.IsNullOrEmpty(csv[3])
-        ? Enumerable.Empty<int>()
-        : csv[3].Split(',').Select(int.Parse);
+      var items = string.IsNullOrEmpty(csv[3]) ? [] : csv[3].Split(',').Select(int.Parse);
       
       cg.Parent = cat;
       cg.Parent.Items.Add(cg);
@@ -56,7 +54,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
   }
 
   public override CategoryGroupM ItemCreate(ITreeItem parent, string name) {
-    var cat = (Category)Tree.GetParentOf<ITreeCategory>(parent).Id;
+    var cat = (Category)Tree.GetParentOf<ITreeCategory>(parent)!.Id;
     var group = GetNew(GetNextId(), name, cat);
     group.Parent = parent;
     group.Items.CollectionChanged += GroupItems_CollectionChanged;
@@ -68,10 +66,10 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
     cat switch {
       Category.Keywords => new KeywordCategoryGroupM(id, name, cat, Res.CategoryToIcon(cat)),
       Category.People => new PersonCategoryGroupM(id, name, cat, Res.CategoryToIcon(cat)),
-      _ => null
+      _ => throw new NotSupportedException()
     };
 
-  public override string ValidateNewItemName(ITreeItem parent, string name) =>
+  public override string? ValidateNewItemName(ITreeItem parent, string? name) =>
     parent.Items
       .OfType<CategoryGroupM>()
       .Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
@@ -79,10 +77,10 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
         : null;
 
   protected override void OnItemDeleted(object sender, CategoryGroupM item) {
-    item.Parent.Items.Remove(item);
+    item.Parent?.Items.Remove(item);
   }
 
-  private void GroupItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+  private void GroupItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
     if (coreR.IsReady) IsModified = true;
   }
 
