@@ -11,7 +11,7 @@ namespace PictureManager.Common.Repositories;
 
 public sealed class CoreR : SimpleDB {
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
-  public static FileOperationDeleteFunc FileOperationDelete { get; set; }
+  public static FileOperationDeleteFunc FileOperationDelete { get; set; } = null!;
   public bool IsCopyMoveInProgress { get; set; }
 
   public CategoryGroupR CategoryGroup { get; }
@@ -77,7 +77,8 @@ public sealed class CoreR : SimpleDB {
   public static Dictionary<string, IEnumerable<T>> GetAsDriveRelated<T>(IEnumerable<T> source, Func<T, ITreeItem> folder) =>
     source
       .GroupBy(x => Tree.GetParentOf<DriveM>(folder(x)))
-      .ToDictionary(x => x.Key.Name, x => x.AsEnumerable());
+      .Where(x => x.Key != null)
+      .ToDictionary(x => x.Key!.Name, x => x.AsEnumerable());
 
   public void AttachEvents() {
     CategoryGroup.ItemDeletedEvent += OnCategoryGroupDeleted;
@@ -109,93 +110,93 @@ public sealed class CoreR : SimpleDB {
     Segment.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
   }
 
-  private void OnCategoryGroupDeleted(object sender, CategoryGroupM item) {
+  private void OnCategoryGroupDeleted(object? sender, CategoryGroupM item) {
     Keyword.MoveGroupItemsToRoot(item);
     Person.MoveGroupItemsToRoot(item);
   }
 
-  private void OnFolderCreated(object sender, FolderM item) {
+  private void OnFolderCreated(object? sender, FolderM item) {
     FolderKeyword.LoadIfContains(item.Parent as FolderM);
   }
 
-  private void OnFolderRenamed(object sender, FolderM item) {
+  private void OnFolderRenamed(object? sender, FolderM item) {
     FolderKeyword.LoadIfContains(item);
   }
 
-  private void OnFoldersDeleted(object sender, IList<FolderM> item) {
+  private void OnFoldersDeleted(object? sender, IList<FolderM> item) {
     FolderKeyword.Reload();
   }
 
-  private void OnFolderDeleted(object sender, FolderM item) {
+  private void OnFolderDeleted(object? sender, FolderM item) {
     FavoriteFolder.ItemDeleteByFolder(item);
     MediaItem.ItemsDelete(item.MediaItems.Cast<MediaItemM>().ToArray());
   }
 
-  private void OnGeoLocationUpdated(object sender, GeoLocationM item) {
+  private void OnGeoLocationUpdated(object? sender, GeoLocationM item) {
     MediaItem.ModifyIfContains(item);
   }
 
-  private void OnGeoLocationDeleted(object sender, GeoLocationM item) {
+  private void OnGeoLocationDeleted(object? sender, GeoLocationM item) {
     MediaItem.ModifyIfContains(item);
   }
 
-  private void OnGeoNameDeleted(object sender, GeoNameM item) {
+  private void OnGeoNameDeleted(object? sender, GeoNameM item) {
     GeoLocation.RemoveGeoName(item);
   }
 
-  private void OnKeywordDeleted(object sender, KeywordM item) {
+  private void OnKeywordDeleted(object? sender, KeywordM item) {
     Person.RemoveKeyword(item);
     Segment.RemoveKeyword(item);
     MediaItem.RemoveKeyword(item);
   }
 
-  private void OnKeywordRenamed(object sender, KeywordM item) {
+  private void OnKeywordRenamed(object? sender, KeywordM item) {
     MediaItem.ModifyIfContains(item);
   }
 
-  private void OnMediaItemDeleted(object sender, MediaItemM item) {
+  private void OnMediaItemDeleted(object? sender, MediaItemM item) {
     Segment.ItemsDelete(item.Segments?.ToArray());
     if (item.GeoLocation != null)
       MediaItemGeoLocation.IsModified = true;
   }
 
-  private void OnMediaItemsOrientationChanged(object sender, RealMediaItemM[] items) {
+  private void OnMediaItemsOrientationChanged(object? sender, RealMediaItemM[] items) {
     foreach (var rmi in items) {
       rmi.SetThumbSize(true);
       File.Delete(rmi.FilePathCache);
     }
   }
 
-  private void OnPersonDeleted(object sender, PersonM item) {
+  private void OnPersonDeleted(object? sender, PersonM item) {
     MediaItem.RemovePerson(item);
     Segment.RemovePerson(item);
   }
 
-  private void OnPersonRenamed(object sender, PersonM item) {
+  private void OnPersonRenamed(object? sender, PersonM item) {
     MediaItem.ModifyIfContains(item);
   }
 
-  private void OnSegmentCreated(object sender, SegmentM e) {
+  private void OnSegmentCreated(object? sender, SegmentM e) {
     MediaItem.AddSegment(e);
   }
 
-  private void OnSegmentDeleted(object sender, SegmentM item) {
+  private void OnSegmentDeleted(object? sender, SegmentM item) {
     Person.OnSegmentPersonChanged(item, item.Person, null);
   }
 
-  private void OnSegmentsDeleted(object sender, IList<SegmentM> items) {
+  private void OnSegmentsDeleted(object? sender, IList<SegmentM> items) {
     MediaItem.RemoveSegments(items);
   }
 
-  private void OnSegmentsKeywordsChanged(object sender, SegmentM[] items) {
+  private void OnSegmentsKeywordsChanged(object? sender, SegmentM[] items) {
     MediaItem.ModifyIfContains(items);
   }
 
-  private void OnSegmentPersonChanged(object sender, (SegmentM, PersonM, PersonM) e) {
+  private void OnSegmentPersonChanged(object? sender, (SegmentM, PersonM, PersonM) e) {
     Person.OnSegmentPersonChanged(e.Item1, e.Item2, e.Item3);
   }
 
-  private void OnSegmentsPersonChanged(object sender, (SegmentM[], PersonM, PersonM[]) e) {
+  private void OnSegmentsPersonChanged(object? sender, (SegmentM[], PersonM, PersonM[]) e) {
     Person.OnSegmentsPersonChanged(e.Item1, e.Item2, e.Item3);
     MediaItem.TogglePerson(e.Item1);
   }
