@@ -90,7 +90,7 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
     return new(found, notFound);
   }
 
-  public List<T>? LinkList(string csv, Func<int, T> getNotFoundRecord, IDataAdapter seeker) =>
+  public List<T>? LinkList(string csv, Func<int, T>? getNotFoundRecord, IDataAdapter seeker) =>
     IdToRecord<T>(csv, AllDict, notFoundId => ResolveNotFoundRecord(notFoundId, getNotFoundRecord, seeker));
 
   public T? ResolveNotFoundRecord(int notFoundId, Func<int, T>? getNotFoundRecord, IDataAdapter seeker) {
