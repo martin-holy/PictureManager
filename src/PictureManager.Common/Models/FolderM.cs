@@ -33,7 +33,7 @@ public class FolderM : TreeItem, IEquatable<FolderM> {
   public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath);
   public bool HasSubFolders => Items.Count > 0 && !ReferenceEquals(Items[0], FolderS.FolderPlaceHolder);
 
-  public FolderM(int id, string name, ITreeItem parent) : base(Res.IconFolder, name) {
+  public FolderM(int id, string name, ITreeItem? parent) : base(Res.IconFolder, name) {
     Id = id;
     Parent = parent;
   }
