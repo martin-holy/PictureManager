@@ -28,9 +28,7 @@ public class KeywordM : TreeItem, IEquatable<KeywordM> {
   public int Id { get; }
   public string FullName => this.GetFullName("/", x => x.Name);
 
-  public KeywordM() { }
-
-  public KeywordM(int id, string name, ITreeItem parent) : base(Res.IconTag, name) {
+  public KeywordM(int id, string name, ITreeItem? parent) : base(Res.IconTag, name) {
     Id = id;
     Name = name;
     Parent = parent;
