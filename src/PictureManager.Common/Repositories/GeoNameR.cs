@@ -43,13 +43,13 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
   public GeoNameM ItemCreate(int id, string name, string toponymName, string fCode, ITreeItem parent) =>
     TreeItemCreate(new(id, name, toponymName, fCode, parent));
 
-  public Task<GeoNameM> CreateGeoNameHierarchy(double lat, double lng) =>
+  public Task<GeoNameM?> CreateGeoNameHierarchy(double lat, double lng) =>
     CreateGeoNameHierarchy($"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}".Replace(",", "."));
 
-  public Task<GeoNameM> CreateGeoNameHierarchy(int id) =>
+  public Task<GeoNameM?> CreateGeoNameHierarchy(int id) =>
     CreateGeoNameHierarchy($"http://api.geonames.org/hierarchy?geonameId={id}");
 
-  private async Task<GeoNameM> CreateGeoNameHierarchy(string url) {
+  private async Task<GeoNameM?> CreateGeoNameHierarchy(string url) {
     if (ApiLimitExceeded) return null;
 
     if (!Core.Settings.GeoName.LoadFromWeb) {
@@ -74,6 +74,8 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
         return xml.SelectSingleNode("/geonames");
       });
 
+      if (root == null) return null;
+
       var geoNames = root.SelectNodes("geoname");
       if (geoNames == null) {
         ApiLimitExceeded = true;
@@ -82,16 +84,16 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
         return null;
       }
 
-      GeoNameM gn = null;
+      GeoNameM? gn = null;
       foreach (XmlNode g in geoNames) {
         var geoNameId = int.Parse(g.SelectSingleNode("geonameId")?.InnerText ?? "0");
         gn = All.SingleOrDefault(x => x.GetHashCode() == geoNameId) ??
              ItemCreate(
                geoNameId,
-               g.SelectSingleNode("name")?.InnerText,
-               g.SelectSingleNode("toponymName")?.InnerText,
-               g.SelectSingleNode("fcode")?.InnerText,
-               (ITreeItem)gn ?? Tree);
+               g.SelectSingleNode("name")?.InnerText ?? string.Empty,
+               g.SelectSingleNode("toponymName")?.InnerText ?? string.Empty,
+               g.SelectSingleNode("fcode")?.InnerText ?? string.Empty,
+               gn as ITreeItem ?? Tree);
       }
 
       return gn;
