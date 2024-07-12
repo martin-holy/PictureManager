@@ -88,10 +88,10 @@ public class PersonR : TreeDataAdapter<PersonM> {
   public List<PersonM>? Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
-  public PersonM? GetPerson(int id, IDataAdapter seeker) =>
+  public PersonM GetPerson(int id, IDataAdapter seeker) =>
     AllDict.TryGetValue(id, out var person)
       ? person
-      : ResolveNotFoundRecord(id, GetNotFoundRecord, seeker);
+      : ResolveNotFoundRecord(id, GetNotFoundRecord, seeker)!;
 
   // the sort order for not available will be lost so take available first
   private string TopSegmentsToCsv(PersonM person) =>
