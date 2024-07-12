@@ -163,7 +163,7 @@ public static class DatabaseMigration {
       pIdsDic.Add(pIdNeg, pIdPos);
     }
 
-    string UpdateIds(string line, int index, Func<string[], bool> skipLine) {
+    string UpdateIds(string line, int index, Func<string[], bool>? skipLine) {
       var vars = line.Split("|");
 
       if (skipLine?.Invoke(vars) == true
@@ -339,7 +339,7 @@ public static class DatabaseMigration {
         vars[0] = maxId.ToString();
         
         // add keyword (VideoClipsGroup)
-        if (nameIdClips.SingleOrDefault(x => x.Value.Item2.Contains(oldId)) is var kv && kv.Value?.Item1 is var kId)
+        if (nameIdClips.SingleOrDefault(x => x.Value.Item2.Contains(oldId)) is { Value.Item1: var kId })
           vars[10] = kId.ToString();
 
         if (vidVcDic.TryGetValue(vidId, out var vid))
