@@ -12,8 +12,8 @@ namespace PictureManager.Common.Repositories;
 
 public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   private readonly CoreR _coreR;
-  private static readonly string[] _supportedImageExts = { ".jpg", ".jpeg" };
-  private static readonly string[] _supportedVideoExts = { ".mp4" };
+  private static readonly string[] _supportedImageExts = [".jpg", ".jpeg"];
+  private static readonly string[] _supportedVideoExts = [".mp4"];
 
   public event EventHandler<MediaItemM> ItemRenamedEvent = delegate { };
   public event EventHandler<MediaItemM[]> MetadataChangedEvent = delegate { };
@@ -28,7 +28,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   public void RaiseMetadataChanged(MediaItemM[] items) => MetadataChangedEvent(this, items);
   public void RaiseOrientationChanged(RealMediaItemM[] items) => OrientationChangedEvent(this, items);
 
-  private void OnDbReady(object sender, EventArgs e) {
+  private void OnDbReady(object? sender, EventArgs e) {
     MaxId = _coreR.Image.MaxId;
 
     _coreR.Image.ItemCreatedEvent += OnItemCreated;
@@ -45,20 +45,20 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     _coreR.VideoImage.ItemsDeletedEvent += OnMediaItemsDeleted;
   }
 
-  protected override void OnItemCreated(object sender, MediaItemM item) {
+  protected override void OnItemCreated(object? sender, MediaItemM item) {
     if (item is RealMediaItemM rmi)
       rmi.Folder.MediaItems.Add(rmi);
 
     RaiseItemCreated(item);
   }
 
-  protected override void OnItemDeleted(object sender, MediaItemM item) =>
+  protected override void OnItemDeleted(object? sender, MediaItemM item) =>
     RaiseItemDeleted(item);
 
-  protected override void OnItemsDeleted(object sender, IList<MediaItemM> items) =>
+  protected override void OnItemsDeleted(object? sender, IList<MediaItemM> items) =>
     RaiseItemsDeleted(items);
 
-  private void OnMediaItemsDeleted<T>(object sender, IList<T> items) where T : MediaItemM =>
+  private void OnMediaItemsDeleted<T>(object? sender, IList<T> items) where T : MediaItemM =>
     OnItemsDeleted(this, items.Cast<MediaItemM>().ToArray());
 
   public void OnItemDeletedCommon(MediaItemM item) {
@@ -68,7 +68,6 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
 
     if (item is not RealMediaItemM rmi) return;
     rmi.Folder.MediaItems.Remove(rmi);
-    rmi.Folder = null;
   }
 
   public override int GetNextId() {
@@ -80,7 +79,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     return id;
   }
 
-  public override MediaItemM GetById(string id, bool nullable = false) {
+  public override MediaItemM? GetById(string id, bool nullable = false) {
     if (!int.TryParse(id, out var intId)) return null;
     if (_coreR.Image.AllDict.TryGetValue(intId, out var img)) return img;
     if (_coreR.Video.AllDict.TryGetValue(intId, out var vid)) return vid;
@@ -89,19 +88,20 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     return null;
   }
 
-  public List<MediaItemM> Link(string csv) {
+  public List<MediaItemM>? Link(string csv) {
     if (string.IsNullOrEmpty(csv)) return null;
 
     var items = csv
       .Split(',')
       .Select(x => GetById(x))
       .Where(x => x != null)
+      .Select(x => x!)
       .ToList();
 
     return items.Count == 0 ? null : items;
   }
 
-  public RealMediaItemM ItemCreate(FolderM folder, string fileName) {
+  public RealMediaItemM? ItemCreate(FolderM folder, string fileName) {
     if (_supportedImageExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
       return _coreR.Image.ItemCreate(folder, fileName);
 
@@ -159,7 +159,8 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     }
   }
 
-  public override void ItemsDelete(IList<MediaItemM> items) {
+  public override void ItemsDelete(IList<MediaItemM>? items) {
+    if (items == null || items.Count == 0) return;
     _coreR.Image.ItemsDelete(items.OfType<ImageM>().ToArray());
     _coreR.Video.ItemsDelete(items.OfType<VideoM>().ToArray());
     _coreR.VideoClip.ItemsDelete(items.OfType<VideoClipM>().ToArray());
@@ -208,7 +209,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   public void TogglePerson(SegmentM[] segments) =>
     ChangeMetadata(segments.GetMediaItems().ToArray(), mi => {
       if (mi.People == null) return;
-      foreach (var p in mi.Segments.GetPeople().Intersect(mi.People).ToArray())
+      foreach (var p in mi.Segments!.GetPeople().Intersect(mi.People).ToArray())
         mi.People = mi.People.Toggle(p, true);
     });
 
@@ -221,7 +222,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   public void ToggleKeyword(MediaItemM[] items, KeywordM keyword) =>
     keyword.Toggle(items, Modify, () => RaiseMetadataChanged(items));
 
-  private void ChangeMetadata(MediaItemM[] items, Action<MediaItemM> action) {
+  private void ChangeMetadata(MediaItemM[] items, Action<MediaItemM>? action) {
     if (items.Length == 0) return;
     foreach (var mi in items) {
       action?.Invoke(mi);
@@ -232,15 +233,15 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   }
 
   public void AddSegment(SegmentM segment) {
-    segment.MediaItem.Segments ??= new();
+    segment.MediaItem.Segments ??= [];
     segment.MediaItem.Segments.Add(segment);
     Modify(segment.MediaItem);
-    RaiseMetadataChanged(new[] { segment.MediaItem });
+    RaiseMetadataChanged([segment.MediaItem]);
   }
 
   public void RemoveSegments(IList<SegmentM> segments) {
     foreach (var miSeg in segments.GroupBy(x => x.MediaItem).Where(x => x.Key.Segments != null)) {
-      miSeg.Key.Segments = miSeg.Key.Segments.Except(miSeg).ToList().NullIfEmpty();
+      miSeg.Key.Segments = miSeg.Key.Segments!.Except(miSeg).ToList().NullIfEmpty();
       Modify(miSeg.Key);
     }
     
@@ -267,12 +268,12 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     };
 
   public IEnumerable<MediaItemM> GetItems(KeywordM keyword, bool recursive) {
-    var arr = recursive ? keyword.Flatten().ToArray() : new[] { keyword };
+    var arr = recursive ? keyword.Flatten().ToArray() : [keyword];
     return GetAll(x => x.Keywords?.Any(k => arr.Any(ar => ReferenceEquals(ar, k))) == true);
   }
 
   public IEnumerable<MediaItemM> GetItems(GeoNameM geoName, bool recursive) {
-    var arr = recursive ? geoName.Flatten().ToArray() : new[] { geoName };
+    var arr = recursive ? geoName.Flatten().ToArray() : [geoName];
     return GetAll(x => arr.Any(ar => ReferenceEquals(ar, x.GeoLocation?.GeoName))).OrderBy(mi => mi.FileName);
   }
 
