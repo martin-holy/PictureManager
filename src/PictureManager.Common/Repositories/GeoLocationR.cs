@@ -28,14 +28,14 @@ public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>(c
       gl.GeoName = coreR.GeoName.GetById(csv[3], true);
   }
 
-  public GeoLocationM ItemCreate(double? lat, double? lng, GeoNameM g) =>
+  public GeoLocationM ItemCreate(double? lat, double? lng, GeoNameM? g) =>
     ItemCreate(new(GetNextId()) {
       Lat = lat,
       Lng = lng,
       GeoName = g
     });
 
-  public async Task<GeoLocationM> GetOrCreate(double? lat, double? lng, int? gnId, GeoNameM gn, bool online = true) {
+  public async Task<GeoLocationM?> GetOrCreate(double? lat, double? lng, int? gnId, GeoNameM? gn, bool online = true) {
     if (lat == null && lng == null && gnId == null && gn == null) return null;
     lat = lat == null ? null : Math.Round((double)lat, 5);
     lng = lng == null ? null : Math.Round((double)lng, 5);
@@ -46,7 +46,7 @@ public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>(c
         gn = await coreR.GeoName.CreateGeoNameHierarchy((int)gnId);
     }
 
-    GeoLocationM gl;
+    GeoLocationM? gl;
     if (lat != null && lng != null) {
       gl = All.FirstOrDefault(x =>
         x.Lat != null &&
