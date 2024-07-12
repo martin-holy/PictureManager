@@ -26,7 +26,7 @@ public sealed class GeoNameM : TreeItem, IEquatable<GeoNameM> {
   public string Fcode { get; }
   public string FullName => this.GetFullName("\n", x => x.Name);
 
-  public GeoNameM(int id, string name, string toponymName, string fCode, ITreeItem parent) : base(Res.IconLocationCheckin, name) {
+  public GeoNameM(int id, string name, string toponymName, string fCode, ITreeItem? parent) : base(Res.IconLocationCheckin, name) {
     Id = id;
     ToponymName = toponymName;
     Fcode = fCode;
