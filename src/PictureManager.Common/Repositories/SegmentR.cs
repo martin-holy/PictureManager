@@ -20,8 +20,8 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   private List<int> _drawerNotAvailable = [];
 
   public List<SegmentM> Drawer { get; private set; } = [];
-  public event EventHandler<(SegmentM, PersonM, PersonM)> SegmentPersonChangedEvent = delegate { };
-  public event EventHandler<(SegmentM[], PersonM, PersonM[])> SegmentsPersonChangedEvent = delegate { };
+  public event EventHandler<(SegmentM, PersonM?, PersonM)> SegmentPersonChangedEvent = delegate { };
+  public event EventHandler<(SegmentM[], PersonM?, PersonM[])> SegmentsPersonChangedEvent = delegate { };
   public event EventHandler<SegmentM[]> SegmentsKeywordsChangedEvent = delegate { };
 
   public SegmentR(CoreR coreR) : base(coreR, "Segments", 5) {
@@ -88,21 +88,21 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       _ = AllDict.Remove(segment.GetHashCode());
 
     // Table Properties
-    if (TableProps == null) return;
     if (TableProps.TryGetValue(nameof(SegmentVM.SegmentSize), out var segmentSize))
       SegmentVM.SegmentSize = int.Parse(segmentSize);
 
-    if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
-      var drawer = IdsToRecords(segmentsDrawer, AllDict);
-      Drawer = drawer.Item1;
-      _drawerNotAvailable = drawer.Item2;
+    if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer)
+        && !string.IsNullOrEmpty(segmentsDrawer)
+        && IdsToRecords(segmentsDrawer, AllDict) is { } drawer) {
+        Drawer = drawer.Item1;
+        _drawerNotAvailable = drawer.Item2;
     }
 
     // table props are not needed any more
     TableProps.Clear();
   }
 
-  public List<SegmentM> Link(string csv, IDataAdapter seeker) =>
+  public List<SegmentM>? Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, null, seeker);
 
   public SegmentM ItemCreate(double x, double y, int size, MediaItemM mediaItem) =>
@@ -117,8 +117,6 @@ public class SegmentR : TableDataAdapter<SegmentM> {
 
   protected override void OnItemDeleted(object sender, SegmentM item) {
     File.Delete(item.FilePathCache);
-    item.MediaItem = null;
-    item.Person = null;
   }
 
   public IEnumerable<SegmentM> GetBy(KeywordM keyword, bool recursive) =>
@@ -135,7 +133,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       IsModified = true;
     }
 
-    SegmentsPersonChangedEvent(this, (segments, null, new[] { person }));
+    SegmentsPersonChangedEvent(this, (segments, null, [person]));
   }
 
   public void RemoveKeyword(KeywordM keyword) =>
