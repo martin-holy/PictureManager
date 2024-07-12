@@ -50,17 +50,18 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
 
     // group for keywords automatically added from MediaItems metadata
     Tree.AutoAddedGroup = Tree.Items
-      .OfType<CategoryGroupM>()
-      .SingleOrDefault(x => x.Name.Equals("Auto Added"));
+                            .OfType<CategoryGroupM>()
+                            .SingleOrDefault(x => x.Name.Equals("Auto Added"))
+                          ?? _coreR.CategoryGroup.ItemCreate(Tree, "Auto Added");
   }
 
-  public List<KeywordM> Link(string csv, IDataAdapter seeker) =>
+  public List<KeywordM>? Link(string csv, IDataAdapter seeker) =>
     LinkList(csv, GetNotFoundRecord, seeker);
 
   private KeywordM GetNotFoundRecord(int notFoundId) {
     var id = GetNextId();
     var item = new KeywordM(id, $"{_notFoundRecordNamePrefix}{id} ({notFoundId})", Tree);
-    item.Parent.Items.Add(item);
+    item.Parent!.Items.Add(item);
     IsModified = true;
     return item;
   }
@@ -68,12 +69,14 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
   public override KeywordM ItemCreate(ITreeItem parent, string name) =>
     TreeItemCreate(new(GetNextId(), name, parent));
 
-  public override string ValidateNewItemName(ITreeItem parent, string name) =>
-    parent.Items.OfType<KeywordM>().Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+  public override string? ValidateNewItemName(ITreeItem parent, string? name) {
+    if (string.IsNullOrEmpty(name)) return "The name is empty!";
+    return parent.Items.OfType<KeywordM>().Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
       ? $"{name} item already exists!"
       : null;
+  }
 
-  public KeywordM GetByFullPath(string fullPath, IEnumerable<ITreeItem> src = null, ITreeItem rootForNew = null) {
+  public KeywordM? GetByFullPath(string? fullPath, IEnumerable<ITreeItem>? src = null, ITreeItem? rootForNew = null) {
     if (string.IsNullOrEmpty(fullPath)) return null;
     src ??= All.Where(x => x.Parent is not KeywordM);
     rootForNew ??= Tree.AutoAddedGroup;
@@ -83,8 +86,8 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
       var found = src.Where(x => x.Name.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
 
       last = found.Length switch {
-        0 => new[] { (ITreeItem)ItemCreate(rootForNew, path) },
-        1 => new[] { found[0] },
+        0 => [ItemCreate(rootForNew, path)],
+        1 => [found[0]],
         _ => found
       };
 
@@ -95,8 +98,7 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
     return GetFirst(last) as KeywordM;
 
     ITreeItem GetFirst(ITreeItem[] items) =>
-      items.FirstOrDefault(x => !x.HasThisParent(Tree.AutoAddedGroup))
-      ?? items.FirstOrDefault();
+      items.FirstOrDefault(x => !x.HasThisParent(Tree.AutoAddedGroup)) ?? items.First();
   }
 
   public void MoveGroupItemsToRoot(CategoryGroupM group) {
