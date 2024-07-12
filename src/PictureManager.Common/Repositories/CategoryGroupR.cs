@@ -69,12 +69,14 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
       _ => throw new NotSupportedException()
     };
 
-  public override string? ValidateNewItemName(ITreeItem parent, string? name) =>
-    parent.Items
+  public override string? ValidateNewItemName(ITreeItem parent, string? name) {
+    if (string.IsNullOrEmpty(name)) return "The name is empty!";
+    return parent.Items
       .OfType<CategoryGroupM>()
       .Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
         ? $"{name} group already exists!"
         : null;
+  }
 
   protected override void OnItemDeleted(object sender, CategoryGroupM item) {
     item.Parent?.Items.Remove(item);
