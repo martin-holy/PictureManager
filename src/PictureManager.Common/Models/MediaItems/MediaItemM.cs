@@ -61,7 +61,7 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
     GeoLocation?.GeoName?.GetThisAndParents() ?? [];
 
   public virtual IEnumerable<KeywordM> GetKeywords() =>
-    Keywords.EmptyIfNull().GetKeywords();
+    Keywords!.GetKeywords();
 
   public virtual IEnumerable<PersonM> GetPeople() =>
     People
