@@ -21,7 +21,7 @@ public sealed class MediaItemGeoLocationR : OneToOneDataAdapter<MediaItemM, GeoL
   public override void AddItem(KeyValuePair<MediaItemM, GeoLocationM> item, string[] props) =>
     item.Key.GeoLocation = item.Value;
 
-  public void ItemUpdate(KeyValuePair<MediaItemM, GeoLocationM> item) {
+  public void ItemUpdate(KeyValuePair<MediaItemM, GeoLocationM?> item) {
     if (ReferenceEquals(item.Key.GeoLocation, item.Value)) return;
     item.Key.GeoLocation = item.Value;
     IsModified = true;
