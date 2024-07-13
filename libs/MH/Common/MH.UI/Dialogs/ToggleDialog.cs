@@ -25,7 +25,7 @@ public interface IToggleDialogOption {
   public Action<object[], object> SetItems { get; }
 }
 
-public class ToggleDialog(string title, string icon) : Dialog(title, icon) {
+public class ToggleDialog() : Dialog(string.Empty, string.Empty) {
   public List<IToggleDialogSourceType> SourceTypes { get; } = [];
   public string? Message { get; private set; }
   public ListItem? Item { get; private set; }
