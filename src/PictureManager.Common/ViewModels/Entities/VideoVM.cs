@@ -10,13 +10,13 @@ using System.Linq;
 namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class VideoVM : ObservableObject {
-  private VideoM _current;
+  private VideoM? _current;
 
   public CollectionViewVideoItems CurrentVideoItems { get; } = new();
-  public VideoM Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
+  public VideoM? Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
   public MediaPlayer MediaPlayer { get; } = new();
 
-  public static Func<string, string, object[]> GetVideoMetadataFunc { get; set; }
+  public static Func<string, string, object[]> GetVideoMetadataFunc { get; set; } = null!;
 
   public VideoVM() {
     MediaPlayer.SelectNextItemAction = CurrentVideoItems.SelectNextOrFirstItem;
@@ -26,7 +26,7 @@ public sealed class VideoVM : ObservableObject {
     MediaPlayer.MarkerSetEvent += OnMarkerSet;
   }
 
-  public void SetCurrent(MediaItemM item, bool setSource = false) {
+  public void SetCurrent(MediaItemM? item, bool setSource = false) {
     var vid = item as VideoM ?? (item as VideoItemM)?.Video;
 
     if (vid == null) {
@@ -48,7 +48,7 @@ public sealed class VideoVM : ObservableObject {
 
   private void ReloadCurrentVideoItems() {
     var items = Current == null
-      ? new()
+      ? []
       : Core.R.VideoItemsOrder.All.TryGetValue(Current, out var list)
         ? list.ToList()
         : Current.GetVideoItems().OrderBy(x => x.TimeStart).ToList();
@@ -56,18 +56,18 @@ public sealed class VideoVM : ObservableObject {
     CurrentVideoItems.Reload(items, GroupMode.ThenByRecursive, groupByItems, true);
   }
 
-  private IVideoClip GetNewClip(int timeStart) =>
-    Core.R.VideoClip.CustomItemCreate(Current, timeStart);
+  private IVideoClip? GetNewClip(int timeStart) =>
+    Current == null ? null : Core.R.VideoClip.CustomItemCreate(Current, timeStart);
 
-  private IVideoImage GetNewImage(int timeStart) =>
-    Core.R.VideoImage.CustomItemCreate(Current, timeStart);
+  private IVideoImage? GetNewImage(int timeStart) =>
+    Current == null ? null : Core.R.VideoImage.CustomItemCreate(Current, timeStart);
 
   private void OnItemDelete() {
     if (Core.VM.MediaItem.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
       MediaPlayer.SetCurrent(null);
   }
 
-  private void OnMarkerSet(object sender, ObjectEventArgs<Tuple<IVideoItem, bool>> e) {
+  private void OnMarkerSet(object? sender, ObjectEventArgs<Tuple<IVideoItem, bool>> e) {
     var item = (VideoItemM)e.Data.Item1;
     Core.R.MediaItem.Modify(item);
 
@@ -76,12 +76,11 @@ public sealed class VideoVM : ObservableObject {
 
     if (item is VideoClipM && !e.Data.Item2) return; // if !start
     CurrentVideoItems.Insert(item);
-    // TODO mi rewrite ScrollTo
     File.Delete(item.FilePathCache);
     item.OnPropertyChanged(nameof(item.FilePathCache));
   }
 
-  private void SetVideoSource(VideoM vid) {
+  private void SetVideoSource(VideoM? vid) {
     if (vid == null) {
       MediaPlayer.Source = string.Empty;
       return;
