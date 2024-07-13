@@ -18,24 +18,24 @@ public sealed class PeopleToolsTabVM : CollectionViewPeople {
       Res.IconPeople,
       true);
 
-    md.Buttons = new DialogButton[] {
+    md.Buttons = [
       new(md.SetResult(1, null, "Thumbnails"), true),
       new(md.SetResult(2, null, "Media Viewer")),
       new(md.SetResult(3, null, "All people"))
-    };
+    ];
 
     var result = Dialog.Show(md);
-    if (result < 1) return Enumerable.Empty<PersonM>();
+    if (result < 1) return [];
 
     return result switch {
-      1 => Core.VM.MediaItem.Views.Current?.GetSelectedOrAll().GetPeople(),
+      1 => Core.VM.MediaItem.Views.Current?.GetSelectedOrAll().GetPeople() ?? [],
       2 => Core.VM.MediaViewer.MediaItems.GetPeople(),
       3 => PersonS.GetAll(),
-      _ => Enumerable.Empty<PersonM>()
+      _ => []
     };
   }
 
-  public void Reload(PersonM[] people) {
+  public void Reload(PersonM[]? people) {
     var src = (people ?? GetPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList();
     if (src.Count == 0) return;
     Reload(src, GroupMode.ThenByRecursive, null, true);
