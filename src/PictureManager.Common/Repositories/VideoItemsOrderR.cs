@@ -36,7 +36,7 @@ public sealed class VideoItemsOrderR : OneToManyMultiDataAdapter<VideoM, VideoIt
   public override Dictionary<string, IEnumerable<KeyValuePair<VideoM, List<VideoItemM>>>> GetAsDriveRelated() =>
     CoreR.GetAsDriveRelated(All, x => x.Key.Folder);
 
-  public override VideoItemM GetValueById(string id) {
+  public override VideoItemM? GetValueById(string id) {
     var intId = int.Parse(id);
     if (_coreR.VideoClip.AllDict.TryGetValue(intId, out var vc)) return vc;
     if (_coreR.VideoImage.AllDict.TryGetValue(intId, out var vi)) return vi;
