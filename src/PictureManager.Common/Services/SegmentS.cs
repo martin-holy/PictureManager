@@ -15,7 +15,7 @@ public sealed class SegmentS : ObservableObject {
   public SegmentR DataAdapter { get; set; }
   public SegmentRectS Rect { get; }
   public Selecting<SegmentM> Selected { get; } = new();
-  public static Action<SegmentM, string> ExportSegment { get; set; }
+  public static Action<SegmentM, string> ExportSegment { get; set; } = null!;
 
   public bool CanSetAsSamePerson {
     get {
@@ -29,7 +29,7 @@ public sealed class SegmentS : ObservableObject {
     Rect = new(this);
   }
 
-  public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
+  public void Select(List<SegmentM>? segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
     if (!isCtrlOn && !isShiftOn)
       Core.S.Person.Selected.DeselectAll();
 
@@ -38,12 +38,12 @@ public sealed class SegmentS : ObservableObject {
     OnPropertyChanged(nameof(CanSetAsSamePerson));
   }
 
-  public SegmentM[] GetOneOrSelected(SegmentM one) =>
+  public SegmentM[]? GetOneOrSelected(SegmentM? one) =>
     one == null
       ? null
       : Selected.Items.Contains(one)
         ? Selected.Items.ToArray()
-        : new[] { one };
+        : [one];
 
   /// <summary>
   /// Sets new Person to all Segments that are selected 
@@ -53,7 +53,7 @@ public sealed class SegmentS : ObservableObject {
     var unknownPeople = selected.GetPeople().Where(x => x.IsUnknown).ToHashSet();
     var segments = selected
       .Where(x => x.Person == null || !x.Person.IsUnknown)
-      .Concat(DataAdapter.All.Where(x => unknownPeople.Contains(x.Person)))
+      .Concat(DataAdapter.All.Where(x => x.Person != null && unknownPeople.Contains(x.Person)))
       .ToArray();
     var people = segments
       .GetPeople()
@@ -103,11 +103,11 @@ public sealed class SegmentS : ObservableObject {
     Core.VM.MainWindow.IsInViewMode = true;
   }
 
-  private IEnumerable<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM segment) {
-    if (segment == null) return Enumerable.Empty<MediaItemM>();
+  private IEnumerable<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM? segment) {
+    if (segment == null) return [];
 
-    if (Core.VM.SegmentsMatching != null && ReferenceEquals(Core.VM.SegmentsMatching.CvSegments, source))
-      return ((CollectionViewGroup<SegmentM>)Core.VM.SegmentsMatching.CvSegments.LastSelectedRow.Parent).Source
+    if (Core.VM.SegmentsMatching is { CvSegments.LastSelectedRow.Parent: { } group } sm && ReferenceEquals(sm.CvSegments, source))
+      return ((CollectionViewGroup<SegmentM>)group).Source
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
         .ThenBy(x => x.FileName);
