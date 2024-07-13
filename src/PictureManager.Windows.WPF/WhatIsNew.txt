@@ -4,6 +4,10 @@
 [B] - Bug fix
 
 Latest:
+ - [B] LoadByTag with CTRL without active MediaItemsView
+ - [B] Creating new Keyword, Person, Keywords group or Persons group with empty name
+
+24.07.07.0707:
  - [U] Controls styles
  - [U] SplashScreen border color
  - [N] UI colors based on Windows accent color
