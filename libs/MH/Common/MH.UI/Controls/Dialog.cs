@@ -39,7 +39,7 @@ public class Dialog : ObservableObject {
     if (dialog != null) dialog.Result = result;
   }
 
-  public RelayCommand SetResult(int result, string icon, string text) =>
+  public RelayCommand SetResult(int result, string? icon, string? text) =>
     new(() => Result = result, icon, text);
 
   public virtual Task OnResultChanged(int result) => Task.CompletedTask;
