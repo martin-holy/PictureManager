@@ -17,53 +17,55 @@ namespace PictureManager.Common.ViewModels.Entities;
 public sealed class MediaItemVM : ObservableObject {
   private readonly CoreVM _coreVM;
   private readonly MediaItemS _s;
-  private MediaItemM _current;
+  private MediaItemM? _current;
   private int _itemsCount;
 
-  public static IImageSourceConverter<MediaItemM> ThumbConverter { get; set; }
+  public static IImageSourceConverter<MediaItemM> ThumbConverter { get; set; } = null!;
 
-  public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
-  public GeoNameM CurrentGeoName => Current?.GeoLocation?.GeoName;
+  public MediaItemM? Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
+  public GeoNameM? CurrentGeoName => Current?.GeoLocation?.GeoName;
   public MediaItemsViewsVM Views { get; } = new();
   public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
 
-  public static RelayCommand CommentCommand { get; set; }
-  public static RelayCommand DeleteCommand { get; set; }
-  public static RelayCommand<GeoNameM> LoadByGeoNameCommand { get; set; }
-  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; }
-  public static RelayCommand<PersonM> LoadByPersonCommand { get; set; }
-  public static RelayCommand LoadByPeopleOrSegmentsCommand { get; set; }
-  public static RelayCommand RenameCommand { get; set; }
-  public static RelayCommand ViewSelectedCommand { get; set; }
+  public static RelayCommand CommentCommand { get; set; } = null!;
+  public static RelayCommand DeleteCommand { get; set; } = null!;
+  public static RelayCommand<GeoNameM> LoadByGeoNameCommand { get; set; } = null!;
+  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
+  public static RelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
+  public static RelayCommand LoadByPeopleOrSegmentsCommand { get; set; } = null!;
+  public static RelayCommand RenameCommand { get; set; } = null!;
+  public static RelayCommand ViewSelectedCommand { get; set; } = null!;
 
   public MediaItemVM(CoreVM coreVM, MediaItemS s) {
     _coreVM = coreVM;
     _s = s;
-    CommentCommand = new(() => Comment(Current), () => Current != null, Res.IconNotification, "Comment");
+    CommentCommand = new(() => Comment(Current!), () => Current != null, Res.IconNotification, "Comment");
     DeleteCommand = new(() => Delete(_coreVM.GetActive<MediaItemM>()), () => _coreVM.AnyActive<MediaItemM>());
     LoadByGeoNameCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPersonCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPeopleOrSegmentsCommand = new(LoadByPeopleOrSegments, Res.IconImageMultiple, "Load Media items with selected People or Segments");
-    RenameCommand = new(Rename, () => Current is RealMediaItemM, null, "Rename");
+    RenameCommand = new(() => Rename((RealMediaItemM)Current!), () => Current is RealMediaItemM, null, "Rename");
     ViewSelectedCommand = new(ViewSelected, CanViewSelected, Res.IconImageMultiple, "View selected");
   }
 
   private void Comment(MediaItemM mi) {
-    var inputDialog = new InputDialog(
+    var commentDialog = new InputDialog(
       "Comment",
       "Add a comment.",
       Res.IconNotification,
       mi.Comment,
-      answer => answer.Length > 256
-        ? "Comment is too long!"
-        : string.Empty);
+      x => string.IsNullOrEmpty(x)
+        ? "Comment is empty!"
+        : x.Length > 256
+          ? "Comment is too long!"
+          : null);
 
-    if (Dialog.Show(inputDialog) == 1)
-      _s.SetComment(mi, StringUtils.NormalizeComment(inputDialog.Answer));
+    if (Dialog.Show(commentDialog) == 1)
+      _s.SetComment(mi, StringUtils.NormalizeComment(commentDialog.Answer!));
   }
 
-  private void LoadBy(object o) =>
+  private void LoadBy(object? o) =>
     _coreVM.MediaItem.Views.LoadByTag(o);
 
   private void LoadByPeopleOrSegments() {
@@ -73,10 +75,10 @@ public sealed class MediaItemVM : ObservableObject {
       Res.IconImageMultiple,
       true);
 
-    md.Buttons = new DialogButton[] {
+    md.Buttons = [
       new(md.SetResult(1, Res.IconPeople, "People"), true),
       new(md.SetResult(2, Res.IconSegment, "Segments"))
-    };
+    ];
 
     var result = Dialog.Show(md);
     if (result < 1) return;
@@ -92,7 +94,7 @@ public sealed class MediaItemVM : ObservableObject {
   }
 
   private void ViewSelected() {
-    var items = Views.Current.Selected.Items.ToList();
+    var items = Views.Current!.Selected.Items.ToList();
     _coreVM.MainWindow.IsInViewMode = true;
     _coreVM.MediaViewer.SetMediaItems(items, items[0]);
   }
@@ -126,27 +128,27 @@ public sealed class MediaItemVM : ObservableObject {
     Dialog.Show(progress);
   }
 
-  public void Rename() {
-    var ext = Path.GetExtension(Current.FileName);
+  public void Rename(RealMediaItemM current) {
+    var ext = Path.GetExtension(current.FileName);
     var dlg = new InputDialog(
       "Rename",
       "Add a new name.",
       Res.IconNotification,
-      Path.GetFileNameWithoutExtension(Current.FileName),
+      Path.GetFileNameWithoutExtension(current.FileName),
       answer => {
         var newFileName = answer + ext;
 
         if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) != -1))
           return "New file name contains invalid character!";
 
-        if (File.Exists(IOExtensions.PathCombine(Current.Folder.FullPath, newFileName)))
+        if (File.Exists(IOExtensions.PathCombine(current.Folder.FullPath, newFileName)))
           return "New file name already exists!";
 
         return string.Empty;
       });
 
     if (Dialog.Show(dlg) != 1) return;
-    _s.Rename((RealMediaItemM)Current, dlg.Answer + ext);
+    _s.Rename(current, dlg.Answer + ext);
   }
 
   public void OnMetadataChanged(MediaItemM[] items) {
