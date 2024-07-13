@@ -3,7 +3,6 @@ using MH.Utils.BaseClasses;
 using PictureManager.Common.CollectionViews;
 using PictureManager.Common.Models;
 using PictureManager.Common.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
@@ -13,11 +12,11 @@ namespace PictureManager.Common.ViewModels.Entities;
 public sealed class PersonDetailVM : ObservableObject {
   private readonly PersonS _personS;
   private readonly SegmentS _segmentS;
-  private PersonM _personM;
+  private PersonM? _personM;
 
   public CollectionViewSegments AllSegments { get; } = new();
   public CollectionViewSegments TopSegments { get; } = new() { AddInOrder = false };
-  public PersonM PersonM { get => _personM; set { _personM = value; OnPropertyChanged(); } }
+  public PersonM? PersonM { get => _personM; set { _personM = value; OnPropertyChanged(); } }
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction TopSegmentsDropAction { get; }
 
@@ -28,8 +27,8 @@ public sealed class PersonDetailVM : ObservableObject {
     TopSegmentsDropAction = TopSegmentsDrop;
   }
 
-  private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
-    if (!haveSameOrigin && PersonM.TopSegments?.Contains(data as SegmentM) != true)
+  private MH.Utils.DragDropEffects CanDrop(object? target, object? data, bool haveSameOrigin) {
+    if (!haveSameOrigin && data is SegmentM segment && PersonM != null && PersonM.TopSegments?.Contains(segment) != true)
       return MH.Utils.DragDropEffects.Copy;
     if (haveSameOrigin && data != target)
       return MH.Utils.DragDropEffects.Move;
@@ -38,13 +37,13 @@ public sealed class PersonDetailVM : ObservableObject {
   }
 
   private void TopSegmentsDrop(object data, bool haveSameOrigin) {
-    var segment = data as SegmentM;
-    _personS.ToggleTopSegment(PersonM, segment);
+    var segment = (SegmentM)data;
+    _personS.ToggleTopSegment(PersonM!, segment);
     if (haveSameOrigin) TopSegments.Remove(segment);
     else TopSegments.Insert(segment);
   }
 
-  public void Reload(PersonM person) {
+  public void Reload(PersonM? person) {
     PersonM = person;
 
     if (PersonM == null) {
@@ -70,7 +69,7 @@ public sealed class PersonDetailVM : ObservableObject {
 
   private void ReloadTopSegments() =>
     TopSegments.Reload(
-      PersonM.TopSegments == null
+      PersonM!.TopSegments == null
         ? []
         : PersonM.TopSegments.ToList(),
       GroupMode.GroupBy, null, true, "Top");
@@ -88,7 +87,7 @@ public sealed class PersonDetailVM : ObservableObject {
     items = remove
       ? items
       : PersonM.TopSegments == null
-        ? Array.Empty<SegmentM>()
+        ? []
         : items.Where(PersonM.TopSegments.Contains).ToArray();
 
     if (remove) TopSegments.Remove(items); else TopSegments.Insert(items);
