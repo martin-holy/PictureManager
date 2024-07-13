@@ -50,7 +50,8 @@ public sealed class MediaItemsFilterVM : ObservableObject {
     OnFilterChanged();
   }
 
-  public void Set(object item, DisplayFilter displayFilter) {
+  public void Set(object? item, DisplayFilter displayFilter) {
+    if (item == null) return;
     if (FilterAnd.Contains(item) || FilterOr.Contains(item) || FilterNot.Contains(item))
       displayFilter = DisplayFilter.None;
 
