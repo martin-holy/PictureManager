@@ -11,6 +11,7 @@ using System.Linq;
 namespace PictureManager.Common.Repositories;
 
 public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
+  public static MediaItemM Dummy { get; } = new ImageM(0, FolderR.Dummy, string.Empty);
   private readonly CoreR _coreR;
   private static readonly string[] _supportedImageExts = [".jpg", ".jpeg"];
   private static readonly string[] _supportedVideoExts = [".mp4"];
