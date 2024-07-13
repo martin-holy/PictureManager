@@ -15,6 +15,7 @@ namespace PictureManager.Common.Repositories;
 /// DB fields: ID|Name|Parent
 /// </summary>
 public class FolderR : TreeDataAdapter<FolderM> {
+  public static FolderM Dummy { get; } = new(0, string.Empty, null);
   public FoldersTreeCategory Tree { get; }
 
   public FolderR(CoreR coreR) : base(coreR, "Folders", 3) {
