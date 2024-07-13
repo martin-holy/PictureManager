@@ -85,6 +85,8 @@
   - limit folder path size
 ## PersonMerge
   - show selected person name on merge dialog
+## PersonDetail
+  - don't show keywords if they are not any
 
 
                                     *** NEW ***
@@ -149,6 +151,12 @@
   - ToBoolConverter where Inst is IsNotNull, IsStringEmpty, IsCollectionEmpty, ...
   - IHaveName is applied only to GenreM but the DataTemplate is used for KeywordM as well
   - replace KeyDataTemplateSelector with TypeDataTemplateSelector
+  - platform independent part of ZoomAndPan
+  - unused method LinkFolderWithFolderKeyword
+  - use FolderR.Dummy in repositories in FromCsv
+  - pass reference Core.VM.MediaItem to MediaItemsViewsVM.SetCurrentView
+  - maybe move all CORE properties that needs to be set from WPF to one class
+  - change MediaItemsViewsVM.AddView to return Current
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
