@@ -13,36 +13,36 @@ namespace PictureManager.Common.ViewModels;
 
 public sealed class MediaItemsViewsVM : ObservableObject {
   private readonly List<MediaItemsViewVM> _all = [];
-  private MediaItemsViewVM _current;
+  private MediaItemsViewVM? _current;
 
-  public MediaItemsViewVM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
+  public MediaItemsViewVM? Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-  public static RelayCommand<object> FilterSetAndCommand { get; set; }
-  public static RelayCommand<object> FilterSetOrCommand { get; set; }
-  public static RelayCommand<object> FilterSetNotCommand { get; set; }
-  public static RelayCommand AddViewCommand { get; set; }
-  public static RelayCommand CopyPathsCommand { get; set; }
-  public static RelayCommand<object> LoadByTagCommand { get; set; }
-  public static RelayCommand ShuffleCommand { get; set; }
-  public static RelayCommand SortCommand { get; set; }
-  public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; }
-  public static RelayCommand ViewModifiedCommand { get; set; }
+  public static RelayCommand<object> FilterSetAndCommand { get; set; } = null!;
+  public static RelayCommand<object> FilterSetOrCommand { get; set; } = null!;
+  public static RelayCommand<object> FilterSetNotCommand { get; set; } = null!;
+  public static RelayCommand AddViewCommand { get; set; } = null!;
+  public static RelayCommand CopyPathsCommand { get; set; } = null!;
+  public static RelayCommand<object> LoadByTagCommand { get; set; } = null!;
+  public static RelayCommand ShuffleCommand { get; set; } = null!;
+  public static RelayCommand SortCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; } = null!;
+  public static RelayCommand ViewModifiedCommand { get; set; } = null!;
 
   public MediaItemsViewsVM() {
-    FilterSetAndCommand = new(item => Current.Filter.Set(item, DisplayFilter.And), _ => Current != null, Res.IconFilter, "Filter And");
-    FilterSetOrCommand = new(item => Current.Filter.Set(item, DisplayFilter.Or), _ => Current != null, Res.IconFilter, "Filter Or");
-    FilterSetNotCommand = new(item => Current.Filter.Set(item, DisplayFilter.Not), _ => Current != null, Res.IconFilter, "Filter Not");
+    FilterSetAndCommand = new(item => Current!.Filter.Set(item, DisplayFilter.And), _ => Current != null, Res.IconFilter, "Filter And");
+    FilterSetOrCommand = new(item => Current!.Filter.Set(item, DisplayFilter.Or), _ => Current != null, Res.IconFilter, "Filter Or");
+    FilterSetNotCommand = new(item => Current!.Filter.Set(item, DisplayFilter.Not), _ => Current != null, Res.IconFilter, "Filter Not");
 
     AddViewCommand = new(() => AddView(string.Empty), Res.IconPlus, "Add Media Items View Tab");
     CopyPathsCommand = new(
-      () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),
+      () => Clipboard.SetText(string.Join("\n", Current!.Selected.Items.Select(x => x.FilePath))),
       () => Current?.Selected.Items.Any() == true, null, "Copy Paths");
     LoadByTagCommand = new(LoadByTag, null, "Load");
     ShuffleCommand = new(
-      () => Current.Shuffle(),
+      () => Current!.Shuffle(),
       () => Current?.FilteredItems.Count > 0, Res.IconRandom, "Shuffle");
     SortCommand = new(
-      () => Current.Sort(),
+      () => Current!.Sort(),
       () => Current?.FilteredItems.Count > 0, Res.IconSort, "Sort");
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
@@ -65,7 +65,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     Core.VM.MediaItem.Current = null;
   }
 
-  public void SetCurrentView(MediaItemsViewVM view) {
+  public void SetCurrentView(MediaItemsViewVM? view) {
     Current = view;
     Current?.UpdateSelected();
     Core.VM.MediaItem.Current = Current?.Selected.Items.Count > 0
@@ -73,7 +73,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       : null;
   }
 
-  private void AddViewIfNotActive(string tabName) {
+  private void AddViewIfNotActive(string? tabName) {
     if (Core.VM.MainTabs.Selected?.Data is MediaItemsViewVM) {
       if (tabName != null)
         Core.VM.MainTabs.Selected.Name = tabName;
@@ -81,7 +81,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       return;
     }
 
-    AddView(tabName);
+    AddView(tabName ?? string.Empty);
   }
 
   private void AddView(string tabName) {
@@ -93,12 +93,12 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     Core.VM.MainTabs.Add(Res.IconImageMultiple, tabName, view);
   }
 
-  private void OnViewSelectionChanged(object o, EventArgs e) {
+  private void OnViewSelectionChanged(object? o, EventArgs e) {
     Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
     _ = Core.VM.MainWindow.StatusBar.UpdateFileSize();
   }
 
-  private void OnViewFilteredChanged(object o, EventArgs e) {
+  private void OnViewFilteredChanged(object? o, EventArgs e) {
     Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
   }
 
@@ -117,14 +117,15 @@ public sealed class MediaItemsViewsVM : ObservableObject {
 
     item.IsSelected = true;
     AddViewIfNotActive(and || hide ? null : item.Name);
-    return Current?.LoadByFolder(item, and, hide, recursive);
+    return Current!.LoadByFolder(item, and, hide, recursive);
   }
 
-  public async void LoadByTag(object item) {
+  public async void LoadByTag(object? item) {
+    if (item == null) return;
     var and = Keyboard.IsCtrlOn() && Current != null;
     var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn()).OfType<RealMediaItemM>().Cast<MediaItemM>();
 
-    if (and) items = Current.LoadedItems.Union(items);
+    if (and) items = Current!.LoadedItems.Union(items);
 
     var tabTitle = and
       ? null
@@ -141,7 +142,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     if (and)
       AddViewIfNotActive(null);
     else
-      AddView(tabTitle);
+      AddView(tabTitle!);
 
     await Current!.LoadByTag(items.ToArray());
   }
@@ -153,13 +154,11 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       Core.VM.MediaItem.Current = null;
   }
 
-  private void RebuildThumbnails(FolderM folder, bool recursive) {
+  private void RebuildThumbnails(FolderM? folder, bool recursive) {
     var mediaItems = (folder == null
-        ? Current?.GetSelectedOrAll()?.OfType<RealMediaItemM>()
-        : folder.GetMediaItems(recursive))?
+        ? Current!.GetSelectedOrAll().OfType<RealMediaItemM>()
+        : folder.GetMediaItems(recursive))
       .Cast<MediaItemM>().ToArray();
-
-    if (mediaItems == null) return;
 
     foreach (var mi in mediaItems) {
       File.Delete(mi.FilePathCache);
@@ -169,11 +168,11 @@ public sealed class MediaItemsViewsVM : ObservableObject {
 
   private async void ViewModified() {
     AddView("Modified");
-    await Current.LoadByTag(Core.R.MediaItem.GetModified().ToArray());
+    await Current!.LoadByTag(Core.R.MediaItem.GetModified().ToArray());
   }
 
   public Task ViewMediaItems(MediaItemM[] items, string name) {
     AddView(name);
-    return Current.LoadByTag(items);
+    return Current!.LoadByTag(items);
   }
 }
