@@ -24,7 +24,7 @@ public class CoreVM : ObservableObject {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
-  public ToggleDialog ToggleDialog { get; } = new(null, null);
+  public ToggleDialog ToggleDialog { get; } = new();
 
   public GeoNameVM GeoName { get; }
   public MediaItemVM MediaItem { get; }
@@ -37,34 +37,34 @@ public class CoreVM : ObservableObject {
   public MainTabsVM MainTabs { get; } = new();
   public MainWindowVM MainWindow { get; }
   public MediaViewerVM MediaViewer { get; } = new();
-  public PeopleVM People { get; set; }
+  public PeopleVM? People { get; set; }
   public SegmentsDrawerVM SegmentsDrawer { get; }
-  public SegmentsMatchingVM SegmentsMatching { get; set; }
+  public SegmentsMatchingVM? SegmentsMatching { get; set; }
   public TitleProgressBarVM TitleProgressBar { get; } = new();
 
   public TabControl ToolsTabs => MainWindow.ToolsTabs;
   public static double DisplayScale { get; set; }
-  public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; }
-  public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; }
-  public static IVideoFrameSaver VideoFrameSaver { get; set; }
+  public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; } = null!;
+  public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; } = null!;
+  public static IVideoFrameSaver VideoFrameSaver { get; set; } = null!;
 
   public event EventHandler AppClosingEvent = delegate { };
 
-  public static RelayCommand AppClosingCommand { get; set; }
-  public static RelayCommand ExportSegmentsCommand { get; set; }
+  public static RelayCommand AppClosingCommand { get; set; } = null!;
+  public static RelayCommand ExportSegmentsCommand { get; set; } = null!;
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialogM()), null, "About");
   public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialogM()), Res.IconSort, "Open log");
-  public static RelayCommand OpenSegmentsMatchingCommand { get; set; }
-  public static RelayCommand OpenSettingsCommand { get; set; }
-  public static RelayCommand SaveDbCommand { get; set; }
-  public static RelayCommand<FolderM> CompressImagesCommand { get; set; }
-  public static RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; set; }
-  public static RelayCommand<FolderM> ImagesToVideoCommand { get; set; }
-  public static RelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; set; }
-  public static RelayCommand<FolderM> ReloadMetadataCommand { get; set; }
-  public static RelayCommand<FolderM> ResizeImagesCommand { get; set; }
-  public static RelayCommand<FolderM> RotateMediaItemsCommand { get; set; }
-  public static RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; set; }
+  public static RelayCommand OpenSegmentsMatchingCommand { get; set; } = null!;
+  public static RelayCommand OpenSettingsCommand { get; set; } = null!;
+  public static RelayCommand SaveDbCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> CompressImagesCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> ImagesToVideoCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> ReloadMetadataCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> ResizeImagesCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> RotateMediaItemsCommand { get; set; } = null!;
+  public static RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; set; } = null!;
 
   public CoreVM(CoreS coreS, CoreR coreR) {
     _coreS = coreS;
@@ -98,17 +98,17 @@ public class CoreVM : ObservableObject {
     SaveImageMetadataToFilesCommand = new(x => SaveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
   }
 
-  public bool AnyActive<T>(FolderM folder = null) where T : MediaItemM =>
+  public bool AnyActive<T>(FolderM? folder = null) where T : MediaItemM =>
     folder != null
     || (MainWindow.IsInViewMode && MediaItem.Current is T)
     || MediaItem.Views.Current?.Selected.Items.OfType<T>().Any() == true;
 
-  public T[] GetActive<T>(FolderM folder = null) where T : MediaItemM =>
+  public T[] GetActive<T>(FolderM? folder = null) where T : MediaItemM =>
     folder != null
       ? folder.GetMediaItems(Keyboard.IsShiftOn()).OfType<T>().ToArray()
       : MainWindow.IsInViewMode
-        ? MediaItem.Current is T current ? new[] { current } : Array.Empty<T>()
-        : MediaItem.Views.Current?.Selected.Items.OfType<T>().ToArray() ?? Array.Empty<T>();
+        ? MediaItem.Current is T current ? [current] : []
+        : MediaItem.Views.Current?.Selected.Items.OfType<T>().ToArray() ?? [];
 
   public void AttachEvents() {
     MainTabs.PropertyChanged += OnMainTabsPropertyChanged;
@@ -138,7 +138,7 @@ public class CoreVM : ObservableObject {
     _coreR.Segment.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
   }
 
-  private void OnMainTabsPropertyChanged(object sender, PropertyChangedEventArgs e) {
+  private void OnMainTabsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(MainTabs.Selected)))
       MediaItem.Views.SetCurrentView(MainTabs.Selected?.Data as MediaItemsViewVM);
   }
@@ -157,7 +157,7 @@ public class CoreVM : ObservableObject {
     }
   }
 
-  private void OnMainWindowPropertyChanged(object sender, PropertyChangedEventArgs e) {
+  private void OnMainWindowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(MainWindow.IsInViewMode))) {
       var isInViewMode = MainWindow.IsInViewMode;
 
@@ -177,7 +177,7 @@ public class CoreVM : ObservableObject {
     }
   }
 
-  private void OnMediaItemPropertyChanged(object sender, PropertyChangedEventArgs e) {
+  private void OnMediaItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(MediaItem.Current))) {
       MainWindow.StatusBar.Update();
       Video.SetCurrent(MediaItem.Current);
@@ -189,14 +189,14 @@ public class CoreVM : ObservableObject {
     }
   }
 
-  private void OnMediaItemViewsPropertyChanged(object sender, PropertyChangedEventArgs e) {
+  private void OnMediaItemViewsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(MediaItem.Views.Current))) {
       MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
       MainWindow.StatusBar.OnPropertyChanged(nameof(MainWindow.StatusBar.IsCountVisible));
     }
   }
 
-  private void OnMediaViewerPropertyChanged(object sender, PropertyChangedEventArgs e) {
+  private void OnMediaViewerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     switch (e.PropertyName) {
       case nameof(MediaViewer.IsVisible):
         MainWindow.StatusBar.Update();
@@ -214,21 +214,21 @@ public class CoreVM : ObservableObject {
     }
   }
 
-  private void OnVideoItemsSelectionChanged(object sender, VideoItemM[] e) {
+  private void OnVideoItemsSelectionChanged(object? sender, VideoItemM[] e) {
     var vi = e.FirstOrDefault();
-    MediaItem.Current = (MediaItemM)vi ?? Video.Current;
+    MediaItem.Current = vi as MediaItemM ?? Video.Current;
     Video.MediaPlayer.SetCurrent(vi);
   }
 
-  private void OnFolderRenamed(object sender, FolderM item) {
+  private void OnFolderRenamed(object? sender, FolderM item) {
     MainWindow.StatusBar.UpdateFilePath();
   }
 
-  private void OnMediaItemCreated(object sender, MediaItemM item) {
+  private void OnMediaItemCreated(object? sender, MediaItemM item) {
     UpdateMediaItemsCount();
   }
 
-  private void OnMediaItemsDeleted(object sender, IList<MediaItemM> items) {
+  private void OnMediaItemsDeleted(object? sender, IList<MediaItemM> items) {
     MediaItem.Current = MediaViewer.IsVisible && items.All(x => x is RealMediaItemM)
       ? MediaViewer.MediaItems.GetNextOrPreviousItem(items)
       : items.OfType<VideoItemM>().FirstOrDefault()?.Video;
@@ -245,12 +245,12 @@ public class CoreVM : ObservableObject {
     }
   }
 
-  private void OnMediaItemRenamed(object sender, MediaItemM item) {
+  private void OnMediaItemRenamed(object? sender, MediaItemM item) {
     MediaItem.OnPropertyChanged(nameof(MediaItem.Current));
     MediaItem.Views.Current?.SoftLoad(MediaItem.Views.Current.FilteredItems, true, false);
   }
 
-  private void OnMediaItemsMetadataChanged(object sender, MediaItemM[] items) {
+  private void OnMediaItemsMetadataChanged(object? sender, MediaItemM[] items) {
     var all = items.OfType<VideoItemM>().Select(x => x.Video).Concat(items).Distinct().ToArray();
     MediaItem.OnMetadataChanged(all);
     MediaItem.Views.UpdateViews(all);
@@ -259,7 +259,7 @@ public class CoreVM : ObservableObject {
     MainWindow.StatusBar.UpdateRating();
   }
 
-  private void OnMediaItemsOrientationChanged(object sender, RealMediaItemM[] items) {
+  private void OnMediaItemsOrientationChanged(object? sender, RealMediaItemM[] items) {
     if (MediaViewer.IsVisible && items.Contains(MediaViewer.Current))
       MediaViewer.Current = MediaViewer.Current;
 
@@ -268,12 +268,12 @@ public class CoreVM : ObservableObject {
       Video.CurrentVideoItems.ReWrapAll();
   }
 
-  private void OnPersonCreated(object sender, PersonM item) {
+  private void OnPersonCreated(object? sender, PersonM item) {
     MainWindow.ToolsTabs.PeopleTab?.Insert(item);
     People?.Insert(item);
   }
 
-  private void OnPersonDeleted(object sender, PersonM item) {
+  private void OnPersonDeleted(object? sender, PersonM item) {
     People?.Remove(item);
     MainWindow.ToolsTabs.PeopleTab?.Remove(item);
     SegmentsMatching?.CvPeople.Remove(item);
@@ -282,29 +282,29 @@ public class CoreVM : ObservableObject {
       MainWindow.ToolsTabs.Close(MainWindow.ToolsTabs.PersonDetailTab);
   }
 
-  private void OnPersonsKeywordsChanged(object sender, PersonM[] items) {
+  private void OnPersonsKeywordsChanged(object? sender, PersonM[] items) {
     MainWindow.ToolsTabs.PersonDetailTab?.UpdateDisplayKeywordsIfContains(items);
     MainWindow.ToolsTabs.PeopleTab?.Update(items);
     People?.Update(items);
     SegmentsMatching?.CvPeople.Update(items);
   }
 
-  private void OnSegmentCreated(object sender, SegmentM e) {
+  private void OnSegmentCreated(object? sender, SegmentM e) {
     SegmentsMatching?.CvSegments.Insert(e);
   }
 
-  private void OnSegmentsDeleted(object sender, IList<SegmentM> items) {
+  private void OnSegmentsDeleted(object? sender, IList<SegmentM> items) {
     MainWindow.ToolsTabs.PersonDetailTab?.Update(items.ToArray(), true, true);
     SegmentsMatching?.CvSegments.Remove(items.ToArray());
     SegmentsDrawer.RemoveIfContains(items.ToArray());
   }
 
-  private void OnSegmentsKeywordsChanged(object sender, SegmentM[] items) {
+  private void OnSegmentsKeywordsChanged(object? sender, SegmentM[] items) {
     MainWindow.ToolsTabs.PersonDetailTab?.Update(items, true, false);
     SegmentsMatching?.CvSegments.Update(items);
   }
 
-  private void OnSegmentsPersonChanged(object sender, (SegmentM[], PersonM, PersonM[]) e) {
+  private void OnSegmentsPersonChanged(object? sender, (SegmentM[], PersonM?, PersonM[]) e) {
     MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Item1);
     People?.Update(e.Item3);
     SegmentsMatching?.OnSegmentsPersonChanged(e.Item1);
@@ -327,16 +327,16 @@ public class CoreVM : ObservableObject {
   private void ExportSegments() =>
     Dialog.Show(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray()));
 
-  private static void OpenSettings() =>
-    Core.VM.MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
+  private void OpenSettings() =>
+    MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
 
   public void OpenPeopleView() {
     People ??= new();
     People.Reload();
-    Core.VM.MainTabs.Activate(Res.IconPeopleMultiple, "People", People);
+    MainTabs.Activate(Res.IconPeopleMultiple, "People", People);
   }
 
-  public void OpenSegmentsMatching(SegmentM[] segments) {
+  public void OpenSegmentsMatching(SegmentM[]? segments) {
     if (segments == null) {
       var result = SegmentsMatchingVM.GetSegmentsToLoadUserInput();
       if (result < 1) return;
@@ -353,12 +353,12 @@ public class CoreVM : ObservableObject {
     Dialog.Show(new CompressDialogM(items, Core.Settings.Common.JpegQuality));
 
   private void GetGeoNamesFromWeb(ImageM[] items) {
-    items = items.Where(x => x.GeoLocation is { } gl && gl.GeoName == null && gl.Lat != null && gl.Lng != null).ToArray();
+    items = items.Where(x => x.GeoLocation is { GeoName: null, Lat: not null, Lng: not null }).ToArray();
     if (items.Length == 0) return;
     GeoLocationProgressDialog(items, "Getting GeoNames from web ...", async mi => {
       if (_coreR.GeoName.ApiLimitExceeded) return;
       _coreR.MediaItemGeoLocation.ItemUpdate(new(mi,
-        await _coreR.GeoLocation.GetOrCreate(mi.GeoLocation.Lat, mi.GeoLocation.Lng, null, null)));
+        await _coreR.GeoLocation.GetOrCreate(mi.GeoLocation?.Lat, mi.GeoLocation?.Lng, null, null)));
     });
   }
 
@@ -370,7 +370,7 @@ public class CoreVM : ObservableObject {
   }
 
   private void ImagesToVideo(ImageM[] items) {
-    if (items.Length == 1) return;
+    if (items.Length < 2) return;
     Dialog.Show(new ImagesToVideoDialogM(
       items,
       (folder, fileName) => {
@@ -380,6 +380,7 @@ public class CoreVM : ObservableObject {
         if (mim.Success)
           mim.FindRefs().ContinueWith(delegate {
             mi.SetThumbSize();
+            if (MediaItem.Views.Current == null) return;
             MediaItem.Views.Current.LoadedItems.Add(mi);
             MediaItem.Views.Current.SoftLoad(MediaItem.Views.Current.LoadedItems, true, true);
           }, Tasks.UiTaskScheduler);
@@ -471,8 +472,8 @@ public class CoreVM : ObservableObject {
     ToggleDialog.SourceTypes.Add(stRating);
   }
 
-  public void OpenMediaItems(MediaItemM[] items, MediaItemM item) {
-    items ??= new[] { item };
+  public void OpenMediaItems(MediaItemM[]? items, MediaItemM item) {
+    items ??= [item];
 
     MainWindow.IsInViewMode = true;
     MediaViewer.SetMediaItems(items.ToList(), item);
