@@ -34,7 +34,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
 
   public override SegmentM FromCsv(string[] csv) {
     var rect = csv[3].Split(',');
-    return new(int.Parse(csv[0]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]));
+    return new(int.Parse(csv[0]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), MediaItemR.Dummy);
   }
 
   public override string ToCsv(SegmentM segment) =>
@@ -106,11 +106,10 @@ public class SegmentR : TableDataAdapter<SegmentM> {
     LinkList(csv, null, seeker);
 
   public SegmentM ItemCreate(double x, double y, int size, MediaItemM mediaItem) =>
-    ItemCreate(new(GetNextId(), x, y, size) { MediaItem = mediaItem });
+    ItemCreate(new(GetNextId(), x, y, size, mediaItem));
 
   public SegmentM ItemCopy(SegmentM item, MediaItemM mediaItem) =>
-    ItemCreate(new(GetNextId(), item.X, item.Y, item.Size) {
-      MediaItem = mediaItem,
+    ItemCreate(new(GetNextId(), item.X, item.Y, item.Size, mediaItem) {
       Person = item.Person,
       Keywords = item.Keywords?.ToList()
     });
