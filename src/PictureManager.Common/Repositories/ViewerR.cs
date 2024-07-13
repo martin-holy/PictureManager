@@ -81,7 +81,7 @@ public class ViewerR : TreeDataAdapter<ViewerM> {
     TreeItemCreate(new(GetNextId(), name, parent));
 
   protected override void OnItemDeleted(object sender, ViewerM item) {
-    item.Parent.Items.Remove(item);
+    item.Parent!.Items.Remove(item);
     item.Parent = null;
     item.IncludedFolders.Clear();
     item.ExcludedFolders.Clear();
