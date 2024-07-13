@@ -20,7 +20,7 @@ public class VideoClipR : TableDataAdapter<VideoClipM> {
     CoreR.GetAsDriveRelated(All, x => x.Folder);
 
   public override VideoClipM FromCsv(string[] csv) {
-    var vc = new VideoClipM(int.Parse(csv[0]), null, csv[2].IntParseOrDefault(0)) {
+    var vc = new VideoClipM(int.Parse(csv[0]), VideoR.Dummy, csv[2].IntParseOrDefault(0)) {
       TimeEnd = csv[3].IntParseOrDefault(0),
       Volume = csv[4].IntParseOrDefault(50) / 100.0,
       Speed = csv[5].IntParseOrDefault(10) / 10.0,
@@ -46,8 +46,8 @@ public class VideoClipR : TableDataAdapter<VideoClipM> {
 
   public override void LinkReferences() {
     foreach (var (vc, csv) in AllCsv) {
-      vc.Video = _coreR.Video.GetById(csv[1]);
-      vc.Video.VideoClips ??= new();
+      vc.Video = _coreR.Video.GetById(csv[1])!;
+      vc.Video.VideoClips ??= [];
       vc.Video.VideoClips.Add(vc);
       vc.People = _coreR.Person.Link(csv[8], this);
       vc.Keywords = _coreR.Keyword.Link(csv[9], this);
@@ -67,6 +67,5 @@ public class VideoClipR : TableDataAdapter<VideoClipM> {
   protected override void OnItemDeleted(object sender, VideoClipM item) {
     _coreR.MediaItem.OnItemDeletedCommon(item);
     item.Video.Toggle(item);
-    item.Video = null;
   }
 }

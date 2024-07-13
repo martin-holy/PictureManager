@@ -11,6 +11,7 @@ namespace PictureManager.Common.Repositories;
 /// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|People|Keywords|IsOnlyInDb
 /// </summary>
 public sealed class VideoR : TableDataAdapter<VideoM> {
+  public static VideoM Dummy = new(0, FolderR.Dummy, string.Empty);
   private readonly CoreR _coreR;
 
   public VideoR(CoreR coreR) : base(coreR, "Videos", 11) {
