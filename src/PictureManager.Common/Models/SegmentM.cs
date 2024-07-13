@@ -20,7 +20,7 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
   private double _size;
 
   public int Id { get; }
-  public MediaItemM MediaItem { get; set; } = null!;
+  public MediaItemM MediaItem { get; set; }
   public PersonM? Person { get => _person; set { _person = value; OnPropertyChanged(); } }
   public List<KeywordM>? Keywords { get; set; }
 
@@ -68,11 +68,12 @@ public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectab
   public string FileNameCache => $"segment_{GetHashCode().ToString()}.jpg";
   public string FilePathCache => IOExtensions.PathCombine(MediaItem.Folder.FullPathCache, FileNameCache);
 
-  public SegmentM(int id, double x, double y, double size) {
+  public SegmentM(int id, double x, double y, double size, MediaItemM mediaItem) {
     Id = id;
     _x = x;
     _y = y;
     _size = size;
+    MediaItem = mediaItem;
   }
 
   #region IEquatable implementation
