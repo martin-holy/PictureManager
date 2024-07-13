@@ -12,7 +12,7 @@ public sealed class MediaViewerVM : ObservableObject {
   private int _contentWidth;
   private int _contentHeight;
   private int _indexOfCurrent;
-  private MediaItemM _current;
+  private MediaItemM? _current;
   private bool _isVisible;
   private bool _reScaleToFit;
 
@@ -28,7 +28,7 @@ public sealed class MediaViewerVM : ObservableObject {
   public int ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
   public int ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
   
-  public MediaItemM Current {
+  public MediaItemM? Current {
     get => _current;
     set {
       if (!Core.S.MediaItem.Exists(value)) return;
@@ -49,8 +49,8 @@ public sealed class MediaViewerVM : ObservableObject {
   public double ActualZoom => Scale * 100;
   public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
   public bool ReScaleToFit { get => _reScaleToFit; set { _reScaleToFit = value; OnPropertyChanged(); } }
-  public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems?.Count}";
-  public List<MediaItemM> MediaItems { get; private set; }
+  public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
+  public List<MediaItemM> MediaItems { get; private set; } = [];
   public PresentationPanelVM PresentationPanel { get; }
 
   public RelayCommand NextCommand { get; }
@@ -64,8 +64,8 @@ public sealed class MediaViewerVM : ObservableObject {
     NavigateCommand = new(Navigate);
   }
 
-  public void OnPlayerRepeatEnded(object sender, EventArgs e) {
-    if (PresentationPanel.IsPaused)
+  public void OnPlayerRepeatEnded(object? sender, EventArgs e) {
+    if (PresentationPanel.IsPaused && Current != null)
       PresentationPanel.Start(Current, false);
   }
 
@@ -74,7 +74,7 @@ public sealed class MediaViewerVM : ObservableObject {
     MediaItems.Clear();
   }
 
-  public void SetMediaItems(List<MediaItemM> mediaItems, MediaItemM current) {
+  public void SetMediaItems(List<MediaItemM>? mediaItems, MediaItemM current) {
     if (mediaItems == null || mediaItems.Count == 0) {
       MediaItems.Clear();
       Current = null;
@@ -107,8 +107,8 @@ public sealed class MediaViewerVM : ObservableObject {
     Current = MediaItems[--_indexOfCurrent];
   }
 
-  private void Navigate(MouseWheelEventArgs e) {
-    if (e.IsCtrlOn) return;
+  private void Navigate(MouseWheelEventArgs? e) {
+    if (e == null || e.IsCtrlOn) return;
     if (e.Delta < 0) {
       if (CanNext())
         Next();
@@ -119,7 +119,7 @@ public sealed class MediaViewerVM : ObservableObject {
     }
   }
 
-  public void Remove(MediaItemM oldMi, MediaItemM newMi) {
+  public void Remove(MediaItemM oldMi, MediaItemM? newMi) {
     MediaItems.Remove(oldMi);
     if (newMi == null) return;
     _indexOfCurrent = MediaItems.IndexOf(newMi);
