@@ -24,7 +24,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
 
   private bool _isEditOn;
   private bool _areVisible;
-  private MediaItemM _mediaItem;
+  private MediaItemM? _mediaItem;
 
   public bool IsEditOn { get => _isEditOn; set { _isEditOn = value; OnPropertyChanged(); } }
 
@@ -37,7 +37,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     }
   }
 
-  public MediaItemM MediaItem {
+  public MediaItemM? MediaItem {
     get => _mediaItem;
     set {
       _mediaItem = value;
@@ -45,7 +45,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     }
   }
 
-  public SegmentRectM Current { get; set; }
+  public SegmentRectM? Current { get; set; }
   public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = [];
 
   public void CreateNew(double x, double y) {
@@ -62,6 +62,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   }
 
   public void SetCurrent(SegmentRectM current, double x, double y) {
+    if (MediaItem == null) return;
     MousePosToRawImage(ref x, ref y, _scale, MediaItem);
     _editMode = GetEditMode(x, y, current.Segment);
     if (_editMode == SegmentEditMode.None) return;
@@ -103,7 +104,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
           ? SegmentEditMode.ResizeTopEdge
           : SegmentEditMode.ResizeBottomEdge;
 
-      if (Current.Size > 50)
+      if (Current!.Size > 50)
         _isNew = false;
     }
     else {
@@ -127,6 +128,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   }
 
   public void Edit(double x, double y) {
+    if (Current == null || MediaItem == null) return;
     var segment = Current.Segment;
 
     MousePosToRawImage(ref x, ref y, _scale, MediaItem);
@@ -262,7 +264,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     var rotated = orientation is Orientation.Rotate270 or Orientation.Rotate90;
     var scale = rotated ? mi.Height / (double)mi.ThumbWidth : mi.Width / (double)mi.ThumbWidth;
 
-    foreach (var s in mi.Segments) {
+    foreach (var s in mi.Segments!) {
       var rX = s.X;
       var rY = s.Y;
 
