@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 namespace PictureManager.Common.Services;
 
 public sealed class MediaItemS(MediaItemR r) : ObservableObject {
-  public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
+  public static Action<MediaItemMetadata, bool> ReadMetadata { get; set; } = null!;
 
   public void DeleteFromDrive(MediaItemM[] items) =>
     r.ItemsDeleteFromDrive(items);
 
-  public bool Exists(MediaItemM mi) {
+  public bool Exists(MediaItemM? mi) {
     if (mi == null || File.Exists(mi.FilePath)) return true;
     r.ItemsDelete(new[] { mi });
     return false;
