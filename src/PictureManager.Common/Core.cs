@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 namespace PictureManager.Common;
 
 public sealed class Core {
-  private static Core _inst;
+  private static Core? _inst;
   private static readonly object _lock = new();
   public static Core Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   public static CoreR R { get; } = new();
-  public static CoreS S { get; private set; }
-  public static CoreVM VM { get; private set; }
+  public static CoreS S { get; private set; } = null!;
+  public static CoreVM VM { get; private set; } = null!;
   public static Settings Settings { get; } = Settings.Load();
   public List<IPluginCore> Plugins { get; } = [];
 
@@ -55,9 +55,6 @@ public sealed class Core {
     foreach (var plugin in Plugins) plugin.AfterInit(S, VM);
 
     AttachEvents();
-
-    R.Keyword.Tree.AutoAddedGroup ??=
-      R.CategoryGroup.ItemCreate(R.Keyword.Tree, "Auto Added");
 
     S.Viewer.SetCurrent(R.Viewer.All.SingleOrDefault(x => x.IsDefault));
     S.Viewer.Current?.UpdateHashSets();
