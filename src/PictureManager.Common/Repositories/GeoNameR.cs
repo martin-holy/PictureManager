@@ -104,7 +104,8 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
     }
   }
 
-  public static (double, double) ParseLatLng(string latLng) {
+  public static (double, double) ParseLatLng(string? latLng) {
+    if (string.IsNullOrEmpty(latLng)) return (0, 0);
     try {
       var lat = double.Parse(latLng.Split(',')[0].Replace("N", "").Replace("S", "-"), CultureInfo.InvariantCulture);
       var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-"), CultureInfo.InvariantCulture);
