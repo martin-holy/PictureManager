@@ -8,7 +8,7 @@ namespace PictureManager.Common.ViewModels.Entities;
 public sealed class GeoNameVM {
   private readonly GeoNameR _r;
 
-  public static RelayCommand NewGeoNameFromGpsCommand { get; set; }
+  public static RelayCommand NewGeoNameFromGpsCommand { get; set; } = null!;
 
   public GeoNameVM(GeoNameR r) {
     _r = r;
