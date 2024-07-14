@@ -14,15 +14,15 @@ public sealed class ImageComparerVM : ObservableObject {
   private int _diff;
 
   public int Diff { get => _diff; set { _diff = value; OnPropertyChanged(); } }
-  public static RelayCommand<MediaItemsViewVM> AverageHashCommand { get; set; }
-  public static RelayCommand<MediaItemsViewVM> PHashCommand { get; set; }
+  public static RelayCommand<MediaItemsViewVM> AverageHashCommand { get; set; } = null!;
+  public static RelayCommand<MediaItemsViewVM> PHashCommand { get; set; } = null!;
 
   public ImageComparerVM() {
     AverageHashCommand = new(x => Compare(x, _avgHashes, Imaging.GetBitmapAvgHash), Res.IconCompare, "Compare images using average hash");
     PHashCommand = new(x => Compare(x, _pHashes, Imaging.GetBitmapPerceptualHash), Res.IconCompare, "Compare images using perceptual hash");
   }
 
-  public void Compare(MediaItemsViewVM view, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
+  private void Compare(MediaItemsViewVM? view, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
     if (view == null) return;
 
     var items = view.LoadedItems.Where(x => view.Filter.Filter(x));
@@ -31,7 +31,7 @@ public sealed class ImageComparerVM : ObservableObject {
     view.FilteredItems.Clear();
     view.Selected.DeselectAll();
 
-    if (similar != null)
+    if (similar.Count > 0)
       view.FilteredItems.AddRange(similar.Cast<MediaItemM>());
 
     view.SoftLoad(view.FilteredItems, false, false);
