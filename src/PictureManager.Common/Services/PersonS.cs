@@ -11,7 +11,7 @@ namespace PictureManager.Common.Services;
 public sealed class PersonS(PersonR r) : ObservableObject {
   public Selecting<PersonM> Selected { get; } = new();
 
-  public void ToggleTopSegment(PersonM person, SegmentM segment) {
+  public void ToggleTopSegment(PersonM person, SegmentM? segment) {
     if (segment == null) return;
 
     person.ToggleTopSegment(segment);
@@ -28,14 +28,14 @@ public sealed class PersonS(PersonR r) : ObservableObject {
 
     var segmentsBefore = Selected.Items
       .Where(x => x.Segment != null)
-      .Select(x => x.Segment)
+      .Select(x => x.Segment!)
       .ToArray();
 
     Selected.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 
     var segmentsAfter = Selected.Items
       .Where(x => x.Segment != null)
-      .Select(x => x.Segment)
+      .Select(x => x.Segment!)
       .ToArray();
 
     Core.S.Segment.Selected.Set(segmentsBefore.Except(segmentsAfter), false);
@@ -48,7 +48,7 @@ public sealed class PersonS(PersonR r) : ObservableObject {
 
     var topSegments = people
       .Where(x => x.TopSegments != null)
-      .SelectMany(x => x.TopSegments)
+      .SelectMany(x => x.TopSegments!)
       .Distinct();
 
     foreach (var segment in topSegments)
