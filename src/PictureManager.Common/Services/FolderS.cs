@@ -18,7 +18,7 @@ public sealed class FolderS {
     };
 
   public FolderM[] GetFolders(ITreeItem item, bool recursive) {
-    var roots = (item as FolderKeywordM)?.Folders?.ToArray() ?? new[] { (FolderM)item };
+    var roots = (item as FolderKeywordM)?.Folders.ToArray() ?? [(FolderM)item];
 
     if (!recursive) return roots;
 
