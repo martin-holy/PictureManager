@@ -6,7 +6,7 @@ using System;
 namespace PictureManager.Common.Services;
 
 public sealed class ImageS(ImageR r) {
-  public static Func<ImageM, bool> WriteMetadata { get; set; }
+  public static Func<ImageM, bool> WriteMetadata { get; set; } = null!;
 
   public bool TryWriteMetadata(ImageM img) {
     try {
