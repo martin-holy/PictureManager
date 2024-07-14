@@ -7,9 +7,9 @@ using System.Linq;
 namespace PictureManager.Common.Services;
 
 public sealed class ViewerS(CoreR coreR) : ObservableObject {
-  private ViewerM _current;
+  private ViewerM? _current;
 
-  public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
+  public ViewerM? Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
   public void ChangeCurrent(ViewerM viewer) {
     if (ReferenceEquals(Current, viewer)) return;
@@ -21,7 +21,7 @@ public sealed class ViewerS(CoreR coreR) : ObservableObject {
     SetCurrent(viewer);
   }
 
-  public void SetCurrent(ViewerM viewer) {
+  public void SetCurrent(ViewerM? viewer) {
     if (viewer != null && !viewer.IsDefault) viewer.IsDefault = true;
     Current = viewer;
     Current?.UpdateHashSets();
