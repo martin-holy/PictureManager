@@ -9,14 +9,14 @@ namespace PictureManager.Common.ViewModels.Entities;
 public sealed class PersonVM {
   private readonly CoreVM _coreVM;
   private readonly PersonR _r;
-  public static RelayCommand<CategoryGroupM> LoadByCategoryGroupCommand { get; set; }
-  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; }
+  public static RelayCommand<CategoryGroupM> LoadByCategoryGroupCommand { get; set; } = null!;
+  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
 
   public PersonVM(CoreVM coreVM, PersonR r) {
     _coreVM = coreVM;
     _r = r;
-    LoadByCategoryGroupCommand = new(LoadBy, Res.IconPeopleMultiple, "Load People");
-    LoadByKeywordCommand = new(LoadBy, Res.IconPeopleMultiple, "Load People");
+    LoadByCategoryGroupCommand = new(x => LoadBy(x!), x => x != null, Res.IconPeopleMultiple, "Load People");
+    LoadByKeywordCommand = new(x => LoadBy(x!), x => x != null, Res.IconPeopleMultiple, "Load People");
   }
 
   private void LoadBy(CategoryGroupM cg) =>
