@@ -11,7 +11,7 @@ public sealed class ViewerS(CoreR coreR) : ObservableObject {
 
   public ViewerM? Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-  public void ChangeCurrent(ViewerM viewer) {
+  public void ChangeCurrent(ViewerM? viewer) {
     if (ReferenceEquals(Current, viewer)) return;
     if (Current != null) Current.IsDefault = false;
     foreach (var ff in coreR.FavoriteFolder.All.Where(x => x.IsHidden)) ff.IsHidden = false;
