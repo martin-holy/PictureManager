@@ -6,11 +6,11 @@ using PictureManager.Common.Repositories;
 namespace PictureManager.Common.TreeCategories;
 
 public sealed class FolderKeywordsTreeCategory : TreeCategory<FolderM> {
-  public static RelayCommand<FolderM> SetAsFolderKeywordCommand { get; set; }
+  public static RelayCommand<FolderM> SetAsFolderKeywordCommand { get; set; } = null!;
 
   public FolderKeywordsTreeCategory(FolderKeywordR r) :
     base(Res.IconFolderPuzzle, "Folder Keywords", (int)Category.FolderKeywords, r) {
-    SetAsFolderKeywordCommand = new(r.SetAsFolderKeyword, null, "Set as Folder Keyword");
+    SetAsFolderKeywordCommand = new(x => r.SetAsFolderKeyword(x!), x => x != null, null, "Set as Folder Keyword");
   }
 
   public override void OnItemSelected(object o) =>
