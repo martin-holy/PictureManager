@@ -6,12 +6,12 @@ using PictureManager.Common.Repositories;
 namespace PictureManager.Common.TreeCategories;
 
 public sealed class FavoriteFoldersTreeCategory : TreeCategory<FavoriteFolderM> {
-  public static RelayCommand<FolderM> AddToFavoritesCommand { get; set; }
+  public static RelayCommand<FolderM> AddToFavoritesCommand { get; set; } = null!;
 
   public FavoriteFoldersTreeCategory(FavoriteFolderR r) :
     base(Res.IconFolderStar, "Favorites", (int)Category.FavoriteFolders, r) {
     CanMoveItem = true;
-    AddToFavoritesCommand = new(r.ItemCreate, null, "Add to Favorites");
+    AddToFavoritesCommand = new(x => r.ItemCreate(x!), x => x != null, null, "Add to Favorites");
   }
 
   public override void OnItemSelected(object o) =>
