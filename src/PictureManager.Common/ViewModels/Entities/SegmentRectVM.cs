@@ -7,16 +7,16 @@ using System.Collections.Generic;
 namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class SegmentRectVM : ObservableObject {
-  public List<Tuple<int, int, int, bool>> SegmentToolTipRects { get; private set; }
+  public List<Tuple<int, int, int, bool>>? SegmentToolTipRects { get; private set; }
 
-  public static RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; set; }
+  public static RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; set; } = null!;
 
   public SegmentRectVM() {
     SegmentToolTipReloadCommand = new(SegmentToolTipReload);
   }
 
-  private void SegmentToolTipReload(SegmentM segment) {
-    if (segment?.MediaItem?.Segments == null)
+  private void SegmentToolTipReload(SegmentM? segment) {
+    if (segment?.MediaItem.Segments == null)
       SegmentToolTipRects = null;
     else {
       segment.MediaItem.SetThumbSize();
