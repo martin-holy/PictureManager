@@ -6,7 +6,7 @@ using System.Linq;
 namespace PictureManager.Common.TreeCategories;
 
 public sealed class PeopleTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
-  private CategoryGroupM _unknownGroup;
+  private CategoryGroupM? _unknownGroup;
   private const string _unknownGroupName = "Unknown";
 
   public CategoryGroupM UnknownGroup {
