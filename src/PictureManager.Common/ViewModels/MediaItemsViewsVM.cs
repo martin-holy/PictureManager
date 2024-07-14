@@ -73,24 +73,24 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       : null;
   }
 
-  private void AddViewIfNotActive(string? tabName) {
-    if (Core.VM.MainTabs.Selected?.Data is MediaItemsViewVM) {
-      if (tabName != null)
-        Core.VM.MainTabs.Selected.Name = tabName;
+  private MediaItemsViewVM AddViewIfNotActive(string? tabName) {
+    if (Core.VM.MainTabs.Selected?.Data is not MediaItemsViewVM view)
+      return AddView(tabName ?? string.Empty);
+    
+    if (tabName != null)
+      Core.VM.MainTabs.Selected.Name = tabName;
 
-      return;
-    }
-
-    AddView(tabName ?? string.Empty);
+    return view;
   }
 
-  private void AddView(string tabName) {
+  private MediaItemsViewVM AddView(string tabName) {
     var view = new MediaItemsViewVM(Core.Settings.MediaItem.MediaItemThumbScale);
     _all.Add(view);
     Current = view;
     view.SelectionChangedEventHandler += OnViewSelectionChanged;
     view.FilteredChangedEventHandler += OnViewFilteredChanged;
     Core.VM.MainTabs.Add(Res.IconImageMultiple, tabName, view);
+    return view;
   }
 
   private void OnViewSelectionChanged(object? o, EventArgs e) {
@@ -114,10 +114,10 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var and = Keyboard.IsCtrlOn();
     var hide = Keyboard.IsAltOn();
     var recursive = Keyboard.IsShiftOn();
-
+    var view = AddViewIfNotActive(and || hide ? null : item.Name);
     item.IsSelected = true;
-    AddViewIfNotActive(and || hide ? null : item.Name);
-    return Current!.LoadByFolder(item, and, hide, recursive);
+    
+    return view.LoadByFolder(item, and, hide, recursive);
   }
 
   public async void LoadByTag(object? item) {
@@ -139,12 +139,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
         _ => string.Empty
       };
 
-    if (and)
-      AddViewIfNotActive(null);
-    else
-      AddView(tabTitle!);
-
-    await Current!.LoadByTag(items.ToArray());
+    var view = and ? AddViewIfNotActive(null) : AddView(tabTitle!);
+    await view.LoadByTag(items.ToArray());
   }
 
   public void SelectAndScrollToCurrentMediaItem() {
@@ -167,12 +163,10 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private async void ViewModified() {
-    AddView("Modified");
-    await Current!.LoadByTag(Core.R.MediaItem.GetModified().ToArray());
+    await AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray());
   }
 
   public Task ViewMediaItems(MediaItemM[] items, string name) {
-    AddView(name);
-    return Current!.LoadByTag(items);
+    return AddView(name).LoadByTag(items);
   }
 }
