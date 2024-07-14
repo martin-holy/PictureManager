@@ -19,14 +19,14 @@ public sealed class SegmentVM : ObservableObject {
   public static int SegmentSize { get; set; } = 100;
   public static int SegmentUiSize { get; set; }
   public int SegmentUiFullWidth { get; set; }
-  public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; }
+  public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; } = null!;
 
   public SegmentRectVM Rect { get; } = new();
 
-  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; }
-  public static RelayCommand<PersonM> LoadByPersonCommand { get; set; }
-  public static RelayCommand SetSelectedAsSamePersonCommand { get; set; }
-  public static RelayCommand SetSelectedAsUnknownCommand { get; set; }
+  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
+  public static RelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
+  public static RelayCommand SetSelectedAsSamePersonCommand { get; set; } = null!;
+  public static RelayCommand SetSelectedAsUnknownCommand { get; set; } = null!;
 
   public SegmentVM(CoreVM coreVM, SegmentS s, SegmentR r) {
     _coreVM = coreVM;
@@ -35,8 +35,8 @@ public sealed class SegmentVM : ObservableObject {
 
     SetSegmentUiSize(CoreVM.DisplayScale);
 
-    LoadByKeywordCommand = new(LoadBy, Res.IconSegment, "Load Segments");
-    LoadByPersonCommand = new(LoadBy, Res.IconSegment, "Load Segments");
+    LoadByKeywordCommand = new(x => LoadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
+    LoadByPersonCommand = new(x => LoadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson, Res.IconEquals, "Set selected as same person");
     SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown, CanSetSelectedAsUnknown, Res.IconUnknownSegment, "Set selected as Unknown");
   }

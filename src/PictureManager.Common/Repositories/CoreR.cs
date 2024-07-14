@@ -192,7 +192,7 @@ public sealed class CoreR : SimpleDB {
     MediaItem.ModifyIfContains(items);
   }
 
-  private void OnSegmentPersonChanged(object? sender, (SegmentM, PersonM?, PersonM) e) {
+  private void OnSegmentPersonChanged(object? sender, (SegmentM, PersonM?, PersonM?) e) {
     Person.OnSegmentPersonChanged(e.Item1, e.Item2, e.Item3);
   }
 

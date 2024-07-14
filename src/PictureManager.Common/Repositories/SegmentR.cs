@@ -20,7 +20,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   private List<int> _drawerNotAvailable = [];
 
   public List<SegmentM> Drawer { get; private set; } = [];
-  public event EventHandler<(SegmentM, PersonM?, PersonM)> SegmentPersonChangedEvent = delegate { };
+  public event EventHandler<(SegmentM, PersonM?, PersonM?)> SegmentPersonChangedEvent = delegate { };
   public event EventHandler<(SegmentM[], PersonM?, PersonM[])> SegmentsPersonChangedEvent = delegate { };
   public event EventHandler<SegmentM[]> SegmentsKeywordsChangedEvent = delegate { };
 
@@ -141,14 +141,14 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   public void ToggleKeyword(SegmentM[] segments, KeywordM keyword) =>
     keyword.Toggle(segments, _ => IsModified = true, () => SegmentsKeywordsChangedEvent(this, segments));
 
-  public void ChangePerson(PersonM person, SegmentM[] segments, PersonM[] people) {
+  public void ChangePerson(PersonM? person, SegmentM[] segments, PersonM[] people) {
     foreach (var segment in segments)
       ChangePerson(segment, person);
 
     SegmentsPersonChangedEvent(this, (segments, person, people));
   }
 
-  private void ChangePerson(SegmentM segment, PersonM person) {
+  private void ChangePerson(SegmentM segment, PersonM? person) {
     var oldPerson = segment.Person;
     segment.Person = person;
     IsModified = true;
