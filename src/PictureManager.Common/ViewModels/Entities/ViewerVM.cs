@@ -12,7 +12,7 @@ namespace PictureManager.Common.ViewModels.Entities;
 
 public sealed class ViewerVM : ObservableObject {
   private readonly ViewerR _r;
-  private ViewerM _selected;
+  private ViewerM _selected = null!;
 
   public ExtObservableCollection<ITreeItem> All => _r.Tree.Items;
   public ViewerM Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
@@ -27,7 +27,7 @@ public sealed class ViewerVM : ObservableObject {
   public DoDropAction DoDropKeyword { get; }
 
   public RelayCommand UpdateExcludedCategoryGroupsCommand { get; }
-  public static RelayCommand<ViewerM> ChangeCurrentCommand { get; set; }
+  public static RelayCommand<ViewerM> ChangeCurrentCommand { get; set; } = null!;
 
   public ViewerVM(ViewerR r, ViewerS s) {
     _r = r;
@@ -51,7 +51,7 @@ public sealed class ViewerVM : ObservableObject {
     _r.IsModified = true;
   }
 
-  public void OpenDetail(ViewerM viewer) {
+  public void OpenDetail(ViewerM? viewer) {
     if (viewer == null) return;
     Core.VM.MainTabs.Activate(Res.IconEye, "Viewer", this);
     Selected = viewer;
@@ -70,7 +70,7 @@ public sealed class ViewerVM : ObservableObject {
       licg.IsSelected = !Selected.ExcludedCategoryGroups.Contains(licg.Content);
   }
 
-  private DragDropEffects CanDropFolder(object target, object data, bool haveSameOrigin, bool included) {
+  private DragDropEffects CanDropFolder(object? target, object? data, bool haveSameOrigin, bool included) {
     if (data is not FolderM folder)
       return DragDropEffects.None;
 
@@ -94,7 +94,7 @@ public sealed class ViewerVM : ObservableObject {
       _r.AddFolder(Selected, (FolderM)data, included);
   }
 
-  private DragDropEffects CanDropKeywordMethod(object target, object data, bool haveSameOrigin) {
+  private DragDropEffects CanDropKeywordMethod(object? target, object? data, bool haveSameOrigin) {
     if (data is not KeywordM keyword)
       return DragDropEffects.None;
 
