@@ -33,7 +33,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
     _ = Core.VM.MediaItem.Views.LoadByFolder((ITreeItem)o);
   }
 
-  public override bool CanDrop(object src, ITreeItem dest) {
+  public override bool CanDrop(object? src, ITreeItem? dest) {
     switch (src) {
       case FolderM srcData: {
         // Folder
@@ -84,8 +84,8 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
         break;
 
       case string[]: // MediaItems
-        var items = Core.VM.MediaItem.Views.Current.Selected.Items.OfType<RealMediaItemM>().ToArray();
-        if (items.Length == 0) return;
+        var items = Core.VM.MediaItem.Views.Current?.Selected.Items.OfType<RealMediaItemM>().ToArray();
+        if (items == null || items.Length == 0) return;
         if (Dialog.Show(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} media items",
               $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Length)} to\n'{dest.Name}'?",
@@ -121,7 +121,7 @@ public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
     }
   }
 
-  public void ScrollTo(FolderM folder) {
+  public void ScrollTo(FolderM? folder) {
     if (folder == null || !Core.S.Viewer.CanViewerSee(folder)) return;
     folder.IsExpanded = true;
     Core.VM.MainWindow.TreeViewCategories.Select(TreeView);
