@@ -35,7 +35,7 @@ public class MainWindowVM : ObservableObject {
     }
   }
 
-  public static RelayCommand SwitchToBrowserCommand { get; set; }
+  public static RelayCommand SwitchToBrowserCommand { get; set; } = null!;
 
   public MainWindowVM(CoreVM coreVM) {
     StatusBar = new(Core.Inst);
@@ -45,10 +45,10 @@ public class MainWindowVM : ObservableObject {
       new(Position.Right, ToolsTabs, GetToolsTabsWidth(coreVM.Segment.SegmentUiFullWidth)) { CanOpen = false },
       new(Position.Bottom, StatusBar, 0),
       MiddleContent,
-      new[] { // Left, Top, Right, Bottom, FullScreen (not part of SlidePanelsGrid)
-        new[] { true, true, false, true, false }, // browse mode
-        new[] { false, false, false, true, false } // view mode
-      });
+      [ // Left, Top, Right, Bottom, FullScreen (not part of SlidePanelsGrid)
+        [true, true, false, true, false], // browse mode
+        [false, false, false, true, false] // view mode
+      ]);
     
     SwitchToBrowserCommand = new(() => IsInViewMode = false, () => Core.VM.MediaViewer.IsVisible);
     AttachEvents();
@@ -56,7 +56,7 @@ public class MainWindowVM : ObservableObject {
 
   private void AttachEvents() {
     ToolsTabs.TabActivatedEvent += _ => {
-      SlidePanelsGrid.PanelRight.IsOpen = true;
+      SlidePanelsGrid.PanelRight!.IsOpen = true;
     };
 
     ToolsTabs.TabClosedEvent += tab => {
@@ -66,7 +66,7 @@ public class MainWindowVM : ObservableObject {
     };
 
     ToolsTabs.Tabs.CollectionChanged += (_, e) => {
-      SlidePanelsGrid.PanelRight.CanOpen = ToolsTabs.Tabs.Count > 0;
+      SlidePanelsGrid.PanelRight!.CanOpen = ToolsTabs.Tabs.Count > 0;
       if (e.NewItems != null)
         SlidePanelsGrid.PanelRight.IsOpen = true;
     };
