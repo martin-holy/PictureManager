@@ -156,12 +156,16 @@
   - use FolderR.Dummy in repositories in FromCsv
   - pass reference Core.VM.MediaItem to MediaItemsViewsVM.SetCurrentView
   - maybe move all CORE properties that needs to be set from WPF to one class
-  - change MediaItemsViewsVM.AddView to return Current
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
 ## ProgressBarAsyncDialog
   - do Init and Start in constructor
+## Components
+  - contains only ViewModel and View
+  - it can be null and it is created on first use
+  - how to create, where hold the instance, dependencies
+  - ...
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
