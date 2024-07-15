@@ -20,8 +20,8 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
   public event EventHandler SelectionChangedEventHandler = delegate { };
   public event EventHandler FilteredChangedEventHandler = delegate { };
 
-  public List<MediaItemM> LoadedItems { get; } = new();
-  public List<MediaItemM> FilteredItems { get; } = new();
+  public List<MediaItemM> LoadedItems { get; } = [];
+  public List<MediaItemM> FilteredItems { get; } = [];
   public MediaItemsFilterVM Filter { get; } = new();
   public MediaItemsImport Import { get; } = new();
   public DragDropHelper.CanDragFunc CanDragFunc { get; }
@@ -49,8 +49,6 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
   }
 
   public override void OnItemOpened(MediaItemM item) {
-    if (item == null) return;
-
     Selected.DeselectAll();
     Core.VM.MainWindow.IsInViewMode = true;
     // TODO open group or all with default sort or all sorted by groups or ...?
@@ -62,7 +60,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     Core.VM.MediaItem.Current = Selected.Items.Contains(e.Item) ? e.Item : null;
   }
 
-  private object CanDrag(object source) {
+  private object? CanDrag(object source) {
     if (source is not MediaItemM) return null;
     var data = Selected.Items.OfType<RealMediaItemM>().Select(p => p.FilePath).ToArray();
     return data.Length == 0 ? null : data;
@@ -109,7 +107,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
         Selected.Items.Remove(item);
     }
 
-    if (needReload) {
+    if (needReload && Root != null) {
       TopItem = Root.Source.GetNextOrPreviousItem(items);
       Remove(items.ToArray());
     }
@@ -131,9 +129,9 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
   public static IEnumerable<MediaItemM> GetSorted(IEnumerable<MediaItemM> items) =>
     items.OrderBy(x => x.FileName);
 
-  private MediaItemM GetItemToScrollTo() =>
-    FilteredItems.Contains(Core.VM.MediaItem.Current)
-      ? Core.VM.MediaItem.Current
+  private MediaItemM? GetItemToScrollTo() =>
+    Core.VM.MediaItem.Current is { } current && FilteredItems.Contains(current)
+      ? current
       : Selected.Items.FirstOrDefault();
 
   public void SelectAndScrollToCurrentMediaItem() {
@@ -179,7 +177,7 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
       var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
       AddMediaItems(GetSorted(toLoad.Except(notImported)).ToList(), and, hide);
       Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
-      if (newItems.Count > 0) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
+      if (newItems.Count > 0 && Root != null) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
       AfterLoad();
       IsLoading = false;
     }, Tasks.UiTaskScheduler);
@@ -256,8 +254,8 @@ public class MediaItemsViewVM : CollectionViewMediaItems {
     OnPropertyChanged(nameof(PositionSlashCount));
     FilteredChangedEventHandler(this, EventArgs.Empty);
 
-    if (FilteredItems.Contains(Core.VM.MediaItem.Current))
-      ScrollTo(Root, Core.VM.MediaItem.Current);
+    if (Core.VM.MediaItem.Current is { } current && FilteredItems.Contains(current))
+      ScrollTo(Root, current);
     else {
       Core.VM.MediaItem.Current = null;
       if (Selected.Items.Count != 0)
