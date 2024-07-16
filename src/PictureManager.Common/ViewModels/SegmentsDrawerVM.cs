@@ -19,8 +19,8 @@ public sealed class SegmentsDrawerVM : CollectionViewSegments {
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction DoDropAction { get; }
 
-  public static RelayCommand AddSelectedCommand { get; set; }
-  public static RelayCommand OpenCommand { get; set; }
+  public static RelayCommand AddSelectedCommand { get; set; } = null!;
+  public static RelayCommand OpenCommand { get; set; } = null!;
 
   public SegmentsDrawerVM(SegmentS segmentS, List<SegmentM> items) {
     _segmentS = segmentS;
@@ -36,7 +36,7 @@ public sealed class SegmentsDrawerVM : CollectionViewSegments {
     OpenCommand = new(() => Open(Core.VM.MainWindow.ToolsTabs), Res.IconDrawer, "Open Segments drawer");
   }
 
-  private DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
+  private DragDropEffects CanDrop(object? target, object? data, bool haveSameOrigin) {
     if (!haveSameOrigin && !Items.Contains(data))
       return DragDropEffects.Copy;
     if (haveSameOrigin && (data as SegmentM[])?.Contains(target as SegmentM) == false)
@@ -45,7 +45,7 @@ public sealed class SegmentsDrawerVM : CollectionViewSegments {
   }
 
   private void DoDrop(object data, bool haveSameOrigin) =>
-    AddOrRemove(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
+    AddOrRemove(data as SegmentM[] ?? (data is SegmentM s ? [s] : []), !haveSameOrigin);
 
   private void AddOrRemove(SegmentM[] segments, bool add) {
     if (!add && Dialog.Show(new MessageDialog(
