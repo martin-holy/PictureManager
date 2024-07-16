@@ -14,26 +14,25 @@ using PictureManager.Common.Services;
 namespace PictureManager.Common.Dialogs;
 
 public sealed class ExportSegmentsDialog : Dialog {
-  private CancellationTokenSource _cts;
+  private CancellationTokenSource? _cts;
   private readonly SegmentM[] _items;
-  private string _fileName;
-  private string _destDir;
+  private string _fileName = string.Empty;
+  private string? _destDir;
   private int _progressMax;
   private int _progressValue;
-  private ObservableCollection<string> _dirPaths;
 
   public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
-  public string DestDir { get => _destDir; set { _destDir = value; OnPropertyChanged(); } }
+  public string? DestDir { get => _destDir; set { _destDir = value; OnPropertyChanged(); } }
   public int ProgressMax { get => _progressMax; set { _progressMax = value; OnPropertyChanged(); } }
   public int ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
-  public ObservableCollection<string> DirPaths { get => _dirPaths; set { _dirPaths = value; OnPropertyChanged(); } }
+  public ObservableCollection<string> DirPaths { get; }
 
   public RelayCommand OpenFolderBrowserCommand { get; }
 
   public ExportSegmentsDialog(SegmentM[] items) : base("Export Segments", Res.IconSegment) {
     OpenFolderBrowserCommand = new(OpenFolderBrowser, Res.IconFolder, "Select folder");
     Buttons = [
-      new(new(Export, null, "Export"), true),
+      new(new(Export, () => !string.IsNullOrEmpty(DestDir), null, "Export"), true),
       new(CloseCommand, false, true)
     ]; 
     _items = items;
@@ -49,7 +48,7 @@ public sealed class ExportSegmentsDialog : Dialog {
   private void Export() {
     if (!Directory.Exists(DestDir)) {
       try {
-        Directory.CreateDirectory(DestDir);
+        Directory.CreateDirectory(DestDir!);
       }
       catch (Exception ex) {
         Log.Error(ex);
@@ -57,7 +56,7 @@ public sealed class ExportSegmentsDialog : Dialog {
       }
     }
 
-    ExportSegments(DestDir);
+    ExportSegments(DestDir!);
   }
 
   private async void ExportSegments(string destination) {
