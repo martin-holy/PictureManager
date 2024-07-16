@@ -1,11 +1,11 @@
 ﻿using MH.UI.Controls;
 using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Common.CollectionViews;
 using PictureManager.Common.Models;
 using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
@@ -24,10 +24,11 @@ public sealed class SegmentsMatchingVM : ObservableObject {
   public static int GetSegmentsToLoadUserInput() {
     var md = new MessageDialog("Segments", "Load segments from ...", Res.IconSegment, true);
 
-    md.Buttons = new DialogButton[] {
+    md.Buttons = [
       new(md.SetResult(1, MH.UI.Res.IconImage, "Media items"), true),
       new(md.SetResult(2, Res.IconPeople, "People")),
-      new(md.SetResult(3, Res.IconSegment, "Segments")) };
+      new(md.SetResult(3, Res.IconSegment, "Segments"))
+    ];
 
     return Dialog.Show(md);
   }
@@ -36,11 +37,8 @@ public sealed class SegmentsMatchingVM : ObservableObject {
     switch (mode) {
       case 1:
         var items = Core.VM.MediaViewer.IsVisible
-          ? Core.VM.MediaViewer.Current != null
-            ? new[] { Core.VM.MediaViewer.Current }
-            : Array.Empty<MediaItemM>()
-          : Core.VM.MediaItem.Views.Current?.GetSelectedOrAll().ToArray()
-            ?? Array.Empty<MediaItemM>();
+          ? Core.VM.MediaViewer.Current != null ? [Core.VM.MediaViewer.Current] : []
+          : Core.VM.MediaItem.Views.Current?.GetSelectedOrAll().ToArray() ?? [];
 
         return items.Concat(items.GetVideoItems()).GetSegments();
       case 2:
@@ -52,15 +50,16 @@ public sealed class SegmentsMatchingVM : ObservableObject {
       case 3:
         return Core.S.Segment.Selected.Items;
       default:
-        return Enumerable.Empty<SegmentM>();
+        return [];
     }
   }
 
   public void OnSegmentsPersonChanged(SegmentM[] segments) {
     CvSegments.Insert(segments);
-    var p = CvSegments.Root.Source.GetPeople().ToArray();
-    var pIn = p.Except(CvPeople.Root.Source).ToArray();
-    var pOut = CvPeople.Root.Source.Except(p).ToArray();
+    var newP = CvSegments.Root?.Source.GetPeople().ToArray()!;
+    var oldP = CvPeople.Root?.Source.EmptyIfNull().ToArray()!;
+    var pIn = newP.Except(oldP).ToArray();
+    var pOut = oldP.Except(newP).ToArray();
     CvPeople.Insert(pIn);
     CvPeople.Remove(pOut);
   }
