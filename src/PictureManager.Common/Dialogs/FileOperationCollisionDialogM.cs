@@ -12,21 +12,21 @@ namespace PictureManager.Common.Dialogs;
 public sealed class FileOperationCollisionDialogM : Dialog {
   private readonly FolderM _destFolder;
 
-  private string _error;
+  private string _error = string.Empty;
   private string _fileName;
-  private RealMediaItemM _srcMediaItem;
-  private RealMediaItemM _destMediaItem;
-  private string _srcPath;
-  private string _destPath;
-  private string _srcSize;
-  private string _destSize;
-  private string _srcLastWrite;
-  private string _destLastWrite;
+  private RealMediaItemM? _srcMediaItem;
+  private RealMediaItemM? _destMediaItem;
+  private string _srcPath = null!;
+  private string _destPath = null!;
+  private string _srcSize = null!;
+  private string _destSize = null!;
+  private string _srcLastWrite = null!;
+  private string _destLastWrite = null!;
 
   public string Error { get => _error; set { _error = value; OnPropertyChanged(); } }
   public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
-  public RealMediaItemM SrcMediaItem { get => _srcMediaItem; set { _srcMediaItem = value; OnPropertyChanged(); } }
-  public RealMediaItemM DestMediaItem { get => _destMediaItem; set { _destMediaItem = value; OnPropertyChanged(); } }
+  public RealMediaItemM? SrcMediaItem { get => _srcMediaItem; set { _srcMediaItem = value; OnPropertyChanged(); } }
+  public RealMediaItemM? DestMediaItem { get => _destMediaItem; set { _destMediaItem = value; OnPropertyChanged(); } }
   public string SrcPath { get => _srcPath; set { _srcPath = value; OnPropertyChanged(); } }
   public string DestPath { get => _destPath; set { _destPath = value; OnPropertyChanged(); } }
   public string SrcSize { get => _srcSize; set { _srcSize = value; OnPropertyChanged(); } }
@@ -34,21 +34,22 @@ public sealed class FileOperationCollisionDialogM : Dialog {
   public string SrcLastWrite { get => _srcLastWrite; set { _srcLastWrite = value; OnPropertyChanged(); } }
   public string DestLastWrite { get => _destLastWrite; set { _destLastWrite = value; OnPropertyChanged(); } }
 
-  public FileOperationCollisionDialogM(FolderM src, FolderM dest, RealMediaItemM srcMi, string fileName) : base("The destination already has a file with this name", Res.IconImageMultiple) {
+  public FileOperationCollisionDialogM(FolderM src, FolderM dest, RealMediaItemM? srcMi, string fileName) : base("The destination already has a file with this name", Res.IconImageMultiple) {
     _destFolder = dest;
     SetInfo(IOExtensions.PathCombine(src.FullPath, fileName), true);
     SetInfo(IOExtensions.PathCombine(dest.FullPath, fileName), false);
     SrcMediaItem = srcMi;
     DestMediaItem = GetMediaItem(dest, fileName);
-    FileName = fileName;
+    _fileName = fileName;
 
-    Buttons = new DialogButton[] {
+    Buttons = [
       new(new (Rename, null, "Rename")),
       new(new (() => Result = (int)CollisionResult.Replace, null, "Replace")),
-      new(new (() => Result = (int)CollisionResult.Skip, null, "Skip")) }; 
+      new(new (() => Result = (int)CollisionResult.Skip, null, "Skip"))
+    ]; 
   }
 
-  public static CollisionResult Open(FolderM src, FolderM dest, RealMediaItemM srcMi, ref string fileName, ref RealMediaItemM replacedMi) {
+  public static CollisionResult Open(FolderM src, FolderM dest, RealMediaItemM? srcMi, ref string fileName, ref RealMediaItemM? replacedMi) {
     var result = CollisionResult.Skip;
     var outFileName = fileName;
     var outReplacedMi = replacedMi;
@@ -68,13 +69,13 @@ public sealed class FileOperationCollisionDialogM : Dialog {
     return result;
   }
 
-  private static void InitThumb(RealMediaItemM mi) {
+  private static void InitThumb(RealMediaItemM? mi) {
     if (mi == null) return;
     mi.SetInfoBox();
     mi.SetThumbSize();
   }
 
-  private static RealMediaItemM GetMediaItem(FolderM folder, string fileName) {
+  private static RealMediaItemM? GetMediaItem(FolderM folder, string fileName) {
     var mi = folder.MediaItems.GetByFileName(fileName)
              ?? CopyMoveU.CreateMediaItemAndReadMetadata(folder, fileName);
 
