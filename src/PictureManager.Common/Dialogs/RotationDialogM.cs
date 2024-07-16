@@ -5,7 +5,7 @@ using MH.Utils.BaseClasses;
 namespace PictureManager.Common.Dialogs;
 
 public sealed class RotationDialogM : Dialog {
-  private static RotationDialogM _inst;
+  private static RotationDialogM? _inst;
 
   public RelayCommand Rotate90Command { get; }
   public RelayCommand Rotate180Command { get; }
