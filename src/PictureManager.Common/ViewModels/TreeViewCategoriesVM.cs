@@ -3,9 +3,7 @@ using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
 using PictureManager.Common.TreeCategories;
-using System;
 using System.Collections.Generic;
 
 namespace PictureManager.Common.ViewModels;
@@ -47,10 +45,10 @@ public sealed class TreeViewCategoriesVM : TabControl {
 
     var mediaItems = Core.VM.MainWindow.IsInViewMode
       ? Core.VM.MediaItem.Current == null
-        ? Array.Empty<MediaItemM>()
-        : new[] { Core.VM.MediaItem.Current }
+        ? []
+        : [Core.VM.MediaItem.Current]
       : Core.VM.MediaItem.Views.Current == null
-        ? Array.Empty<MediaItemM>()
+        ? []
         : Core.VM.MediaItem.Views.Current.GetSelectedOrAll().ToArray();
 
     if (mediaItems.Length == 0) {
@@ -79,8 +77,6 @@ public sealed class TreeViewCategoriesVM : TabControl {
   }
 
   private void Mark(object tag) {
-    if (tag == null) return;
-
     if (!MarkedTags.TryAdd(tag, 1))
       MarkedTags[tag]++;
   }
