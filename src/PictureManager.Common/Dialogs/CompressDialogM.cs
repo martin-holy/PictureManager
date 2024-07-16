@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 namespace PictureManager.Common.Dialogs;
 
 public class CompressDialogM : Dialog {
-  private CancellationTokenSource _cts;
-  private Task _workTask;
+  private CancellationTokenSource? _cts;
+  private Task? _workTask;
 
   private int _jpegQualityLevel;
   private long _totalSourceSize;
