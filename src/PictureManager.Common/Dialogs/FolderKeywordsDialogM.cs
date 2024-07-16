@@ -5,33 +5,33 @@ using PictureManager.Common.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PictureManager.Common.Dialogs {
-  public sealed class FolderKeywordsDialogM : Dialog {
-    private FolderM _selectedFolder;
+namespace PictureManager.Common.Dialogs;
 
-    public FolderM SelectedFolder { get => _selectedFolder; set { _selectedFolder = value; OnPropertyChanged(); } }
-    public ObservableCollection<FolderM> Items { get; } = new();
-    public RelayCommand<FolderM> SelectCommand { get; }
+public sealed class FolderKeywordsDialogM : Dialog {
+  private FolderM? _selectedFolder;
 
-    public static RelayCommand OpenCommand { get; } = new(
-      () => Show(new FolderKeywordsDialogM()), null, "Folder Keywords list");
+  public FolderM? SelectedFolder { get => _selectedFolder; set { _selectedFolder = value; OnPropertyChanged(); } }
+  public ObservableCollection<FolderM> Items { get; } = [];
+  public RelayCommand<FolderM> SelectCommand { get; }
 
-    public FolderKeywordsDialogM() : base("Folder Keywords", Res.IconFolderPuzzle) {
-      SelectCommand = new(x => SelectedFolder = x);
-      Buttons = new DialogButton[] {
-        new(new(() => Remove(SelectedFolder), () => SelectedFolder != null, MH.UI.Res.IconXCross, "Remove")),
-        new(CloseCommand, false, true) };
+  public static RelayCommand OpenCommand { get; } = new(
+    () => Show(new FolderKeywordsDialogM()), null, "Folder Keywords list");
 
-      foreach (var folder in Core.R.FolderKeyword.All.OrderBy(x => x.FullPath))
-        Items.Add(folder);
-    }
+  public FolderKeywordsDialogM() : base("Folder Keywords", Res.IconFolderPuzzle) {
+    SelectCommand = new(x => SelectedFolder = x);
+    Buttons = [
+      new(new(() => Remove(SelectedFolder!), () => SelectedFolder != null, MH.UI.Res.IconXCross, "Remove")),
+      new(CloseCommand, false, true)
+    ];
 
-    private void Remove(FolderM folder) {
-      if (folder == null) return;
-      if (Show(new MessageDialog("Remove Confirmation", "Are you sure?", MH.UI.Res.IconQuestion, true)) != 1) return;
+    foreach (var folder in Core.R.FolderKeyword.All.OrderBy(x => x.FullPath))
+      Items.Add(folder);
+  }
 
-      Core.R.FolderKeyword.ItemDelete(folder);
-      Items.Remove(folder);
-    }
+  private void Remove(FolderM folder) {
+    if (Show(new MessageDialog("Remove Confirmation", "Are you sure?", MH.UI.Res.IconQuestion, true)) != 1) return;
+
+    Core.R.FolderKeyword.ItemDelete(folder);
+    Items.Remove(folder);
   }
 }
