@@ -54,8 +54,8 @@ public sealed class PresentationPanelVM : ObservableObject {
   }
 
   public bool IsPaused { get; private set; }
-  public static RelayCommand StartPresentationCommand { get; set; }
-  public static RelayCommand StopPresentationCommand { get; set; }
+  public static RelayCommand StartPresentationCommand { get; set; } = null!;
+  public static RelayCommand StopPresentationCommand { get; set; } = null!;
 
   public PresentationPanelVM(MediaViewerVM mediaViewerVM) {
     _mediaViewerVM = mediaViewerVM;
@@ -67,10 +67,10 @@ public sealed class PresentationPanelVM : ObservableObject {
   }
 
   ~PresentationPanelVM() {
-    _timer?.Dispose();
+    _timer.Dispose();
   }
 
-  public void Start(MediaItemM current, bool delay) {
+  public void Start(MediaItemM? current, bool delay) {
     if (delay
         && PlayPanoramicImages
         && current is ImageM
@@ -121,7 +121,6 @@ public sealed class PresentationPanelVM : ObservableObject {
   }
 
   public void Next(MediaItemM current) {
-    // TODO MediaTypes
     if (IsRunning && (current is VideoM || current.IsPanoramic() && PlayPanoramicImages)) {
       Pause();
 
