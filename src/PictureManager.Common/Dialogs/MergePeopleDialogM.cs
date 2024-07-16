@@ -8,13 +8,13 @@ using System.Linq;
 namespace PictureManager.Common.Dialogs;
 
 public sealed class MergePeopleDialogM : Dialog {
-  private static MergePeopleDialogM _inst;
+  private static MergePeopleDialogM? _inst;
   private readonly SegmentS _segmentS;
-  private static PersonM[] _people;
-  private static SegmentM[] _unknownSelected;
+  private static PersonM[] _people = null!;
+  private static SegmentM[] _unknownSelected = null!;
 
-  public static PersonM Person { get; private set; }
-  public static SegmentM[] SegmentsToUpdate { get; private set; }
+  public static PersonM Person { get; private set; } = null!;
+  public static SegmentM[] SegmentsToUpdate { get; private set; } = null!;
   public CollectionViewPeople PeopleView { get; }
   public CollectionViewSegments SegmentsView { get; }
 
@@ -22,9 +22,10 @@ public sealed class MergePeopleDialogM : Dialog {
     _segmentS = segmentS;
     PeopleView = new() { CanOpen = false, IsMultiSelect = false };
     SegmentsView = new() { CanSelect = false, CanOpen = false };
-    Buttons = new DialogButton[] {
+    Buttons = [
       new(OkCommand, true),
-      new(CloseCommand, false, true) };
+      new(CloseCommand, false, true)
+    ];
   }
 
   public void SetPerson(PersonM person) {
@@ -39,7 +40,7 @@ public sealed class MergePeopleDialogM : Dialog {
   private SegmentM[] GetSegmentsToUpdate(PersonM person, IEnumerable<PersonM> people) {
     var oldPeople = people.Where(x => !ReferenceEquals(x, person)).ToHashSet();
     return _segmentS.DataAdapter.All
-      .Where(x => oldPeople.Contains(x.Person))
+      .Where(x => x.Person != null && oldPeople.Contains(x.Person))
       .Concat(_unknownSelected)
       .ToArray();
   }
