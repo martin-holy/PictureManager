@@ -9,16 +9,17 @@ using System.IO;
 namespace PictureManager.Common.Dialogs;
 
 public sealed class FolderBrowserDialogM : Dialog {
-  private FolderTreeViewItem _selectedFolder;
+  private FolderTreeViewItem? _selectedFolder;
 
-  public FolderTreeViewItem SelectedFolder { get => _selectedFolder; private set { _selectedFolder = value; OnPropertyChanged(); } }
+  public FolderTreeViewItem? SelectedFolder { get => _selectedFolder; private set { _selectedFolder = value; OnPropertyChanged(); } }
   public TreeView<FolderTreeViewItem> TreeView { get; } = new() { ShowTreeItemSelection = true };
 
   public FolderBrowserDialogM() : base("Browse For Folder", Res.IconFolder) {
     TreeView.TreeItemSelectedEvent += (_, e) => SelectedFolder = e.Data;
-    Buttons = new DialogButton[] {
+    Buttons = [
       new(OkCommand, true),
-      new(CloseCommand, false, true) };
+      new(CloseCommand, false, true)
+    ];
 
     AddDrives();
   }
@@ -37,7 +38,7 @@ public sealed class FolderBrowserDialogM : Dialog {
       };
 
       // add placeholder so the Drive can be expanded
-      item.Items.Add(new FolderTreeViewItem(null, null));
+      item.Items.Add(FolderTreeViewItem.Dummy);
 
       TreeView.RootHolder.Add(item);
     }
@@ -45,9 +46,10 @@ public sealed class FolderBrowserDialogM : Dialog {
 }
 
 public class FolderTreeViewItem : TreeItem {
+  public static FolderTreeViewItem Dummy { get; } = new(null, string.Empty);
   public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
 
-  public FolderTreeViewItem(ITreeItem parent, string name) : base(Res.IconFolder, name) {
+  public FolderTreeViewItem(ITreeItem? parent, string name) : base(Res.IconFolder, name) {
     Parent = parent;
   }
 
@@ -74,7 +76,7 @@ public class FolderTreeViewItem : TreeItem {
         // add placeholder so the folder can be expanded
         using var enumerator = Directory.EnumerateDirectories(folder.FullPath).GetEnumerator();
         if (enumerator.MoveNext())
-          folder.Items.Add(new FolderTreeViewItem(null, null));
+          folder.Items.Add(Dummy);
 
         // add new Folder to the tree if is Accessible
         Items.Add(folder);
