@@ -4,8 +4,8 @@ using MH.Utils.Interfaces;
 
 namespace PictureManager.Common.Models; 
 
-public sealed class TreeViewSearchItemM(string icon, string name, ITreeItem data, string toolTip, TreeCategory category)
+public sealed class TreeViewSearchItemM(string icon, string name, ITreeItem data, string? toolTip, TreeCategory category)
   : ListItem(icon, name, data) {
-  public string ToolTip { get; } = toolTip;
+  public string? ToolTip { get; } = toolTip;
   public TreeCategory Category { get; } = category;
 }

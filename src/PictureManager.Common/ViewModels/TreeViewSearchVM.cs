@@ -10,7 +10,7 @@ namespace PictureManager.Common.ViewModels;
 
 public sealed class TreeViewSearchVM : ObservableObject {
   private readonly TreeViewCategoriesVM _tvc;
-  private string _searchText;
+  private string _searchText = string.Empty;
   private bool _isOpen;
 
   public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); Search(); } }
@@ -28,11 +28,11 @@ public sealed class TreeViewSearchVM : ObservableObject {
     NavigateToCommand = new(NavigateTo);
   }
 
-  private void NavigateTo(TreeViewSearchItemM item) {
+  private void NavigateTo(TreeViewSearchItemM? item) {
     if (item == null && SearchResult.Count > 0) item = SearchResult[0];
     if (item == null) return;
     _tvc.Select(item.Category.TreeView);
-    item.Category.TreeView.ScrollTo((ITreeItem)item.Data);
+    item.Category.TreeView.ScrollTo(item.Data as ITreeItem);
     IsOpen = false;
   }
 
