@@ -6,9 +6,9 @@ using System.Text;
 namespace PictureManager.Common.ViewModels;
 
 public class WhatIsNewVM {
-  private static WhatIsNewVM _inst;
+  private static WhatIsNewVM? _inst;
 
-  public static string Content { get; set; }
+  public static string Content { get; set; } = string.Empty;
 
   public static RelayCommand OpenCommand { get; } = new(Open, null, "What's new");
 
