@@ -106,7 +106,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
       var srcFileName = srcFilePath[srcPathLength..];
       var mi = src.MediaItems.GetByFileName(srcFileName);
 
-      if (_dlg.WorkCts.Token.IsCancellationRequested) {
+      if (_dlg.WorkCts?.Token.IsCancellationRequested == true) {
         if (mi != null) Skipped.Add(mi);
         continue; // continue so that all files are added to skipped files
       }
@@ -182,7 +182,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
 
     for (int i = 0; i < count; i++) {
       RealMediaItemM mi = items[i];
-      if (_dlg.WorkCts.Token.IsCancellationRequested) {
+      if (_dlg.WorkCts?.Token.IsCancellationRequested == true) {
         Skipped.Add(mi);
         continue; // continue so that all files are added to skipped files
       }
