@@ -57,7 +57,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
       if (mode == FileOperationMode.Move) {
         var mis = items.Except(cm.Skipped).ToList();
         Core.VM.MediaItem.Current = null;
-        Core.VM.MediaItem.Views.Current.Remove(mis, true);
+        Core.VM.MediaItem.Views.Current?.Remove(mis, true);
       }
     }
     catch (Exception ex) {
@@ -98,7 +98,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     var srcPathCache = src.FullPathCache;
     var srcPathLength = srcPath.Length + 1;
     var target = dest.GetByName(src.Name);
-    var targetPath = target.FullPath;
+    var targetPath = target!.FullPath;
     var targetPathCache = target.FullPathCache;
 
     // for each file in the folder (all files *.*)
@@ -111,7 +111,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
         continue; // continue so that all files are added to skipped files
       }
 
-      _dlg.Progress.Report(new object[] { 0, srcPath, targetPath, srcFileName });
+      _dlg.Progress.Report([0, srcPath, targetPath, srcFileName]);
 
       if (ResolveTargetFileName(src, target, srcFileName, targetPath, ref mi) is not var (targetFilePath, targetFileName))
         continue;
@@ -157,7 +157,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
       mi.FileName = newFileName;
   }
 
-  private void CopyMoveFolderInDBRecursive(FolderM src, FolderM dest, Action<RealMediaItemM, FolderM> itemAction, Action<FolderM> folderAction) {
+  private void CopyMoveFolderInDBRecursive(FolderM src, FolderM dest, Action<RealMediaItemM, FolderM> itemAction, Action<FolderM>? folderAction) {
     if (dest.GetByName(src.Name) is not { } targetFolder) return;
     CopyMoveMediaItemsInDB(src.MediaItems, targetFolder, itemAction);
 
@@ -181,7 +181,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     var targetPathCache = dest.FullPathCache;
 
     for (int i = 0; i < count; i++) {
-      var mi = items[i];
+      RealMediaItemM mi = items[i];
       if (_dlg.WorkCts.Token.IsCancellationRequested) {
         Skipped.Add(mi);
         continue; // continue so that all files are added to skipped files
@@ -191,9 +191,9 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
       var srcPathCache = mi.Folder.FullPathCache;
       var targetPath = dest.FullPath;
 
-      _dlg.Progress.Report(new object[] { Convert.ToInt32((double)i / count * 100), srcPath, targetPath, mi.FileName });
+      _dlg.Progress.Report([Convert.ToInt32((double)i / count * 100), srcPath, targetPath, mi.FileName]);
 
-      if (ResolveTargetFileName(mi.Folder, dest, mi.FileName, targetPath, ref mi) is not var (targetFilePath, targetFileName))
+      if (ResolveTargetFileName(mi.Folder, dest, mi.FileName, targetPath, ref mi!) is not var (targetFilePath, targetFileName))
         continue;
 
       try {
@@ -210,13 +210,13 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     return Task.CompletedTask;
   }
 
-  private (string, string)? ResolveTargetFileName(FolderM src, FolderM target, string srcFileName, string targetPath, ref RealMediaItemM mi) {
+  private (string, string)? ResolveTargetFileName(FolderM src, FolderM target, string srcFileName, string targetPath, ref RealMediaItemM? mi) {
     var targetFileName = srcFileName;
     var targetFilePath = IOExtensions.PathCombine(targetPath, targetFileName);
     if (!File.Exists(targetFilePath)) return new(targetFilePath, targetFileName);
 
     if (mi == null) mi = CreateMediaItemAndReadMetadata(src, srcFileName);
-    RealMediaItemM replacedMi = null;
+    RealMediaItemM? replacedMi = null;
     var result = FileOperationCollisionDialogM.Open(src, target, mi, ref targetFileName, ref replacedMi);
 
     switch (result) {
@@ -245,13 +245,13 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
         break;
       case FileOperationMode.Move: {
         if (File.Exists(dest)) File.Delete(dest);
-        if (dest != null) File.Move(src, dest);
+        File.Move(src, dest);
         break;
       }
     }
   }
 
-  private void CopyMoveCacheOnDrive(MediaItemM mi, string srcPathCache, string targetPathCache, string targetFileName) {
+  private void CopyMoveCacheOnDrive(MediaItemM? mi, string srcPathCache, string targetPathCache, string targetFileName) {
     if (mi == null) return;
     var mis = new List<MediaItemM> { mi };
     var fileNames = new List<(string, string)>();
@@ -303,7 +303,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     }
   }
 
-  public static RealMediaItemM CreateMediaItemAndReadMetadata(FolderM folder, string fileName) {
+  public static RealMediaItemM? CreateMediaItemAndReadMetadata(FolderM folder, string fileName) {
     if (Core.R.MediaItem.ItemCreate(folder, fileName) is not { } mi) return null;
     var mim = new MediaItemMetadata(mi);
     MediaItemS.ReadMetadata(mim, false);
@@ -325,8 +325,8 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     MediaItemVideoCopyImages(mi as VideoM, copy as VideoM);
   }
 
-  private void MediaItemVideoCopyClips(VideoM vid, VideoM copy) {
-    if (vid?.VideoClips == null) return;
+  private void MediaItemVideoCopyClips(VideoM? vid, VideoM? copy) {
+    if (vid?.VideoClips == null || copy == null) return;
     copy.VideoClips = [];
     foreach (var vc in vid.VideoClips) {
       var vcCopy = coreR.VideoClip.CustomItemCreate(copy, vc.TimeStart);
@@ -338,8 +338,8 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     }
   }
 
-  private void MediaItemVideoCopyImages(VideoM vid, VideoM copy) {
-    if (vid?.VideoImages == null) return;
+  private void MediaItemVideoCopyImages(VideoM? vid, VideoM? copy) {
+    if (vid?.VideoImages == null || copy == null) return;
     copy.VideoImages = [];
     foreach (var vi in vid.VideoImages) {
       var viCopy = coreR.VideoImage.CustomItemCreate(copy, vi.TimeStart);
