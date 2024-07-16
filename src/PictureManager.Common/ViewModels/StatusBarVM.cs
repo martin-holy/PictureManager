@@ -12,7 +12,7 @@ namespace PictureManager.Common.ViewModels;
 
 public class StatusBarVM(Core core) : ObservableObject {
   private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
-  private string _fileSize;
+  private string _fileSize = string.Empty;
 
   public Core Core { get; } = core;
   public bool IsCountVisible => Core.VM.MediaItem.Views.Current != null || Core.VM.MediaViewer.IsVisible;
