@@ -12,7 +12,7 @@ namespace MH.Utils.Extensions {
     /// <param name="dateFormats">Example: {{"d", "d. "}, {"M", "MMMM "}, {"y", "yyyy"}}</param>
     /// <param name="timeFormat">Example: H:mm:ss</param>
     /// <returns>Formated "date, time" or string.Empty</returns>
-    public static string DateTimeFromString(string text, Dictionary<string, string> dateFormats, string timeFormat) {
+    public static string DateTimeFromString(string? text, Dictionary<string, string> dateFormats, string timeFormat) {
       if (string.IsNullOrEmpty(text) || text.Length < 15 || text[8] != '_') return string.Empty;
 
       var locDateFormats = dateFormats.ToDictionary(df => df.Key, df => df.Value);
