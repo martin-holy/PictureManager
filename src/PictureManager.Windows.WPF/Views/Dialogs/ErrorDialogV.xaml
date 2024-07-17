@@ -6,7 +6,7 @@
   <DataTemplate DataType="{x:Type md:ErrorDialogM}">
     <StackPanel Margin="5" Width="515">
       <TextBlock
-        Text="{Binding Message}"
+        Text="{Binding Message, Mode=OneWay}"
         Margin="5"
         TextWrapping="Wrap"/>
 
@@ -16,7 +16,7 @@
         Foreground="{StaticResource MH.B.C.Static.Fo}">
 
         <TextBox
-          Text="{Binding Detail}"
+          Text="{Binding Detail, Mode=OneWay}"
           IsReadOnly="True" 
           VerticalScrollBarVisibility="Auto"
           HorizontalScrollBarVisibility="Auto"
