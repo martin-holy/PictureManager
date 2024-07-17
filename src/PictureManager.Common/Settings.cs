@@ -3,24 +3,45 @@ using MH.UI.Dialogs;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace PictureManager.Common;
 
 public sealed class Settings {
-  private static readonly string _filePath = "settings.json";
-  
+  private const string _filePath = "settings.json";
+
   [JsonIgnore]
   public bool Modified { get; set; }
+  [JsonIgnore]
+  public ListItem[] Groups { get; }
 
-  public CommonSettings Common { get; set; }
-  public GeoNameSettings GeoName { get; set; }
-  public ImagesToVideoSettings ImagesToVideo { get; set; }
-  public MediaItemSettings MediaItem { get; set; }
-  public SegmentSettings Segment { get; set; }
+  public CommonSettings Common { get; }
+  public GeoNameSettings GeoName { get; }
+  public ImagesToVideoSettings ImagesToVideo { get; }
+  public MediaItemSettings MediaItem { get; }
+  public SegmentSettings Segment { get; }
+
+  public Settings(CommonSettings common, GeoNameSettings geoName, ImagesToVideoSettings imagesToVideo, MediaItemSettings mediaItem, SegmentSettings segment) {
+    Common = common;
+    GeoName = geoName;
+    ImagesToVideo = imagesToVideo;
+    MediaItem = mediaItem;
+    Segment = segment;
+
+    Groups = [
+      new(Res.IconSettings, "Common", common),
+      new(Res.IconLocationCheckin, "GeoName", geoName),
+      //new(Res.IconBug, "Images to video", imagesToVideo),
+      new(Res.IconImageMultiple, "MediaItem", mediaItem),
+      new(Res.IconSegment, "Segment", segment)
+    ];
+
+    foreach (var item in Groups.Select(x => (ObservableObject)x.Data!))
+      item.PropertyChanged += delegate { Modified = true; };
+  }
 
   public void Save() {
     try {
@@ -36,19 +57,32 @@ public sealed class Settings {
   public static Settings Load() {
     if (!File.Exists(_filePath)) return CreateNew();
     try {
-      var set = JsonSerializer.Deserialize<Settings>(File.ReadAllText(_filePath));
-      set.Common ??= new();
-      set.GeoName ??= new();
-      set.ImagesToVideo ??= new();
-      set.MediaItem ??= new();
-      set.Segment ??= new();
-      return set.Init();
+      using var doc = JsonDocument.Parse(File.ReadAllText(_filePath));
+      var root = doc.RootElement;
+
+      var common = DeserializeGroup<CommonSettings>(root, "Common") ?? new();
+      var geoName = DeserializeGroup<GeoNameSettings>(root, "GeoName") ?? new();
+      var imagesToVideo = DeserializeGroup<ImagesToVideoSettings>(root, "ImagesToVideo") ?? new();
+      var mediaItem = DeserializeGroup<MediaItemSettings>(root, "MediaItem") ?? new();
+      var segment = DeserializeGroup<SegmentSettings>(root, "Segment") ?? new();
+
+      var settings = new Settings(common, geoName, imagesToVideo, mediaItem, segment);
+
+      return settings;
     }
     catch (Exception ex) {
       Log.Error(ex);
       return CreateNew();
     }
   }
+
+  private static T? DeserializeGroup<T>(JsonElement root, string name) =>
+    root.TryGetProperty(name, out JsonElement elm)
+      ? JsonSerializer.Deserialize<T>(elm.GetRawText())
+      : default;
+
+  private static Settings CreateNew() =>
+    new(new(), new(), new(), new(), new());
 
   public void OnClosing() {
     if (Modified &&
@@ -59,35 +93,16 @@ public sealed class Settings {
           true)) == 1)
       Save();
   }
-
-  public static Settings CreateNew() =>
-    new Settings {
-      Common = new(),
-      GeoName = new(),
-      ImagesToVideo = new(),
-      MediaItem = new(),
-      Segment = new()
-    }.Init();
-
-  public Settings Init() {
-    AttachEvents(new ObservableObject[] { Common, GeoName, ImagesToVideo, MediaItem, Segment });
-    return this;
-  }
-
-  private void AttachEvents(IEnumerable<ObservableObject> items) {
-    foreach (var item in items)
-      item.PropertyChanged += delegate { Modified = true; };
-  }
 }
 
 public sealed class CommonSettings : ObservableObject {
   private string _cachePath = @":\Temp\PictureManagerCache";
-  private string[] _directorySelectFolders;
-  private string _ffmpegPath;
+  private string[]? _directorySelectFolders;
+  private string _ffmpegPath = string.Empty;
   private int _jpegQuality = 80;
   
   public string CachePath { get => _cachePath; set => OnCachePathChange(value); }
-  public string[] DirectorySelectFolders { get => _directorySelectFolders; set { _directorySelectFolders = value; OnPropertyChanged(); } }
+  public string[]? DirectorySelectFolders { get => _directorySelectFolders; set { _directorySelectFolders = value; OnPropertyChanged(); } }
   public string FfmpegPath { get => _ffmpegPath; set { _ffmpegPath = value; OnPropertyChanged(); } }
   public int JpegQuality { get => _jpegQuality; set { _jpegQuality = value; OnPropertyChanged(); } }
 
@@ -100,7 +115,7 @@ public sealed class CommonSettings : ObservableObject {
 
 public sealed class GeoNameSettings : ObservableObject {
   private bool _loadFromWeb;
-  private string _userName;
+  private string _userName = string.Empty;
 
   public bool LoadFromWeb { get => _loadFromWeb; set { _loadFromWeb = value; OnPropertyChanged(); } }
   public string UserName { get => _userName; set { _userName = value; OnPropertyChanged(); } }
