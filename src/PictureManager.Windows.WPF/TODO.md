@@ -79,14 +79,15 @@
   - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
     + setting this position in VideoDetail
   - keep last video in VideoDetail when leaving MediaItemsView
-## Settings
-  - use WrapPanel and each category is one block
 ## StatusBar
   - limit folder path size
 ## PersonMerge
   - show selected person name on merge dialog
 ## PersonDetail
   - don't show keywords if they are not any
+## PresentationPanelVM
+  - three state button with play/pause/stop and show paused state when video is playing
+  - play VideoImages and VideoClips based on settings
 
 
                                     *** NEW ***
@@ -166,6 +167,8 @@
   - it can be null and it is created on first use
   - how to create, where hold the instance, dependencies
   - ...
+## MergePeopleDialogM
+  - rewrite, use ref for Person and SegmentsToUpdate
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
