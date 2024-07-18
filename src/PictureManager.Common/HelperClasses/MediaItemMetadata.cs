@@ -13,17 +13,16 @@ namespace PictureManager.Common.HelperClasses;
 public class MediaItemMetadata(RealMediaItemM mediaItem) {
   public RealMediaItemM MediaItem { get; } = mediaItem;
   public int Rating { get; set; }
-  public string Comment { get; set; }
+  public string? Comment { get; set; }
   public int Width { get; set; }
   public int Height { get; set; }
   public Orientation Orientation { get; set; }
   public bool Success { get; set; }
-  public string[] People { get; set; }
-  public string[] Keywords { get; set; }
+  public string[]? Keywords { get; set; }
   public double? Lat { get; set; }
   public double? Lng { get; set; }
   public int? GeoNameId { get; set; }
-  public List<Tuple<string, List<Tuple<string, string[]>>>> PeopleSegmentsKeywords { get; set; }
+  public List<Tuple<string, List<Tuple<string, string[]?>>>>? PeopleSegmentsKeywords { get; set; }
 
   public Task FindRefs() {
     MediaItem.Rating = Rating;
@@ -81,7 +80,7 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
     Core.R.Segment.ItemsDelete(oldSegments?.Except(MediaItem.Segments.EmptyIfNull()).ToList());
   }
 
-  private static SegmentM RecycleSegment(int x, int y, int s, MediaItemM mi, PersonM person, ref List<SegmentM> bin) {
+  private static SegmentM RecycleSegment(int x, int y, int s, MediaItemM mi, PersonM? person, ref List<SegmentM>? bin) {
     SegmentM segment;
     if (bin?.Any() == true) {
       segment = bin[^1];
@@ -90,6 +89,7 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
       segment.X = x;
       segment.Y = y;
       segment.Size = s;
+      mi.Segments ??= [];
       mi.Segments.Add(segment);
       Core.R.Segment.IsModified = true;
     }
@@ -104,7 +104,7 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
   public void FindKeywords() {
     MediaItem.Keywords = null;
     if (Keywords == null) return;
-    MediaItem.Keywords = new();
+    MediaItem.Keywords = [];
     foreach (var k in Keywords.OrderByDescending(x => x).Distinct()) {
       var keyword = Core.R.Keyword.GetByFullPath(k.Replace('|', ' '));
       if (keyword != null)
