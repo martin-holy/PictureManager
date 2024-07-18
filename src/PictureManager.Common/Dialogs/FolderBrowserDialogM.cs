@@ -14,8 +14,11 @@ public sealed class FolderBrowserDialogM : Dialog {
   public FolderTreeViewItem? SelectedFolder { get => _selectedFolder; private set { _selectedFolder = value; OnPropertyChanged(); } }
   public TreeView<FolderTreeViewItem> TreeView { get; } = new() { ShowTreeItemSelection = true };
 
+  public new RelayCommand OkCommand { get; }
+
   public FolderBrowserDialogM() : base("Browse For Folder", Res.IconFolder) {
     TreeView.TreeItemSelectedEvent += (_, e) => SelectedFolder = e.Data;
+    OkCommand = new(() => SetResult(this, 1), () => SelectedFolder != null, null, "Ok");
     Buttons = [
       new(OkCommand, true),
       new(CloseCommand, false, true)
