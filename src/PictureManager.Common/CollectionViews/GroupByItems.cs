@@ -119,7 +119,7 @@ public static class GroupByItems {
 
   public static GroupByItem<PersonM> GetPeopleGroupsInGroup(IEnumerable<PersonM> people) =>
     people
-      .GroupBy(x => x.Parent)
+      .GroupBy(x => x.Parent!)
       .Select(x => x.Key)
       .OrderBy(x => x.Name)
       .ToGroupByItems<PersonM, ITreeItem>(GroupPersonByGroup)
@@ -139,7 +139,7 @@ public static class GroupByItems {
     parameter is FolderM f && folder.GetThisAndParents().Contains(f);
 
   private static bool GroupByFolder(IEnumerable<FolderM> items, object parameter) =>
-    items?.Any(x => GroupByFolder(x, parameter)) == true;
+    items.Any(x => GroupByFolder(x, parameter));
 
   private static bool GroupByFolder(MediaItemM item, object parameter) =>
     GroupByFolder(item.Folder, parameter);
@@ -150,8 +150,8 @@ public static class GroupByItems {
   private static bool GroupByFolder(SegmentM item, object parameter) =>
     GroupByFolder(item.MediaItem.Folder, parameter);
 
-  private static bool GroupByGeoName(GeoNameM geoName, object parameter) =>
-    geoName?.GetThisAndParents()?.Contains(parameter as GeoNameM) == true;
+  private static bool GroupByGeoName(GeoNameM? geoName, object parameter) =>
+    geoName?.GetThisAndParents().Contains(parameter as GeoNameM) == true;
 
   private static bool GroupByGeoName(MediaItemM item, object parameter) =>
     GroupByGeoName(item.GeoLocation?.GeoName, parameter);
@@ -159,13 +159,13 @@ public static class GroupByItems {
   private static bool GroupByGeoName(SegmentM item, object parameter) =>
     GroupByGeoName(item.MediaItem.GeoLocation?.GeoName, parameter);
 
-  private static bool GroupByPerson(PersonM person, object parameter) =>
+  private static bool GroupByPerson(PersonM? person, object parameter) =>
     ReferenceEquals(parameter, person) ||
     ReferenceEquals(parameter, person?.Parent);
 
   private static bool GroupByPerson(IEnumerable<PersonM> items, object parameter) =>
     ReferenceEquals(parameter, Core.R.Person.Tree) ||
-    items?.Any(x => GroupByPerson(x, parameter)) == true;
+    items.Any(x => GroupByPerson(x, parameter));
 
   private static bool GroupByPerson(this MediaItemM item, object parameter) =>
     GroupByPerson(item.GetPeople(), parameter);
@@ -180,7 +180,7 @@ public static class GroupByItems {
 
   private static bool GroupByKeyword(IEnumerable<KeywordM> items, object parameter) =>
     ReferenceEquals(parameter, Core.R.Keyword.Tree) ||
-    items?.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter) == true;
+    items.SelectMany(x => x.GetThisAndParents<ITreeItem>()).Contains(parameter);
 
   private static bool GroupByKeyword(this IHaveKeywords item, object parameter) =>
     GroupByKeyword(item.GetKeywords(), parameter);
