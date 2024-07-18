@@ -99,7 +99,7 @@ public sealed class ExportSegmentsDialog : Dialog {
 
     if (Show(dir) != 1) return;
 
-    if (!DirPaths.Contains(dir.SelectedFolder.FullPath)) {
+    if (!DirPaths.Contains(dir.SelectedFolder!.FullPath)) {
       DirPaths.Insert(0, dir.SelectedFolder.FullPath);
       Core.Settings.Common.DirectorySelectFolders = DirPaths.ToArray();
       Core.Settings.Save();
