@@ -34,7 +34,9 @@ public class TableDataAdapter<T> : DataAdapter<T>, ITableDataAdapter where T : c
   public void Clear() {
     All = AllDict.Values.ToHashSet();
     AllDict.Clear();
+    AllDict.TrimExcess(0);
     AllCsv.Clear();
+    AllCsv.TrimExcess();
   }
 
   public override void AddItem(T item, string[] props) {
