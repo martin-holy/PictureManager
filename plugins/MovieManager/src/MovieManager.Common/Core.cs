@@ -16,13 +16,13 @@ public sealed class Core : IPluginCore {
   public string Name => "MovieManager";
   public string BaseDir { get; }
   public string PluginsDir { get; }
-  public static PM.Core PMCore { get; private set; }
-  public static Core Inst { get; private set; }
-  public static CoreR R { get; private set; }
-  public static CoreS S { get; private set; }
-  public static CoreVM VM { get; private set; }
-  public IImportPlugin ImportPlugin { get; set; }
-  public IImportPlugin[] ImportPlugins { get; private set; }
+  public static PM.Core PMCore { get; private set; } = null!;
+  public static Core Inst { get; private set; } = null!;
+  public static CoreR R { get; private set; } = null!;
+  public static CoreS S { get; private set; } = null!;
+  public static CoreVM VM { get; private set; } = null!;
+  public IImportPlugin? ImportPlugin { get; private set; }
+  public IImportPlugin[] ImportPlugins { get; private set; } = [];
 
   IPluginCoreVM IPluginCore.VM => VM;
 
@@ -64,6 +64,7 @@ public sealed class Core : IPluginCore {
         .EnumerateFiles(PluginsDir, "*.dll", SearchOption.TopDirectoryOnly)
         .Select(Plugin.LoadPlugin<IImportPlugin>)
         .Where(x => x != null)
+        .Select(x => x!)
         .ToArray();
 
       ImportPlugin = ImportPlugins.FirstOrDefault();
