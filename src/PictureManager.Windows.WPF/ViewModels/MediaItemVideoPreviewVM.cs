@@ -27,7 +27,7 @@ namespace PictureManager.Windows.WPF.ViewModels {
       };
     }
 
-    private static void ShowVideoPreview(Grid grid) {
+    private static void ShowVideoPreview(Grid? grid) {
       if (grid?.DataContext is not VideoM mi) return;
 
       var rotation = new TransformGroup();
