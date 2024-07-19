@@ -11,7 +11,7 @@ namespace MovieManager.Common.Repositories;
 /// </summary>
 public class CharacterR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<CharacterM>(coreR, "Characters", 5) {
   public override CharacterM FromCsv(string[] csv) =>
-    new(int.Parse(csv[0]), csv[1]);
+    new(int.Parse(csv[0]), csv[1], ActorR.Dummy, MovieR.Dummy);
 
   public override string ToCsv(CharacterM item) =>
     string.Join("|",
@@ -23,17 +23,17 @@ public class CharacterR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataA
 
   public override void LinkReferences() {
     foreach (var (item, csv) in AllCsv) {
-      item.Actor = coreR.Actor.GetById(csv[2]);
-      item.Movie = coreR.Movie.GetById(csv[3]);
+      item.Actor = coreR.Actor.GetById(csv[2])!;
+      item.Movie = coreR.Movie.GetById(csv[3])!;
       item.Segment = pmCoreR.Segment.GetById(csv[4], true);
     }
   }
 
   public CharacterM ItemCreate(string name, ActorM actor, MovieM movie) =>
-    ItemCreate(new(GetNextId(), name) { Actor = actor, Movie = movie });
+    ItemCreate(new(GetNextId(), name, actor, movie));
 
-  public void SetSegment(CharacterM character, SegmentM segment) {
-    if (character == null | segment == null) return;
+  public void SetSegment(CharacterM character, SegmentM? segment) {
+    if (segment == null) return;
     character.Segment = segment;
     IsModified = true;
   }
