@@ -11,7 +11,7 @@ public sealed class GenreM : ObservableObject, IHaveName {
 
   public GenreM(int id, string name) {
     Id = id;
-    Name = name;
+    _name = name;
   }
 
   public override int GetHashCode() => Id;
