@@ -110,12 +110,12 @@ public static class MediaItemVM {
            * (val.EndsWith("S") || val.EndsWith("W") ? -1 : 1);
   }
 
-  private static List<Tuple<string, List<Tuple<string, string[]>>>> ReadPeopleSegmentsKeywords(BitmapMetadata bm) {
+  private static List<Tuple<string, List<Tuple<string, string[]?>>>>? ReadPeopleSegmentsKeywords(BitmapMetadata bm) {
     if (bm.GetQuery<BitmapMetadata>(_msRegions) is not { } regions) return null;
-    var output = new List<Tuple<string, List<Tuple<string, string[]>>>>();
+    var output = new List<Tuple<string, List<Tuple<string, string[]?>>>>();
       
     foreach (var r in regions.Select(x => _msRegions + x)) {
-      var name = bm.GetQuery<string>(r + _msPersonName);
+      var name = bm.GetQuery<string>(r + _msPersonName)!;
 
       if (output.SingleOrDefault(x => string.Equals(x.Item1, name, StringComparison.OrdinalIgnoreCase)) is not { } person) {
         person = new(name, []);
@@ -128,6 +128,7 @@ public static class MediaItemVM {
       person.Item2.Add(new(rect, keywords?
         .Select(x => keywords.GetQuery<string>(x))
         .Where(x => x != null)
+        .Select(x => x!)
         .ToArray()));
     }
 
@@ -145,13 +146,13 @@ public static class MediaItemVM {
       if (decoder.CodecInfo?.FileExtensions.Contains("jpg") == true && decoder.Frames[0] != null) {
         var metadata = decoder.Frames[0].Metadata == null
           ? new("jpg")
-          : decoder.Frames[0].Metadata.Clone() as BitmapMetadata;
+          : decoder.Frames[0].Metadata!.Clone() as BitmapMetadata;
 
         if (metadata != null) {
           WritePeople(metadata, img);
           metadata.Rating = img.Rating;
           metadata.Comment = img.Comment ?? string.Empty;
-          metadata.Keywords = new(img.Keywords?.Select(k => k.FullName).ToList() ?? new List<string>());
+          metadata.Keywords = new(img.Keywords?.Select(k => k.FullName).ToList() ?? []);
           metadata.SetQuery("System.Photo.Orientation", (ushort)img.Orientation.ToInt());
           SetOrRemoveQuery(metadata, "/xmp/GeoNames:GeoNameId", img.GeoLocation?.GeoName?.Id.ToString());
 
@@ -212,22 +213,22 @@ public static class MediaItemVM {
       bm.SetQuery(_msRegionInfo, ri);
   }
 
-  private static List<Tuple<PersonM, string, string[]>> GetPeopleSegmentsKeywords(ImageM img) {
+  private static List<Tuple<PersonM?, string?, string[]?>>? GetPeopleSegmentsKeywords(ImageM img) {
     var peopleOnSegments = img.Segments.EmptyIfNull().Select(x => x.Person).Distinct().ToHashSet();
 
     return img.Segments?
-      .Select(x => new Tuple<PersonM, string, string[]>(
+      .Select(x => new Tuple<PersonM?, string?, string[]?>(
         x.Person,
         x.ToMsRect(),
         x.Keywords?.Select(k => k.FullName).ToArray()))
       .Concat(img.People
         .EmptyIfNull()
         .Where(x => !peopleOnSegments.Contains(x))
-        .Select(x => new Tuple<PersonM, string, string[]>(x, null, null)))
+        .Select(x => new Tuple<PersonM?, string?, string[]?>(x, null, null)))
       .ToList();
   }
 
-  private static void WritePersonRectangleKeywords(BitmapMetadata bm, string query, string[] keywords) {
+  private static void WritePersonRectangleKeywords(BitmapMetadata bm, string query, string[]? keywords) {
     if (keywords != null) {
       var idx = -1;
       bm.SetQuery(query, new BitmapMetadata("xmpbag"));
@@ -278,7 +279,7 @@ public static class MediaItemVM {
     return bSuccess;
   }
 
-  private static void SetOrRemoveQuery(BitmapMetadata bm, string query, object value) {
+  private static void SetOrRemoveQuery(BitmapMetadata bm, string query, object? value) {
     if (value != null)
       bm.SetQuery(query, value);
     else if (bm.ContainsQuery(query))
