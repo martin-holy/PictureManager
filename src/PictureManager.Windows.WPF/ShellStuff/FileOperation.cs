@@ -1,3 +1,5 @@
+#nullable disable
+// ReSharper disable InconsistentNaming
 // Stephen Toub
 
 using PictureManager.Windows.WPF.ShellStuff.Interfaces;
@@ -89,7 +91,7 @@ namespace PictureManager.Windows.WPF.ShellStuff {
     private static ComReleaser<IShellItem> CreateShellItem(string path) {
       try {
         //I don't know how to do it better
-        if (!Path.HasExtension(path)) {
+        if (path != null && !Path.HasExtension(path)) {
           DirectoryInfo di = new DirectoryInfo(path);
           if (!di.Exists)
             di.Create();

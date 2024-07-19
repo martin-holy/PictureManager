@@ -1,4 +1,5 @@
-﻿using PictureManager.Windows.WPF.ShellStuff.Interfaces;
+﻿#nullable disable
+using PictureManager.Windows.WPF.ShellStuff.Interfaces;
 using System.Collections.Generic;
 
 namespace PictureManager.Windows.WPF.ShellStuff {

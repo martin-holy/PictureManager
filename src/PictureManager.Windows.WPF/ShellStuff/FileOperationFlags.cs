@@ -1,3 +1,4 @@
+// ReSharper disable InconsistentNaming
 using System;
 
 namespace PictureManager.Windows.WPF.ShellStuff {

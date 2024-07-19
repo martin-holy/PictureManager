@@ -1,3 +1,4 @@
+#nullable disable
 // Stephen Toub
 
 using System.Runtime.InteropServices;
