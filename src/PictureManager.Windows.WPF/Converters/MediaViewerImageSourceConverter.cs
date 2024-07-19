@@ -7,10 +7,10 @@ namespace PictureManager.Windows.WPF.Converters;
 
 public class MediaViewerImageSourceConverter : BaseConverter {
   private static readonly object _lock = new();
-  private static MediaViewerImageSourceConverter _inst;
+  private static MediaViewerImageSourceConverter? _inst;
   public static MediaViewerImageSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  public override object Convert(object value, object parameter) {
+  public override object? Convert(object? value, object? parameter) {
     try {
       return value is ImageM mi
         ? Utils.Imaging.GetBitmapImage(mi.FilePath, mi.Orientation)
