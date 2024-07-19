@@ -5,13 +5,13 @@ namespace PictureManager.Windows.WPF.Converters;
 
 public class MarkedTagsItemsCountConverter : BaseMultiConverter {
   private static readonly object _lock = new();
-  private static MarkedTagsItemsCountConverter _inst;
+  private static MarkedTagsItemsCountConverter? _inst;
   public static MarkedTagsItemsCountConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  public override object Convert(object[] values, object parameter) =>
-    values is [Dictionary<object, int> tags, _]
-      ? tags.ContainsKey(values[1])
-        ? tags[values[1]].ToString()
+  public override object Convert(object?[]? values, object? parameter) =>
+    values is [Dictionary<object, int> tags, { } tag]
+      ? tags.ContainsKey(tag)
+        ? tags[tag].ToString()
         : string.Empty
       : string.Empty;
 }
