@@ -23,7 +23,7 @@ public static class Res {
   public const string IconDrawerAdd = "IconDrawerAdd";
   public const string IconDrive = "IconDrive";
   public const string IconDriveError = "IconDriveError";
-  public const string IconEmpty = null;
+  public const string IconEmpty = "";
   public const string IconEquals = "IconEquals";
   public const string IconEye = "IconEye";
   public const string IconFilter = "IconFilter";
@@ -101,7 +101,7 @@ public static class Res {
       _ => IconEmpty
     };
 
-  public static string TypeToGroupByDialogTemplateKey(object o) =>
+  public static string? TypeToGroupByDialogTemplateKey(object o) =>
     o switch {
       PersonM => "PM.DT.Person.ListItem",
       IListItem => "MH.DT.IListItem",
