@@ -91,14 +91,14 @@ public sealed class SegmentS : ObservableObject {
     DataAdapter.ChangePerson(newPerson, toUpdate, affectedPeople);
   }
 
-  public void ViewMediaItemsWithSegment(object source, SegmentM segment) {
+  public void ViewMediaItemsWithSegment(object source, SegmentM? segment) {
     var items = GetMediaItemsWithSegment(source, segment).ToArray();
     var rmis = items.OfType<RealMediaItemM>()
       .Concat(items.OfType<VideoItemM>().Select(x => x.Video))
       .Distinct().Cast<MediaItemM>().ToList();
 
     if (rmis.Count == 0) return;
-    var current = segment.MediaItem is VideoItemM vi ? vi.Video : segment.MediaItem;
+    var current = segment!.MediaItem is VideoItemM vi ? vi.Video : segment.MediaItem;
     Core.VM.MediaViewer.SetMediaItems(rmis, current);
     Core.VM.MainWindow.IsInViewMode = true;
   }
