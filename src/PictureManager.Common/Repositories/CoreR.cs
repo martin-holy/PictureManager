@@ -10,7 +10,7 @@ using System.Linq;
 namespace PictureManager.Common.Repositories;
 
 public sealed class CoreR : SimpleDB {
-  public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
+  public delegate Dictionary<string, string>? FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; } = null!;
   public bool IsCopyMoveInProgress { get; set; }
 
