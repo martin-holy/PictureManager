@@ -18,17 +18,17 @@ namespace PictureManager.Windows.WPF.Converters;
 
 public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImageSourceConverter<SegmentM> {
   private static readonly object _lock = new();
-  private static SegmentThumbnailSourceConverter _inst;
+  private static SegmentThumbnailSourceConverter? _inst;
   public static SegmentThumbnailSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   private static readonly TaskQueue<SegmentM> _taskQueue = new();
 
-  public HashSet<SegmentM> ErrorCache { get; } = new();
-  public HashSet<SegmentM> IgnoreCache { get; } = new();
+  public HashSet<SegmentM> ErrorCache { get; } = [];
+  public HashSet<SegmentM> IgnoreCache { get; } = [];
 
-  public override object Convert(object[] values, object parameter) {
+  public override object? Convert(object?[]? values, object? parameter) {
     try {
-      if (values is not [_, SegmentM segment] || segment.MediaItem == null) return null;
+      if (values is not [_, SegmentM segment]) return null;
       if (ErrorCache.Contains(segment)) return null;
 
       if (!File.Exists(segment.FilePathCache)) {
@@ -97,7 +97,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
   }
 
   private static void CreateThumbnailFromVideo(SegmentM segment) =>
-    VideoThumbsU.Create(new[] { segment.MediaItem });
+    VideoThumbsU.Create([segment.MediaItem]);
 
   private static void TriggerChanged(SegmentM segment) =>
     segment.OnPropertyChanged(nameof(segment.FilePathCache));
