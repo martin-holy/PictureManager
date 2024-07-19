@@ -4,24 +4,24 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace PictureManager.Windows.WPF.Views {
-  public partial class SplashScreenV : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged = delegate { };
-    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged(this, new(name));
+namespace PictureManager.Windows.WPF.Views;
 
-    private string _version;
-    private string _message;
+public partial class SplashScreenV : INotifyPropertyChanged {
+  public event PropertyChangedEventHandler? PropertyChanged = delegate { };
+  public void OnPropertyChanged([CallerMemberName] string? name = null) =>
+    PropertyChanged!(this, new(name));
 
-    public string Version { get => _version; set { _version = value; OnPropertyChanged(); } }
-    public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
-    public IProgress<string> ProgressMessage { get; set; }
+  private string? _message;
 
-    public SplashScreenV() {
-      InitializeComponent();
+  public string Version { get; }
+  public string? Message { get => _message; set { _message = value; OnPropertyChanged(); } }
+  public IProgress<string> ProgressMessage { get; set; }
 
-      ProgressMessage = new Progress<string>(msg => Message = msg);
+  public SplashScreenV() {
+    InitializeComponent();
 
-      Version = $"ver.: {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
-    }
+    ProgressMessage = new Progress<string>(msg => Message = msg);
+
+    Version = $"ver.: {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
   }
 }
