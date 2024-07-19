@@ -1,3 +1,4 @@
+#nullable disable
 // Stephen Toub
 
 using PictureManager.Windows.WPF.ShellStuff.Interfaces;

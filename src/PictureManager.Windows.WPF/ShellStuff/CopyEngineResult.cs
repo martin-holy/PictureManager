@@ -1,3 +1,4 @@
+// ReSharper disable InconsistentNaming
 // Stephen Toub
 
 namespace PictureManager.Windows.WPF.ShellStuff {
