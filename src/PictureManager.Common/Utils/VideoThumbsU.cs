@@ -13,8 +13,8 @@ using System.Linq;
 namespace PictureManager.Common.Utils;
 
 public static class VideoThumbsU {
-  private static HashSet<MediaItemM> _workingOn;
-  private static HashSet<MediaItemM> _todo;
+  private static HashSet<MediaItemM>? _workingOn;
+  private static HashSet<MediaItemM>? _todo;
 
   public static void Create(MediaItemM[] items, bool rebuild = false) {
     _todo ??= [];
@@ -49,7 +49,7 @@ public static class VideoThumbsU {
 
   private static void AddFrames(MediaItemM mi, List<VfsFrame> frames, bool rebuild) {
     if (rebuild || !File.Exists(mi.FilePathCache)) {
-      _workingOn.Add(mi);
+      _workingOn!.Add(mi);
       frames.Add(ToVfsFrame(mi));
     }
 
@@ -58,7 +58,7 @@ public static class VideoThumbsU {
 
   private static IEnumerable<VfsFrame> ToVfsFrames(IEnumerable<SegmentM> segments, bool rebuild) {
     foreach (var s in segments.Where(s => rebuild || !File.Exists(s.FilePathCache))) {
-      _workingOn.Add(s.MediaItem);
+      _workingOn!.Add(s.MediaItem);
       yield return ToVfsFrame(s);
     }
   }
@@ -105,8 +105,8 @@ public static class VideoThumbsU {
   }
 
   private static void OnFinished() {
-    _workingOn.Clear();
-    if (_todo.Count == 0) return;
+    _workingOn!.Clear();
+    if (_todo!.Count == 0) return;
     var todo = _todo.ToArray();
     _todo.Clear();
     Create(todo);
