@@ -15,15 +15,15 @@ namespace PictureManager.Windows.WPF.Converters;
 
 public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSourceConverter<MediaItemM> {
   private static readonly object _lock = new();
-  private static MediaItemThumbSourceConverter _inst;
+  private static MediaItemThumbSourceConverter? _inst;
   public static MediaItemThumbSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   private static readonly TaskQueue<MediaItemM> _taskQueue = new();
 
-  public HashSet<MediaItemM> ErrorCache { get; } = new();
-  public HashSet<MediaItemM> IgnoreCache { get; } = new();
+  public HashSet<MediaItemM> ErrorCache { get; } = [];
+  public HashSet<MediaItemM> IgnoreCache { get; } = [];
 
-  public override object Convert(object[] values, object parameter) {
+  public override object? Convert(object?[]? values, object? parameter) {
     try {
       if (values is not [_, MediaItemM mi]) return null;
       if (ErrorCache.Contains(mi)) return null;
@@ -71,7 +71,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
         _taskQueue.Start(CreateImageThumbnail, TriggerChanged);
         break;
       case VideoM:
-        VideoThumbsU.Create(new[] { mi });
+        VideoThumbsU.Create([mi]);
         break;
       case VideoItemM vi:
         CreateVideoItemThumbnail(vi);
@@ -96,7 +96,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
       TriggerChanged(vi);
     }
     else
-      VideoThumbsU.Create(new[] { (MediaItemM)vi.Video });
+      VideoThumbsU.Create([vi.Video]);
   }
 
   private static void TriggerChanged(MediaItemM mi) =>
