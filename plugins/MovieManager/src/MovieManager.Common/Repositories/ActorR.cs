@@ -12,6 +12,7 @@ namespace MovieManager.Common.Repositories;
 /// DB fields: Id|Name|Person|Image
 /// </summary>
 public class ActorR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 4) {
+  public static ActorM Dummy { get; } = new(0, string.Empty);
   public event EventHandler<ActorM> ActorPersonChangedEvent = delegate { };
     
   public override ActorM FromCsv(string[] csv) =>
@@ -34,7 +35,7 @@ public class ActorR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapt
   public ActorM ItemCreate(string name) =>
     ItemCreate(new ActorM(GetNextId(), name));
 
-  public void SetPerson(ActorM actor, PersonM person) {
+  public void SetPerson(ActorM actor, PersonM? person) {
     actor.Person = person;
     IsModified = true;
     ActorPersonChangedEvent(this, actor);
