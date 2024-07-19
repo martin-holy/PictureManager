@@ -21,7 +21,7 @@ using System.Windows;
 namespace PictureManager.Windows.WPF;
 
 public sealed class AppCore : ObservableObject {
-  public WPF.ViewModels.SegmentRectVM SegmentRectVM { get; private set; }
+  public WPF.ViewModels.SegmentRectVM SegmentRectVM { get; private set; } = null!;
 
   public static RelayCommand TestButtonCommand { get; } = new(Tests.Run, Res.IconBug, "Test Button");
 
@@ -56,7 +56,7 @@ public sealed class AppCore : ObservableObject {
       : PresentationSource.FromVisual(Application.Current.MainWindow)
         ?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
 
-  public static Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
+  public static Dictionary<string, string>? FileOperationDelete(List<string> items, bool recycle, bool silent) {
     if (items.Count == 0) return null;
     var fops = new PicFileOperationProgressSink();
     using var fo = new FileOperation(fops);
@@ -90,7 +90,7 @@ public sealed class AppCore : ObservableObject {
         var uris = resourceSet.Cast<DictionaryEntry>()
           .Select(x => x.Key.ToString())
           .Where(x => x != null && (x.StartsWith("resources/") || x.StartsWith("views/")) && x.EndsWith(".baml"))
-          .Select(x => new Uri($"/{asmName};component/{x.Replace(".baml", ".xaml")}", UriKind.Relative))
+          .Select(x => new Uri($"/{asmName};component/{x!.Replace(".baml", ".xaml")}", UriKind.Relative))
           .ToArray();
         
         foreach (var uri in uris) {
