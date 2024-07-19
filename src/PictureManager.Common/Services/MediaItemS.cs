@@ -44,7 +44,7 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
   public void Rename(RealMediaItemM mi, string newFileName) =>
     r.ItemRename(mi, newFileName);
 
-  public void SetComment(MediaItemM mi, string comment) {
+  public void SetComment(MediaItemM mi, string? comment) {
     mi.Comment = comment;
     mi.SetInfoBox(true);
     mi.OnPropertyChanged(nameof(mi.Comment));
