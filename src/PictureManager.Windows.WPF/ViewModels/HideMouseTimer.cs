@@ -9,7 +9,7 @@ namespace PictureManager.Windows.WPF.ViewModels;
 
 public static class HideMouseTimer {
   private static bool _isHidden;
-  private static DispatcherTimer _timer;
+  private static DispatcherTimer _timer = null!;
   private static readonly TimeSpan _interval = TimeSpan.FromMilliseconds(3000);
   private static DateTime _lastMove;
 
@@ -37,7 +37,7 @@ public static class HideMouseTimer {
     };
   }
 
-  private static void OnMouseMoveHideTimer(object sender, MouseEventArgs args) {
+  private static void OnMouseMoveHideTimer(object? sender, MouseEventArgs? args) {
     _lastMove = DateTime.Now;
     if (!_isHidden) return;
     _isHidden = false;
