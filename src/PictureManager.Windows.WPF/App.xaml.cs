@@ -9,8 +9,8 @@ using System.Windows;
 namespace PictureManager.Windows.WPF;
 
 public partial class App {
-  public static Core Core => (Core)Current.Properties[nameof(AppProperty.Core)];
-  public static AppCore Ui => (AppCore)Current.Properties[nameof(AppProperty.Ui)];
+  public static Core Core { get; private set; } = null!;
+  public static AppCore Ui { get; private set; } = null!;
     
   protected override async void OnStartup(StartupEventArgs e) {
     base.OnStartup(e);
@@ -27,8 +27,8 @@ public partial class App {
 
     await Core.Inst.InitAsync(splashScreen.ProgressMessage);
 
-    Current.Properties[nameof(AppProperty.Core)] = Core.Inst;
-    Current.Properties[nameof(AppProperty.Ui)] = new AppCore();
+    Core = Core.Inst;
+    Ui = new();
 
     Core.AfterInit();
     Ui.AfterInit();
