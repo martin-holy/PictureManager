@@ -17,6 +17,7 @@ namespace MovieManager.Common.Repositories;
 /// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|Seen|Poster|MediaItems|Keywords|Plot
 /// </summary>
 public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 14) {
+  public static MovieM Dummy { get; } = new(0, string.Empty);
   public event EventHandler<MovieM[]> MoviesKeywordsChangedEvent = delegate { };
   public event EventHandler<MovieM> PosterChangedEvent = delegate { };
 
@@ -51,7 +52,7 @@ public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDa
 
   public override void LinkReferences() {
     foreach (var (item, csv) in AllCsv) {
-      item.Genres = coreR.Genre.LinkList(csv[7], null, null);
+      item.Genres = coreR.Genre.LinkList(csv[7], null, this);
       item.Poster = pmCoreR.MediaItem.GetById(csv[10], true);
       item.MediaItems = pmCoreR.MediaItem.Link(csv[11]);
       item.Keywords = pmCoreR.Keyword.Link(csv[12], this);
@@ -71,6 +72,7 @@ public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDa
     item.Genres = md.Genres
       .Select(x => coreR.Genre.GetGenre(x, true))
       .Where(x => x != null)
+      .Select(x => x!)
       .ToList();
 
     return item;
@@ -83,6 +85,8 @@ public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDa
   }
 
   public void RemoveMediaItems(MovieM movie, MediaItemM[] mediaItems) {
+    if (movie.MediaItems == null) return;
+
     foreach (var mi in mediaItems)
       movie.MediaItems.Remove(mi);
 
@@ -113,7 +117,7 @@ public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDa
     }
 
     foreach (var movie in All.Where(x => x.MediaItems?.Contains(mi) == true)) {
-      movie.MediaItems.Remove(mi);
+      movie.MediaItems!.Remove(mi);
       IsModified = true;
     }
   }
