@@ -157,9 +157,12 @@
   - use FolderR.Dummy in repositories in FromCsv
   - pass reference Core.VM.MediaItem to MediaItemsViewsVM.SetCurrentView
   - maybe move all CORE properties that needs to be set from WPF to one class
+  - use Vertical slice architecture in MovieManager
+  - set binding mode to OneWay where possible
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
+  - change GetById to return not null and add TryGetById and maybe pass class prop to it
 ## ProgressBarAsyncDialog
   - do Init and Start in constructor
 ## Components
