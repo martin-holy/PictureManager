@@ -23,7 +23,7 @@ public class ImportS {
     _coreS = coreS;
   }
 
-  public async Task ImportMovie(SearchResult result, IProgress<string> progress, CancellationToken token) {
+  public async Task ImportMovie(SearchResult? result, IProgress<string> progress, CancellationToken token) {
     if (result == null) return;
     progress.Report($"Importing '{result.Name}' ...", true);
 
@@ -33,7 +33,7 @@ public class ImportS {
       return;
     }
 
-    var md = await Core.Inst.ImportPlugin.GetMovieDetail(result.DetailId);
+    var md = await Core.Inst.ImportPlugin!.GetMovieDetail(result.DetailId);
     if (md == null) {
       progress.Report("Information about the movie not found.", true);
       return;
@@ -69,7 +69,7 @@ public class ImportS {
     }
   }
 
-  // Images are disabled because of poor content. Random screenshots or not from movie it self.
+  // Images are disabled because of poor content. Random screenshots or not from movie itself.
   /*private async Task ImportImages(IProgress<string> progress, MovieDetail md, MovieM movie) {
     if (md.Images == null || md.Images.Length == 0 || GetMovieImagesFolder(movie) is not { } imgFolder) return;
 
@@ -103,8 +103,8 @@ public class ImportS {
     }
   }
 
-  private async Task<MediaItemM> DownloadImage(Image image, FolderM folder, string fileName) {
-    if (image == null || string.IsNullOrEmpty(image.Url)) return null;
+  private async Task<MediaItemM?> DownloadImage(Image? image, FolderM? folder, string fileName) {
+    if (image == null || folder == null || string.IsNullOrEmpty(image.Url)) return null;
     var filePath = Path.Combine(folder.FullPath, fileName);
     try {
       if (!Path.Exists(filePath)) 
