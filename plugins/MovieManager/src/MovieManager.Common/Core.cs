@@ -21,7 +21,7 @@ public sealed class Core : IPluginCore {
   public static CoreR R { get; private set; } = null!;
   public static CoreS S { get; private set; } = null!;
   public static CoreVM VM { get; private set; } = null!;
-  public IImportPlugin? ImportPlugin { get; private set; }
+  public IImportPlugin? ImportPlugin { get; set; }
   public IImportPlugin[] ImportPlugins { get; private set; } = [];
 
   IPluginCoreVM IPluginCore.VM => VM;
