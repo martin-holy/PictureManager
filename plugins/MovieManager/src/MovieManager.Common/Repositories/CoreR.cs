@@ -20,10 +20,10 @@ public sealed class CoreR : SimpleDB {
   public MovieDetailIdR MovieDetailId { get; }
   public MovieR Movie { get; }
 
-  public FolderM ActorsFolder { get; set; }
+  public FolderM? ActorsFolder { get; set; }
   //public FolderM ImagesFolder { get; set; }
-  public FolderM PostersFolder { get; set; }
-  public FolderM RootFolder { get; set; }
+  public FolderM? PostersFolder { get; set; }
+  public FolderM? RootFolder { get; set; }
 
   public CoreR(PM.Repositories.CoreR pmCoreR, Core core) : base(Path.Combine(core.BaseDir, "db")) {
     PMCoreR = pmCoreR;
@@ -54,25 +54,25 @@ public sealed class CoreR : SimpleDB {
     PMCoreR.Segment.ItemDeletedEvent += OnSegmentDeleted;
   }
 
-  private void OnMovieDeleted(object sender, MovieM e) {
+  private void OnMovieDeleted(object? sender, MovieM e) {
     Character.ItemsDelete(Character.All.Where(x => ReferenceEquals(x.Movie, e)).ToList());
     MovieDetailId.ItemDelete(MovieDetailId.All.Single(x => ReferenceEquals(x.Movie, e)));
   }
 
-  private void OnKeywordDeleted(object sender, KeywordM e) {
+  private void OnKeywordDeleted(object? sender, KeywordM e) {
     Movie.OnKeywordDeleted(e);
   }
 
-  private void OnMediaItemDeleted(object sender, MediaItemM e) {
+  private void OnMediaItemDeleted(object? sender, MediaItemM e) {
     Actor.OnMediaItemDeleted(e);
     Movie.OnMediaItemDeleted(e);
   }
 
-  private void OnPersonDeleted(object sender, PersonM e) {
+  private void OnPersonDeleted(object? sender, PersonM e) {
     Actor.OnPersonDeleted(e);
   }
 
-  private void OnSegmentDeleted(object sender, SegmentM e) {
+  private void OnSegmentDeleted(object? sender, SegmentM e) {
     Character.OnSegmentDeleted(e);
   }
 
@@ -83,12 +83,12 @@ public sealed class CoreR : SimpleDB {
     RootFolder = GetFolder(_core.BaseDir);
   }
 
-  public FolderM GetFolder(string path) {
+  public FolderM? GetFolder(string path) {
     if (Directory.Exists(path))
       return PMCoreR.Folder.GetFolder(path);
 
     try {
-      Directory.CreateDirectory(path!);
+      Directory.CreateDirectory(path);
       return PMCoreR.Folder.GetFolder(path);
     }
     catch (Exception ex) {
