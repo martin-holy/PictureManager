@@ -20,7 +20,7 @@ public class CharacterM(int id, string name, ActorM actor, MovieM movie) : ListI
       if (Segment != null) return Segment;
       if (Actor.Person == null) return null;
       if (Actor.Person.Segment != null) return Actor.Person.Segment;
-      if (Movie.MediaItems.GetSegments().FirstOrDefault(x => ReferenceEquals(x.Person, Actor.Person)) is { } segment)
+      if (Movie.MediaItems?.GetSegments().FirstOrDefault(x => ReferenceEquals(x.Person, Actor.Person)) is { } segment)
         return segment;
 
       return null;
