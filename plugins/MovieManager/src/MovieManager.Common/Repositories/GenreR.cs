@@ -15,7 +15,7 @@ public sealed class GenreR(CoreR coreR) : TableDataAdapter<GenreM>(coreR, "Genre
   public override string ToCsv(GenreM item) =>
     string.Join("|", item.GetHashCode().ToString(), item.Name);
 
-  public GenreM GetGenre(string name, bool create) =>
+  public GenreM? GetGenre(string name, bool create) =>
     string.IsNullOrEmpty(name)
       ? null
       : All.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
