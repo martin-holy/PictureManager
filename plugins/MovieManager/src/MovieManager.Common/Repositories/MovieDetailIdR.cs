@@ -10,7 +10,7 @@ namespace MovieManager.Common.Repositories;
 /// </summary>
 public sealed class MovieDetailIdR(CoreR coreR) : TableDataAdapter<MovieDetailIdM>(coreR, "MovieDetailIds", 4) {
   public override MovieDetailIdM FromCsv(string[] csv) =>
-    new(int.Parse(csv[0]), csv[1], csv[2]);
+    new(int.Parse(csv[0]), csv[1], csv[2], MovieR.Dummy);
 
   public override string ToCsv(MovieDetailIdM item) =>
     string.Join("|",
@@ -27,7 +27,7 @@ public sealed class MovieDetailIdR(CoreR coreR) : TableDataAdapter<MovieDetailId
   }
 
   public MovieDetailIdM ItemCreate(DetailId detailId, MovieM movie) =>
-    ItemCreate(new(GetNextId(), detailId.Id, detailId.Name) { Movie = movie });
+    ItemCreate(new(GetNextId(), detailId.Id, detailId.Name, movie));
 
   public MovieM? GetMovie(DetailId detailId) =>
     All.FirstOrDefault(x =>
