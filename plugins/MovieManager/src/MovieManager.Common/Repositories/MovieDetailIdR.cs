@@ -21,16 +21,15 @@ public sealed class MovieDetailIdR(CoreR coreR) : TableDataAdapter<MovieDetailId
 
   public override void LinkReferences() {
     foreach (var (item, csv) in AllCsv) {
-      item.Movie = coreR.Movie.GetById(csv[3]);
-      if (item.Movie != null)
-        item.Movie.DetailId = item;
+      item.Movie = coreR.Movie.GetById(csv[3])!;
+      item.Movie.DetailId = item;
     }
   }
 
   public MovieDetailIdM ItemCreate(DetailId detailId, MovieM movie) =>
     ItemCreate(new(GetNextId(), detailId.Id, detailId.Name) { Movie = movie });
 
-  public MovieM GetMovie(DetailId detailId) =>
+  public MovieM? GetMovie(DetailId detailId) =>
     All.FirstOrDefault(x =>
       x.DetailName.Equals(detailId.Name)
       && x.DetailId.Equals(detailId.Id))?.Movie;
