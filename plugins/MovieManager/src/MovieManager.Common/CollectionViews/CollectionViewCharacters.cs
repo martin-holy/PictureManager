@@ -19,6 +19,8 @@ public class CollectionViewCharacters() : CollectionView<CharacterM>(PM.Res.Icon
   public override void OnItemSelected(SelectionEventArgs<CharacterM> e) =>
     Core.S.Character.Select(e);
 
-  public override void OnItemOpened(CharacterM item) =>
-    Core.VM.PMCoreVM.OpenMediaItems(null, item.Actor.Image);
+  public override void OnItemOpened(CharacterM item) {
+    if (item.Actor.Image != null)
+      Core.VM.PMCoreVM.OpenMediaItems(null, item.Actor.Image);
+  }
 }
