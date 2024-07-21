@@ -6,7 +6,7 @@ using PM = PictureManager.Common;
 
 namespace MovieManager.Common.Features.Character;
 
-public class CollectionViewCharacters() : CollectionView<CharacterM>(PM.Res.IconPeople, "Characters") {
+public class CharacterCollectionView() : CollectionView<CharacterM>(PM.Res.IconPeople, "Characters") {
   public override IEnumerable<GroupByItem<CharacterM>> GetGroupByItems(IEnumerable<CharacterM> source) => [];
 
   public override int GetItemSize(CharacterM item, bool getWidth) =>

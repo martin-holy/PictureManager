@@ -20,7 +20,7 @@ public sealed class MovieDetailVM : ObservableObject {
   private MovieM _movieM;
 
   public MovieM MovieM { get => _movieM; set { _movieM = value; OnPropertyChanged(); OnPropertyChanged(nameof(LastSeenDate)); } }
-  public CollectionViewCharacters Characters { get; } = new();
+  public CharacterCollectionView Characters { get; } = new();
   public string LastSeenDate => MovieM.Seen.Count == 0 ? string.Empty : MovieM.Seen.Last().ToShortDateString();
 
   public RelayCommand AddMediaItemsCommand { get; }
