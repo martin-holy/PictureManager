@@ -1,13 +1,11 @@
 ﻿using MH.Utils;
-using MovieManager.Common.Repositories;
-using MovieManager.Common.Services;
-using MovieManager.Common.ViewModels;
 using MovieManager.Plugins.Common.Interfaces;
 using PictureManager.Common.Interfaces.Plugin;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MovieManager.Common.Utils;
 using PM = PictureManager.Common;
 
 namespace MovieManager.Common;

@@ -1,4 +1,4 @@
-﻿using MovieManager.Plugins.Common.Models;
+﻿using MovieManager.Plugins.Common.DTOs;
 using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.Common.Interfaces;

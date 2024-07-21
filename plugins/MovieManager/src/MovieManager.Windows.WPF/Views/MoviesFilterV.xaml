@@ -1,17 +1,18 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:vm="clr-namespace:MovieManager.Common.ViewModels;assembly=MovieManager.Common"
-  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:movie="clr-namespace:MovieManager.Common.Features.Movie;assembly=MovieManager.Common"
+  xmlns:genre="clr-namespace:MovieManager.Common.Features.Genre;assembly=MovieManager.Common">
 
-  <DataTemplate DataType="{x:Type vm:MoviesFilterVM}">
+  <DataTemplate DataType="{x:Type movie:MoviesFilterVM}">
     <DataTemplate.Resources>
       <Style x:Key="_label" TargetType="TextBlock" BasedOn="{StaticResource MH.S.TextBlock}">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
       </Style>
 
-      <DataTemplate x:Key="_genreFilter" DataType="{x:Type vm:GenreFilterVM}">
+      <DataTemplate x:Key="_genreFilter" DataType="{x:Type genre:GenreFilterVM}">
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>

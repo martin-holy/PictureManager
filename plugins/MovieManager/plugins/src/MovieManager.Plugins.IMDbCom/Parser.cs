@@ -1,5 +1,5 @@
 ﻿using MH.Utils.Extensions;
-using MovieManager.Plugins.Common.Models;
+using MovieManager.Plugins.Common.DTOs;
 using System.Collections.Generic;
 using System.Text.Json;
 

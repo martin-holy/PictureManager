@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:m="clr-namespace:MovieManager.Plugins.Common.Models;assembly=MovieManager.Plugins.Common">
+  xmlns:dto="clr-namespace:MovieManager.Plugins.Common.DTOs;assembly=MovieManager.Plugins.Common">
     
-  <DataTemplate x:Key="MM.DT.SearchResult" DataType="{x:Type m:SearchResult}">
+  <DataTemplate x:Key="MM.DT.SearchResult" DataType="{x:Type dto:SearchResult}">
     <Grid Margin="0,3,0,3" ToolTip="{Binding DetailId.Id}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="70"/>

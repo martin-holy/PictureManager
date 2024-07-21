@@ -1,6 +1,6 @@
 ﻿using MH.Utils;
 using MovieManager.Plugins.Common.Interfaces;
-using MovieManager.Plugins.Common.Models;
+using MovieManager.Plugins.Common.DTOs;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

@@ -1,11 +1,11 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:models="clr-namespace:MovieManager.Common.Models;assembly=MovieManager.Common"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:pmvme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
+  xmlns:pmvme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
+  xmlns:character="clr-namespace:MovieManager.Common.Features.Character;assembly=MovieManager.Common">
 
-  <DataTemplate x:Key="MM.Views.CharacterV" DataType="{x:Type models:CharacterM}">
+  <DataTemplate x:Key="MM.Views.CharacterV" DataType="{x:Type character:CharacterM}">
     <Grid Background="Transparent">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto"/>
