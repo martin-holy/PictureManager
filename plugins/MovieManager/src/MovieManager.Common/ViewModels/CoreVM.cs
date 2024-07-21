@@ -23,10 +23,10 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public string PluginIcon => MH.UI.Res.IconMovieClapper;
   public string PluginTitle => "Movie Manager";
 
-  public ImportVM Import { get; private set; }
-  public MoviesVM Movies { get; private set; }
-  public MovieDetailVM MovieDetail { get; private set; }
-  public MoviesFilterVM MoviesFilter { get; private set; }
+  public ImportVM? Import { get; private set; }
+  public MoviesVM? Movies { get; private set; }
+  public MovieDetailVM? MovieDetail { get; private set; }
+  public MoviesFilterVM? MoviesFilter { get; private set; }
 
   public List<RelayCommand> MainMenuCommands { get; }
 
@@ -75,14 +75,14 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     PMCoreVM.ToolsTabs.TabClosedEvent += OnToolsTabsTabClosed;
   }
 
-  private void OnActorPersonChanged(object sender, ActorM e) {
+  private void OnActorPersonChanged(object? sender, ActorM e) {
     foreach (var character in _coreR.Character.All.Where(x =>
                ReferenceEquals(x.Actor, e) && ReferenceEquals(x.Movie, MovieDetail?.MovieM))) {
       character.OnPropertyChanged(nameof(character.DisplaySegment));
     }
   }
 
-  private void OnMovieImported(object sender, MovieM e) {
+  private void OnMovieImported(object? sender, MovieM e) {
     if (Movies != null) {
       e.Poster?.SetThumbSize();
       Movies.Insert(e);
@@ -91,21 +91,21 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     MoviesFilter?.Update(_coreR.Movie.All, _coreR.Genre.All);
   }
 
-  private void OnMovieDeleted(object sender, MovieM e) {
+  private void OnMovieDeleted(object? sender, MovieM e) {
     if (ReferenceEquals(e, MovieDetail?.MovieM))
       PMCoreVM.ToolsTabs.Close(MovieDetail);
   }
 
-  private void OnMoviesDeleted(object sender, IList<MovieM> e) {
+  private void OnMoviesDeleted(object? sender, IList<MovieM> e) {
     Movies?.Remove(e.ToArray());
     MoviesFilter?.Update(_coreR.Movie.All, _coreR.Genre.All);
   }
 
-  private void OnMoviesKeywordsChanged(object sender, MovieM[] items) {
+  private void OnMoviesKeywordsChanged(object? sender, MovieM[] items) {
     MovieDetail?.UpdateDisplayKeywordsIfContains(items);
   }
 
-  private void OnMoviePosterChanged(object sender, MovieM e) {
+  private void OnMoviePosterChanged(object? sender, MovieM e) {
     Movies?.ReWrapAll();
   }
 
@@ -121,7 +121,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     }
   }
 
-  private void OnAppClosing(object sender, EventArgs e) {
+  private void OnAppClosing(object? sender, EventArgs e) {
     if (_coreR.Changes > 0 &&
         Dialog.Show(new MessageDialog(
           "Database changes",
@@ -165,11 +165,11 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
     PMCoreVM.ToolsTabs.Activate(PM.Res.IconFilter, "Movies filter", MoviesFilter);
   }
 
-  private void OnMoviesFilterChanged(object sender, EventArgs e) {
-    Movies?.Open(_coreR.Movie.All.Where(MoviesFilter.Filter));
+  private void OnMoviesFilterChanged(object? sender, EventArgs e) {
+    Movies?.Open(_coreR.Movie.All.Where(MoviesFilter!.Filter));
   }
 
-  public void OpenMovieDetail(MovieM movie) {
+  public void OpenMovieDetail(MovieM? movie) {
     if (movie == null) {
       if (MovieDetail != null)
         PMCoreVM.ToolsTabs.Close(MovieDetail);
