@@ -15,7 +15,7 @@ public class ImportVM : ObservableObject {
   private readonly List<string> _searchQueue = [];
   private bool _isSearchInProgress;
   private bool _isImportInProgress;
-  private CancellationTokenSource _cts;
+  private CancellationTokenSource? _cts;
 
   public ObservableCollection<SearchResult> SearchResults { get; } = [];
   public ObservableCollection<string> ProgressCollection { get; } = [];
@@ -29,8 +29,8 @@ public class ImportVM : ObservableObject {
     _importS = importS;
     Progress = new Progress<string>(x => ProgressCollection.Insert(0, x));
 
-    SearchCommand = new(Search, x => !string.IsNullOrEmpty(x) && !_isSearchInProgress && !_isImportInProgress, null, "Search");
-    ImportCommand = new(Import, x => x != null, null, "Import");
+    SearchCommand = new(x => Search(x!), x => !string.IsNullOrEmpty(x) && !_isSearchInProgress && !_isImportInProgress, null, "Search");
+    ImportCommand = new(x => Import(x!), x => x != null, null, "Import");
     CancelCommand = new(Cancel, () => _isImportInProgress, null, "Cancel");
   }
 
@@ -38,7 +38,7 @@ public class ImportVM : ObservableObject {
     ProgressCollection.Clear();
     _searchQueue.Clear();
     _searchQueue.AddRange(titles.Split(
-      new[] { Environment.NewLine },
+      [Environment.NewLine],
       StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
     ));
 
@@ -67,7 +67,7 @@ public class ImportVM : ObservableObject {
   }
 
   private Task Cancel() =>
-    _cts?.CancelAsync();
+    _cts == null ? Task.CompletedTask : _cts.CancelAsync();
 
   private async Task SearchQueue() {
     SearchResults.Clear();
@@ -79,7 +79,7 @@ public class ImportVM : ObservableObject {
 
     Progress.Report($"Searching for '{title}' ...", true);
     _isSearchInProgress = true;
-    var results = await Core.Inst.ImportPlugin.SearchMovie(title);
+    var results = await Core.Inst.ImportPlugin!.SearchMovie(title);
     _isSearchInProgress = false;
 
     if (results.Length == 0) {
