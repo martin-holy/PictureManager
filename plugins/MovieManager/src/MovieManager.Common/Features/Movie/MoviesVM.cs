@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MovieManager.Common.Features.Movie;
 
-public sealed class MoviesVM : CollectionViewMovies {
+public sealed class MoviesVM : MovieCollectionView {
   public void Open(IEnumerable<MovieM> items) {
     var source = items.OrderBy(x => x.Title).ToList();
 
