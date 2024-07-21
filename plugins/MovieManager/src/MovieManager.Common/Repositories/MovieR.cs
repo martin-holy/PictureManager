@@ -69,11 +69,11 @@ public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDa
       Plot = md.Plot
     });
 
-    item.Genres = md.Genres
+    item.Genres = md.Genres?
       .Select(x => coreR.Genre.GetGenre(x, true))
       .Where(x => x != null)
       .Select(x => x!)
-      .ToList();
+      .ToList() ?? [];
 
     return item;
   }

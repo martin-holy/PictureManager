@@ -70,15 +70,17 @@ public static class Parser {
     return json.RootElement.TryGetArray(_d, ParseSearch);
   }
 
-  private static SearchResult ParseSearch(JsonElement element) =>
-    new() {
-      DetailId = new(element.TryGetString(_id), Core.IdName),
-      Name = element.TryGetString(_l),
-      Year = element.TryGetInt32(_y),
-      Type = ParseSearchType(element),
-      Desc = element.TryGetString(_s),
-      Image = element.TryGetObject(_i, elm => ParseImage(elm, _searchPosterUrlParams))
-    };
+  private static SearchResult? ParseSearch(JsonElement element) =>
+    element.TryGetString(_id) is not { } id
+      ? null
+      : new() {
+        DetailId = new(id, Core.IdName),
+        Name = element.TryGetString(_l),
+        Year = element.TryGetInt32(_y),
+        Type = ParseSearchType(element),
+        Desc = element.TryGetString(_s),
+        Image = element.TryGetObject(_i, elm => ParseImage(elm, _searchPosterUrlParams))
+      };
 
   private static string ParseSearchType(JsonElement element) {
     var q = element.TryGetString(_q) ?? string.Empty;
@@ -91,25 +93,24 @@ public static class Parser {
     return string.Join(' ', q, qid);
   }
 
-  private static Image ParseImage(JsonElement element, string urlParams) {
-    var img = ParseImage(element);
-    img.Url = Common.Core.IMDbPlugin.AddImgUrlParams(img.Url, urlParams);
+  private static Image? ParseImage(JsonElement element, string urlParams) {
+    if (ParseImage(element) is not { } img) return null;
+    img.Url = Core.AddImgUrlParams(img.Url, urlParams);
     return img;
   }
 
-  public static MovieDetail ParseMovie(string text) {
+  public static MovieDetail? ParseMovie(string text) {
     var json = JsonDocument.Parse(text);
 
     if (!json.RootElement.TryGetProperty(_props, out var props)
         || !props.TryGetProperty(_pageProps, out var pageProps)
         || !pageProps.TryGetProperty(_aboveTheFoldData, out var dataA)
-        || !pageProps.TryGetProperty(_mainColumnData, out var dataB)) return null;
+        || !pageProps.TryGetProperty(_mainColumnData, out var dataB)
+        || dataA.TryGetString(_titleText, _text) is not { } title) return null;
 
-    // Images are disabled because of poor content. Random screenshots or not from movie it self.
-    var md = new MovieDetail {
-      DetailId = new (dataA.TryGetString(_id), Core.IdName),
+    // Images are disabled because of poor content. Random screenshots or not from movie itself.
+    var md = new MovieDetail(new(dataA.TryGetString(_id)!, Core.IdName), title) {
       Type = dataA.TryGetString(_titleType, _text),
-      Title = dataA.TryGetString(_titleText, _text),
       OriginalTitle = dataA.TryGetString(_originalTitleText, _text),
       MPAA = dataA.TryGetString(_certificate, _rating),
       Year = dataA.TryGetInt32(_releaseYear, _year),
@@ -128,23 +129,31 @@ public static class Parser {
     return md;
   }
 
-  private static Image ParseImage(JsonElement element) =>
-    new() {
+  private static Image? ParseImage(JsonElement element) {
+    var url = element.TryGetString(_url) ?? element.TryGetString(_imageUrl);
+    if (url == null) return null;
+
+    return new(Core.AddImgUrlParams(url, _imgQuality)) {
       Id = element.TryGetString(_id),
-      Url = Common.Core.IMDbPlugin.AddImgUrlParams(
-        element.TryGetString(_url) ?? element.TryGetString(_imageUrl), _imgQuality),
       Height = element.TryGetInt32(_height),
       Width = element.TryGetInt32(_width),
       Desc = element.TryGetString(_caption, _plainText)
     };
+  }
 
-  private static Cast ParseCast(JsonElement element) =>
-    new() {
-      Actor = new() {
-        DetailId = new(element.TryGetString(_name, _id), Core.IdName),
-        Name = element.TryGetString(_name, _nameText, _text),
-        Image = element.TryGetObject(_name, _primaryImage, ParseImage)
-      },
-      Characters = element.TryGetArray(_characters, x => x.TryGetString(_name))
-    };
+  private static Cast? ParseCast(JsonElement element) {
+    var characters = element.TryGetArray(_characters, x => x.TryGetString(_name));
+
+    if (characters.Length == 0 ||
+        element.TryGetString(_name, _id) is not { } actorId ||
+        element.TryGetString(_name, _nameText, _text) is not { } actorName)
+      return null;
+
+    var actor = new Actor(
+      new(actorId, Core.IdName),
+      actorName,
+      element.TryGetObject(_name, _primaryImage, ParseImage));
+
+    return new(actor, characters);
+  }
 }

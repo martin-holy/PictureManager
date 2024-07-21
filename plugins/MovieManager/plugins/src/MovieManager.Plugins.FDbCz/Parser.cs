@@ -71,10 +71,12 @@ public static class Parser {
 
     return _srSearch.From(text, ref idx)?
       .AsEnumerable(() => ParseSearchResult(text, ref idx))
-      .ToArray();
+      .Where(x => x != null)
+      .Select(x => x!)
+      .ToArray() ?? [];
   }
 
-  private static SearchResult ParseSearchResult(string text, ref int idx) {
+  private static SearchResult? ParseSearchResult(string text, ref int idx) {
     if (!text.TryIndexOf(_classVbox, ref idx)
         || !text.TryIndexOf(_classInfo, ref idx)) return null;
 
@@ -82,11 +84,16 @@ public static class Parser {
 
     if (_srSearchA.Found(text, idx)) {
       if (_srSearchImage.From(text, _srSearchA)?.AsString(text) is { } imgUrl)
-        sr.Image = new() { Url = imgUrl };
+        sr.Image = new(imgUrl);
 
-      sr.DetailId = MovieDetailIdFromUrl(_srSearchDetailId.From(text, _srSearchA)?.AsString(text));
+      if (MovieDetailIdFromUrl(_srSearchDetailId.From(text, _srSearchA)?.AsString(text)) is not { } detailId)
+        return null;
+
+      sr.DetailId = detailId;
       sr.Name = _srSearchName.From(text, _srSearchA)?.AsString(text);
     }
+    else
+      return null;
 
     if (_srSearchYearAndType.From(text, ref idx) is { } yearType) {
       sr.Year = _srSearchYear.From(text, yearType)?.AsInt32(text) ?? 0;
@@ -98,18 +105,17 @@ public static class Parser {
     return sr;
   }
 
-  public static async Task<MovieDetail> ParseMovie(string text, DetailId detailId) {
+  public static async Task<MovieDetail?> ParseMovie(string text, DetailId detailId) {
     var idx = 0;
 
-    if (!text.TryIndexOf(_detailStart, ref idx)) return null;
+    if (!text.TryIndexOf(_detailStart, ref idx)
+        || _srDetailTitle.From(text, ref idx)?.AsString(text) is not { } title)
+      return null;
 
-    var md = new MovieDetail {
-      DetailId = detailId,
-      Title = _srDetailTitle.From(text, ref idx)?.AsString(text)
-    };
+    var md = new MovieDetail(detailId, title);
 
     if (_srDetailPoster.From(text, idx)?.AsString(text) is { } posterUrl)
-      md.Poster = new() { Url = posterUrl };
+      md.Poster = new(posterUrl);
 
     md.Genres = ParseGenres(text, _srDetailGenres.From(text, ref idx));
     md.Year = _srDetailYear.From(text, ref idx)?.AsInt32(text) ?? 0;
@@ -123,9 +129,10 @@ public static class Parser {
         .AsEnumerable(text, _srDetailCast)
         .Select(x => ParseCast(text, x))
         .Where(x => x != null)
+        .Select(x => x!)
         .ToArray();
 
-    if (!string.IsNullOrEmpty(imdbId)) {
+    if (!string.IsNullOrEmpty(imdbId) && Common.Core.IMDbPlugin != null) {
       var imdbPoster = await Common.Core.IMDbPlugin.GetPoster(imdbId);
       if (imdbPoster != null) md.Poster = imdbPoster;
     }
@@ -135,37 +142,36 @@ public static class Parser {
     return md;
   }
 
-  private static string[] ParseGenres(string text, StringRange range) =>
+  private static string[] ParseGenres(string text, StringRange? range) =>
     range?
       .AsEnumerable(text, _srDetailGenre)
-      .Select(x => ExtractFirstInt(x.AsString(text)))
+      .Select(x => ExtractFirstInt(x?.AsString(text)))
       .Where(x => x != null)
-      .Select(x => _genres.TryGetValue(int.Parse(x), out var genre) ? genre : string.Empty)
+      .Select(x => _genres.TryGetValue(int.Parse(x!), out var genre) ? genre : string.Empty)
       .Where(x => !string.IsNullOrEmpty(x))
       .Distinct()
       .ToArray() ?? [];
 
-  private static double ExtractRating(string rating) =>
+  private static double ExtractRating(string? rating) =>
     double.TryParse(rating, CultureInfo.InvariantCulture, out var d) ? Math.Round(d / 10.0, 1) : 0;
 
-  private static Cast ParseCast(string text, StringRange range) {
-    var actor = new Actor();
-    var cast = new Cast { Actor = actor };
+  private static Cast? ParseCast(string text, StringRange? range) {
+    if (range == null) return null;
     var idx = range.Start;
+    var imgUrl = _srDetailCastImage.From(text, ref idx, range.End)?.AsString(text);
+    var actorId = _srDetailCastId.From(text, ref idx, range.End)?.AsString(text);
+    var actorName = _srDetailCastName.From(text, ref idx, range.End)?.AsString(text).Replace("  ", " ");
+    var characters = _srDetailCastCharacters.From(text, ref idx, range.End)?.AsString(text).Split("/") ?? [];
 
-    if (_srDetailCastImage.From(text, ref idx, range.End)?.AsString(text) is { } imgUrl)
-      actor.Image = new() { Url = imgUrl };
+    if (actorId == null || actorName == null || characters.Length == 0) return null;
 
-    if (_srDetailCastId.From(text, ref idx, range.End)?.AsString(text) is { } id)
-      actor.DetailId = new(id, Core.IdName);
+    var actor = new Actor(new(actorId, Core.IdName), actorName, imgUrl == null ? null : new(imgUrl));
 
-    actor.Name = _srDetailCastName.From(text, ref idx, range.End)?.AsString(text).Replace("  ", " ");
-    cast.Characters = _srDetailCastCharacters.From(text, ref idx, range.End)?.AsString(text).Split("/") ?? [];
-
-    return cast;
+    return new(actor, characters);
   }
 
-  private static string ExtractFirstInt(string text) {
+  private static string? ExtractFirstInt(string? text) {
+    if (text == null) return null;
     var match = Regex.Match(text, @"\d+");
     return match.Success ? match.Value : null;
   }
@@ -173,6 +179,6 @@ public static class Parser {
   public static string MovieDetailIdToUrl(DetailId detailId) =>
     detailId.Id.Replace("_", "/");
 
-  private static DetailId MovieDetailIdFromUrl(string url) =>
+  private static DetailId? MovieDetailIdFromUrl(string? url) =>
     string.IsNullOrEmpty(url) ? null : new(url.Replace("/", "_"), Core.IdName);
 }

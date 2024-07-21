@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace MovieManager.Plugins.Common;
 
 public class Core {
-  public static IIMDbPlugin IMDbPlugin { get; set; }
+  public static IIMDbPlugin? IMDbPlugin { get; set; }
 
   public static async Task DownloadAndSaveFile(string url, string filePath) {
     using var client = new HttpClient();
@@ -17,7 +17,7 @@ public class Core {
     await File.WriteAllBytesAsync(filePath, bytes);
   }
 
-  public static async Task<string> GetWebPageContent(string url, string language = "en") {
+  public static async Task<string?> GetWebPageContent(string url, string language = "en") {
     using var client = new HttpClient();
     client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
     client.DefaultRequestHeaders.Add("Accept-Language", language);

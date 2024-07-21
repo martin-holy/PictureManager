@@ -62,8 +62,9 @@ public class ImportS {
         actor.DetailId = _coreR.ActorDetailId.ItemCreate(cast.Actor.DetailId, actor);
       }
 
-      await DownloadActorImage(actor, cast.Actor.Image);
-      
+      if (cast.Actor.Image != null)
+        await DownloadActorImage(actor, cast.Actor.Image);
+
       foreach (var character in cast.Characters)
         _coreR.Character.ItemCreate(character, actor, movie);
     }

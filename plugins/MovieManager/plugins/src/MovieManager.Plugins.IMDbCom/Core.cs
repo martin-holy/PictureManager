@@ -29,7 +29,7 @@ public class Core : IIMDbPlugin {
     }
   }
 
-  public async Task<MovieDetail> GetMovieDetail(DetailId id) {
+  public async Task<MovieDetail?> GetMovieDetail(DetailId id) {
     if (!id.Name.Equals(IdName)) return null;
     var url = $"https://www.imdb.com/title/{id.Id}";
     var content = await Common.Core.GetWebPageContent(url);
@@ -51,7 +51,7 @@ public class Core : IIMDbPlugin {
   /// <param name="url"></param>
   /// <param name="urlParams">QL is quality, UY is height, UX is width => QL80_UY150</param>
   /// <returns></returns>
-  public string AddImgUrlParams(string url, string urlParams) {
+  public static string AddImgUrlParams(string url, string urlParams) {
     var startIndex = url.LastIndexOf(_imgUrlParamStart, StringComparison.OrdinalIgnoreCase) + _imgUrlParamStart.Length;
     var endIndex = url.LastIndexOf(_imgExt, StringComparison.OrdinalIgnoreCase);
 
@@ -60,7 +60,10 @@ public class Core : IIMDbPlugin {
       : url[..startIndex] + urlParams + url[endIndex..];
   }
 
-  public async Task<Image> GetPoster(string movieId) {
+  string IIMDbPlugin.AddImgUrlParams(string url, string urlParams) =>
+    AddImgUrlParams(url, urlParams);
+
+  public async Task<Image?> GetPoster(string movieId) {
     var result = await SearchMovie(movieId);
     if (result.FirstOrDefault(x => movieId.Equals(x.DetailId.Id))?.Image is not { } image) return null;
     image.Url = AddImgUrlParams(image.Url, "QL80");
