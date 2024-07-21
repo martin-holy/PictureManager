@@ -24,7 +24,7 @@ public sealed class MovieDetailVM : ObservableObject {
 
   public MovieM MovieM { get => _movieM; set { _movieM = value; OnPropertyChanged(); OnPropertyChanged(nameof(LastSeenDate)); } }
   public CollectionViewCharacters Characters { get; } = new();
-  public string LastSeenDate => MovieM == null || MovieM.Seen.Count == 0 ? string.Empty : MovieM.Seen.Last().ToShortDateString();
+  public string LastSeenDate => MovieM.Seen.Count == 0 ? string.Empty : MovieM.Seen.Last().ToShortDateString();
 
   public RelayCommand AddMediaItemsCommand { get; }
   public RelayCommand RemoveMediaItemsCommand { get; }
@@ -35,10 +35,11 @@ public sealed class MovieDetailVM : ObservableObject {
   public RelayCommand SetPosterCommand { get; }
   public RelayCommand MyRatingChangedCommand { get; }
 
-  public MovieDetailVM(PM.ViewModels.CoreVM pmCoreVM, CoreR coreR, CoreS coreS) {
+  public MovieDetailVM(PM.ViewModels.CoreVM pmCoreVM, CoreR coreR, CoreS coreS, MovieM movie) {
     _pmCoreVM = pmCoreVM;
     _coreR = coreR;
     _coreS = coreS;
+    _movieM = movie;
 
     AddMediaItemsCommand = new(AddMediaItems, CanAddMediaItems, PM.Res.IconImageMultiple, "Add Media items");
     RemoveMediaItemsCommand = new(RemoveMediaItems, CanRemoveMediaItems, PM.Res.IconImageMultiple, "Remove Media items");
@@ -52,12 +53,6 @@ public sealed class MovieDetailVM : ObservableObject {
 
   public void Reload(MovieM movie) {
     MovieM = movie;
-
-    if (MovieM == null) {
-      Characters.Root?.Clear();
-      return;
-    }
-
     var charSource = Core.R.Character.All.Where(x => ReferenceEquals(x.Movie, movie)).ToList();
     Characters.Reload(charSource, GroupMode.ThenByRecursive, null, true);
   }
@@ -88,7 +83,7 @@ public sealed class MovieDetailVM : ObservableObject {
   }
 
   private void RemoveMediaItems() {
-    var mis = _pmCoreVM.GetActive<MediaItemM>().Intersect(MovieM.MediaItems).ToArray();
+    var mis = _pmCoreVM.GetActive<MediaItemM>().Intersect(MovieM.MediaItems!).ToArray();
     if (Dialog.Show(new MessageDialog(
           "Removing Media items from Movie",
           "Do you really want to remove {0} Media item{1} from Movie?".Plural(mis.Length),
@@ -102,7 +97,7 @@ public sealed class MovieDetailVM : ObservableObject {
     MovieM.MediaItems?.Count > 0 && _pmCoreVM.GetActive<MediaItemM>().Any(MovieM.MediaItems.Contains);
 
   private Task ViewMediaItems() =>
-    _pmCoreVM.MediaItem.ViewMediaItems([.. MovieM.MediaItems], MovieM.Title);
+    _pmCoreVM.MediaItem.ViewMediaItems([.. MovieM.MediaItems!], MovieM.Title);
 
   private void SetCharacterSegment() {
     if (_coreS.Character.Selected.Items.FirstOrDefault() is not { } character) return;
@@ -120,7 +115,7 @@ public sealed class MovieDetailVM : ObservableObject {
            && ReferenceEquals(segments[0].Person, characters[0].Actor.Person);
   }
 
-  private void AddSeenDate(ObservableCollection<DateTime> selectedDates) {
+  private void AddSeenDate(ObservableCollection<DateTime>? selectedDates) {
     if (selectedDates?.FirstOrDefault() is not { } dt) return;
     _coreR.Movie.AddSeenDate(MovieM, new(dt.Year, dt.Month, dt.Day));
     OnPropertyChanged(nameof(LastSeenDate));
@@ -132,7 +127,7 @@ public sealed class MovieDetailVM : ObservableObject {
   }
 
   public void UpdateDisplayKeywordsIfContains(MovieM[] items) {
-    if (MovieM != null && items.Contains(MovieM))
+    if (items.Contains(MovieM))
       MovieM.OnPropertyChanged(nameof(MovieM.DisplayKeywords));
   }
 }

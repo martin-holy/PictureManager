@@ -171,13 +171,15 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
 
   public void OpenMovieDetail(MovieM? movie) {
     if (movie == null) {
-      if (MovieDetail != null)
+      if (MovieDetail != null) {
         PMCoreVM.ToolsTabs.Close(MovieDetail);
+        MovieDetail = null;
+      }
 
       return;
     }
 
-    MovieDetail ??= new(PMCoreVM, _coreR, _coreS);
+    MovieDetail ??= new(PMCoreVM, _coreR, _coreS, movie);
     MovieDetail.Reload(movie);
     PMCoreVM.ToolsTabs.Activate(MH.UI.Res.IconMovieClapper, "Movie", MovieDetail);
   }
