@@ -11,17 +11,17 @@ public enum LastSeenType { Days, Weeks, Months, Years }
 
 public sealed class MoviesFilterVM : ObservableObject {
   private bool _clearing;
-  private string _title;
+  private string _title = string.Empty;
   private int _lastSeen;
   private LastSeenType _lastSeenType = LastSeenType.Years;
   private int _lastSeenDays;
 
-  public static KeyValuePair<LastSeenType, string>[] LastSeenTypes { get; } = {
+  public static KeyValuePair<LastSeenType, string>[] LastSeenTypes { get; } = [
     new(LastSeenType.Days, "Days"),
     new(LastSeenType.Weeks, "Weeks"),
     new(LastSeenType.Months, "Months"),
     new(LastSeenType.Years, "Years")
-  };
+  ];
 
   public string Title { get => _title; set { _title = value; OnPropertyChanged(); RaiseFilterChanged(); } }
   public int LastSeen { get => _lastSeen; set { _lastSeen = value; OnPropertyChanged(); OnLastSeenChanged(); } }
@@ -47,7 +47,7 @@ public sealed class MoviesFilterVM : ObservableObject {
 
   private void RaiseFilterChanged() => FilterChangedEvent(this, EventArgs.Empty);
 
-  private void OnRangeChanged(object sender, EventArgs e) => RaiseFilterChanged();
+  private void OnRangeChanged(object? sender, EventArgs e) => RaiseFilterChanged();
 
   private void OnLastSeenChanged() {
     _lastSeenDays = LastSeenType switch {

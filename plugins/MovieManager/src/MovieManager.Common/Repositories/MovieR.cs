@@ -42,7 +42,7 @@ public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDa
       item.Length.ToString(),
       ((int)(item.Rating * 10)).ToString(),
       ((int)(item.MyRating * 10)).ToString(),
-      item.Genres?.ToHashCodes().ToCsv(),
+      item.Genres.ToHashCodes().ToCsv(),
       item.MPAA,
       item.Seen.Select(x => x.ToString("yyyyMMdd", CultureInfo.InvariantCulture)).ToCsv(),
       item.Poster?.GetHashCode().ToString(),
@@ -52,7 +52,7 @@ public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDa
 
   public override void LinkReferences() {
     foreach (var (item, csv) in AllCsv) {
-      item.Genres = coreR.Genre.LinkList(csv[7], null, this);
+      item.Genres = coreR.Genre.LinkList(csv[7], null, this) ?? [];
       item.Poster = pmCoreR.MediaItem.GetById(csv[10], true);
       item.MediaItems = pmCoreR.MediaItem.Link(csv[11]);
       item.Keywords = pmCoreR.Keyword.Link(csv[12], this);
