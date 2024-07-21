@@ -13,11 +13,11 @@ public static class JsonElementExtensions {
     return false;
   }
 
-  public static T[] TryGetArray<T>(this JsonElement element, string propName, Func<JsonElement, T> parseElement) =>
+  public static T[] TryGetArray<T>(this JsonElement element, string propName, Func<JsonElement, T?> parseElement) =>
     element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.Array
-      ? prop.EnumerateArray().Select(parseElement).ToArray() : [];
+      ? prop.EnumerateArray().Select(parseElement).Where(x => x != null).Select(x => x!).ToArray() : [];
 
-  public static T[] TryGetArray<T>(this JsonElement element, string propName1, string propName2, Func<JsonElement, T> parseElement) =>
+  public static T[] TryGetArray<T>(this JsonElement element, string propName1, string propName2, Func<JsonElement, T?> parseElement) =>
     element.TryGetPropertySafe(propName1, out var prop)
       ? prop.TryGetArray(propName2, parseElement) : [];
 
@@ -45,11 +45,11 @@ public static class JsonElementExtensions {
     element.TryGetPropertySafe(propName1, out var prop)
       ? prop.TryGetInt32(propName2, ifNull) : ifNull;
 
-  public static T? TryGetObject<T>(this JsonElement element, string propName, Func<JsonElement, T> parseElement) =>
+  public static T? TryGetObject<T>(this JsonElement element, string propName, Func<JsonElement, T?> parseElement) =>
     element.TryGetPropertySafe(propName, out var prop) && prop.ValueKind == JsonValueKind.Object
       ? parseElement(prop) : default;
 
-  public static T? TryGetObject<T>(this JsonElement element, string propName1, string propName2, Func<JsonElement, T> parseElement) =>
+  public static T? TryGetObject<T>(this JsonElement element, string propName1, string propName2, Func<JsonElement, T?> parseElement) =>
     element.TryGetPropertySafe(propName1, out var prop)
       ? prop.TryGetObject(propName2, parseElement) : default;
 
