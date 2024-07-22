@@ -140,7 +140,7 @@ public class CoreVM : ObservableObject {
 
   private void OnMainTabsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(MainTabs.Selected)))
-      MediaItem.Views.SetCurrentView(MainTabs.Selected?.Data as MediaItemsViewVM);
+      MediaItem.OnViewSelected(MainTabs.Selected?.Data as MediaItemsViewVM);
   }
 
   private void OnMainTabsTabClosed(IListItem tab) {

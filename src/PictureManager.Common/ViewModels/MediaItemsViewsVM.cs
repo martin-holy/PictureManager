@@ -68,9 +68,6 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public void SetCurrentView(MediaItemsViewVM? view) {
     Current = view;
     Current?.UpdateSelected();
-    Core.VM.MediaItem.Current = Current?.Selected.Items.Count > 0
-      ? Current.Selected.Items[0]
-      : null;
   }
 
   private MediaItemsViewVM AddViewIfNotActive(string? tabName) {
