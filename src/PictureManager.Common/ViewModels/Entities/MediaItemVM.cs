@@ -157,6 +157,13 @@ public sealed class MediaItemVM : ObservableObject {
       mi.SetInfoBox(true);
   }
 
+  public void OnViewSelected(MediaItemsViewVM? view) {
+    Views.SetCurrentView(view);
+    Current = Views.Current?.Selected.Items.Count > 0
+      ? Views.Current.Selected.Items[0]
+      : null;
+  }
+
   public Task ViewMediaItems(MediaItemM[] items, string name) =>
     Views.ViewMediaItems(items, name);
 }
