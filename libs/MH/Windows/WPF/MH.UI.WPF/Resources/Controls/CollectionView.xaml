@@ -8,18 +8,17 @@
   xmlns:u="clr-namespace:MH.UI.WPF.Utils"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
-  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources">
 
-  <u:KeyDataTemplateSelector x:Key="MH.DT.CollectionView.TemplateSelector">
-    <u:KeyDataTemplateSelector.Keys>
-      <x:Array Type="{x:Type sys:String}">
-        <sys:String>MH.UI.Controls.CollectionViewGroup`1</sys:String>
-        <sys:String>MH.UI.Controls.CollectionViewRow`1</sys:String>
+  <u:TypeDataTemplateSelector x:Key="MH.DT.CollectionView.TemplateSelector">
+    <u:TypeDataTemplateSelector.TemplateMappings>
+      <x:Array Type="{x:Type u:TypeTemplateMapping}">
+        <u:TypeTemplateMapping Type="{x:Type uic:CollectionViewGroup`1}" TemplateKey="MH.UI.Controls.CollectionViewGroup`1"/>
+        <u:TypeTemplateMapping Type="{x:Type uic:CollectionViewRow`1}" TemplateKey="MH.UI.Controls.CollectionViewRow`1"/>
       </x:Array>
-    </u:KeyDataTemplateSelector.Keys>
-  </u:KeyDataTemplateSelector>
+    </u:TypeDataTemplateSelector.TemplateMappings>
+  </u:TypeDataTemplateSelector>
 
   <Style x:Key="MH.S.CollectionView" TargetType="c:CollectionView" BasedOn="{StaticResource MH.S.TreeViewBase}">
     <Setter Property="ItemContainerStyle" Value="{DynamicResource MH.S.TreeViewItem.Lite}"/>
