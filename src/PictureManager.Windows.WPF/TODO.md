@@ -79,6 +79,7 @@
   - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
     + setting this position in VideoDetail
   - keep last video in VideoDetail when leaving MediaItemsView
+  - add support for clearing MediaItemThumbSourceConverter ErrorCache and IgnoreCache
 ## StatusBar
   - limit folder path size
 ## PersonMerge
@@ -151,14 +152,10 @@
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
   - ToBoolConverter where Inst is IsNotNull, IsStringEmpty, IsCollectionEmpty, ...
   - IHaveName is applied only to GenreM but the DataTemplate is used for KeywordM as well
-  - replace KeyDataTemplateSelector with TypeDataTemplateSelector
   - platform independent part of ZoomAndPan
   - unused method LinkFolderWithFolderKeyword
-  - use FolderR.Dummy in repositories in FromCsv
-  - pass reference Core.VM.MediaItem to MediaItemsViewsVM.SetCurrentView
   - maybe move all CORE properties that needs to be set from WPF to one class
-  - use Vertical slice architecture in MovieManager
-  - set binding mode to OneWay where possible
+  - set binding mode to OneWay where possible (ap:Icon, ...)
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
