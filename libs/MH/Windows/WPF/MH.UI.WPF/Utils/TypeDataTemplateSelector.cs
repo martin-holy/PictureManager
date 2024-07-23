@@ -15,6 +15,11 @@ public class TypeDataTemplateSelector : DataTemplateSelector {
     var itemType = item.GetType();
     var tm = TemplateMappings.FirstOrDefault(x => x.Type.IsAssignableFrom(itemType));
 
+    if (tm == null) {
+      var itemTypeName = string.Join('.', itemType.Namespace, itemType.Name);
+      tm = TemplateMappings.FirstOrDefault(x => itemTypeName.Equals(string.Join('.', x.Type.Namespace, x.Type.Name)));
+    }
+
     if (!string.IsNullOrEmpty(tm?.TemplateKey) && fe.TryFindResource(tm.TemplateKey) is DataTemplate dt)
       return dt;
 
