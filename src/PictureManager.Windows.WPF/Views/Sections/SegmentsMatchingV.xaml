@@ -4,10 +4,10 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:pm="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
+  xmlns:pm="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vm:SegmentsMatchingVM}">
+  <DataTemplate DataType="{x:Type ftSegment:SegmentsMatchingVM}">
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition

@@ -1,12 +1,11 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Common.Dialogs;
-using PictureManager.Common.HelperClasses;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
-using PictureManager.Common.Repositories;
-using PictureManager.Common.Services;
+using PictureManager.Common.Features.Common;
+using PictureManager.Common.Features.Folder;
+using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.MediaItem.Video;
+using PictureManager.Common.Features.Segment;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +15,7 @@ using System.Threading.Tasks;
 namespace PictureManager.Common.Utils;
 
 public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
-  private readonly FileOperationDialogM _dlg = new($"File Operation ({mode})");
+  private readonly FileOperationDialog _dlg = new($"File Operation ({mode})");
   private readonly Dictionary<MediaItemM, string> _renamed = new();
   private readonly HashSet<MediaItemM> _replaced = [];
   private readonly List<(SegmentM, SegmentM)> _segments = [];
@@ -217,7 +216,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
 
     if (mi == null) mi = CreateMediaItemAndReadMetadata(src, srcFileName);
     RealMediaItemM? replacedMi = null;
-    var result = FileOperationCollisionDialogM.Open(src, target, mi, ref targetFileName, ref replacedMi);
+    var result = FileOperationCollisionDialog.Open(src, target, mi, ref targetFileName, ref replacedMi);
 
     switch (result) {
       case CollisionResult.Rename: {

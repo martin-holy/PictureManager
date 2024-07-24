@@ -1,7 +1,4 @@
-﻿using PictureManager.Common.Repositories;
-using PictureManager.Common.Services;
-using PictureManager.Common.ViewModels;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Interfaces.Plugin;

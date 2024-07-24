@@ -1,10 +1,10 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type md:MergePeopleDialogM}">
+  <DataTemplate DataType="{x:Type ftPerson:MergePeopleDialog}">
     <Grid Margin="2" MinWidth="364" Height="450">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>

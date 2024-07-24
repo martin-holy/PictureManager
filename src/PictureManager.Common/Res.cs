@@ -1,7 +1,12 @@
 ﻿using MH.Utils.Interfaces;
-using PictureManager.Common.Models;
-using PictureManager.Common.TreeCategories;
 using System.Collections.Generic;
+using PictureManager.Common.Features.FavoriteFolder;
+using PictureManager.Common.Features.Folder;
+using PictureManager.Common.Features.FolderKeyword;
+using PictureManager.Common.Features.GeoName;
+using PictureManager.Common.Features.Keyword;
+using PictureManager.Common.Features.Person;
+using PictureManager.Common.Features.Viewer;
 
 namespace PictureManager.Common;
 
@@ -75,14 +80,14 @@ public static class Res {
     { typeof(DriveM), "TreeContextMenuDrive" },
     { typeof(FolderM), "TreeContextMenuFolder" },
     { typeof(FavoriteFolderM), "TreeContextMenuFavoriteFolder" },
-    { typeof(PeopleTreeCategory), "TreeContextMenuPeople" },
+    { typeof(PersonTreeCategory), "TreeContextMenuPeople" },
     { typeof(PersonM), "TreeContextMenuPerson" },
-    { typeof(FolderKeywordsTreeCategory), "TreeContextMenuFolderKeywords" },
-    { typeof(KeywordsTreeCategory), "TreeContextMenuKeywords" },
+    { typeof(FolderKeywordTreeCategory), "TreeContextMenuFolderKeywords" },
+    { typeof(KeywordTreeCategory), "TreeContextMenuKeywords" },
     { typeof(KeywordM), "TreeContextMenuKeyword" },
-    { typeof(GeoNamesTreeCategory), "TreeContextMenuGeoNames" },
+    { typeof(GeoNameTreeCategory), "TreeContextMenuGeoNames" },
     { typeof(GeoNameM), "TreeContextMenuGeoName" },
-    { typeof(ViewersTreeCategory), "TreeContextMenuViewers" },
+    { typeof(ViewerTreeCategory), "TreeContextMenuViewers" },
     { typeof(ViewerM), "TreeContextMenuViewer" },
     { typeof(KeywordCategoryGroupM), "TreeContextMenuKeywordGroup" },
     { typeof(PersonCategoryGroupM), "TreeContextMenuPersonGroup" }

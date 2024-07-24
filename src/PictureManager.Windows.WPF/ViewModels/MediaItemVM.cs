@@ -2,9 +2,10 @@
 using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Common;
-using PictureManager.Common.HelperClasses;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.MediaItem.Image;
+using PictureManager.Common.Features.MediaItem.Video;
+using PictureManager.Common.Features.Person;
 using PictureManager.Common.Utils;
 using System;
 using System.Collections.Generic;

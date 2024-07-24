@@ -1,6 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Features.MediaItem.Video;
 using System;
 using System.Windows.Controls;
 using System.Windows.Media;

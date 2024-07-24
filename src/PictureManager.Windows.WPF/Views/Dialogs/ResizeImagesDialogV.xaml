@@ -2,9 +2,9 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common">
+  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type md:ResizeImagesDialogM}">
+  <DataTemplate DataType="{x:Type ftImage:ImageResizeDialog}">
     <DataTemplate.Resources>
       <Style TargetType="TextBlock" BasedOn="{StaticResource MH.S.TextBlock}">
         <Setter Property="VerticalAlignment" Value="Center"/>
