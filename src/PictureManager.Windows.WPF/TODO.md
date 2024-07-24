@@ -146,7 +146,6 @@
   - Find generic way to create and open tab from Command
   - OneToManyMultiDataAdapter do it without reference to CoreR
   - don't do CreateDirectory in FolderR.ItemCreate. it can throw exception
-  - replace MH.UI.Controls.Position with MH.UI.Controls.Dock
   - add scrollbar for TabPanel
   - FocusVisualStyle on SlidePanelsGridHost should not be null but set to Focusable = false
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
@@ -155,7 +154,6 @@
   - platform independent part of ZoomAndPan
   - unused method LinkFolderWithFolderKeyword
   - maybe move all CORE properties that needs to be set from WPF to one class
-  - set binding mode to OneWay where possible (ap:Icon, ...)
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
@@ -163,7 +161,7 @@
 ## ProgressBarAsyncDialog
   - do Init and Start in constructor
 ## Components
-  - contains only ViewModel and View
+  - feature that contains only ViewModel and View
   - it can be null and it is created on first use
   - how to create, where hold the instance, dependencies
   - ...
