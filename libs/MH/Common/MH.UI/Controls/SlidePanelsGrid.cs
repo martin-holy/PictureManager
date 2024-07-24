@@ -3,8 +3,6 @@ using MH.Utils.Extensions;
 
 namespace MH.UI.Controls;
 
-public enum Position { Left, Top, Right, Bottom }
-
 public class SlidePanelsGrid : ObservableObject {
   private int _activeLayout;
   private double _panelTopGridHeight;
@@ -60,7 +58,7 @@ public class SlidePanelsGrid : ObservableObject {
     if (panel == null) return;
     panel.PropertyChanged += (_, e) => {
       if (!e.Is(nameof(panel.IsPinned))) return;
-      PinLayouts[ActiveLayout][(int)panel.Position] = panel.IsPinned;
+      PinLayouts[ActiveLayout][(int)panel.Dock] = panel.IsPinned;
       SetPin(panel);
     };
   }

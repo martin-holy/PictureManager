@@ -12,14 +12,14 @@ public class SlidePanel : ObservableObject {
   private double _size;
 
   public object Content { get; }
-  public Position Position { get; }
+  public Dock Dock { get; }
   public bool CanOpen { get => _canOpen; set { _canOpen = value; OnCanOpenChanged(); } }
   public bool IsOpen { get => _isOpen; set => OnIsOpenChanged(value); }
   public bool IsPinned { get => _isPinned; set { _isPinned = value; OnIsPinnedChanged(); } }
   public double Size { get => _size; private set { _size = value; OnPropertyChanged(); } }
 
-  public SlidePanel(Position position, object content, double size) {
-    Position = position;
+  public SlidePanel(Dock dock, object content, double size) {
+    Dock = dock;
     Content = content;
     Size = size;
   }

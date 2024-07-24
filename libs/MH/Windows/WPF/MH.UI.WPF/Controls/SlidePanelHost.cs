@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using Dock = MH.UI.Controls.Dock;
 
 namespace MH.UI.WPF.Controls;
 
@@ -46,8 +47,8 @@ public class SlidePanelHost : Control {
   }
 
   public void UpdateAnimation(SizeChangedEventArgs e) {
-    if ((SlidePanel.Position is Position.Top or Position.Bottom && !e.HeightChanged) ||
-        (SlidePanel.Position is Position.Left or Position.Right && !e.WidthChanged))
+    if ((SlidePanel.Dock is Dock.Top or Dock.Bottom && !e.HeightChanged) ||
+        (SlidePanel.Dock is Dock.Left or Dock.Right && !e.WidthChanged))
       return;
 
     var size = SlidePanel.Size * -1;
@@ -57,11 +58,11 @@ public class SlidePanelHost : Control {
     var closeFrom = new Thickness(0);
     var closeTo = new Thickness(0);
 
-    switch (SlidePanel.Position) {
-      case Position.Left: openFrom.Left = size; closeTo.Left = size; break;
-      case Position.Top: openFrom.Top = size; closeTo.Top = size; break;
-      case Position.Right: openFrom.Right = size; closeTo.Right = size; break;
-      case Position.Bottom: openFrom.Bottom = size; closeTo.Bottom = size; break;
+    switch (SlidePanel.Dock) {
+      case Dock.Left: openFrom.Left = size; closeTo.Left = size; break;
+      case Dock.Top: openFrom.Top = size; closeTo.Top = size; break;
+      case Dock.Right: openFrom.Right = size; closeTo.Right = size; break;
+      case Dock.Bottom: openFrom.Bottom = size; closeTo.Bottom = size; break;
       default: throw new ArgumentOutOfRangeException();
     }
 
