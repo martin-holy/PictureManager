@@ -1,11 +1,11 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:md="clr-namespace:PictureManager.Common.Dialogs;assembly=PictureManager.Common"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:ftFolder="clr-namespace:PictureManager.Common.Features.Folder;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type md:FolderBrowserDialogM}">
+  <DataTemplate DataType="{x:Type ftFolder:FolderBrowserDialog}">
     <c:TreeViewBase
       x:Name="tree"
       Style="{StaticResource MH.S.TreeViewBase}"
@@ -16,7 +16,7 @@
 
       <c:TreeViewBase.ItemTemplate>
         <HierarchicalDataTemplate
-          DataType="{x:Type md:FolderTreeViewItem}"
+          DataType="{x:Type ftFolder:FolderTreeViewItem}"
           ItemsSource="{Binding Items}">
 
           <c:IconTextBlock

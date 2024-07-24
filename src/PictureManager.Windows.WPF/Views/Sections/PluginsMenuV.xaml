@@ -1,10 +1,10 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pmhc="clr-namespace:PictureManager.Common.HelperClasses;assembly=PictureManager.Common"
-  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:utils="clr-namespace:PictureManager.Common.Utils;assembly=PictureManager.Common">
 
-  <DataTemplate x:Key="MH.DT.PluginsMenu" DataType="{x:Static pmhc:GenericTypes.ListOfIPluginCore}">
+  <DataTemplate x:Key="MH.DT.PluginsMenu" DataType="{x:Static utils:GenericTypes.ListOfIPluginCore}">
     <Menu Background="Transparent">
       <MenuItem ItemsSource="{Binding}" Padding="6,2,-2,2">
         <MenuItem.Icon>

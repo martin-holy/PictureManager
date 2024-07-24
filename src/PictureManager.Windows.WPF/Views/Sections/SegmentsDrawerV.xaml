@@ -3,9 +3,9 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vm:SegmentsDrawerVM}">
+  <DataTemplate DataType="{x:Type ftSegment:SegmentsDrawerVM}">
     <mhc:CollectionView
       View="{Binding}"
       InnerItemTemplate="{StaticResource PM.DT.Segment}"

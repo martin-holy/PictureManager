@@ -5,9 +5,9 @@
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
-  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
+  xmlns:ftVideo="clr-namespace:PictureManager.Common.Features.MediaItem.Video;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vme:VideoVM}">
+  <DataTemplate DataType="{x:Type ftVideo:VideoVM}">
     <Grid x:Name="root" Background="{StaticResource MH.B.C.Static.Ba}">
       <Grid.RowDefinitions>
         <RowDefinition Height="200" x:Name="rowPlayer"/>

@@ -1,8 +1,10 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:ftGeoName="clr-namespace:PictureManager.Common.Features.GeoName;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftWhatIsNew="clr-namespace:PictureManager.Common.Features.WhatIsNew;assembly=PictureManager.Common">
 
   <DataTemplate x:Key="PM.DT.MainMenu">
     <Menu Background="Transparent">
@@ -17,41 +19,41 @@
           <MenuItem.Icon>
             <Path Data="{StaticResource IconLocationCheckin}" Style="{StaticResource MH.S.Icon.Shadow}"/>
           </MenuItem.Icon>
-          <MenuItem Command="vm:CoreVM.GetGeoNamesFromWebCommand"/>
-          <MenuItem Command="vme:GeoNameVM.NewGeoNameFromGpsCommand"/>
-          <MenuItem Command="vm:CoreVM.ReadGeoLocationFromFilesCommand"/>
+          <MenuItem Command="core:CoreVM.GetGeoNamesFromWebCommand"/>
+          <MenuItem Command="ftGeoName:GeoNameVM.NewGeoNameFromGpsCommand"/>
+          <MenuItem Command="core:CoreVM.ReadGeoLocationFromFilesCommand"/>
         </MenuItem>
 
         <MenuItem Header="Media Items">
           <MenuItem.Icon>
             <Path Data="{StaticResource IconImageMultiple}" Style="{StaticResource MH.S.Icon.Shadow}"/>
           </MenuItem.Icon>
-          <MenuItem Command="vme:MediaItemVM.CommentCommand" InputGestureText="Ctrl+K"/>
-          <MenuItem Command="vm:CoreVM.CompressImagesCommand"/>
-          <MenuItem Command="vm:MediaItemsViewsVM.CopyPathsCommand"/>
-          <MenuItem Command="vm:CoreVM.ImagesToVideoCommand"/>
-          <MenuItem Command="vm:MediaItemsViewsVM.RebuildThumbnailsCommand"/>
-          <MenuItem Command="vme:MediaItemVM.RenameCommand" InputGestureText="F2"/>
-          <MenuItem Command="vm:CoreVM.ResizeImagesCommand"/>
-          <MenuItem Command="vm:CoreVM.ReloadMetadataCommand"/>
-          <MenuItem Command="vm:CoreVM.RotateMediaItemsCommand" InputGestureText="Ctrl+R"/>
-          <MenuItem Command="vm:CoreVM.SaveImageMetadataToFilesCommand"/>
-          <MenuItem Command="vm:CoreVM.OpenSegmentsMatchingCommand"/>
-          <MenuItem Command="vm:MediaItemsViewsVM.ViewModifiedCommand"/>
-          <MenuItem Command="vm:MediaItemsViewsVM.ShuffleCommand"/>
-          <MenuItem Command="vm:MediaItemsViewsVM.SortCommand"/>
+          <MenuItem Command="ftMediaItem:MediaItemVM.CommentCommand" InputGestureText="Ctrl+K"/>
+          <MenuItem Command="core:CoreVM.CompressImagesCommand"/>
+          <MenuItem Command="ftMediaItem:MediaItemsViewsVM.CopyPathsCommand"/>
+          <MenuItem Command="core:CoreVM.ImagesToVideoCommand"/>
+          <MenuItem Command="ftMediaItem:MediaItemsViewsVM.RebuildThumbnailsCommand"/>
+          <MenuItem Command="ftMediaItem:MediaItemVM.RenameCommand" InputGestureText="F2"/>
+          <MenuItem Command="core:CoreVM.ResizeImagesCommand"/>
+          <MenuItem Command="core:CoreVM.ReloadMetadataCommand"/>
+          <MenuItem Command="core:CoreVM.RotateMediaItemsCommand" InputGestureText="Ctrl+R"/>
+          <MenuItem Command="core:CoreVM.SaveImageMetadataToFilesCommand"/>
+          <MenuItem Command="core:CoreVM.OpenSegmentsMatchingCommand"/>
+          <MenuItem Command="ftMediaItem:MediaItemsViewsVM.ViewModifiedCommand"/>
+          <MenuItem Command="ftMediaItem:MediaItemsViewsVM.ShuffleCommand"/>
+          <MenuItem Command="ftMediaItem:MediaItemsViewsVM.SortCommand"/>
         </MenuItem>
 
         <MenuItem Header="Segments">
           <MenuItem.Icon>
             <Path Data="{StaticResource IconSegment}" Style="{StaticResource MH.S.Icon.Shadow}"/>
           </MenuItem.Icon>
-          <MenuItem Command="vm:CoreVM.ExportSegmentsCommand"/>
+          <MenuItem Command="core:CoreVM.ExportSegmentsCommand"/>
         </MenuItem>
 
-        <MenuItem Command="vm:CoreVM.OpenSettingsCommand"/>
-        <MenuItem Command="vm:WhatIsNewVM.OpenCommand"/>
-        <MenuItem Command="vm:CoreVM.OpenAboutCommand"/>
+        <MenuItem Command="core:CoreVM.OpenSettingsCommand"/>
+        <MenuItem Command="ftWhatIsNew:WhatIsNewVM.OpenCommand"/>
+        <MenuItem Command="core:CoreVM.OpenAboutCommand"/>
       </MenuItem>
     </Menu>
   </DataTemplate>

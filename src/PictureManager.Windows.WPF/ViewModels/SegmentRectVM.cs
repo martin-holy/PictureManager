@@ -1,6 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Common.Models;
-using PictureManager.Common.Services;
+using PictureManager.Common.Features.Segment;
 using System.Windows;
 using System.Windows.Input;
 

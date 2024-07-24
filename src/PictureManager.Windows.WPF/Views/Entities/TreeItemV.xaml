@@ -4,10 +4,11 @@
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhuiint="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
   xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:ftFavoriteFolder="clr-namespace:PictureManager.Common.Features.FavoriteFolder;assembly=PictureManager.Common"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent">
@@ -61,11 +62,11 @@
       <!-- FavoriteFolderM ToolTip -->
       <DataTrigger
         Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
-                  ConverterParameter={x:Type m:FavoriteFolderM}}"
+                  ConverterParameter={x:Type ftFavoriteFolder:FavoriteFolderM}}"
         Value="True">
         <Setter
           Property="ToolTip"
-          Value="{Binding Path=(m:FavoriteFolderM.Folder).FullPath}"/>
+          Value="{Binding Path=(ftFavoriteFolder:FavoriteFolderM.Folder).FullPath}"/>
       </DataTrigger>
 
       <!-- PersonM ToolTip -->
@@ -73,17 +74,17 @@
         <MultiDataTrigger.Conditions>
           <Condition
             Binding="{Binding Converter={x:Static mhConv:DataTypeConverter.Inst},
-                      ConverterParameter={x:Type m:PersonM}}"
+                      ConverterParameter={x:Type ftPerson:PersonM}}"
             Value="True"/>
           <Condition
-            Binding="{Binding Path=(m:PersonM.Segment), Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
+            Binding="{Binding Path=(ftPerson:PersonM.Segment), Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
             Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter Property="ToolTip">
           <Setter.Value>
             <ToolTip BorderThickness="0" Padding="0">
               <ContentPresenter
-                Content="{Binding Path=(m:PersonM.Segment)}"
+                Content="{Binding Path=(ftPerson:PersonM.Segment)}"
                 ContentTemplate="{DynamicResource PM.DT.Segment.Lite}"/>
             </ToolTip>
           </Setter.Value>

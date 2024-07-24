@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vm:ToolsTabsVM}">
+  <DataTemplate DataType="{x:Type layout:ToolsTabsVM}">
     <TabControl/>
   </DataTemplate>
 </ResourceDictionary>

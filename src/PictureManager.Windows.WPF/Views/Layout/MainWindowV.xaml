@@ -5,8 +5,9 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
   DataContext="{Binding VM.MainWindow, Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.S.CustomWindow}"
   IsFullScreen="{Binding IsFullScreen, Mode=TwoWay}"
@@ -16,17 +17,17 @@
   CanFullScreen="True">
 
   <Window.InputBindings>
-    <KeyBinding Modifiers="Control" Key="R" Command="vm:CoreVM.RotateMediaItemsCommand"/>
-    <KeyBinding Modifiers="Control" Key="K" Command="vme:MediaItemVM.CommentCommand"/>
-    <KeyBinding Key="F2" Command="vme:MediaItemVM.RenameCommand"/>
-    <KeyBinding Key="Delete" Command="vme:MediaItemVM.DeleteCommand"/>
-    <KeyBinding Key="Esc" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
-    <MouseBinding MouseAction="LeftDoubleClick" Command="vm:MainWindowVM.SwitchToBrowserCommand"/>
+    <KeyBinding Modifiers="Control" Key="R" Command="core:CoreVM.RotateMediaItemsCommand"/>
+    <KeyBinding Modifiers="Control" Key="K" Command="ftMediaItem:MediaItemVM.CommentCommand"/>
+    <KeyBinding Key="F2" Command="ftMediaItem:MediaItemVM.RenameCommand"/>
+    <KeyBinding Key="Delete" Command="ftMediaItem:MediaItemVM.DeleteCommand"/>
+    <KeyBinding Key="Esc" Command="layout:MainWindowVM.SwitchToBrowserCommand"/>
+    <MouseBinding MouseAction="LeftDoubleClick" Command="layout:MainWindowVM.SwitchToBrowserCommand"/>
   </Window.InputBindings>
 
   <b:Interaction.Triggers>
     <b:EventTrigger EventName="Closing">
-      <b:InvokeCommandAction Command="vm:CoreVM.AppClosingCommand"/>
+      <b:InvokeCommandAction Command="core:CoreVM.AppClosingCommand"/>
     </b:EventTrigger>
   </b:Interaction.Triggers>
 

@@ -1,6 +1,6 @@
 ﻿using MH.UI.WPF.Converters;
 using MH.Utils;
-using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Features.MediaItem.Image;
 using System;
 
 namespace PictureManager.Windows.WPF.Converters;

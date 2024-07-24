@@ -7,10 +7,13 @@
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common">
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vm:ToolBarVM}">
+  <DataTemplate DataType="{x:Type layout:ToolBarVM}">
     <Grid DataContext="{x:Static pm:App.Core}">
       <StackPanel
         Orientation="Horizontal"
@@ -82,11 +85,11 @@
             ap:Icon.Data="{StaticResource IconImageMultiple}"
             ap:Text.Text="{Binding VM.MediaItem.ItemsCount}"/>
 
-          <c:IconTextButton Command="vm:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
+          <c:IconTextButton Command="core:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
 
           <!-- Log Button -->
           <c:IconTextButton
-            Command="vm:CoreVM.OpenLogCommand"
+            Command="core:CoreVM.OpenLogCommand"
             ap:Text.Text="{Binding Path=(u:Log.Items).Count}"
             Visibility="{Binding Path=(u:Log.Items).Count, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
 
@@ -101,16 +104,16 @@
               ap:Icon.Data="{StaticResource IconPeople}"
               IsChecked="{Binding S.Segment.Rect.AreVisible}"/>
 
-            <c:IconButton Command="vm:SegmentsDrawerVM.OpenCommand"/>
-            <c:IconButton Command="vm:SegmentsDrawerVM.AddSelectedCommand"/>
-            <c:IconButton Command="vm:CoreVM.OpenSegmentsMatchingCommand"/>
-            <c:IconButton Command="vme:SegmentVM.SetSelectedAsUnknownCommand"/>
+            <c:IconButton Command="ftSegment:SegmentsDrawerVM.OpenCommand"/>
+            <c:IconButton Command="ftSegment:SegmentsDrawerVM.AddSelectedCommand"/>
+            <c:IconButton Command="core:CoreVM.OpenSegmentsMatchingCommand"/>
+            <c:IconButton Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
           </StackPanel>
 
           <Separator/>
 
-          <c:IconButton Command="vm:ToolsTabsVM.OpenPeopleTabCommand"/>
-          <c:IconButton Command="vme:MediaItemVM.LoadByPeopleOrSegmentsCommand"/>
+          <c:IconButton Command="layout:ToolsTabsVM.OpenPeopleTabCommand"/>
+          <c:IconButton Command="ftMediaItem:MediaItemVM.LoadByPeopleOrSegmentsCommand"/>
           
           <!-- Presentation ToolBar -->
           <StackPanel
@@ -124,10 +127,10 @@
             <!-- Play/Stop -->
             <Grid>
               <c:IconButton
-                Command="vm:PresentationPanelVM.StartPresentationCommand"
+                Command="ftMediaItem:PresentationPanelVM.StartPresentationCommand"
                 Visibility="{Binding IsRunning, Converter={x:Static conv:VisibilityConverter.FalseToVisible}}"/>
               <c:IconButton
-                Command="vm:PresentationPanelVM.StopPresentationCommand"
+                Command="ftMediaItem:PresentationPanelVM.StopPresentationCommand"
                 Visibility="{Binding IsRunning, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
             </Grid>
 
@@ -197,21 +200,21 @@
             </c:PopupSlider>
 
             <!-- Shuffle -->
-            <c:IconButton Command="vm:MediaItemsViewsVM.ShuffleCommand"/>
+            <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.ShuffleCommand"/>
 
             <!-- Sort -->
-            <c:IconButton Command="vm:MediaItemsViewsVM.SortCommand"/>
+            <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.SortCommand"/>
 
             <!-- View Selected -->
-            <c:IconButton Command="vme:MediaItemVM.ViewSelectedCommand"/>
+            <c:IconButton Command="ftMediaItem:MediaItemVM.ViewSelectedCommand"/>
 
             <!-- Image Comparer -->
             <c:IconButton
-              Command="vm:ImageComparerVM.AverageHashCommand"
+              Command="ftImage:ImageComparerVM.AverageHashCommand"
               CommandParameter="{Binding VM.MediaItem.Views.Current}"/>
 
             <c:IconButton
-              Command="vm:ImageComparerVM.PHashCommand"
+              Command="ftImage:ImageComparerVM.PHashCommand"
               CommandParameter="{Binding VM.MediaItem.Views.Current}"/>
 
             <c:PopupSlider

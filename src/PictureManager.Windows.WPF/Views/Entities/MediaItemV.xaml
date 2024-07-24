@@ -2,11 +2,12 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-  xmlns:mmi="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
   xmlns:vm="clr-namespace:PictureManager.Windows.WPF.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
-  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftVideo="clr-namespace:PictureManager.Common.Features.MediaItem.Video;assembly=PictureManager.Common">
 
   <Style x:Key="PM.S.ItemsControl.MediaItem.ThumbInfo" TargetType="ItemsControl">
     <Setter Property="Margin" Value="2"/>
@@ -32,7 +33,7 @@
     </Style.Triggers>
   </Style>
 
-  <DataTemplate x:Key="PM.DT.MediaItem.Thumb" DataType="{x:Type mmi:MediaItemM}">
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb" DataType="{x:Type ftMediaItem:MediaItemM}">
     <Image Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
       <Image.Source>
         <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
@@ -43,7 +44,7 @@
     </Image>
   </DataTemplate>
 
-  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Fill" DataType="{x:Type mmi:MediaItemM}">
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Fill" DataType="{x:Type ftMediaItem:MediaItemM}">
     <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
       <Image.Source>
         <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
@@ -54,7 +55,7 @@
     </Image>
   </DataTemplate>
 
-  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Lite" DataType="{x:Type mmi:MediaItemM}">
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Lite" DataType="{x:Type ftMediaItem:MediaItemM}">
     <Border
       Width="{Binding ThumbWidth}"
       Height="{Binding ThumbHeight}"
@@ -79,7 +80,7 @@
     </Border>
   </DataTemplate>
 
-  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Full" DataType="{x:Type mmi:MediaItemM}">
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Full" DataType="{x:Type ftMediaItem:MediaItemM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <sys:Double x:Key="ThumbnailInfoMinSize">170.0</sys:Double>
@@ -151,16 +152,16 @@
         <MultiDataTrigger.Conditions>
           <Condition
             Binding="{Binding Converter={x:Static conv:DataTypeConverter.Inst},
-                      ConverterParameter={x:Type mmi:VideoM}}"
+                      ConverterParameter={x:Type ftVideo:VideoM}}"
             Value="True"/>
-          <Condition Binding="{Binding Path=(mmi:VideoM.HasVideoItems)}" Value="True"/>
+          <Condition Binding="{Binding Path=(ftVideo:VideoM.HasVideoItems)}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="vidClipsOverlayer" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
       
       <DataTrigger
         Binding="{Binding Converter={x:Static conv:DataTypeConverter.Inst},
-                  ConverterParameter={x:Type mmi:VideoM}}"
+                  ConverterParameter={x:Type ftVideo:VideoM}}"
         Value="True">
         <Setter TargetName="vidOverlayer" Property="Visibility" Value="Visible"/>
       </DataTrigger>

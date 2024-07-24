@@ -5,13 +5,13 @@
   xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
   xmlns:ui="clr-namespace:MH.UI;assembly=MH.UI"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
-  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vm:TreeViewCategoriesVM}">
+  <DataTemplate DataType="{x:Type ftCommon:TreeViewCategoriesVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <DataTemplate DataType="{x:Static ui:GenericTypes.TreeViewOfITreeItem}">
@@ -56,15 +56,15 @@
     </DataTemplate.Triggers>
   </DataTemplate>
 
-  <DataTemplate DataType="{x:Type vm:TreeViewCategoriesSlotVM}">
+  <DataTemplate DataType="{x:Type ftCommon:TreeViewCategoriesSlotVM}">
     <Grid DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=TabControl}}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition/>
         <ColumnDefinition/>
       </Grid.ColumnDefinitions>
 
-      <c:IconButton Command="{Binding Path=(vm:TreeViewCategoriesVM.TreeViewSearch).(vm:TreeViewSearchVM.OpenCommand)}"/>
-      <ContentPresenter Grid.Column="1" Content="{Binding Path=(vm:TreeViewCategoriesVM.SlidePanelPinButton)}"/>
+      <c:IconButton Command="{Binding Path=(ftCommon:TreeViewCategoriesVM.TreeViewSearch).(ftCommon:TreeViewSearchVM.OpenCommand)}"/>
+      <ContentPresenter Grid.Column="1" Content="{Binding Path=(ftCommon:TreeViewCategoriesVM.SlidePanelPinButton)}"/>
     </Grid>
   </DataTemplate>
 

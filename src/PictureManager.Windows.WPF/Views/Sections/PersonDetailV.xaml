@@ -1,14 +1,15 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vme="clr-namespace:PictureManager.Common.ViewModels.Entities;assembly=PictureManager.Common"
-  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vme:PersonDetailVM}">
+  <DataTemplate DataType="{x:Type ftPerson:PersonDetailVM}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
@@ -36,8 +37,8 @@
       </Grid>
 
       <StackPanel Grid.Row="1" Orientation="Horizontal">
-        <c:IconButton Command="vme:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding PersonM}"/>
-        <c:IconButton Command="vme:SegmentVM.SetSelectedAsUnknownCommand"/>
+        <c:IconButton Command="ftMediaItem:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding PersonM}"/>
+        <c:IconButton Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
       </StackPanel>
 
       <!-- Keywords -->
@@ -55,7 +56,7 @@
         InnerItemTemplate="{DynamicResource PM.DT.Segment}"
         u:DragDropHelper.IsDragEnabled="True"
         u:DragDropHelper.IsDropEnabled="True"
-        u:DragDropHelper.DragDataType="{x:Type m:SegmentM}"
+        u:DragDropHelper.DragDataType="{x:Type ftSegment:SegmentM}"
         u:DragDropHelper.CanDrop="{Binding CanDropFunc}"
         u:DragDropHelper.DoDrop="{Binding TopSegmentsDropAction}"/>
 
@@ -65,7 +66,7 @@
         View="{Binding AllSegments}"
         InnerItemTemplate="{DynamicResource PM.DT.Segment}"
         u:DragDropHelper.IsDragEnabled="True"
-        u:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>
+        u:DragDropHelper.DragDataType="{x:Type ftSegment:SegmentM}"/>
 
     </Grid>
   </DataTemplate>
