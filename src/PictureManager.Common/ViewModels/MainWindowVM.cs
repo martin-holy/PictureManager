@@ -40,10 +40,10 @@ public class MainWindowVM : ObservableObject {
   public MainWindowVM(CoreVM coreVM) {
     StatusBar = new(Core.Inst);
     SlidePanelsGrid = new(
-      new(Position.Left, TreeViewCategories, 380),
-      new(Position.Top, ToolBar, 30),
-      new(Position.Right, ToolsTabs, GetToolsTabsWidth(coreVM.Segment.SegmentUiFullWidth)) { CanOpen = false },
-      new(Position.Bottom, StatusBar, 0),
+      new(Dock.Left, TreeViewCategories, 380),
+      new(Dock.Top, ToolBar, 30),
+      new(Dock.Right, ToolsTabs, GetToolsTabsWidth(coreVM.Segment.SegmentUiFullWidth)) { CanOpen = false },
+      new(Dock.Bottom, StatusBar, 0),
       MiddleContent,
       [ // Left, Top, Right, Bottom, FullScreen (not part of SlidePanelsGrid)
         [true, true, false, true, false], // browse mode
