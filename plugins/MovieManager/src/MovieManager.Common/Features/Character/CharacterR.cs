@@ -1,7 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Features.Actor;
 using MovieManager.Common.Features.Movie;
-using PictureManager.Common.Models;
+using PictureManager.Common.Features.Segment;
 using System.Linq;
 using PM = PictureManager.Common;
 
@@ -10,7 +10,7 @@ namespace MovieManager.Common.Features.Character;
 /// <summary>
 /// DB fields: Id|Name|Actor|Movie|Segment
 /// </summary>
-public class CharacterR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<CharacterM>(coreR, "Characters", 5) {
+public class CharacterR(CoreR coreR, PM.CoreR pmCoreR) : TableDataAdapter<CharacterM>(coreR, "Characters", 5) {
   public override CharacterM FromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1], ActorR.Dummy, MovieR.Dummy);
 

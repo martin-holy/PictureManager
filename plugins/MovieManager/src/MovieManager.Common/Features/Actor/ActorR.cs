@@ -1,6 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.Person;
 using System;
 using System.Linq;
 using PM = PictureManager.Common;
@@ -10,7 +10,7 @@ namespace MovieManager.Common.Features.Actor;
 /// <summary>
 /// DB fields: Id|Name|Person|Image
 /// </summary>
-public class ActorR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 4) {
+public class ActorR(CoreR coreR, PM.CoreR pmCoreR) : TableDataAdapter<ActorM>(coreR, "Actors", 4) {
   public static ActorM Dummy { get; } = new(0, string.Empty);
   public event EventHandler<ActorM> ActorPersonChangedEvent = delegate { };
 

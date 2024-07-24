@@ -1,6 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.Person;
 
 namespace MovieManager.Common.Features.Actor;
 

@@ -1,8 +1,8 @@
 ﻿using MH.Utils.BaseClasses;
 using MovieManager.Common.Features.Actor;
 using MovieManager.Common.Features.Movie;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.Segment;
 using System.Linq;
 
 namespace MovieManager.Common.Features.Character;

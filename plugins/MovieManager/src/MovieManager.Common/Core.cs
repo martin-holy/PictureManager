@@ -1,11 +1,11 @@
 ﻿using MH.Utils;
+using MovieManager.Common.Utils;
 using MovieManager.Plugins.Common.Interfaces;
 using PictureManager.Common.Interfaces.Plugin;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using MovieManager.Common.Utils;
 using PM = PictureManager.Common;
 
 namespace MovieManager.Common;
@@ -30,7 +30,7 @@ public sealed class Core : IPluginCore {
     PluginsDir = Path.Combine(BaseDir, "plugins");
   }
 
-  public Task InitAsync(PM.Core pmCore, PM.Repositories.CoreR pmCoreR, IProgress<string> progress) {
+  public Task InitAsync(PM.Core pmCore, PM.CoreR pmCoreR, IProgress<string> progress) {
     PMCore = pmCore;
     R = new(pmCoreR, this);
 
@@ -46,7 +46,7 @@ public sealed class Core : IPluginCore {
     });
   }
 
-  public void AfterInit(PM.Services.CoreS pmCoreS, PM.ViewModels.CoreVM pmCoreVM) {
+  public void AfterInit(PM.CoreS pmCoreS, PM.CoreVM pmCoreVM) {
     S = new(pmCoreS, R);
     VM = new(pmCoreVM, S, R);
     R.SetFolders();

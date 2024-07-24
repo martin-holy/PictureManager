@@ -3,20 +3,20 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common">
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vm:StatusBarVM}">
+  <DataTemplate DataType="{x:Type layout:StatusBarVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        <DataTemplate x:Key="_person" DataType="{x:Type m:PersonM}">
+        <DataTemplate x:Key="_person" DataType="{x:Type ftPerson:PersonM}">
           <Border Style="{StaticResource MH.S.Border.RoundDark}" Cursor="Hand">
             <Border.InputBindings>
               <MouseBinding
                 MouseAction="LeftClick"
-                Command="vm:ToolsTabsVM.OpenPersonTabCommand"
+                Command="layout:ToolsTabsVM.OpenPersonTabCommand"
                 CommandParameter="{Binding}"/>
             </Border.InputBindings>
 

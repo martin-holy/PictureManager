@@ -1,6 +1,6 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Common.CollectionViews;
+using PictureManager.Common.Features.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -2,8 +2,8 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MovieManager.Plugins.Common.DTOs;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Features.Keyword;
+using PictureManager.Common.Features.MediaItem;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -15,7 +15,7 @@ namespace MovieManager.Common.Features.Movie;
 /// <summary>
 /// DB fields: Id|Title|Year|YearEnd|Length|Rating|MyRating|Genres|MPAA|Seen|Poster|MediaItems|Keywords|Plot
 /// </summary>
-public sealed class MovieR(CoreR coreR, PM.Repositories.CoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 14) {
+public sealed class MovieR(CoreR coreR, PM.CoreR pmCoreR) : TableDataAdapter<MovieM>(coreR, "Movies", 14) {
   public static MovieM Dummy { get; } = new(0, string.Empty);
   public event EventHandler<MovieM[]> MoviesKeywordsChangedEvent = delegate { };
   public event EventHandler<MovieM> PosterChangedEvent = delegate { };

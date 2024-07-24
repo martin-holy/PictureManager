@@ -3,8 +3,11 @@ using MovieManager.Common.Features.Actor;
 using MovieManager.Common.Features.Character;
 using MovieManager.Common.Features.Genre;
 using MovieManager.Common.Features.Movie;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
+using PictureManager.Common.Features.Folder;
+using PictureManager.Common.Features.Keyword;
+using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.Person;
+using PictureManager.Common.Features.Segment;
 using System;
 using System.IO;
 using System.Linq;
@@ -13,7 +16,7 @@ using PM = PictureManager.Common;
 namespace MovieManager.Common;
 
 public sealed class CoreR : SimpleDB {
-  public readonly PM.Repositories.CoreR PMCoreR;
+  public readonly PM.CoreR PMCoreR;
   private readonly Core _core;
 
   public ActorR Actor { get; }
@@ -28,7 +31,7 @@ public sealed class CoreR : SimpleDB {
   public FolderM? PostersFolder { get; set; }
   public FolderM? RootFolder { get; set; }
 
-  public CoreR(PM.Repositories.CoreR pmCoreR, Core core) : base(Path.Combine(core.BaseDir, "db")) {
+  public CoreR(PM.CoreR pmCoreR, Core core) : base(Path.Combine(core.BaseDir, "db")) {
     PMCoreR = pmCoreR;
     _core = core;
 

@@ -2,10 +2,10 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common;
-using PictureManager.Common.Repositories;
-using PictureManager.Common.Services;
-using PictureManager.Common.ViewModels;
-using PictureManager.Common.ViewModels.Entities;
+using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.MediaItem.Image;
+using PictureManager.Common.Features.MediaItem.Video;
+using PictureManager.Common.Features.Segment;
 using PictureManager.Windows.WPF.Converters;
 using PictureManager.Windows.WPF.ShellStuff;
 using System;

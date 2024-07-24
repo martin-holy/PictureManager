@@ -2,15 +2,16 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
-  xmlns:mmi="clr-namespace:PictureManager.Common.Models.MediaItems;assembly=PictureManager.Common"
   xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:vmWin="clr-namespace:PictureManager.Windows.WPF.ViewModels"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common">
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
+  xmlns:ftVideo="clr-namespace:PictureManager.Common.Features.MediaItem.Video;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type vm:MediaViewerVM}">
+  <DataTemplate DataType="{x:Type ftMediaItem:MediaViewerVM}">
     <Grid
       x:Name="Root"
       Background="Transparent"
@@ -21,7 +22,7 @@
       <Grid.InputBindings>
         <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
         <KeyBinding Key="Left" Command="{Binding PreviousCommand}"/>
-        <KeyBinding Modifiers="Control" Key="P" Command="vm:PresentationPanelVM.StartPresentationCommand"/>
+        <KeyBinding Modifiers="Control" Key="P" Command="ftMediaItem:PresentationPanelVM.StartPresentationCommand"/>
       </Grid.InputBindings>
 
       <b:Interaction.Triggers>
@@ -101,13 +102,13 @@
       </Trigger>
       <DataTrigger
         Binding="{Binding Current, Converter={x:Static conv:DataTypeConverter.Inst},
-                  ConverterParameter={x:Type mmi:ImageM}}"
+                  ConverterParameter={x:Type ftImage:ImageM}}"
         Value="True">
         <Setter TargetName="image" Property="Visibility" Value="Visible"/>
       </DataTrigger>
       <DataTrigger
         Binding="{Binding Current, Converter={x:Static conv:DataTypeConverter.Inst},
-                  ConverterParameter={x:Type mmi:VideoM}}"
+                  ConverterParameter={x:Type ftVideo:VideoM}}"
         Value="True">
         <Setter TargetName="player" Property="Visibility" Value="Visible"/>
       </DataTrigger>

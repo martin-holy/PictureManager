@@ -1,10 +1,9 @@
 ﻿using MH.UI.HelperClasses;
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
-using PictureManager.Common.ViewModels;
-using PictureManager.Common.ViewModels.Entities;
+using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.MediaItem.Video;
+using PictureManager.Common.Features.Segment;
 using System;
 using System.Collections.Generic;
 using System.IO;

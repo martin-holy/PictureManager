@@ -2,11 +2,11 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:m="clr-namespace:PictureManager.Common.Models;assembly=PictureManager.Common"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters">
+  xmlns:pmConv="clr-namespace:PictureManager.Windows.WPF.Converters"
+  xmlns:ftRating="clr-namespace:PictureManager.Common.Features.Rating;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type m:RatingM}">
+  <DataTemplate DataType="{x:Type ftRating:RatingM}">
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition/>
@@ -30,11 +30,11 @@
     </Grid>
   </DataTemplate>
 
-  <HierarchicalDataTemplate DataType="{x:Type m:RatingTreeM}">
+  <HierarchicalDataTemplate DataType="{x:Type ftRating:RatingTreeM}">
     <HierarchicalDataTemplate.Resources>
       <ContextMenu x:Key="_contextMenu" DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}">
-        <MenuItem Command="vm:MediaItemsViewsVM.LoadByTagCommand" CommandParameter="{Binding}"/>
-        <MenuItem Command="vm:MediaItemsViewsVM.FilterSetOrCommand" CommandParameter="{Binding Path=(m:RatingTreeM.Rating)}"/>
+        <MenuItem Command="ftMediaItem:MediaItemsViewsVM.LoadByTagCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="ftMediaItem:MediaItemsViewsVM.FilterSetOrCommand" CommandParameter="{Binding Path=(ftRating:RatingTreeM.Rating)}"/>
       </ContextMenu>
     </HierarchicalDataTemplate.Resources>
 

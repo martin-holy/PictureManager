@@ -2,7 +2,7 @@
 using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Common;
-using PictureManager.Common.Models;
+using PictureManager.Common.Features.Segment;
 using System;
 using System.IO;
 using System.Windows;

@@ -2,9 +2,9 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using MovieManager.Common.Features.Genre;
+using PictureManager.Common.Features.Keyword;
+using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Interfaces;
-using PictureManager.Common.Models;
-using PictureManager.Common.Models.MediaItems;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

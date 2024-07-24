@@ -2,16 +2,17 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.Common.ViewModels;assembly=PictureManager.Common"
-  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF">
+  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
 
-  <DataTemplate x:Key="PM.DT.MainTabs" DataType="{x:Type vm:MainTabsVM}">
+  <DataTemplate x:Key="PM.DT.MainTabs" DataType="{x:Type layout:MainTabsVM}">
     <TabControl/>
   </DataTemplate>
 
-  <DataTemplate DataType="{x:Type vm:MainTabsSlotVM}">
+  <DataTemplate DataType="{x:Type layout:MainTabsSlotVM}">
     <c:IconButton
-      Command="vm:MediaItemsViewsVM.AddViewCommand"
+      Command="ftMediaItem:MediaItemsViewsVM.AddViewCommand"
       ap:Icon.Size="13"
       Width="20"
       Height="20"/>

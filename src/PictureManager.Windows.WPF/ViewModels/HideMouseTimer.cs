@@ -1,5 +1,5 @@
 ﻿using MH.Utils.Extensions;
-using PictureManager.Common.ViewModels;
+using PictureManager.Common.Features.MediaItem;
 using System;
 using System.Windows;
 using System.Windows.Input;

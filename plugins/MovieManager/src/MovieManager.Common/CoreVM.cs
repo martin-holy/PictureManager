@@ -6,8 +6,9 @@ using MH.Utils.Interfaces;
 using MovieManager.Common.Features.Actor;
 using MovieManager.Common.Features.Import;
 using MovieManager.Common.Features.Movie;
+using PictureManager.Common.Features.Keyword;
+using PictureManager.Common.Features.Person;
 using PictureManager.Common.Interfaces.Plugin;
-using PictureManager.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
-  public PM.ViewModels.CoreVM PMCoreVM { get; }
+  public PM.CoreVM PMCoreVM { get; }
   public string PluginIcon => MH.UI.Res.IconMovieClapper;
   public string PluginTitle => "Movie Manager";
 
@@ -37,7 +38,7 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
   public RelayCommand SaveDbCommand { get; }
   public RelayCommand ScrollToRootFolderCommand { get; }
 
-  public CoreVM(PM.ViewModels.CoreVM pmCoreVM, CoreS coreS, CoreR coreR) {
+  public CoreVM(PM.CoreVM pmCoreVM, CoreS coreS, CoreR coreR) {
     PMCoreVM = pmCoreVM;
     _coreS = coreS;
     _coreR = coreR;

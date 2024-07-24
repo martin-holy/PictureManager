@@ -3,18 +3,18 @@ using MH.UI.Controls;
 using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MovieManager.Common.Features.Character;
+using PictureManager.Common.Features.MediaItem;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using PictureManager.Common.Models.MediaItems;
 using PM = PictureManager.Common;
-using MovieManager.Common.Features.Character;
 
 namespace MovieManager.Common.Features.Movie;
 
 public sealed class MovieDetailVM : ObservableObject {
-  private readonly PM.ViewModels.CoreVM _pmCoreVM;
+  private readonly PM.CoreVM _pmCoreVM;
   private readonly CoreR _coreR;
   private readonly CoreS _coreS;
   private MovieM _movieM;
@@ -32,7 +32,7 @@ public sealed class MovieDetailVM : ObservableObject {
   public RelayCommand SetPosterCommand { get; }
   public RelayCommand MyRatingChangedCommand { get; }
 
-  public MovieDetailVM(PM.ViewModels.CoreVM pmCoreVM, CoreR coreR, CoreS coreS, MovieM movie) {
+  public MovieDetailVM(PM.CoreVM pmCoreVM, CoreR coreR, CoreS coreS, MovieM movie) {
     _pmCoreVM = pmCoreVM;
     _coreR = coreR;
     _coreS = coreS;

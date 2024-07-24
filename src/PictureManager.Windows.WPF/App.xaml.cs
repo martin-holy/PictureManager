@@ -1,6 +1,6 @@
 ﻿using MH.UI.Controls;
 using PictureManager.Common;
-using PictureManager.Common.Dialogs;
+using PictureManager.Common.Features.Common;
 using PictureManager.Windows.WPF.Views;
 using PictureManager.Windows.WPF.Views.Layout;
 using System;
@@ -16,7 +16,7 @@ public partial class App {
     base.OnStartup(e);
 
     AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs args) {
-      Dialog.Show(new ErrorDialogM((Exception)args.ExceptionObject));
+      Dialog.Show(new ErrorDialog((Exception)args.ExceptionObject));
     };
 
     MH.UI.WPF.Utils.ColorHelper.AddColorsToResources();
