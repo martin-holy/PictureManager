@@ -2,7 +2,8 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common">
+  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type ftImage:ImageResizeDialog}">
     <DataTemplate.Resources>
@@ -45,7 +46,9 @@
           VerticalAlignment="Center"
           DockPanel.Dock="Right"/>
 
-        <ComboBox ItemsSource="{Binding DirPaths}" Text="{Binding DestDir}"/>
+        <ComboBox
+          ItemsSource="{Binding Path=Common.DirectorySelectFolders, Source={x:Static core:Core.Settings}}"
+          Text="{Binding DestDir}"/>
       </DockPanel>
 
       <!-- Slider MPx -->
