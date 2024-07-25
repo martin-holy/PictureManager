@@ -97,12 +97,12 @@ public sealed class Settings {
 
 public sealed class CommonSettings : ObservableObject {
   private string _cachePath = @":\Temp\PictureManagerCache";
-  private string[]? _directorySelectFolders;
+  private string[] _directorySelectFolders = [];
   private string _ffmpegPath = string.Empty;
   private int _jpegQuality = 80;
   
   public string CachePath { get => _cachePath; set => OnCachePathChange(value); }
-  public string[]? DirectorySelectFolders { get => _directorySelectFolders; set { _directorySelectFolders = value; OnPropertyChanged(); } }
+  public string[] DirectorySelectFolders { get => _directorySelectFolders; set { _directorySelectFolders = value; OnPropertyChanged(); } }
   public string FfmpegPath { get => _ffmpegPath; set { _ffmpegPath = value; OnPropertyChanged(); } }
   public int JpegQuality { get => _jpegQuality; set { _jpegQuality = value; OnPropertyChanged(); } }
 
@@ -110,6 +110,14 @@ public sealed class CommonSettings : ObservableObject {
     if (value.Length < 4 || !value.StartsWith(":\\") || value.EndsWith("\\")) return;
     _cachePath = value;
     OnPropertyChanged(nameof(CachePath));
+  }
+
+  public void AddDirectorySelectFolder(string dirPath) {
+    if (DirectorySelectFolders.Contains(dirPath)) return;
+    var list = DirectorySelectFolders.ToList();
+    list.Insert(0, dirPath);
+    DirectorySelectFolders = list.ToArray();
+    Core.Settings.Save();
   }
 }
 

@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type ftSegment:ExportSegmentsDialog}">
     <DataTemplate.Resources>
@@ -32,7 +33,9 @@
           VerticalAlignment="Center"
           DockPanel.Dock="Right"/>
 
-        <ComboBox ItemsSource="{Binding DirPaths}" Text="{Binding DestDir}"/>
+        <ComboBox
+          ItemsSource="{Binding Path=Common.DirectorySelectFolders, Source={x:Static core:Core.Settings}}"
+          Text="{Binding DestDir}"/>
       </DockPanel>
 
       <TextBlock

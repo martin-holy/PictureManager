@@ -1,12 +1,8 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
-using PictureManager.Common.Features.Folder;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +28,6 @@ public sealed class ImageResizeDialog : Dialog {
   public double MaxMpx { get => _maxMpx; set { _maxMpx = value; OnPropertyChanged(); } }
   public int ProgressMax { get => _progressMax; set { _progressMax = value; OnPropertyChanged(); } }
   public int ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
-  public ObservableCollection<string> DirPaths { get; }
 
   public RelayCommand OpenFolderBrowserCommand { get; }
 
@@ -44,7 +39,6 @@ public sealed class ImageResizeDialog : Dialog {
     ]; 
     _items = items;
     ProgressMax = _items.Length;
-    DirPaths = new(Core.Settings.Common.DirectorySelectFolders.EmptyIfNull());
     SetMaxMpx();
   }
 
@@ -112,16 +106,7 @@ public sealed class ImageResizeDialog : Dialog {
   }
 
   private void OpenFolderBrowser() {
-    var dir = new FolderBrowserDialog();
-
-    if (Show(dir) != 1 || dir.SelectedFolder == null) return;
-
-    if (!DirPaths.Contains(dir.SelectedFolder.FullPath)) {
-      DirPaths.Insert(0, dir.SelectedFolder.FullPath);
-      Core.Settings.Common.DirectorySelectFolders = DirPaths.ToArray();
-      Core.Settings.Save();
-    }
-
-    DestDir = dir.SelectedFolder.FullPath;
+    if (Core.VM.BrowseForFolder() is { } dirPath)
+      DestDir = dirPath;
   }
 }

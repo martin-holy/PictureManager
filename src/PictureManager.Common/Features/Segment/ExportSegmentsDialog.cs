@@ -1,14 +1,10 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PictureManager.Common.Features.Folder;
 
 namespace PictureManager.Common.Features.Segment;
 
@@ -24,7 +20,6 @@ public sealed class ExportSegmentsDialog : Dialog {
   public string? DestDir { get => _destDir; set { _destDir = value; OnPropertyChanged(); } }
   public int ProgressMax { get => _progressMax; set { _progressMax = value; OnPropertyChanged(); } }
   public int ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
-  public ObservableCollection<string> DirPaths { get; }
 
   public RelayCommand OpenFolderBrowserCommand { get; }
 
@@ -36,7 +31,6 @@ public sealed class ExportSegmentsDialog : Dialog {
     ]; 
     _items = items;
     ProgressMax = _items.Length;
-    DirPaths = new(Core.Settings.Common.DirectorySelectFolders.EmptyIfNull());
   }
 
   public override Task OnResultChanged(int result) {
@@ -94,16 +88,7 @@ public sealed class ExportSegmentsDialog : Dialog {
   }
 
   private void OpenFolderBrowser() {
-    var dir = new FolderBrowserDialog();
-
-    if (Show(dir) != 1) return;
-
-    if (!DirPaths.Contains(dir.SelectedFolder!.FullPath)) {
-      DirPaths.Insert(0, dir.SelectedFolder.FullPath);
-      Core.Settings.Common.DirectorySelectFolders = DirPaths.ToArray();
-      Core.Settings.Save();
-    }
-
-    DestDir = dir.SelectedFolder.FullPath;
+    if (Core.VM.BrowseForFolder() is { } dirPath)
+      DestDir = dirPath;
   }
 }
