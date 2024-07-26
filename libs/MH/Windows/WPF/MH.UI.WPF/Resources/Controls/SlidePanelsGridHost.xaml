@@ -5,7 +5,7 @@
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters">
 
   <Style x:Key="MH.S.SlidePanelsGridHost" TargetType="c:SlidePanelsGridHost">
-    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="c:SlidePanelsGridHost">
