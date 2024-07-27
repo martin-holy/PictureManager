@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace MH.Utils;
 
-public class TaskQueue<T> {
-  public bool IsRunning { get; private set; }
-  public readonly HashSet<T> Items = new();
+public class TaskQueue<T>(int queueSize, Action<T> workAction, Action<T> doneAction) {
+  private bool _isRunning;
+  private readonly HashSet<T> _items = [];
 
   public void Add(T item) =>
-    Items.Add(item);
+    _items.Add(item);
 
-  public async void Start(Action<T> workAction, Action<T> doneAction) {
-    if (IsRunning) return;
-    if (Items.Count == 0) {
-      IsRunning = false;
+  public async void Start() {
+    if (_isRunning) return;
+    if (_items.Count == 0) {
+      _isRunning = false;
       return;
     }
 
-    IsRunning = true;
-    var items = Items.ToArray();
+    _isRunning = true;
+    var items = _items.Take(queueSize).ToArray();
 
     await Task.WhenAll(
       from partition in Partitioner.Create(items).GetPartitions(Environment.ProcessorCount)
@@ -33,11 +33,11 @@ public class TaskQueue<T> {
       }));
 
     foreach (var item in items) {
-      Items.Remove(item);
+      _items.Remove(item);
       doneAction(item);
     }
 
-    IsRunning = false;
-    Start(workAction, doneAction);
+    _isRunning = false;
+    Start();
   }
 }
