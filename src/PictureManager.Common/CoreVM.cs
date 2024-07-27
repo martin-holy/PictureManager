@@ -123,6 +123,7 @@ public class CoreVM : ObservableObject {
     MediaItem.Views.PropertyChanged += OnMediaItemViewsPropertyChanged;
     MediaViewer.PropertyChanged += OnMediaViewerPropertyChanged;
     Video.MediaPlayer.RepeatEndedEvent += MediaViewer.OnPlayerRepeatEnded;
+    Video.MediaPlayer.PropertyChanged += OnVideoMediaPlayerPropertyChanged;
     Video.CurrentVideoItems.Selected.ItemsChangedEvent += OnVideoItemsSelectionChanged;
 
     _coreR.Folder.ItemRenamedEvent += OnFolderRenamed;
@@ -223,6 +224,17 @@ public class CoreVM : ObservableObject {
     var vi = e.FirstOrDefault();
     MediaItem.Current = vi as MediaItemM ?? Video.Current;
     Video.MediaPlayer.SetCurrent(vi);
+  }
+
+  private void OnVideoMediaPlayerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (!_coreS.Segment.Rect.AreVisible || !MediaViewer.IsVisible ||
+        MediaItem.Current == null || !e.Is(nameof(MediaPlayer.TimelinePosition))) return;
+
+    var pos = MediaItem.Current is VideoItemM vi ? vi.TimeStart : 0;
+    MediaItemM? mi = Video.MediaPlayer.TimelinePosition == pos ? MediaItem.Current : null;
+
+    if (!ReferenceEquals(mi, _coreS.Segment.Rect.MediaItem))
+      _coreS.Segment.Rect.MediaItem = mi;
   }
 
   private void OnFolderRenamed(object? sender, FolderM item) {
