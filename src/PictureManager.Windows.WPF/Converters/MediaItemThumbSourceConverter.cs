@@ -20,7 +20,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
   private static MediaItemThumbSourceConverter? _inst;
   public static MediaItemThumbSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  private static readonly TaskQueue<MediaItemM> _taskQueue = new();
+  private readonly TaskQueue<MediaItemM> _taskQueue = new(8, CreateImageThumbnail, TriggerChanged);
 
   public HashSet<MediaItemM> ErrorCache { get; } = [];
   public HashSet<MediaItemM> IgnoreCache { get; } = [];
@@ -70,7 +70,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
     switch (mi) {
       case ImageM:
         _taskQueue.Add(mi);
-        _taskQueue.Start(CreateImageThumbnail, TriggerChanged);
+        _taskQueue.Start();
         break;
       case VideoM:
         VideoThumbsU.Create([mi]);
