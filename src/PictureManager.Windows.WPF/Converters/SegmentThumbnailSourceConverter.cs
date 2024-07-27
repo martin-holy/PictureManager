@@ -20,10 +20,14 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
   private static SegmentThumbnailSourceConverter? _inst;
   public static SegmentThumbnailSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  private static readonly TaskQueue<SegmentM> _taskQueue = new();
+  private readonly TaskQueue<SegmentM> _taskQueue;
 
   public HashSet<SegmentM> ErrorCache { get; } = [];
   public HashSet<SegmentM> IgnoreCache { get; } = [];
+
+  public SegmentThumbnailSourceConverter() {
+    _taskQueue = new(8, CreateThumbnailFromImage, TriggerChanged);
+  }
 
   public override object? Convert(object?[]? values, object? parameter) {
     try {
@@ -69,7 +73,7 @@ public sealed class SegmentThumbnailSourceConverter : BaseMultiConverter, IImage
 
     if (segment.MediaItem is ImageM) {
       _taskQueue.Add(segment);
-      _taskQueue.Start(CreateThumbnailFromImage, TriggerChanged);
+      _taskQueue.Start();
     }
     else
       CreateThumbnailFromVideo(segment);
