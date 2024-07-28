@@ -34,8 +34,8 @@
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
         <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
 
       <Grid Margin="4">
@@ -105,16 +105,17 @@
         <Grid>
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
           </Grid.RowDefinitions>
 
           <!-- Genres Header -->
           <Border
-            Padding="0,0,5,0"
+            Padding="0,0,8,0"
             BorderThickness="0,0,0,1"
-            BorderBrush="{StaticResource MH.B.C.Static.Bo}">
+            BorderBrush="{StaticResource MH.B.C.Static.Bo}"
+            Background="{DynamicResource MH.B.Black3}">
 
-            <Grid Background="{StaticResource MH.B.Gray1}">
+            <Grid>
               <Grid.Resources>
                 <Style TargetType="TextBlock" BasedOn="{StaticResource MH.S.TextBlock}">
                   <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -129,6 +130,7 @@
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="50"/>
+                <ColumnDefinition MinWidth="{StaticResource ScrollBar.Size}" Width="0"/>
               </Grid.ColumnDefinitions>
 
               <TextBlock Text="Genres" HorizontalAlignment="Left"/>
@@ -144,7 +146,8 @@
             ItemsSource="{Binding Genres}"
             ItemTemplate="{StaticResource _genreFilter}"
             HorizontalContentAlignment="Stretch"
-            BorderThickness="0"/>
+            BorderThickness="0"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"/>
         </Grid>
       </Border>
 
