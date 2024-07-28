@@ -8,6 +8,9 @@ Latest:
  - [B] Creating new Keyword, Person, Keywords group or Persons group with empty name
  - [U] Settings view
  - [U] FolderBrowserDialog disable OK button until folder is selected
+ - [U] Hide Segments on Video when video position is not on beginning of Video or VideoItem
+ - [U] MediaItem and Segment thumbnail creation. UI refresh more often
+ - [B] MoviesFilter view: genres and clear button position
 
 24.07.07.0707:
  - [U] Controls styles
