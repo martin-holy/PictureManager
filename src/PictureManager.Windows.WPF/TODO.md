@@ -43,10 +43,9 @@
         # MH.UI.WPF
   - RangeSlider - change values by keyboard
   - PopupSlider - close Slider using keyboard
+  - add scrollbar for TabPanel
 
         # MH.UI
-  - FolderPicker control with ComboBox with used folders from settings and button to open FolderBrowserDialogM
-    + static command to open FolderBrowserDialogM
 ## CollectionView
   - don't show expanded root if source is empty
 
@@ -62,10 +61,6 @@
   - select/mark searched item after selecting item in search result
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
-## Segments
-  - add button remove selected segments from drawer
-  - SegmentThumbnailSourceConverter update more often
-  - hide segments in MediaViewer on video when time is not set to clip, videoImage or video start
 ## ToggleDialog
   - show selected items on dialog
   - add support for removing GeoName
@@ -146,8 +141,6 @@
   - Find generic way to create and open tab from Command
   - OneToManyMultiDataAdapter do it without reference to CoreR
   - don't do CreateDirectory in FolderR.ItemCreate. it can throw exception
-  - add scrollbar for TabPanel
-  - FocusVisualStyle on SlidePanelsGridHost should not be null but set to Focusable = false
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
   - ToBoolConverter where Inst is IsNotNull, IsStringEmpty, IsCollectionEmpty, ...
   - IHaveName is applied only to GenreM but the DataTemplate is used for KeywordM as well
