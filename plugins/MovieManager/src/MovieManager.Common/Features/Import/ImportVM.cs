@@ -15,10 +15,12 @@ public class ImportVM : ObservableObject {
   private bool _isSearchInProgress;
   private bool _isImportInProgress;
   private CancellationTokenSource? _cts;
+  private string _searchTitle = string.Empty;
 
   public ObservableCollection<SearchResult> SearchResults { get; } = [];
   public ObservableCollection<string> ProgressCollection { get; } = [];
   public IProgress<string> Progress { get; }
+  public string SearchTitle { get => _searchTitle; set { _searchTitle = value; OnPropertyChanged(); } }
 
   public AsyncRelayCommand<string> SearchCommand { get; }
   public AsyncRelayCommand<SearchResult> ImportCommand { get; }
@@ -46,6 +48,7 @@ public class ImportVM : ObservableObject {
 
   private async Task Import(SearchResult result) {
     SearchResults.Clear();
+    SearchTitle = string.Empty;
     _isImportInProgress = true;
 
     _cts = new();
@@ -70,6 +73,7 @@ public class ImportVM : ObservableObject {
 
   private async Task SearchQueue() {
     SearchResults.Clear();
+    SearchTitle = string.Empty;
 
     if (_searchQueue.Pop() is not { } title) {
       Progress.Report("Importing completed.", true);
@@ -77,6 +81,7 @@ public class ImportVM : ObservableObject {
     }
 
     Progress.Report($"Searching for '{title}' ...", true);
+    SearchTitle = title;
     _isSearchInProgress = true;
     var results = await Core.Inst.ImportPlugin!.SearchMovie(title);
     _isSearchInProgress = false;

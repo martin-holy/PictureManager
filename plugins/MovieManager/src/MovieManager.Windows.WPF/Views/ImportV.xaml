@@ -60,7 +60,12 @@
           Command="{Binding CancelCommand}"/>
       </Grid>
 
-      <TextBlock Text="Search results:" Grid.Column="0" Grid.Row="3" Margin="5,0,0,2"/>
+      <TextBlock
+        Text="{Binding SearchTitle, StringFormat='Search results for: {0}'}"
+        Grid.Column="0"
+        Grid.Row="3"
+        Margin="5,0,0,2"
+        TextWrapping="Wrap"/>
       <ListBox
         x:Name="result"
         Grid.Column="0"
