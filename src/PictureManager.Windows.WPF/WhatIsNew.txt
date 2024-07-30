@@ -11,6 +11,8 @@ Latest:
  - [U] Hide Segments on Video when video position is not on beginning of Video or VideoItem
  - [U] MediaItem and Segment thumbnail creation. UI refresh more often
  - [B] MoviesFilter view: genres and clear button position
+ - [U] Movie import: search query size
+ - [U] Movie import: searched title above search results
 
 24.07.07.0707:
  - [U] Controls styles
