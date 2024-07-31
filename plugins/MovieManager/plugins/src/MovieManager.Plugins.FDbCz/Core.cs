@@ -13,7 +13,7 @@ public class Core : IImportPlugin {
   public async Task<SearchResult[]> SearchMovie(string query) {
     var url = $"https://www.fdb.cz/vyhledavani.html?hledat={query.Replace(' ', '+')}";
     var content = await Common.Core.GetWebPageContent(url, "cs");
-    if (content == null) return [];
+    if (string.IsNullOrEmpty(content)) return [];
 
     try {
       return Parser.ParseSearch(content);
@@ -28,7 +28,7 @@ public class Core : IImportPlugin {
     if (!id.Name.Equals(IdName)) return null;
     var url = $"https://www.fdb.cz/film/{Parser.MovieDetailIdToUrl(id)}";
     var content = await Common.Core.GetWebPageContent(url, "cs");
-    if (content == null) return null;
+    if (string.IsNullOrEmpty(content)) return null;
     
     try {
       return await Parser.ParseMovie(content, id);
