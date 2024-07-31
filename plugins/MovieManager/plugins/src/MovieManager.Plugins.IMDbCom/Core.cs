@@ -18,7 +18,7 @@ public class Core : IIMDbPlugin {
   public async Task<SearchResult[]> SearchMovie(string query) {
     var url = $"https://v2.sg.media-imdb.com/suggestion/h/{query.Replace(' ', '+')}.json";
     var content = await Common.Core.GetWebPageContent(url);
-    if (content == null) return [];
+    if (string.IsNullOrEmpty(content)) return [];
 
     try {
       return Parser.ParseSearch(content);
@@ -33,7 +33,7 @@ public class Core : IIMDbPlugin {
     if (!id.Name.Equals(IdName)) return null;
     var url = $"https://www.imdb.com/title/{id.Id}";
     var content = await Common.Core.GetWebPageContent(url);
-    if (content == null) return null;
+    if (string.IsNullOrEmpty(content)) return null;
     if (_srMovieDetailJson.From(content, 0)?.AsString(content) is not { } jsonText) return null;
 
     try {
