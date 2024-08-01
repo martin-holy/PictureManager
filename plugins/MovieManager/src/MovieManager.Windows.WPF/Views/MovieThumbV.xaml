@@ -1,9 +1,35 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:movie="clr-namespace:MovieManager.Common.Features.Movie;assembly=MovieManager.Common">
+  xmlns:ftMovie="clr-namespace:MovieManager.Common.Features.Movie;assembly=MovieManager.Common"
+  xmlns:ftGenre="clr-namespace:MovieManager.Common.Features.Genre;assembly=MovieManager.Common">
+
+  <Style x:Key="MM.S.ItemsControl.Movie.ThumbInfo" TargetType="ItemsControl">
+    <Setter Property="Margin" Value="2"/>
+    <Setter Property="ItemTemplate">
+      <Setter.Value>
+        <DataTemplate DataType="{x:Type ftGenre:GenreM}">
+          <Border Style="{DynamicResource MH.S.Border.RoundDark}">
+            <TextBlock Text="{Binding Name}"/>
+          </Border>
+        </DataTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+        <Setter Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
     
-  <DataTemplate x:Key="MM.DT.Movie.Thumb" DataType="{x:Type movie:MovieM}">
+  <DataTemplate x:Key="MM.DT.Movie.Thumb" DataType="{x:Type ftMovie:MovieM}">
     <Grid Background="Transparent">
       <TextBlock
         Text="{Binding Title}"
@@ -15,6 +41,10 @@
       <ContentControl
         Content="{Binding Poster}"
         ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Fill}"/>
+
+      <ItemsControl
+        ItemsSource="{Binding Genres}"
+        Style="{StaticResource MM.S.ItemsControl.Movie.ThumbInfo}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>
