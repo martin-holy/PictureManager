@@ -13,6 +13,8 @@ Latest:
  - [B] MoviesFilter view: genres and clear button position
  - [U] Movie import: search query size
  - [U] Movie import: searched title above search results
+ - [N] MovieManager: Genres over Movie thumbnails
+ - [B] Hide Keywords on PersonDetail if they are not any
 
 24.07.07.0707:
  - [U] Controls styles
