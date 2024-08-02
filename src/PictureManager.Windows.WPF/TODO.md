@@ -79,18 +79,13 @@
   - limit folder path size
 ## PersonMerge
   - show selected person name on merge dialog
-## PersonDetail
-  - don't show keywords if they are not any
 ## PresentationPanelVM
   - three state button with play/pause/stop and show paused state when video is playing
   - play VideoImages and VideoClips based on settings
 
-        # Movie Manager
-## Import
-  - handling 0 search results. like when searching for "Dude, Where's My Car?"
+        # Movie Managers
 ## Movies
   - group by genre
-  - show genres over thumbnail
 
 
                                     *** NEW ***
