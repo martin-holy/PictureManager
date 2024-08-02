@@ -14,6 +14,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=MH_002ES_002E/@EntryIndexedValue">MH.S.</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=MH_002ET_002EI/@EntryIndexedValue">MH.T.I</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=MM_002E/@EntryIndexedValue">MM.</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=MM_002ES_002E/@EntryIndexedValue">MM.S.</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=PM_002E/@EntryIndexedValue">PM.</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=PM_002EB_002E/@EntryIndexedValue">PM.B.</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=PM_002EDTS_002E/@EntryIndexedValue">PM.DTS.</s:String>
