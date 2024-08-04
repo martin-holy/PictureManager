@@ -2,7 +2,7 @@
 
 namespace MH.Utils.BaseClasses;
 
-public abstract class RelayCommandBase {
+public abstract class RelayCommandBase : ObservableObject {
   public string? Icon { get; set; }
   public string? Text { get; set; }
 
@@ -22,7 +22,10 @@ public abstract class RelayCommandBase {
     Text = text;
   }
 
-  public static void InvokeCanExecuteChanged(object? o, EventArgs e) =>
+  public static void RaiseCanExecuteChanged() =>
+    RaiseCanExecuteChanged(null, EventArgs.Empty);
+
+  public static void RaiseCanExecuteChanged(object? o, EventArgs e) =>
     CanExecuteChangedEvent(o, e);
 
   public virtual bool CanExecute(object? parameter) =>
