@@ -21,6 +21,6 @@ public static class Init {
 
     MH.Utils.Tasks.Dispatch = action => Application.Current.Dispatcher.Invoke(DispatcherPriority.Render, action);
 
-    CommandManager.RequerySuggested += RelayCommandBase.InvokeCanExecuteChanged;
+    CommandManager.RequerySuggested += RelayCommandBase.RaiseCanExecuteChanged;
   }
 }

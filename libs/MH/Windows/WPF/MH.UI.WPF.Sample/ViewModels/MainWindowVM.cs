@@ -5,6 +5,7 @@ using MH.UI.WPF.Sample.ViewModels.Controls;
 using MH.UI.WPF.Sample.ViewModels.Layout;
 using MH.Utils.BaseClasses;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MH.UI.WPF.Sample.ViewModels;
@@ -118,7 +119,7 @@ public class MainWindowVM : ObservableObject {
   }
 
   // TODO
-  private async Task OpenProgressBarDialog() {
+  private async Task OpenProgressBarDialog(CancellationToken token) {
     var items = new[] { "Item 1", "Item 2", "Item 3" };
     var progress = new ProgressBarSyncDialog("Progress Bar Dialog", Icons.Drive);
     await progress.Init(items, null, item => Task.Delay(1000), item => item, null);
