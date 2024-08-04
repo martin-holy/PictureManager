@@ -50,8 +50,7 @@ public class RelayCommandConverter : BaseMultiConverter {
         ((Button)fe).ToolTip ??= rc.Text;
         break;
       case Button:
-        if (!fe.HasAttachedProperty(AP.Text.TextProperty) || fe.GetValue(AP.Text.TextProperty) == null)
-          fe.SetValue(AP.Text.TextProperty, rc.Text);
+        fe.SetValue(AP.Text.TextProperty, rc.Text);
         break;
       case MenuItem mi: mi.Header ??= rc.Text; break;
     }
