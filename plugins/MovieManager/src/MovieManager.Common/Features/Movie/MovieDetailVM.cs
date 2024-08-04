@@ -8,6 +8,7 @@ using PictureManager.Common.Features.MediaItem;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using PM = PictureManager.Common;
 
@@ -93,7 +94,7 @@ public sealed class MovieDetailVM : ObservableObject {
   private bool CanRemoveMediaItems() =>
     MovieM.MediaItems?.Count > 0 && _pmCoreVM.GetActive<MediaItemM>().Any(MovieM.MediaItems.Contains);
 
-  private Task ViewMediaItems() =>
+  private Task ViewMediaItems(CancellationToken token) =>
     _pmCoreVM.MediaItem.ViewMediaItems([.. MovieM.MediaItems!], MovieM.Title);
 
   private void SetCharacterSegment() {

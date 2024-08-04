@@ -14,7 +14,6 @@ public class ImportVM : ObservableObject {
   private readonly List<string> _searchQueue = [];
   private bool _isSearchInProgress;
   private bool _isImportInProgress;
-  private CancellationTokenSource? _cts;
   private string _searchTitle = string.Empty;
 
   public ObservableCollection<SearchResult> SearchResults { get; } = [];
@@ -24,18 +23,19 @@ public class ImportVM : ObservableObject {
 
   public AsyncRelayCommand<string> SearchCommand { get; }
   public AsyncRelayCommand<SearchResult> ImportCommand { get; }
-  public AsyncRelayCommand CancelCommand { get; }
 
   public ImportVM(ImportS importS) {
     _importS = importS;
     Progress = new Progress<string>(x => ProgressCollection.Insert(0, x));
 
-    SearchCommand = new(x => Search(x!), x => !string.IsNullOrEmpty(x) && !_isSearchInProgress && !_isImportInProgress, null, "Search");
-    ImportCommand = new(x => Import(x!), x => x != null, null, "Import");
-    CancelCommand = new(Cancel, () => _isImportInProgress, null, "Cancel");
+    SearchCommand = new((x, y) => Search(x!, y), CanSearch, null, "Search");
+    ImportCommand = new((x, y) => Import(x!, y), x => x != null, null, "Import");
   }
 
-  private Task Search(string titles) {
+  private bool CanSearch(string? query) =>
+    !string.IsNullOrEmpty(query) && !_isSearchInProgress && !_isImportInProgress;
+
+  private Task Search(string titles, CancellationToken token) {
     ProgressCollection.Clear();
     _searchQueue.Clear();
     _searchQueue.AddRange(titles.Split(
@@ -43,37 +43,25 @@ public class ImportVM : ObservableObject {
       StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
     ));
 
-    return SearchQueue();
+    return SearchQueue(token);
   }
 
-  private async Task Import(SearchResult result) {
+  private async Task Import(SearchResult result, CancellationToken token) {
     SearchResults.Clear();
     SearchTitle = string.Empty;
     _isImportInProgress = true;
-
-    _cts = new();
-    try {
-      await _importS.ImportMovie(result, Progress, _cts.Token);
-    }
-    catch (OperationCanceledException) { }
-    finally {
-      _cts.Dispose();
-      _cts = null;
-    }
-
+    await _importS.ImportMovie(result, Progress, token);
     _isImportInProgress = false;
     Progress.Report(string.Empty);
-
-    await SearchQueue();
-    RelayCommandBase.InvokeCanExecuteChanged(null, EventArgs.Empty);
+    await SearchQueue(SearchCommand.CancelCommand.Token);
+    RelayCommandBase.RaiseCanExecuteChanged();
   }
 
-  private Task Cancel() =>
-    _cts == null ? Task.CompletedTask : _cts.CancelAsync();
-
-  private async Task SearchQueue() {
+  private async Task SearchQueue(CancellationToken token) {
     SearchResults.Clear();
     SearchTitle = string.Empty;
+
+    if (token.IsCancellationRequested) return;
 
     if (_searchQueue.Pop() is not { } title) {
       Progress.Report("Importing completed.", true);
@@ -83,12 +71,12 @@ public class ImportVM : ObservableObject {
     Progress.Report($"Searching for '{title}' ...", true);
     SearchTitle = title;
     _isSearchInProgress = true;
-    var results = await Core.Inst.ImportPlugin!.SearchMovie(title);
+    var results = await Core.Inst.ImportPlugin!.SearchMovie(title, token);
     _isSearchInProgress = false;
 
     if (results.Length == 0) {
       Progress.Report("No results were found.", true);
-      await SearchQueue();
+      await SearchQueue(token);
     }
     else {
       foreach (var result in results) SearchResults.Add(result);

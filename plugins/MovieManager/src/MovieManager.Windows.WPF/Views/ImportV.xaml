@@ -36,7 +36,6 @@
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <ComboBox
@@ -46,18 +45,16 @@
           VerticalContentAlignment="Center"/>
 
         <Button
+          x:Name="btnSearch"
           Grid.Column="1"
           Command="{Binding SearchCommand}"
           CommandParameter="{Binding Text, ElementName=search}"/>
 
         <Button
+          x:Name="btnImport"
           Grid.Column="2"
           Command="{Binding ImportCommand}"
           CommandParameter="{Binding Path=SelectedItem, ElementName=result}"/>
-
-        <Button
-          Grid.Column="3"
-          Command="{Binding CancelCommand}"/>
       </Grid>
 
       <TextBlock
@@ -91,5 +88,14 @@
         </ListBox.ItemTemplate>
       </ListBox>
     </Grid>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding SearchCommand.Execution.IsNotCompleted}" Value="True">
+        <Setter TargetName="btnSearch" Property="Command" Value="{Binding SearchCommand.CancelCommand}"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding ImportCommand.Execution.IsNotCompleted}" Value="True">
+        <Setter TargetName="btnImport" Property="Command" Value="{Binding ImportCommand.CancelCommand}"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>

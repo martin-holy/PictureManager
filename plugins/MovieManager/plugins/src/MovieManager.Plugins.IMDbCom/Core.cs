@@ -3,6 +3,7 @@ using MovieManager.Plugins.Common.Interfaces;
 using MovieManager.Plugins.Common.DTOs;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.IMDbCom;
@@ -15,9 +16,9 @@ public class Core : IIMDbPlugin {
   private const string _imgUrlParamStart = "_V1_";
   private static readonly StringRange _srMovieDetailJson = new("__NEXT_DATA__", ">", "</script");
 
-  public async Task<SearchResult[]> SearchMovie(string query) {
+  public async Task<SearchResult[]> SearchMovie(string query, CancellationToken token) {
     var url = $"https://v2.sg.media-imdb.com/suggestion/h/{query.Replace(' ', '+')}.json";
-    var content = await Common.Core.GetWebPageContent(url);
+    var content = await Common.Core.GetWebPageContent(url, token);
     if (string.IsNullOrEmpty(content)) return [];
 
     try {
@@ -29,10 +30,10 @@ public class Core : IIMDbPlugin {
     }
   }
 
-  public async Task<MovieDetail?> GetMovieDetail(DetailId id) {
+  public async Task<MovieDetail?> GetMovieDetail(DetailId id, CancellationToken token) {
     if (!id.Name.Equals(IdName)) return null;
     var url = $"https://www.imdb.com/title/{id.Id}";
-    var content = await Common.Core.GetWebPageContent(url);
+    var content = await Common.Core.GetWebPageContent(url, token);
     if (string.IsNullOrEmpty(content)) return null;
     if (_srMovieDetailJson.From(content, 0)?.AsString(content) is not { } jsonText) return null;
 
@@ -63,8 +64,8 @@ public class Core : IIMDbPlugin {
   string IIMDbPlugin.AddImgUrlParams(string url, string urlParams) =>
     AddImgUrlParams(url, urlParams);
 
-  public async Task<Image?> GetPoster(string movieId) {
-    var result = await SearchMovie(movieId);
+  public async Task<Image?> GetPoster(string movieId, CancellationToken token) {
+    var result = await SearchMovie(movieId, token);
     if (result.FirstOrDefault(x => movieId.Equals(x.DetailId.Id))?.Image is not { } image) return null;
     image.Url = AddImgUrlParams(image.Url, "QL80");
     return image;

@@ -33,7 +33,7 @@ public class ImportS {
       return;
     }
 
-    var md = await Core.Inst.ImportPlugin!.GetMovieDetail(result.DetailId);
+    var md = await Core.Inst.ImportPlugin!.GetMovieDetail(result.DetailId, token);
     if (md == null) {
       progress.Report("Information about the movie not found.", true);
       return;

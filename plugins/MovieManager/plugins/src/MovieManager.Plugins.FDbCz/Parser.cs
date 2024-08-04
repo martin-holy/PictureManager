@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MovieManager.Plugins.FDbCz;
@@ -105,7 +106,7 @@ public static class Parser {
     return sr;
   }
 
-  public static async Task<MovieDetail?> ParseMovie(string text, DetailId detailId) {
+  public static async Task<MovieDetail?> ParseMovie(string text, DetailId detailId, CancellationToken token) {
     var idx = 0;
 
     if (!text.TryIndexOf(_detailStart, ref idx)
@@ -133,7 +134,7 @@ public static class Parser {
         .ToArray();
 
     if (!string.IsNullOrEmpty(imdbId) && Common.Core.IMDbPlugin != null) {
-      var imdbPoster = await Common.Core.IMDbPlugin.GetPoster(imdbId);
+      var imdbPoster = await Common.Core.IMDbPlugin.GetPoster(imdbId, token);
       if (imdbPoster != null) md.Poster = imdbPoster;
     }
 
