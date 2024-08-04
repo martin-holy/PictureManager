@@ -1,7 +1,6 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -71,7 +70,7 @@ public class CompressDialog : Dialog {
     await _workTask;
     IsWorkInProgress = false;
     // this is here because button doesn't get updated until focus is changed
-    RelayCommandBase.InvokeCanExecuteChanged(null, EventArgs.Empty);
+    RelayCommandBase.RaiseCanExecuteChanged();
   }
 
   private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(ImageM[] items, [EnumeratorCancellation] CancellationToken token = default) {
