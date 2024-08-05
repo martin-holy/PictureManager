@@ -95,7 +95,7 @@ public sealed class MovieDetailVM : ObservableObject {
     MovieM.MediaItems?.Count > 0 && _pmCoreVM.GetActive<MediaItemM>().Any(MovieM.MediaItems.Contains);
 
   private Task ViewMediaItems(CancellationToken token) =>
-    _pmCoreVM.MediaItem.ViewMediaItems([.. MovieM.MediaItems!], MovieM.Title);
+    _pmCoreVM.MediaItem.ViewMediaItems([.. MovieM.MediaItems!], MovieM.Title, token);
 
   private void SetCharacterSegment() {
     if (_coreS.Character.Selected.Items.FirstOrDefault() is not { } character) return;
