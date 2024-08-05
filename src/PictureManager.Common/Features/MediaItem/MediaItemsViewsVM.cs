@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem;
@@ -30,7 +31,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public static RelayCommand ShuffleCommand { get; set; } = null!;
   public static RelayCommand SortCommand { get; set; } = null!;
   public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; } = null!;
-  public static RelayCommand ViewModifiedCommand { get; set; } = null!;
+  public static AsyncRelayCommand ViewModifiedCommand { get; set; } = null!;
 
   public MediaItemsViewsVM() {
     FilterSetAndCommand = new(item => Current!.Filter.Set(item, DisplayFilter.And), _ => Current != null, Res.IconFilter, "Filter And");
@@ -163,11 +164,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     }
   }
 
-  private async void ViewModified() {
-    await AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray());
-  }
+  private Task ViewModified(CancellationToken token) =>
+    AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray());
 
-  public Task ViewMediaItems(MediaItemM[] items, string name) {
-    return AddView(name).LoadByTag(items);
-  }
+  public Task ViewMediaItems(MediaItemM[] items, string name) =>
+    AddView(name).LoadByTag(items);
 }
