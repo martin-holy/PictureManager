@@ -27,7 +27,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public static RelayCommand<object> FilterSetNotCommand { get; set; } = null!;
   public static RelayCommand AddViewCommand { get; set; } = null!;
   public static RelayCommand CopyPathsCommand { get; set; } = null!;
-  public static RelayCommand<object> LoadByTagCommand { get; set; } = null!;
+  public static AsyncRelayCommand<object> LoadByTagCommand { get; set; } = null!;
   public static RelayCommand ShuffleCommand { get; set; } = null!;
   public static RelayCommand SortCommand { get; set; } = null!;
   public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; } = null!;
@@ -122,8 +122,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     return view.LoadByFolder(item, and, hide, recursive);
   }
 
-  public async void LoadByTag(object? item) {
-    if (item == null) return;
+  public Task LoadByTag(object? item, CancellationToken token) {
+    if (item == null) return Task.CompletedTask;
     var and = Keyboard.IsCtrlOn() && Current != null;
     var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn()).OfType<RealMediaItemM>().Cast<MediaItemM>();
 
@@ -142,7 +142,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       };
 
     var view = and ? AddViewIfNotActive(null) : AddView(tabTitle!);
-    await view.LoadByTag(items.ToArray());
+    return view.LoadByTag(items.ToArray(), token);
   }
 
   public void SelectAndScrollToCurrentMediaItem() {
@@ -165,8 +165,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private Task ViewModified(CancellationToken token) =>
-    AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray());
+    AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray(), token);
 
-  public Task ViewMediaItems(MediaItemM[] items, string name) =>
-    AddView(name).LoadByTag(items);
+  public Task ViewMediaItems(MediaItemM[] items, string name, CancellationToken token) =>
+    AddView(name).LoadByTag(items, token);
 }

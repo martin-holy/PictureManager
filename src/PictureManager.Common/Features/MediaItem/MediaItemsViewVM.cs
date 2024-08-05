@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem;
@@ -222,15 +223,22 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     AfterLoad();
   }
 
-  public async Task LoadByTag(MediaItemM[] items) {
+  public async Task LoadByTag(MediaItemM[] items, CancellationToken token) {
     IsLoading = true;
     Clear();
+    HashSet<Folder.FolderM> foldersSet;
 
-    var foldersSet = await Task.Run(() => items
-      .Select(x => x.Folder)
-      .Distinct()
-      .Where(x => Core.S.Viewer.CanViewerSeeContentOf(x))
-      .ToHashSet());
+    try {
+      foldersSet = await Task.Run(() => items
+        .Select(x => x.Folder)
+        .Distinct()
+        .Where(x => Core.S.Viewer.CanViewerSeeContentOf(x))
+        .ToHashSet(), token);
+    }
+    catch (OperationCanceledException) {
+      IsLoading = false;
+      return;
+    }
 
     var skip = items
       .Where(x => !foldersSet.Contains(x.Folder));

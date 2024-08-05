@@ -10,6 +10,7 @@ using PictureManager.Common.Utils;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem;
@@ -29,10 +30,10 @@ public sealed class MediaItemVM : ObservableObject {
 
   public static RelayCommand CommentCommand { get; set; } = null!;
   public static RelayCommand DeleteCommand { get; set; } = null!;
-  public static RelayCommand<GeoNameM> LoadByGeoNameCommand { get; set; } = null!;
-  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
-  public static RelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
-  public static RelayCommand LoadByPeopleOrSegmentsCommand { get; set; } = null!;
+  public static AsyncRelayCommand<GeoNameM> LoadByGeoNameCommand { get; set; } = null!;
+  public static AsyncRelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
+  public static AsyncRelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
+  public static AsyncRelayCommand LoadByPeopleOrSegmentsCommand { get; set; } = null!;
   public static RelayCommand RenameCommand { get; set; } = null!;
   public static RelayCommand ViewSelectedCommand { get; set; } = null!;
 
@@ -65,10 +66,10 @@ public sealed class MediaItemVM : ObservableObject {
       _s.SetComment(mi, StringUtils.NormalizeComment(commentDialog.Answer!));
   }
 
-  private void LoadBy(object? o) =>
-    _coreVM.MediaItem.Views.LoadByTag(o);
+  private Task LoadBy(object? o, CancellationToken token) =>
+    _coreVM.MediaItem.Views.LoadByTag(o, token);
 
-  private void LoadByPeopleOrSegments() {
+  private Task LoadByPeopleOrSegments(CancellationToken token) {
     var md = new MessageDialog(
       "Load Media items",
       "Do you want to load Media items from selected People or Segments?",
@@ -81,7 +82,7 @@ public sealed class MediaItemVM : ObservableObject {
     ];
 
     var result = Dialog.Show(md);
-    if (result < 1) return;
+    if (result < 1) return Task.CompletedTask;
 
     var items = result switch {
       1 => Core.S.Person.Selected.Items.ToArray(),
@@ -89,8 +90,9 @@ public sealed class MediaItemVM : ObservableObject {
       _ => Array.Empty<object>()
     };
 
-    if (items.Length == 0) return;
-    _coreVM.MediaItem.Views.LoadByTag(items);
+    return items.Length == 0
+      ? Task.CompletedTask
+      : _coreVM.MediaItem.Views.LoadByTag(items, token);
   }
 
   private void ViewSelected() {
@@ -164,6 +166,6 @@ public sealed class MediaItemVM : ObservableObject {
       : null;
   }
 
-  public Task ViewMediaItems(MediaItemM[] items, string name) =>
-    Views.ViewMediaItems(items, name);
+  public Task ViewMediaItems(MediaItemM[] items, string name, CancellationToken token) =>
+    Views.ViewMediaItems(items, name, token);
 }
