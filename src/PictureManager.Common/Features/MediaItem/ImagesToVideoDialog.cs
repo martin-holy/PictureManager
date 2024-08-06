@@ -1,6 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.UI.Dialogs;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem.Image;
@@ -10,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem;
@@ -29,7 +31,7 @@ public sealed class ImagesToVideoDialog : Dialog {
 
   public ImagesToVideoDialog(ImageM[] items, OnSuccess onSuccess) : base("Images to Video", MH.UI.Res.IconMovieClapper) {
     Buttons = [
-      new(new(CreateVideo, () => !IsBusy, MH.UI.Res.IconMovieClapper, "Create Video"), true),
+      new(new AsyncRelayCommand(CreateVideo, () => !IsBusy, MH.UI.Res.IconMovieClapper, "Create Video"), true),
       new(CloseCommand, false, true)
     ];
 
@@ -121,7 +123,7 @@ public sealed class ImagesToVideoDialog : Dialog {
     return tcs.Task;
   }
 
-  private async void CreateVideo() {
+  private async Task CreateVideo(CancellationToken token) {
     Core.Settings.Save();
 
     // check for FFMPEG

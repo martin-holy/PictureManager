@@ -20,7 +20,7 @@ public sealed class FolderKeywordsDialog : Dialog {
   public FolderKeywordsDialog() : base("Folder Keywords", Res.IconFolderPuzzle) {
     SelectCommand = new(x => SelectedFolder = x);
     Buttons = [
-      new(new(() => Remove(SelectedFolder!), () => SelectedFolder != null, MH.UI.Res.IconXCross, "Remove")),
+      new(new RelayCommand(() => Remove(SelectedFolder!), () => SelectedFolder != null, MH.UI.Res.IconXCross, "Remove")),
       new(CloseCommand, false, true)
     ];
 
