@@ -73,7 +73,7 @@ public sealed class CancelAsyncCommand : RelayCommandBase, ICommand {
   bool ICommand.CanExecute(object? parameter) =>
     _executing && !_cts.IsCancellationRequested;
 
-  void ICommand.Execute(object? parameter) {
+  public void Execute(object? parameter) {
     _cts.Cancel();
     RaiseCanExecuteChanged();
   }
