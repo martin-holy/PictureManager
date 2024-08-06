@@ -30,7 +30,6 @@ public class KeywordM : TreeItem, IEquatable<KeywordM> {
 
   public KeywordM(int id, string name, ITreeItem? parent) : base(Res.IconTag, name) {
     Id = id;
-    Name = name;
     Parent = parent;
   }
 
