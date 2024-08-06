@@ -1,5 +1,6 @@
 ﻿using MH.UI.Controls;
 using System;
+using MH.Utils.BaseClasses;
 
 namespace MH.UI.Dialogs;
 
@@ -21,7 +22,7 @@ public class InputDialog : Dialog {
     _validator = validator;
 
     Buttons = [
-      new(new(Validate, Res.IconCheckMark, "Ok"), true),
+      new(new RelayCommand(Validate, Res.IconCheckMark, "Ok"), true),
       new(CancelCommand, false, true)
     ];
   }
