@@ -1,5 +1,6 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
@@ -43,9 +44,9 @@ public sealed class FileOperationCollisionDialog : Dialog {
     _fileName = fileName;
 
     Buttons = [
-      new(new (Rename, null, "Rename")),
-      new(new (() => Result = (int)CollisionResult.Replace, null, "Replace")),
-      new(new (() => Result = (int)CollisionResult.Skip, null, "Skip"))
+      new(new RelayCommand(Rename, null, "Rename")),
+      new(new RelayCommand(() => Result = (int)CollisionResult.Replace, null, "Replace")),
+      new(new RelayCommand(() => Result = (int)CollisionResult.Skip, null, "Skip"))
     ]; 
   }
 
