@@ -35,7 +35,7 @@ public class AsyncRelayCommand : RelayCommandBase, IAsyncCommand {
   }
 
   public virtual async Task ExecuteAsync(object? parameter, Task task) {
-    Execution = new(task);
+    Execution = new(task, true);
     RaiseCanExecuteChanged();
     await Execution.TaskCompletion;
     CancelCommand.NotifyCommandFinished();
