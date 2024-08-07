@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace PictureManager.Common.Features.MediaItem.Image;
 
 public sealed class ImageResizeDialog : Dialog {
-  private CancellationTokenSource? _cts;
   private readonly ImageM[] _items;
+  private readonly AsyncRelayCommand _resizeCommand;
   private bool _preserveThumbnail;
   private bool _preserveMetadata;
   private string _fileName = string.Empty;
@@ -19,6 +19,7 @@ public sealed class ImageResizeDialog : Dialog {
   private double _maxMpx;
   private int _progressMax;
   private int _progressValue;
+  private readonly IProgress<(int, string)> _progress;
 
   public bool PreserveThumbnail { get => _preserveThumbnail; set { _preserveThumbnail = value; OnPropertyChanged(); } }
   public bool PreserveMetadata { get => _preserveMetadata; set { _preserveMetadata = value; OnPropertyChanged(); } }
@@ -33,17 +34,24 @@ public sealed class ImageResizeDialog : Dialog {
 
   public ImageResizeDialog(ImageM[] items) : base("Resize Images", Res.IconImageMultiple) {
     OpenFolderBrowserCommand = new(OpenFolderBrowser, Res.IconFolder, "Select folder");
+    _resizeCommand = new(Resize, () => !string.IsNullOrEmpty(_destDir), null, "Resize");
+    _items = items;
+    _progressMax = _items.Length;
+    _progress = new Progress<(int, string)>(x => {
+      ProgressValue = x.Item1;
+      FileName = x.Item2;
+    });
+
     Buttons = [
-      new(new(Resize, () => !string.IsNullOrEmpty(DestDir), null, "Resize"), true),
+      new(_resizeCommand, true),
       new(CloseCommand, false, true)
     ]; 
-    _items = items;
-    ProgressMax = _items.Length;
+    
     SetMaxMpx();
   }
 
   public override Task OnResultChanged(int result) {
-    if (result == 0 && _cts != null) _cts.Cancel();
+    if (result == 0) _resizeCommand.CancelCommand.Execute(null);
     return Task.CompletedTask;
   }
 
@@ -58,55 +66,37 @@ public sealed class ImageResizeDialog : Dialog {
     Mpx = MaxMpx;
   }
 
-  private void Resize() {
-    if (!Directory.Exists(DestDir)) {
-      try {
-        Directory.CreateDirectory(DestDir!);
-      }
-      catch (Exception ex) {
-        Log.Error(ex);
-        return;
-      }
-    }
+  private async Task Resize(CancellationToken token) {
+    var px = Convert.ToInt32(Mpx * 1000000);
 
-    ResizeImages(DestDir!, Convert.ToInt32(Mpx * 1000000), PreserveMetadata, PreserveThumbnail);
-  }
+    try {
+      if (!Directory.Exists(_destDir))
+        Directory.CreateDirectory(_destDir!);
 
-  private async void ResizeImages(string destination, int px, bool withMetadata, bool withThumbnail) {
-    _cts = new();
-
-    await Task.Run(() => {
-      try {
+      await Task.Run(() => {
         var index = 0;
-        var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _cts.Token };
+        var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = token };
 
         Parallel.ForEach(_items, po, mi => {
-          index++;
-          Tasks.RunOnUiThread(() => {
-            ProgressValue = index;
-            FileName = mi.FileName;
-          });
+          _progress.Report((index++, mi.FileName));
 
           try {
-            var dest = Path.Combine(destination, mi.FileName);
-            Imaging.ResizeJpg(mi.FilePath, dest, px, withMetadata, withThumbnail, Core.Settings.Common.JpegQuality);
+            var dest = Path.Combine(_destDir!, mi.FileName);
+            Imaging.ResizeJpg(mi.FilePath, dest, px, _preserveMetadata, _preserveThumbnail, Core.Settings.Common.JpegQuality);
           }
           catch (Exception ex) {
             Log.Error(ex, mi.FilePath);
           }
         });
-      }
-      catch (OperationCanceledException) { }
-      finally {
-        _cts.Dispose();
-        _cts = null;
-        Tasks.RunOnUiThread(() => { Result = 1; });
-      }
-    });
+      }, token);
+    }
+    finally {
+      Result = 1;
+    }
   }
 
   private void OpenFolderBrowser() {
     if (Core.VM.BrowseForFolder() is { } dirPath)
-      DestDir = dirPath;
+      _destDir = dirPath;
   }
 }
