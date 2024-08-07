@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 namespace PictureManager.Common.Features.Segment;
 
 public sealed class ExportSegmentsDialog : Dialog {
-  private CancellationTokenSource? _cts;
   private readonly SegmentM[] _items;
+  private readonly AsyncRelayCommand _exportCommand;
   private string _fileName = string.Empty;
   private string? _destDir;
   private int _progressMax;
   private int _progressValue;
+  private readonly IProgress<(int, string)> _progress;
 
   public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
   public string? DestDir { get => _destDir; set { _destDir = value; OnPropertyChanged(); } }
@@ -25,70 +26,54 @@ public sealed class ExportSegmentsDialog : Dialog {
 
   public ExportSegmentsDialog(SegmentM[] items) : base("Export Segments", Res.IconSegment) {
     OpenFolderBrowserCommand = new(OpenFolderBrowser, Res.IconFolder, "Select folder");
-    Buttons = [
-      new(new(Export, () => !string.IsNullOrEmpty(DestDir), null, "Export"), true),
-      new(CloseCommand, false, true)
-    ]; 
+    _exportCommand = new(Export, () => !string.IsNullOrEmpty(_destDir), null, "Export");
     _items = items;
-    ProgressMax = _items.Length;
+    _progressMax = _items.Length;
+    _progress = new Progress<(int, string)>(x => {
+      ProgressValue = x.Item1;
+      FileName = x.Item2;
+    });
+
+    Buttons = [
+      new(_exportCommand, true),
+      new(CloseCommand, false, true)
+    ];
   }
 
   public override Task OnResultChanged(int result) {
-    if (result == 0 && _cts != null) _cts.Cancel();
+    if (result == 0) _exportCommand.CancelCommand.Execute(null);
     return Task.CompletedTask;
   }
 
-  private void Export() {
-    if (!Directory.Exists(DestDir)) {
-      try {
-        Directory.CreateDirectory(DestDir!);
-      }
-      catch (Exception ex) {
-        Log.Error(ex);
-        return;
-      }
-    }
+  private async Task Export(CancellationToken token) {
+    try {
+      if (!Directory.Exists(_destDir))
+        Directory.CreateDirectory(_destDir!);
 
-    ExportSegments(DestDir!);
-  }
-
-  private async void ExportSegments(string destination) {
-    _cts = new();
-
-    await Task.Run(() => {
-      try {
+      await Task.Run(() => {
         var index = 0;
-        var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _cts.Token };
+        var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = token };
 
         Parallel.ForEach(_items, po, s => {
-          index++;
           var fileName = s.MediaItem.FileName.Replace(".jpg", "_segment_" + s.Id + ".jpg", StringComparison.OrdinalIgnoreCase);
-
-          Tasks.RunOnUiThread(() => {
-            ProgressValue = index;
-            FileName = fileName;
-          });
+          _progress.Report((index++, fileName));
 
           try {
-            var dest = Path.Combine(destination, fileName);
-            SegmentS.ExportSegment(s, dest);
+            SegmentS.ExportSegment(s, Path.Combine(_destDir!, fileName));
           }
           catch (Exception ex) {
             Log.Error(ex, s.MediaItem.FilePath);
           }
         });
-      }
-      catch (OperationCanceledException) { }
-      finally {
-        _cts.Dispose();
-        _cts = null;
-        Tasks.RunOnUiThread(() => { Result = 1; });
-      }
-    });
+      }, token);
+    }
+    finally {
+      Result = 1;
+    }
   }
 
   private void OpenFolderBrowser() {
     if (Core.VM.BrowseForFolder() is { } dirPath)
-      DestDir = dirPath;
+      _destDir = dirPath;
   }
 }
