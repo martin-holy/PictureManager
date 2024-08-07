@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 namespace MH.Utils.BaseClasses;
 
 public class NotifyTaskCompletion : ObservableObject {
+  private readonly bool _logError;
+
   public Task Task { get; }
   public Task TaskCompletion { get; }
   public TaskStatus Status => Task.Status;
@@ -21,15 +23,21 @@ public class NotifyTaskCompletion : ObservableObject {
     TaskCompletion = task.IsCompleted ? Task.CompletedTask : WatchTaskAsync(task);
   }
 
+  public NotifyTaskCompletion(Task task, bool logError) : this(task) {
+    _logError = logError;
+  }
+
   private async Task WatchTaskAsync(Task task) {
     try {
       await task;
     }
-    catch {
-      // ignored
+    catch (OperationCanceledException) { }
+    catch (Exception ex) {
+      if (_logError) Log.Error(ex);
     }
-
-    NotifyPropertyChanged(task);
+    finally {
+      NotifyPropertyChanged(task);
+    }
   }
 
   protected virtual void NotifyPropertyChanged(Task task) {
