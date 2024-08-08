@@ -36,7 +36,7 @@ public class CompressDialog : Dialog {
     ];
   }
 
-  public override Task OnResultChanged(int result) {
+  protected override Task OnResultChanged(int result) {
     if (result != 0) return Task.CompletedTask;
     _cts?.Cancel();
     return _workTask ?? Task.CompletedTask;
