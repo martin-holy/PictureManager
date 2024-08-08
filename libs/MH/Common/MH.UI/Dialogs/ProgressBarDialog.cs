@@ -20,7 +20,7 @@ public abstract class ProgressBarDialog : Dialog {
     Buttons = [new(CancelCommand, false, true)];
   }
 
-  public override Task OnResultChanged(int result) {
+  protected override Task OnResultChanged(int result) {
     if (result != 0) {
       IsCanceled = true;
       OnCancel();
