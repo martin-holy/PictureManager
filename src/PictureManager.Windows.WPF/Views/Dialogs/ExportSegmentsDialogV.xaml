@@ -42,7 +42,7 @@
         Grid.Column="0"
         Grid.Row="1"
         Grid.ColumnSpan="2"
-        Text="{Binding FileName}"/>
+        Text="{Binding ProgressText}"/>
 
       <ProgressBar
         Grid.Column="0"
