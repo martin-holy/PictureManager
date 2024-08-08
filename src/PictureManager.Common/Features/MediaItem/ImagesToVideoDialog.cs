@@ -46,7 +46,7 @@ public sealed class ImagesToVideoDialog : Dialog {
     _onSuccess = onSuccess;
   }
 
-  public override Task OnResultChanged(int result) {
+  protected override Task OnResultChanged(int result) {
     if (result == 0 && _process != null) {
       _process.Kill();
       DeleteFile(_inputListPath);

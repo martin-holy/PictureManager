@@ -50,7 +50,7 @@ public sealed class ImageResizeDialog : Dialog {
     SetMaxMpx();
   }
 
-  public override Task OnResultChanged(int result) {
+  protected override Task OnResultChanged(int result) {
     if (result == 0) _resizeCommand.CancelCommand.Execute(null);
     return Task.CompletedTask;
   }
