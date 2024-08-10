@@ -1,5 +1,4 @@
 ﻿using MH.UI.Controls;
-using MH.UI.Dialogs;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using System.Collections.Generic;
@@ -40,27 +39,10 @@ public sealed class ImageComparerVM : ObservableObject {
     // get hashes
     var newItems = items.Where(x => !hashes.ContainsKey(x)).ToArray();
     if (newItems.Length > 0)
-      GetHashes(newItems, hashes, hashMethod);
+      Dialog.Show(new ComputeImageHashesDialog(items, hashes, hashMethod));
 
     // get similar
     var toCompare = hashes.Where(x => items.Contains(x.Key)).ToDictionary(x => x.Key, x => x.Value);
     return Imaging.GetSimilarImages(toCompare, limit);
-  }
-
-  private static void GetHashes(MediaItemM[] items, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
-    var progress = new ProgressBarAsyncDialog("Computing Hashes ...", Res.IconCompare, true, 1);
-    progress.Init(
-      items,
-      null,
-      // action
-      mi => {
-        if (!hashes.ContainsKey(mi))
-          hashes.Add(mi, hashMethod(mi.FilePathCache));
-      },
-      mi => mi.FilePath,
-      null);
-
-    progress.Start();
-    Dialog.Show(progress);
   }
 }
