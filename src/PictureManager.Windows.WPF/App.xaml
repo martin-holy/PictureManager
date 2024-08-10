@@ -4,7 +4,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:dialogs="clr-namespace:MH.UI.Dialogs;assembly=MH.UI">
+  xmlns:dialogs="clr-namespace:MH.UI.Dialogs;assembly=MH.UI"
+  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common">
   
   <Application.Resources>
     <ResourceDictionary>
@@ -160,7 +161,9 @@
       <u:TypeDataTemplateSelector x:Key="MH.S.DialogHost.DialogTemplateSelector">
         <u:TypeDataTemplateSelector.TemplateMappings>
           <x:Array Type="{x:Type u:TypeTemplateMapping}">
+            <u:TypeTemplateMapping Type="{x:Type ftImage:ComputeImageHashesDialog}" TemplateKey="MH.UI.Dialogs.ProgressDialog`1"/>
             <u:TypeTemplateMapping Type="{x:Type dialogs:GroupByDialog`1}" TemplateKey="MH.UI.Dialogs.GroupByDialog`1"/>
+            <u:TypeTemplateMapping Type="{x:Type dialogs:ProgressDialog`1}" TemplateKey="MH.UI.Dialogs.ProgressDialog`1"/>
           </x:Array>
         </u:TypeDataTemplateSelector.TemplateMappings>
       </u:TypeDataTemplateSelector>
