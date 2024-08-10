@@ -16,6 +16,7 @@ public sealed class Core {
   private static readonly object _lock = new();
   public static Core Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
+  public static ICoreP P { get; private set; } = null!;
   public static CoreR R { get; } = new();
   public static CoreS S { get; private set; } = null!;
   public static CoreVM VM { get; private set; } = null!;
@@ -41,7 +42,8 @@ public sealed class Core {
     });
   }
 
-  public void AfterInit() {
+  public void AfterInit(ICoreP coreP) {
+    P = coreP;
     S = new(R);
     VM = new(S, R);
 

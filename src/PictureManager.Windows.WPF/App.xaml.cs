@@ -30,7 +30,7 @@ public partial class App {
     Core = Core.Inst;
     Ui = new();
 
-    Core.AfterInit();
+    Core.AfterInit(Ui);
     Ui.AfterInit();
 
     ShutdownMode = ShutdownMode.OnMainWindowClose;
