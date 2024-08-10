@@ -1,0 +1,19 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:uid="clr-namespace:MH.UI.Dialogs;assembly=MH.UI">
+
+  <DataTemplate x:Key="MH.UI.Dialogs.ProgressDialog`1" DataType="{x:Type uid:ProgressDialog`1}">
+    <DockPanel Margin="5" Height="110" Width="550">
+      <ProgressBar
+        DockPanel.Dock="Bottom"
+        Value="{Binding ProgressValue}"
+        Maximum="{Binding ProgressMax}"/>
+
+      <TextBlock
+        TextWrapping="Wrap"
+        Margin="5,10"
+        Text="{Binding ProgressText}"/>
+    </DockPanel>
+  </DataTemplate>
+</ResourceDictionary>
