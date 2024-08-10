@@ -20,7 +20,7 @@ using System.Windows;
 
 namespace PictureManager.Windows.WPF;
 
-public sealed class AppCore : ObservableObject {
+public sealed class AppCore : ObservableObject, ICoreP {
   public WPF.ViewModels.SegmentRectVM SegmentRectVM { get; private set; } = null!;
 
   public static RelayCommand TestButtonCommand { get; } = new(Tests.Run, Res.IconBug, "Test Button");
@@ -103,4 +103,7 @@ public sealed class AppCore : ObservableObject {
       }
     }
   }
+
+  public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) =>
+    Utils.Imaging.CreateImageThumbnail(srcPath, destPath, desiredSize, quality);
 }
