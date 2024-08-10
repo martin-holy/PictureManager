@@ -53,4 +53,11 @@ public sealed class MediaItemS(MediaItemR r) : ObservableObject {
     var mi = folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
     return mi != null ? mi : CopyMoveU.CreateMediaItemAndReadMetadata(folder, fileName);
   }
+
+  public static void CreateImageThumbnail(MediaItemM mi) =>
+    Core.P.CreateImageThumbnail(
+      mi.FilePath,
+      mi.FilePathCache,
+      Core.Settings.MediaItem.ThumbSize,
+      Core.Settings.Common.JpegQuality);
 }
