@@ -39,8 +39,8 @@ public sealed class FileOperationCollisionDialog : Dialog {
     _destFolder = dest;
     SetInfo(IOExtensions.PathCombine(src.FullPath, fileName), true);
     SetInfo(IOExtensions.PathCombine(dest.FullPath, fileName), false);
-    SrcMediaItem = srcMi;
-    DestMediaItem = GetMediaItem(dest, fileName);
+    _srcMediaItem = srcMi;
+    _destMediaItem = GetMediaItem(dest, fileName);
     _fileName = fileName;
 
     Buttons = [
