@@ -423,16 +423,7 @@ public class CoreVM : ObservableObject {
   }
 
   private void SaveImageMetadataToFiles(ImageM[] items) {
-    if (Dialog.Show(new MessageDialog(
-          "Save metadata to files",
-          "Do you really want to save image metadata to {0} file{1}?".Plural(items.Length),
-          MH.UI.Res.IconQuestion,
-          true)) != 1) return;
-
-    var progress = new ProgressBarAsyncDialog("Saving metadata to files...", MH.UI.Res.IconImage, true, Environment.ProcessorCount);
-    progress.Init(items, null, mi => _coreS.Image.TryWriteMetadata(mi), mi => mi.FilePath, null);
-    progress.Start();
-    Dialog.Show(progress);
+    SaveMetadataDialog.Open(items, _coreS.Image);
     _ = MainWindow.StatusBar.UpdateFileSize();
   }
 
