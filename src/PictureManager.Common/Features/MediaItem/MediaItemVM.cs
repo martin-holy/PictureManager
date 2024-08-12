@@ -115,20 +115,8 @@ public sealed class MediaItemVM : ObservableObject {
     return true;
   }
 
-  public void ReloadMetadata(RealMediaItemM[] items) {
-    if (items.Length == 0 || Dialog.Show(new MessageDialog(
-          "Reload metadata from files",
-          "Do you really want to reload image metadata for {0} file{1}?".Plural(items.Length),
-          MH.UI.Res.IconQuestion,
-          true)) != 1) return;
-
-    // TODO check async and maybe use the other ProgressBarDialog
-    var progress = new ProgressBarAsyncDialog("Reloading metadata...", MH.UI.Res.IconImage, true, Environment.ProcessorCount);
-    progress.Init(items, null, async mi => await _s.ReloadMetadata(mi), mi => mi.FilePath,
-      delegate { _s.OnMetadataReloaded(items); });
-    progress.Start();
-    Dialog.Show(progress);
-  }
+  public void ReloadMetadata(RealMediaItemM[] items) =>
+    ReloadMetadataDialog.Open(items, _s);
 
   public void Rename(RealMediaItemM current) {
     var ext = Path.GetExtension(current.FileName);
