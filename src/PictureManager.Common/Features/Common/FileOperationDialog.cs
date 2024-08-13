@@ -24,7 +24,7 @@ public sealed class FileOperationDialog : Dialog {
   public IProgress<object[]> Progress { get; set; }
 
   public FileOperationDialog(string title) : base(title, Res.IconImageMultiple) {
-    ProgressValue = 0;
+    _progressValue = 0;
 
     Progress = new Progress<object[]>(e => {
       ProgressValue = (int)e[0];
