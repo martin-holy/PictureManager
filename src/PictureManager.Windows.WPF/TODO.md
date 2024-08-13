@@ -33,6 +33,10 @@
 ## SegmentsMatching
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
+## MainTabs
+  - text is cropped from both sides (centered)
+## PresentationPanelVM
+  - move MediaItemM.IsPanoramic method to PresentationPanelVM and use ZoomAndPan.ActualSize instead of 16/9 to calculate result
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
@@ -73,6 +77,7 @@
   - add support for clearing MediaItemThumbSourceConverter ErrorCache and IgnoreCache
 ## StatusBar
   - limit folder path size
+  - add menu with zooms on zoom
 ## PersonMerge
   - show selected person name on merge dialog
 ## PresentationPanelVM
@@ -145,6 +150,7 @@
   - platform independent part of ZoomAndPan
   - unused method LinkFolderWithFolderKeyword
   - maybe move all CORE properties that needs to be set from WPF to one class
+  - use private fileds in classes when possible
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
@@ -158,6 +164,8 @@
   - ...
 ## MergePeopleDialogM
   - rewrite, use ref for Person and SegmentsToUpdate
+## Async rewrite
+  - CompressDialog
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
