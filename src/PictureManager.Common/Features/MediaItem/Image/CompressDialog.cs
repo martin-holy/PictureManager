@@ -28,8 +28,8 @@ public class CompressDialog : Dialog {
 
   public CompressDialog(ImageM[] items, int jpegQualityLevel) : base("Compress images", MH.UI.Res.IconImage) {
     Items = items;
-    JpegQualityLevel = jpegQualityLevel;
-    ProgressValue = Items.Length;
+    _jpegQualityLevel = jpegQualityLevel;
+    _progressValue = Items.Length;
     Buttons = [
       new(new RelayCommand(Compress, () => !IsWorkInProgress, MH.UI.Res.IconImage, "Compress"), true),
       new(CloseCommand, false, true)
