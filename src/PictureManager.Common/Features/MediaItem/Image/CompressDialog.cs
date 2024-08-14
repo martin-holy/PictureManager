@@ -55,7 +55,7 @@ public class CompressDialog : Dialog {
       _cts?.Dispose();
       _cts = new();
 
-      await foreach (var fileSizes in CompressMediaItemsAsync(Items, _cts.Token)) {
+      await foreach (var fileSizes in CompressMediaItemsAsync(Items, _cts.Token, _jpegQualityLevel)) {
         ProgressValue++;
         _totalSourceSize += fileSizes[0];
         _totalCompressedSize += fileSizes[1];
@@ -73,13 +73,13 @@ public class CompressDialog : Dialog {
     RelayCommandBase.RaiseCanExecuteChanged();
   }
 
-  private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(ImageM[] items, [EnumeratorCancellation] CancellationToken token = default) {
+  private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(ImageM[] items, [EnumeratorCancellation] CancellationToken token, int quality) {
     foreach (var mi in items) {
       if (token.IsCancellationRequested) yield break;
 
       yield return await Task.Run(() => {
         var originalSize = new FileInfo(mi.FilePath).Length;
-        var bSuccess = Core.S.Image.TryWriteMetadata(mi);
+        var bSuccess = Core.S.Image.TryWriteMetadata(mi, quality);
         var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
         return new[] { originalSize, newSize };
       });
