@@ -1,7 +1,6 @@
 ﻿using MH.UI.WPF.Extensions;
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
@@ -136,7 +135,7 @@ public static class MediaItemVM {
     return output;
   }
 
-  public static bool WriteMetadata(ImageM img) {
+  public static bool WriteMetadata(ImageM img, int quality) {
     var original = new FileInfo(img.FilePath);
     var newFile = new FileInfo(img.FilePath + "_newFile");
     var bSuccess = false;
@@ -157,7 +156,7 @@ public static class MediaItemVM {
           metadata.SetQuery("System.Photo.Orientation", (ushort)img.Orientation.ToInt());
           SetOrRemoveQuery(metadata, "/xmp/GeoNames:GeoNameId", img.GeoLocation?.GeoName?.Id.ToString());
 
-          bSuccess = WriteMetadataToFile(img, newFile, decoder, metadata, true);
+          bSuccess = WriteMetadataToFile(img, newFile, decoder, metadata, true, quality);
         }
       }
     }
@@ -242,10 +241,10 @@ public static class MediaItemVM {
       bm.RemoveQuery(query);
   }
 
-  private static bool WriteMetadataToFile(ImageM img, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
+  private static bool WriteMetadataToFile(ImageM img, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail, int quality) {
     bool bSuccess;
     var hResult = 0;
-    var encoder = new JpegBitmapEncoder { QualityLevel = Core.Settings.Common.JpegQuality };
+    var encoder = new JpegBitmapEncoder { QualityLevel = quality };
     encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0],
       withThumbnail ? decoder.Frames[0].Thumbnail : null, metadata, decoder.Frames[0].ColorContexts));
 
@@ -274,7 +273,7 @@ public static class MediaItemVM {
         return false;
       }
 
-      bSuccess = WriteMetadataToFile(img, newFile, decoder, metadata, false);
+      bSuccess = WriteMetadataToFile(img, newFile, decoder, metadata, false, quality);
     }
 
     return bSuccess;
