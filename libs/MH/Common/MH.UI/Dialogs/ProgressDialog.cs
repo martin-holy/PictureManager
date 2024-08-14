@@ -13,7 +13,7 @@ public class ProgressDialog<T> : Dialog {
   private int _progressValue;
   private int _progressIndex;
   private string? _progressText;
-  private readonly IProgress<(int, string)> _progress;
+  private readonly IProgress<(int, string, object?)> _progress;
 
   public int ProgressMax { get => _progressMax; set { _progressMax = value; OnPropertyChanged(); } }
   public int ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
@@ -25,9 +25,11 @@ public class ProgressDialog<T> : Dialog {
     _items = items;
     _autoClose = autoClose;
     _progressMax = _items.Length;
-    _progress = new Progress<(int, string)>(x => {
+    _progressValue = _progressMax;
+    _progress = new Progress<(int, string, object?)>(x => {
       ProgressValue = x.Item1;
       ProgressText = x.Item2;
+      CustomProgress(x.Item3);
     });
 
     Buttons = actionIcon == null && actionText == null
@@ -41,7 +43,12 @@ public class ProgressDialog<T> : Dialog {
   }
 
   protected void ReportProgress(string msg) =>
-    _progress.Report((_progressIndex++, msg));
+    ReportProgress(msg, null);
+
+  protected virtual void ReportProgress(string msg, object? args) =>
+    _progress.Report((++_progressIndex, msg, args));
+
+  protected virtual void CustomProgress(object? args) { }
 
   protected override Task OnResultChanged(int result) {
     if (result == 0) ActionCommand.CancelCommand.Execute(null);
