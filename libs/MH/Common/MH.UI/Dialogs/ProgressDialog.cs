@@ -8,6 +8,7 @@ namespace MH.UI.Dialogs;
 
 public class ProgressDialog<T> : Dialog {
   private readonly T[] _items;
+  private readonly bool _autoClose;
   private int _progressMax;
   private int _progressValue;
   private int _progressIndex;
@@ -19,9 +20,10 @@ public class ProgressDialog<T> : Dialog {
   public string? ProgressText { get => _progressText; set { _progressText = value; OnPropertyChanged(); } }
   public AsyncRelayCommand ActionCommand { get; }
 
-  public ProgressDialog(string title, string icon, T[] items, string? actionIcon, string? actionText) : base(title, icon) {
+  public ProgressDialog(string title, string icon, T[] items, string? actionIcon, string? actionText, bool autoClose = true) : base(title, icon) {
     ActionCommand = new(DoAction, CanAction, actionIcon, actionText);
     _items = items;
+    _autoClose = autoClose;
     _progressMax = _items.Length;
     _progress = new Progress<(int, string)>(x => {
       ProgressValue = x.Item1;
@@ -72,7 +74,7 @@ public class ProgressDialog<T> : Dialog {
     }
     finally {
       DoAfter();
-      Result = 1;
+      if (_autoClose) Result = 1;
     }
   }
 }

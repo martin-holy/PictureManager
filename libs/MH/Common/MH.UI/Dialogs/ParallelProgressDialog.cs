@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace MH.UI.Dialogs;
 
-public class ParallelProgressDialog<T>(string title, string icon, T[] items, string? actionIcon, string? actionText)
-  : ProgressDialog<T>(title, icon, items, actionIcon, actionText) {
+public class ParallelProgressDialog<T>(string title, string icon, T[] items, string? actionIcon, string? actionText, bool autoClose = true)
+  : ProgressDialog<T>(title, icon, items, actionIcon, actionText, autoClose) {
   public int MaxDegreeOfParallelism { get; set; } = Environment.ProcessorCount;
 
   protected override Task Do(T[] items, CancellationToken token) {
