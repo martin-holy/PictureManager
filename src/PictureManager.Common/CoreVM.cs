@@ -423,7 +423,7 @@ public class CoreVM : ObservableObject {
   }
 
   private void SaveImageMetadataToFiles(ImageM[] items) {
-    SaveMetadataDialog.Open(items, _coreS.Image);
+    SaveMetadataDialog.Open(items, _coreS.Image, Core.Settings.Common.JpegQuality);
     _ = MainWindow.StatusBar.UpdateFileSize();
   }
 
