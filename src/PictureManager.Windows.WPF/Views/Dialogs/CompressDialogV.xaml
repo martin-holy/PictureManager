@@ -14,47 +14,14 @@
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
-
-      <Label
-        Grid.Column="0"
-        Grid.Row="0"
-        HorizontalAlignment="Center"
-        Content="Original"/>
-      
-      <Label
-        Grid.Column="1"
-        Grid.Row="0"
-        HorizontalAlignment="Center"
-        Content="Compressed"/>
-
-      <Label
-        Grid.Column="0"
-        Grid.Row="1"
-        HorizontalAlignment="Center"
-        FontSize="20"
-        Content="{Binding TotalSourceSize}"/>
-      
-      <Label
-        Grid.Column="1"
-        Grid.Row="1"
-        HorizontalAlignment="Center"
-        FontSize="20"
-        Content="{Binding TotalCompressedSize}"/>
-
-      <ProgressBar
-        Grid.Column="0"
-        Grid.Row="2"
-        Grid.ColumnSpan="2"
-        Margin="10"
-        Maximum="{Binding Items.Length}"
-        Value="{Binding ProgressValue}"/>
 
       <DockPanel
         Grid.Column="0"
-        Grid.Row="3"
+        Grid.Row="0"
         Grid.ColumnSpan="2"
-        Margin="10,0">
+        Margin="10,5,10,20">
 
         <TextBlock
           DockPanel.Dock="Left"
@@ -63,13 +30,55 @@
 
         <Slider
           Margin="10,0,0,0"
-          Minimum="80"
+          Minimum="70"
           Maximum="95"
           VerticalAlignment="Center"
           IsTabStop="True"
           SmallChange="1"
           Value="{Binding JpegQualityLevel}"/>
       </DockPanel>
+
+      <Label
+        Grid.Column="0"
+        Grid.Row="1"
+        HorizontalAlignment="Center"
+        Content="Original"/>
+    
+      <Label
+        Grid.Column="1"
+        Grid.Row="1"
+        HorizontalAlignment="Center"
+        Content="Compressed"/>
+
+      <Label
+        Grid.Column="0"
+        Grid.Row="2"
+        HorizontalAlignment="Center"
+        FontSize="20"
+        Content="{Binding TotalSourceSize}"/>
+    
+      <Label
+        Grid.Column="1"
+        Grid.Row="2"
+        HorizontalAlignment="Center"
+        FontSize="20"
+        Content="{Binding TotalCompressedSize}"/>
+
+      <TextBlock
+        Grid.Column="0"
+        Grid.Row="3"
+        Grid.ColumnSpan="2"
+        Margin="10"
+        HorizontalAlignment="Left"
+        Text="{Binding ProgressText}"/>
+
+      <ProgressBar
+        Grid.Column="0"
+        Grid.Row="4"
+        Grid.ColumnSpan="2"
+        Margin="10,0,10,5"
+        Maximum="{Binding ProgressMax}"
+        Value="{Binding ProgressValue}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>
