@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Folder;
+using PictureManager.Common.Features.GeoLocation;
 using PictureManager.Common.Features.GeoName;
 using PictureManager.Common.Features.Keyword;
 using PictureManager.Common.Features.MediaItem;
@@ -405,13 +406,9 @@ public class CoreVM : ObservableObject {
     );
   }
 
-  private void ReadGeoLocationFromFiles(ImageM[] items, bool reload = true) {
-    GeoLocationProgressDialog(items, "Reading GeoLocations from files ...", async mi => {
-      if (!reload && mi.GeoLocation != null) return;
-      var mim = new MediaItemMetadata(mi);
-      await Task.Run(() => { MediaItemS.ReadMetadata(mim, true); });
-      if (mim.Success) await mim.FindGeoLocation(false);
-    });
+  private void ReadGeoLocationFromFiles(ImageM[] items) {
+    Dialog.Show(new ReadGeoLocationFromFilesDialog(items));
+    _coreR.MediaItem.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
   }
 
   private void ResizeImages(ImageM[] items) =>
