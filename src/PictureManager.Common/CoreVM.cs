@@ -366,8 +366,8 @@ public class CoreVM : ObservableObject {
     SegmentsMatching.Reload(segments);
   }
 
-  private static void CompressImages(ImageM[] items) =>
-    Dialog.Show(new CompressDialog(items, Core.Settings.Common.JpegQuality));
+  private void CompressImages(ImageM[] items) =>
+    Dialog.Show(new CompressDialog(items, _coreS.Image, Core.Settings.Common.JpegQuality));
 
   private void GetGeoNamesFromWeb(ImageM[] items) {
     items = items.Where(x => x.GeoLocation is { GeoName: null, Lat: not null, Lng: not null }).ToArray();
