@@ -4,6 +4,10 @@
 [B] - Bug fix
 
 Latest:
+ - [U] CompressDialog: JPG quality 70-95
+ - [U] CompressDialog view
+
+24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
  - [B] Creating new Keyword, Person, Keywords group or Persons group with empty name
  - [U] Settings view
