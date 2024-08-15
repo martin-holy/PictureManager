@@ -6,7 +6,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:dialogs="clr-namespace:MH.UI.Dialogs;assembly=MH.UI"
   xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
-  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftGeoLocation="clr-namespace:PictureManager.Common.Features.GeoLocation;assembly=PictureManager.Common">
   
   <Application.Resources>
     <ResourceDictionary>
@@ -162,6 +163,7 @@
       <u:TypeDataTemplateSelector x:Key="MH.S.DialogHost.DialogTemplateSelector">
         <u:TypeDataTemplateSelector.TemplateMappings>
           <x:Array Type="{x:Type u:TypeTemplateMapping}">
+            <u:TypeTemplateMapping Type="{x:Type ftGeoLocation:ReadGeoLocationFromFilesDialog}" TemplateKey="MH.UI.Dialogs.ProgressDialog`1"/>
             <u:TypeTemplateMapping Type="{x:Type ftImage:ComputeImageHashesDialog}" TemplateKey="MH.UI.Dialogs.ProgressDialog`1"/>
             <u:TypeTemplateMapping Type="{x:Type ftMediaItem:ReloadMetadataDialog}" TemplateKey="MH.UI.Dialogs.ProgressDialog`1"/>
             <u:TypeTemplateMapping Type="{x:Type ftImage:SaveMetadataDialog}" TemplateKey="MH.UI.Dialogs.ProgressDialog`1"/>
