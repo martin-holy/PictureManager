@@ -48,6 +48,7 @@
   - RangeSlider - change values by keyboard
   - PopupSlider - close Slider using keyboard
   - add scrollbar for TabPanel
+  - ProgressDialog: create host template with ProgressText and ProgressBar
 
         # MH.UI
 ## CollectionView
@@ -155,8 +156,6 @@
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
   - change GetById to return not null and add TryGetById and maybe pass class prop to it
-## ProgressBarAsyncDialog
-  - do Init and Start in constructor
 ## Components
   - feature that contains only ViewModel and View
   - it can be null and it is created on first use
@@ -164,8 +163,6 @@
   - ...
 ## MergePeopleDialogM
   - rewrite, use ref for Person and SegmentsToUpdate
-## Async rewrite
-  - CompressDialog
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
