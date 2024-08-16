@@ -32,7 +32,7 @@
           <MenuItem Header="Dialogs" DataContext="{Binding VM.MainWindow, Source={x:Static s:App.Core}}">
             <MenuItem Command="{Binding OpenMessageDialogCommand}"/>
             <MenuItem Command="{Binding OpenInputDialogCommand}"/>
-            <!--<MenuItem Command="{Binding OpenProgressBarDialogCommand}"/>-->
+            <MenuItem Command="{Binding OpenProgressDialogCommand}"/>
           </MenuItem>
           <MenuItem Header="Left Content" DataContext="{Binding VM.MainWindow, Source={x:Static s:App.Core}}">
             <MenuItem.Icon>

@@ -56,7 +56,7 @@ public class MainWindowVM : ObservableObject {
 
   public RelayCommand OpenMessageDialogCommand { get; }
   public RelayCommand OpenInputDialogCommand { get; }
-  public AsyncRelayCommand OpenProgressBarDialogCommand { get; }
+  public RelayCommand OpenProgressDialogCommand { get; }
 
   public RelayCommand OpenControlsTabCommand { get; }
   public RelayCommand OpenButtonsTabCommand { get; }
@@ -82,7 +82,7 @@ public class MainWindowVM : ObservableObject {
 
     OpenMessageDialogCommand = new(OpenMessageDialog, Icons.Bug, "Message Dialog");
     OpenInputDialogCommand = new(OpenInputDialog, Icons.Bug, "Input Dialog");
-    OpenProgressBarDialogCommand = new(OpenProgressBarDialog, Icons.Bug, "Progress Bar Dialog");
+    OpenProgressDialogCommand = new(OpenProgressDialog, Icons.Bug, "Progress Bar Dialog");
 
     OpenControlsTabCommand = new(OpenControlsTab, Icons.Bug, "Controls");
 
@@ -118,13 +118,13 @@ public class MainWindowVM : ObservableObject {
     var result = Dialog.Show(new InputDialog("Input Dialog", "Sample message", Icons.Tag, "Sample", validator));
   }
 
-  // TODO
-  private async Task OpenProgressBarDialog(CancellationToken token) {
+  private void OpenProgressDialog() {
     var items = new[] { "Item 1", "Item 2", "Item 3" };
-    var progress = new ProgressBarSyncDialog("Progress Bar Dialog", Icons.Drive);
+    Dialog.Show(new SampleProgressDialog(items));
+    /*var progress = new ProgressBarSyncDialog("Progress Bar Dialog", Icons.Drive);
     await progress.Init(items, null, item => Task.Delay(1000), item => item, null);
     progress.Start();
-    Dialog.Show(progress);
+    Dialog.Show(progress);*/
   }
 
   private void OpenControlsTab() => MiddleContent.Activate(Icons.Bug, "Controls", Controls);
