@@ -5,11 +5,6 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.GeoLocation;
@@ -23,6 +18,10 @@ using PictureManager.Common.Features.Rating;
 using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Features.Viewer;
 using PictureManager.Common.Layout;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace PictureManager.Common;
 
@@ -371,20 +370,8 @@ public class CoreVM : ObservableObject {
     Dialog.Show(new CompressDialog(items, _coreS.Image, Core.Settings.Common.JpegQuality));
 
   private void GetGeoNamesFromWeb(ImageM[] items) {
-    items = items.Where(x => x.GeoLocation is { GeoName: null, Lat: not null, Lng: not null }).ToArray();
-    if (items.Length == 0) return;
-    GeoLocationProgressDialog(items, "Getting GeoNames from web ...", async mi => {
-      if (_coreR.GeoName.ApiLimitExceeded) return;
-      _coreR.MediaItemGeoLocation.ItemUpdate(new(mi,
-        await _coreR.GeoLocation.GetOrCreate(mi.GeoLocation?.Lat, mi.GeoLocation?.Lng, null, null)));
-    });
-  }
-
-  private void GeoLocationProgressDialog(ImageM[] items, string msg, Func<ImageM, Task> action) {
-    var progress = new ProgressBarSyncDialog(msg, Res.IconLocationCheckin);
-    _ = progress.Init(items, null, action, mi => mi.FilePath, null);
-    progress.Start();
-    _coreR.MediaItem.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
+    if (GetGeoNamesFromWebDialog.Open(items, _coreR))
+      _coreR.MediaItem.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
   }
 
   private void ImagesToVideo(ImageM[] items) {
