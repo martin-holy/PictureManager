@@ -22,20 +22,28 @@ public sealed class CompressDialog : ParallelProgressDialog<ImageM> {
   }
 
   protected override void CustomProgress(object? args) {
-    if (args is not (long[] and [var originalSize, var newSize])) return;
+    if (args is not (long[] and [var sourceSize, var compressedSize])) return;
+    SetSize(_totalSourceSize + sourceSize, _totalCompressedSize + compressedSize);
+  }
 
-    _totalSourceSize += originalSize;
-    _totalCompressedSize += newSize;
+  protected override bool DoBefore() {
+    SetSize(0, 0);
+    return true;
+  }
+
+  private void SetSize(long source, long compressed) {
+    _totalSourceSize = source;
+    _totalCompressedSize = compressed;
     OnPropertyChanged(nameof(TotalSourceSize));
     OnPropertyChanged(nameof(TotalCompressedSize));
   }
 
   protected override Task Do(ImageM image) {
-    var originalSize = new FileInfo(image.FilePath).Length;
+    var sourceSize = new FileInfo(image.FilePath).Length;
     var bSuccess = _imageS.TryWriteMetadata(image, _jpegQualityLevel);
-    var newSize = bSuccess ? new FileInfo(image.FilePath).Length : originalSize;
+    var compressedSize = bSuccess ? new FileInfo(image.FilePath).Length : sourceSize;
 
-    ReportProgress(image.FileName, new[] { originalSize, newSize });
+    ReportProgress(image.FileName, new[] { sourceSize, compressedSize });
 
     return Task.CompletedTask;
   }
