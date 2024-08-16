@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 namespace PictureManager.Common.Features.GeoLocation;
 
 public sealed class ReadGeoLocationFromFilesDialog : ProgressDialog<ImageM> {
-  public ReadGeoLocationFromFilesDialog(ImageM[] items) : base("Reading GeoLocations from files ...",
-    Res.IconLocationCheckin, items, null, null) {
+  public ReadGeoLocationFromFilesDialog(ImageM[] items) :
+    base("Reading GeoLocations from files ...", Res.IconLocationCheckin, items, null, null) {
+    RunSync = true;
     AutoRun();
   }
 
