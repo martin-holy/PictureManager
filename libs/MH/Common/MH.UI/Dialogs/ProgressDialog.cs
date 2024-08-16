@@ -18,6 +18,7 @@ public class ProgressDialog<T> : Dialog {
   public int ProgressMax { get => _progressMax; set { _progressMax = value; OnPropertyChanged(); } }
   public int ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
   public string? ProgressText { get => _progressText; set { _progressText = value; OnPropertyChanged(); } }
+  public bool RunSync { get; set; }
   public AsyncRelayCommand ActionCommand { get; }
 
   public ProgressDialog(string title, string icon, T[] items, string? actionIcon, string? actionText, bool autoClose = true) : base(title, icon) {
@@ -74,10 +75,12 @@ public class ProgressDialog<T> : Dialog {
     try {
       if (!DoBefore()) return;
 
-      await Task.Run(async () => {
-        _progressIndex = 0;
-        await Do(_items, token).ConfigureAwait(false);
-      }, token);
+      _progressIndex = 0;
+
+      if (RunSync)
+        await Do(_items, token);
+      else
+        await Task.Run(async () => { await Do(_items, token).ConfigureAwait(false); }, token);
     }
     finally {
       DoAfter();
