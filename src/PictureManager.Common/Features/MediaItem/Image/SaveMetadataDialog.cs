@@ -1,5 +1,6 @@
 ﻿using MH.UI.Dialogs;
 using MH.Utils.Extensions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem.Image;
@@ -15,7 +16,7 @@ public sealed class SaveMetadataDialog : ParallelProgressDialog<ImageM> {
     AutoRun();
   }
 
-  protected override Task Do(ImageM item) {
+  protected override Task Do(ImageM item, CancellationToken token) {
     ReportProgress(item.FilePath);
     _imageS.TryWriteMetadata(item, _quality);
 

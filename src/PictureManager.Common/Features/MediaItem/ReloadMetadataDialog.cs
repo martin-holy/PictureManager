@@ -1,5 +1,6 @@
 ﻿using MH.UI.Dialogs;
 using MH.Utils.Extensions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem;
@@ -15,7 +16,7 @@ public sealed class ReloadMetadataDialog : ParallelProgressDialog<RealMediaItemM
     AutoRun();
   }
 
-  protected override Task Do(RealMediaItemM item) {
+  protected override Task Do(RealMediaItemM item, CancellationToken token) {
     ReportProgress(item.FilePath);
     return _mediaItemS.ReloadMetadata(item);
   }

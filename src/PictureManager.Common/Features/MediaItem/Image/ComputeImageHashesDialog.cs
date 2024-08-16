@@ -2,6 +2,7 @@
 using MH.Utils;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem.Image;
@@ -17,7 +18,7 @@ public sealed class ComputeImageHashesDialog : ProgressDialog<MediaItemM> {
     AutoRun();
   }
 
-  protected override Task Do(MediaItemM item) {
+  protected override Task Do(MediaItemM item, CancellationToken token) {
     ReportProgress(item.FilePath);
 
     if (_hashes.ContainsKey(item)) return Task.CompletedTask;
