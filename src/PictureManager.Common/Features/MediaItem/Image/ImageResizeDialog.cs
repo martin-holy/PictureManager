@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem.Image;
@@ -37,7 +38,7 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
     return true;
   }
 
-  protected override Task Do(ImageM image) {
+  protected override Task Do(ImageM image, CancellationToken token) {
     ReportProgress(image.FileName);
 
     try {

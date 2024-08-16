@@ -1,6 +1,7 @@
 ﻿using MH.UI.Dialogs;
 using MH.Utils.Extensions;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem.Image;
@@ -38,7 +39,7 @@ public sealed class CompressDialog : ParallelProgressDialog<ImageM> {
     OnPropertyChanged(nameof(TotalCompressedSize));
   }
 
-  protected override Task Do(ImageM image) {
+  protected override Task Do(ImageM image, CancellationToken token) {
     var sourceSize = new FileInfo(image.FilePath).Length;
     var bSuccess = _imageS.TryWriteMetadata(image, _jpegQualityLevel);
     var compressedSize = bSuccess ? new FileInfo(image.FilePath).Length : sourceSize;

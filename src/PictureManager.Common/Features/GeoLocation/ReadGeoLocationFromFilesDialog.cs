@@ -1,6 +1,7 @@
 ﻿using MH.UI.Dialogs;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.GeoLocation;
@@ -12,7 +13,7 @@ public sealed class ReadGeoLocationFromFilesDialog : ProgressDialog<ImageM> {
     AutoRun();
   }
 
-  protected override Task Do(ImageM item) {
+  protected override Task Do(ImageM item, CancellationToken token) {
     ReportProgress(item.FileName);
     var mim = new MediaItemMetadata(item);
     MediaItemS.ReadMetadata(mim, true);

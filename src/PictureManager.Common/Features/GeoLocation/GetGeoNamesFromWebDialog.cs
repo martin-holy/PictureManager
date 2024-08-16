@@ -1,6 +1,7 @@
 ﻿using MH.UI.Dialogs;
 using PictureManager.Common.Features.MediaItem.Image;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.GeoLocation;
@@ -15,7 +16,7 @@ public sealed class GetGeoNamesFromWebDialog : ProgressDialog<ImageM> {
     AutoRun();
   }
 
-  protected override async Task Do(ImageM item) {
+  protected override async Task Do(ImageM item, CancellationToken token) {
     ReportProgress(item.FileName);
     if (_coreR.GeoName.ApiLimitExceeded) return;
     var gl = await _coreR.GeoLocation.GetOrCreate(item.GeoLocation?.Lat, item.GeoLocation?.Lng, null, null);

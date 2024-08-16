@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Segment;
@@ -25,7 +26,7 @@ public sealed class ExportSegmentsDialog : ParallelProgressDialog<SegmentM> {
     return true;
   }
 
-  protected override Task Do(SegmentM segment) {
+  protected override Task Do(SegmentM segment, CancellationToken token) {
     var fileName = segment.MediaItem.FileName.Replace(".jpg", "_segment_" + segment.Id + ".jpg", StringComparison.OrdinalIgnoreCase);
     ReportProgress(fileName);
 
