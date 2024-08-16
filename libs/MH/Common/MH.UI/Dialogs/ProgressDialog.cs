@@ -60,12 +60,12 @@ public class ProgressDialog<T> : Dialog {
 
   protected virtual bool DoBefore() => true;
 
-  protected virtual Task Do(T item) => Task.CompletedTask;
+  protected virtual Task Do(T item, CancellationToken token) => Task.CompletedTask;
 
   protected virtual async Task Do(T[] items, CancellationToken token) {
     foreach (var item in _items) {
       if (token.IsCancellationRequested) break;
-      await Do(item).ConfigureAwait(false);
+      await Do(item, token).ConfigureAwait(false);
     }
   }
 
