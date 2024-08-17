@@ -21,7 +21,7 @@ public class ProgressDialog<T> : Dialog {
   public bool RunSync { get; set; }
   public AsyncRelayCommand ActionCommand { get; }
 
-  public ProgressDialog(string title, string icon, T[] items, string? actionIcon, string? actionText, bool autoClose = true) : base(title, icon) {
+  public ProgressDialog(string title, string icon, T[] items, string? actionIcon = null, string? actionText = null, bool autoClose = true) : base(title, icon) {
     ActionCommand = new(DoAction, CanAction, actionIcon, actionText);
     _items = items;
     _autoClose = autoClose;

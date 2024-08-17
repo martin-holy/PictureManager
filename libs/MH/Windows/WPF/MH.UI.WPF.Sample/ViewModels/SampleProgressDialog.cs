@@ -5,7 +5,7 @@ using MH.UI.Dialogs;
 namespace MH.UI.WPF.Sample.ViewModels;
 
 public sealed class SampleProgressDialog: ProgressDialog<string> {
-  public SampleProgressDialog(string[] items) : base("Sample Progress Dialog", Res.IconImage, items, null, null) {
+  public SampleProgressDialog(string[] items) : base("Sample Progress Dialog", Res.IconImage, items) {
     AutoRun();
   }
 
