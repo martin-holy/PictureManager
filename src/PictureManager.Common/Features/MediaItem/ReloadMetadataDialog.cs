@@ -10,7 +10,7 @@ public sealed class ReloadMetadataDialog : ParallelProgressDialog<RealMediaItemM
   private readonly MediaItemS _mediaItemS;
 
   public ReloadMetadataDialog(RealMediaItemM[] items, MediaItemS mediaItemS) :
-    base("Reloading metadata...", MH.UI.Res.IconImage, items, null, null) {
+    base("Reloading metadata...", MH.UI.Res.IconImage, items) {
     _items = items;
     _mediaItemS = mediaItemS;
     AutoRun();

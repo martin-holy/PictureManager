@@ -10,7 +10,7 @@ public sealed class GetGeoNamesFromWebDialog : ProgressDialog<ImageM> {
   private readonly CoreR _coreR;
 
   public GetGeoNamesFromWebDialog(ImageM[] items, CoreR coreR) :
-    base("Getting GeoNames from web ...", Res.IconLocationCheckin, items, null, null) {
+    base("Getting GeoNames from web ...", Res.IconLocationCheckin, items) {
     _coreR = coreR;
     RunSync = true;
     AutoRun();

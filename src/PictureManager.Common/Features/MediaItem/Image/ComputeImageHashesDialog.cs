@@ -12,7 +12,7 @@ public sealed class ComputeImageHashesDialog : ProgressDialog<MediaItemM> {
   private readonly Imaging.ImageHashFunc _hashMethod;
 
   public ComputeImageHashesDialog(MediaItemM[] items, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) :
-    base("Computing Hashes ...", Res.IconCompare, items, null, null) {
+    base("Computing Hashes ...", Res.IconCompare, items) {
     _hashes = hashes;
     _hashMethod = hashMethod;
     AutoRun();

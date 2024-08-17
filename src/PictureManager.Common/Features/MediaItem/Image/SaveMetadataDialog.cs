@@ -10,7 +10,7 @@ public sealed class SaveMetadataDialog : ParallelProgressDialog<ImageM> {
   private readonly int _quality;
 
   public SaveMetadataDialog(ImageM[] items, ImageS imageS, int quality) :
-    base("Saving metadata to files...", MH.UI.Res.IconImage, items, null, null) {
+    base("Saving metadata to files...", MH.UI.Res.IconImage, items) {
     _imageS = imageS;
     _quality = quality;
     AutoRun();

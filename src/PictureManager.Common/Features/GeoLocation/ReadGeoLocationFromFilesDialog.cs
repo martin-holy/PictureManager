@@ -8,7 +8,7 @@ namespace PictureManager.Common.Features.GeoLocation;
 
 public sealed class ReadGeoLocationFromFilesDialog : ProgressDialog<ImageM> {
   public ReadGeoLocationFromFilesDialog(ImageM[] items) :
-    base("Reading GeoLocations from files ...", Res.IconLocationCheckin, items, null, null) {
+    base("Reading GeoLocations from files ...", Res.IconLocationCheckin, items) {
     RunSync = true;
     AutoRun();
   }
