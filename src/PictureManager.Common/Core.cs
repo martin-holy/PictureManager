@@ -20,7 +20,8 @@ public sealed class Core {
   public static CoreR R { get; } = new();
   public static CoreS S { get; private set; } = null!;
   public static CoreVM VM { get; private set; } = null!;
-  public static Settings Settings { get; } = Settings.Load();
+  public static Settings Settings { get; } = Settings.Load("settings.json");
+  public AllSettings AllSettings { get; private set; } = null!;
   public List<IPluginCore> Plugins { get; } = [];
 
   private Core() {
@@ -46,6 +47,7 @@ public sealed class Core {
     P = coreP;
     S = new(R);
     VM = new(S, R);
+    AllSettings = new(Settings, Plugins);
 
     R.AttachEvents();
     S.AttachEvents();

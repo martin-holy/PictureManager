@@ -1,30 +1,21 @@
-﻿using MH.UI.Controls;
-using MH.UI.Dialogs;
+﻿using MH.UI.BaseClasses;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace PictureManager.Common.Features.Common;
 
-public sealed class Settings {
-  private const string _filePath = "settings.json";
-
-  [JsonIgnore]
-  public bool Modified { get; set; }
-  [JsonIgnore]
-  public ListItem[] Groups { get; }
-
+public sealed class Settings : UserSettings {
   public CommonSettings Common { get; }
   public GeoNameSettings GeoName { get; }
   public ImagesToVideoSettings ImagesToVideo { get; }
   public MediaItemSettings MediaItem { get; }
   public SegmentSettings Segment { get; }
 
-  public Settings(CommonSettings common, GeoNameSettings geoName, ImagesToVideoSettings imagesToVideo, MediaItemSettings mediaItem, SegmentSettings segment) {
+  public Settings(string filePath, CommonSettings common, GeoNameSettings geoName, ImagesToVideoSettings imagesToVideo, MediaItemSettings mediaItem, SegmentSettings segment) : base(filePath) {
     Common = common;
     GeoName = geoName;
     ImagesToVideo = imagesToVideo;
@@ -39,25 +30,13 @@ public sealed class Settings {
       new(Res.IconSegment, "Segment", segment)
     ];
 
-    foreach (var item in Groups.Select(x => (ObservableObject)x.Data!))
-      item.PropertyChanged += delegate { Modified = true; };
+    WatchForChanges();
   }
 
-  public void Save() {
+  public static Settings Load(string filePath) {
+    if (!File.Exists(filePath)) return CreateNew(filePath);
     try {
-      var opt = new JsonSerializerOptions { WriteIndented = true };
-      File.WriteAllText(_filePath, JsonSerializer.Serialize(this, opt));
-      Modified = false;
-    }
-    catch (Exception ex) {
-      Log.Error(ex);
-    }
-  }
-
-  public static Settings Load() {
-    if (!File.Exists(_filePath)) return CreateNew();
-    try {
-      using var doc = JsonDocument.Parse(File.ReadAllText(_filePath));
+      using var doc = JsonDocument.Parse(File.ReadAllText(filePath));
       var root = doc.RootElement;
 
       var common = DeserializeGroup<CommonSettings>(root, "Common") ?? new();
@@ -66,33 +45,21 @@ public sealed class Settings {
       var mediaItem = DeserializeGroup<MediaItemSettings>(root, "MediaItem") ?? new();
       var segment = DeserializeGroup<SegmentSettings>(root, "Segment") ?? new();
 
-      var settings = new Settings(common, geoName, imagesToVideo, mediaItem, segment);
+      var settings = new Settings(filePath, common, geoName, imagesToVideo, mediaItem, segment);
 
       return settings;
     }
     catch (Exception ex) {
       Log.Error(ex);
-      return CreateNew();
+      return CreateNew(filePath);
     }
   }
 
-  private static T? DeserializeGroup<T>(JsonElement root, string name) =>
-    root.TryGetProperty(name, out JsonElement elm)
-      ? JsonSerializer.Deserialize<T>(elm.GetRawText())
-      : default;
+  private static Settings CreateNew(string filePath) =>
+    new(filePath, new(), new(), new(), new(), new());
 
-  private static Settings CreateNew() =>
-    new(new(), new(), new(), new(), new());
-
-  public void OnClosing() {
-    if (Modified &&
-        Dialog.Show(new MessageDialog(
-          "Settings changes",
-          "There are some changes in settings. Do you want to save them?",
-          MH.UI.Res.IconQuestion,
-          true)) == 1)
-      Save();
-  }
+  protected override string Serialize(JsonSerializerOptions options) =>
+    JsonSerializer.Serialize(this, options);
 }
 
 public sealed class CommonSettings : ObservableObject {

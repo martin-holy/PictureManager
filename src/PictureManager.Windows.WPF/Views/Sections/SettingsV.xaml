@@ -4,7 +4,9 @@
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:bc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI">
 
   <Style x:Key="PM.S.ItemsControl.Settings.Items" TargetType="ItemsControl">
     <Style.Resources>
@@ -69,7 +71,7 @@
     </Setter>
   </Style>
 
-  <DataTemplate DataType="{x:Type ftCommon:Settings}">
+  <DataTemplate DataType="{x:Type ftCommon:AllSettings}">
     <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
       <ItemsControl ItemsSource="{Binding Groups}">
         <ItemsControl.ItemsPanel>
@@ -97,12 +99,26 @@
                   HorizontalAlignment="Left"/>
               </Border>
 
-              <ContentPresenter Grid.Row="1" Content="{Binding Data}"/>
+              <ContentPresenter x:Name="dataPresenter" Grid.Row="1" Content="{Binding Data}"/>
             </Grid>
+
+            <DataTemplate.Triggers>
+              <DataTrigger
+                Binding="{Binding Data,
+                        Converter={x:Static conv:DataTypeConverter.Inst},
+                        ConverterParameter={x:Type bc:UserSettings}}"
+                Value="True">
+                <Setter TargetName="dataPresenter" Property="Grid.Row" Value="0"/>
+              </DataTrigger>
+            </DataTemplate.Triggers>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
     </ScrollViewer>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:Settings}">
+    <c:IconButton Command="{Binding SaveCommand}" HorizontalAlignment="Right"/>
   </DataTemplate>
 
   <DataTemplate DataType="{x:Type ftCommon:CommonSettings}">
