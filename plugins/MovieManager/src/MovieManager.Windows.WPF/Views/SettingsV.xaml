@@ -1,0 +1,24 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:ftCommon="clr-namespace:MovieManager.Common.Features.Common;assembly=MovieManager.Common">
+
+  <DataTemplate DataType="{x:Type ftCommon:Settings}">
+    <c:IconButton Command="{Binding SaveCommand}" HorizontalAlignment="Right"/>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:ImportSettings}">
+    <ItemsControl Style="{StaticResource PM.S.ItemsControl.Settings.Items}">
+      <ItemsControl.ItemsSource>
+        <x:Array Type="{x:Type sys:Object}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding MaxImageSize, StringFormat='Maximum image size: {0} MPx'}"/>
+            <Slider Minimum="1" Maximum="30" Value="{Binding MaxImageSize, Mode=TwoWay}"/>
+          </x:Array>
+        </x:Array>
+      </ItemsControl.ItemsSource>
+    </ItemsControl>
+  </DataTemplate>
+</ResourceDictionary>

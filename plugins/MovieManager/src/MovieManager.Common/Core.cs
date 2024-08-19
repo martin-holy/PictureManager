@@ -1,4 +1,6 @@
-﻿using MH.Utils;
+﻿using MH.UI.BaseClasses;
+using MH.Utils;
+using MovieManager.Common.Features.Common;
 using MovieManager.Common.Utils;
 using MovieManager.Plugins.Common.Interfaces;
 using PictureManager.Common.Interfaces.Plugin;
@@ -11,6 +13,8 @@ using PM = PictureManager.Common;
 namespace MovieManager.Common;
 
 public sealed class Core : IPluginCore {
+  public string Icon => MH.UI.Res.IconMovieClapper;
+  public string Text => "Movie Manager";
   public string Name => "MovieManager";
   public string BaseDir { get; }
   public string PluginsDir { get; }
@@ -19,15 +23,18 @@ public sealed class Core : IPluginCore {
   public static CoreR R { get; private set; } = null!;
   public static CoreS S { get; private set; } = null!;
   public static CoreVM VM { get; private set; } = null!;
+  public Settings Settings { get; }
   public IImportPlugin? ImportPlugin { get; set; }
   public IImportPlugin[] ImportPlugins { get; private set; } = [];
 
   IPluginCoreVM IPluginCore.VM => VM;
+  UserSettings IPluginCore.Settings => Settings;
 
   public Core() {
     Inst = this;
     BaseDir = Path.Combine("plugins", Name);
     PluginsDir = Path.Combine(BaseDir, "plugins");
+    Settings = Settings.Load(Path.Combine(BaseDir, "settings.json"));
   }
 
   public Task InitAsync(PM.Core pmCore, PM.CoreR pmCoreR, IProgress<string> progress) {
