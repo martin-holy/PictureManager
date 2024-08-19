@@ -157,9 +157,6 @@ public class CoreVM : ObservableObject {
       case PersonS people:
         people.Selected.DeselectAll();
         break;
-      case Settings settings:
-        settings.OnClosing();
-        break;
     }
   }
 
@@ -345,7 +342,7 @@ public class CoreVM : ObservableObject {
     Dialog.Show(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray()));
 
   private void OpenSettings() =>
-    MainTabs.Activate(Res.IconSettings, "Settings", Core.Settings);
+    MainTabs.Activate(Res.IconSettings, "Settings", Core.Inst.AllSettings);
 
   public void OpenPeopleView() {
     People ??= new();
