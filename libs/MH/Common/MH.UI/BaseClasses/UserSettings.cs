@@ -1,9 +1,8 @@
-﻿using MH.UI.Controls;
-using MH.UI.Dialogs;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,7 +20,12 @@ public abstract class UserSettings {
 
   protected UserSettings(string filePath) {
     _filePath = filePath;
-    SaveCommand = new(Save, () => Modified, null, "Save");
+    SaveCommand = new(Save, () => Modified, Res.IconSave, "Save");
+  }
+
+  protected void WatchForChanges() {
+    foreach (var item in Groups.Select(x => x.Data).OfType<ObservableObject>())
+      item.PropertyChanged += delegate { Modified = true; };
   }
 
   public static T? DeserializeGroup<T>(JsonElement root, string name) =>
@@ -32,7 +36,7 @@ public abstract class UserSettings {
   public void Save() {
     try {
       var opt = new JsonSerializerOptions { WriteIndented = true };
-      File.WriteAllText(_filePath, JsonSerializer.Serialize(this, opt));
+      File.WriteAllText(_filePath, Serialize(opt));
       Modified = false;
     }
     catch (Exception ex) {
@@ -40,13 +44,5 @@ public abstract class UserSettings {
     }
   }
 
-  public virtual void OnClosing() {
-    if (Modified &&
-        Dialog.Show(new MessageDialog(
-          "Settings changes",
-          "There are some changes in settings. Do you want to save them?",
-          Res.IconQuestion,
-          true)) == 1)
-      Save();
-  }
+  protected abstract string Serialize(JsonSerializerOptions options);
 }
