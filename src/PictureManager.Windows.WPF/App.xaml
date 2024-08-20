@@ -79,7 +79,7 @@
         <ResourceDictionary Source="/Views/Entities/ViewerV.xaml"/>
 
         <ResourceDictionary Source="/Views/Dialogs/AboutDialogV.xaml"/>
-        <ResourceDictionary Source="/Views/Dialogs/CompressDialogV.xaml"/>
+        <ResourceDictionary Source="/Views/Dialogs/CompressImagesDialogV.xaml"/>
         <ResourceDictionary Source="/Views/Dialogs/ErrorDialogV.xaml"/>
         <ResourceDictionary Source="/Views/Dialogs/ExportSegmentsDialogV.xaml"/>
         <ResourceDictionary Source="/Views/Dialogs/FileOperationCollisionDialogV.xaml"/>
