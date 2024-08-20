@@ -11,7 +11,7 @@ using PictureManager.Common.Features.Person;
 namespace PictureManager.Common.Features.Segment;
 
 public sealed class SegmentS : ObservableObject {
-  public SegmentR DataAdapter { get; set; }
+  public SegmentR DataAdapter { get; }
   public SegmentRectS Rect { get; }
   public Selecting<SegmentM> Selected { get; } = new();
   public static Action<SegmentM, string> ExportSegment { get; set; } = null!;
