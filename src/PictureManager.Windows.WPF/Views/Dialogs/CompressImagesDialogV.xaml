@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common">
 
-  <DataTemplate DataType="{x:Type ftImage:CompressDialog}">
+  <DataTemplate DataType="{x:Type ftImage:CompressImagesDialog}">
     <Grid Width="320">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>

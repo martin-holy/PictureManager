@@ -364,7 +364,7 @@ public class CoreVM : ObservableObject {
   }
 
   private void CompressImages(ImageM[] items) =>
-    Dialog.Show(new CompressDialog(items, _coreS.Image, Core.Settings.Common.JpegQuality));
+    Dialog.Show(new CompressImagesDialog(items, _coreS.Image, Core.Settings.Common.JpegQuality));
 
   private void GetGeoNamesFromWeb(ImageM[] items) {
     if (GetGeoNamesFromWebDialog.Open(items, _coreR))
