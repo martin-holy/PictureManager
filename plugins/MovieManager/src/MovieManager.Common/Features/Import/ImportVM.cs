@@ -50,7 +50,7 @@ public class ImportVM : ObservableObject {
     SearchResults.Clear();
     SearchTitle = string.Empty;
     _isImportInProgress = true;
-    await _importS.ImportMovie(result, Progress, token);
+    await _importS.ImportMovie(result, Progress, Core.Inst.ImportPlugin!, token);
     _isImportInProgress = false;
     Progress.Report(string.Empty);
     await SearchQueue(SearchCommand.CancelCommand.Token);

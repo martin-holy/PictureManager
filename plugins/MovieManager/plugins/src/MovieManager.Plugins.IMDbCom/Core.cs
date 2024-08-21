@@ -14,6 +14,7 @@ public class Core : IIMDbPlugin {
 
   private const string _imgExt = ".jpg";
   private const string _imgUrlParamStart = "_V1_";
+  private const string _imgQuality = "QL80";
   private static readonly StringRange _srMovieDetailJson = new("__NEXT_DATA__", ">", "</script");
 
   public async Task<SearchResult[]> SearchMovie(string query, CancellationToken token) {
@@ -67,7 +68,26 @@ public class Core : IIMDbPlugin {
   public async Task<Image?> GetPoster(string movieId, CancellationToken token) {
     var result = await SearchMovie(movieId, token);
     if (result.FirstOrDefault(x => movieId.Equals(x.DetailId.Id))?.Image is not { } image) return null;
-    image.Url = AddImgUrlParams(image.Url, "QL80");
+    image.Url = AddImgUrlParams(image.Url, _imgQuality);
     return image;
+  }
+
+  public void LimitImageSizes(MovieDetail movieDetail, int maxImageSize) {
+    LimitImageSize(movieDetail.Poster, maxImageSize);
+
+    foreach (var cast in movieDetail.Cast)
+      LimitImageSize(cast.Actor.Image, maxImageSize);
+  }
+
+  private static void LimitImageSize(Image? image, int maxImageSize) {
+    if (image == null) return;
+
+    var imgMPx = (image.Width * image.Height) / 1000000.0;
+    if (imgMPx < maxImageSize) return;
+
+    var scale = Math.Sqrt(maxImageSize / imgMPx);
+    var newWidth = (int)(image.Width * scale);
+    var urlParams = $"{_imgQuality}_UX{newWidth}";
+    image.Url = AddImgUrlParams(image.Url, urlParams);
   }
 }

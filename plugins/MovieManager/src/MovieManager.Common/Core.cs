@@ -23,7 +23,7 @@ public sealed class Core : IPluginCore {
   public static CoreR R { get; private set; } = null!;
   public static CoreS S { get; private set; } = null!;
   public static CoreVM VM { get; private set; } = null!;
-  public Settings Settings { get; }
+  public static Settings Settings { get; private set; } = null!;
   public IImportPlugin? ImportPlugin { get; set; }
   public IImportPlugin[] ImportPlugins { get; private set; } = [];
 

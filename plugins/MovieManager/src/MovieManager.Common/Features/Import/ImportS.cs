@@ -3,6 +3,7 @@ using MH.Utils.Extensions;
 using MovieManager.Common.Features.Actor;
 using MovieManager.Common.Features.Movie;
 using MovieManager.Plugins.Common.DTOs;
+using MovieManager.Plugins.Common.Interfaces;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 using System;
@@ -23,7 +24,7 @@ public class ImportS {
     _coreS = coreS;
   }
 
-  public async Task ImportMovie(SearchResult? result, IProgress<string> progress, CancellationToken token) {
+  public async Task ImportMovie(SearchResult? result, IProgress<string> progress, IImportPlugin plugin, CancellationToken token) {
     if (result == null) return;
     progress.Report($"Importing '{result.Name}' ...", true);
 
@@ -33,13 +34,17 @@ public class ImportS {
       return;
     }
 
-    var md = await Core.Inst.ImportPlugin!.GetMovieDetail(result.DetailId, token);
+    var md = await plugin.GetMovieDetail(result.DetailId, token);
     if (md == null) {
       progress.Report("Information about the movie not found.", true);
       return;
     }
 
     if (token.IsCancellationRequested) return;
+
+    if (plugin is IIMDbPlugin imDbPlugin)
+      imDbPlugin.LimitImageSizes(md, Core.Settings.Import.MaxImageSize);
+
     movie = _coreR.Movie.ItemCreate(md);
     movie.DetailId = _coreR.MovieDetailId.ItemCreate(md.DetailId, movie);
     await DownloadMoviePoster(progress, md, movie);
