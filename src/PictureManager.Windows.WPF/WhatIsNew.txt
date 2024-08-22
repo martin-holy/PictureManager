@@ -6,6 +6,8 @@
 Latest:
  - [U] CompressDialog: JPG quality 70-95
  - [U] CompressDialog view
+ - [U] Settings: Save buttons for Picture and Movie Manager
+ - [N] MovieManager Import: Limit image size in settings
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
