@@ -199,11 +199,7 @@
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding IsSelected}" Value="True"/>
-          <Condition
-             Binding="{Binding S.Segment.CanSetAsSamePerson,
-                       Source={x:Static pm:App.Core},
-                       Converter={x:Static conv:AllToBoolConverter.Inst}}"
-             Value="True"/>
+          <Condition Binding="{Binding S.Segment.CanSetAsSamePerson, Source={x:Static pm:App.Core}}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="boSelectedCount" Property="Visibility" Value="Visible"/>
         <Setter TargetName="btnSamePerson" Property="Visibility" Value="Visible"/>
