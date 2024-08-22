@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace MH.UI.WPF.Converters;
 
-public enum CheckFor { NotNull, Null, True, False, NotEmpty, NullOrEmpty, Int, All }
+public enum CheckFor { NotNull, Null, True, False, NotEmpty, NullOrEmpty, MoreThan0, All }
 
 public class VisibilityConverter : BaseConverter {
   private static VisibilityConverter? _allToVisible;
@@ -25,7 +25,7 @@ public class VisibilityConverter : BaseConverter {
   public static VisibilityConverter TrueToHidden => _trueToHidden ??= new() { CheckFor = CheckFor.True, ToHidden = true };
   public static VisibilityConverter NotEmptyToVisible => _notEmptyToVisible ??= new() { CheckFor = CheckFor.NotEmpty, ToVisible = true };
   public static VisibilityConverter NullOrEmptyToVisible => _nullOrEmptyToVisible ??= new() { CheckFor = CheckFor.NullOrEmpty, ToVisible = true };
-  public static VisibilityConverter IntToVisible => _intToVisible ??= new() { CheckFor = CheckFor.Int, ToVisible = true };
+  public static VisibilityConverter IntToVisible => _intToVisible ??= new() { CheckFor = CheckFor.MoreThan0, ToVisible = true };
 
   public CheckFor CheckFor { get; init; }
 
@@ -41,7 +41,7 @@ public class VisibilityConverter : BaseConverter {
       CheckFor.False => GetFor(value is false),
       CheckFor.NotEmpty => GetFor(value is IList { Count: > 0 }),
       CheckFor.NullOrEmpty => GetFor(value is null or IList { Count: 0 }),
-      CheckFor.Int => GetFor(value is > 0),
+      CheckFor.MoreThan0 => GetFor(value is > 0),
       CheckFor.All => GetFor(AllToBoolConverter.AllToBool(value, parameter)),
       _ => Binding.DoNothing
     };
