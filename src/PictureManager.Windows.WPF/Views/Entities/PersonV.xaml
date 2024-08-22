@@ -38,7 +38,7 @@
       Background="Transparent"/>
 
     <DataTemplate.Triggers>
-      <DataTrigger Value="True" Binding="{Binding Segment, Converter={x:Static conv:AllToBoolConverter.Inst}}">
+      <DataTrigger Value="True" Binding="{Binding Segment, Converter={x:Static conv:ToBoolConverter.IsNotNull}}">
         <Setter Property="ToolTip">
           <Setter.Value>
             <ToolTip BorderThickness="0" Padding="0">
