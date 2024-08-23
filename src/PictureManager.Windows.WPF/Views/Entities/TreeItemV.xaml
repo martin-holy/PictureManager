@@ -77,7 +77,7 @@
                       ConverterParameter={x:Type ftPerson:PersonM}}"
             Value="True"/>
           <Condition
-            Binding="{Binding Path=(ftPerson:PersonM.Segment), Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
+            Binding="{Binding Path=(ftPerson:PersonM.Segment), Converter={x:Static mhConv:ToBoolConverter.IsNotNull}}"
             Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter Property="ToolTip">
