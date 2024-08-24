@@ -56,8 +56,8 @@
       </DataTrigger>
 
       <DataTrigger
-        Binding="{Binding MediaPlayer.Source, Converter={x:Static mhConv:AllToBoolConverter.Inst}}"
-        Value="False">
+        Binding="{Binding MediaPlayer.Source, Converter={x:Static mhConv:ToBoolConverter.IsEmpty}}"
+        Value="True">
         <Setter TargetName="controlPanel" Property="IsEnabled" Value="False"/>
       </DataTrigger>
     </DataTemplate.Triggers>
