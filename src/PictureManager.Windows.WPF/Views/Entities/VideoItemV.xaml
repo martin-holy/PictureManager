@@ -36,7 +36,7 @@
         <Setter TargetName="tbDuration" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding Comment, Converter={x:Static conv:AllToBoolConverter.Inst}}" Value="True">
+      <DataTrigger Binding="{Binding Comment, Converter={x:Static conv:ToBoolConverter.IsEmpty}}" Value="False">
         <Setter TargetName="root" Property="ToolTip" Value="{Binding Comment}"/>
       </DataTrigger>
     </DataTemplate.Triggers>
