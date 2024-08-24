@@ -57,8 +57,7 @@
                 <TextBlock
                   x:Name="text"
                   Text="{Binding Path=(ap:Text.Text)}"
-                  Foreground="{Binding Foreground}"
-                  HorizontalAlignment="Center"/>
+                  Foreground="{Binding Foreground}"/>
               </Border>
             </Grid>
           </Border>
