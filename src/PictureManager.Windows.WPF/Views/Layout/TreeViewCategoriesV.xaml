@@ -88,9 +88,9 @@
     <Style.Triggers>
       <DataTrigger
         Binding="{Binding Text,
-                Converter={x:Static conv:AllToBoolConverter.Inst},
-                RelativeSource={RelativeSource Self}}"
-        Value="False">
+                  Converter={x:Static conv:ToBoolConverter.IsEmpty},
+                  RelativeSource={RelativeSource Self}}"
+        Value="True">
         <Setter Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
     </Style.Triggers>
