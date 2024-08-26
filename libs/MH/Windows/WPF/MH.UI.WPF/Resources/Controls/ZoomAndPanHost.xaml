@@ -3,10 +3,10 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
-  <Style x:Key="MH.S.ZoomAndPan" TargetType="c:ZoomAndPan">
+  <Style x:Key="MH.S.ZoomAndPanHost" TargetType="c:ZoomAndPanHost">
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="c:ZoomAndPan">
+        <ControlTemplate TargetType="c:ZoomAndPanHost">
           <Canvas
             x:Name="PART_Canvas"
             DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
@@ -15,19 +15,19 @@
               x:Name="PART_Content"
               Content="{Binding Content}"
               RenderTransformOrigin="0,0"
-              Width="{Binding ContentWidth}"
-              Height="{Binding ContentHeight}">
+              Width="{Binding ZoomAndPan.ContentWidth}"
+              Height="{Binding ZoomAndPan.ContentHeight}">
 
               <ContentPresenter.RenderTransform>
                 <TransformGroup>
                   <ScaleTransform
-                    ScaleX="{Binding ScaleX}"
-                    ScaleY="{Binding ScaleY}"/>
+                    ScaleX="{Binding ZoomAndPan.ScaleX}"
+                    ScaleY="{Binding ZoomAndPan.ScaleY}"/>
 
                   <TranslateTransform
                     x:Name="PART_ContentTransform"
-                    X="{Binding TransformX}"
-                    Y="{Binding TransformY}"/>
+                    X="{Binding ZoomAndPan.TransformX}"
+                    Y="{Binding ZoomAndPan.TransformY}"/>
                 </TransformGroup>
               </ContentPresenter.RenderTransform>
             </ContentPresenter>

@@ -50,7 +50,7 @@
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ToolTip.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TreeViewBase.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/WindowButtons.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ZoomAndPan.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ZoomAndPanHost.xaml"/>
 
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ComboBox.xaml"/><!-- Depends on: TextBoxBase -->
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/CatTreeView.xaml"/><!-- Depends on: TreeViewBase -->
@@ -120,7 +120,7 @@
       <Style TargetType="mhc:SlidePanelHost" BasedOn="{StaticResource MH.S.SlidePanelHost}"/>
       <Style TargetType="mhc:SlidePanelsGridHost" BasedOn="{StaticResource MH.S.SlidePanelsGridHost}"/>
       <Style TargetType="mhc:TreeViewBase" BasedOn="{StaticResource MH.S.TreeViewBase}"/>
-      <Style TargetType="mhc:ZoomAndPan" BasedOn="{StaticResource MH.S.ZoomAndPan}"/>
+      <Style TargetType="mhc:ZoomAndPanHost" BasedOn="{StaticResource MH.S.ZoomAndPanHost}"/>
 
       <u:TypeDataTemplateSelector x:Key="MH.S.DialogHost.DialogTemplateSelector">
         <u:TypeDataTemplateSelector.TemplateMappings>
