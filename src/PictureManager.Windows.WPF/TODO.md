@@ -33,10 +33,10 @@
 ## SegmentsMatching
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
-## MainTabs
-  - text is cropped from both sides (centered)
 ## PresentationPanelVM
   - move MediaItemM.IsPanoramic method to PresentationPanelVM and use ZoomAndPan.ActualSize instead of 16/9 to calculate result
+## PersonDetail
+  - create new segment => set person to the new segment => open PersonDetail from StatusBar => new segment is not there (second open is ok)
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
@@ -53,7 +53,8 @@
         # MH.UI
 ## CollectionView
   - don't show expanded root if source is empty
-
+## TabControl
+  - Custom tab background color (same color for MediaItems, Segments, MovieManager, ...)
 
         # Picture Manager
 ##
@@ -148,9 +149,8 @@
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
   - ToBoolConverter where Inst is IsNotNull, IsStringEmpty, IsCollectionEmpty, ...
   - IHaveName is applied only to GenreM but the DataTemplate is used for KeywordM as well
-  - platform independent part of ZoomAndPan
   - unused method LinkFolderWithFolderKeyword
-  - maybe move all CORE properties that needs to be set from WPF to one class
+  - maybe move all CORE properties that needs to be set from WPF to one class, use ICoreP
   - use private fileds in classes when possible
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
