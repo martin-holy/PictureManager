@@ -1,4 +1,5 @@
-﻿using MH.Utils;
+﻿using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using System;
@@ -7,22 +8,11 @@ using System.Collections.Generic;
 namespace PictureManager.Common.Features.MediaItem;
 
 public sealed class MediaViewerVM : ObservableObject {
-  private double _scale;
   private int _contentWidth;
   private int _contentHeight;
   private int _indexOfCurrent;
   private MediaItemM? _current;
   private bool _isVisible;
-  private bool _reScaleToFit;
-
-  public double Scale {
-    get => _scale;
-    set {
-      _scale = value;
-      OnPropertyChanged();
-      OnPropertyChanged(nameof(ActualZoom));
-    }
-  }
 
   public int ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
   public int ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
@@ -40,17 +30,16 @@ public sealed class MediaViewerVM : ObservableObject {
 
         ContentWidth = rotated ? value.Height : value.Width;
         ContentHeight = rotated ? value.Width : value.Height;
-        ReScaleToFit = true;
+        ZoomAndPan.ScaleToFitContent(ContentWidth, ContentHeight);
       }
     }
   }
 
-  public double ActualZoom => Scale * 100;
   public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
-  public bool ReScaleToFit { get => _reScaleToFit; set { _reScaleToFit = value; OnPropertyChanged(); } }
   public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
   public List<MediaItemM> MediaItems { get; private set; } = [];
   public PresentationPanelVM PresentationPanel { get; }
+  public ZoomAndPan ZoomAndPan { get; } = new();
 
   public RelayCommand NextCommand { get; }
   public RelayCommand PreviousCommand { get; }
@@ -58,9 +47,15 @@ public sealed class MediaViewerVM : ObservableObject {
 
   public MediaViewerVM() {
     PresentationPanel = new(this);
+    ZoomAndPan.AnimationEndedEvent += OnZoomAndPanAnimationEnded;
     NextCommand = new(Next, CanNext);
     PreviousCommand = new(Previous, CanPrevious);
     NavigateCommand = new(Navigate);
+  }
+
+  private void OnZoomAndPanAnimationEnded(object? sender, EventArgs e) {
+    if (PresentationPanel.IsPaused && Current != null)
+      PresentationPanel.Start(Current, false);
   }
 
   public void OnPlayerRepeatEnded(object? sender, EventArgs e) {
