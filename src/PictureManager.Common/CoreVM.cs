@@ -122,6 +122,7 @@ public class CoreVM : ObservableObject {
     MediaItem.PropertyChanged += OnMediaItemPropertyChanged;
     MediaItem.Views.PropertyChanged += OnMediaItemViewsPropertyChanged;
     MediaViewer.PropertyChanged += OnMediaViewerPropertyChanged;
+    MediaViewer.ZoomAndPan.PropertyChanged += OnMediaViewerZoomAndPanPropertyChanged;
     Video.MediaPlayer.RepeatEndedEvent += MediaViewer.OnPlayerRepeatEnded;
     Video.MediaPlayer.PropertyChanged += OnVideoMediaPlayerPropertyChanged;
     Video.CurrentVideoItems.Selected.ItemsChangedEvent += OnVideoItemsSelectionChanged;
@@ -211,10 +212,13 @@ public class CoreVM : ObservableObject {
         else
           Video.SetCurrent(MediaViewer.Current, true);
         break;
-      case nameof(MediaViewer.Scale):
-        _coreS.Segment.Rect.UpdateScale(MediaViewer.Scale);
-        break;
     }
+  }
+
+  private void OnMediaViewerZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (sender is not ZoomAndPan zap) return;
+    if (e.Is(nameof(ZoomAndPan.ScaleX)))
+      _coreS.Segment.Rect.UpdateScale(zap.ScaleX);
   }
 
   private void OnVideoItemsSelectionChanged(object? sender, VideoItemM[] e) {

@@ -1,17 +1,15 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using System.Timers;
 using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
+using System.Timers;
 
 namespace PictureManager.Common.Features.MediaItem;
 
 public sealed class PresentationPanelVM : ObservableObject {
   private bool _isRunning;
   private bool _playPanoramicImages = true;
-  private bool _isAnimationOn;
-  private int _minAnimationDuration;
   private int _interval = 3;
   private readonly Timer _timer = new();
   private readonly MediaViewerVM _mediaViewerVM;
@@ -32,18 +30,6 @@ public sealed class PresentationPanelVM : ObservableObject {
       OnPropertyChanged();
     }
   }
-
-  public bool IsAnimationOn {
-    get => _isAnimationOn;
-    set {
-      _isAnimationOn = value;
-      if (!value)
-        Start(_mediaViewerVM.Current, false);
-      OnPropertyChanged();
-    }
-  }
-
-  public int MinAnimationDuration { get => _minAnimationDuration; set { _minAnimationDuration = value; OnPropertyChanged(); } }
 
   public int Interval {
     get => _interval;
@@ -77,8 +63,7 @@ public sealed class PresentationPanelVM : ObservableObject {
         && current is ImageM
         && current.IsPanoramic()) {
       Pause();
-      MinAnimationDuration = Interval * 1000;
-      IsAnimationOn = true;
+      _mediaViewerVM.ZoomAndPan.StartAnimation(Interval * 1000);
       return;
     }
 
@@ -91,9 +76,7 @@ public sealed class PresentationPanelVM : ObservableObject {
   }
 
   public void Stop() {
-    if (IsAnimationOn)
-      IsAnimationOn = false;
-
+    _mediaViewerVM.ZoomAndPan.StopAnimation();
     IsPaused = false;
     IsRunning = false;
     Core.VM.Video.MediaPlayer.RepeatForSeconds = 0; // infinity
@@ -105,7 +88,7 @@ public sealed class PresentationPanelVM : ObservableObject {
   }
 
   private void Presentation() {
-    if (IsAnimationOn || IsRunning || IsPaused)
+    if (_mediaViewerVM.ZoomAndPan.IsAnimationOn || IsRunning || IsPaused)
       Stop();
     else
       Start(_mediaViewerVM.Current, true);
