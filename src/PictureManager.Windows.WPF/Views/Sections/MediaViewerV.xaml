@@ -9,7 +9,8 @@
   xmlns:vmWin="clr-namespace:PictureManager.Windows.WPF.ViewModels"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
   xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
-  xmlns:ftVideo="clr-namespace:PictureManager.Common.Features.MediaItem.Video;assembly=PictureManager.Common">
+  xmlns:ftVideo="clr-namespace:PictureManager.Common.Features.MediaItem.Video;assembly=PictureManager.Common"
+  xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI">
 
   <DataTemplate DataType="{x:Type ftMediaItem:MediaViewerVM}">
     <Grid
@@ -42,15 +43,7 @@
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
-      <c:ZoomAndPan
-        x:Name="zoom"
-        ContentWidth="{Binding ContentWidth, Mode=TwoWay}"
-        ContentHeight="{Binding ContentHeight, Mode=TwoWay}"
-        MinAnimationDuration="{Binding PresentationPanel.MinAnimationDuration}"
-        IsAnimationOn="{Binding PresentationPanel.IsAnimationOn, Mode=TwoWay}"
-        ReScaleToFit="{Binding ReScaleToFit, Mode=TwoWay}"
-        ScaleX="{Binding Scale, Mode=TwoWay}">
-        
+      <c:ZoomAndPanHost x:Name="zoom" ZoomAndPan="{Binding ZoomAndPan}">
         <Grid>
           <!-- Image -->
           <Image
@@ -75,7 +68,7 @@
             </FrameworkElement.LayoutTransform>
           </ContentControl>
         </Grid>
-      </c:ZoomAndPan>
+      </c:ZoomAndPanHost>
 
       <!-- Segments Rects -->
       <Canvas>
@@ -86,8 +79,8 @@
 
           <ContentPresenter.RenderTransform>
             <TranslateTransform
-              X="{Binding ElementName=zoom, Path=TransformX}"
-              Y="{Binding ElementName=zoom, Path=TransformY}"/>
+              X="{Binding ElementName=zoom, Path=ZoomAndPan.(uic:ZoomAndPan.TransformX)}"
+              Y="{Binding ElementName=zoom, Path=ZoomAndPan.(uic:ZoomAndPan.TransformY)}"/>
           </ContentPresenter.RenderTransform>
         </ContentPresenter>
       </Canvas>

@@ -78,7 +78,7 @@
         <c:IconTextBlock
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconMagnify"
-          ap:Text.Text="{Binding Core.VM.MediaViewer.ActualZoom, StringFormat={}{0:####}%}"
+          ap:Text.Text="{Binding Core.VM.MediaViewer.ZoomAndPan.ActualZoom, StringFormat={}{0:####}%}"
           Visibility="{Binding Core.VM.MediaViewer.IsVisible, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
 
         <!-- Rating -->
