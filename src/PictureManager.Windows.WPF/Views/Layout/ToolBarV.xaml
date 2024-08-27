@@ -161,7 +161,7 @@
                 <Style.Triggers>
                   <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                      <Condition Binding="{Binding VM.MediaItem.Views.Current, Converter={x:Static conv:AllToBoolConverter.Inst}}" Value="True"/>
+                      <Condition Binding="{Binding VM.MediaItem.Views.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="False"/>
                       <Condition Binding="{Binding VM.MainWindow.IsInViewMode}" Value="False"/>
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Visibility" Value="Visible"/>
