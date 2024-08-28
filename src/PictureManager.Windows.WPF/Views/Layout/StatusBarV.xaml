@@ -117,12 +117,11 @@
 
         <!-- People -->
         <c:IconTextBlockItemsControl
-          x:Name="people"
           Style="{StaticResource MH.S.IconTextBlockItemsControl.Borders.RoundDark}"
           ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayPeople}"
           ItemTemplate="{StaticResource _person}"
           ap:Icon.Res="IconPeople"
-          Visibility="Collapsed"/>
+          Visibility="{Binding Core.VM.MediaItem.Current.DisplayPeople, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
 
         <!-- Keywords -->
         <c:IconTextBlockItemsControl
@@ -149,10 +148,6 @@
           TargetName="tbPositionSlashCount"
           Property="ap:Text.Text"
           Value="{Binding Core.VM.MediaViewer.PositionSlashCount}"/>
-      </DataTrigger>
-
-      <DataTrigger Binding="{Binding Core.VM.MediaItem.Current.DisplayPeople, Converter={x:Static conv:AllToBoolConverter.Inst}}" Value="True">
-        <Setter TargetName="people" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
       <DataTrigger Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="False">
