@@ -117,6 +117,7 @@
 
         <!-- People -->
         <c:IconTextBlockItemsControl
+          x:Name="people"
           Style="{StaticResource MH.S.IconTextBlockItemsControl.Borders.RoundDark}"
           ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayPeople}"
           ItemTemplate="{StaticResource _person}"
@@ -153,6 +154,10 @@
       <DataTrigger Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="False">
         <Setter TargetName="keywords" Property="Visibility" Value="Collapsed"/>
         <Setter TargetName="comment" Property="Visibility" Value="Collapsed"/>
+      </DataTrigger>
+
+      <DataTrigger Binding="{Binding Core.VM.MediaItem.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="True">
+        <Setter TargetName="people" Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
