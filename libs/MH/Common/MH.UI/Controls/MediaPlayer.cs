@@ -249,6 +249,8 @@ public sealed class MediaPlayer : ObservableObject {
     // and can't be repeated with WPF MediaElement.Stop()/MediaElement.Play()
     if (_uiPlayer != null) _uiPlayer.Position = TimeSpan.FromMilliseconds(1);
 
+    MediaEndedEvent(this, EventArgs.Empty);
+
     if (_repeatCount > 0)
       _repeatCount--;
     else
