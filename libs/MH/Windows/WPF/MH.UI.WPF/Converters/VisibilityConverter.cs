@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace MH.UI.WPF.Converters;
 
-public enum CheckFor { NotNull, Null, True, False, NotEmpty, NullOrEmpty, MoreThan0, All }
+public enum CheckFor { NotNull, Null, True, False, NotEmpty, NullOrEmpty, MoreThan0, All, EqualsParam, NotEqualsParam }
 
 public class VisibilityConverter : BaseConverter {
   private static VisibilityConverter? _allToVisible;
@@ -16,6 +16,8 @@ public class VisibilityConverter : BaseConverter {
   private static VisibilityConverter? _notEmptyToVisible;
   private static VisibilityConverter? _nullOrEmptyToVisible;
   private static VisibilityConverter? _intToVisible;
+  private static VisibilityConverter? _equalsParamToVisible;
+  private static VisibilityConverter? _notEqualsParamToVisible;
 
   public static VisibilityConverter AllToVisible => _allToVisible ??= new() { CheckFor = CheckFor.All, ToVisible = true };
   public static VisibilityConverter NullToVisible => _nullToVisible ??= new() { CheckFor = CheckFor.Null, ToVisible = true };
@@ -26,6 +28,8 @@ public class VisibilityConverter : BaseConverter {
   public static VisibilityConverter NotEmptyToVisible => _notEmptyToVisible ??= new() { CheckFor = CheckFor.NotEmpty, ToVisible = true };
   public static VisibilityConverter NullOrEmptyToVisible => _nullOrEmptyToVisible ??= new() { CheckFor = CheckFor.NullOrEmpty, ToVisible = true };
   public static VisibilityConverter IntToVisible => _intToVisible ??= new() { CheckFor = CheckFor.MoreThan0, ToVisible = true };
+  public static VisibilityConverter EqualsParamToVisible => _equalsParamToVisible ??= new() { CheckFor = CheckFor.EqualsParam, ToVisible = true };
+  public static VisibilityConverter NotEqualsParamToVisible => _notEqualsParamToVisible ??= new() { CheckFor = CheckFor.NotEqualsParam, ToVisible = true };
 
   public CheckFor CheckFor { get; init; }
 
@@ -43,6 +47,8 @@ public class VisibilityConverter : BaseConverter {
       CheckFor.NullOrEmpty => GetFor(value is null or IList { Count: 0 }),
       CheckFor.MoreThan0 => GetFor(value is > 0),
       CheckFor.All => GetFor(AllToBoolConverter.AllToBool(value, parameter)),
+      CheckFor.EqualsParam => GetFor(Equals(value, parameter)),
+      CheckFor.NotEqualsParam => GetFor(!Equals(value, parameter)),
       _ => Binding.DoNothing
     };
 
