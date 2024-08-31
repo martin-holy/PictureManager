@@ -122,8 +122,9 @@ public class CoreVM : ObservableObject {
     MediaItem.PropertyChanged += OnMediaItemPropertyChanged;
     MediaItem.Views.PropertyChanged += OnMediaItemViewsPropertyChanged;
     MediaViewer.PropertyChanged += OnMediaViewerPropertyChanged;
+    MediaViewer.Slideshow.PropertyChanged += OnMediaViewerSlideshowPropertyChanged;
     MediaViewer.ZoomAndPan.PropertyChanged += OnMediaViewerZoomAndPanPropertyChanged;
-    Video.MediaPlayer.RepeatEndedEvent += MediaViewer.OnPlayerRepeatEnded;
+    Video.MediaPlayer.MediaEndedEvent += MediaViewer.Slideshow.OnPlayerMediaEnded;
     Video.MediaPlayer.PropertyChanged += OnVideoMediaPlayerPropertyChanged;
     Video.CurrentVideoItems.Selected.ItemsChangedEvent += OnVideoItemsSelectionChanged;
 
@@ -213,6 +214,11 @@ public class CoreVM : ObservableObject {
           Video.SetCurrent(MediaViewer.Current, true);
         break;
     }
+  }
+
+  private void OnMediaViewerSlideshowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(SlideshowVM.State)) && ((SlideshowVM)sender!).State == SlideshowState.On)
+      Video.MediaPlayer.PlayType = PlayType.Video;
   }
 
   private void OnMediaViewerZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
