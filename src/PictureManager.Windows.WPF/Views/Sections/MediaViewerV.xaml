@@ -23,7 +23,7 @@
       <Grid.InputBindings>
         <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
         <KeyBinding Key="Left" Command="{Binding PreviousCommand}"/>
-        <KeyBinding Modifiers="Control" Key="P" Command="ftMediaItem:PresentationPanelVM.StartPresentationCommand"/>
+        <KeyBinding Modifiers="Control" Key="P" Command="{Binding Slideshow.StartCommand}"/>
       </Grid.InputBindings>
 
       <b:Interaction.Triggers>

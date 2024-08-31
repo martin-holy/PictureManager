@@ -115,11 +115,11 @@
           <c:IconButton Command="layout:ToolsTabsVM.OpenPeopleTabCommand"/>
           <c:IconButton Command="ftMediaItem:MediaItemVM.LoadByPeopleOrSegmentsCommand"/>
           
-          <!-- Presentation ToolBar -->
+          <!-- Slideshow ToolBar -->
           <StackPanel
             VerticalAlignment="Center"
             Orientation="Horizontal"
-            DataContext="{Binding VM.MediaViewer.PresentationPanel}"
+            DataContext="{Binding VM.MediaViewer.Slideshow}"
             Visibility="{Binding VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
 
             <Separator/>
@@ -127,11 +127,15 @@
             <!-- Play/Stop -->
             <Grid>
               <c:IconButton
-                Command="ftMediaItem:PresentationPanelVM.StartPresentationCommand"
-                Visibility="{Binding IsRunning, Converter={x:Static conv:VisibilityConverter.FalseToVisible}}"/>
+                Command="{Binding StartCommand}"
+                Visibility="{Binding State,
+                             ConverterParameter={x:Static ftMediaItem:SlideshowState.Stopped},
+                             Converter={x:Static conv:VisibilityConverter.EqualsParamToVisible}}"/>
               <c:IconButton
-                Command="ftMediaItem:PresentationPanelVM.StopPresentationCommand"
-                Visibility="{Binding IsRunning, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
+                Command="{Binding StopCommand}"
+                Visibility="{Binding State,
+                             ConverterParameter={x:Static ftMediaItem:SlideshowState.Stopped},
+                             Converter={x:Static conv:VisibilityConverter.NotEqualsParamToVisible}}"/>
             </Grid>
 
             <!-- Interval -->
@@ -141,7 +145,7 @@
               Value="{Binding Interval, Mode=TwoWay}">
               <c:PopupSlider.Content>
                 <c:IconTextButton
-                  ToolTip="Presentation interval"
+                  ToolTip="Slideshow interval"
                   ap:Icon.Data="{StaticResource IconTimer}"
                   ap:Text.Text="{Binding Interval, StringFormat={}{0:G2}}"/>
               </c:PopupSlider.Content>
