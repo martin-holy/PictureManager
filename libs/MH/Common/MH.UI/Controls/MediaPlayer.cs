@@ -179,6 +179,7 @@ public sealed class MediaPlayer : ObservableObject {
 
   public event EventHandler<ObjectEventArgs<Tuple<IVideoItem, bool>>> MarkerSetEvent = delegate { };
   public event EventHandler RepeatEndedEvent = delegate { };
+  public event EventHandler MediaEndedEvent = delegate { };
 
   public MediaPlayer() {
     _clipTimer = new() { Interval = 10 };
