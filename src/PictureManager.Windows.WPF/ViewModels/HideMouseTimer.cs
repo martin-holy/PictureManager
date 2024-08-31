@@ -13,7 +13,7 @@ public static class HideMouseTimer {
   private static readonly TimeSpan _interval = TimeSpan.FromMilliseconds(3000);
   private static DateTime _lastMove;
 
-  public static void Init(Window window, PresentationPanelVM panel) {
+  public static void Init(Window window, SlideshowVM slideshow) {
     _timer = new() { Interval = _interval };
     _timer.Tick += delegate {
       if (_isHidden || !window.IsActive || DateTime.Now - _lastMove < _interval)
@@ -23,9 +23,9 @@ public static class HideMouseTimer {
       Mouse.OverrideCursor = Cursors.None;
     };
 
-    panel.PropertyChanged += (_, e) => {
-      if (!e.Is(nameof(panel.IsRunning))) return;
-      if (panel.IsRunning) {
+    slideshow.PropertyChanged += (_, e) => {
+      if (!e.Is(nameof(slideshow.State))) return;
+      if (slideshow.State == SlideshowState.On) {
         window.MouseMove += OnMouseMoveHideTimer;
         _timer.Start();
       }

@@ -2,43 +2,25 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
-using System;
 using System.Collections.Generic;
 
 namespace PictureManager.Common.Features.MediaItem;
 
 public sealed class MediaViewerVM : ObservableObject {
+  private int _indexOfCurrent;
+
   private int _contentWidth;
   private int _contentHeight;
-  private int _indexOfCurrent;
   private MediaItemM? _current;
   private bool _isVisible;
 
   public int ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
   public int ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
-  
-  public MediaItemM? Current {
-    get => _current;
-    set {
-      if (!Core.S.MediaItem.Exists(value)) return;
-      _current = value;
-      OnPropertyChanged();
-      OnPropertyChanged(nameof(PositionSlashCount));
-
-      if (value != null) {
-        var rotated = value.Orientation is Orientation.Rotate90 or Orientation.Rotate270;
-
-        ContentWidth = rotated ? value.Height : value.Width;
-        ContentHeight = rotated ? value.Width : value.Height;
-        ZoomAndPan.ScaleToFitContent(ContentWidth, ContentHeight);
-      }
-    }
-  }
-
+  public MediaItemM? Current { get => _current; set => _onCurrentChanged(value); }
   public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
   public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
   public List<MediaItemM> MediaItems { get; private set; } = [];
-  public PresentationPanelVM PresentationPanel { get; }
+  public SlideshowVM Slideshow { get; }
   public ZoomAndPan ZoomAndPan { get; } = new();
 
   public RelayCommand NextCommand { get; }
@@ -46,25 +28,31 @@ public sealed class MediaViewerVM : ObservableObject {
   public RelayCommand<MouseWheelEventArgs> NavigateCommand { get; }
 
   public MediaViewerVM() {
-    PresentationPanel = new(this);
-    ZoomAndPan.AnimationEndedEvent += OnZoomAndPanAnimationEnded;
-    NextCommand = new(Next, CanNext);
-    PreviousCommand = new(Previous, CanPrevious);
-    NavigateCommand = new(Navigate);
+    Slideshow = new(this, ZoomAndPan);
+    NextCommand = new(_next, _canNext);
+    PreviousCommand = new(_previous, _canPrevious);
+    NavigateCommand = new(_navigate);
   }
 
-  private void OnZoomAndPanAnimationEnded(object? sender, EventArgs e) {
-    if (PresentationPanel.IsPaused && Current != null)
-      PresentationPanel.Start(Current, false);
-  }
+  private void _onCurrentChanged(MediaItemM? current) {
+    if (!Core.S.MediaItem.Exists(current)) return;
+    _current = current;
+    OnPropertyChanged(nameof(Current));
+    OnPropertyChanged(nameof(PositionSlashCount));
 
-  public void OnPlayerRepeatEnded(object? sender, EventArgs e) {
-    if (PresentationPanel.IsPaused && Current != null)
-      PresentationPanel.Start(Current, false);
+    if (current != null) {
+      var rotated = current.Orientation is Orientation.Rotate90 or Orientation.Rotate270;
+
+      ContentWidth = rotated ? current.Height : current.Width;
+      ContentHeight = rotated ? current.Width : current.Height;
+      ZoomAndPan.ScaleToFitContent(ContentWidth, ContentHeight);
+      ZoomAndPan.StopAnimation();
+      Slideshow.OnCurrentChanged(current);
+    }
   }
 
   public void Deactivate() {
-    PresentationPanel.Stop();
+    Slideshow.Stop();
     MediaItems.Clear();
   }
 
@@ -83,33 +71,34 @@ public sealed class MediaViewerVM : ObservableObject {
     }
   }
 
-  public bool CanNext() =>
-    MediaItems.Count > 0 && _indexOfCurrent < MediaItems.Count - 1;
-
-  public void Next() {
-    Current = MediaItems[++_indexOfCurrent];
-    PresentationPanel.Next(Current);
+  public bool Next() {
+    if (!_canNext()) return false;
+    _next();
+    return true;
   }
 
-  public bool CanPrevious() =>
+  private bool _canNext() =>
+    MediaItems.Count > 0 && _indexOfCurrent < MediaItems.Count - 1;
+
+  private void _next() {
+    Current = MediaItems[++_indexOfCurrent];
+  }
+
+  private bool _canPrevious() =>
     _indexOfCurrent > 0;
 
-  public void Previous() {
-    if (PresentationPanel.IsRunning)
-      PresentationPanel.Stop();
-
+  private void _previous() {
+    Slideshow.Stop();
     Current = MediaItems[--_indexOfCurrent];
   }
 
-  private void Navigate(MouseWheelEventArgs? e) {
+  private void _navigate(MouseWheelEventArgs? e) {
     if (e == null || e.IsCtrlOn) return;
     if (e.Delta < 0) {
-      if (CanNext())
-        Next();
+      if (_canNext()) _next();
     }
     else {
-      if (CanPrevious())
-        Previous();
+      if (_canPrevious()) _previous();
     }
   }
 
