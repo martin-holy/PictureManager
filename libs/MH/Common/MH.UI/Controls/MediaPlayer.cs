@@ -91,7 +91,6 @@ public sealed class MediaPlayer : ObservableObject {
     get => _timelineMaximum;
     private set {
       _timelineMaximum = value;
-      _repeatCount = (int)Math.Round(RepeatForSeconds / (value / 1000), 0);
       OnPropertyChanged();
       OnPropertyChanged(nameof(PositionSlashDuration));
     }
@@ -178,7 +177,6 @@ public sealed class MediaPlayer : ObservableObject {
   public Action? OnItemDeleteAction { get; set; }
 
   public event EventHandler<ObjectEventArgs<Tuple<IVideoItem, bool>>> MarkerSetEvent = delegate { };
-  public event EventHandler RepeatEndedEvent = delegate { };
   public event EventHandler MediaEndedEvent = delegate { };
 
   public MediaPlayer() {
@@ -251,11 +249,6 @@ public sealed class MediaPlayer : ObservableObject {
     if (_uiPlayer != null) _uiPlayer.Position = TimeSpan.FromMilliseconds(1);
 
     MediaEndedEvent(this, EventArgs.Empty);
-
-    if (_repeatCount > 0)
-      _repeatCount--;
-    else
-      RepeatEndedEvent(this, EventArgs.Empty);
   }
 
   private void OnClipTimer() {
