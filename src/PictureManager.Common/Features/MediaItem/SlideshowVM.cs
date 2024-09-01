@@ -80,8 +80,8 @@ public sealed class SlideshowVM : ObservableObject {
     }
 
     switch (_current) {
-      case ImageM img:
-        if (_playPanoramicImages && img.IsPanoramic()) {
+      case ImageM:
+        if (_playPanoramicImages && _zoomAndPan.IsContentPanoramic()) {
           State = SlideshowState.Paused;
           _zoomAndPan.StartAnimation(_interval * 1000);
         }
