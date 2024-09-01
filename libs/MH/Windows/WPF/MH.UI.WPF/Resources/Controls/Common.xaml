@@ -15,9 +15,9 @@
 
   <DataTrigger
     x:Key="MH.Trigger.IconResToDataAndFill"
-    Value="True"
+    Value="False"
     Binding="{Binding Path=(ap:Icon.Res), RelativeSource=
-             {RelativeSource Self}, Converter={x:Static conv:AllToBoolConverter.Inst}}">
+             {RelativeSource Self}, Converter={x:Static conv:ToBoolConverter.IsEmpty}}">
     <Setter
       Property="ap:Icon.Data"
       Value="{Binding Path=(ap:Icon.Res), RelativeSource=
