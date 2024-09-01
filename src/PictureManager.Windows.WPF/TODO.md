@@ -33,8 +33,7 @@
 ## SegmentsMatching
   - scroll people down => select segment in segments => select person => people are scrolled to top
     maybe set focus on mouse enter
-## PresentationPanelVM
-  - move MediaItemM.IsPanoramic method to PresentationPanelVM and use ZoomAndPan.ActualSize instead of 16/9 to calculate result
+  - can't select multiple segments one by one fast
 ## PersonDetail
   - create new segment => set person to the new segment => open PersonDetail from StatusBar => new segment is not there (second open is ok)
 
@@ -55,6 +54,8 @@
   - don't show expanded root if source is empty
 ## TabControl
   - Custom tab background color (same color for MediaItems, Segments, MovieManager, ...)
+## ZoomAndPan
+  - ExpandToFill and ShrinkToFill options
 
         # Picture Manager
 ##
