@@ -1,4 +1,5 @@
-﻿using MH.UI.Interfaces;
+﻿using System.Collections.Generic;
+using MH.UI.Interfaces;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Extensions;
 using MH.Utils.Interfaces;
@@ -16,6 +17,6 @@ public sealed class CollectionViewItemTemplateConverter : BaseConverter {
     value is FrameworkElement fe
     && fe.TryFindParent<StackPanel>() is
       { DataContext: ITreeItem { Parent: ICollectionViewGroup { UIView: { } view } } }
-      ? CollectionView.InnerItemTemplates[view]
+      ? CollectionView.InnerItemTemplates.GetValueOrDefault(view)
       : null;
 }
