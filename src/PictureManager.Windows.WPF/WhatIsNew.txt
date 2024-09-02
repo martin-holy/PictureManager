@@ -10,6 +10,7 @@ Latest:
  - [N] MovieManager Import: Limit image size in settings
  - [B] TabItem text position when text is to long
  - [B] Slideshow: animation of panoramic images
+ - [N] MediaVewer: ExpandToFill and ShrinkToFill in ToolBar
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
