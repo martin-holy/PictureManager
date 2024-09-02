@@ -36,6 +36,8 @@
   - can't select multiple segments one by one fast
 ## PersonDetail
   - create new segment => set person to the new segment => open PersonDetail from StatusBar => new segment is not there (second open is ok)
+## ToolBar
+  - add margin around checkbox PlayPanoramic
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
@@ -54,8 +56,6 @@
   - don't show expanded root if source is empty
 ## TabControl
   - Custom tab background color (same color for MediaItems, Segments, MovieManager, ...)
-## ZoomAndPan
-  - ExpandToFill and ShrinkToFill options
 
         # Picture Manager
 ##
