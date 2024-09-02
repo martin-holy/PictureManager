@@ -26,6 +26,8 @@ public class ZoomAndPan : ObservableObject {
   private double _contentWidth;
   private double _contentHeight;
   private bool _isAnimationOn;
+  private bool _expandToFill;
+  private bool _shrinkToFill = true;
 
   public IZoomAndPanHost? Host { get; set; }
   public double ScaleX { get => _scaleX; set { _scaleX = value; OnPropertyChanged(); } }
@@ -35,6 +37,8 @@ public class ZoomAndPan : ObservableObject {
   public double ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
   public double ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
   public bool IsAnimationOn { get => _isAnimationOn; set { _isAnimationOn = value; OnPropertyChanged(); } }
+  public bool ExpandToFill { get => _expandToFill; set { _expandToFill = value; OnPropertyChanged(); } }
+  public bool ShrinkToFill { get => _shrinkToFill; set { _shrinkToFill = value; OnPropertyChanged(); } }
   public double ActualZoom => _scaleX * 100;
 
   public event EventHandler AnimationEndedEvent = delegate { };
@@ -53,7 +57,7 @@ public class ZoomAndPan : ObservableObject {
 
   public void ScaleToFit() {
     if (Host == null) return;
-    var scale = _getFitScale(_contentWidth, _contentHeight, Host.Width, Host.Height);
+    var scale = _getFitScale(Host.Width, Host.Height);
     ScaleX = scale;
     ScaleY = scale;
     TransformX = (Host.Width - (_contentWidth * scale)) / 2;
@@ -68,28 +72,18 @@ public class ZoomAndPan : ObservableObject {
     ScaleToFit();
   }
 
-  private static double _getFitScale(double contentW, double contentH, double hostW, double hostH) {
-    var cw = contentW;
-    var ch = contentH;
+  private double _getFitScale(double hostW, double hostH) {
+    double scaleW = hostW / _contentWidth;
+    double scaleH = hostH / _contentHeight;
+    double scale = 1.0;
 
-    if (cw > hostW) {
-      cw = hostW;
-      ch = contentH / (contentW / hostW);
-
-      if (ch > hostH) {
-        ch = hostH;
-        cw = contentW / (contentH / hostH);
-      }
+    if (_shrinkToFill && (_contentWidth > hostW || _contentHeight > hostH)) {
+      scale = Math.Min(scaleW, scaleH);
+    } else if (_expandToFill && (_contentWidth < hostW || _contentHeight < hostH)) {
+      scale = Math.Min(scaleW, scaleH);
     }
 
-    if (ch > hostH) {
-      cw = contentW / (contentH / hostH);
-
-      if (cw > hostW)
-        cw = hostW;
-    }
-
-    return cw / contentW;
+    return scale;
   }
 
   public void StartAnimation(int minDuration) {
