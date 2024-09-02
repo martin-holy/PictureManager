@@ -20,6 +20,7 @@ using PictureManager.Common.Features.Viewer;
 using PictureManager.Common.Layout;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
@@ -87,6 +88,7 @@ public class CoreVM : ObservableObject {
     Viewer = new(_coreR.Viewer, _coreS.Viewer);
     
     SegmentsDrawer = new(_coreS.Segment, _coreR.Segment.Drawer);
+    _addToolBars(MainWindow.ToolBar.ToolBars);
 
     UpdateMediaItemsCount();
     InitToggleDialog();
@@ -423,6 +425,15 @@ public class CoreVM : ObservableObject {
 
   public void UpdateMediaItemsCount() =>
     MediaItem.ItemsCount = _coreR.Image.All.Count + _coreR.Video.All.Count;
+
+  private void _addToolBars(ObservableCollection<object> toolBars) {
+    toolBars.Add(new TitleToolBarVM());
+    toolBars.Add(new MiscToolBarVM());
+    toolBars.Add(new SegmentToolBarVM(_coreS.Segment));
+    toolBars.Add(new PersonToolBarVM());
+    toolBars.Add(new SlideshowToolBarVM(MediaViewer.Slideshow));
+    toolBars.Add(new MediaItemToolBarVM(MediaItem.Views, MainWindow, ImageComparer));
+  }
 
   private void InitToggleDialog() {
     var ttSegment = new ToggleDialogTargetType<SegmentM>(

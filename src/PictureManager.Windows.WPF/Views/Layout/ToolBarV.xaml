@@ -11,229 +11,31 @@
   xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
   xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
-  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common">
+  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type layout:ToolBarVM}">
-    <Grid DataContext="{x:Static pm:App.Core}">
-      <StackPanel
-        Orientation="Horizontal"
-        HorizontalAlignment="Stretch"
-        Height="30"
-        Background="{DynamicResource MH.B.Black2}">
+    <DataTemplate.Resources>
+      <Style
+        TargetType="{x:Type Separator}"
+        BasedOn="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}">
+        <Setter Property="Height" Value="15"/>
+      </Style>
+    </DataTemplate.Resources>
 
-        <Grid Width="180">
-          <Grid.Background>
-            <LinearGradientBrush>
-              <GradientStop Offset="0" Color="{DynamicResource MH.Color.Accent}"/>
-              <GradientStop Offset="1" Color="Transparent"/>
-            </LinearGradientBrush>
-          </Grid.Background>
-          
-          <!-- Progress bar -->
-          <ContentPresenter Content="{Binding VM.TitleProgressBar}"/>
-
-          <Grid
-            Background="Transparent"
-            c:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType=c:CustomWindow}}">
-            
-            <!-- App Icon -->
-            <Path
-              Style="{StaticResource MH.S.Icon.Shadow}"
-              Data="{StaticResource IconImage}"
-              Margin="5,0,0,0"
-              HorizontalAlignment="Left"/>
-
-            <!-- App Title -->
-            <TextBlock
-              Text="Picture Manager"
-              VerticalAlignment="Center"
-              HorizontalAlignment="Center"
-              FontWeight="Bold"
-              Effect="{StaticResource MH.Effects.DropShadow}"/>
-          </Grid>
-
-          <!-- Main Menu -->
-          <ContentPresenter
-            ContentTemplate="{StaticResource PM.DT.MainMenu}"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Center"/>
-        </Grid>
-
-        <StackPanel Orientation="Horizontal">
-          <StackPanel.Resources>
-            <Style
-              TargetType="{x:Type Separator}"
-              BasedOn="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}">
-              <Setter Property="Height" Value="15"/>
-            </Style>
-          </StackPanel.Resources>
-
-          <!-- Plugins Menu -->
-          <ContentPresenter
-            Content="{Binding Inst.Plugins, Mode=OneTime}"
-            ContentTemplate="{StaticResource MH.DT.PluginsMenu}"
-            VerticalAlignment="Center"
-            Visibility="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
-
-          <!-- Viewers -->
-          <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}" VerticalAlignment="Center"/>
-
-          <Separator/>
-
-          <!-- Media Items Count -->
-          <c:IconTextBlock
-            ap:Icon.Data="{StaticResource IconImageMultiple}"
-            ap:Text.Text="{Binding VM.MediaItem.ItemsCount}"/>
-
-          <c:IconTextButton Command="core:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
-
-          <!-- Log Button -->
-          <c:IconTextButton
-            Command="core:CoreVM.OpenLogCommand"
-            ap:Text.Text="{Binding Path=(u:Log.Items).Count}"
-            Visibility="{Binding Path=(u:Log.Items).Count, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
-
-          <Separator/>
-
-          <!-- Segments ToolBar -->
-          <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-            <c:IconToggleButton
-              ToolTip="Segments edit"
-              IsThreeState="False"
-              VerticalAlignment="Center"
-              ap:Icon.Data="{StaticResource IconPeople}"
-              IsChecked="{Binding S.Segment.Rect.AreVisible}"/>
-
-            <c:IconButton Command="ftSegment:SegmentsDrawerVM.OpenCommand"/>
-            <c:IconButton Command="ftSegment:SegmentsDrawerVM.AddSelectedCommand"/>
-            <c:IconButton Command="core:CoreVM.OpenSegmentsMatchingCommand"/>
-            <c:IconButton Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
-          </StackPanel>
-
-          <Separator/>
-
-          <c:IconButton Command="layout:ToolsTabsVM.OpenPeopleTabCommand"/>
-          <c:IconButton Command="ftMediaItem:MediaItemVM.LoadByPeopleOrSegmentsCommand"/>
-          
-          <!-- Slideshow ToolBar -->
-          <StackPanel
-            VerticalAlignment="Center"
-            Orientation="Horizontal"
-            DataContext="{Binding VM.MediaViewer.Slideshow}"
-            Visibility="{Binding VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
-
-            <Separator/>
-            
-            <!-- Play/Stop -->
-            <Grid>
-              <c:IconButton
-                Command="{Binding StartCommand}"
-                Visibility="{Binding State,
-                             ConverterParameter={x:Static ftMediaItem:SlideshowState.Stopped},
-                             Converter={x:Static conv:VisibilityConverter.EqualsParamToVisible}}"/>
-              <c:IconButton
-                Command="{Binding StopCommand}"
-                Visibility="{Binding State,
-                             ConverterParameter={x:Static ftMediaItem:SlideshowState.Stopped},
-                             Converter={x:Static conv:VisibilityConverter.NotEqualsParamToVisible}}"/>
-            </Grid>
-
-            <!-- Interval -->
-            <c:PopupSlider
-              Minimum="1"
-              Maximum="10"
-              Value="{Binding Interval, Mode=TwoWay}">
-              <c:PopupSlider.Content>
-                <c:IconTextButton
-                  ToolTip="Slideshow interval"
-                  ap:Icon.Data="{StaticResource IconTimer}"
-                  ap:Text.Text="{Binding Interval, StringFormat={}{0:G2}}"/>
-              </c:PopupSlider.Content>
-            </c:PopupSlider>
-
-            <!-- Play Panoramic Images -->
-            <CheckBox
-              IsChecked="{Binding PlayPanoramicImages}"
-              ToolTip="Play Panoramic Images"/>
-          </StackPanel>
-
-          <!-- Media Items View -->
-          <StackPanel Orientation="Horizontal">
-            <StackPanel.Style>
-              <Style TargetType="StackPanel">
-                <Setter Property="Visibility" Value="Collapsed"/>
-                <Style.Triggers>
-                  <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                      <Condition Binding="{Binding VM.MediaItem.Views.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="False"/>
-                      <Condition Binding="{Binding VM.MainWindow.IsInViewMode}" Value="False"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Visibility" Value="Visible"/>
-                  </MultiDataTrigger>
-                </Style.Triggers>
-              </Style>
-            </StackPanel.Style>
-
-            <Separator/>
-
-            <!-- Filters Panel -->
-            <ContentPresenter
-              Content="{Binding VM.MediaItem.Views.Current.Filter}"
-              ContentTemplate="{StaticResource PM.DT.MediaItemsFilter}"/>
-
-            <!-- Thumbnails scale -->
-            <c:PopupSlider
-              Minimum="0.2"
-              Maximum="2"
-              TickFrequency="0.1"
-              SmallChange="0.1"
-              LargeChange="0.2"
-              Value="{Binding VM.MediaItem.Views.Current.ThumbScale, Mode=TwoWay}">
-              <c:PopupSlider.Content>
-                <c:IconTextButton
-                  ToolTip="Thumbnails scale"
-                  ap:Icon.Data="{StaticResource IconMagnify}"
-                  ap:Text.Text="{Binding VM.MediaItem.Views.Current.ThumbScale, StringFormat={}{0:G2}}"/>
-              </c:PopupSlider.Content>
-
-              <b:Interaction.Triggers>
-                <b:EventTrigger EventName="PopupClosedEvent">
-                  <b:InvokeCommandAction Command="{Binding VM.MediaItem.Views.Current.ThumbScaleChangedCommand}"/>
-                </b:EventTrigger>
-              </b:Interaction.Triggers>
-            </c:PopupSlider>
-
-            <!-- Shuffle -->
-            <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.ShuffleCommand"/>
-
-            <!-- Sort -->
-            <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.SortCommand"/>
-
-            <!-- View Selected -->
-            <c:IconButton Command="ftMediaItem:MediaItemVM.ViewSelectedCommand"/>
-
-            <!-- Image Comparer -->
-            <c:IconButton
-              Command="ftImage:ImageComparerVM.AverageHashCommand"
-              CommandParameter="{Binding VM.MediaItem.Views.Current}"/>
-
-            <c:IconButton
-              Command="ftImage:ImageComparerVM.PHashCommand"
-              CommandParameter="{Binding VM.MediaItem.Views.Current}"/>
-
-            <c:PopupSlider
-              Maximum="25"
-              Value="{Binding VM.ImageComparer.Diff, Mode=TwoWay}">
-              <c:PopupSlider.Content>
-                <c:IconTextButton
-                  ToolTip="Compare limit"
-                  ap:Icon.Data="{StaticResource IconCompare}"
-                  ap:Text.Text="{Binding VM.ImageComparer.Diff, StringFormat={}{0:G2}}"/>
-              </c:PopupSlider.Content>
-            </c:PopupSlider>
-          </StackPanel>
-        </StackPanel>
-      </StackPanel>
+    <Grid>
+      <ItemsControl ItemsSource="{Binding ToolBars}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel
+              Orientation="Horizontal"
+              HorizontalAlignment="Stretch"
+              Height="30"
+              Background="{DynamicResource MH.B.Black2}"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
 
       <Grid HorizontalAlignment="Right">
         <Grid.ColumnDefinitions>
@@ -241,7 +43,7 @@
           <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ContentPresenter Content="{Binding VM.MainWindow.ToolBar.SlidePanelPinButton}"/>
+        <ContentPresenter Content="{Binding SlidePanelPinButton}"/>
 
         <ContentPresenter
           Grid.Column="1"
@@ -249,5 +51,218 @@
           ContentTemplate="{StaticResource MH.DT.CustomWindow.Buttons}"/>
       </Grid>
     </Grid>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:TitleToolBarVM}">
+    <Grid Width="180">
+      <Grid.Background>
+        <LinearGradientBrush>
+          <GradientStop Offset="0" Color="{DynamicResource MH.Color.Accent}"/>
+          <GradientStop Offset="1" Color="Transparent"/>
+        </LinearGradientBrush>
+      </Grid.Background>
+
+      <Grid
+        Background="Transparent"
+        c:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType=c:CustomWindow}}">
+    
+        <!-- App Icon -->
+        <Path
+          Style="{StaticResource MH.S.Icon.Shadow}"
+          Data="{StaticResource IconImage}"
+          Margin="5,0,0,0"
+          HorizontalAlignment="Left"/>
+
+        <!-- App Title -->
+        <TextBlock
+          Text="Picture Manager"
+          VerticalAlignment="Center"
+          HorizontalAlignment="Center"
+          FontWeight="Bold"
+          Effect="{StaticResource MH.Effects.DropShadow}"/>
+      </Grid>
+
+      <!-- Main Menu -->
+      <ContentPresenter
+        ContentTemplate="{StaticResource PM.DT.MainMenu}"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"/>
+    </Grid>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:MiscToolBarVM}">
+    <StackPanel Orientation="Horizontal" DataContext="{x:Static pm:App.Core}">
+      <!-- Plugins Menu -->
+      <ContentPresenter
+        Content="{Binding Inst.Plugins, Mode=OneTime}"
+        ContentTemplate="{StaticResource MH.DT.PluginsMenu}"
+        VerticalAlignment="Center"
+        Visibility="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
+
+      <!-- Viewers -->
+      <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}" VerticalAlignment="Center"/>
+
+      <Separator/>
+
+      <!-- Media Items Count -->
+      <c:IconTextBlock
+        ap:Icon.Data="{StaticResource IconImageMultiple}"
+        ap:Text.Text="{Binding VM.MediaItem.ItemsCount}"/>
+
+      <c:IconTextButton Command="core:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
+
+      <!-- Log Button -->
+      <c:IconTextButton
+        Command="core:CoreVM.OpenLogCommand"
+        ap:Text.Text="{Binding Path=(u:Log.Items).Count}"
+        Visibility="{Binding Path=(u:Log.Items).Count, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
+    </StackPanel>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftSegment:SegmentToolBarVM}">
+    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+      <Separator/>
+
+      <c:IconToggleButton
+        ToolTip="Segments edit"
+        IsThreeState="False"
+        VerticalAlignment="Center"
+        ap:Icon.Data="{StaticResource IconPeople}"
+        IsChecked="{Binding SegmentS.Rect.AreVisible}"/>
+
+      <c:IconButton Command="ftSegment:SegmentsDrawerVM.OpenCommand"/>
+      <c:IconButton Command="ftSegment:SegmentsDrawerVM.AddSelectedCommand"/>
+      <c:IconButton Command="core:CoreVM.OpenSegmentsMatchingCommand"/>
+      <c:IconButton Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
+    </StackPanel>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftPerson:PersonToolBarVM}">
+    <StackPanel Orientation="Horizontal">
+      <Separator/>
+
+      <c:IconButton Command="layout:ToolsTabsVM.OpenPeopleTabCommand"/>
+      <c:IconButton Command="ftMediaItem:MediaItemVM.LoadByPeopleOrSegmentsCommand"/>
+    </StackPanel>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftMediaItem:SlideshowToolBarVM}">
+    <StackPanel
+      VerticalAlignment="Center"
+      Orientation="Horizontal"
+      DataContext="{Binding Slideshow}"
+      Visibility="{Binding VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
+
+      <Separator/>
+  
+      <!-- Play/Stop -->
+      <Grid>
+        <c:IconButton
+          Command="{Binding StartCommand}"
+          Visibility="{Binding State,
+                   ConverterParameter={x:Static ftMediaItem:SlideshowState.Stopped},
+                   Converter={x:Static conv:VisibilityConverter.EqualsParamToVisible}}"/>
+        <c:IconButton
+          Command="{Binding StopCommand}"
+          Visibility="{Binding State,
+                   ConverterParameter={x:Static ftMediaItem:SlideshowState.Stopped},
+                   Converter={x:Static conv:VisibilityConverter.NotEqualsParamToVisible}}"/>
+      </Grid>
+
+      <!-- Interval -->
+      <c:PopupSlider
+        Minimum="1"
+        Maximum="10"
+        Value="{Binding Interval, Mode=TwoWay}">
+        <c:PopupSlider.Content>
+          <c:IconTextButton
+            ToolTip="Slideshow interval"
+            ap:Icon.Data="{StaticResource IconTimer}"
+            ap:Text.Text="{Binding Interval, StringFormat={}{0:G2}}"/>
+        </c:PopupSlider.Content>
+      </c:PopupSlider>
+
+      <!-- Play Panoramic Images -->
+      <CheckBox
+        IsChecked="{Binding PlayPanoramicImages}"
+        ToolTip="Play Panoramic Images"/>
+    </StackPanel>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftMediaItem:MediaItemToolBarVM}">
+    <StackPanel Orientation="Horizontal">
+      <StackPanel.Style>
+        <Style TargetType="StackPanel">
+          <Setter Property="Visibility" Value="Collapsed"/>
+          <Style.Triggers>
+            <MultiDataTrigger>
+              <MultiDataTrigger.Conditions>
+                <Condition Binding="{Binding MediaItemViews.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="False"/>
+                <Condition Binding="{Binding MainWindow.IsInViewMode}" Value="False"/>
+              </MultiDataTrigger.Conditions>
+              <Setter Property="Visibility" Value="Visible"/>
+            </MultiDataTrigger>
+          </Style.Triggers>
+        </Style>
+      </StackPanel.Style>
+
+      <Separator/>
+
+      <!-- Filters Panel -->
+      <ContentPresenter
+        Content="{Binding MediaItemViews.Current.Filter}"
+        ContentTemplate="{StaticResource PM.DT.MediaItemsFilter}"/>
+
+      <!-- Thumbnails scale -->
+      <c:PopupSlider
+        Minimum="0.2"
+        Maximum="2"
+        TickFrequency="0.1"
+        SmallChange="0.1"
+        LargeChange="0.2"
+        Value="{Binding MediaItemViews.Current.ThumbScale, Mode=TwoWay}">
+        <c:PopupSlider.Content>
+          <c:IconTextButton
+            ToolTip="Thumbnails scale"
+            ap:Icon.Data="{StaticResource IconMagnify}"
+            ap:Text.Text="{Binding MediaItemViews.Current.ThumbScale, StringFormat={}{0:G2}}"/>
+        </c:PopupSlider.Content>
+
+        <b:Interaction.Triggers>
+          <b:EventTrigger EventName="PopupClosedEvent">
+            <b:InvokeCommandAction Command="{Binding MediaItemViews.Current.ThumbScaleChangedCommand}"/>
+          </b:EventTrigger>
+        </b:Interaction.Triggers>
+      </c:PopupSlider>
+
+      <!-- Shuffle -->
+      <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.ShuffleCommand"/>
+
+      <!-- Sort -->
+      <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.SortCommand"/>
+
+      <!-- View Selected -->
+      <c:IconButton Command="ftMediaItem:MediaItemVM.ViewSelectedCommand"/>
+
+      <!-- Image Comparer -->
+      <c:IconButton
+        Command="ftImage:ImageComparerVM.AverageHashCommand"
+        CommandParameter="{Binding MediaItemViews.Current}"/>
+
+      <c:IconButton
+        Command="ftImage:ImageComparerVM.PHashCommand"
+        CommandParameter="{Binding MediaItemViews.Current}"/>
+
+      <c:PopupSlider
+        Maximum="25"
+        Value="{Binding ImageComparer.Diff, Mode=TwoWay}">
+        <c:PopupSlider.Content>
+          <c:IconTextButton
+            ToolTip="Compare limit"
+            ap:Icon.Data="{StaticResource IconCompare}"
+            ap:Text.Text="{Binding ImageComparer.Diff, StringFormat={}{0:G2}}"/>
+        </c:PopupSlider.Content>
+      </c:PopupSlider>
+    </StackPanel>
   </DataTemplate>
 </ResourceDictionary>
