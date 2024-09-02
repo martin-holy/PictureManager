@@ -183,7 +183,8 @@
       <!-- Play Panoramic Images -->
       <CheckBox
         IsChecked="{Binding PlayPanoramicImages}"
-        ToolTip="Play Panoramic Images"/>
+        ToolTip="Play Panoramic Images"
+        Margin="2"/>
     </StackPanel>
   </DataTemplate>
 
