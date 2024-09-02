@@ -26,7 +26,7 @@ public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment,
   }
 
   public override int GetItemSize(SegmentM item, bool getWidth) =>
-    Core.VM.Segment.SegmentUiFullWidth;
+    SegmentVM.SegmentUiFullWidth;
 
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>
     string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);

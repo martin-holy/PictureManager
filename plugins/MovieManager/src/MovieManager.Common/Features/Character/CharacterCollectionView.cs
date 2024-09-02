@@ -1,5 +1,6 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
+using PictureManager.Common.Features.Segment;
 using System;
 using System.Collections.Generic;
 using PM = PictureManager.Common;
@@ -10,7 +11,7 @@ public class CharacterCollectionView() : CollectionView<CharacterM>(PM.Res.IconP
   public override IEnumerable<GroupByItem<CharacterM>> GetGroupByItems(IEnumerable<CharacterM> source) => [];
 
   public override int GetItemSize(CharacterM item, bool getWidth) =>
-    getWidth ? 300 : Core.VM.PMCoreVM.Segment.SegmentUiFullWidth;
+    getWidth ? 300 : SegmentVM.SegmentUiFullWidth;
 
   public override int SortCompare(CharacterM itemA, CharacterM itemB) =>
     string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);

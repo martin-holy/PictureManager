@@ -17,7 +17,7 @@ public sealed class SegmentVM : ObservableObject {
 
   public static int SegmentSize { get; set; } = 100;
   public static int SegmentUiSize { get; set; }
-  public int SegmentUiFullWidth { get; set; }
+  public static int SegmentUiFullWidth { get; set; }
   public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; } = null!;
 
   public SegmentRectVM Rect { get; } = new();
@@ -31,8 +31,6 @@ public sealed class SegmentVM : ObservableObject {
     _coreVM = coreVM;
     _s = s;
     _r = r;
-
-    SetSegmentUiSize(CoreVM.DisplayScale);
 
     LoadByKeywordCommand = new(x => LoadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new(x => LoadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
@@ -61,7 +59,7 @@ public sealed class SegmentVM : ObservableObject {
     r.ChangePerson(null, segments, segments.GetPeople().ToArray());
   }
 
-  private void SetSegmentUiSize(double scale) {
+  public static void SetSegmentUiSize(double scale) {
     var size = (int)(SegmentSize / scale);
     SegmentUiSize = size;
     SegmentUiFullWidth = size + 6; // + border, margin
