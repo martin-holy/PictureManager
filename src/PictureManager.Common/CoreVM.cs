@@ -433,6 +433,7 @@ public class CoreVM : ObservableObject {
     toolBars.Add(new PersonToolBarVM());
     toolBars.Add(new SlideshowToolBarVM(MediaViewer.Slideshow));
     toolBars.Add(new MediaItemToolBarVM(MediaItem.Views, MainWindow, ImageComparer));
+    toolBars.Add(new MediaViewerToolBarVM(MediaViewer));
   }
 
   private void InitToggleDialog() {
