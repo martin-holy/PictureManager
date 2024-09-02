@@ -125,8 +125,6 @@
 
       <c:IconToggleButton
         ToolTip="Segments edit"
-        IsThreeState="False"
-        VerticalAlignment="Center"
         ap:Icon.Data="{StaticResource IconPeople}"
         IsChecked="{Binding SegmentS.Rect.AreVisible}"/>
 
@@ -263,6 +261,36 @@
             ap:Text.Text="{Binding ImageComparer.Diff, StringFormat={}{0:G2}}"/>
         </c:PopupSlider.Content>
       </c:PopupSlider>
+    </StackPanel>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftMediaItem:MediaViewerToolBarVM}">
+    <StackPanel Orientation="Horizontal">
+      <StackPanel.Style>
+        <Style TargetType="StackPanel">
+          <Setter Property="Visibility" Value="Collapsed"/>
+          <Style.Triggers>
+            <MultiDataTrigger>
+              <MultiDataTrigger.Conditions>
+                <Condition Binding="{Binding MediaViewer.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="False"/>
+                <Condition Binding="{Binding MediaViewer.IsVisible}" Value="True"/>
+              </MultiDataTrigger.Conditions>
+              <Setter Property="Visibility" Value="Visible"/>
+            </MultiDataTrigger>
+          </Style.Triggers>
+        </Style>
+      </StackPanel.Style>
+
+      <Separator/>
+
+      <c:IconToggleButton
+        ToolTip="Expand to fill"
+        ap:Icon.Data="{StaticResource IconExpandRect}"
+        IsChecked="{Binding MediaViewer.ZoomAndPan.ExpandToFill}"/>
+      <c:IconToggleButton
+        ToolTip="Shrink to fill"
+        ap:Icon.Data="{StaticResource IconShrinkRect}"
+        IsChecked="{Binding MediaViewer.ZoomAndPan.ShrinkToFill}"/>
     </StackPanel>
   </DataTemplate>
 </ResourceDictionary>
