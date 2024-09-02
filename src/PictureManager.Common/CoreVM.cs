@@ -75,14 +75,17 @@ public class CoreVM : ObservableObject {
     _coreS = coreS;
     _coreR = coreR;
 
+    SegmentVM.SetSegmentUiSize(DisplayScale);
+
+    MainWindow = new();
+
     GeoName = new(_coreR.GeoName);
     MediaItem = new(this, _coreS.MediaItem);
     Person = new(this, _coreR.Person);
     Segment = new(this, _coreS.Segment, _coreR.Segment);
     Video = new();
     Viewer = new(_coreR.Viewer, _coreS.Viewer);
-
-    MainWindow = new(this);
+    
     SegmentsDrawer = new(_coreS.Segment, _coreR.Segment.Drawer);
 
     UpdateMediaItemsCount();

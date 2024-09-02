@@ -2,6 +2,7 @@
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Person;
+using PictureManager.Common.Features.Segment;
 
 namespace PictureManager.Common.Layout;
 
@@ -38,12 +39,12 @@ public class MainWindowVM : ObservableObject {
 
   public static RelayCommand SwitchToBrowserCommand { get; set; } = null!;
 
-  public MainWindowVM(CoreVM coreVM) {
+  public MainWindowVM() {
     StatusBar = new(Core.Inst);
     SlidePanelsGrid = new(
       new(Dock.Left, TreeViewCategories, 380),
       new(Dock.Top, ToolBar, 30),
-      new(Dock.Right, ToolsTabs, GetToolsTabsWidth(coreVM.Segment.SegmentUiFullWidth)) { CanOpen = false },
+      new(Dock.Right, ToolsTabs, GetToolsTabsWidth(SegmentVM.SegmentUiFullWidth)) { CanOpen = false },
       new(Dock.Bottom, StatusBar, 0),
       MiddleContent,
       [ // Left, Top, Right, Bottom, FullScreen (not part of SlidePanelsGrid)
