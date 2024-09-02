@@ -129,8 +129,9 @@ public class ZoomAndPan : ObservableObject {
   }
 
   public void StopAnimation() {
-    if (_isAnimationOn)
-      Host?.StopAnimation();
+    if (!_isAnimationOn) return;
+    IsAnimationOn = false;
+    Host?.StopAnimation();
   }
 
   public void OnHostSizeChanged() =>
