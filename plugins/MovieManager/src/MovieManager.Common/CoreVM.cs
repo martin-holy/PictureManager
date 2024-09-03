@@ -4,6 +4,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using MovieManager.Common.Features.Actor;
+using MovieManager.Common.Features.Common;
 using MovieManager.Common.Features.Import;
 using MovieManager.Common.Features.Movie;
 using PictureManager.Common.Features.Keyword;
@@ -62,6 +63,8 @@ public sealed class CoreVM : ObservableObject, IPluginCoreVM {
       SaveDbCommand,
       ScrollToRootFolderCommand
     ];
+
+    pmCoreVM.MainWindow.ToolBar.ToolBars.Add(new MovieManagerToolBarVM(this));
   }
 
   public void AttachEvents() {

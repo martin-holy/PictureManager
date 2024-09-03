@@ -1,0 +1,26 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:app="clr-namespace:MovieManager.Common;assembly=MovieManager.Common"
+  xmlns:ftCommon="clr-namespace:MovieManager.Common.Features.Common;assembly=MovieManager.Common">
+    
+  <DataTemplate DataType="{x:Type ftCommon:MovieManagerToolBarVM}">
+    <StackPanel
+      Orientation="Horizontal"
+      Visibility="{Binding Common.ShowToolBar,
+                   Source={x:Static app:Core.Settings},
+                   Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
+
+      <Separator ToolTip="Movie Manager"/>
+
+      <c:IconButton Command="{Binding CoreVM.DeleteSelectedMoviesCommand}"/>
+      <c:IconButton Command="{Binding CoreVM.ImportMoviesCommand}"/>
+      <c:IconButton Command="{Binding CoreVM.OpenMoviesCommand}"/>
+      <c:IconButton Command="{Binding CoreVM.OpenMoviesFilterCommand}"/>
+      <c:IconButton Command="{Binding CoreVM.SaveDbCommand}"/>
+      <c:IconButton Command="{Binding CoreVM.ScrollToRootFolderCommand}"/>
+    </StackPanel>
+  </DataTemplate>
+</ResourceDictionary>
