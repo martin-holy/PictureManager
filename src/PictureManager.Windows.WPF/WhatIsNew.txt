@@ -13,6 +13,7 @@ Latest:
  - [N] MediaVewer: ExpandToFill and ShrinkToFill in ToolBar
  - [N] MovieManager Settings: show toolbar
  - [N] MovieManager: toolbar
+ - [N] MediaViewer Settings with ExpandToFill and ShrinkToFill
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
