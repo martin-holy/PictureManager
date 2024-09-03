@@ -28,6 +28,9 @@ public sealed class MediaViewerVM : ObservableObject {
   public RelayCommand<MouseWheelEventArgs> NavigateCommand { get; }
 
   public MediaViewerVM() {
+    ZoomAndPan.ExpandToFill = Core.Settings.MediaViewer.ExpandToFill;
+    ZoomAndPan.ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill;
+
     Slideshow = new(this, ZoomAndPan);
     NextCommand = new(_next, _canNext);
     PreviousCommand = new(_previous, _canPrevious);

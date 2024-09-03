@@ -208,4 +208,21 @@
       </ItemsControl.ItemsSource>
     </ItemsControl>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:MediaViewerSettings}">
+    <ItemsControl Style="{StaticResource PM.S.ItemsControl.Settings.Items}">
+      <ItemsControl.ItemsSource>
+        <x:Array Type="{x:Type sys:Object}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Expand content to fill:"/>
+            <CheckBox IsChecked="{Binding ExpandToFill, Mode=TwoWay}"/>
+          </x:Array>
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Shrink content to fill:"/>
+            <CheckBox IsChecked="{Binding ShrinkToFill, Mode=TwoWay}"/>
+          </x:Array>
+        </x:Array>
+      </ItemsControl.ItemsSource>
+    </ItemsControl>
+  </DataTemplate>
 </ResourceDictionary>

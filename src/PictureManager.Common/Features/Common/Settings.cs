@@ -14,20 +14,23 @@ public sealed class Settings : UserSettings {
   public ImagesToVideoSettings ImagesToVideo { get; }
   public MediaItemSettings MediaItem { get; }
   public SegmentSettings Segment { get; }
+  public MediaViewerSettings MediaViewer { get; }
 
-  public Settings(string filePath, CommonSettings common, GeoNameSettings geoName, ImagesToVideoSettings imagesToVideo, MediaItemSettings mediaItem, SegmentSettings segment) : base(filePath) {
+  public Settings(string filePath, CommonSettings common, GeoNameSettings geoName, ImagesToVideoSettings imagesToVideo, MediaItemSettings mediaItem, SegmentSettings segment, MediaViewerSettings mediaViewer) : base(filePath) {
     Common = common;
     GeoName = geoName;
     ImagesToVideo = imagesToVideo;
     MediaItem = mediaItem;
     Segment = segment;
+    MediaViewer = mediaViewer;
 
     Groups = [
       new(Res.IconSettings, "Common", common),
       new(Res.IconLocationCheckin, "GeoName", geoName),
       //new(Res.IconBug, "Images to video", imagesToVideo),
       new(Res.IconImageMultiple, "MediaItem", mediaItem),
-      new(Res.IconSegment, "Segment", segment)
+      new(Res.IconSegment, "Segment", segment),
+      new(Res.IconImageMultiple, "MediaViewer", mediaViewer)
     ];
 
     WatchForChanges();
@@ -44,8 +47,9 @@ public sealed class Settings : UserSettings {
       var imagesToVideo = DeserializeGroup<ImagesToVideoSettings>(root, "ImagesToVideo") ?? new();
       var mediaItem = DeserializeGroup<MediaItemSettings>(root, "MediaItem") ?? new();
       var segment = DeserializeGroup<SegmentSettings>(root, "Segment") ?? new();
+      var mediaViewer = DeserializeGroup<MediaViewerSettings>(root, "MediaViewer") ?? new();
 
-      var settings = new Settings(filePath, common, geoName, imagesToVideo, mediaItem, segment);
+      var settings = new Settings(filePath, common, geoName, imagesToVideo, mediaItem, segment, mediaViewer);
 
       return settings;
     }
@@ -56,7 +60,7 @@ public sealed class Settings : UserSettings {
   }
 
   private static Settings CreateNew(string filePath) =>
-    new(filePath, new(), new(), new(), new(), new());
+    new(filePath, new(), new(), new(), new(), new(), new());
 
   protected override string Serialize(JsonSerializerOptions options) =>
     JsonSerializer.Serialize(this, options);
@@ -122,4 +126,12 @@ public sealed class SegmentSettings : ObservableObject {
   private int _groupSize = 250;
 
   public int GroupSize { get => _groupSize; set { _groupSize = value; OnPropertyChanged(); } }
+}
+
+public sealed class MediaViewerSettings : ObservableObject {
+  private bool _expandToFill;
+  private bool _shrinkToFill = true;
+
+  public bool ExpandToFill { get => _expandToFill; set { _expandToFill = value; OnPropertyChanged(); } }
+  public bool ShrinkToFill { get => _shrinkToFill; set { _shrinkToFill = value; OnPropertyChanged(); } }
 }
