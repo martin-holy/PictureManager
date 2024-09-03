@@ -9,13 +9,16 @@ using System.Text.Json;
 namespace MovieManager.Common.Features.Common;
 
 public sealed class Settings : UserSettings {
+  public CommonSettings Common { get; }
   public ImportSettings Import { get; }
 
-  public Settings(string filePath, ImportSettings import) : base(filePath) {
+  public Settings(string filePath, CommonSettings common, ImportSettings import) : base(filePath) {
+    Common = common;
     Import = import;
 
     Groups = [
-      new(Res.IconImport, "Import", import),
+      new(Res.IconSettings, "Common", common),
+      new(Res.IconImport, "Import", import)
     ];
 
     WatchForChanges();
@@ -26,8 +29,11 @@ public sealed class Settings : UserSettings {
     try {
       using var doc = JsonDocument.Parse(File.ReadAllText(filePath));
       var root = doc.RootElement;
+
+      var common = DeserializeGroup<CommonSettings>(root, "Common") ?? new();
       var import = DeserializeGroup<ImportSettings>(root, "Import") ?? new();
-      var settings = new Settings(filePath, import);
+
+      var settings = new Settings(filePath, common, import);
 
       return settings;
     }
@@ -38,10 +44,16 @@ public sealed class Settings : UserSettings {
   }
 
   private static Settings CreateNew(string filePath) =>
-    new(filePath, new());
+    new(filePath, new(), new());
 
   protected override string Serialize(JsonSerializerOptions options) =>
     JsonSerializer.Serialize(this, options);
+}
+
+public sealed class CommonSettings : ObservableObject {
+  private bool _showToolBar;
+  
+  public bool ShowToolBar { get => _showToolBar; set { _showToolBar = value; OnPropertyChanged(); } }
 }
 
 public sealed class ImportSettings : ObservableObject {

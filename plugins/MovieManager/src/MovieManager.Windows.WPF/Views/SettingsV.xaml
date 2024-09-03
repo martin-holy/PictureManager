@@ -9,6 +9,19 @@
     <c:IconButton Command="{Binding SaveCommand}" HorizontalAlignment="Right"/>
   </DataTemplate>
 
+  <DataTemplate DataType="{x:Type ftCommon:CommonSettings}">
+    <ItemsControl Style="{StaticResource PM.S.ItemsControl.Settings.Items}">
+      <ItemsControl.ItemsSource>
+        <x:Array Type="{x:Type sys:Object}">
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Show toolbar:"/>
+            <CheckBox IsChecked="{Binding ShowToolBar, Mode=TwoWay}"/>
+          </x:Array>
+        </x:Array>
+      </ItemsControl.ItemsSource>
+    </ItemsControl>
+  </DataTemplate>
+
   <DataTemplate DataType="{x:Type ftCommon:ImportSettings}">
     <ItemsControl Style="{StaticResource PM.S.ItemsControl.Settings.Items}">
       <ItemsControl.ItemsSource>
