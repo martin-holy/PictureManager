@@ -8,11 +8,22 @@
     <Grid Margin="2" MinWidth="364" Height="450">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
         <RowDefinition/>
       </Grid.RowDefinitions>
 
       <mhc:CollectionView View="{Binding PeopleView}" MaxHeight="160" InnerItemTemplate="{DynamicResource PM.DT.Person.Thumb}"/>
-      <mhc:CollectionView View="{Binding SegmentsView}" Grid.Row="1" InnerItemTemplate="{DynamicResource PM.DT.Segment}"/>
+
+      <Border
+        Grid.Row="1"
+        Style="{DynamicResource MH.S.Border.RoundDarker}"
+        Margin="2"
+        HorizontalAlignment="Left">
+
+        <TextBlock Text="{Binding Person.Name}"/>
+      </Border>
+
+      <mhc:CollectionView View="{Binding SegmentsView}" Grid.Row="2" InnerItemTemplate="{DynamicResource PM.DT.Segment}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>
