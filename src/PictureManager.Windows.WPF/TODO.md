@@ -36,8 +36,6 @@
   - can't select multiple segments one by one fast
 ## PersonDetail
   - create new segment => set person to the new segment => open PersonDetail from StatusBar => new segment is not there (second open is ok)
-## ToolBar
-  - add margin around checkbox PlayPanoramic
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
@@ -54,6 +52,7 @@
         # MH.UI
 ## CollectionView
   - don't show expanded root if source is empty
+  - expand and scroll to item in GroupByDialog on open
 ## TabControl
   - Custom tab background color (same color for MediaItems, Segments, MovieManager, ...)
 
@@ -81,11 +80,13 @@
 ## StatusBar
   - limit folder path size
   - add menu with zooms on zoom
-## PersonMerge
-  - show selected person name on merge dialog
 ## PresentationPanelVM
   - three state button with play/pause/stop and show paused state when video is playing
   - play VideoImages and VideoClips based on settings
+## SegmentRect
+  - allow mouse events trough
+## Search
+  - make "plug-ins" for search (keywords, folders, fileNames, dates, people, actors, ...)
 
         # Movie Managers
 ## Movies
@@ -162,8 +163,6 @@
   - it can be null and it is created on first use
   - how to create, where hold the instance, dependencies
   - ...
-## MergePeopleDialogM
-  - rewrite, use ref for Person and SegmentsToUpdate
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
