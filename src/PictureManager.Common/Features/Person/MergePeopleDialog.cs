@@ -9,11 +9,12 @@ namespace PictureManager.Common.Features.Person;
 public sealed class MergePeopleDialog : Dialog {
   private static MergePeopleDialog? _inst;
   private readonly SegmentS _segmentS;
-  private static PersonM[] _people = null!;
-  private static SegmentM[] _unknownSelected = null!;
+  private PersonM[] _people = null!;
+  private SegmentM[] _unknownSelected = null!;
+  private SegmentM[] _segmentsToUpdate = null!;
+  private PersonM _person = null!;
 
-  public static PersonM Person { get; private set; } = null!;
-  public static SegmentM[] SegmentsToUpdate { get; private set; } = null!;
+  public PersonM Person { get => _person; private set { _person = value; OnPropertyChanged(); } }
   public PersonCollectionView PeopleView { get; }
   public SegmentCollectionView SegmentsView { get; }
 
@@ -27,16 +28,48 @@ public sealed class MergePeopleDialog : Dialog {
     ];
   }
 
-  public void SetPerson(PersonM person) {
+  public static bool Open(PersonS personS, SegmentS segmentS, PersonM[] people, out PersonM? person, out SegmentM[]? segmentsToUpdate) {
+    if (_inst == null) {
+      _inst = new(segmentS);
+      _inst.PeopleView.ItemSelectedEvent += (_, e) =>
+        _inst._setPerson(e.Item);
+    }
+
+    return _inst._open(personS, segmentS, people, out person, out segmentsToUpdate);
+  }
+
+  private bool _open(PersonS personS, SegmentS segmentS, PersonM[] people, out PersonM? person, out SegmentM[]? segmentsToUpdate) {
+    _people = people;
+    _unknownSelected = segmentS.Selected.Items.Where(x => x.Person == null).ToArray();
+    personS.Selected.Select(people[0]);
+    _setPerson(people[0]);
+    PeopleView.Reload(people.ToList(), GroupMode.ThenByRecursive, null, true);
+
+    if (Show(this) != 1) {
+      _clear();
+      person = null;
+      segmentsToUpdate = null;
+      return false;
+    }
+
+    personS.MergePeople(Person, people.Where(x => !ReferenceEquals(x, Person)).ToArray());
+    _clear();
+    person = Person;
+    segmentsToUpdate = _segmentsToUpdate;
+
+    return true;
+  }
+
+  private void _setPerson(PersonM person) {
     Person = person;
-    SegmentsToUpdate = GetSegmentsToUpdate(Person, _people);
-    var source = SegmentsToUpdate.OrderBy(x => x.MediaItem.FileName).ToList();
-    var groupByItems = GroupByItems.GetPeople(SegmentsToUpdate).ToArray();
+    _segmentsToUpdate = _getSegmentsToUpdate(Person, _people);
+    var source = _segmentsToUpdate.OrderBy(x => x.MediaItem.FileName).ToList();
+    var groupByItems = GroupByItems.GetPeople(_segmentsToUpdate).ToArray();
 
     SegmentsView.Reload(source, GroupMode.GroupBy, groupByItems, true, "Segments to update");
   }
 
-  private SegmentM[] GetSegmentsToUpdate(PersonM person, IEnumerable<PersonM> people) {
+  private SegmentM[] _getSegmentsToUpdate(PersonM person, IEnumerable<PersonM> people) {
     var oldPeople = people.Where(x => !ReferenceEquals(x, person)).ToHashSet();
     return _segmentS.DataAdapter.All
       .Where(x => x.Person != null && oldPeople.Contains(x.Person))
@@ -44,31 +77,8 @@ public sealed class MergePeopleDialog : Dialog {
       .ToArray();
   }
 
-  private void Clear() {
+  private void _clear() {
     PeopleView.Root?.Clear();
     SegmentsView.Root?.Clear();
-  }
-
-  public static bool Open(PersonS personS, SegmentS segmentS, PersonM[] people) {
-    if (_inst == null) {
-      _inst = new(segmentS);
-      _inst.PeopleView.ItemSelectedEvent += (_, e) =>
-        _inst.SetPerson(e.Item);
-    }
-
-    _people = people;
-    _unknownSelected = segmentS.Selected.Items.Where(x => x.Person == null).ToArray();
-    personS.Selected.Select(people[0]);
-    _inst.SetPerson(people[0]);
-    _inst.PeopleView.Reload(people.ToList(), GroupMode.ThenByRecursive, null, true);
-
-    if (Show(_inst) != 1) {
-      _inst.Clear();
-      return false;
-    }
-
-    personS.MergePeople(Person, people.Where(x => !ReferenceEquals(x, Person)).ToArray());
-    _inst.Clear();
-    return true;
   }
 }

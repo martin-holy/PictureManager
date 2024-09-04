@@ -80,9 +80,9 @@ public sealed class SegmentS : ObservableObject {
       toUpdate = items.Where(x => x.Person == null).ToArray();
     }
     else {
-      if (!MergePeopleDialog.Open(Core.S.Person, this, people)) return;
-      newPerson = MergePeopleDialog.Person;
-      toUpdate = MergePeopleDialog.SegmentsToUpdate;
+      if (!MergePeopleDialog.Open(Core.S.Person, this, people, out var newP, out var toU)) return;
+      newPerson = newP!;
+      toUpdate = toU!;
     }
 
     Core.S.Person.Selected.DeselectAll();
