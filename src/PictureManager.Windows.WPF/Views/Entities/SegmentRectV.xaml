@@ -6,10 +6,11 @@
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
   xmlns:vmWin="clr-namespace:PictureManager.Windows.WPF.ViewModels"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:pmc="clr-namespace:PictureManager.Windows.WPF.Controls">
 
   <DataTemplate DataType="{x:Type ftSegment:SegmentRectM}">
-    <Border
+    <pmc:SegmentRectBorder
       x:Name="PART_ResizeBorder"
       MinWidth="{Binding Size}"
       MinHeight="{Binding Size}"
@@ -23,9 +24,9 @@
       HorizontalAlignment="Left"
       VerticalAlignment="Top">
 
-      <Border.RenderTransform>
+      <pmc:SegmentRectBorder.RenderTransform>
         <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
-      </Border.RenderTransform>
+      </pmc:SegmentRectBorder.RenderTransform>
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseDown">
@@ -54,7 +55,7 @@
           Margin="2"
           Cursor="Arrow"/>
       </Grid>
-    </Border>
+    </pmc:SegmentRectBorder>
 
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding Segment.Person}" Value="{x:Null}">
@@ -70,7 +71,7 @@
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding S.Segment.Rect.IsEditOn, Source={x:Static pm:App.Core}}" Value="False"/>
-          <Condition Binding="{Binding IsMouseOver, ElementName=PART_ResizeBorder}" Value="True"/>
+          <Condition Binding="{Binding IsMouseOver2, ElementName=PART_ResizeBorder}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="buttons" Property="Visibility" Value="Visible"/>
       </MultiDataTrigger>
