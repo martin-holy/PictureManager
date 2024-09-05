@@ -136,7 +136,6 @@
   - keywords:
     - sort like in the tree
     - disable/enable available
-  - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
   - create multiple views of segments like media items views
 ## GroupByDialog
   - incremental search
