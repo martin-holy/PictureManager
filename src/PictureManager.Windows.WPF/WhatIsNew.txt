@@ -15,6 +15,7 @@ Latest:
  - [N] MovieManager: toolbar
  - [N] MediaViewer Settings with ExpandToFill and ShrinkToFill
  - [U] MergePeopleDialog: selected person name
+ - [U] SegmentRect: allow mouse events through rect
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
