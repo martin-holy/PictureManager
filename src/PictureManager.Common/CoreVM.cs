@@ -96,7 +96,7 @@ public class CoreVM : ObservableObject {
     AppClosingCommand = new(AppClosing);
     ExportSegmentsCommand = new(ExportSegments, () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export Segments");
     OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
-    OpenSegmentsMatchingCommand = new(() => OpenSegmentsMatching(null), Res.IconSegment, "Segments View");
+    OpenSegmentsMatchingCommand = new(() => OpenSegmentsMatching(null, string.Empty), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
     CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
     GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
@@ -163,6 +163,9 @@ public class CoreVM : ObservableObject {
         break;
       case PersonS people:
         people.Selected.DeselectAll();
+        break;
+      case SegmentsViewsVM sv:
+        sv.Close();
         break;
     }
   }
@@ -316,27 +319,33 @@ public class CoreVM : ObservableObject {
     MainWindow.ToolsTabs.PeopleTab?.Update(items);
     People?.Update(items);
     SegmentsMatching?.CvPeople.Update(items);
+    Segment.Views.CvPeople.Update(items);
   }
 
   private void OnSegmentCreated(object? sender, SegmentM e) {
     SegmentsMatching?.CvSegments.Insert(e);
+    Segment.Views.Current?.Insert(e);
   }
 
   private void OnSegmentsDeleted(object? sender, IList<SegmentM> items) {
-    MainWindow.ToolsTabs.PersonDetailTab?.Update(items.ToArray(), true, true);
-    SegmentsMatching?.CvSegments.Remove(items.ToArray());
-    SegmentsDrawer.RemoveIfContains(items.ToArray());
+    var arr = items.ToArray();
+    MainWindow.ToolsTabs.PersonDetailTab?.Update(arr, true, true);
+    SegmentsMatching?.CvSegments.Remove(arr);
+    Segment.Views.RemoveSegments(arr);
+    SegmentsDrawer.RemoveIfContains(arr);
   }
 
   private void OnSegmentsKeywordsChanged(object? sender, SegmentM[] items) {
     MainWindow.ToolsTabs.PersonDetailTab?.Update(items, true, false);
     SegmentsMatching?.CvSegments.Update(items);
+    Segment.Views.UpdateViews(items);
   }
 
   private void OnSegmentsPersonChanged(object? sender, (SegmentM[], PersonM?, PersonM[]) e) {
     MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Item1);
     People?.Update(e.Item3);
     SegmentsMatching?.OnSegmentsPersonChanged(e.Item1);
+    Segment.Views.OnSegmentsPersonChanged(e.Item1);
   }
 
   private void AppClosing() {
@@ -365,7 +374,19 @@ public class CoreVM : ObservableObject {
     MainTabs.Activate(Res.IconPeopleMultiple, "People", People);
   }
 
-  public void OpenSegmentsMatching(SegmentM[]? segments) {
+  public void OpenSegmentsMatchingNew(SegmentM[]? segments, string tabTitle) {
+    if (segments == null) {
+      var result = SegmentsViewsVM.GetSegmentsToLoadUserInput();
+      if (result < 1) return;
+      segments = SegmentsViewsVM.GetSegments(result).ToArray();
+    }
+    
+    MainTabs.Activate(Res.IconSegment, "Segments", Segment.Views);
+    if (MediaViewer.IsVisible) MainWindow.IsInViewMode = false;
+    Segment.Views.Load(segments, tabTitle);
+  }
+
+  public void OpenSegmentsMatching(SegmentM[]? segments, string tabTitle) {
     if (segments == null) {
       var result = SegmentsMatchingVM.GetSegmentsToLoadUserInput();
       if (result < 1) return;

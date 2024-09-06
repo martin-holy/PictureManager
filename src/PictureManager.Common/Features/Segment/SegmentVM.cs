@@ -20,6 +20,7 @@ public sealed class SegmentVM : ObservableObject {
   public static int SegmentUiFullWidth { get; set; }
   public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; } = null!;
 
+  public SegmentsViewsVM Views { get; }
   public SegmentRectVM Rect { get; } = new();
 
   public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
@@ -31,6 +32,7 @@ public sealed class SegmentVM : ObservableObject {
     _coreVM = coreVM;
     _s = s;
     _r = r;
+    Views = new(_s);
 
     LoadByKeywordCommand = new(x => LoadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new(x => LoadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
@@ -39,10 +41,10 @@ public sealed class SegmentVM : ObservableObject {
   }
 
   private void LoadBy(KeywordM k) =>
-    _coreVM.OpenSegmentsMatching(_r.GetBy(k, Keyboard.IsShiftOn()).ToArray());
+    _coreVM.OpenSegmentsMatching(_r.GetBy(k, Keyboard.IsShiftOn()).ToArray(), k.FullName);
 
   private void LoadBy(PersonM p) =>
-    _coreVM.OpenSegmentsMatching(_r.GetBy(p).ToArray());
+    _coreVM.OpenSegmentsMatching(_r.GetBy(p).ToArray(), p.Name);
 
   private void SetSelectedAsSamePerson() =>
     _s.SetSelectedAsSamePerson(_s.Selected.Items.ToArray());
