@@ -83,8 +83,6 @@
 ## PresentationPanelVM
   - three state button with play/pause/stop and show paused state when video is playing
   - play VideoImages and VideoClips based on settings
-## SegmentRect
-  - allow mouse events trough
 ## Search
   - make "plug-ins" for search (keywords, folders, fileNames, dates, people, actors, ...)
 
@@ -136,7 +134,6 @@
   - keywords:
     - sort like in the tree
     - disable/enable available
-  - create multiple views of segments like media items views
 ## GroupByDialog
   - incremental search
 ## PersonDetail
