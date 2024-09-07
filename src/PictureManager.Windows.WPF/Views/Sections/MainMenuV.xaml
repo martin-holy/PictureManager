@@ -38,7 +38,7 @@
           <MenuItem Command="core:CoreVM.ReloadMetadataCommand"/>
           <MenuItem Command="core:CoreVM.RotateMediaItemsCommand" InputGestureText="Ctrl+R"/>
           <MenuItem Command="core:CoreVM.SaveImageMetadataToFilesCommand"/>
-          <MenuItem Command="core:CoreVM.OpenSegmentsMatchingCommand"/>
+          <MenuItem Command="core:CoreVM.OpenSegmentsViewsCommand"/>
           <MenuItem Command="ftMediaItem:MediaItemsViewsVM.ViewModifiedCommand"/>
           <MenuItem Command="ftMediaItem:MediaItemsViewsVM.ShuffleCommand"/>
           <MenuItem Command="ftMediaItem:MediaItemsViewsVM.SortCommand"/>

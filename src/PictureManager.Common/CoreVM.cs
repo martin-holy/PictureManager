@@ -59,7 +59,7 @@ public class CoreVM : ObservableObject {
   public static RelayCommand ExportSegmentsCommand { get; set; } = null!;
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialog()), null, "About");
   public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialog()), Res.IconSort, "Open log");
-  public static RelayCommand OpenSegmentsMatchingCommand { get; set; } = null!;
+  public static RelayCommand OpenSegmentsViewsCommand { get; set; } = null!;
   public static RelayCommand OpenSettingsCommand { get; set; } = null!;
   public static RelayCommand SaveDbCommand { get; set; } = null!;
   public static RelayCommand<FolderM> CompressImagesCommand { get; set; } = null!;
@@ -95,7 +95,7 @@ public class CoreVM : ObservableObject {
     AppClosingCommand = new(AppClosing);
     ExportSegmentsCommand = new(ExportSegments, () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export Segments");
     OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
-    OpenSegmentsMatchingCommand = new(() => OpenSegmentsViews(null, string.Empty), Res.IconSegment, "Segments View");
+    OpenSegmentsViewsCommand = new(() => OpenSegmentsViews(null, string.Empty), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
     CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
     GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
