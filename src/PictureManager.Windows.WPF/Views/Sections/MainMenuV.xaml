@@ -4,7 +4,8 @@
   xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
   xmlns:ftGeoName="clr-namespace:PictureManager.Common.Features.GeoName;assembly=PictureManager.Common"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
-  xmlns:ftWhatIsNew="clr-namespace:PictureManager.Common.Features.WhatIsNew;assembly=PictureManager.Common">
+  xmlns:ftWhatIsNew="clr-namespace:PictureManager.Common.Features.WhatIsNew;assembly=PictureManager.Common"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
 
   <DataTemplate x:Key="PM.DT.MainMenu">
     <Menu Background="Transparent">
@@ -49,6 +50,8 @@
             <Path Data="{StaticResource IconSegment}" Style="{StaticResource MH.S.Icon.Shadow}"/>
           </MenuItem.Icon>
           <MenuItem Command="core:CoreVM.ExportSegmentsCommand"/>
+          <MenuItem Command="ftSegment:SegmentsViewsVM.ShuffleCommand"/>
+          <MenuItem Command="ftSegment:SegmentsViewsVM.SortCommand"/>
         </MenuItem>
 
         <MenuItem Command="core:CoreVM.OpenSettingsCommand"/>
