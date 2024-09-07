@@ -20,34 +20,34 @@
   </DataTemplate>
 
   <DataTemplate DataType="{x:Type ftSegment:SegmentsViewVM}">
-    <c:CollectionView
-      View="{Binding}"
-      InnerItemTemplate="{StaticResource PM.DT.Segment}"
-      wpfu:DragDropHelper.IsDragEnabled="True"
-      wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
-  </DataTemplate>
-
-  <DataTemplate DataType="{x:Type ftSegment:SegmentsViewsVM}">
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="3"/>
         <ColumnDefinition
           Width="{Binding Source={x:Static ftSegment:SegmentVM.SegmentUiFullWidth},
-          Converter={x:Static pmConv:SegmentsViewWidthConverter.Inst},
-          ConverterParameter=3,
-          FallbackValue=280}"/>
+                  Converter={x:Static pmConv:SegmentsViewWidthConverter.Inst},
+                  ConverterParameter=3,
+                  FallbackValue=280}"/>
       </Grid.ColumnDefinitions>
 
-      <ContentPresenter Content="{Binding Tabs}"/>
+      <c:CollectionView
+        View="{Binding}"
+        InnerItemTemplate="{StaticResource PM.DT.Segment}"
+        wpfu:DragDropHelper.IsDragEnabled="True"
+        wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
 
       <GridSplitter Grid.Column="1"/>
-      
+  
       <c:CollectionView
         Grid.Column="2"
         View="{Binding CvPeople}"
         InnerItemTemplate="{StaticResource PM.DT.Person.Thumb}"/>
 
     </Grid>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftSegment:SegmentsViewsVM}">
+    <ContentPresenter Content="{Binding Tabs}"/>
   </DataTemplate>
 </ResourceDictionary>

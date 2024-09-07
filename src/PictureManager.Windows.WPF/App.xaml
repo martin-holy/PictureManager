@@ -101,7 +101,6 @@
         <ResourceDictionary Source="/Views/Sections/PersonDetailV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/PluginsMenuV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/SegmentsDrawerV.xaml"/>
-        <ResourceDictionary Source="/Views/Sections/SegmentsMatchingV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/SegmentsViewsV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/SelectedItemsStatusBarV.xaml"/>
         <ResourceDictionary Source="/Views/Sections/SettingsV.xaml"/>
