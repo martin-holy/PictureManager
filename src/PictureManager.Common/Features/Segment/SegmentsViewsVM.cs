@@ -19,7 +19,6 @@ public sealed class SegmentsViewsVM : ObservableObject {
   private SegmentsViewVM? _current;
 
   public SegmentsViewsTabsVM Tabs { get; } = new();
-  public PersonCollectionView CvPeople { get; } = new();
   public SegmentsViewVM? Current { get => _current; private set => _setCurrent(value); }
   public static RelayCommand AddViewCommand { get; set; } = null!;
   public static RelayCommand ShuffleCommand { get; set; } = null!;
@@ -45,7 +44,9 @@ public sealed class SegmentsViewsVM : ObservableObject {
 
     if (_current != null) {
       oldSelected = _current.Root?.Source.Where(x => x.IsSelected).ToArray() ?? [];
-      _views[_current] = oldSelected;
+
+      if (_views.ContainsKey(_current))
+        _views[_current] = oldSelected;
     }
 
     _current = value;
@@ -56,9 +57,6 @@ public sealed class SegmentsViewsVM : ObservableObject {
     _segmentS.Selected.Set(oldSelected.Except(newSelected), false);
     _segmentS.Selected.Set(newSelected, true);
     _segmentS.OnPropertyChanged(nameof(SegmentS.CanSetAsSamePerson));
-
-    // TODO select/deselect of People
-    // TODO reload CvPeople
 
     OnPropertyChanged(nameof(Current));
   }
@@ -85,13 +83,12 @@ public sealed class SegmentsViewsVM : ObservableObject {
       Tabs.Close(tab);
   }
 
-  // TODO debug
-  private SegmentsViewVM _addViewIfNotActive(string? tabName) {
+  private SegmentsViewVM _addViewIfNotActive(string tabName) {
     if (Tabs.Selected?.Data is not SegmentsViewVM view)
-      return _addView(tabName ?? string.Empty);
+      return _addView(tabName);
     
-    if (tabName != null)
-      Tabs.Selected.Name = tabName;
+    if (!string.IsNullOrEmpty(tabName))
+      Tabs.Selected.Name += ", " + tabName;
 
     return view;
   }
@@ -136,37 +133,41 @@ public sealed class SegmentsViewsVM : ObservableObject {
           .Where(x => x.Person != null && people.Contains(x.Person))
           .OrderBy(x => x.MediaItem.FileName);
       case 3:
-        return Core.S.Segment.Selected.Items; // TODO
+        return Core.S.Segment.Selected.Items;
       default:
         return [];
     }
   }
 
   public void OnSegmentsPersonChanged(SegmentM[] segments) {
-    if (Current == null) return;
+    foreach (var view in _views.Keys)
+      view.OnSegmentsPersonChanged(segments);
+  }
 
-    Current.Insert(segments);
-    var newP = Current.Root?.Source.GetPeople().ToArray()!;
-    var oldP = CvPeople.Root?.Source.EmptyIfNull().ToArray()!;
-    var pIn = newP.Except(oldP).ToArray();
-    var pOut = oldP.Except(newP).ToArray();
-    CvPeople.Insert(pIn);
-    CvPeople.Remove(pOut);
+  public void OnPersonsKeywordsChanged(PersonM[] items) {
+    foreach (var view in _views.Keys)
+      view.CvPeople.Update(items);
+  }
+
+  public void OnPersonDeleted(PersonM item) {
+    foreach (var view in _views.Keys)
+      view.CvPeople.Remove(item);
   }
 
   public void Load(SegmentM[] items, string tabTitle) {
+    if (string.IsNullOrEmpty(tabTitle))
+      tabTitle = $"Segments {_views.Count + 1}";
+
     var and = Keyboard.IsCtrlOn() && Current != null;
     var source = _sort(and && Current!.Root != null ? items.Union(Current.Root.Source) : items).ToList();
-    var view = and ? _addViewIfNotActive(null) : _addView(tabTitle);
+    var view = and ? _addViewIfNotActive(tabTitle) : _addView(tabTitle);
     var groupByItems = new[] {
       GroupByItems.GetPeopleInGroup(source),
       GroupByItems.GetKeywordsInGroup(source)
     };
 
     view.Reload(source, GroupMode.ThenByRecursive, groupByItems, true);
-
-    var people = source.GetPeople().OrderBy(x => x.Name).ToList();
-    CvPeople.Reload(people, GroupMode.GroupByRecursive, null, true);
+    view.ReloadPeople();
   }
 
   private static IEnumerable<SegmentM> _sort(IEnumerable<SegmentM> items) =>

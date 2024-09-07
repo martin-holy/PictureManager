@@ -41,10 +41,10 @@ public sealed class SegmentVM : ObservableObject {
   }
 
   private void LoadBy(KeywordM k) =>
-    _coreVM.OpenSegmentsMatching(_r.GetBy(k, Keyboard.IsShiftOn()).ToArray(), k.FullName);
+    _coreVM.OpenSegmentsViews(_r.GetBy(k, Keyboard.IsShiftOn()).ToArray(), k.GetFullName("-", x => x.Name));
 
   private void LoadBy(PersonM p) =>
-    _coreVM.OpenSegmentsMatching(_r.GetBy(p).ToArray(), p.Name);
+    _coreVM.OpenSegmentsViews(_r.GetBy(p).ToArray(), p.Name);
 
   private void SetSelectedAsSamePerson() =>
     _s.SetSelectedAsSamePerson(_s.Selected.Items.ToArray());
