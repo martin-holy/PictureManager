@@ -44,14 +44,17 @@ public sealed class SegmentsViewVM : SegmentCollectionView {
     }
   }
   
-  //TODO
   public void Shuffle() {
-
+    if (Root == null) return;
+    var sourceCopy = Root.Source.ToList();
+    sourceCopy.Shuffle();
+    Reload(sourceCopy, GroupMode.ThenByRecursive, null, true);
   }
 
-  //TODO
   public void Sort() {
-
+    if (Root == null) return;
+    var sourceCopy = Root.Source.OrderBy(x => x.MediaItem.FileName).ToList();
+    Reload(sourceCopy, GroupMode.ThenByRecursive, null, true);
   }
 
   private SegmentM[]? _getOneOrSelected(SegmentM? one) {
