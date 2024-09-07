@@ -17,6 +17,7 @@ Latest:
  - [U] MergePeopleDialog: selected person name
  - [U] SegmentRect: allow mouse events through rect
  - [N] Multiple Segments views replacing SegmentsMatching
+ - [N] Segments Shuffle and Sort buttons
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
