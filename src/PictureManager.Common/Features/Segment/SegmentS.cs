@@ -105,8 +105,8 @@ public sealed class SegmentS : ObservableObject {
   private IEnumerable<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM? segment) {
     if (segment == null) return [];
 
-    if (Core.VM.SegmentsMatching is { CvSegments.LastSelectedRow.Parent: { } group } sm && ReferenceEquals(sm.CvSegments, source))
-      return ((CollectionViewGroup<SegmentM>)group).Source
+    if (source is SegmentsViewVM { LastSelectedRow.Parent: CollectionViewGroup<SegmentM> group })
+      return group.Source
         .GetMediaItems()
         .OrderBy(x => x.Folder.FullPath)
         .ThenBy(x => x.FileName);

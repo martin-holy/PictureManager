@@ -1,4 +1,6 @@
-﻿using MH.Utils.Extensions;
+﻿using MH.UI.Controls;
+using MH.Utils.Extensions;
+using PictureManager.Common.Features.Person;
 using System.Collections.Generic;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
@@ -6,6 +8,7 @@ using static MH.Utils.DragDropHelper;
 namespace PictureManager.Common.Features.Segment;
 
 public sealed class SegmentsViewVM : SegmentCollectionView {
+  public PersonCollectionView CvPeople { get; } = new();
   public CanDragFunc CanDragFunc { get; }
 
   public SegmentsViewVM() {
@@ -16,6 +19,22 @@ public sealed class SegmentsViewVM : SegmentCollectionView {
     if (!IsVisible) return;
     ReGroupPendingItems();
     ScrollTo(TopGroup, TopItem);
+  }
+
+  public void OnSegmentsPersonChanged(SegmentM[] segments) {
+    Insert(segments);
+    var newP = Root?.Source.GetPeople().ToArray()!;
+    var oldP = CvPeople.Root?.Source.EmptyIfNull().ToArray()!;
+    var pIn = newP.Except(oldP).ToArray();
+    var pOut = oldP.Except(newP).ToArray();
+    CvPeople.Insert(pIn);
+    CvPeople.Remove(pOut);
+  }
+
+  public void ReloadPeople() {
+    if (Root?.Source is not { } source) return;
+    var people = source.GetPeople().OrderBy(x => x.Name).ToList();
+    CvPeople.Reload(people, GroupMode.GroupByRecursive, null, true);
   }
 
   public void RemoveSegments(IList<SegmentM> items) {
