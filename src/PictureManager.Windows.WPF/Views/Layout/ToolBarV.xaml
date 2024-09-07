@@ -130,7 +130,7 @@
 
       <c:IconButton Command="ftSegment:SegmentsDrawerVM.OpenCommand"/>
       <c:IconButton Command="ftSegment:SegmentsDrawerVM.AddSelectedCommand"/>
-      <c:IconButton Command="core:CoreVM.OpenSegmentsMatchingCommand"/>
+      <c:IconButton Command="core:CoreVM.OpenSegmentsViewsCommand"/>
       <c:IconButton Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
     </StackPanel>
   </DataTemplate>
