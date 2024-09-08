@@ -52,7 +52,7 @@ public class CollectionView : TreeViewBase {
     if (e is not { ChangedButton: MouseButton.Left }
         || (e.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { View.CanOpen: true } cv) return;
 
-    cv.OpenItem(GetDataContext(e.OriginalSource));
+    cv.OpenItem(_getDataContext(e.OriginalSource));
   }
 
   public void OpenItem(object? item) {
@@ -65,7 +65,7 @@ public class CollectionView : TreeViewBase {
     if ((e?.OriginalSource as FrameworkElement)?.TryFindParent<CollectionView>() is not { View.CanSelect: true } cv
         || cv.DoubleClicking()) return;
 
-    var item = GetDataContext(e.OriginalSource);
+    var item = _getDataContext(e.OriginalSource);
     var row = (e.Source as FrameworkElement)?.DataContext;
     var btn = e.OriginalSource as Button ?? (e.OriginalSource as FrameworkElement)?.TryFindParent<Button>();
 
@@ -99,15 +99,12 @@ public class CollectionView : TreeViewBase {
       view.View.UIView = view;
   }
 
-  private static object? GetDataContext(object source) {
-    FrameworkElement? fe = source as FrameworkElement;
-    if (fe == null) return null;
-
-    if (fe.TemplatedParent == null)
-      fe = fe.Parent as FrameworkElement;
-
-    return fe?.FindTopTemplatedParent()?.DataContext;
-  }
+  private static object? _getDataContext(object source) =>
+    source is not FrameworkElement fe
+      ? null
+      : (fe.TemplatedParent == null
+        ? fe.Parent as FrameworkElement
+        : fe).FindTopTemplatedParent()?.DataContext;
 }
 
 public class GroupByDialogDataTemplateSelector : DataTemplateSelector {
