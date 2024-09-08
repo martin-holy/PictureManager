@@ -31,7 +31,7 @@ public sealed class VideoVM : ObservableObject {
     if (vid == null) {
       SetVideoSource(null);
       Current = null;
-      CurrentVideoItems.Root?.Clear();
+      CurrentVideoItems.Root.Clear();
       CurrentVideoItems.Selected.DeselectAll();
       return;
     }

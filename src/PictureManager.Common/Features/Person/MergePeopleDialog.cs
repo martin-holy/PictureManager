@@ -78,7 +78,7 @@ public sealed class MergePeopleDialog : Dialog {
   }
 
   private void _clear() {
-    PeopleView.Root?.Clear();
-    SegmentsView.Root?.Clear();
+    PeopleView.Root.Clear();
+    SegmentsView.Root.Clear();
   }
 }

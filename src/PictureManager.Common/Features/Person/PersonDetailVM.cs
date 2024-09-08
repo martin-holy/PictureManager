@@ -46,8 +46,8 @@ public sealed class PersonDetailVM : ObservableObject {
     PersonM = person;
 
     if (PersonM == null) {
-      AllSegments.Root?.Clear();
-      TopSegments.Root?.Clear();
+      AllSegments.Root.Clear();
+      TopSegments.Root.Clear();
       return;
     }
 
