@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MH.UI.Interfaces;
+﻿using MH.UI.Interfaces;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Extensions;
 using MH.Utils.Interfaces;
@@ -14,9 +13,8 @@ public sealed class CollectionViewItemTemplateConverter : BaseConverter {
   public static CollectionViewItemTemplateConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   public override object? Convert(object? value, object? parameter) =>
-    value is FrameworkElement fe
-    && fe.TryFindParent<StackPanel>() is
-      { DataContext: ITreeItem { Parent: ICollectionViewGroup { UIView: { } view } } }
-      ? CollectionView.InnerItemTemplates.GetValueOrDefault(view)
+    value is FrameworkElement fe && fe.TryFindParent<StackPanel>() is
+      { DataContext: ITreeItem { Parent: ICollectionViewGroup { UIView: CollectionView cv } } }
+      ? cv.InnerItemTemplate
       : null;
 }
