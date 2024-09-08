@@ -29,10 +29,10 @@ public sealed class SegmentsViewsVM : ObservableObject {
     AddViewCommand = new(() => _addView(string.Empty), Res.IconPlus, "Add Segments View Tab");
     ShuffleCommand = new(
       () => Current!.Shuffle(),
-      () => Current?.Root?.Source.Count > 0, Res.IconRandom, "Shuffle");
+      () => Current?.Root.Source.Count > 0, Res.IconRandom, "Shuffle");
     SortCommand = new(
       () => Current!.Sort(),
-      () => Current?.Root?.Source.Count > 0, Res.IconSort, "Sort");
+      () => Current?.Root.Source.Count > 0, Res.IconSort, "Sort");
 
     Tabs.PropertyChanged += _onTabsPropertyChanged;
     Tabs.TabClosedEvent += _onTabsTabClosed;
@@ -43,7 +43,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
     SegmentM[] newSelected = [];
 
     if (_current != null) {
-      oldSelected = _current.Root?.Source.Where(x => x.IsSelected).ToArray() ?? [];
+      oldSelected = _current.Root.Source.Where(x => x.IsSelected).ToArray();
 
       if (_views.ContainsKey(_current))
         _views[_current] = oldSelected;
@@ -159,7 +159,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
       tabTitle = $"Segments {_views.Count + 1}";
 
     var and = Keyboard.IsCtrlOn() && Current != null;
-    var source = _sort(and && Current!.Root != null ? items.Union(Current.Root.Source) : items).ToList();
+    var source = _sort(and ? items.Union(Current!.Root.Source) : items).ToList();
     var view = and ? _addViewIfNotActive(tabTitle) : _addView(tabTitle);
     var groupByItems = new[] {
       GroupByItems.GetPeopleInGroup(source),

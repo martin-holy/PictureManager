@@ -10,7 +10,7 @@ public sealed class PeopleVM : PersonCollectionView {
     var groupByItems = new[] { GroupByItems.GetPeopleGroupsInGroup(source) };
 
     Reload(source, GroupMode.ThenByRecursive, groupByItems, false);
-    Root!.IsExpanded = true;
+    Root.IsExpanded = true;
 
     if (Root.Items.Count > 0 && Root.Items[0] is CollectionViewGroup<PersonM> group)
       group.IsExpanded = true;

@@ -23,8 +23,8 @@ public sealed class SegmentsViewVM : SegmentCollectionView {
 
   public void OnSegmentsPersonChanged(SegmentM[] segments) {
     Insert(segments);
-    var newP = Root?.Source.GetPeople().ToArray()!;
-    var oldP = CvPeople.Root?.Source.EmptyIfNull().ToArray()!;
+    var newP = Root.Source.GetPeople().ToArray();
+    var oldP = CvPeople.Root.Source.EmptyIfNull().ToArray();
     var pIn = newP.Except(oldP).ToArray();
     var pOut = oldP.Except(newP).ToArray();
     CvPeople.Insert(pIn);
@@ -32,33 +32,30 @@ public sealed class SegmentsViewVM : SegmentCollectionView {
   }
 
   public void ReloadPeople() {
-    if (Root?.Source is not { } source) return;
-    var people = source.GetPeople().OrderBy(x => x.Name).ToList();
+    var people = Root.Source.GetPeople().OrderBy(x => x.Name).ToList();
     CvPeople.Reload(people, GroupMode.GroupByRecursive, null, true);
   }
 
   public void RemoveSegments(IList<SegmentM> items) {
-    if (Root != null && Root.Source.Any(items.Contains)) {
+    if (Root.Source.Any(items.Contains)) {
       TopItem = Root.Source.GetNextOrPreviousItem(items);
       Remove(items.ToArray());
     }
   }
   
   public void Shuffle() {
-    if (Root == null) return;
     var sourceCopy = Root.Source.ToList();
     sourceCopy.Shuffle();
     Reload(sourceCopy, GroupMode.ThenByRecursive, null, true);
   }
 
   public void Sort() {
-    if (Root == null) return;
     var sourceCopy = Root.Source.OrderBy(x => x.MediaItem.FileName).ToList();
     Reload(sourceCopy, GroupMode.ThenByRecursive, null, true);
   }
 
   private SegmentM[]? _getOneOrSelected(SegmentM? one) {
-    if (one == null || Root == null) return null;
+    if (one == null) return null;
     var selected = Root.Source.Where(x => x.IsSelected).ToArray();
     return selected.Contains(one) ? selected : [one];
   }

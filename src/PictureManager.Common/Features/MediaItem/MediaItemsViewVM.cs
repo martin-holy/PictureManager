@@ -105,7 +105,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
         Selected.Items.Remove(item);
     }
 
-    if (needReload && Root != null) {
+    if (needReload) {
       TopItem = Root.Source.GetNextOrPreviousItem(items);
       Remove(items.ToArray());
     }
@@ -175,7 +175,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
       AddMediaItems(GetSorted(toLoad.Except(notImported)).ToList(), and, hide);
       Reload(FilteredItems.ToList(), GroupMode.ThenByRecursive, null, true);
-      if (newItems.Count > 0 && Root != null) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
+      if (newItems.Count > 0) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
       AfterLoad();
       IsLoading = false;
     }, Tasks.UiTaskScheduler);

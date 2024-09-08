@@ -21,9 +21,8 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
     ThumbScaleChangedCommand = new(OnThumbScaleChanged);
   }
 
-  private void OnThumbScaleChanged() {
-    if (Root != null) ReWrapAll();
-  }
+  private void OnThumbScaleChanged() =>
+    ReWrapAll();
 
   public override IEnumerable<GroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
     var src = source.ToArray();
