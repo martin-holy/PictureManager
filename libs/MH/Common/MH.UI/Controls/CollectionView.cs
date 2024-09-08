@@ -16,7 +16,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   private readonly HashSet<T> _pendingRemove = [];
   private readonly HashSet<T> _pendingUpdate = [];
 
-  public CollectionViewGroup<T>? Root { get; set; }
+  public CollectionViewGroup<T> Root { get; set; }
   public T? TopItem { get; set; }
   public T? LastSelectedItem { get; set; }
   public CollectionViewGroup<T>? TopGroup { get; set; }
@@ -36,6 +36,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   public event EventHandler<SelectionEventArgs<T>> ItemSelectedEvent = delegate { };
 
   protected CollectionView(string icon, string name) {
+    Root = new(this, [], null);
     Icon = icon;
     Name = name;
     OpenGroupByDialogCommand = new(OpenGroupByDialog, null, "Group by");
@@ -86,17 +87,16 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
     });
 
     _groupByItemsRoots.Clear();
-    _groupByItemsRoots.Add(Root!);
+    _groupByItemsRoots.Add(Root);
   }
 
   public void ReWrapAll() {
-    if (Root == null) return;
     UpdateRoot(Root, _ => CollectionViewGroup<T>.ReWrapAll(Root));
     ScrollTo(TopGroup, TopItem);
   }
 
   public void ReWrapAll(IEnumerable<T> items) {
-    if (Root?.Source.Intersect(items).Any() == true) ReWrapAll();
+    if (Root.Source.Intersect(items).Any()) ReWrapAll();
   }
 
   public void Insert(T item) =>
@@ -125,7 +125,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   }
 
   private void ReGroupItems(T[]? items, bool remove, bool ifContains) {
-    if (Root == null || items == null || items.Length == 0) return;
+    if (items == null || items.Length == 0) return;
 
     if (!IsVisible && remove) {
       items.ForEach(x => _pendingRemove.Add(x));
@@ -174,7 +174,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   }
 
   public void SetExpanded(object group) {
-    if (Root == null || group is not CollectionViewGroup<T> g) return;
+    if (group is not CollectionViewGroup<T> g) return;
       
     UpdateRoot(Root, _ => g.SetExpanded<CollectionViewGroup<T>>(g.IsExpanded));
     TopItem = default;
@@ -204,7 +204,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   }
 
   public void ScrollTo(CollectionViewGroup<T>? group, T? item, bool exactly = true) {
-    if (Root == null || (group == null && item == null)) return;
+    if (group == null && item == null) return;
 
     CollectionViewRow<T>? row = default;
 
@@ -217,7 +217,7 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   }
 
   public T? SelectFirstItem() {
-    if ((Root?.GetNextBranchEndOfType() ?? Root) is not { } group) return default;
+    if ((Root.GetNextBranchEndOfType() ?? Root) is not { } group) return default;
     if (group.GetItemByIndex(0) is not { } item) return default;
     if (group.GetRowWithItem(item) is not { } row) return default;
     SelectItem(row, item, false, false);
