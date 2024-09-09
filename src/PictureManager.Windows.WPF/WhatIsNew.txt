@@ -19,6 +19,7 @@ Latest:
  - [N] Multiple Segments views replacing SegmentsMatching
  - [N] Segments Shuffle and Sort buttons
  - [B] CollectionView: ItemTemplate
+ - [N] ToolBar toggle button: Show MediaItem thumbnail info
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
