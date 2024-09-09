@@ -57,9 +57,10 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
   public override void OnItemOpened(MediaItemM item) {
     Selected.DeselectAll();
+
+    if (LastSelectedRow?.Parent is not CollectionViewGroup<MediaItemM> group) return;
     Core.VM.MainWindow.IsInViewMode = true;
-    // TODO open group or all with default sort or all sorted by groups or ...?
-    Core.VM.MediaViewer.SetMediaItems(FilteredItems.ToList(), item);
+    Core.VM.MediaViewer.SetMediaItems(group.Source.ToList(), item);
   }
 
   public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) {
