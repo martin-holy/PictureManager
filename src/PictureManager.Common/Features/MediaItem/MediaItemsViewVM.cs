@@ -5,6 +5,7 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -14,6 +15,7 @@ namespace PictureManager.Common.Features.MediaItem;
 
 public class MediaItemsViewVM : MediaItemCollectionView {
   private bool _isLoading;
+  private bool _showThumbInfo = true;
   
   public event EventHandler SelectionChangedEventHandler = delegate { };
   public event EventHandler FilteredChangedEventHandler = delegate { };
@@ -24,6 +26,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   public MediaItemsImport Import { get; } = new();
   public DragDropHelper.CanDragFunc CanDragFunc { get; }
   public bool IsLoading { get => _isLoading; set { _isLoading = value; OnPropertyChanged(); } }
+  public bool ShowThumbInfo { get => _showThumbInfo; set { _showThumbInfo = value; OnPropertyChanged(); } }
   
   public string PositionSlashCount =>
     Selected.Items.Count == 0
@@ -38,6 +41,12 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     Filter.FilterChangedEventHandler += delegate { SoftLoad(LoadedItems, true, true); };
     Selected.ItemsChangedEvent += delegate { SelectionChanged(); };
     Selected.AllDeselectedEvent += delegate { SelectionChanged(); };
+    PropertyChanged += _onPropertyChanged;
+  }
+
+  private void _onPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(ThumbScale)))
+      ShowThumbInfo = ThumbScale > 0.4;
   }
 
   public override void OnIsVisibleChanged() {

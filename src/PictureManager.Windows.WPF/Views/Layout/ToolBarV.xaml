@@ -236,6 +236,12 @@
         </b:Interaction.Triggers>
       </c:PopupSlider>
 
+      <!-- Show thumb info -->
+      <c:IconToggleButton
+        ToolTip="Show thumbnail info"
+        ap:Icon.Data="{StaticResource IconInformation}"
+        IsChecked="{Binding MediaItemViews.Current.ShowThumbInfo}"/>
+
       <!-- Shuffle -->
       <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.ShuffleCommand"/>
 
