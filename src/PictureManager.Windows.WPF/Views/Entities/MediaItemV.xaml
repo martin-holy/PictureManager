@@ -141,7 +141,7 @@
     </Grid>
     
     <DataTemplate.Triggers>
-      <DataTrigger Value="True" Binding="{Binding ActualWidth, ElementName=border,
+      <DataTrigger Value="True" Binding="{Binding ActualWidth, ElementName=grid,
         Converter={x:Static conv:DoubleEqualityConverter.IsLessThan},
         ConverterParameter={StaticResource ThumbnailInfoMinSize}}">
 
