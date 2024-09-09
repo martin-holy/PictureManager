@@ -20,6 +20,7 @@ Latest:
  - [N] Segments Shuffle and Sort buttons
  - [B] CollectionView: ItemTemplate
  - [N] ToolBar toggle button: Show MediaItem thumbnail info
+ - [U] MediaItem open will load just other items from the group
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
