@@ -23,6 +23,7 @@
   - changing selection in Viewer detail works only with mouse. with keyboard selection works only visually
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
+  - load MediaItems by person in full screen doesn't close full screen or loads new items to MediaViewer
 ## Video Items (VideoImage and VideoClip)
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
@@ -61,6 +62,8 @@
   - Rethink hierarchical keywords moving
 ## TreeViewCategories
   - select/mark searched item after selecting item in search result
+  - for People and Keywords generate context menu items with command MoveToGroupCommand
+    or allow setting group to person
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
 ## ToggleDialog
@@ -71,7 +74,6 @@
   - save to file only metadata visible for viewer
 ## MediaItemsView
   - use Filter on MediaItem type in LoadByTag GetItems
-  - open items from group or all with default sort or all sorted by groups or ...?
 ## Video
   - ThumbPosition for VideoM and VideoItemM as RelationDataAdapter
     + setting this position in VideoDetail
@@ -99,6 +101,7 @@
     and if is closer => change value is bigger
     (or zooming time line)
   - Reload Drives (change DB to be able to load Folders, MediaItems and Segments from one drive after initial load was finished)
+  - Generic filter (item|and|or|not) like in moves filter. showing just available items. used in Movies and MediaItems
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
     so I can choice how to display filtered data: in MediaItemsView or MediaViewer
@@ -121,7 +124,7 @@
 ## MediaViewer
   - zoom to segment
   - highlight segment on mouse hover over person on StatusBar even if it is not visible
-## ThumbnailsGrid
+## MediaItemsView
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
   - TimeLine for thumbnails showing dates and number of day from first date in folder
 ## Viewers
@@ -138,6 +141,7 @@
   - incremental search
 ## PersonDetail
   - Comment
+  - Rename person
 
                                     *** Code ***
 ##
@@ -150,6 +154,9 @@
   - unused method LinkFolderWithFolderKeyword
   - maybe move all CORE properties that needs to be set from WPF to one class, use ICoreP
   - use private fileds in classes when possible
+  - VideoItemM primary constructor
+  - FavoriteFolderM primary constructor
+  - TreeMarginConverter: not nullable return
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
