@@ -1,10 +1,12 @@
 ﻿using MH.Utils.BaseClasses;
-using System;
 using PictureManager.Common.Features.Folder;
+using System;
 
 namespace PictureManager.Common.Features.FavoriteFolder;
 
 public sealed class FavoriteFolderM(int id, string name, FolderM folder) : TreeItem(Res.IconFolder, name), IEquatable<FavoriteFolderM> {
+  private FolderM _folder = folder;
+
   #region IEquatable implementation
   public bool Equals(FavoriteFolderM? other) => Id == other?.Id;
   public override bool Equals(object? obj) => Equals(obj as FavoriteFolderM);
@@ -18,5 +20,5 @@ public sealed class FavoriteFolderM(int id, string name, FolderM folder) : TreeI
   #endregion
 
   public int Id { get; } = id;
-  public FolderM Folder { get => folder; set { folder = value; OnPropertyChanged(); } }
+  public FolderM Folder { get => _folder; set { _folder = value; OnPropertyChanged(); } }
 }
