@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type ftCommon:FileOperationCollisionDialog}">
@@ -140,7 +140,7 @@
     </Grid>
 
     <DataTemplate.Triggers>
-      <DataTrigger Binding="{Binding Error, Converter={x:Static mhConv:AllToBoolConverter.Inst}}" Value="True">
+      <DataTrigger Binding="{Binding Error, Converter={x:Static conv:ToBoolConverter.IsEmpty}}" Value="False">
         <Setter TargetName="fileName" Property="Background" Value="#7FFF0000"/>
         <Setter TargetName="fileName" Property="ToolTip" Value="{Binding Error}"/>
       </DataTrigger>
