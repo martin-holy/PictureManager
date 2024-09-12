@@ -23,7 +23,6 @@
   - changing selection in Viewer detail works only with mouse. with keyboard selection works only visually
 ## MediaItems
   - D:\!test\364__32_original.jpg save metadata doesn't work (re-save without metadata in XnView fixed the file)
-  - load MediaItems by person in full screen doesn't close full screen or loads new items to MediaViewer
 ## Video Items (VideoImage and VideoClip)
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
@@ -37,6 +36,8 @@
   - can't select multiple segments one by one fast
 ## PersonDetail
   - create new segment => set person to the new segment => open PersonDetail from StatusBar => new segment is not there (second open is ok)
+## StatusBar
+  - Position/Count is not centered
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
@@ -149,13 +150,12 @@
   - OneToManyMultiDataAdapter do it without reference to CoreR
   - don't do CreateDirectory in FolderR.ItemCreate. it can throw exception
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
-  - ToBoolConverter where Inst is IsNotNull, IsStringEmpty, IsCollectionEmpty, ...
+  - remove VisibilityConverter.AllToVisible
   - IHaveName is applied only to GenreM but the DataTemplate is used for KeywordM as well
   - unused method LinkFolderWithFolderKeyword
   - maybe move all CORE properties that needs to be set from WPF to one class, use ICoreP
   - use private fileds in classes when possible
   - VideoItemM primary constructor
-  - FavoriteFolderM primary constructor
   - TreeMarginConverter: not nullable return
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
