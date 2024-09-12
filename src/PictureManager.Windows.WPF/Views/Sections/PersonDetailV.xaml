@@ -7,7 +7,8 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
-  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:mhuibc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI">
 
   <DataTemplate DataType="{x:Type ftPerson:PersonDetailVM}">
     <Grid>
@@ -39,6 +40,7 @@
             </MenuItem.Icon>
 
             <MenuItem Command="ftMediaItem:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding PersonM}"/>
+            <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding PersonM}"/>
             <MenuItem Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
           </MenuItem>
         </Menu>
