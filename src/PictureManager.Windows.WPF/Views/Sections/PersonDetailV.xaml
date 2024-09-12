@@ -15,35 +15,47 @@
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
         <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
 
       <!-- Heather -->
-      <Grid Grid.Row="0" Background="{DynamicResource MH.B.Black5}" Margin="0,0,0,5">
+      <Grid Background="{DynamicResource MH.B.Black5}">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Menu -->
+        <Menu
+          Grid.Row="0"
+          HorizontalAlignment="Left"
+          VerticalAlignment="Center"
+          Background="Transparent"
+          Margin="4">
+
+          <MenuItem Padding="6,2,-2,2">
+            <MenuItem.Icon>
+              <Path Data="{StaticResource IconThreeBars}" Style="{StaticResource MH.S.Icon.Shadow}"/>
+            </MenuItem.Icon>
+
+            <MenuItem Command="ftMediaItem:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding PersonM}"/>
+            <MenuItem Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
+          </MenuItem>
+        </Menu>
+
         <TextBlock
+          Grid.Column="1"
           Text="{Binding PersonM.Name}"
           FontSize="20"
-          Padding="4"
-          HorizontalAlignment="Center"
-          VerticalAlignment="Center"/>
-
-        <Path
-          Style="{StaticResource MH.S.Icon.Shadow}"
-          Data="{StaticResource IconPeople}"
-          Fill="{StaticResource PM.B.People}"
-          HorizontalAlignment="Left"
-          Margin="6,0"/>
+          Padding="2"
+          TextAlignment="Center"
+          VerticalAlignment="Center"
+          TextWrapping="Wrap"/>
       </Grid>
-
-      <StackPanel Grid.Row="1" Orientation="Horizontal">
-        <c:IconButton Command="ftMediaItem:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding PersonM}"/>
-        <c:IconButton Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
-      </StackPanel>
 
       <!-- Keywords -->
       <c:IconTextBlockItemsControl
-        Grid.Row="2"
+        Grid.Row="1"
         ap:Icon.Res="IconTag"
         ItemsSource="{Binding PersonM.DisplayKeywords}"
         ItemTemplate="{DynamicResource MH.T.IHaveName.Border.RoundDarker}"
@@ -51,7 +63,7 @@
 
       <!-- Top Segments -->
       <c:CollectionView
-        Grid.Row="3"
+        Grid.Row="2"
         View="{Binding TopSegments}"
         InnerItemTemplate="{DynamicResource PM.DT.Segment}"
         u:DragDropHelper.IsDragEnabled="True"
@@ -62,7 +74,7 @@
 
       <!-- All Segments -->
       <c:CollectionView
-        Grid.Row="4"
+        Grid.Row="3"
         View="{Binding AllSegments}"
         InnerItemTemplate="{DynamicResource PM.DT.Segment}"
         u:DragDropHelper.IsDragEnabled="True"
