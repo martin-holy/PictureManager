@@ -17,6 +17,7 @@
   CanFullScreen="True">
 
   <Window.InputBindings>
+    <KeyBinding Modifiers="Control" Key="F" Command="{Binding TreeViewCategories.TreeViewSearch.OpenCommand}"/>
     <KeyBinding Modifiers="Control" Key="R" Command="core:CoreVM.RotateMediaItemsCommand"/>
     <KeyBinding Modifiers="Control" Key="K" Command="ftMediaItem:MediaItemVM.CommentCommand"/>
     <KeyBinding Key="F2" Command="ftMediaItem:MediaItemVM.RenameCommand"/>
