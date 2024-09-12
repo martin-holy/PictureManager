@@ -23,6 +23,7 @@ Latest:
  - [U] MediaItem open will load just other items from the group
  - [U] PersonDetailV: buttons moved to menu
  - [N] PersonDetailV: Rename commad in menu
+ - [B] Close MediaViewer before loading MediaItems
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
