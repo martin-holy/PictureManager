@@ -24,6 +24,7 @@ Latest:
  - [U] PersonDetailV: buttons moved to menu
  - [N] PersonDetailV: Rename commad in menu
  - [B] Close MediaViewer before loading MediaItems
+ - [N] CTRL+F shortcut for opening search in main tree
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
