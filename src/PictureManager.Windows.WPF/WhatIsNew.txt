@@ -21,6 +21,7 @@ Latest:
  - [B] CollectionView: ItemTemplate
  - [N] ToolBar toggle button: Show MediaItem thumbnail info
  - [U] MediaItem open will load just other items from the group
+ - [U] PersonDetailV: buttons moved to menu
 
 24.08.11.1108:
  - [B] LoadByTag with CTRL without active MediaItemsView
