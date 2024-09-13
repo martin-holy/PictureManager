@@ -45,11 +45,12 @@ public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView w
   protected void RaiseItemOpened(T item) => ItemOpenedEvent(this, new(item));
   protected void RaiseItemSelected(SelectionEventArgs<T> args) => ItemSelectedEvent(this, args);
 
-  public abstract int GetItemSize(T item, bool getWidth);
+  public abstract int GetItemSize(ViewMode viewMode, T item, bool getWidth);
   public abstract IEnumerable<GroupByItem<T>> GetGroupByItems(IEnumerable<T> source);
   public abstract int SortCompare(T itemA, T itemB);
   public virtual void OnItemOpened(T item) { }
   public virtual void OnItemSelected(SelectionEventArgs<T> args) { }
+  public virtual string GetItemTemplateName(ViewMode viewMode) => string.Empty;
 
   public void OpenItem(object? item) {
     if (item is not T i) return;
