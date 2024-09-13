@@ -10,7 +10,7 @@ namespace MovieManager.Common.Features.Character;
 public class CharacterCollectionView() : CollectionView<CharacterM>(PM.Res.IconPeople, "Characters") {
   public override IEnumerable<GroupByItem<CharacterM>> GetGroupByItems(IEnumerable<CharacterM> source) => [];
 
-  public override int GetItemSize(CharacterM item, bool getWidth) =>
+  public override int GetItemSize(ViewMode viewMode, CharacterM item, bool getWidth) =>
     getWidth ? 300 : SegmentVM.SegmentUiFullWidth;
 
   public override int SortCompare(CharacterM itemA, CharacterM itemB) =>

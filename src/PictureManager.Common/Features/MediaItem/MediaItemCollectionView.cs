@@ -37,7 +37,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
     return top;
   }
 
-  public override int GetItemSize(MediaItemM item, bool getWidth) =>
+  public override int GetItemSize(ViewMode viewMode, MediaItemM item, bool getWidth) =>
     (int)((getWidth ? item.ThumbWidth : item.ThumbHeight) * ThumbScale);
 
   public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>

@@ -25,7 +25,7 @@ public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment,
     return top;
   }
 
-  public override int GetItemSize(SegmentM item, bool getWidth) =>
+  public override int GetItemSize(ViewMode viewMode, SegmentM item, bool getWidth) =>
     SegmentVM.SegmentUiFullWidth;
 
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>

@@ -19,8 +19,12 @@ public class PersonCollectionView() : CollectionView<PersonM>(Res.IconPeopleMult
     return top;
   }
 
-  public override int GetItemSize(PersonM item, bool getWidth) =>
-    SegmentVM.SegmentUiFullWidth;
+  public override int GetItemSize(ViewMode viewMode, PersonM item, bool getWidth) =>
+    viewMode switch {
+      ViewMode.Thumb => SegmentVM.SegmentUiFullWidth,
+      ViewMode.List => getWidth ? 200 : 30,
+      _ => SegmentVM.SegmentUiFullWidth
+    };
 
   public override int SortCompare(PersonM itemA, PersonM itemB) =>
     string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);
@@ -30,4 +34,11 @@ public class PersonCollectionView() : CollectionView<PersonM>(Res.IconPeopleMult
 
   public override void OnItemOpened(PersonM item) =>
     Core.S.Segment.ViewMediaItemsWithSegment(this, item.Segment);
+
+  public override string GetItemTemplateName(ViewMode viewMode) =>
+    viewMode switch {
+      ViewMode.Thumb => "PM.DT.Person.Thumb",
+      ViewMode.List => "PM.DT.Person.ListItem",
+      _ => "PM.DT.Person.Thumb"
+    };
 }
