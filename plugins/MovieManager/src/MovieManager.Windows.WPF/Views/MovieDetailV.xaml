@@ -104,7 +104,7 @@
           ToolTip="MPAA"
           Style="{StaticResource MH.S.Border.RoundDarker}"
           VerticalAlignment="Center"
-          Visibility="{Binding MovieM.MPAA, Converter={x:Static conv:VisibilityConverter.AllToVisible}}">
+          Visibility="{Binding MovieM.MPAA, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}">
           
           <TextBlock
             Text="{Binding MovieM.MPAA}"
