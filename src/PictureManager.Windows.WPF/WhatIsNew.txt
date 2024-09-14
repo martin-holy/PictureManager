@@ -4,6 +4,9 @@
 [B] - Bug fix
 
 Latest:
+ - [U] Main menu: Open Segments View moved to Segments
+
+24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
  - [U] CompressDialog view
  - [U] Settings: Save buttons for Picture and Movie Manager
