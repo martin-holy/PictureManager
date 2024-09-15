@@ -16,15 +16,12 @@ public enum GroupMode {
   ThenByRecursive
 }
 
-public enum ViewMode { Thumb, List }
-
 public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : class, ISelectable {
   private double _width;
-  private ViewMode _viewMode = ViewMode.Thumb;
 
   public CollectionView<T> View { get; }
   public object? UIView => View.UIView;
-  public ViewMode ViewMode { get => _viewMode; set => _setViewMode(value); }
+  public CollectionView.ViewMode ViewMode { get; set; }
   public List<T> Source { get; }
   public int SourceCount => Source.Count;
   public IEnumerable<CollectionViewGroup<T>> Groups => Items.OfType<CollectionViewGroup<T>>();
@@ -44,7 +41,9 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
     OnPropertyChanged(nameof(SourceCount));
   }
 
-  public CollectionViewGroup(CollectionViewGroup<T> parent, GroupByItem<T>? groupedBy, List<T> source) : this (parent.View, source, groupedBy) {
+  public CollectionViewGroup(CollectionViewGroup<T> parent, GroupByItem<T>? groupedBy, List<T> source)
+    : this(parent.View, source, groupedBy) {
+    ViewMode = parent.ViewMode;
     Parent = parent;
     IsRecursive = parent.IsRecursive;
     IsGroupBy = parent.IsGroupBy;
@@ -307,7 +306,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
   }
 
   public int GetItemSize(object item, bool getWidth) =>
-    View.GetItemSize(_viewMode, (T)item, getWidth);
+    View.GetItemSize(ViewMode, (T)item, getWidth);
 
   private IEnumerable<IList<T>> WrapSource() {
     var index = 0;
@@ -363,12 +362,11 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
   public CollectionViewRow<T>? GetRowWithItem(T item) =>
     Items.OfType<CollectionViewRow<T>>().FirstOrDefault(row => row.Leaves.Contains(item));
 
-  private void _setViewMode(ViewMode value) {
-    _viewMode = value;
+  public void SetViewMode(CollectionView.ViewMode viewMode) {
+    ViewMode = viewMode;
     ReWrapAll(this);
-    OnPropertyChanged();
   }
 
   public string GetItemTemplateName() =>
-    View.GetItemTemplateName(_viewMode);
+    View.GetItemTemplateName(ViewMode);
 }
