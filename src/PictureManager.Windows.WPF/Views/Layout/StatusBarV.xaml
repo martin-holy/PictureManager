@@ -72,7 +72,7 @@
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconPageUpload"
           ap:Text.Text="{Binding FileSize}"
-          Visibility="{Binding FileSize, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
+          Visibility="{Binding FileSize, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
 
         <!-- ImageActualZoom -->
         <c:IconTextBlock
