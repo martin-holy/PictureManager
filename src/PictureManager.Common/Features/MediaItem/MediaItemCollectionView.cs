@@ -16,7 +16,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
 
   public RelayCommand ThumbScaleChangedCommand { get; }
 
-  public MediaItemCollectionView(double thumbScale) : base(Res.IconImageMultiple, "Media Items") {
+  public MediaItemCollectionView(double thumbScale) : base(Res.IconImageMultiple, "Media Items", ViewMode.ThumbBig) {
     ThumbScale = thumbScale;
     ThumbScaleChangedCommand = new(OnThumbScaleChanged);
   }

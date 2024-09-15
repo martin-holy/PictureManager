@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.MediaItem.Video;
 
-public class VideoItemCollectionView() : CollectionView<VideoItemM>(Res.IconImageMultiple, "Video Items") {
+public class VideoItemCollectionView() : CollectionView<VideoItemM>(Res.IconImageMultiple, "Video Items", ViewMode.ThumbBig) {
   public Selecting<VideoItemM> Selected { get; } = new();
 
   public override int GetItemSize(ViewMode viewMode, VideoItemM item, bool getWidth) =>

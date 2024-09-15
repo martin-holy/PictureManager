@@ -8,7 +8,8 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.Person;
 
-public class PersonCollectionView() : CollectionView<PersonM>(Res.IconPeopleMultiple, "People") {
+public class PersonCollectionView()
+  : CollectionView<PersonM>(Res.IconPeopleMultiple, "People", ViewMode.ThumbSmall | ViewMode.List) {
   public override IEnumerable<GroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
     var src = source.ToArray();
     var top = new List<GroupByItem<PersonM>>();
@@ -21,7 +22,6 @@ public class PersonCollectionView() : CollectionView<PersonM>(Res.IconPeopleMult
 
   public override int GetItemSize(ViewMode viewMode, PersonM item, bool getWidth) =>
     viewMode switch {
-      ViewMode.Thumb => SegmentVM.SegmentUiFullWidth,
       ViewMode.List => getWidth ? 200 : 30,
       _ => SegmentVM.SegmentUiFullWidth
     };
@@ -37,7 +37,6 @@ public class PersonCollectionView() : CollectionView<PersonM>(Res.IconPeopleMult
 
   public override string GetItemTemplateName(ViewMode viewMode) =>
     viewMode switch {
-      ViewMode.Thumb => "PM.DT.Person.Thumb",
       ViewMode.List => "PM.DT.Person.ListItem",
       _ => "PM.DT.Person.Thumb"
     };
