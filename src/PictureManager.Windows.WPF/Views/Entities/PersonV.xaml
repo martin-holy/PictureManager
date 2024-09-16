@@ -4,7 +4,8 @@
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
-  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
 
   <DataTemplate x:Key="PM.DT.Person.Thumb" DataType="{x:Type ftPerson:PersonM}">
     <Grid>
@@ -48,5 +49,23 @@
         </Setter>
       </DataTrigger>
     </DataTemplate.Triggers>
+  </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.Person.Tile" DataType="{x:Type ftPerson:PersonM}">
+    <Grid Background="Transparent">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="{Binding Source={x:Static ftSegment:SegmentVM.SegmentUiFullWidth}}"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PM.DT.Person.Thumb}"/>
+
+      <TextBlock
+        Grid.Column="1"
+        Text="{Binding Name}"
+        TextWrapping="Wrap"
+        VerticalAlignment="Center"
+        Margin="4,0,4,0"/>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>
