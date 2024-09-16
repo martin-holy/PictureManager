@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.Segment;
 
-public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment, "Segments", ViewMode.ThumbSmall) {
+public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment, "Segments", [ViewMode.ThumbSmall]) {
   public void Reload(List<SegmentM> source, GroupMode groupMode, GroupByItem<SegmentM>[]? groupByItems, bool expandAll, string rootTitle, bool removeEmpty = true) {
     Name = rootTitle;
     Reload(source, groupMode, groupByItems, expandAll, removeEmpty);
