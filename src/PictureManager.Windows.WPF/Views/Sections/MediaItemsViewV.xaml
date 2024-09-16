@@ -49,7 +49,6 @@
       <c:CollectionView
         x:Name="view"
         View="{Binding}"
-        InnerItemTemplate="{StaticResource PM.DT.MediaItem.Thumb-Full}"
         VirtualizingPanel.CacheLength="1"
         u:DragDropHelper.IsDragEnabled="True"
         u:DragDropHelper.CanDrag="{Binding CanDragFunc}"

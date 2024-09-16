@@ -45,4 +45,6 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
 
   public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) =>
     Selected.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
+
+  public override string GetItemTemplateName(ViewMode viewMode) => "PM.DT.MediaItem.Thumb-Full";
 }
