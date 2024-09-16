@@ -33,16 +33,12 @@
 
       <c:CollectionView
         View="{Binding}"
-        InnerItemTemplate="{StaticResource PM.DT.Segment}"
         wpfu:DragDropHelper.IsDragEnabled="True"
         wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
 
       <GridSplitter Grid.Column="1"/>
   
-      <c:CollectionView
-        Grid.Column="2"
-        View="{Binding CvPeople}"
-        InnerItemTemplate="{StaticResource PM.DT.Person.Thumb}"/>
+      <c:CollectionView Grid.Column="2" View="{Binding CvPeople}"/>
 
     </Grid>
   </DataTemplate>

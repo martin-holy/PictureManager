@@ -36,4 +36,6 @@ public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment,
 
   public override void OnItemOpened(SegmentM item) =>
     Core.S.Segment.ViewMediaItemsWithSegment(this, item);
+
+  public override string GetItemTemplateName(ViewMode viewMode) => "PM.DT.Segment";
 }

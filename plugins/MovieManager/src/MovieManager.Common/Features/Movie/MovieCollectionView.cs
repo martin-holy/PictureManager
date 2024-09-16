@@ -33,4 +33,6 @@ public class MovieCollectionView() : CollectionView<MovieM>(MH.UI.Res.IconMovieC
 
   public override void OnItemSelected(SelectionEventArgs<MovieM> e) =>
     Core.S.Movie.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
+
+  public override string GetItemTemplateName(ViewMode viewMode) => "MM.DT.Movie.Thumb";
 }

@@ -12,7 +12,7 @@
         <RowDefinition/>
       </Grid.RowDefinitions>
 
-      <mhc:CollectionView View="{Binding PeopleView}" MaxHeight="160" InnerItemTemplate="{DynamicResource PM.DT.Person.Thumb}"/>
+      <mhc:CollectionView View="{Binding PeopleView}" MaxHeight="160"/>
 
       <Border
         Grid.Row="1"
@@ -23,7 +23,7 @@
         <TextBlock Text="{Binding Person.Name}"/>
       </Border>
 
-      <mhc:CollectionView View="{Binding SegmentsView}" Grid.Row="2" InnerItemTemplate="{DynamicResource PM.DT.Segment}"/>
+      <mhc:CollectionView View="{Binding SegmentsView}" Grid.Row="2"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

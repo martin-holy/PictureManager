@@ -229,10 +229,7 @@
       </ScrollViewer>
 
       <!-- Characters -->
-      <c:CollectionView
-        Grid.Row="5"
-        View="{Binding Characters}"
-        InnerItemTemplate="{DynamicResource MM.Views.CharacterV}"/>
+      <c:CollectionView Grid.Row="5" View="{Binding Characters}"/>
     </Grid>
 
     <DataTemplate.Triggers>

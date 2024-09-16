@@ -2,10 +2,10 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:movie="clr-namespace:MovieManager.Common.Features.Movie;assembly=MovieManager.Common">
+  xmlns:ftMovie="clr-namespace:MovieManager.Common.Features.Movie;assembly=MovieManager.Common">
 
-  <DataTemplate DataType="{x:Type movie:MoviesVM}">
-    <mhc:CollectionView View="{Binding}" InnerItemTemplate="{DynamicResource MM.DT.Movie.Thumb}">
+  <DataTemplate DataType="{x:Type ftMovie:MoviesVM}">
+    <mhc:CollectionView View="{Binding}">
       <mhc:CollectionView.ItemsPanel>
         <ItemsPanelTemplate>
           <mhc:VirtualizingSingleItemScrollStackPanel/>

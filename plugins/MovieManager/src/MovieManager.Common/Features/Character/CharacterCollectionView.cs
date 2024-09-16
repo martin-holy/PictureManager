@@ -23,4 +23,6 @@ public class CharacterCollectionView() : CollectionView<CharacterM>(PM.Res.IconP
     if (item.Actor.Image != null)
       Core.VM.PMCoreVM.OpenMediaItems(null, item.Actor.Image);
   }
+
+  public override string GetItemTemplateName(ViewMode viewMode) => "MM.Views.CharacterV";
 }
