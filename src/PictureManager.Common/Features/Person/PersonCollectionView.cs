@@ -9,7 +9,7 @@ using System.Linq;
 namespace PictureManager.Common.Features.Person;
 
 public class PersonCollectionView()
-  : CollectionView<PersonM>(Res.IconPeopleMultiple, "People", [ViewMode.ThumbSmall, ViewMode.List]) {
+  : CollectionView<PersonM>(Res.IconPeopleMultiple, "People", [ViewMode.ThumbSmall, ViewMode.List, ViewMode.Tiles]) {
   public override IEnumerable<GroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
     var src = source.ToArray();
     var top = new List<GroupByItem<PersonM>>();
@@ -23,6 +23,7 @@ public class PersonCollectionView()
   public override int GetItemSize(ViewMode viewMode, PersonM item, bool getWidth) =>
     viewMode switch {
       ViewMode.List => getWidth ? 200 : 30,
+      ViewMode.Tiles => getWidth ? 200 + SegmentVM.SegmentUiFullWidth : SegmentVM.SegmentUiFullWidth,
       _ => SegmentVM.SegmentUiFullWidth
     };
 
@@ -38,6 +39,7 @@ public class PersonCollectionView()
   public override string GetItemTemplateName(ViewMode viewMode) =>
     viewMode switch {
       ViewMode.List => "PM.DT.Person.ListItem",
+      ViewMode.Tiles => "PM.DT.Person.Tile",
       _ => "PM.DT.Person.Thumb"
     };
 }
