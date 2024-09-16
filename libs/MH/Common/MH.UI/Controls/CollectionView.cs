@@ -11,38 +11,31 @@ using System.Linq;
 namespace MH.UI.Controls;
 
 public abstract class CollectionView : TreeView<ITreeItem> {
-  [Flags]
-  public enum ViewMode { None = 0, Content = 1, Details = 2, List = 4, ThumbBig = 8, ThumbMedium = 16, ThumbSmall = 32, Tiles = 64 }
+  public enum ViewMode { Content, Details, List, ThumbBig, ThumbMedium, ThumbSmall, Tiles }
 
-  public ViewMode ViewModes { get; }
-  public List<RelayCommand> ViewModesCommands { get; }
+  protected ViewMode[] ViewModes { get; }
+  public RelayCommand<ICollectionViewGroup>[] ViewModesCommands { get; }
 
-  protected CollectionView(ViewMode viewModes) {
+  protected CollectionView(ViewMode[] viewModes) {
+    if (viewModes.Length == 0)
+      throw new ArgumentException("At least one ViewMode must be specified");
+
     ViewModes = viewModes;
-    ViewModesCommands = _getViewModesCommands(viewModes);
+    ViewModesCommands = viewModes
+      .Select(vm => new RelayCommand<ICollectionViewGroup>(g => g?.SetViewMode(vm), null, _viewModeTextMap[vm]))
+      .OrderBy(x => x.Text)
+      .ToArray();
   }
 
-  private static List<RelayCommand> _getViewModesCommands(ViewMode viewModes) {
-    var commands = new List<RelayCommand>();
-
-    var viewModeTextMap = new Dictionary<ViewMode, string> {
-      { ViewMode.Content, "Content" },
-      { ViewMode.Details, "Details" },
-      { ViewMode.List, "List" },
-      { ViewMode.ThumbBig, "Big thumb" },
-      { ViewMode.ThumbMedium, "Medium thumb" },
-      { ViewMode.ThumbSmall, "Small thumb" },
-      { ViewMode.Tiles, "Tiles" }
-    };
-
-    foreach (var viewMode in Enum.GetValues(typeof(ViewMode)).Cast<ViewMode>()) {
-      if (!viewModes.HasFlag(viewMode) || viewMode == ViewMode.None) continue;
-      var text = viewModeTextMap[viewMode];
-      commands.Add(new RelayCommand<ICollectionViewGroup>(g => g?.SetViewMode(viewMode), null, text));
-    }
-
-    return commands;
-  }
+  private static readonly Dictionary<ViewMode, string> _viewModeTextMap = new() {
+    { ViewMode.Content, "Content" },
+    { ViewMode.Details, "Details" },
+    { ViewMode.List, "List" },
+    { ViewMode.ThumbBig, "Thumb big" },
+    { ViewMode.ThumbMedium, "Thumb medium" },
+    { ViewMode.ThumbSmall, "Thumb small" },
+    { ViewMode.Tiles, "Tiles" }
+  };
 }
 
 public abstract class CollectionView<T> : CollectionView, ICollectionView where T : class, ISelectable {
@@ -70,7 +63,7 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
   public event EventHandler<ObjectEventArgs<T>> ItemOpenedEvent = delegate { };
   public event EventHandler<SelectionEventArgs<T>> ItemSelectedEvent = delegate { };
 
-  protected CollectionView(string icon, string name, ViewMode viewModes) : base(viewModes) {
+  protected CollectionView(string icon, string name, ViewMode[] viewModes) : base(viewModes) {
     Root = new(this, [], null);
     Icon = icon;
     Name = name;
@@ -103,9 +96,9 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
     OnItemSelected(args);
   }
 
-  // TODO default ViewMode
   public void Reload(List<T> source, GroupMode groupMode, GroupByItem<T>[]? groupByItems, bool expandAll, bool removeEmpty = true) {
     var root = new CollectionViewGroup<T>(this, source, new(new ListItem(Icon, Name, this), null)) {
+      ViewMode = ViewModes[0],
       IsGroupingRoot = true,
       IsGroupBy = groupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive,
       IsThenBy = groupMode is GroupMode.ThenBy or GroupMode.ThenByRecursive,

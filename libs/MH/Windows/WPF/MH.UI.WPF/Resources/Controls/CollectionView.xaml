@@ -73,7 +73,7 @@
 
             <MenuItem Command="{Binding View.OpenGroupByDialogCommand}" CommandParameter="{Binding}"/>
 
-            <MenuItem Header="View" ItemsSource="{Binding View.ViewModesCommands}">
+            <MenuItem x:Name="miView" Header="View" ItemsSource="{Binding View.ViewModesCommands}">
               <MenuItem.ItemContainerStyle>
                 <Style TargetType="MenuItem">
                   <Setter Property="Header" Value="{Binding Text}"/>
@@ -105,6 +105,9 @@
     <HierarchicalDataTemplate.Triggers>
       <DataTrigger Binding="{Binding Items.Count}" Value="0">
         <Setter TargetName="expander" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding View.ViewModesCommands.Length}" Value="1">
+        <Setter TargetName="miView" Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
