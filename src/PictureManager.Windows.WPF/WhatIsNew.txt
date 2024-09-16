@@ -8,6 +8,7 @@ Latest:
  - [N] ViewModes for CollectionView applicable to each group separately or for all sub-groups with SHIFT key
  - [N] List ViewMode for all views with people
  - [N] Tiles ViewMode for all views with people
+ - [N] TreeView ScrollBar button: Scroll to top
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
