@@ -1,5 +1,6 @@
                                 *** BUGS ***
         # MH.UI.WPF
+  - MenuItem height is smaller when Icon is null
 ## TreeViewBase
   - Mouse scroll up when some items are collapsed (ListItem.IsHidden) is not possible. ScrollBar is working
 ## Custom Window
