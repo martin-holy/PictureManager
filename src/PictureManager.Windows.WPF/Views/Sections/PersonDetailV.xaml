@@ -67,7 +67,6 @@
       <c:CollectionView
         Grid.Row="2"
         View="{Binding TopSegments}"
-        InnerItemTemplate="{DynamicResource PM.DT.Segment}"
         u:DragDropHelper.IsDragEnabled="True"
         u:DragDropHelper.IsDropEnabled="True"
         u:DragDropHelper.DragDataType="{x:Type ftSegment:SegmentM}"
@@ -78,7 +77,6 @@
       <c:CollectionView
         Grid.Row="3"
         View="{Binding AllSegments}"
-        InnerItemTemplate="{DynamicResource PM.DT.Segment}"
         u:DragDropHelper.IsDragEnabled="True"
         u:DragDropHelper.DragDataType="{x:Type ftSegment:SegmentM}"/>
 

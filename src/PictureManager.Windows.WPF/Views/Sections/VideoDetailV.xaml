@@ -39,10 +39,7 @@
         Content="{Binding MediaPlayer}"
         ContentTemplate="{StaticResource MH.S.MediaPlayer.ControlPanel}"/>
 
-      <mhc:CollectionView
-        Grid.Row="3"
-        View="{Binding CurrentVideoItems}"
-        InnerItemTemplate="{DynamicResource PM.DT.VideoItem.Thumb}"/>
+      <mhc:CollectionView Grid.Row="3" View="{Binding CurrentVideoItems}"/>
     </Grid>
 
     <DataTemplate.Triggers>
