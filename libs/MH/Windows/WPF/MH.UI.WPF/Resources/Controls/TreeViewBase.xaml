@@ -205,19 +205,27 @@
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
+
+      <RepeatButton
+        Command="{Binding ScrollToTopCommand}"
+        Content="M30,0 60,30 0,30z"
+        ToolTip="Scroll to top"
+        Style="{DynamicResource MH.S.ScrollBar.Button}"/>
 
       <RepeatButton
         Command="{Binding ScrollLevelUpCommand}"
         Content="M30,0 60,30 0,30z"
         ToolTip="Scroll one level up"
+        Grid.Row="1"
         Style="{DynamicResource MH.S.ScrollBar.Button}"/>
 
       <RepeatButton
         Command="{Binding ScrollSiblingUpCommand}"
         Content="M30,0 60,30 0,30z"
         ToolTip="Scroll one sibling up"
-        Grid.Row="1"
+        Grid.Row="2"
         Style="{DynamicResource MH.S.ScrollBar.Button}"/>
     </Grid>
   </DataTemplate>
