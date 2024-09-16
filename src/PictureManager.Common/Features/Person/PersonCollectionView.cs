@@ -8,7 +8,8 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.Person;
 
-public class PersonCollectionView() : CollectionView<PersonM>(Res.IconPeopleMultiple, "People") {
+public class PersonCollectionView()
+  : CollectionView<PersonM>(Res.IconPeopleMultiple, "People", [ViewMode.ThumbSmall, ViewMode.List]) {
   public override IEnumerable<GroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
     var src = source.ToArray();
     var top = new List<GroupByItem<PersonM>>();
@@ -19,8 +20,11 @@ public class PersonCollectionView() : CollectionView<PersonM>(Res.IconPeopleMult
     return top;
   }
 
-  public override int GetItemSize(PersonM item, bool getWidth) =>
-    SegmentVM.SegmentUiFullWidth;
+  public override int GetItemSize(ViewMode viewMode, PersonM item, bool getWidth) =>
+    viewMode switch {
+      ViewMode.List => getWidth ? 200 : 30,
+      _ => SegmentVM.SegmentUiFullWidth
+    };
 
   public override int SortCompare(PersonM itemA, PersonM itemB) =>
     string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);
@@ -30,4 +34,10 @@ public class PersonCollectionView() : CollectionView<PersonM>(Res.IconPeopleMult
 
   public override void OnItemOpened(PersonM item) =>
     Core.S.Segment.ViewMediaItemsWithSegment(this, item.Segment);
+
+  public override string GetItemTemplateName(ViewMode viewMode) =>
+    viewMode switch {
+      ViewMode.List => "PM.DT.Person.ListItem",
+      _ => "PM.DT.Person.Thumb"
+    };
 }

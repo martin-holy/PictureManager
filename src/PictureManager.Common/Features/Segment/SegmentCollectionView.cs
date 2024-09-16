@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.Segment;
 
-public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment, "Segments") {
+public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment, "Segments", [ViewMode.ThumbSmall]) {
   public void Reload(List<SegmentM> source, GroupMode groupMode, GroupByItem<SegmentM>[]? groupByItems, bool expandAll, string rootTitle, bool removeEmpty = true) {
     Name = rootTitle;
     Reload(source, groupMode, groupByItems, expandAll, removeEmpty);
@@ -25,7 +25,7 @@ public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment,
     return top;
   }
 
-  public override int GetItemSize(SegmentM item, bool getWidth) =>
+  public override int GetItemSize(ViewMode viewMode, SegmentM item, bool getWidth) =>
     SegmentVM.SegmentUiFullWidth;
 
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>

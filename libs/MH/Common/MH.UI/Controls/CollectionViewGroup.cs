@@ -17,10 +17,12 @@ public enum GroupMode {
 }
 
 public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : class, ISelectable {
+  private bool _isViewModePending;
   private double _width;
 
   public CollectionView<T> View { get; }
   public object? UIView => View.UIView;
+  public CollectionView.ViewMode ViewMode { get; set; }
   public List<T> Source { get; }
   public int SourceCount => Source.Count;
   public IEnumerable<CollectionViewGroup<T>> Groups => Items.OfType<CollectionViewGroup<T>>();
@@ -40,7 +42,9 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
     OnPropertyChanged(nameof(SourceCount));
   }
 
-  public CollectionViewGroup(CollectionViewGroup<T> parent, GroupByItem<T>? groupedBy, List<T> source) : this (parent.View, source, groupedBy) {
+  public CollectionViewGroup(CollectionViewGroup<T> parent, GroupByItem<T>? groupedBy, List<T> source)
+    : this(parent.View, source, groupedBy) {
+    ViewMode = parent.ViewMode;
     Parent = parent;
     IsRecursive = parent.IsRecursive;
     IsGroupBy = parent.IsGroupBy;
@@ -248,15 +252,18 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
       group.Width = width - View.GroupContentOffset;
   }
 
-  public static void ReWrapAll(CollectionViewGroup<T> group) {
+  public static void DoForAll(CollectionViewGroup<T> group, Action<CollectionViewGroup<T>> action) {
     var groups = group.Groups.ToArray();
 
     if (groups.Length == 0)
-      group.ReWrap();
+      action(group);
     else
       foreach (var subGroup in groups)
-        ReWrapAll(subGroup);
+        DoForAll(subGroup, action);
   }
+
+  public static void ReWrapAll(CollectionViewGroup<T> group) =>
+    DoForAll(group, g => g.ReWrap());
 
   public void ReWrap() {
     if (Items.FirstOrDefault() is CollectionViewGroup<T> || !(Width > 0)) return;
@@ -291,7 +298,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
       var oldRow = (CollectionViewRow<T>)Items[i];
       var newRow = newRows[i];
 
-      if (oldRow.Leaves.SequenceEqual(newRow))
+      if (!_isViewModePending && oldRow.Leaves.SequenceEqual(newRow))
         continue;
 
       oldRow.Leaves.Execute(items => {
@@ -300,10 +307,12 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
           items.Add(item);
       });
     }
+
+    _isViewModePending = false;
   }
 
   public int GetItemSize(object item, bool getWidth) =>
-    View.GetItemSize((T)item, getWidth);
+    View.GetItemSize(ViewMode, (T)item, getWidth);
 
   private IEnumerable<IList<T>> WrapSource() {
     var index = 0;
@@ -358,4 +367,20 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
 
   public CollectionViewRow<T>? GetRowWithItem(T item) =>
     Items.OfType<CollectionViewRow<T>>().FirstOrDefault(row => row.Leaves.Contains(item));
+
+  public void SetViewMode(CollectionView.ViewMode viewMode) {
+    if (Keyboard.IsShiftOn())
+      DoForAll(this, g => _setViewMode(g, viewMode));
+    else
+      _setViewMode(this, viewMode);
+  }
+
+  private void _setViewMode(CollectionViewGroup<T> group, CollectionView.ViewMode viewMode) {
+    group.ViewMode = viewMode;
+    _isViewModePending = true;
+    group.ReWrap();
+  }
+
+  public string GetItemTemplateName() =>
+    View.GetItemTemplateName(ViewMode);
 }

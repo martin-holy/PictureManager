@@ -1,4 +1,6 @@
-﻿namespace MH.UI.Interfaces; 
+﻿using MH.UI.Controls;
+
+namespace MH.UI.Interfaces; 
 
 public interface ICollectionView : ITreeView {
   public object? UIView { get; set; }
@@ -13,4 +15,6 @@ public interface ICollectionViewGroup {
   public object? UIView { get; }
   public double Width { get; set; }
   public int GetItemSize(object item, bool getWidth);
+  public string GetItemTemplateName();
+  public void SetViewMode(CollectionView.ViewMode viewMode);
 }

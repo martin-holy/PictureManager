@@ -3,7 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:uii="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
-  xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:u="clr-namespace:MH.UI.WPF.Utils"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
@@ -52,17 +51,39 @@
           Style="{DynamicResource MH.S.ToggleButton.TreeExpandCollapse}"
           IsChecked="{Binding IsExpanded, Mode=TwoWay}"/>
 
-        <c:IconButton
-          Command="{Binding View.OpenGroupByDialogCommand}"
-          CommandParameter="{Binding}"
+        <!-- Menu -->
+        <Menu
           Grid.Column="1"
-          ap:Icon.Data="{Binding
-            Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
-            Converter={x:Static conv:ResourceConverter.Inst}}"
-          ap:Icon.Fill="{Binding
-            Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
-            Converter={x:Static conv:ResourceConverter.Inst},
-            ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
+          Background="Transparent"
+          VerticalAlignment="Center"
+          Margin="0">
+
+          <MenuItem Padding="6,2,-2,2">
+            <MenuItem.Icon>
+              <Path
+                Data="{Binding
+                        Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
+                        Converter={x:Static conv:ResourceConverter.Inst}}"
+                Fill="{Binding
+                        Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
+                        Converter={x:Static conv:ResourceConverter.Inst},
+                        ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
+                Style="{StaticResource MH.S.Icon.Shadow}"/>
+            </MenuItem.Icon>
+
+            <MenuItem Command="{Binding View.OpenGroupByDialogCommand}" CommandParameter="{Binding}"/>
+
+            <MenuItem x:Name="miView" Header="View" ItemsSource="{Binding View.ViewModesCommands}">
+              <MenuItem.ItemContainerStyle>
+                <Style TargetType="MenuItem">
+                  <Setter Property="Header" Value="{Binding Text}"/>
+                  <Setter Property="Command" Value="{Binding}"/>
+                  <Setter Property="CommandParameter" Value="{Binding DataContext, ElementName=border}"/>
+                </Style>
+              </MenuItem.ItemContainerStyle>
+            </MenuItem>
+          </MenuItem>
+        </Menu>
 
         <TextBlock
           Grid.Column="2"
@@ -84,6 +105,9 @@
     <HierarchicalDataTemplate.Triggers>
       <DataTrigger Binding="{Binding Items.Count}" Value="0">
         <Setter TargetName="expander" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding View.ViewModesCommands.Length}" Value="1">
+        <Setter TargetName="miView" Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
       <DataTrigger Value="True">
         <DataTrigger.Binding>

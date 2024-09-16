@@ -16,7 +16,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
 
   public RelayCommand ThumbScaleChangedCommand { get; }
 
-  public MediaItemCollectionView(double thumbScale) : base(Res.IconImageMultiple, "Media Items") {
+  public MediaItemCollectionView(double thumbScale) : base(Res.IconImageMultiple, "Media Items", [ViewMode.ThumbBig]) {
     ThumbScale = thumbScale;
     ThumbScaleChangedCommand = new(OnThumbScaleChanged);
   }
@@ -37,7 +37,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
     return top;
   }
 
-  public override int GetItemSize(MediaItemM item, bool getWidth) =>
+  public override int GetItemSize(ViewMode viewMode, MediaItemM item, bool getWidth) =>
     (int)((getWidth ? item.ThumbWidth : item.ThumbHeight) * ThumbScale);
 
   public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>

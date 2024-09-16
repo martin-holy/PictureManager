@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.MediaItem.Video;
 
-public class VideoItemCollectionView() : CollectionView<VideoItemM>(Res.IconImageMultiple, "Video Items") {
+public class VideoItemCollectionView() : CollectionView<VideoItemM>(Res.IconImageMultiple, "Video Items", [ViewMode.ThumbBig]) {
   public Selecting<VideoItemM> Selected { get; } = new();
 
-  public override int GetItemSize(VideoItemM item, bool getWidth) =>
+  public override int GetItemSize(ViewMode viewMode, VideoItemM item, bool getWidth) =>
     (int)((getWidth ? item.ThumbWidth : item.ThumbHeight) * Core.Settings.MediaItem.VideoItemThumbScale);
 
   public override IEnumerable<GroupByItem<VideoItemM>> GetGroupByItems(IEnumerable<VideoItemM> source) {
