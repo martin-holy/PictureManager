@@ -23,7 +23,7 @@ public class PersonCollectionView()
   public override int GetItemSize(ViewMode viewMode, PersonM item, bool getWidth) =>
     viewMode switch {
       ViewMode.List => getWidth ? 200 : 30,
-      ViewMode.Tiles => getWidth ? 200 + SegmentVM.SegmentUiFullWidth : SegmentVM.SegmentUiFullWidth,
+      ViewMode.Tiles => getWidth ? 173 + SegmentVM.SegmentUiFullWidth : SegmentVM.SegmentUiFullWidth,
       _ => SegmentVM.SegmentUiFullWidth
     };
 
