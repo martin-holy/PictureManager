@@ -10,6 +10,7 @@ Latest:
  - [N] Tiles ViewMode for all views with people
  - [N] TreeView ScrollBar button: Scroll to top
  - [B] Person tile view: Segment width
+ - [U] Person tile view: smaller width to fit to SegmentsView
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
