@@ -9,6 +9,8 @@ namespace PictureManager.Common.Features.Person;
 public sealed class PersonVM {
   private readonly CoreVM _coreVM;
   private readonly PersonR _r;
+
+  public static int PersonTileSegmentWidth { get; set; }
   public static RelayCommand<CategoryGroupM> LoadByCategoryGroupCommand { get; set; } = null!;
   public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
 

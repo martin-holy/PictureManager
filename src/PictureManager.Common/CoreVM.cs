@@ -76,6 +76,7 @@ public class CoreVM : ObservableObject {
     _coreR = coreR;
 
     SegmentVM.SetSegmentUiSize(DisplayScale);
+    PersonVM.PersonTileSegmentWidth = SegmentVM.SegmentUiSize + 2;
 
     MainWindow = new();
 
