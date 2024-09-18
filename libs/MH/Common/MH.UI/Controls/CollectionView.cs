@@ -67,7 +67,7 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
     Root = new(this, [], null);
     Icon = icon;
     Name = name;
-    OpenGroupByDialogCommand = new(OpenGroupByDialog, Res.IconGroup, "Group by");
+    OpenGroupByDialogCommand = new(_openGroupByDialog, Res.IconGroup, "Group by");
   }
 
   protected void RaiseItemOpened(T item) => ItemOpenedEvent(this, new(item));
@@ -133,28 +133,28 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
     Insert([item]);
 
   public void Insert(T[] items) =>
-    ReGroupItems(items, false, false);
+    _reGroupItems(items, false, false);
 
   public void Update(T item) =>
     Update([item]);
 
   public void Update(T[] items) =>
-    ReGroupItems(items, false, true);
+    _reGroupItems(items, false, true);
 
   public void Remove(T item) =>
     Remove([item]);
 
   public void Remove(T[] items) =>
-    ReGroupItems(items, true, true);
+    _reGroupItems(items, true, true);
 
   public void ReGroupPendingItems() {
-    ReGroupItems(_pendingRemove.ToArray(), true, false);
-    ReGroupItems(_pendingUpdate.Except(_pendingRemove).ToArray(), false, false);
+    _reGroupItems(_pendingRemove.ToArray(), true, false);
+    _reGroupItems(_pendingUpdate.Except(_pendingRemove).ToArray(), false, false);
     _pendingRemove.Clear();
     _pendingUpdate.Clear();
   }
 
-  private void ReGroupItems(T[]? items, bool remove, bool ifContains) {
+  private void _reGroupItems(T[]? items, bool remove, bool ifContains) {
     if (items == null || items.Length == 0) return;
 
     if (!IsVisible && remove) {
@@ -212,7 +212,7 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
     ScrollTo(TopGroup, TopItem);
   }
 
-  private void OpenGroupByDialog(CollectionViewGroup<T>? group) {
+  private void _openGroupByDialog(CollectionViewGroup<T>? group) {
     if (group != null && _groupByDialog.Open(group, GetGroupByItems(group.Source)))
       _groupByItemsRoots.Add(group);
   }
