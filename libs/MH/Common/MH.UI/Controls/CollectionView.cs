@@ -172,9 +172,13 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
     
     var toReWrap = new HashSet<CollectionViewGroup<T>>();
 
-    if (remove)
+    if (remove) {
+      if (items.Contains(TopItem))
+        TopItem = TopGroup?.Source.GetNextOrPreviousItem(items);
+
       foreach (var item in items)
         Root.RemoveItem(item, toReWrap);
+    }
     else {
       foreach (var gbiRoot in _groupByItemsRoots)
         gbiRoot.UpdateGroupByItems(GetGroupByItems(items).ToArray());
@@ -190,11 +194,19 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
     var removedGroups = new List<CollectionViewGroup<T>>();
     toReWrap ??= new HashSet<CollectionViewGroup<T>>();
     CollectionViewGroup<T>.RemoveEmptyGroups(group, toReWrap, removedGroups);
-    if (TopGroup != null && removedGroups.Contains(TopGroup)) TopGroup = null;
+    if (TopGroup != null && removedGroups.Contains(TopGroup))
+      TopGroup = _getGroupParentNotIn(TopGroup, removedGroups);
     if (toReWrap.Count == 0) return;
     foreach (var g in toReWrap) g.ReWrap();
     if (toReWrap.Any(x => x.IsFullyExpanded()))
       ScrollTo(TopGroup ?? Root, TopItem);
+  }
+
+  private static CollectionViewGroup<T>? _getGroupParentNotIn(CollectionViewGroup<T>? group, List<CollectionViewGroup<T>> groups) {
+    while (group?.Parent is CollectionViewGroup<T> parentGroup && groups.Contains(parentGroup))
+      group = parentGroup;
+
+    return group;
   }
 
   public override void OnIsVisibleChanged() {
@@ -229,7 +241,7 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
     else if (row != null) {
       TopGroup = (CollectionViewGroup<T>)row.Parent!;
       if (row.Leaves.Count > 0)
-        TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Leaves[0]);
+        TopItem = row.Leaves[0];
     }
   }
 
