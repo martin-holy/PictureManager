@@ -11,6 +11,7 @@ Latest:
  - [N] TreeView ScrollBar button: Scroll to top
  - [B] Person tile view: Segment width
  - [U] Person tile view: smaller width to fit to SegmentsView
+ - [U] MediaItemsView: ScrollTo after remove improvement
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
