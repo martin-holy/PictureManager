@@ -115,10 +115,8 @@ public class MediaItemsViewVM : MediaItemCollectionView {
         Selected.Items.Remove(item);
     }
 
-    if (needReload) {
-      TopItem = Root.Source.GetNextOrPreviousItem(items);
+    if (needReload)
       Remove(items.ToArray());
-    }
 
     SelectionChanged();
   }
