@@ -12,6 +12,7 @@ Latest:
  - [B] Person tile view: Segment width
  - [U] Person tile view: smaller width to fit to SegmentsView
  - [U] MediaItemsView: ScrollTo after remove improvement
+ - [U] MediaItemsView: ScrollTo when exiting viewer improvement
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
