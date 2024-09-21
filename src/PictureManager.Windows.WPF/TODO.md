@@ -39,6 +39,12 @@
   - create new segment => set person to the new segment => open PersonDetail from StatusBar => new segment is not there (second open is ok)
 ## StatusBar
   - Position/Count is not centered
+## TreeViewCategories
+  - not necessary scroll on folders when moving media items
+## SlideShow
+  - when image is ExpandToFill
+## PeopleTabsView
+  - items not sorted after person change
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
@@ -56,6 +62,8 @@
 ## CollectionView
   - don't show expanded root if source is empty
   - expand and scroll to item in GroupByDialog on open
+  - optional bar on top or bottom with TopGroup path to Root
+    - static ShowPathToRootCommand in group menu
 ## TabControl
   - Custom tab background color (same color for MediaItems, Segments, MovieManager, ...)
 
@@ -158,6 +166,7 @@
   - use private fileds in classes when possible
   - VideoItemM primary constructor
   - TreeMarginConverter: not nullable return
+  - refactor CollectionView._reGroupItems
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
   - separate Repository from DB storage (continue with MH.Utils.DB.BaseClasses.Repository)
