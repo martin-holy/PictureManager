@@ -2,6 +2,7 @@
 
 public static class Res {
   public const string IconAutoPlay = "IconAutoPlay";
+  public const string IconDashSquareDotted = "IconDashSquareDotted";
   public const string IconGroup = "IconGroup";
   public const string IconCheckMark = "IconCheckMark";
   public const string IconChevronDown = "IconChevronDown";

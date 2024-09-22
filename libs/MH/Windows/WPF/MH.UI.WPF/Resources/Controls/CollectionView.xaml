@@ -61,12 +61,8 @@
           <MenuItem Padding="6,2,-2,2">
             <MenuItem.Icon>
               <Path
-                Data="{Binding
-                        Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
-                        Converter={x:Static conv:ResourceConverter.Inst}}"
-                Fill="{Binding
-                        Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
-                        Converter={x:Static conv:ResourceConverter.Inst},
+                Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
+                Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
                         ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
                 Style="{StaticResource MH.S.Icon.Shadow}"/>
             </MenuItem.Icon>

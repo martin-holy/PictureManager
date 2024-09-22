@@ -34,6 +34,7 @@ public class CollectionViewGroup<T> : TreeItem, ICollectionViewGroup where T : c
   public bool IsGroupBy { get; set; }
   public bool IsThenBy { get; set; }
   public bool IsReWrapPending { get; set; } = true;
+  public new string Icon => (GroupedBy?.Data as IListItem)?.Icon ?? Res.IconDashSquareDotted;
 
   public CollectionViewGroup(CollectionView<T> view, List<T> source, GroupByItem<T>? groupedBy) {
     View = view;
