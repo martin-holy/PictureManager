@@ -230,6 +230,7 @@ public abstract class CollectionView<T> : CollectionView, ICollectionView where 
   }
 
   public override void OnTopTreeItemChanged() {
+    base.OnTopTreeItemChanged();
     var row = TopTreeItem as CollectionViewRow<T>;
     var group = TopTreeItem as CollectionViewGroup<T>;
 

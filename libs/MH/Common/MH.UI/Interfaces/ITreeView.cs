@@ -10,6 +10,7 @@ public interface ITreeView : INotifyPropertyChanged {
   public bool ShowTreeItemSelection { get; set; }
   public bool IsVisible { get; set; }
   public ITreeItem? TopTreeItem { get; set; }
+  public ITreeItem[] TopTreeItemPath { get; }
   public Action? ScrollToTopAction { get; set; }
   public Action<object[], bool>? ScrollToItemsAction { get; set; }
   public Action<ITreeItem>? ExpandRootWhenReadyAction { get; set; }

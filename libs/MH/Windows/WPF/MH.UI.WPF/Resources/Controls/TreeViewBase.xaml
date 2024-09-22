@@ -6,7 +6,8 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
   xmlns:ubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
-  xmlns:uiInt="clr-namespace:MH.UI.Interfaces;assembly=MH.UI">
+  xmlns:uiInt="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
+  xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
 
   <PathGeometry x:Key="TreeArrow" Figures="M0,0 L0,10 L5,5 z"/>
 
@@ -230,6 +231,36 @@
     </Grid>
   </DataTemplate>
 
+  <DataTemplate x:Key="MH.DT.TreeViewBase.InfoBar" DataType="{x:Type uiInt:ITreeView}">
+    <!--TODO resolve overflow-->
+    <!--TODO disable selection-->
+    <ListBox
+      ItemsSource="{Binding TopTreeItemPath}"
+      BorderThickness="0"
+      ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="{x:Type uInt:IListItem}">
+          <c:IconTextBlock ap:Text.Text="{Binding Name}" ap:Icon.Res="{Binding Icon}" Margin="0"/>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+
+      <ListBox.ItemContainerStyle>
+        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}">
+          <Setter Property="Padding" Value="4,0,4,0"/>
+        </Style>
+      </ListBox.ItemContainerStyle>
+
+      <ListBox.ItemsPanel>
+        <ItemsPanelTemplate>
+          <VirtualizingStackPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+      </ListBox.ItemsPanel>
+    </ListBox>
+
+    <!--Visibility="{Binding TopTreeItemPath, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"-->
+  </DataTemplate>
+
   <Style x:Key="MH.S.TreeViewBase" TargetType="c:TreeViewBase">
     <Setter Property="Background" Value="{StaticResource MH.B.C.Static.Ba}"/>
     <Setter Property="BorderBrush" Value="{StaticResource MH.B.C.Static.Bo}"/>
@@ -247,6 +278,8 @@
     <Setter Property="VirtualizingPanel.CacheLength" Value="3"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+    <Setter Property="ap:Slot.TopContent" Value="{Binding TreeView, RelativeSource={RelativeSource Self}}"/>
+    <Setter Property="ap:Slot.TopContentTemplate" Value="{StaticResource MH.DT.TreeViewBase.InfoBar}"/>
 
     <Setter Property="ItemsPanel">
       <Setter.Value>
@@ -259,15 +292,27 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="c:TreeViewBase">
-          <ScrollViewer
-            x:Name="PART_ScrollViewer"
-            Focusable="False"
-            Padding="{TemplateBinding Padding}"
-            ap:Slot.TopContent="{Binding TreeView, RelativeSource={RelativeSource TemplatedParent}}"
-            ap:Slot.TopContentTemplate="{StaticResource MH.DT.TreeViewBase.ScrollButtons}">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <ItemsPresenter/>
-          </ScrollViewer>
+            <ContentPresenter
+              Content="{Binding Path=(ap:Slot.TopContent), RelativeSource={RelativeSource TemplatedParent}}"
+              ContentTemplate="{Binding Path=(ap:Slot.TopContentTemplate), RelativeSource={RelativeSource TemplatedParent}}"/>
+
+            <ScrollViewer
+              x:Name="PART_ScrollViewer"
+              Grid.Row="1"
+              Focusable="False"
+              Padding="{TemplateBinding Padding}"
+              ap:Slot.TopContent="{Binding TreeView, RelativeSource={RelativeSource TemplatedParent}}"
+              ap:Slot.TopContentTemplate="{StaticResource MH.DT.TreeViewBase.ScrollButtons}">
+
+              <ItemsPresenter/>
+            </ScrollViewer>
+          </Grid>
 
           <ControlTemplate.Triggers>
             <Trigger SourceName="PART_ScrollViewer" Property="ComputedVerticalScrollBarVisibility" Value="Collapsed">
