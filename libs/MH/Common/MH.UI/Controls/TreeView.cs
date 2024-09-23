@@ -23,6 +23,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeIte
   public Action<object[], bool>? ScrollToItemsAction { get; set; }
   public Action<ITreeItem>? ExpandRootWhenReadyAction { get; set; }
 
+  public RelayCommand<ITreeItem> ScrollToItemCommand { get; }
   public RelayCommand ScrollToTopCommand { get; }
   public RelayCommand ScrollSiblingUpCommand { get; }
   public RelayCommand ScrollLevelUpCommand { get; }
@@ -30,6 +31,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeIte
   public event EventHandler<ObjectEventArgs<T>> TreeItemSelectedEvent = delegate { };
 
   public TreeView() {
+    ScrollToItemCommand = new(x => ScrollTo(x));
     ScrollToTopCommand = new(ScrollToTop);
     ScrollSiblingUpCommand = new(ScrollSiblingUp);
     ScrollLevelUpCommand = new(ScrollLevelUp);

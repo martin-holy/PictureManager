@@ -5,6 +5,7 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:res="clr-namespace:MH.UI.WPF.Resources"
   xmlns:ubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:uiInt="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
   xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
@@ -231,34 +232,31 @@
     </Grid>
   </DataTemplate>
 
-  <DataTemplate x:Key="MH.DT.TreeViewBase.InfoBar" DataType="{x:Type uiInt:ITreeView}">
-    <!--TODO resolve overflow-->
-    <!--TODO disable selection-->
-    <ListBox
+  <DataTemplate x:Key="MH.DT.TreeView-PathToRootBar" DataType="{x:Type uiInt:ITreeView}">
+    <ItemsControl
       ItemsSource="{Binding TopTreeItemPath}"
       BorderThickness="0"
-      ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+      HorizontalAlignment="Left">
 
-      <ListBox.ItemTemplate>
+      <ItemsControl.ItemTemplate>
         <DataTemplate DataType="{x:Type uInt:IListItem}">
-          <c:IconTextBlock ap:Text.Text="{Binding Name}" ap:Icon.Res="{Binding Icon}" Margin="0"/>
+          <c:SlimButton
+            Command="{Binding Path=TreeView.ScrollToItemCommand, RelativeSource={RelativeSource AncestorType=c:TreeViewBase}}"
+            CommandParameter="{Binding}"
+            ap:Text.Text="{Binding Name}"
+            ap:Icon.Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
+            ap:Icon.Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
+                           ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
+            Margin="0"/>
         </DataTemplate>
-      </ListBox.ItemTemplate>
+      </ItemsControl.ItemTemplate>
 
-      <ListBox.ItemContainerStyle>
-        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MH.S.ListBoxItem}">
-          <Setter Property="Padding" Value="4,0,4,0"/>
-        </Style>
-      </ListBox.ItemContainerStyle>
-
-      <ListBox.ItemsPanel>
+      <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
-          <VirtualizingStackPanel Orientation="Horizontal"/>
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"/>
         </ItemsPanelTemplate>
-      </ListBox.ItemsPanel>
-    </ListBox>
-
-    <!--Visibility="{Binding TopTreeItemPath, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"-->
+      </ItemsControl.ItemsPanel>
+    </ItemsControl>
   </DataTemplate>
 
   <Style x:Key="MH.S.TreeViewBase" TargetType="c:TreeViewBase">
@@ -279,7 +277,7 @@
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
     <Setter Property="ap:Slot.TopContent" Value="{Binding TreeView, RelativeSource={RelativeSource Self}}"/>
-    <Setter Property="ap:Slot.TopContentTemplate" Value="{StaticResource MH.DT.TreeViewBase.InfoBar}"/>
+    <Setter Property="ap:Slot.TopContentTemplate" Value="{StaticResource MH.DT.TreeView-PathToRootBar}"/>
 
     <Setter Property="ItemsPanel">
       <Setter.Value>
