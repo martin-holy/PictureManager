@@ -240,14 +240,34 @@
 
       <ItemsControl.ItemTemplate>
         <DataTemplate DataType="{x:Type uInt:IListItem}">
-          <c:SlimButton
+          <Button
             Command="{Binding Path=TreeView.ScrollToItemCommand, RelativeSource={RelativeSource AncestorType=c:TreeViewBase}}"
             CommandParameter="{Binding}"
             ap:Text.Text="{Binding Name}"
             ap:Icon.Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
             ap:Icon.Fill="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst},
-                           ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
-            Margin="0"/>
+                           ConverterParameter={x:Static res:Dictionaries.IconToBrush}}">
+            <Button.Style>
+              <Style TargetType="Button" BasedOn="{StaticResource MH.S.ButtonBase}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Style.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.B.I.Hover.Ba}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
+                  </Trigger>
+                  <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.B.I.Hover.Ba}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Hover.Bo}"/>
+                  </Trigger>
+                  <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="ap:Button.OverLayer" Value="{StaticResource MH.B.I.Selected.Ba}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource MH.B.I.Selected.Bo}"/>
+                  </Trigger>
+                </Style.Triggers>
+              </Style>
+            </Button.Style>
+          </Button>
         </DataTemplate>
       </ItemsControl.ItemTemplate>
 
