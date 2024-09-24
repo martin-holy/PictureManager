@@ -16,7 +16,7 @@ public class TreeView<T> : ObservableObject, ITreeView where T : class, ITreeIte
   public Selecting<T> SelectedTreeItems { get; } = new();
   public ITreeItem? TopTreeItem { get => _topTreeItem; set { _topTreeItem = value; OnTopTreeItemChanged(); } }
   public bool IsVisible { get => _isVisible; set { _isVisible = value; OnIsVisibleChanged(); } }
-  public ITreeItem[] TopTreeItemPath => _topTreeItem == null ? [] : _topTreeItem.GetThisAndParents().SkipLast(1).Except([_topTreeItem]).Reverse().ToArray();
+  public ITreeItem[] TopTreeItemPath => _topTreeItem == null ? [] : _topTreeItem.GetThisAndParents().Skip(1).Reverse().Skip(1).ToArray();
   // TODO rename and combine with single and multi select
   public bool ShowTreeItemSelection { get; set; }
   public Action? ScrollToTopAction { get; set; }
