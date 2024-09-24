@@ -26,7 +26,7 @@ using System.Linq;
 
 namespace PictureManager.Common;
 
-public class CoreVM : ObservableObject {
+public sealed class CoreVM : ObservableObject {
   private readonly CoreS _coreS;
   private readonly CoreR _coreR;
 
@@ -55,23 +55,23 @@ public class CoreVM : ObservableObject {
 
   public event EventHandler AppClosingEvent = delegate { };
 
-  public static RelayCommand AppClosingCommand { get; set; } = null!;
-  public static RelayCommand ExportSegmentsCommand { get; set; } = null!;
+  public static RelayCommand AppClosingCommand { get; private set; } = null!;
+  public static RelayCommand ExportSegmentsCommand { get; private set; } = null!;
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialog()), null, "About");
   public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialog()), Res.IconSort, "Open log");
-  public static RelayCommand OpenSegmentsViewsCommand { get; set; } = null!;
-  public static RelayCommand OpenSettingsCommand { get; set; } = null!;
-  public static RelayCommand SaveDbCommand { get; set; } = null!;
-  public static RelayCommand<FolderM> CompressImagesCommand { get; set; } = null!;
-  public static RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; set; } = null!;
-  public static RelayCommand<FolderM> ImagesToVideoCommand { get; set; } = null!;
-  public static RelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; set; } = null!;
-  public static RelayCommand<FolderM> ReloadMetadataCommand { get; set; } = null!;
-  public static RelayCommand<FolderM> ResizeImagesCommand { get; set; } = null!;
-  public static RelayCommand<FolderM> RotateMediaItemsCommand { get; set; } = null!;
-  public static RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; set; } = null!;
+  public static RelayCommand OpenSegmentsViewsCommand { get; private set; } = null!;
+  public static RelayCommand OpenSettingsCommand { get; private set; } = null!;
+  public static RelayCommand SaveDbCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> CompressImagesCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> ImagesToVideoCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> ReloadMetadataCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> ResizeImagesCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> RotateMediaItemsCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; private set; } = null!;
 
-  public CoreVM(CoreS coreS, CoreR coreR) {
+  internal CoreVM(CoreS coreS, CoreR coreR) {
     _coreS = coreS;
     _coreR = coreR;
 
@@ -90,22 +90,22 @@ public class CoreVM : ObservableObject {
     SegmentsDrawer = new(_coreS.Segment, _coreR.Segment.Drawer);
     _addToolBars(MainWindow.ToolBar.ToolBars);
 
-    UpdateMediaItemsCount();
-    InitToggleDialog();
+    _updateMediaItemsCount();
+    _initToggleDialog();
 
-    AppClosingCommand = new(AppClosing);
-    ExportSegmentsCommand = new(ExportSegments, () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export Segments");
-    OpenSettingsCommand = new(OpenSettings, Res.IconSettings, "Settings");
+    AppClosingCommand = new(_onAppClosing);
+    ExportSegmentsCommand = new(_exportSegments, () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export Segments");
+    OpenSettingsCommand = new(_openSettings, Res.IconSettings, "Settings");
     OpenSegmentsViewsCommand = new(() => OpenSegmentsViews(null, string.Empty), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
-    CompressImagesCommand = new(x => CompressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
-    GetGeoNamesFromWebCommand = new(x => GetGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
-    ImagesToVideoCommand = new(x => ImagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");
-    ReadGeoLocationFromFilesCommand = new(x => ReadGeoLocationFromFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
+    CompressImagesCommand = new(x => _compressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
+    GetGeoNamesFromWebCommand = new(x => _getGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
+    ImagesToVideoCommand = new(x => _imagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");
+    ReadGeoLocationFromFilesCommand = new(x => _readGeoLocationFromFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
     ReloadMetadataCommand = new(x => MediaItem.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
-    ResizeImagesCommand = new(x => ResizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
-    RotateMediaItemsCommand = new(x => RotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
-    SaveImageMetadataToFilesCommand = new(x => SaveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
+    ResizeImagesCommand = new(x => _resizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
+    RotateMediaItemsCommand = new(x => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
+    SaveImageMetadataToFilesCommand = new(x => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
   }
 
   public bool AnyActive<T>(FolderM? folder = null) where T : MediaItemM =>
@@ -120,43 +120,43 @@ public class CoreVM : ObservableObject {
         ? MediaItem.Current is T current ? [current] : []
         : MediaItem.Views.Current?.Selected.Items.OfType<T>().ToArray() ?? [];
 
-  public void AttachEvents() {
-    MainTabs.PropertyChanged += OnMainTabsPropertyChanged;
-    MainTabs.TabClosedEvent += OnMainTabsTabClosed;
-    MainWindow.PropertyChanged += OnMainWindowPropertyChanged;
-    MediaItem.PropertyChanged += OnMediaItemPropertyChanged;
-    MediaItem.Views.PropertyChanged += OnMediaItemViewsPropertyChanged;
-    MediaViewer.PropertyChanged += OnMediaViewerPropertyChanged;
-    MediaViewer.Slideshow.PropertyChanged += OnMediaViewerSlideshowPropertyChanged;
-    MediaViewer.ZoomAndPan.PropertyChanged += OnMediaViewerZoomAndPanPropertyChanged;
+  internal void AttachEvents() {
+    MainTabs.PropertyChanged += _onMainTabsPropertyChanged;
+    MainTabs.TabClosedEvent += _onMainTabsTabClosed;
+    MainWindow.PropertyChanged += _onMainWindowPropertyChanged;
+    MediaItem.PropertyChanged += _onMediaItemPropertyChanged;
+    MediaItem.Views.PropertyChanged += _onMediaItemViewsPropertyChanged;
+    MediaViewer.PropertyChanged += _onMediaViewerPropertyChanged;
+    MediaViewer.Slideshow.PropertyChanged += _onMediaViewerSlideshowPropertyChanged;
+    MediaViewer.ZoomAndPan.PropertyChanged += _onMediaViewerZoomAndPanPropertyChanged;
     Video.MediaPlayer.MediaEndedEvent += MediaViewer.Slideshow.OnPlayerMediaEnded;
-    Video.MediaPlayer.PropertyChanged += OnVideoMediaPlayerPropertyChanged;
-    Video.CurrentVideoItems.Selected.ItemsChangedEvent += OnVideoItemsSelectionChanged;
+    Video.MediaPlayer.PropertyChanged += _onVideoMediaPlayerPropertyChanged;
+    Video.CurrentVideoItems.Selected.ItemsChangedEvent += _onVideoItemsSelectionChanged;
 
-    _coreR.Folder.ItemRenamedEvent += OnFolderRenamed;
+    _coreR.Folder.ItemRenamedEvent += _onFolderRenamed;
 
-    _coreR.MediaItem.ItemCreatedEvent += OnMediaItemCreated;
-    _coreR.MediaItem.ItemRenamedEvent += OnMediaItemRenamed;
-    _coreR.MediaItem.ItemsDeletedEvent += OnMediaItemsDeleted;
-    _coreR.MediaItem.MetadataChangedEvent += OnMediaItemsMetadataChanged;
-    _coreR.MediaItem.OrientationChangedEvent += OnMediaItemsOrientationChanged;
+    _coreR.MediaItem.ItemCreatedEvent += _onMediaItemCreated;
+    _coreR.MediaItem.ItemRenamedEvent += _onMediaItemRenamed;
+    _coreR.MediaItem.ItemsDeletedEvent += _onMediaItemsDeleted;
+    _coreR.MediaItem.MetadataChangedEvent += _onMediaItemsMetadataChanged;
+    _coreR.MediaItem.OrientationChangedEvent += _onMediaItemsOrientationChanged;
 
-    _coreR.Person.ItemCreatedEvent += OnPersonCreated;
-    _coreR.Person.ItemDeletedEvent += OnPersonDeleted;
-    _coreR.Person.PersonsKeywordsChangedEvent += OnPersonsKeywordsChanged;
+    _coreR.Person.ItemCreatedEvent += _onPersonCreated;
+    _coreR.Person.ItemDeletedEvent += _onPersonDeleted;
+    _coreR.Person.PersonsKeywordsChangedEvent += _onPersonsKeywordsChanged;
 
-    _coreR.Segment.ItemCreatedEvent += OnSegmentCreated;
-    _coreR.Segment.ItemsDeletedEvent += OnSegmentsDeleted;
-    _coreR.Segment.SegmentsKeywordsChangedEvent += OnSegmentsKeywordsChanged;
-    _coreR.Segment.SegmentsPersonChangedEvent += OnSegmentsPersonChanged;
+    _coreR.Segment.ItemCreatedEvent += _onSegmentCreated;
+    _coreR.Segment.ItemsDeletedEvent += _onSegmentsDeleted;
+    _coreR.Segment.SegmentsKeywordsChangedEvent += _onSegmentsKeywordsChanged;
+    _coreR.Segment.SegmentsPersonChangedEvent += _onSegmentsPersonChanged;
   }
 
-  private void OnMainTabsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+  private void _onMainTabsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(MainTabs.Selected)))
       MediaItem.OnViewSelected(MainTabs.Selected?.Data as MediaItemsViewVM);
   }
 
-  private void OnMainTabsTabClosed(IListItem tab) {
+  private void _onMainTabsTabClosed(IListItem tab) {
     switch (tab.Data) {
       case MediaItemsViewVM miView:
         MediaItem.Views.CloseView(miView);
@@ -170,46 +170,42 @@ public class CoreVM : ObservableObject {
     }
   }
 
-  private void OnMainWindowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(MainWindow.IsInViewMode))) {
-      var isInViewMode = MainWindow.IsInViewMode;
+  private void _onMainWindowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (!e.Is(nameof(MainWindow.IsInViewMode))) return;
+    var isInViewMode = MainWindow.IsInViewMode;
 
-      MediaViewer.IsVisible = isInViewMode;
+    MediaViewer.IsVisible = isInViewMode;
 
-      if (isInViewMode) {
-        Video.MediaPlayer.SetView(UiFullVideo);
-        _coreS.Segment.Rect.MediaItem = MediaItem.Current;
-      }
-      else {
-        MediaItem.Views.SelectAndScrollToCurrentMediaItem();
-        MediaViewer.Deactivate();
-        Video.MediaPlayer.SetView(UiDetailVideo);
-      }
-
-      MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+    if (isInViewMode) {
+      Video.MediaPlayer.SetView(UiFullVideo);
+      _coreS.Segment.Rect.MediaItem = MediaItem.Current;
     }
+    else {
+      MediaItem.Views.SelectAndScrollToCurrentMediaItem();
+      MediaViewer.Deactivate();
+      Video.MediaPlayer.SetView(UiDetailVideo);
+    }
+
+    MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
   }
 
-  private void OnMediaItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(MediaItem.Current))) {
-      MainWindow.StatusBar.Update();
-      Video.SetCurrent(MediaItem.Current);
+  private void _onMediaItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (!e.Is(nameof(MediaItem.Current))) return;
+    MainWindow.StatusBar.Update();
+    Video.SetCurrent(MediaItem.Current);
 
-      if (MainWindow.IsInViewMode) {
-        MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
-        _coreS.Segment.Rect.MediaItem = MediaItem.Current;
-      }
-    }
+    if (!MainWindow.IsInViewMode) return;
+    MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+    _coreS.Segment.Rect.MediaItem = MediaItem.Current;
   }
 
-  private void OnMediaItemViewsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(MediaItem.Views.Current))) {
-      MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
-      MainWindow.StatusBar.OnPropertyChanged(nameof(MainWindow.StatusBar.IsCountVisible));
-    }
+  private void _onMediaItemViewsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (!e.Is(nameof(MediaItem.Views.Current))) return;
+    MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+    MainWindow.StatusBar.OnPropertyChanged(nameof(MainWindow.StatusBar.IsCountVisible));
   }
 
-  private void OnMediaViewerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+  private void _onMediaViewerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     switch (e.PropertyName) {
       case nameof(MediaViewer.IsVisible):
         MainWindow.StatusBar.Update();
@@ -224,24 +220,24 @@ public class CoreVM : ObservableObject {
     }
   }
 
-  private void OnMediaViewerSlideshowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+  private void _onMediaViewerSlideshowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(SlideshowVM.State)) && ((SlideshowVM)sender!).State == SlideshowState.On)
       Video.MediaPlayer.PlayType = PlayType.Video;
   }
 
-  private void OnMediaViewerZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+  private void _onMediaViewerZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (sender is not ZoomAndPan zap) return;
     if (e.Is(nameof(ZoomAndPan.ScaleX)))
       _coreS.Segment.Rect.UpdateScale(zap.ScaleX);
   }
 
-  private void OnVideoItemsSelectionChanged(object? sender, VideoItemM[] e) {
+  private void _onVideoItemsSelectionChanged(object? sender, VideoItemM[] e) {
     var vi = e.FirstOrDefault();
     MediaItem.Current = vi as MediaItemM ?? Video.Current;
     Video.MediaPlayer.SetCurrent(vi);
   }
 
-  private void OnVideoMediaPlayerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+  private void _onVideoMediaPlayerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (!_coreS.Segment.Rect.AreVisible || !MediaViewer.IsVisible ||
         MediaItem.Current == null || !e.Is(nameof(MediaPlayer.TimelinePosition))) return;
 
@@ -252,20 +248,18 @@ public class CoreVM : ObservableObject {
       _coreS.Segment.Rect.MediaItem = mi;
   }
 
-  private void OnFolderRenamed(object? sender, FolderM item) {
+  private void _onFolderRenamed(object? sender, FolderM item) =>
     MainWindow.StatusBar.UpdateFilePath();
-  }
 
-  private void OnMediaItemCreated(object? sender, MediaItemM item) {
-    UpdateMediaItemsCount();
-  }
+  private void _onMediaItemCreated(object? sender, MediaItemM item) =>
+    _updateMediaItemsCount();
 
-  private void OnMediaItemsDeleted(object? sender, IList<MediaItemM> items) {
+  private void _onMediaItemsDeleted(object? sender, IList<MediaItemM> items) {
     MediaItem.Current = MediaViewer.IsVisible && items.All(x => x is RealMediaItemM)
       ? MediaViewer.MediaItems.GetNextOrPreviousItem(items)
       : items.OfType<VideoItemM>().FirstOrDefault()?.Video;
 
-    UpdateMediaItemsCount();
+    _updateMediaItemsCount();
     MediaItem.Views.RemoveMediaItems(items);
     Video.CurrentVideoItems.Remove(items.OfType<VideoItemM>().ToArray());
 
@@ -277,12 +271,12 @@ public class CoreVM : ObservableObject {
     }
   }
 
-  private void OnMediaItemRenamed(object? sender, MediaItemM item) {
+  private void _onMediaItemRenamed(object? sender, MediaItemM item) {
     MediaItem.OnPropertyChanged(nameof(MediaItem.Current));
     MediaItem.Views.Current?.SoftLoad(MediaItem.Views.Current.FilteredItems, true, false);
   }
 
-  private void OnMediaItemsMetadataChanged(object? sender, MediaItemM[] items) {
+  private void _onMediaItemsMetadataChanged(object? sender, MediaItemM[] items) {
     var all = items.OfType<VideoItemM>().Select(x => x.Video).Concat(items).Distinct().ToArray();
     MediaItem.OnMetadataChanged(all);
     MediaItem.Views.UpdateViews(all);
@@ -291,7 +285,7 @@ public class CoreVM : ObservableObject {
     MainWindow.StatusBar.UpdateRating();
   }
 
-  private void OnMediaItemsOrientationChanged(object? sender, RealMediaItemM[] items) {
+  private void _onMediaItemsOrientationChanged(object? sender, RealMediaItemM[] items) {
     if (MediaViewer.IsVisible && items.Contains(MediaViewer.Current))
       MediaViewer.Current = MediaViewer.Current;
 
@@ -300,12 +294,12 @@ public class CoreVM : ObservableObject {
       Video.CurrentVideoItems.ReWrapAll();
   }
 
-  private void OnPersonCreated(object? sender, PersonM item) {
+  private void _onPersonCreated(object? sender, PersonM item) {
     MainWindow.ToolsTabs.PeopleTab?.Insert(item);
     People?.Insert(item);
   }
 
-  private void OnPersonDeleted(object? sender, PersonM item) {
+  private void _onPersonDeleted(object? sender, PersonM item) {
     People?.Remove(item);
     MainWindow.ToolsTabs.PeopleTab?.Remove(item);
     Segment.Views.OnPersonDeleted(item);
@@ -314,36 +308,35 @@ public class CoreVM : ObservableObject {
       MainWindow.ToolsTabs.Close(MainWindow.ToolsTabs.PersonDetailTab);
   }
 
-  private void OnPersonsKeywordsChanged(object? sender, PersonM[] items) {
+  private void _onPersonsKeywordsChanged(object? sender, PersonM[] items) {
     MainWindow.ToolsTabs.PersonDetailTab?.UpdateDisplayKeywordsIfContains(items);
     MainWindow.ToolsTabs.PeopleTab?.Update(items);
     People?.Update(items);
     Segment.Views.OnPersonsKeywordsChanged(items);
   }
 
-  private void OnSegmentCreated(object? sender, SegmentM e) {
+  private void _onSegmentCreated(object? sender, SegmentM e) =>
     Segment.Views.Current?.Insert(e);
-  }
 
-  private void OnSegmentsDeleted(object? sender, IList<SegmentM> items) {
+  private void _onSegmentsDeleted(object? sender, IList<SegmentM> items) {
     var arr = items.ToArray();
     MainWindow.ToolsTabs.PersonDetailTab?.Update(arr, true, true);
     Segment.Views.RemoveSegments(arr);
     SegmentsDrawer.RemoveIfContains(arr);
   }
 
-  private void OnSegmentsKeywordsChanged(object? sender, SegmentM[] items) {
+  private void _onSegmentsKeywordsChanged(object? sender, SegmentM[] items) {
     MainWindow.ToolsTabs.PersonDetailTab?.Update(items, true, false);
     Segment.Views.UpdateViews(items);
   }
 
-  private void OnSegmentsPersonChanged(object? sender, (SegmentM[], PersonM?, PersonM[]) e) {
+  private void _onSegmentsPersonChanged(object? sender, (SegmentM[], PersonM?, PersonM[]) e) {
     MainWindow.ToolsTabs.PersonDetailTab?.Update(e.Item1);
     People?.Update(e.Item3);
     Segment.Views.OnSegmentsPersonChanged(e.Item1);
   }
 
-  private void AppClosing() {
+  private void _onAppClosing() {
     AppClosingEvent.Invoke(this, EventArgs.Empty);
 
     if (_coreR.Changes > 0 &&
@@ -357,10 +350,10 @@ public class CoreVM : ObservableObject {
     _coreR.BackUp();
   }
 
-  private void ExportSegments() =>
+  private void _exportSegments() =>
     Dialog.Show(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray()));
 
-  private void OpenSettings() =>
+  private void _openSettings() =>
     MainTabs.Activate(Res.IconSettings, "Settings", Core.Inst.AllSettings);
 
   public void OpenPeopleView() {
@@ -381,15 +374,15 @@ public class CoreVM : ObservableObject {
     Segment.Views.Load(segments, tabTitle);
   }
 
-  private void CompressImages(ImageM[] items) =>
+  private void _compressImages(ImageM[] items) =>
     Dialog.Show(new CompressImagesDialog(items, _coreS.Image, Core.Settings.Common.JpegQuality));
 
-  private void GetGeoNamesFromWeb(ImageM[] items) {
+  private void _getGeoNamesFromWeb(ImageM[] items) {
     if (GetGeoNamesFromWebDialog.Open(items, _coreR))
       _coreR.MediaItem.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
   }
 
-  private void ImagesToVideo(ImageM[] items) {
+  private void _imagesToVideo(ImageM[] items) {
     if (items.Length < 2) return;
     Dialog.Show(new ImagesToVideoDialog(
       items,
@@ -408,25 +401,25 @@ public class CoreVM : ObservableObject {
     );
   }
 
-  private void ReadGeoLocationFromFiles(ImageM[] items) {
+  private void _readGeoLocationFromFiles(ImageM[] items) {
     Dialog.Show(new ReadGeoLocationFromFilesDialog(items));
     _coreR.MediaItem.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
   }
 
-  private void ResizeImages(ImageM[] items) =>
+  private static void _resizeImages(ImageM[] items) =>
     Dialog.Show(new ImageResizeDialog(items));
 
-  private void RotateMediaItems(RealMediaItemM[] items) {
+  private void _rotateMediaItems(RealMediaItemM[] items) {
     if (RotationDialog.Open(out var rotation))
       _coreR.MediaItem.Rotate(items, rotation);
   }
 
-  private void SaveImageMetadataToFiles(ImageM[] items) {
+  private void _saveImageMetadataToFiles(ImageM[] items) {
     SaveMetadataDialog.Open(items, _coreS.Image, Core.Settings.Common.JpegQuality);
     _ = MainWindow.StatusBar.UpdateFileSize();
   }
 
-  public void UpdateMediaItemsCount() =>
+  private void _updateMediaItemsCount() =>
     MediaItem.ItemsCount = _coreR.Image.All.Count + _coreR.Video.All.Count;
 
   private void _addToolBars(ObservableCollection<object> toolBars) {
@@ -439,7 +432,7 @@ public class CoreVM : ObservableObject {
     toolBars.Add(new MediaViewerToolBarVM(MediaViewer));
   }
 
-  private void InitToggleDialog() {
+  private void _initToggleDialog() {
     var ttSegment = new ToggleDialogTargetType<SegmentM>(
       Res.IconSegment,
       _ => _coreS.Segment.Selected.Items.ToArray(),
@@ -496,7 +489,7 @@ public class CoreVM : ObservableObject {
     MediaViewer.SetMediaItems(items.ToList(), item);
   }
 
-  public string? BrowseForFolder() {
+  public static string? BrowseForFolder() {
     var dir = new FolderBrowserDialog();
     if (Dialog.Show(dir) != 1 || dir.SelectedFolder == null) return null;
     var dirPath = dir.SelectedFolder.FullPath;

@@ -25,7 +25,7 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
   public RelayCommand OpenFolderBrowserCommand { get; }
 
   public ImageResizeDialog(ImageM[] items) : base("Resize Images", Res.IconImageMultiple, items, null, "Resize") {
-    OpenFolderBrowserCommand = new(() => DestDir = Core.VM.BrowseForFolder(), Res.IconFolder, "Select folder");
+    OpenFolderBrowserCommand = new(() => DestDir = CoreVM.BrowseForFolder(), Res.IconFolder, "Select folder");
     SetMaxMpx(items);
   }
 

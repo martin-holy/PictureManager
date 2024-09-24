@@ -15,7 +15,7 @@ public sealed class ExportSegmentsDialog : ParallelProgressDialog<SegmentM> {
   public RelayCommand OpenFolderBrowserCommand { get; }
 
   public ExportSegmentsDialog(SegmentM[] items) : base("Export Segments", Res.IconSegment, items, null, "Export") {
-    OpenFolderBrowserCommand = new(() => DestDir = Core.VM.BrowseForFolder(), Res.IconFolder, "Select folder");
+    OpenFolderBrowserCommand = new(() => DestDir = CoreVM.BrowseForFolder(), Res.IconFolder, "Select folder");
   }
 
   protected override bool CanAction() =>
