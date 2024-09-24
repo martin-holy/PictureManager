@@ -14,6 +14,7 @@ Latest:
  - [U] MediaItemsView: ScrollTo after remove improvement
  - [U] MediaItemsView: ScrollTo when exiting viewer improvement
  - [U] Icon for CollectionViewGroup with items without grouping item
+ - [N] Bar on top of TreeView with path to root
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
