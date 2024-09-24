@@ -54,7 +54,7 @@ public class TreeViewBase : TreeView {
   }
 
   public virtual void OnScrollChanged(object sender, ScrollChangedEventArgs e) {
-    if (!_isScrollingTo && TreeView != null && e.VerticalChange != 0 && _sv.IsVisible)
+    if (!_isScrollingTo && TreeView != null && _sv.IsVisible)
       TreeView.TopTreeItem = GetHitTestItem(10, 10);
 
     if (_resetHScroll) {
@@ -83,6 +83,9 @@ public class TreeViewBase : TreeView {
     if (_sv.VerticalOffset == 0) return;
     _sv.ScrollToTop();
     _sv.UpdateLayout();
+
+    if (!_sv.IsVisible && TreeView != null)
+      TreeView.TopTreeItem = GetHitTestItem(10, 10);
   }
 
   private void ScrollToItemsWhenReady(object[] items, bool exactly) {

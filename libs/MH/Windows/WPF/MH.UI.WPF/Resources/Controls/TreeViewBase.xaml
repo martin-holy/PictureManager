@@ -234,6 +234,7 @@
 
   <DataTemplate x:Key="MH.DT.TreeView-PathToRootBar" DataType="{x:Type uiInt:ITreeView}">
     <ItemsControl
+      x:Name="ic"
       ItemsSource="{Binding TopTreeItemPath}"
       BorderThickness="0"
       HorizontalAlignment="Left">
@@ -241,7 +242,7 @@
       <ItemsControl.ItemTemplate>
         <DataTemplate DataType="{x:Type uInt:IListItem}">
           <Button
-            Command="{Binding Path=TreeView.ScrollToItemCommand, RelativeSource={RelativeSource AncestorType=c:TreeViewBase}}"
+            Command="{Binding Path=DataContext.(uiInt:ITreeView.ScrollToItemCommand), ElementName=ic}"
             CommandParameter="{Binding}"
             ap:Text.Text="{Binding Name}"
             ap:Icon.Data="{Binding Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
