@@ -49,7 +49,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
     <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
-    <ProjectReference Include="..\..\libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj" />
+    <ProjectReference Include="..\..\..\MH.UI.WPF\src\MH.UI.WPF\MH.UI.WPF.csproj" />
     <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
   </ItemGroup>
 

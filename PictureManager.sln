@@ -8,8 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.UI.WPF", "libs\MH\Windows\WPF\MH.UI.WPF\MH.UI.WPF.csproj", "{0F822793-8F26-4A1C-822D-2DF480FFB10F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{E72BD25C-CE27-4839-9FB4-9E073F75A6F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Common", "plugins\MovieManager\src\MovieManager.Common\MovieManager.Common.csproj", "{C57C05D4-3CA5-42DE-AA13-BCDC3A15FB36}"
@@ -26,11 +24,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.IMDbCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.FDbCz", "plugins\MovieManager\plugins\src\MovieManager.Plugins.FDbCz\MovieManager.Plugins.FDbCz.csproj", "{3BD81866-D369-4CC6-BA47-42B214643AD6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.UI.WPF.Sample", "libs\MH\Windows\WPF\MH.UI.WPF.Sample\MH.UI.WPF.Sample.csproj", "{57B14E4A-5367-468F-9BDD-AAC3D7956E63}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.Utils", "..\MH.Utils\src\MH.Utils\MH.Utils.csproj", "{F5C41C04-3568-44B5-A734-9804D6A1211A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.UI", "..\MH.UI\src\MH.UI\MH.UI.csproj", "{B1B2F375-5E46-4A7D-BDAE-C3D095DA130E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.UI.WPF", "..\MH.UI.WPF\src\MH.UI.WPF\MH.UI.WPF.csproj", "{23E39C08-1A89-45F9-B625-AC20EF06895C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.UI.WPF.Sample", "..\MH.UI.WPF\src\MH.UI.WPF.Sample\MH.UI.WPF.Sample.csproj", "{4E8EAD5C-391E-4E51-9F45-49226415358B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +38,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0F822793-8F26-4A1C-822D-2DF480FFB10F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F822793-8F26-4A1C-822D-2DF480FFB10F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F822793-8F26-4A1C-822D-2DF480FFB10F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F822793-8F26-4A1C-822D-2DF480FFB10F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C57C05D4-3CA5-42DE-AA13-BCDC3A15FB36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C57C05D4-3CA5-42DE-AA13-BCDC3A15FB36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C57C05D4-3CA5-42DE-AA13-BCDC3A15FB36}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,10 +66,6 @@ Global
 		{3BD81866-D369-4CC6-BA47-42B214643AD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BD81866-D369-4CC6-BA47-42B214643AD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BD81866-D369-4CC6-BA47-42B214643AD6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57B14E4A-5367-468F-9BDD-AAC3D7956E63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57B14E4A-5367-468F-9BDD-AAC3D7956E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57B14E4A-5367-468F-9BDD-AAC3D7956E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57B14E4A-5367-468F-9BDD-AAC3D7956E63}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5C41C04-3568-44B5-A734-9804D6A1211A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F5C41C04-3568-44B5-A734-9804D6A1211A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5C41C04-3568-44B5-A734-9804D6A1211A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -82,6 +74,14 @@ Global
 		{B1B2F375-5E46-4A7D-BDAE-C3D095DA130E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1B2F375-5E46-4A7D-BDAE-C3D095DA130E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1B2F375-5E46-4A7D-BDAE-C3D095DA130E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23E39C08-1A89-45F9-B625-AC20EF06895C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23E39C08-1A89-45F9-B625-AC20EF06895C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23E39C08-1A89-45F9-B625-AC20EF06895C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23E39C08-1A89-45F9-B625-AC20EF06895C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E8EAD5C-391E-4E51-9F45-49226415358B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E8EAD5C-391E-4E51-9F45-49226415358B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E8EAD5C-391E-4E51-9F45-49226415358B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E8EAD5C-391E-4E51-9F45-49226415358B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
