@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libs\MH\Common\MH.UI\MH.UI.csproj">
+    <ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" >
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj">
