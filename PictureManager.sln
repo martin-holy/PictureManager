@@ -10,19 +10,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{E72BD25C-CE27-4839-9FB4-9E073F75A6F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Common", "plugins\MovieManager\src\MovieManager.Common\MovieManager.Common.csproj", "{C57C05D4-3CA5-42DE-AA13-BCDC3A15FB36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Common", "..\MovieManager\src\MovieManager.Common\MovieManager.Common.csproj", "{C57C05D4-3CA5-42DE-AA13-BCDC3A15FB36}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Windows.WPF", "plugins\MovieManager\src\MovieManager.Windows.WPF\MovieManager.Windows.WPF.csproj", "{DED6E1C3-238F-4B9E-BB10-3DD80519B4E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Windows.WPF", "..\MovieManager\src\MovieManager.Windows.WPF\MovieManager.Windows.WPF.csproj", "{DED6E1C3-238F-4B9E-BB10-3DD80519B4E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Common", "src\PictureManager.Common\PictureManager.Common.csproj", "{B55BDA55-4B8C-4660-AA3E-5C5A846873BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Windows.WPF", "src\PictureManager.Windows.WPF\PictureManager.Windows.WPF.csproj", "{B8FC45F5-F582-4B0F-BF72-0166841061D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.Common", "plugins\MovieManager\plugins\src\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj", "{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.Common", "..\MovieManager\plugins\src\MovieManager.Plugins.Common\MovieManager.Plugins.Common.csproj", "{E9CFB1C4-8155-4D4F-AFF6-9309290A74FC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.IMDbCom", "plugins\MovieManager\plugins\src\MovieManager.Plugins.IMDbCom\MovieManager.Plugins.IMDbCom.csproj", "{962A7AA4-9675-4B5D-8288-A0363CD49F85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.IMDbCom", "..\MovieManager\plugins\src\MovieManager.Plugins.IMDbCom\MovieManager.Plugins.IMDbCom.csproj", "{962A7AA4-9675-4B5D-8288-A0363CD49F85}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.FDbCz", "plugins\MovieManager\plugins\src\MovieManager.Plugins.FDbCz\MovieManager.Plugins.FDbCz.csproj", "{3BD81866-D369-4CC6-BA47-42B214643AD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieManager.Plugins.FDbCz", "..\MovieManager\plugins\src\MovieManager.Plugins.FDbCz\MovieManager.Plugins.FDbCz.csproj", "{3BD81866-D369-4CC6-BA47-42B214643AD6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.Utils", "..\MH.Utils\src\MH.Utils\MH.Utils.csproj", "{F5C41C04-3568-44B5-A734-9804D6A1211A}"
 EndProject
