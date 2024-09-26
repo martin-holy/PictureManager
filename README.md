@@ -104,3 +104,15 @@ Selected segments can be set as the same person with the `=` button on the selec
 All segments linked to one named person can be viewed by clicking on `i` button on the segment.
 
 All source images with segments linked to the same person as is the person on the segment can be viewed by `double-click` on the segment.
+
+## Cloning PictureManager with Dependencies
+
+To clone and set up PictureManager with its dependencies (MH.Utils, MH.UI, MH.UI.WPF, MovieManager), follow these steps:
+
+```bash
+git clone https://github.com/martin-holy/MH.Utils.git
+git clone https://github.com/martin-holy/MH.UI.git
+git clone https://github.com/martin-holy/MH.UI.WPF.git
+git clone https://github.com/martin-holy/PictureManager.git
+git clone https://github.com/martin-holy/MovieManager.git
+```
