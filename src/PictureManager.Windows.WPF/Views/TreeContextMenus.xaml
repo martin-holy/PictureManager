@@ -38,6 +38,7 @@
         <MenuItem Command="layout:ToolsTabsVM.OpenPersonTabCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="mhuibc:TreeCategory.ItemMoveToGroupCommand" CommandParameter="{Binding}"/>
         <Separator/>
         <MenuItem Command="ftMediaItem:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="ftSegment:SegmentVM.LoadByPersonCommand" CommandParameter="{Binding}"/>
