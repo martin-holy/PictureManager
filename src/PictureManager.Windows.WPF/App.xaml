@@ -66,6 +66,7 @@
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/InputDialog.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/MessageDialog.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/ProgressDialog.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/SelectFromListDialog.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Dialogs/ToggleDialog.xaml"/>
 
         <!-- Picture Manager -->
