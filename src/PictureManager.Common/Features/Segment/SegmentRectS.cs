@@ -32,7 +32,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     get => _areVisible;
     set {
       _areVisible = value;
-      if (value) ReloadMediaItemSegmentRects();
+      if (value) _reloadMediaItemSegmentRects();
       OnPropertyChanged();
     }
   }
@@ -41,7 +41,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     get => _mediaItem;
     set {
       _mediaItem = value;
-      if (AreVisible) ReloadMediaItemSegmentRects();
+      if (AreVisible) _reloadMediaItemSegmentRects();
     }
   }
 
@@ -64,13 +64,13 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   public void SetCurrent(SegmentRectM current, double x, double y) {
     if (MediaItem == null) return;
     MousePosToRawImage(ref x, ref y, _scale, MediaItem);
-    _editMode = GetEditMode(x, y, current.Segment);
+    _editMode = _getEditMode(x, y, current.Segment);
     if (_editMode == SegmentEditMode.None) return;
     Current = current;
     segmentS.Select(null, current.Segment, false, false);
   }
 
-  private SegmentEditMode GetEditMode(double x, double y, SegmentM segment) {
+  private SegmentEditMode _getEditMode(double x, double y, SegmentM segment) {
     var xDiff = Math.Abs(segment.X + segment.Size / 2 - x);
     var yDiff = Math.Abs(segment.Y + segment.Size / 2 - y);
     var limit = _editLimit / _scale;
@@ -78,53 +78,41 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     if (xDiff < limit && yDiff < limit && segment.Size > 20)
       return SegmentEditMode.Move;
 
-    if (!IsCloseToEdge(limit, x, y, segment))
+    if (!_isCloseToEdge(limit, x, y, segment))
       return SegmentEditMode.None;
 
     return Math.Abs(xDiff - yDiff) < limit
       ? SegmentEditMode.ResizeCorner
-      : GetResizeEdgeEditMode(x, y, segment);
+      : _determineEdgeForExistingSegment(x, y, segment);
   }
 
-  private static bool IsCloseToEdge(double limit, double x, double y, SegmentM segment) =>
+  private static bool _isCloseToEdge(double limit, double x, double y, SegmentM segment) =>
     Math.Abs(x - segment.X) < limit
     || Math.Abs(y - segment.Y) < limit
     || Math.Abs(x - segment.X - segment.Size) < limit
     || Math.Abs(y - segment.Y - segment.Size) < limit;
 
-  private SegmentEditMode GetResizeEdgeEditMode(double x, double y, SegmentM segment) {
-    var edge = SegmentEditMode.None;
+  private SegmentEditMode _determineEdgeForNewSegment(double x, double y) {
+    if (Current!.Size > 50) _isNew = false;
 
-    if (_isNew) {
-      edge = Math.Abs(_startX - x) > Math.Abs(_startY - y)
-        ? _startX > x
-          ? SegmentEditMode.ResizeLeftEdge
-          : SegmentEditMode.ResizeRightEdge
-        : _startY > y
-          ? SegmentEditMode.ResizeTopEdge
-          : SegmentEditMode.ResizeBottomEdge;
+    return Math.Abs(_startX - x) > Math.Abs(_startY - y)
+      ? _startX > x
+        ? SegmentEditMode.ResizeLeftEdge
+        : SegmentEditMode.ResizeRightEdge
+      : _startY > y
+        ? SegmentEditMode.ResizeTopEdge
+        : SegmentEditMode.ResizeBottomEdge;
+  }
 
-      if (Current!.Size > 50)
-        _isNew = false;
-    }
-    else {
-      var lDiff = Math.Abs(x - segment.X);
-      var rDiff = Math.Abs(x - segment.X - segment.Size);
-      var tDiff = Math.Abs(y - segment.Y);
-      var bDiff = Math.Abs(y - segment.Y - segment.Size);
-      var minDiff = new[] { lDiff, rDiff, tDiff, bDiff }.Min();
+  private static SegmentEditMode _determineEdgeForExistingSegment(double x, double y, SegmentM segment) {
+    var diffs = new Dictionary<SegmentEditMode, double> {
+      { SegmentEditMode.ResizeLeftEdge, Math.Abs(x - segment.X) },
+      { SegmentEditMode.ResizeRightEdge, Math.Abs(x - segment.X - segment.Size) },
+      { SegmentEditMode.ResizeTopEdge, Math.Abs(y - segment.Y) },
+      { SegmentEditMode.ResizeBottomEdge, Math.Abs(y - segment.Y - segment.Size) }
+    };
 
-      if (lDiff == minDiff)
-        edge = SegmentEditMode.ResizeLeftEdge;
-      else if (bDiff == minDiff)
-        edge = SegmentEditMode.ResizeBottomEdge;
-      else if (tDiff == minDiff)
-        edge = SegmentEditMode.ResizeTopEdge;
-      else if (rDiff == minDiff)
-        edge = SegmentEditMode.ResizeRightEdge;
-    }
-
-    return edge;
+    return diffs.OrderBy(d => d.Value).First().Key;
   }
 
   public void Edit(double x, double y) {
@@ -135,7 +123,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
 
     _isCurrentModified = true;
     if (!IsEditOn) IsEditOn = true;
-    if (_isNew) _editMode = GetResizeEdgeEditMode(x, y, segment);
+    if (_isNew) _editMode = _determineEdgeForNewSegment(x, y);
 
     switch (_editMode) {
       case SegmentEditMode.Move:
@@ -239,7 +227,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     if (y > mediaItem.Height) y = mediaItem.Height;
   }
 
-  private void ReloadMediaItemSegmentRects() {
+  private void _reloadMediaItemSegmentRects() {
     Current = null;
     MediaItemSegmentsRects.Clear();
     if (MediaItem?.Segments == null) return;
