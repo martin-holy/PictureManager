@@ -17,6 +17,7 @@ Latest:
  - [N] Bar on top of TreeView with path to root
  - [N] Another way to move Person between groups in tree
  - [B] Update movies view after keyword toggle
+ - [N] Not seen check box in MovieFilter
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
