@@ -23,16 +23,10 @@ public sealed class ImageComparerVM : ObservableObject {
   private void Compare(MediaItemsViewVM? view, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
     if (view == null) return;
 
-    var items = view.LoadedItems.Where(x => view.Filter.Filter(x));
-    var similar = GetSimilar(items.ToArray(), Diff, hashes, hashMethod);
-
-    view.FilteredItems.Clear();
+    var items = view.LoadedItems.Where(x => view.Filter.Filter(x)).ToArray();
+    var similar = GetSimilar(items, Diff, hashes, hashMethod);
     view.Selected.DeselectAll();
-
-    if (similar.Count > 0)
-      view.FilteredItems.AddRange(similar.Cast<MediaItemM>());
-
-    view.SoftLoad(view.FilteredItems, false, false);
+    view.SoftLoad(similar.Cast<MediaItemM>(), false, false);
   }
 
   private static List<object> GetSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
