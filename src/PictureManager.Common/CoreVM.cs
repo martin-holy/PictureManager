@@ -393,9 +393,7 @@ public sealed class CoreVM : ObservableObject {
         if (mim.Success)
           mim.FindRefs().ContinueWith(delegate {
             mi.SetThumbSize();
-            if (MediaItem.Views.Current == null) return;
-            MediaItem.Views.Current.LoadedItems.Add(mi);
-            MediaItem.Views.Current.SoftLoad(MediaItem.Views.Current.LoadedItems, true, true);
+            MediaItem.Views.Current?.Add(mi);
           }, Tasks.UiTaskScheduler);
       })
     );

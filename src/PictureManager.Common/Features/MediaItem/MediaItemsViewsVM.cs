@@ -127,7 +127,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var and = Keyboard.IsCtrlOn() && Current != null;
     var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn()).OfType<RealMediaItemM>().Cast<MediaItemM>();
 
-    if (and) items = Current!.LoadedItems.Union(items);
+    if (and) items = Current!.GetUnfilteredItems().Union(items);
 
     var tabTitle = and
       ? null

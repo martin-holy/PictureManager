@@ -36,8 +36,9 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
   public MediaItemsViewVM(double thumbScale) : base(thumbScale) {
     CanDragFunc = _canDrag;
+    SetFilter(Filter);
     SelectAllCommand = new(() => Selected.Set(Root.Source));
-    Filter.FilterChangedEventHandler += delegate { SoftLoad(LoadedItems, true, true); };
+    Filter.FilterChangedEvent += delegate { SoftLoad(LoadedItems, true, true); };
     Selected.ItemsChangedEvent += delegate { _selectionChanged(); };
     Selected.AllDeselectedEvent += delegate { _selectionChanged(); };
     PropertyChanged += _onPropertyChanged;
@@ -224,30 +225,40 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   public async Task LoadByTag(MediaItemM[] items, CancellationToken token) {
     IsLoading = true;
     Clear();
-    HashSet<Folder.FolderM> foldersSet;
 
-    try {
-      foldersSet = await Task.Run(() => items
-        .Select(x => x.Folder)
-        .Distinct()
-        .Where(x => Core.S.Viewer.CanViewerSeeContentOf(x))
-        .ToHashSet(), token);
-    }
-    catch (OperationCanceledException) {
+    items = await _filterByViewer(items, token);
+    if (items.Length == 0) {
       IsLoading = false;
       return;
     }
 
-    var skip = items
-      .Where(x => !foldersSet.Contains(x.Folder));
-
-    var toLoad = _addMediaItems(GetSorted(items.Except(skip)).ToList());
+    var toLoad = _addMediaItems(GetSorted(items).ToList());
     Reload(toLoad, GroupMode.ThenByRecursive, null, true);
     _afterLoad();
     IsLoading = false;
 
     if (Core.VM.MediaViewer.IsVisible && Root.Source.Count > 0)
       OpenItem(Root.Source[0]);
+  }
+
+  private async Task<MediaItemM[]> _filterByViewer(MediaItemM[] items, CancellationToken token) {
+    HashSet<Folder.FolderM> foldersSet;
+
+    try {
+      foldersSet = await Task.Run(() => items
+        .Select(x => x.Folder)
+        .Distinct()
+        .Where(Core.S.Viewer.CanViewerSeeContentOf)
+        .ToHashSet(), token);
+    }
+    catch (OperationCanceledException) {
+      IsLoading = false;
+      return [];
+    }
+
+    var skip = items.Where(x => !foldersSet.Contains(x.Folder));
+
+    return items.Except(skip).ToArray();
   }
 
   private void _afterLoad() {
@@ -264,5 +275,11 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       if (Selected.Items.Count != 0)
         ScrollTo(Root, Selected.Items[0]);
     }
+  }
+
+  public void Add(MediaItemM mi) {
+    Insert(mi);
+    OnPropertyChanged(nameof(PositionSlashCount));
+    FilteredChangedEventHandler(this, EventArgs.Empty);
   }
 }

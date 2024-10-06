@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.Interfaces;
+using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Rating;
@@ -10,7 +11,7 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.MediaItem;
 
-public sealed class MediaItemsFilterVM : ObservableObject {
+public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter<MediaItemM> {
   private bool _showImages = true;
   private bool _showVideos = true;
 
@@ -24,7 +25,7 @@ public sealed class MediaItemsFilterVM : ObservableObject {
   public SelectionRange Width { get; } = new();
   public SelectionRange Size { get; } = new();
 
-  public event EventHandler FilterChangedEventHandler = delegate { };
+  public event EventHandler FilterChangedEvent = delegate { };
 
   public RelayCommand ClearCommand { get; }
 
@@ -36,7 +37,7 @@ public sealed class MediaItemsFilterVM : ObservableObject {
   }
 
   private void OnFilterChanged() {
-    FilterChangedEventHandler(this, EventArgs.Empty);
+    FilterChangedEvent(this, EventArgs.Empty);
   }
 
   private void Clear() {
