@@ -113,7 +113,7 @@
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconCalendar"
           ap:Text.Text="{Binding DateAndTime}"
-          Visibility="{Binding DateAndTime, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
+          Visibility="{Binding DateAndTime, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
 
         <!-- People -->
         <c:IconTextBlockItemsControl
