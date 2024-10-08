@@ -138,7 +138,7 @@
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconNotification"
           ap:Text.Text="{Binding Core.VM.MediaItem.Current.Comment}"
-          Visibility="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static conv:VisibilityConverter.AllToVisible}}"/>
+          Visibility="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
       </WrapPanel>
     </Grid>
 
