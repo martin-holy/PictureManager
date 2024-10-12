@@ -159,12 +159,10 @@
   - OneToManyMultiDataAdapter do it without reference to CoreR
   - don't do CreateDirectory in FolderR.ItemCreate. it can throw exception
   - <ColumnDefinition MinWidth="{DynamicResource ScrollBar.Width}" Width="0"/> can I use this trick somewhere else?
-  - remove VisibilityConverter.AllToVisible
   - IHaveName is applied only to GenreM but the DataTemplate is used for KeywordM as well
   - unused method LinkFolderWithFolderKeyword
   - maybe move all CORE properties that needs to be set from WPF to one class, use ICoreP
   - use private fileds in classes when possible
-  - VideoItemM primary constructor
   - TreeMarginConverter: not nullable return
   - refactor CollectionView._reGroupItems
 ## SimpleDB
