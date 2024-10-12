@@ -5,9 +5,16 @@ using PictureManager.Common.Features.Folder;
 
 namespace PictureManager.Common.Features.MediaItem.Video;
 
-public class VideoItemM(int id, VideoM video, int timeStart) : MediaItemM(id), IVideoItem {
-  public VideoM Video { get; set; } = video;
-  public int TimeStart { get => timeStart; set { timeStart = value; OnPropertyChanged(); } }
+public class VideoItemM : MediaItemM, IVideoItem {
+  private int _timeStart;
+
+  public VideoM Video { get; set; }
+  public int TimeStart { get => _timeStart; set { _timeStart = value; OnPropertyChanged(); } }
+
+  public VideoItemM(int id, VideoM video, int timeStart) : base(id) {
+    _timeStart = timeStart;
+    Video = video;
+  }
 
   public override FolderM Folder { get => Video.Folder; set => Video.Folder = value; }
   public override string FileName { get => Video.FileName; set => Video.FileName = value; }
