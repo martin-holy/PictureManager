@@ -149,9 +149,10 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
     var folders = Core.S.Folder.GetFolders(item, recursive);
     var newItems = new List<MediaItemMetadata>();
-    var toLoad = new List<MediaItemM>();
+    var toProcess = new List<MediaItemM>();
 
     foreach (var folder in folders) {
+      // TODO do this check in Core.S.Folder.GetFolders
       if (!Directory.Exists(folder.FullPath)
           || !Core.S.Viewer.CanViewerSeeContentOf(folder)) continue;
 
@@ -169,14 +170,33 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       // remove MediaItems deleted outside of this application
       Core.R.MediaItem.ItemsDelete(mediaItems.Values.Cast<MediaItemM>().ToArray());
 
-      toLoad.AddRange(folder.MediaItems);
+      toProcess.AddRange(folder.MediaItems);
     }
 
     return Import.Import(newItems).ContinueWith(delegate {
       var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
-      var items = _addMediaItems(GetSorted(toLoad.Except(notImported)).ToList(), and, hide);
-      Reload(items, GroupMode.ThenByRecursive, null, true);
-      if (newItems.Count > 0) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
+      toProcess = toProcess.Except(notImported).ToList();
+
+      if (hide) {
+        // TODO deselect items and update filter
+        Remove(toProcess.ToArray());
+      }
+      else if (and) {
+        // TODO deselect items and update filter
+        // TODO skip what viewer can't see
+        // TODO SetThumbSize and SetInfoBox
+        Insert(toProcess.ToArray());
+      }
+      else {
+        // TODO deselect items and update filter
+        // TODO skip what viewer can't see
+        // TODO SetThumbSize and SetInfoBox
+        Reload(GetSorted(toProcess).ToList(), GroupMode.ThenByRecursive, null, true);
+
+        // TODO is this necessary?
+        if (newItems.Count > 0) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
+      }
+      
       _afterLoad();
       IsLoading = false;
     }, Tasks.UiTaskScheduler);
@@ -200,6 +220,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       LoadedItems.Add(mi);
     }
 
+    // TODO use GetUnfilteredItems
     Filter.UpdateSizeRanges(LoadedItems);
 
     return hide
