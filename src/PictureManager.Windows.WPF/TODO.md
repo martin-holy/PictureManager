@@ -163,7 +163,6 @@
   - unused method LinkFolderWithFolderKeyword
   - maybe move all CORE properties that needs to be set from WPF to one class, use ICoreP
   - use private fileds in classes when possible
-  - TreeMarginConverter: not nullable return
   - refactor CollectionView._reGroupItems
 ## SimpleDB
   - better CSV mapping, maybe Dictionary<propName, csvIndex>
