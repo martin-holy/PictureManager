@@ -151,7 +151,6 @@
   - incremental search
 ## PersonDetail
   - Comment
-  - Rename person
 
                                     *** Code ***
 ##
