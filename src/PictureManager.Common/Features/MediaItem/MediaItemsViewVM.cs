@@ -177,25 +177,33 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
       toProcess = toProcess.Except(notImported).ToList();
 
+      Selected.DeselectAll();
+      foreach (var mi in toProcess.Where(mi => mi.IsSelected))
+        mi.IsSelected = false;
+
       if (hide) {
-        // TODO deselect items and update filter
         Remove(toProcess.ToArray());
       }
-      else if (and) {
-        // TODO deselect items and update filter
-        // TODO skip what viewer can't see
-        // TODO SetThumbSize and SetInfoBox
-        Insert(toProcess.ToArray());
-      }
       else {
-        // TODO deselect items and update filter
-        // TODO skip what viewer can't see
-        // TODO SetThumbSize and SetInfoBox
-        Reload(GetSorted(toProcess).ToList(), GroupMode.ThenByRecursive, null, true);
+        toProcess = toProcess.Where(Core.S.Viewer.CanViewerSee).ToList();
 
-        // TODO is this necessary?
-        if (newItems.Count > 0) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
+        foreach (var mi in toProcess) {
+          mi.SetThumbSize();
+          mi.SetInfoBox();
+        }
+
+        if (and) {
+          Insert(toProcess.ToArray());
+        }
+        else {
+          Reload(GetSorted(toProcess).ToList(), GroupMode.ThenByRecursive, null, true);
+
+          // TODO is this necessary?
+          if (newItems.Count > 0) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
+        }
       }
+
+      Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
       
       _afterLoad();
       IsLoading = false;
