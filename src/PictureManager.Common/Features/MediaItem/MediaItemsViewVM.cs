@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem;
 
+//TODO test ScrollTo mi when scrolled out of view in viewer
+
 public class MediaItemsViewVM : MediaItemCollectionView {
   private bool _isLoading;
   private bool _showThumbInfo = true;
@@ -38,10 +40,10 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     CanDragFunc = _canDrag;
     SetFilter(Filter);
     SelectAllCommand = new(() => Selected.Set(Root.Source));
-    Filter.FilterChangedEvent += delegate { SoftLoad(LoadedItems, true, true); };
     Selected.ItemsChangedEvent += delegate { _selectionChanged(); };
     Selected.AllDeselectedEvent += delegate { _selectionChanged(); };
     PropertyChanged += _onPropertyChanged;
+    FilterAppliedEvent += _onFilterApplied;
   }
 
   private void _onPropertyChanged(object? sender, PropertyChangedEventArgs e) {
@@ -304,6 +306,13 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       if (Selected.Items.Count != 0)
         ScrollTo(Root, Selected.Items[0]);
     }
+  }
+
+  private void _onFilterApplied(object? sender, EventArgs e) {
+    foreach (var mi in Selected.Items.Where(x => !Root.Source.Contains(x)).ToArray())
+      Selected.Set(mi, false);
+
+    OnPropertyChanged(nameof(PositionSlashCount));
   }
 
   public void Add(MediaItemM mi) {
