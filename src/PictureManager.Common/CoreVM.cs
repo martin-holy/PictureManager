@@ -273,7 +273,7 @@ public sealed class CoreVM : ObservableObject {
 
   private void _onMediaItemRenamed(object? sender, MediaItemM item) {
     MediaItem.OnPropertyChanged(nameof(MediaItem.Current));
-    MediaItem.Views.Current?.SoftLoad(MediaItem.Views.Current.Root.Source, true, false);
+    MediaItem.Views.Current?.OnMediaItemRenamed(item);
   }
 
   private void _onMediaItemsMetadataChanged(object? sender, MediaItemM[] items) {

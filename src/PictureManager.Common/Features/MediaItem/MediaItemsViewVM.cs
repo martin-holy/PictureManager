@@ -206,36 +206,8 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       }
 
       Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
-      
-      _afterLoad();
       IsLoading = false;
     }, Tasks.UiTaskScheduler);
-  }
-
-  private List<MediaItemM> _addMediaItems(List<MediaItemM> items, bool and = false, bool hide = false) {
-    Selected.DeselectAll();
-    foreach (var mi in items) {
-      if (mi.IsSelected) mi.IsSelected = false;
-
-      if (hide) {
-        LoadedItems.Remove(mi);
-        continue;
-      }
-
-      if (and && LoadedItems.Contains(mi)) continue;
-      if (!Core.S.Viewer.CanViewerSee(mi)) continue;
-
-      mi.SetThumbSize();
-      mi.SetInfoBox();
-      LoadedItems.Add(mi);
-    }
-
-    // TODO use GetUnfilteredItems
-    Filter.UpdateSizeRanges(LoadedItems);
-
-    return hide
-      ? Root.Source.Except(items).ToList()
-      : LoadedItems.Where(Filter.Filter).ToList();
   }
 
   public void SoftLoad(IEnumerable<MediaItemM> items, bool sort, bool filter) {
@@ -263,9 +235,18 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       return;
     }
 
-    var toLoad = _addMediaItems(GetSorted(items).ToList());
+    Selected.DeselectAll();
+
+    var toLoad = GetSorted(items).ToList();
+
+    foreach (var mi in toLoad) {
+      if (mi.IsSelected) mi.IsSelected = false;
+      mi.SetThumbSize();
+      mi.SetInfoBox();
+    }
+
     Reload(toLoad, GroupMode.ThenByRecursive, null, true);
-    _afterLoad();
+    Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
     IsLoading = false;
 
     if (Core.VM.MediaViewer.IsVisible && Root.Source.Count > 0)
@@ -287,7 +268,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       return [];
     }
 
-    var skip = items.Where(x => !foldersSet.Contains(x.Folder));
+    var skip = items.Where(x => !foldersSet.Contains(x.Folder) && Core.S.Viewer.CanViewerSee(x));
 
     return items.Except(skip).ToArray();
   }
@@ -319,5 +300,11 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     Insert(mi);
     OnPropertyChanged(nameof(PositionSlashCount));
     FilteredChangedEventHandler(this, EventArgs.Empty);
+  }
+
+  public void OnMediaItemRenamed(MediaItemM item) {
+    Remove(item);
+    Insert(item);
+    OnPropertyChanged(nameof(PositionSlashCount));
   }
 }
