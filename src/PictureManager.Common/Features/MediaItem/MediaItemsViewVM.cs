@@ -76,6 +76,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     return data.Length == 0 ? null : data;
   }
 
+  // TODO use DeselectAll
   public void Clear() {
     foreach (var item in Selected.Items)
       item.IsSelected = false;
@@ -225,9 +226,8 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     _afterLoad();
   }
 
-  public async Task LoadByTag(MediaItemM[] items, CancellationToken token) {
+  public async Task LoadByTag(MediaItemM[] items, bool add, CancellationToken token) {
     IsLoading = true;
-    Clear();
 
     items = await _filterByViewer(items, token);
     if (items.Length == 0) {
@@ -236,16 +236,19 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     }
 
     Selected.DeselectAll();
+    foreach (var mi in items.Where(mi => mi.IsSelected))
+      mi.IsSelected = false;
 
-    var toLoad = GetSorted(items).ToList();
-
-    foreach (var mi in toLoad) {
-      if (mi.IsSelected) mi.IsSelected = false;
+    foreach (var mi in items) {
       mi.SetThumbSize();
       mi.SetInfoBox();
     }
 
-    Reload(toLoad, GroupMode.ThenByRecursive, null, true);
+    if (add)
+      Insert(items);
+    else
+      Reload(GetSorted(items).ToList(), GroupMode.ThenByRecursive, null, true);
+
     Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
     IsLoading = false;
 

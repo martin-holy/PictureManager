@@ -127,7 +127,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var and = Keyboard.IsCtrlOn() && Current != null;
     var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn()).OfType<RealMediaItemM>().Cast<MediaItemM>();
 
-    if (and) items = Current!.GetUnfilteredItems().Union(items);
+    if (and) items = items.Except(Current!.GetUnfilteredItems());
 
     var tabTitle = and
       ? null
@@ -142,7 +142,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       };
 
     var view = and ? AddViewIfNotActive(null) : AddView(tabTitle!);
-    return view.LoadByTag(items.ToArray(), token);
+    return view.LoadByTag(items.ToArray(), and, token);
   }
 
   public void SelectAndScrollToCurrentMediaItem() {
@@ -165,8 +165,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private Task ViewModified(CancellationToken token) =>
-    AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray(), token);
+    AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray(), false, token);
 
   public Task ViewMediaItems(MediaItemM[] items, string name, CancellationToken token) =>
-    AddView(name).LoadByTag(items, token);
+    AddView(name).LoadByTag(items, false, token);
 }
