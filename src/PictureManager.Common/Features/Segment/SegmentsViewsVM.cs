@@ -32,7 +32,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
       () => Current?.Root.Source.Count > 0, Res.IconRandom, "Shuffle");
     SortCommand = new(
       () => Current!.Sort(),
-      () => Current?.Root.Source.Count > 0, Res.IconSort, "Sort");
+      () => Current?.Root.Source.Count > 0, MH.UI.Res.IconSort, "Sort");
 
     Tabs.PropertyChanged += _onTabsPropertyChanged;
     Tabs.TabClosedEvent += _onTabsTabClosed;

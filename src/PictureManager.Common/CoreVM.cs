@@ -58,7 +58,7 @@ public sealed class CoreVM : ObservableObject {
   public static RelayCommand AppClosingCommand { get; private set; } = null!;
   public static RelayCommand ExportSegmentsCommand { get; private set; } = null!;
   public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialog()), null, "About");
-  public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialog()), Res.IconSort, "Open log");
+  public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialog()), MH.UI.Res.IconSort, "Open log");
   public static RelayCommand OpenSegmentsViewsCommand { get; private set; } = null!;
   public static RelayCommand OpenSettingsCommand { get; private set; } = null!;
   public static RelayCommand SaveDbCommand { get; private set; } = null!;

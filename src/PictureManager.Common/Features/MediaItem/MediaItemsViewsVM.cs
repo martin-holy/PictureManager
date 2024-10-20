@@ -48,7 +48,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       () => Current?.FilteredItems.Count > 0, Res.IconRandom, "Shuffle");
     SortCommand = new(
       () => Current!.Sort(),
-      () => Current?.FilteredItems.Count > 0, Res.IconSort, "Sort");
+      () => Current?.FilteredItems.Count > 0, MH.UI.Res.IconSort, "Sort");
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.FilteredItems.Count > 0, null, "Rebuild Thumbnails");

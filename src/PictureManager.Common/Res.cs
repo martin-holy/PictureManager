@@ -54,7 +54,6 @@ public static class Res {
   public const string IconSave = "IconSave";
   public const string IconSegment = "IconSegment";
   public const string IconSettings = "IconSettings";
-  public const string IconSort = "IconSort";
   public const string IconStar = "IconStar";
   public const string IconTag = "IconTag";
   public const string IconTagLabel = "IconTagLabel";
