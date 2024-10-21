@@ -29,7 +29,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
     AddViewCommand = new(() => _addView(string.Empty), Res.IconPlus, "Add Segments View Tab");
     ShuffleCommand = new(
       () => Current!.Shuffle(),
-      () => Current?.Root.Source.Count > 0, Res.IconRandom, "Shuffle");
+      () => Current?.Root.Source.Count > 0, MH.UI.Res.IconRandom, "Shuffle");
     SortCommand = new(
       () => Current!.Sort(),
       () => Current?.Root.Source.Count > 0, MH.UI.Res.IconSort, "Sort");

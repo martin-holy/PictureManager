@@ -45,7 +45,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     LoadByTagCommand = new(LoadByTag, null, "Load");
     ShuffleCommand = new(
       () => Current!.Shuffle(),
-      () => Current?.FilteredItems.Count > 0, Res.IconRandom, "Shuffle");
+      () => Current?.FilteredItems.Count > 0, MH.UI.Res.IconRandom, "Shuffle");
     SortCommand = new(
       () => Current!.Sort(),
       () => Current?.FilteredItems.Count > 0, MH.UI.Res.IconSort, "Sort");
