@@ -28,8 +28,6 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public static RelayCommand AddViewCommand { get; set; } = null!;
   public static RelayCommand CopyPathsCommand { get; set; } = null!;
   public static AsyncRelayCommand<object> LoadByTagCommand { get; set; } = null!;
-  public static RelayCommand ShuffleCommand { get; set; } = null!;
-  public static RelayCommand SortCommand { get; set; } = null!;
   public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; } = null!;
   public static AsyncRelayCommand ViewModifiedCommand { get; set; } = null!;
 
@@ -43,12 +41,6 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       () => Clipboard.SetText(string.Join("\n", Current!.Selected.Items.Select(x => x.FilePath))),
       () => Current?.Selected.Items.Any() == true, null, "Copy Paths");
     LoadByTagCommand = new(LoadByTag, null, "Load");
-    ShuffleCommand = new(
-      () => Current!.Shuffle(),
-      () => Current?.Root.Source.Count > 0, MH.UI.Res.IconRandom, "Shuffle");
-    SortCommand = new(
-      () => Current!.Sort(),
-      () => Current?.Root.Source.Count > 0, MH.UI.Res.IconSort, "Sort");
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.Root.Source.Count > 0, null, "Rebuild Thumbnails");

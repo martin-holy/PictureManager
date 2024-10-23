@@ -119,14 +119,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   public List<MediaItemM> GetSelectedOrAll() =>
     Selected.Items.Count == 0 ? Root.Source : Selected.Items.ToList();
 
-  public void Shuffle() {
-    LoadedItems.Shuffle();
-    SoftLoad(LoadedItems, false, true);
-  }
-
-  public void Sort() =>
-    SoftLoad(LoadedItems, true, true);
-
   public static IEnumerable<MediaItemM> GetSorted(IEnumerable<MediaItemM> items) =>
     items.OrderBy(x => x.FileName);
 

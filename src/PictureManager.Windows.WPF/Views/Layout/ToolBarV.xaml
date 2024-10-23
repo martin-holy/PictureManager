@@ -242,12 +242,6 @@
         ap:Icon.Data="{StaticResource IconInformation}"
         IsChecked="{Binding MediaItemViews.Current.ShowThumbInfo}"/>
 
-      <!-- Shuffle -->
-      <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.ShuffleCommand"/>
-
-      <!-- Sort -->
-      <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.SortCommand"/>
-
       <!-- View Selected -->
       <c:IconButton Command="ftMediaItem:MediaItemVM.ViewSelectedCommand"/>
 
