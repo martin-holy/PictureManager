@@ -40,8 +40,6 @@
           <MenuItem Command="core:CoreVM.RotateMediaItemsCommand" InputGestureText="Ctrl+R"/>
           <MenuItem Command="core:CoreVM.SaveImageMetadataToFilesCommand"/>
           <MenuItem Command="ftMediaItem:MediaItemsViewsVM.ViewModifiedCommand"/>
-          <MenuItem Command="ftMediaItem:MediaItemsViewsVM.ShuffleCommand"/>
-          <MenuItem Command="ftMediaItem:MediaItemsViewsVM.SortCommand"/>
         </MenuItem>
 
         <MenuItem Header="Segments">
