@@ -21,6 +21,7 @@ Latest:
  - [U] Filtering Movies with keeping grouping
  - [N] Sort items on each CollectionViewGroup
  - [N] Shuffle items on each CollectionViewGroup
+ - [U] Sort and Shuffle commands from MainMenu and ToolBar removed
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
