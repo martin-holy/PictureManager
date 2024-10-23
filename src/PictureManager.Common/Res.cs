@@ -46,7 +46,6 @@ public static class Res {
   public const string IconPeople = "IconPeople";
   public const string IconPeopleMultiple = "IconPeopleMultiple";
   public const string IconPlus = "IconPlus";
-  public const string IconRandom = "IconRandom";
   public const string IconRotateClockwise = "IconRotateClockwise";
   public const string IconRotateLeft = "IconRotateLeft";
   public const string IconRotateRight = "IconRotateRight";
@@ -54,7 +53,6 @@ public static class Res {
   public const string IconSave = "IconSave";
   public const string IconSegment = "IconSegment";
   public const string IconSettings = "IconSettings";
-  public const string IconSort = "IconSort";
   public const string IconStar = "IconStar";
   public const string IconTag = "IconTag";
   public const string IconTagLabel = "IconTagLabel";

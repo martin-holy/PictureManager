@@ -45,10 +45,10 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     LoadByTagCommand = new(LoadByTag, null, "Load");
     ShuffleCommand = new(
       () => Current!.Shuffle(),
-      () => Current?.Root.Source.Count > 0, Res.IconRandom, "Shuffle");
+      () => Current?.Root.Source.Count > 0, MH.UI.Res.IconRandom, "Shuffle");
     SortCommand = new(
       () => Current!.Sort(),
-      () => Current?.Root.Source.Count > 0, Res.IconSort, "Sort");
+      () => Current?.Root.Source.Count > 0, MH.UI.Res.IconSort, "Sort");
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.Root.Source.Count > 0, null, "Rebuild Thumbnails");

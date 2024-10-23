@@ -19,6 +19,8 @@ Latest:
  - [B] Update movies view after keyword toggle
  - [N] Not seen check box in MovieFilter
  - [U] Filtering Movies with keeping grouping
+ - [N] Sort items on each CollectionViewGroup
+ - [N] Shuffle items on each CollectionViewGroup
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
