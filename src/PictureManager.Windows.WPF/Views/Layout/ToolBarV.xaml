@@ -11,7 +11,6 @@
   xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
   xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
-  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
   xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common"
   xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
 
@@ -252,22 +251,18 @@
       <c:IconButton Command="ftMediaItem:MediaItemVM.ViewSelectedCommand"/>
 
       <!-- Image Comparer -->
-      <c:IconButton
-        Command="ftImage:ImageComparerVM.AverageHashCommand"
-        CommandParameter="{Binding MediaItemViews.Current}"/>
+      <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.CompareAverageHashCommand"/>
 
-      <c:IconButton
-        Command="ftImage:ImageComparerVM.PHashCommand"
-        CommandParameter="{Binding MediaItemViews.Current}"/>
+      <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.ComparePHashCommand"/>
 
       <c:PopupSlider
         Maximum="25"
-        Value="{Binding ImageComparer.Diff, Mode=TwoWay}">
+        Value="{Binding MediaItemViews.CurrentImageComparer.Diff, Mode=TwoWay}">
         <c:PopupSlider.Content>
           <c:IconTextButton
             ToolTip="Compare limit"
             ap:Icon.Data="{StaticResource IconCompare}"
-            ap:Text.Text="{Binding ImageComparer.Diff, StringFormat={}{0:G2}}"/>
+            ap:Text.Text="{Binding MediaItemViews.CurrentImageComparer.Diff, StringFormat={}{0:G2}}"/>
         </c:PopupSlider.Content>
       </c:PopupSlider>
     </StackPanel>
