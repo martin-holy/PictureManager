@@ -22,6 +22,7 @@ Latest:
  - [N] Sort items on each CollectionViewGroup
  - [N] Shuffle items on each CollectionViewGroup
  - [U] Sort and Shuffle commands from MainMenu and ToolBar removed
+ - [U] Image comparer for each view
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
