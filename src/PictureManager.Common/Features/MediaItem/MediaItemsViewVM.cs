@@ -13,8 +13,6 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.MediaItem;
 
-//TODO test ScrollTo mi when scrolled out of view in viewer
-
 public class MediaItemsViewVM : MediaItemCollectionView {
   private bool _isLoading;
   private bool _showThumbInfo = true;
@@ -22,7 +20,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   public event EventHandler SelectionChangedEventHandler = delegate { };
   public event EventHandler FilteredChangedEventHandler = delegate { };
 
-  public List<MediaItemM> LoadedItems { get; } = [];
   public MediaItemsFilterVM Filter { get; } = new();
   public MediaItemsImport Import { get; } = new();
   public DragDropHelper.CanDragFunc CanDragFunc { get; }
@@ -82,7 +79,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       item.IsSelected = false;
 
     Selected.Items.Clear();
-    LoadedItems.Clear();
   }
 
   private void _selectionChanged() {
@@ -104,8 +100,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
   public void Remove(IList<MediaItemM> items, bool isCurrent) {
     foreach (var item in items) {
-      LoadedItems.Remove(item);
-
       if (isCurrent)
         Selected.Set(item, false);
       else
@@ -203,21 +197,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     }, Tasks.UiTaskScheduler);
   }
 
-  public void SoftLoad(IEnumerable<MediaItemM> items, bool sort, bool filter) {
-    IEnumerable<MediaItemM> toLoad = items.ToArray();
-
-    toLoad = filter
-      ? toLoad.Where(Filter.Filter)
-      : toLoad;
-
-    toLoad = sort
-      ? GetSorted(toLoad)
-      : toLoad;
-
-    Reload(toLoad.ToList(), GroupMode.ThenByRecursive, null, true);
-    _afterLoad();
-  }
-
   public async Task LoadByTag(MediaItemM[] items, bool add, CancellationToken token) {
     IsLoading = true;
 
@@ -266,22 +245,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     var skip = items.Where(x => !foldersSet.Contains(x.Folder) && Core.S.Viewer.CanViewerSee(x));
 
     return items.Except(skip).ToArray();
-  }
-
-  private void _afterLoad() {
-    foreach (var mi in Selected.Items.Where(x => !Root.Source.Contains(x)).ToArray())
-      Selected.Set(mi, false);
-
-    OnPropertyChanged(nameof(PositionSlashCount));
-    FilteredChangedEventHandler(this, EventArgs.Empty);
-
-    if (Core.VM.MediaItem.Current is { } current && Root.Source.Contains(current))
-      ScrollTo(Root, current);
-    else {
-      Core.VM.MediaItem.Current = null;
-      if (Selected.Items.Count != 0)
-        ScrollTo(Root, Selected.Items[0]);
-    }
   }
 
   private void _onFilterApplied(object? sender, EventArgs e) {
