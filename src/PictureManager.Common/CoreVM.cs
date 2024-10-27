@@ -39,7 +39,6 @@ public sealed class CoreVM : ObservableObject {
   public VideoVM Video { get; }
   public ViewerVM Viewer { get; }
 
-  public ImageComparerVM ImageComparer { get; } = new();
   public MainTabsVM MainTabs { get; } = new();
   public MainWindowVM MainWindow { get; }
   public MediaViewerVM MediaViewer { get; } = new();
@@ -426,7 +425,7 @@ public sealed class CoreVM : ObservableObject {
     toolBars.Add(new SegmentToolBarVM(_coreS.Segment));
     toolBars.Add(new PersonToolBarVM());
     toolBars.Add(new SlideshowToolBarVM(MediaViewer.Slideshow));
-    toolBars.Add(new MediaItemToolBarVM(MediaItem.Views, MainWindow, ImageComparer));
+    toolBars.Add(new MediaItemToolBarVM(MediaItem.Views, MainWindow));
     toolBars.Add(new MediaViewerToolBarVM(MediaViewer));
   }
 
