@@ -25,11 +25,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   public DragDropHelper.CanDragFunc CanDragFunc { get; }
   public bool IsLoading { get => _isLoading; set { _isLoading = value; OnPropertyChanged(); } }
   public bool ShowThumbInfo { get => _showThumbInfo; set { _showThumbInfo = value; OnPropertyChanged(); } }
-  
-  public string PositionSlashCount =>
-    Selected.Items.Count == 0
-      ? Root.Source.Count.ToString()
-      : $"{Root.Source.IndexOf(Selected.Items[0]) + 1}/{Root.Source.Count}";
 
   public RelayCommand SelectAllCommand { get; }
 
@@ -85,7 +80,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     if (!ReferenceEquals(this, Core.VM.MediaItem.Views.Current) || Core.VM.MediaViewer.IsVisible) return;
 
     SelectionChangedEventHandler(this, EventArgs.Empty);
-    OnPropertyChanged(nameof(PositionSlashCount));
   }
 
   public void UpdateSelected() {
@@ -128,6 +122,11 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     Selected.Set(mi, true);
     var group = LastSelectedRow?.Parent as CollectionViewGroup<MediaItemM> ?? Root;
     ScrollTo(group, mi, Core.Settings.MediaItem.ScrollExactlyToMediaItem);
+    LastSelectedRow = LastSelectedRow?.Parent?.Items
+      .OfType<CollectionViewRow<MediaItemM>>()
+      .FirstOrDefault(x => x.Leaves.Contains(mi));
+    LastSelectedItem = mi;
+    OnPropertyChanged(nameof(PositionSlashCount));
     _selectionChanged();
   }
 
@@ -193,6 +192,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       }
 
       Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
+      _selectionChanged();
       IsLoading = false;
     }, Tasks.UiTaskScheduler);
   }
@@ -221,6 +221,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       Reload(GetSorted(items).ToList(), GroupMode.ThenByRecursive, null, true);
 
     Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
+    _selectionChanged();
     IsLoading = false;
 
     if (Core.VM.MediaViewer.IsVisible && Root.Source.Count > 0)
@@ -250,19 +251,15 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   private void _onFilterApplied(object? sender, EventArgs e) {
     foreach (var mi in Selected.Items.Where(x => !Root.Source.Contains(x)).ToArray())
       Selected.Set(mi, false);
-
-    OnPropertyChanged(nameof(PositionSlashCount));
   }
 
   public void Add(MediaItemM mi) {
     Insert(mi);
-    OnPropertyChanged(nameof(PositionSlashCount));
     FilteredChangedEventHandler(this, EventArgs.Empty);
   }
 
   public void OnMediaItemRenamed(MediaItemM item) {
     Remove(item);
     Insert(item);
-    OnPropertyChanged(nameof(PositionSlashCount));
   }
 }
