@@ -40,8 +40,6 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public static RelayCommand AddViewCommand { get; set; } = null!;
   public static RelayCommand CopyPathsCommand { get; set; } = null!;
   public static AsyncRelayCommand<object> LoadByTagCommand { get; set; } = null!;
-  public static RelayCommand ShuffleCommand { get; set; } = null!;
-  public static RelayCommand SortCommand { get; set; } = null!;
   public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; } = null!;
   public static AsyncRelayCommand ViewModifiedCommand { get; set; } = null!;
   public static RelayCommand CompareAverageHashCommand { get; set; } = null!;
@@ -57,15 +55,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       () => Clipboard.SetText(string.Join("\n", Current!.Selected.Items.Select(x => x.FilePath))),
       () => Current?.Selected.Items.Any() == true, null, "Copy Paths");
     LoadByTagCommand = new(LoadByTag, null, "Load");
-    ShuffleCommand = new(
-      () => Current!.Shuffle(),
-      () => Current?.FilteredItems.Count > 0, MH.UI.Res.IconRandom, "Shuffle");
-    SortCommand = new(
-      () => Current!.Sort(),
-      () => Current?.FilteredItems.Count > 0, MH.UI.Res.IconSort, "Sort");
     RebuildThumbnailsCommand = new(
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
-      x => x != null || Current?.FilteredItems.Count > 0, null, "Rebuild Thumbnails");
+      x => x != null || Current?.Root.Source.Count > 0, null, "Rebuild Thumbnails");
     ViewModifiedCommand = new(ViewModified, Res.IconImageMultiple, "Show modified");
     CompareAverageHashCommand = new(() => _compare(c => c.CompareAverageHash()), Res.IconCompare, "Compare images using average hash");
     ComparePHashCommand = new(() => _compare(c => c.ComparePHash()), Res.IconCompare, "Compare images using perceptual hash");
@@ -77,9 +69,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   public void CloseView(MediaItemsViewVM view) {
-    view.Clear();
-    view.SelectionChangedEventHandler -= OnViewSelectionChanged;
-    view.FilteredChangedEventHandler -= OnViewFilteredChanged;
+    view.Selected.DeselectAll();
+    view.SelectionChangedEvent -= OnViewSelectionChanged;
+    view.FilteredChangedEvent -= OnViewFilteredChanged;
     _all.Remove(view);
     _removeImageComparer(view);
     if (!ReferenceEquals(view, Current)) return;
@@ -106,8 +98,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var view = new MediaItemsViewVM(Core.Settings.MediaItem.MediaItemThumbScale);
     _all.Add(view);
     Current = view;
-    view.SelectionChangedEventHandler += OnViewSelectionChanged;
-    view.FilteredChangedEventHandler += OnViewFilteredChanged;
+    view.SelectionChangedEvent += OnViewSelectionChanged;
+    view.FilteredChangedEvent += OnViewFilteredChanged;
     Core.VM.MainTabs.Add(Res.IconImageMultiple, tabName, view);
     return view;
   }
@@ -145,7 +137,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var and = Keyboard.IsCtrlOn() && Current != null;
     var items = Core.R.MediaItem.GetItems(item, Keyboard.IsShiftOn()).OfType<RealMediaItemM>().Cast<MediaItemM>();
 
-    if (and) items = Current!.LoadedItems.Union(items);
+    if (and) items = items.Except(Current!.GetUnfilteredItems());
 
     var tabTitle = and
       ? null
@@ -161,7 +153,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
 
     var view = and ? AddViewIfNotActive(null) : AddView(tabTitle!);
     _removeImageComparer(view);
-    return view.LoadByTag(items.ToArray(), token);
+    return view.LoadByTag(items.ToArray(), and, token);
   }
 
   public void SelectAndScrollToCurrentMediaItem() {
@@ -184,10 +176,10 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private Task ViewModified(CancellationToken token) =>
-    AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray(), token);
+    AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray(), false, token);
 
   public Task ViewMediaItems(MediaItemM[] items, string name, CancellationToken token) =>
-    AddView(name).LoadByTag(items, token);
+    AddView(name).LoadByTag(items, false, token);
 
   private void _compare(Func<ImageComparerVM, List<MediaItemM>> method) {
     if (_current == null) return;

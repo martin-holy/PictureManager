@@ -272,7 +272,7 @@ public sealed class CoreVM : ObservableObject {
 
   private void _onMediaItemRenamed(object? sender, MediaItemM item) {
     MediaItem.OnPropertyChanged(nameof(MediaItem.Current));
-    MediaItem.Views.Current?.SoftLoad(MediaItem.Views.Current.FilteredItems, true, false);
+    MediaItem.Views.Current?.OnMediaItemRenamed(item);
   }
 
   private void _onMediaItemsMetadataChanged(object? sender, MediaItemM[] items) {
@@ -392,9 +392,7 @@ public sealed class CoreVM : ObservableObject {
         if (mim.Success)
           mim.FindRefs().ContinueWith(delegate {
             mi.SetThumbSize();
-            if (MediaItem.Views.Current == null) return;
-            MediaItem.Views.Current.LoadedItems.Add(mi);
-            MediaItem.Views.Current.SoftLoad(MediaItem.Views.Current.LoadedItems, true, true);
+            MediaItem.Views.Current?.Add(mi);
           }, Tasks.UiTaskScheduler);
       })
     );
