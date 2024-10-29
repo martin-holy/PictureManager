@@ -17,8 +17,8 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   private bool _isLoading;
   private bool _showThumbInfo = true;
   
-  public event EventHandler SelectionChangedEventHandler = delegate { };
-  public event EventHandler FilteredChangedEventHandler = delegate { };
+  public event EventHandler SelectionChangedEvent = delegate { };
+  public event EventHandler FilteredChangedEvent = delegate { };
 
   public MediaItemsFilterVM Filter { get; } = new();
   public MediaItemsImport Import { get; } = new();
@@ -68,18 +68,10 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     return data.Length == 0 ? null : data;
   }
 
-  // TODO use DeselectAll
-  public void Clear() {
-    foreach (var item in Selected.Items)
-      item.IsSelected = false;
-
-    Selected.Items.Clear();
-  }
-
   private void _selectionChanged() {
     if (!ReferenceEquals(this, Core.VM.MediaItem.Views.Current) || Core.VM.MediaViewer.IsVisible) return;
 
-    SelectionChangedEventHandler(this, EventArgs.Empty);
+    SelectionChangedEvent(this, EventArgs.Empty);
   }
 
   public void UpdateSelected() {
@@ -133,7 +125,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   public Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
     IsLoading = true;
     if (!and && !hide)
-      Clear();
+      Selected.DeselectAll();
 
     var folders = Core.S.Folder.GetFolders(item, recursive);
     var newItems = new List<MediaItemMetadata>();
@@ -163,44 +155,21 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
     return Import.Import(newItems).ContinueWith(delegate {
       var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
-      toProcess = toProcess.Except(notImported).ToList();
-
-      Selected.DeselectAll();
-      foreach (var mi in toProcess.Where(mi => mi.IsSelected))
-        mi.IsSelected = false;
-
-      if (hide) {
-        Remove(toProcess.ToArray());
-      }
-      else {
-        toProcess = toProcess.Where(Core.S.Viewer.CanViewerSee).ToList();
-
-        foreach (var mi in toProcess) {
-          mi.SetThumbSize();
-          mi.SetInfoBox();
-        }
-
-        if (and) {
-          Insert(toProcess.ToArray());
-        }
-        else {
-          Reload(GetSorted(toProcess).ToList(), GroupMode.ThenByRecursive, null, true);
-
-          // TODO is this necessary?
-          if (newItems.Count > 0) CollectionViewGroup<MediaItemM>.ReWrapAll(Root);
-        }
-      }
-
-      Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
-      _selectionChanged();
-      IsLoading = false;
+      var items = toProcess.Except(notImported).Where(Core.S.Viewer.CanViewerSee).ToArray();
+      _load(items, and, hide);
     }, Tasks.UiTaskScheduler);
   }
 
-  public async Task LoadByTag(MediaItemM[] items, bool add, CancellationToken token) {
+  public async Task LoadByTag(MediaItemM[] items, bool and, CancellationToken token) {
     IsLoading = true;
-
     items = await _filterByViewer(items, token);
+    _load(items, and, false);
+
+    if (Core.VM.MediaViewer.IsVisible && Root.Source.Count > 0)
+      OpenItem(Root.Source[0]);
+  }
+
+  private void _load(MediaItemM[] items, bool and, bool hide) {
     if (items.Length == 0) {
       IsLoading = false;
       return;
@@ -210,22 +179,24 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     foreach (var mi in items.Where(mi => mi.IsSelected))
       mi.IsSelected = false;
 
-    foreach (var mi in items) {
-      mi.SetThumbSize();
-      mi.SetInfoBox();
+    if (hide) {
+      Remove(items);
     }
+    else {
+      foreach (var mi in items) {
+        mi.SetThumbSize();
+        mi.SetInfoBox();
+      }
 
-    if (add)
-      Insert(items);
-    else
-      Reload(GetSorted(items).ToList(), GroupMode.ThenByRecursive, null, true);
+      if (and)
+        Insert(items);
+      else
+        Reload(GetSorted(items).ToList(), GroupMode.ThenByRecursive, null, true);
+    }
 
     Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
     _selectionChanged();
     IsLoading = false;
-
-    if (Core.VM.MediaViewer.IsVisible && Root.Source.Count > 0)
-      OpenItem(Root.Source[0]);
   }
 
   private async Task<MediaItemM[]> _filterByViewer(MediaItemM[] items, CancellationToken token) {
@@ -255,7 +226,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
   public void Add(MediaItemM mi) {
     Insert(mi);
-    FilteredChangedEventHandler(this, EventArgs.Empty);
+    FilteredChangedEvent(this, EventArgs.Empty);
   }
 
   public void OnMediaItemRenamed(MediaItemM item) {

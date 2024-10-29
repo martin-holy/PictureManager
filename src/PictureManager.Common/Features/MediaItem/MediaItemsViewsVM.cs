@@ -69,9 +69,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   public void CloseView(MediaItemsViewVM view) {
-    view.Clear();
-    view.SelectionChangedEventHandler -= OnViewSelectionChanged;
-    view.FilteredChangedEventHandler -= OnViewFilteredChanged;
+    view.Selected.DeselectAll();
+    view.SelectionChangedEvent -= OnViewSelectionChanged;
+    view.FilteredChangedEvent -= OnViewFilteredChanged;
     _all.Remove(view);
     _removeImageComparer(view);
     if (!ReferenceEquals(view, Current)) return;
@@ -98,8 +98,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var view = new MediaItemsViewVM(Core.Settings.MediaItem.MediaItemThumbScale);
     _all.Add(view);
     Current = view;
-    view.SelectionChangedEventHandler += OnViewSelectionChanged;
-    view.FilteredChangedEventHandler += OnViewFilteredChanged;
+    view.SelectionChangedEvent += OnViewSelectionChanged;
+    view.FilteredChangedEvent += OnViewFilteredChanged;
     Core.VM.MainTabs.Add(Res.IconImageMultiple, tabName, view);
     return view;
   }
