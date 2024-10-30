@@ -1,11 +1,9 @@
-﻿using MH.UI.Controls;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.GeoName;
 using PictureManager.Common.Features.Keyword;
-using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.Person;
 using PictureManager.Common.Features.Rating;
 using PictureManager.Common.Features.Segment;
@@ -20,20 +18,9 @@ namespace PictureManager.Common.Features.MediaItem;
 
 public sealed class MediaItemsViewsVM : ObservableObject {
   private readonly List<MediaItemsViewVM> _all = [];
-  private readonly Dictionary<MediaItemsViewVM, ImageComparerVM> _imageComparers = new();
   private MediaItemsViewVM? _current;
 
-  public MediaItemsViewVM? Current {
-    get => _current;
-    private set {
-      _current = value;
-      OnPropertyChanged();
-      OnPropertyChanged(nameof(CurrentImageComparer));
-    }
-  }
-
-  public ImageComparerVM? CurrentImageComparer => _current == null ? null : _imageComparers.GetValueOrDefault(_current);
-
+  public MediaItemsViewVM? Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
   public static RelayCommand<object> FilterSetAndCommand { get; set; } = null!;
   public static RelayCommand<object> FilterSetOrCommand { get; set; } = null!;
   public static RelayCommand<object> FilterSetNotCommand { get; set; } = null!;
@@ -59,8 +46,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.Root.Source.Count > 0, null, "Rebuild Thumbnails");
     ViewModifiedCommand = new(ViewModified, Res.IconImageMultiple, "Show modified");
-    CompareAverageHashCommand = new(() => _compare(c => c.CompareAverageHash()), Res.IconCompare, "Compare images using average hash");
-    ComparePHashCommand = new(() => _compare(c => c.ComparePHash()), Res.IconCompare, "Compare images using perceptual hash");
+    CompareAverageHashCommand = new(() => _current!.CompareImages(c => c.CompareAverageHash()), () => _current != null, Res.IconCompare, "Compare images using average hash");
+    ComparePHashCommand = new(() => _current!.CompareImages(c => c.ComparePHash()), () => _current != null, Res.IconCompare, "Compare images using perceptual hash");
   }
 
   public void RemoveMediaItems(IList<MediaItemM> items) {
@@ -73,7 +60,6 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     view.SelectionChangedEvent -= OnViewSelectionChanged;
     view.FilteredChangedEvent -= OnViewFilteredChanged;
     _all.Remove(view);
-    _removeImageComparer(view);
     if (!ReferenceEquals(view, Current)) return;
     Current = null;
     Core.VM.MediaItem.Current = null;
@@ -127,7 +113,6 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var recursive = Keyboard.IsShiftOn();
     var view = AddViewIfNotActive(and || hide ? null : item.Name);
     item.IsSelected = true;
-    _removeImageComparer(view);
     
     return view.LoadByFolder(item, and, hide, recursive);
   }
@@ -152,7 +137,6 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       };
 
     var view = and ? AddViewIfNotActive(null) : AddView(tabTitle!);
-    _removeImageComparer(view);
     return view.LoadByTag(items.ToArray(), and, token);
   }
 
@@ -180,21 +164,4 @@ public sealed class MediaItemsViewsVM : ObservableObject {
 
   public Task ViewMediaItems(MediaItemM[] items, string name, CancellationToken token) =>
     AddView(name).LoadByTag(items, false, token);
-
-  private void _compare(Func<ImageComparerVM, List<MediaItemM>> method) {
-    if (_current == null) return;
-
-    if (!_imageComparers.ContainsKey(_current)) {
-      _imageComparers.Add(_current, new(_current.Root.Source.ToArray()));
-      OnPropertyChanged(nameof(CurrentImageComparer));
-    }
-
-    _current.Selected.DeselectAll();
-    _current.Reload(method(_imageComparers[_current]), GroupMode.ThenByRecursive, null, true);
-  }
-
-  private void _removeImageComparer(MediaItemsViewVM view) {
-    _imageComparers.Remove(view);
-    OnPropertyChanged(nameof(CurrentImageComparer));
-  }
 }

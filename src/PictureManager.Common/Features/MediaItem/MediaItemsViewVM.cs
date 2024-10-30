@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Common.Features.MediaItem.Image;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,6 +23,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
   public MediaItemsFilterVM Filter { get; } = new();
   public MediaItemsImport Import { get; } = new();
+  public ImageComparerVM? ImageComparer { get; private set; }
   public DragDropHelper.CanDragFunc CanDragFunc { get; }
   public bool IsLoading { get => _isLoading; set { _isLoading = value; OnPropertyChanged(); } }
   public bool ShowThumbInfo { get => _showThumbInfo; set { _showThumbInfo = value; OnPropertyChanged(); } }
@@ -170,6 +172,9 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   }
 
   private void _load(MediaItemM[] items, bool and, bool hide) {
+    ImageComparer = null;
+    OnPropertyChanged(nameof(ImageComparer));
+
     if (items.Length == 0) {
       IsLoading = false;
       return;
@@ -232,5 +237,15 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   public void OnMediaItemRenamed(MediaItemM item) {
     Remove(item);
     Insert(item);
+  }
+
+  public void CompareImages(Func<ImageComparerVM, List<MediaItemM>> method) {
+    if (ImageComparer == null) {
+      ImageComparer = new(Root.Source.ToArray());
+      OnPropertyChanged(nameof(ImageComparer));
+    }
+
+    Selected.DeselectAll();
+    Reload(method(ImageComparer), GroupMode.ThenByRecursive, null, true);
   }
 }
