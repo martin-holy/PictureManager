@@ -131,7 +131,6 @@
       <c:IconButton Command="ftSegment:SegmentsDrawerVM.AddSelectedCommand"/>
       <c:IconButton Command="core:CoreVM.OpenSegmentsViewsCommand"/>
       <c:IconButton Command="ftSegment:SegmentsViewsVM.ShuffleCommand"/>
-      <c:IconButton Command="ftSegment:SegmentsViewsVM.SortCommand"/>
       <c:IconButton Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
     </StackPanel>
   </DataTemplate>

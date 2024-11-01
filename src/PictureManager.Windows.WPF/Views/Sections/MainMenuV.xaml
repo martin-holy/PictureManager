@@ -49,7 +49,6 @@
           <MenuItem Command="core:CoreVM.ExportSegmentsCommand"/>
           <MenuItem Command="core:CoreVM.OpenSegmentsViewsCommand"/>
           <MenuItem Command="ftSegment:SegmentsViewsVM.ShuffleCommand"/>
-          <MenuItem Command="ftSegment:SegmentsViewsVM.SortCommand"/>
         </MenuItem>
 
         <MenuItem Command="core:CoreVM.OpenSettingsCommand"/>
