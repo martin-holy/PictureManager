@@ -21,9 +21,10 @@ Latest:
  - [U] Filtering Movies with keeping grouping
  - [N] Sort items on each CollectionViewGroup
  - [N] Shuffle items on each CollectionViewGroup
- - [U] MediaItems Sort and Shuffle commands from MainMenu and ToolBar removed
+ - [U] MediaItems Sort and Shuffle commands removed from MainMenu and ToolBar
  - [U] Image comparer for each MediaItems view
  - [U] Position/Count now shows total group items count as well
+ - [U] Segments Sort command removed from MainMenu and ToolBar
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
