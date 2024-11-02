@@ -21,16 +21,10 @@ public sealed class SegmentsViewsVM : ObservableObject {
   public SegmentsViewsTabsVM Tabs { get; } = new();
   public SegmentsViewVM? Current { get => _current; private set => _setCurrent(value); }
   public static RelayCommand AddViewCommand { get; set; } = null!;
-  public static RelayCommand ShuffleCommand { get; set; } = null!;
-  public static RelayCommand SortCommand { get; set; } = null!;
 
   public SegmentsViewsVM(SegmentS segmentS) {
     _segmentS = segmentS;
     AddViewCommand = new(() => _addView(string.Empty), Res.IconPlus, "Add Segments View Tab");
-    ShuffleCommand = new(
-      () => Current!.Shuffle(),
-      () => Current?.Root.Source.Count > 0, MH.UI.Res.IconRandom, "Shuffle");
-
     Tabs.PropertyChanged += _onTabsPropertyChanged;
     Tabs.TabClosedEvent += _onTabsTabClosed;
   }
