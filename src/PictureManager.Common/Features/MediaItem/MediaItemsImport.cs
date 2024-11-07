@@ -35,17 +35,18 @@ public sealed class MediaItemsImport : ObservableObject {
     DoneCount = 0;
 
     try {
-      await _task.Start(new(() => ReadMetadata(items))).ContinueWith(async delegate {
-        Tasks.Dispatch(delegate { DoneCount = 0; }); // new counter for loading GeoNames if any
-        foreach (var mim in items) {
-          if (mim.Success)
-            await mim.FindRefs();
-          else
-            Core.R.MediaItem.ItemDelete(mim.MediaItem);
+      await _task.Start(new(() => ReadMetadata(items)));
 
-          Tasks.Dispatch(delegate { DoneCount++; });
-        }
-      }, Tasks.UiTaskScheduler);
+      Tasks.Dispatch(delegate { DoneCount = 0; }); // new counter for loading GeoNames if any
+
+      foreach (var mim in items) {
+        if (mim.Success)
+          await mim.FindRefs();
+        else
+          Core.R.MediaItem.ItemDelete(mim.MediaItem);
+
+        Tasks.Dispatch(delegate { DoneCount++; });
+      }
     }
     catch (Exception ex) {
       Log.Error(ex);
