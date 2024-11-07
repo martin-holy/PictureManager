@@ -72,7 +72,7 @@ public sealed class TreeViewSearchVM : ObservableObject {
     result.AddRange(Core.R.FolderKeyword.All2
       .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
                   && x.Folders.All(f => Core.S.Viewer.CanViewerSee(f)))
-      .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, Core.R.FolderKeyword.Tree)));
+      .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, Core.R.FolderKeyword.Tree.Category)));
     AddToSearchResult(result);
   }
 

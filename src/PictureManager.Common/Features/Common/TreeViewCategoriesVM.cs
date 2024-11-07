@@ -26,7 +26,7 @@ public sealed class TreeViewCategoriesVM : TabControl {
     AddCategory(Core.R.Folder.Tree.Category);
     AddCategory(RatingsTreeCategory);
     AddCategory(Core.R.Person.Tree);
-    AddCategory(Core.R.FolderKeyword.Tree);
+    AddCategory(Core.R.FolderKeyword.Tree.Category);
     AddCategory(Core.R.Keyword.Tree);
     AddCategory(Core.R.GeoName.Tree);
     AddCategory(Core.R.Viewer.Tree);

@@ -15,7 +15,7 @@ namespace PictureManager.Common.Features.FolderKeyword;
 public class FolderKeywordR : TreeDataAdapter<FolderM> {
   private readonly CoreR _coreR;
 
-  public FolderKeywordTreeCategory Tree { get; }
+  public FolderKeywordTreeView Tree { get; }
 
   public static readonly FolderKeywordM FolderKeywordPlaceHolder = new(string.Empty, null);
   public List<FolderKeywordM> All2 { get; } = [];
@@ -51,11 +51,11 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
       fk.Items.Clear();
     }
 
-    Tree.Items.Clear();
+    Tree.Category.Items.Clear();
     All2.Clear();
 
     foreach (var folder in All)
-      LoadRecursive(folder, Tree);
+      LoadRecursive(folder, Tree.Category);
 
     foreach (var fk in All2.Where(fk => fk.Folders.All(x => !Core.S.Viewer.CanViewerSee(x))))
       fk.IsHidden = true;
@@ -75,8 +75,8 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
 
     if (fk == null) {
       // remove placeholder
-      if (Tree.Items.Count == 1 && ReferenceEquals(FolderKeywordPlaceHolder, Tree.Items[0]))
-        Tree.Items.Clear();
+      if (Tree.Category.Items.Count == 1 && ReferenceEquals(FolderKeywordPlaceHolder, Tree.Category.Items[0]))
+        Tree.Category.Items.Clear();
 
       fk = new(folder.Name, fkRoot);
       fkRoot.Items.SetInOrder(fk, x => ((FolderKeywordM)x).Name);
