@@ -10,7 +10,7 @@ public sealed class KeywordTreeCategory : TreeCategory<KeywordM, CategoryGroupM>
   public CategoryGroupM AutoAddedGroup { get; set; } = null!;
 
   public KeywordTreeCategory(KeywordR r, CategoryGroupR groupR)
-    : base(Res.IconTagLabel, "Keywords", (int)Category.Keywords, r, groupR) {
+    : base(new(), Res.IconTagLabel, "Keywords", (int)Category.Keywords, r, groupR) {
     CanMoveItem = true;
     UseTreeDelete = true;
     ScrollToAfterCreate = true;

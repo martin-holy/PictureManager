@@ -4,7 +4,7 @@ using System.Linq;
 namespace PictureManager.Common.Features.Rating;
 
 public sealed class RatingTreeCategory : TreeCategory {
-  public RatingTreeCategory() : base(Res.IconStar, "Ratings", (int)Category.Ratings) {
+  public RatingTreeCategory() : base(new(), Res.IconStar, "Ratings", (int)Category.Ratings) {
     Load();
   }
 

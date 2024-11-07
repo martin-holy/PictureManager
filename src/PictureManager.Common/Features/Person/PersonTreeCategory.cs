@@ -19,7 +19,7 @@ public sealed class PersonTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
   }
 
   public PersonTreeCategory(PersonR r, CategoryGroupR groupR)
-    : base(Res.IconPeopleMultiple, "People", (int)Category.People, r, groupR) {
+    : base(new(), Res.IconPeopleMultiple, "People", (int)Category.People, r, groupR) {
     CanMoveItem = true;
     ScrollToAfterCreate = true;
   }
