@@ -124,7 +124,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     _selectionChanged();
   }
 
-  public Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
+  public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
     IsLoading = true;
     if (!and && !hide)
       Selected.DeselectAll();
@@ -155,11 +155,10 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       toProcess.AddRange(folder.MediaItems);
     }
 
-    return Import.Import(newItems).ContinueWith(delegate {
-      var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
-      var items = toProcess.Except(notImported).Where(Core.S.Viewer.CanViewerSee).ToArray();
-      _load(items, and, hide);
-    }, Tasks.UiTaskScheduler);
+    await Import.Import(newItems);
+    var notImported = newItems.Where(x => !x.Success).Select(x => x.MediaItem);
+    var items = toProcess.Except(notImported).Where(Core.S.Viewer.CanViewerSee).ToArray();
+    _load(items, and, hide);
   }
 
   public async Task LoadByTag(MediaItemM[] items, bool and, CancellationToken token) {
