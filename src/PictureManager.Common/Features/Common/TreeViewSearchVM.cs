@@ -66,7 +66,7 @@ public sealed class TreeViewSearchVM : ObservableObject {
     var result = Core.R.Folder.All
       .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
                   && Core.S.Viewer.CanViewerSee(x))
-      .Select(x => new TreeViewSearchItemM(Res.IconFolder, x.Name, x, x.FullPath, Core.R.Folder.Tree)).ToList();
+      .Select(x => new TreeViewSearchItemM(Res.IconFolder, x.Name, x, x.FullPath, Core.R.Folder.Tree.Category)).ToList();
 
     // Folder Keywords
     result.AddRange(Core.R.FolderKeyword.All2

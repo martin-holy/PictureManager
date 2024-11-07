@@ -13,7 +13,7 @@ namespace PictureManager.Common.Features.Folder;
 /// </summary>
 public class FolderR : TreeDataAdapter<FolderM> {
   public static FolderM Dummy { get; } = new(0, string.Empty, null);
-  public FolderTreeCategory Tree { get; }
+  public FolderTreeView Tree { get; }
 
   public FolderR(CoreR coreR) : base(coreR, "Folders", 3) {
     IsDriveRelated = true;
@@ -30,7 +30,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
   }
 
   public override Dictionary<string, IEnumerable<FolderM>> GetAsDriveRelated() =>
-    Tree.Items.ToDictionary(x => x.Name, GetAll<FolderM>);
+    Tree.Category.Items.ToDictionary(x => x.Name, GetAll<FolderM>);
 
   public override FolderM FromCsv(string[] csv) =>
     string.IsNullOrEmpty(csv[2])
@@ -44,8 +44,8 @@ public class FolderR : TreeDataAdapter<FolderM> {
       (folder.Parent as FolderM)?.GetHashCode().ToString() ?? string.Empty);
 
   public override void LinkReferences() {
-    Tree.Items.Clear();
-    LinkTree(Tree, 2);
+    Tree.Category.Items.Clear();
+    LinkTree(Tree.Category, 2);
   }
 
   public override FolderM ItemCreate(ITreeItem parent, string name) {
@@ -97,7 +97,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
   public FolderM? GetFolder(string folderPath) {
     if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return null;
     var parts = Path.GetFullPath(folderPath).Split(Path.DirectorySeparatorChar);
-    if (Tree.Items.GetByName(parts[0], StringComparison.OrdinalIgnoreCase) is not { } folder) return null;
+    if (Tree.Category.Items.GetByName(parts[0], StringComparison.OrdinalIgnoreCase) is not { } folder) return null;
 
     for (int i = 1; i < parts.Length; i++) {
       ((FolderM)folder).RemovePlaceHolder();

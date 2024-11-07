@@ -53,7 +53,7 @@ public sealed class Core {
     S.AttachEvents();
     VM.AttachEvents();
 
-    R.Folder.Tree.AddDrives();
+    R.Folder.Tree.Category.AddDrives();
 
     foreach (var plugin in Plugins) plugin.AfterInit(S, VM);
 

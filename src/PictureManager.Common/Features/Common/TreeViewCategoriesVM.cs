@@ -23,7 +23,7 @@ public sealed class TreeViewCategoriesVM : TabControl {
   public void AddCategories() {
     Tabs.Clear();
     AddCategory(Core.R.FavoriteFolder.Tree);
-    AddCategory(Core.R.Folder.Tree);
+    AddCategory(Core.R.Folder.Tree.Category);
     AddCategory(RatingsTreeCategory);
     AddCategory(Core.R.Person.Tree);
     AddCategory(Core.R.FolderKeyword.Tree);

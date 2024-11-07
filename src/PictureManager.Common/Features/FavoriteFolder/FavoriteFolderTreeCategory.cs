@@ -14,5 +14,5 @@ public sealed class FavoriteFolderTreeCategory : TreeCategory<FavoriteFolderM> {
   }
 
   public override void OnItemSelected(object o) =>
-    Core.R.Folder.Tree.ScrollTo((o as FavoriteFolderM)?.Folder);
+    Core.R.Folder.Tree.Category.ScrollTo((o as FavoriteFolderM)?.Folder);
 }

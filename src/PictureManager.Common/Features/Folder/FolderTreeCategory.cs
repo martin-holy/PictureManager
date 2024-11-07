@@ -4,7 +4,6 @@ using MH.UI.Dialogs;
 using MH.Utils;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Common.Features.FolderKeyword;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Utils;
 using System;
@@ -14,21 +13,11 @@ using System.Linq;
 namespace PictureManager.Common.Features.Folder;
 
 public sealed class FolderTreeCategory : TreeCategory<FolderM> {
-  public FolderTreeCategory(FolderR r) :
-    base(Res.IconFolder, "Folders", (int)Category.Folders, r) {
+  public FolderTreeCategory(FolderR r, TreeView<ITreeItem> treeView) :
+    base(treeView, Res.IconFolder, "Folders", (int)Category.Folders, r) {
     CanMoveItem = true;
     CanCopyItem = true;
     UseTreeDelete = true;
-  }
-
-  public override void OnItemSelected(object o) {
-    // SHIFT key => recursive
-    // MBL => show, MBL+ctrl => and, MBL+alt => hide
-    if (o is not FolderM && o is not FolderKeywordM) return;
-    if (Core.VM.MediaViewer.IsVisible)
-      Core.VM.MainWindow.IsInViewMode = false;
-
-    _ = Core.VM.MediaItem.Views.LoadByFolder((ITreeItem)o);
   }
 
   public override bool CanDrop(object? src, ITreeItem? dest) {

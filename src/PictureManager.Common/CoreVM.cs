@@ -133,6 +133,7 @@ public sealed class CoreVM : ObservableObject {
     Video.CurrentVideoItems.Selected.ItemsChangedEvent += _onVideoItemsSelectionChanged;
 
     _coreR.Folder.ItemRenamedEvent += _onFolderRenamed;
+    _coreR.Folder.Tree.TreeItemSelectedEvent += _onFolderTreeItemSelected;
 
     _coreR.MediaItem.ItemCreatedEvent += _onMediaItemCreated;
     _coreR.MediaItem.ItemRenamedEvent += _onMediaItemRenamed;
@@ -249,6 +250,11 @@ public sealed class CoreVM : ObservableObject {
 
   private void _onFolderRenamed(object? sender, FolderM item) =>
     MainWindow.StatusBar.UpdateFilePath();
+
+  private void _onFolderTreeItemSelected(object? sender, ObjectEventArgs<ITreeItem> e) {
+    if (MediaViewer.IsVisible)
+      MainWindow.IsInViewMode = false;
+  }
 
   private void _onMediaItemCreated(object? sender, MediaItemM item) =>
     _updateMediaItemsCount();

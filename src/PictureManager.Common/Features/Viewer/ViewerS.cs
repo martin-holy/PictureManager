@@ -33,7 +33,7 @@ public sealed class ViewerS(CoreR coreR) : ObservableObject {
     foreach (var ff in coreR.FavoriteFolder.Tree.Items.Cast<FavoriteFolderM>())
       ff.IsHidden = !CanViewerSee(ff.Folder);
 
-    foreach (var f in coreR.Folder.Tree.Items.Cast<FolderM>()) {
+    foreach (var f in coreR.Folder.Tree.Category.Items.Cast<FolderM>()) {
       f.IsExpanded = false;
       f.IsHidden = !CanViewerSee(f);
     }
