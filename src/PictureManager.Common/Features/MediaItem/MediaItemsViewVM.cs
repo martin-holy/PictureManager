@@ -126,8 +126,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
   public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
     IsLoading = true;
-    if (!and && !hide)
-      Selected.DeselectAll();
 
     var folders = Core.S.Folder.GetFolders(item, recursive);
     var newItems = new List<MediaItemMetadata>();
