@@ -27,6 +27,7 @@ Latest:
  - [U] Segments Sort command removed from MainMenu and ToolBar
  - [U] Segments Shuffle command removed from MainMenu and ToolBar
  - [B] Imported images doesn't have size
+ - [B] StatusBar info about current MediaItem after reload
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
