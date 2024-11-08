@@ -176,6 +176,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
     if (items.Length == 0) return;
 
+    Core.VM.MediaItem.Current = null;
     Selected.DeselectAll();
     foreach (var mi in items.Where(mi => mi.IsSelected))
       mi.IsSelected = false;
