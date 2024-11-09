@@ -15,8 +15,8 @@ public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter
   private bool _showImages = true;
   private bool _showVideos = true;
 
-  public bool ShowImages { get => _showImages; set { _showImages = value; OnFilterChanged(); OnPropertyChanged(); } }
-  public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnFilterChanged(); OnPropertyChanged(); } }
+  public bool ShowImages { get => _showImages; set { _showImages = value; _raiseFilterChanged(); OnPropertyChanged(); } }
+  public bool ShowVideos { get => _showVideos; set { _showVideos = value; _raiseFilterChanged(); OnPropertyChanged(); } }
 
   public ObservableCollection<object> FilterAnd { get; } = [];
   public ObservableCollection<object> FilterOr { get; } = [];
@@ -30,15 +30,14 @@ public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter
   public RelayCommand ClearCommand { get; }
 
   public MediaItemsFilterVM() {
-    Height.ChangedEvent += delegate { OnFilterChanged(); };
-    Width.ChangedEvent += delegate { OnFilterChanged(); };
-    Size.ChangedEvent += delegate { OnFilterChanged(); };
+    Height.ChangedEvent += delegate { _raiseFilterChanged(); };
+    Width.ChangedEvent += delegate { _raiseFilterChanged(); };
+    Size.ChangedEvent += delegate { _raiseFilterChanged(); };
     ClearCommand = new(Clear, null, "Clear");
   }
 
-  private void OnFilterChanged() {
+  private void _raiseFilterChanged() =>
     FilterChangedEvent(this, EventArgs.Empty);
-  }
 
   private void Clear() {
     FilterAnd.Clear();
@@ -49,7 +48,7 @@ public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter
     Height.SetFullRange();
     Width.SetFullRange();
 
-    OnFilterChanged();
+    _raiseFilterChanged();
   }
 
   public void Set(object? item, DisplayFilter displayFilter) {
@@ -76,7 +75,7 @@ public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter
         throw new ArgumentOutOfRangeException(nameof(displayFilter), displayFilter, null);
     }
 
-    OnFilterChanged();
+    _raiseFilterChanged();
   }
 
   public bool Filter(MediaItemM mi) {
@@ -131,5 +130,7 @@ public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter
       Height.Reset(limit.Min(x => x.Height), limit.Max(x => x.Height));
       Width.Reset(limit.Min(x => x.Width), limit.Max(x => x.Width));
     }
+
+    _raiseFilterChanged();
   }
 }
