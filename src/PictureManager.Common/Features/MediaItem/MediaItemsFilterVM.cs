@@ -33,13 +33,12 @@ public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter
     Height.ChangedEvent += delegate { _raiseFilterChanged(); };
     Width.ChangedEvent += delegate { _raiseFilterChanged(); };
     Size.ChangedEvent += delegate { _raiseFilterChanged(); };
-    ClearCommand = new(Clear, null, "Clear");
+    ClearCommand = new(_clear, null, "Clear");
   }
 
-  private void _raiseFilterChanged() =>
-    FilterChangedEvent(this, EventArgs.Empty);
+  private void _raiseFilterChanged() => FilterChangedEvent(this, EventArgs.Empty);
 
-  private void Clear() {
+  private void _clear() {
     FilterAnd.Clear();
     FilterOr.Clear();
     FilterNot.Clear();
@@ -84,7 +83,7 @@ public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter
     if (!ShowVideos && mi is VideoM) return false;
 
     // GeoNames
-    if (!Filter(mi.GetGeoNames().ToArray())) return false;
+    if (!_filter(mi.GetGeoNames().ToArray())) return false;
 
     //Ratings
     var chosenRatings = FilterOr.OfType<RatingM>().Select(x => x.Value).ToArray();
@@ -98,13 +97,13 @@ public sealed class MediaItemsFilterVM : ObservableObject, ICollectionViewFilter
 
     // People
     var miPeople = mi.GetPeople().ToArray();
-    if (!Filter(miPeople)) return false;
+    if (!_filter(miPeople)) return false;
 
     // Keywords
-    return Filter(mi.GetKeywords().Concat(miPeople.GetKeywords()).Distinct().ToArray());
+    return _filter(mi.GetKeywords().Concat(miPeople.GetKeywords()).Distinct().ToArray());
   }
 
-  private bool Filter<T>(T[] miI) where T : class {
+  private bool _filter<T>(T[] miI) where T : class {
     var notI = FilterNot.OfType<T>().ToArray();
     if (notI.Any() && miI.Any() && notI.Any(fx => miI.Any(x => ReferenceEquals(x, fx)))) return false;
     var andI = FilterAnd.OfType<T>().ToArray();
