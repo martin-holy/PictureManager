@@ -29,6 +29,7 @@ Latest:
  - [B] Imported images doesn't have size
  - [B] StatusBar info about current MediaItem after reload
  - [B] MediaItemsFilter: Size reset on reload
+ - [B] Update count of selected MediaItems in trees after filter change
 
 24.09.14.1145:
  - [U] CompressDialog: JPG quality 70-95
