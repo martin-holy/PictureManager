@@ -37,15 +37,15 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     FilterSetOrCommand = new(item => Current!.Filter.Set(item, DisplayFilter.Or), _ => Current != null, Res.IconFilter, "Filter Or");
     FilterSetNotCommand = new(item => Current!.Filter.Set(item, DisplayFilter.Not), _ => Current != null, Res.IconFilter, "Filter Not");
 
-    AddViewCommand = new(() => AddView(string.Empty), Res.IconPlus, "Add Media Items View Tab");
+    AddViewCommand = new(() => _addView(string.Empty), Res.IconPlus, "Add Media Items View Tab");
     CopyPathsCommand = new(
       () => Clipboard.SetText(string.Join("\n", Current!.Selected.Items.Select(x => x.FilePath))),
       () => Current?.Selected.Items.Any() == true, null, "Copy Paths");
     LoadByTagCommand = new(LoadByTag, null, "Load");
     RebuildThumbnailsCommand = new(
-      x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
+      x => _rebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.Root.Source.Count > 0, null, "Rebuild Thumbnails");
-    ViewModifiedCommand = new(ViewModified, Res.IconImageMultiple, "Show modified");
+    ViewModifiedCommand = new(_viewModified, Res.IconImageMultiple, "Show modified");
     CompareAverageHashCommand = new(() => _current!.CompareImages(c => c.CompareAverageHash()), () => _current != null, Res.IconCompare, "Compare images using average hash");
     ComparePHashCommand = new(() => _current!.CompareImages(c => c.ComparePHash()), () => _current != null, Res.IconCompare, "Compare images using perceptual hash");
   }
@@ -57,8 +57,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
 
   public void CloseView(MediaItemsViewVM view) {
     view.Selected.DeselectAll();
-    view.SelectionChangedEvent -= OnViewSelectionChanged;
-    view.FilteredChangedEvent -= OnViewFilteredChanged;
+    view.SelectionChangedEvent -= _onViewSelectionChanged;
+    view.FilteredChangedEvent -= _onViewFilteredChanged;
     _all.Remove(view);
     if (!ReferenceEquals(view, Current)) return;
     Current = null;
@@ -70,9 +70,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     Current?.UpdateSelected();
   }
 
-  private MediaItemsViewVM AddViewIfNotActive(string? tabName) {
+  private MediaItemsViewVM _addViewIfNotActive(string? tabName) {
     if (Core.VM.MainTabs.Selected?.Data is not MediaItemsViewVM view)
-      return AddView(tabName ?? string.Empty);
+      return _addView(tabName ?? string.Empty);
     
     if (tabName != null)
       Core.VM.MainTabs.Selected.Name = tabName;
@@ -80,22 +80,22 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     return view;
   }
 
-  private MediaItemsViewVM AddView(string tabName) {
+  private MediaItemsViewVM _addView(string tabName) {
     var view = new MediaItemsViewVM(Core.Settings.MediaItem.MediaItemThumbScale);
     _all.Add(view);
     Current = view;
-    view.SelectionChangedEvent += OnViewSelectionChanged;
-    view.FilteredChangedEvent += OnViewFilteredChanged;
+    view.SelectionChangedEvent += _onViewSelectionChanged;
+    view.FilteredChangedEvent += _onViewFilteredChanged;
     Core.VM.MainTabs.Add(Res.IconImageMultiple, tabName, view);
     return view;
   }
 
-  private void OnViewSelectionChanged(object? o, EventArgs e) {
+  private void _onViewSelectionChanged(object? o, EventArgs e) {
     Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
     _ = Core.VM.MainWindow.StatusBar.UpdateFileSize();
   }
 
-  private void OnViewFilteredChanged(object? o, EventArgs e) {
+  private void _onViewFilteredChanged(object? o, EventArgs e) {
     Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
   }
 
@@ -111,7 +111,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var and = Keyboard.IsCtrlOn();
     var hide = Keyboard.IsAltOn();
     var recursive = Keyboard.IsShiftOn();
-    var view = AddViewIfNotActive(and || hide ? null : item.Name);
+    var view = _addViewIfNotActive(and || hide ? null : item.Name);
     item.IsSelected = true;
     
     return view.LoadByFolder(item, and, hide, recursive);
@@ -136,7 +136,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
         _ => string.Empty
       };
 
-    var view = and ? AddViewIfNotActive(null) : AddView(tabTitle!);
+    var view = and ? _addViewIfNotActive(null) : _addView(tabTitle!);
     return view.LoadByTag(items.ToArray(), and, token);
   }
 
@@ -147,7 +147,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       Core.VM.MediaItem.Current = null;
   }
 
-  private void RebuildThumbnails(FolderM? folder, bool recursive) {
+  private void _rebuildThumbnails(FolderM? folder, bool recursive) {
     var mediaItems = (folder == null
         ? Current!.GetSelectedOrAll().OfType<RealMediaItemM>()
         : folder.GetMediaItems(recursive))
@@ -159,9 +159,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     }
   }
 
-  private Task ViewModified(CancellationToken token) =>
-    AddView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray(), false, token);
+  private Task _viewModified(CancellationToken token) =>
+    _addView("Modified").LoadByTag(Core.R.MediaItem.GetModified().ToArray(), false, token);
 
   public Task ViewMediaItems(MediaItemM[] items, string name, CancellationToken token) =>
-    AddView(name).LoadByTag(items, false, token);
+    _addView(name).LoadByTag(items, false, token);
 }
