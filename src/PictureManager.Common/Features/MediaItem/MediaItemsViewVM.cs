@@ -222,6 +222,8 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   private void _onFilterApplied(object? sender, EventArgs e) {
     foreach (var mi in Selected.Items.Where(x => !Root.Source.Contains(x)).ToArray())
       Selected.Set(mi, false);
+
+    _selectionChanged();
   }
 
   public void Add(MediaItemM mi) {
