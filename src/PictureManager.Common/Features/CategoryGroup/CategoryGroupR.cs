@@ -24,7 +24,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
 
   public override CategoryGroupM FromCsv(string[] csv) {
     var category = (Category)int.Parse(csv[2]);
-    return GetNew(int.Parse(csv[0]), csv[1], category);
+    return _getNew(int.Parse(csv[0]), csv[1], category);
   }
 
   public override string ToCsv(CategoryGroupM cg) =>
@@ -50,20 +50,20 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
         cg.Items.Add(item);
       }
 
-      cg.Items.CollectionChanged += GroupItems_CollectionChanged;
+      cg.Items.CollectionChanged += _onGroupItemsCollectionChanged;
     }
   }
 
   public override CategoryGroupM ItemCreate(ITreeItem parent, string name) {
     var cat = (Category)Tree.GetParentOf<ITreeCategory>(parent)!.Id;
-    var group = GetNew(GetNextId(), name, cat);
+    var group = _getNew(GetNextId(), name, cat);
     group.Parent = parent;
-    group.Items.CollectionChanged += GroupItems_CollectionChanged;
+    group.Items.CollectionChanged += _onGroupItemsCollectionChanged;
 
     return TreeItemCreate(group);
   }
 
-  private static CategoryGroupM GetNew(int id, string name, Category cat) =>
+  private static CategoryGroupM _getNew(int id, string name, Category cat) =>
     cat switch {
       Category.Keywords => new KeywordCategoryGroupM(id, name, cat, Res.CategoryToIcon(cat)),
       Category.People => new PersonCategoryGroupM(id, name, cat, Res.CategoryToIcon(cat)),
@@ -83,7 +83,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
     item.Parent?.Items.Remove(item);
   }
 
-  private void GroupItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+  private void _onGroupItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
     if (coreR.IsReady) IsModified = true;
   }
 
