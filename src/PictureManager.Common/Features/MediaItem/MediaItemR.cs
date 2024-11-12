@@ -29,28 +29,28 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
 
   public MediaItemR(CoreR coreR) : base(coreR, string.Empty, 0) {
     _coreR = coreR;
-    _coreR.ReadyEvent += OnDbReady;
+    _coreR.ReadyEvent += _onDbReady;
   }
 
-  private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, item);
+  private void _raiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, item);
   public void RaiseMetadataChanged(MediaItemM[] items) => MetadataChangedEvent(this, items);
   public void RaiseOrientationChanged(RealMediaItemM[] items) => OrientationChangedEvent(this, items);
 
-  private void OnDbReady(object? sender, EventArgs e) {
+  private void _onDbReady(object? sender, EventArgs e) {
     MaxId = _coreR.Image.MaxId;
 
     _coreR.Image.ItemCreatedEvent += OnItemCreated;
     _coreR.Image.ItemDeletedEvent += OnItemDeleted;
-    _coreR.Image.ItemsDeletedEvent += OnMediaItemsDeleted;
+    _coreR.Image.ItemsDeletedEvent += _onMediaItemsDeleted;
     _coreR.Video.ItemCreatedEvent += OnItemCreated;
     _coreR.Video.ItemDeletedEvent += OnItemDeleted;
-    _coreR.Video.ItemsDeletedEvent += OnMediaItemsDeleted;
+    _coreR.Video.ItemsDeletedEvent += _onMediaItemsDeleted;
     _coreR.VideoClip.ItemCreatedEvent += OnItemCreated;
     _coreR.VideoClip.ItemDeletedEvent += OnItemDeleted;
-    _coreR.VideoClip.ItemsDeletedEvent += OnMediaItemsDeleted;
+    _coreR.VideoClip.ItemsDeletedEvent += _onMediaItemsDeleted;
     _coreR.VideoImage.ItemCreatedEvent += OnItemCreated;
     _coreR.VideoImage.ItemDeletedEvent += OnItemDeleted;
-    _coreR.VideoImage.ItemsDeletedEvent += OnMediaItemsDeleted;
+    _coreR.VideoImage.ItemsDeletedEvent += _onMediaItemsDeleted;
   }
 
   protected override void OnItemCreated(object? sender, MediaItemM item) {
@@ -66,7 +66,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   protected override void OnItemsDeleted(object? sender, IList<MediaItemM> items) =>
     RaiseItemsDeleted(items);
 
-  private void OnMediaItemsDeleted<T>(object? sender, IList<T> items) where T : MediaItemM =>
+  private void _onMediaItemsDeleted<T>(object? sender, IList<T> items) where T : MediaItemM =>
     OnItemsDeleted(this, items.Cast<MediaItemM>().ToArray());
 
   public void OnItemDeletedCommon(MediaItemM item) {
@@ -133,7 +133,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     }
     
     ModifyOnlyDA(item);
-    RaiseItemRenamed(item);
+    _raiseItemRenamed(item);
   }
 
   public void ModifyOnlyDA(RealMediaItemM mi) {
@@ -196,33 +196,33 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     _coreR.Image.All.Where(x => x.IsOnlyInDb).Cast<MediaItemM>()
       .Concat(_coreR.Video.All.Where(x => x.IsOnlyInDb));
 
-  private void Modify(IEnumerable<MediaItemM> items) =>
-    ChangeMetadata(items.ToArray(), null);
+  private void _modify(IEnumerable<MediaItemM> items) =>
+    _changeMetadata(items.ToArray(), null);
 
   public void ModifyIfContains(GeoLocationM gl) =>
-    Modify(GetAll(x => ReferenceEquals(x.GeoLocation, gl)));
+    _modify(GetAll(x => ReferenceEquals(x.GeoLocation, gl)));
 
   public void ModifyIfContains(PersonM person) =>
-    Modify(GetAll(mi => mi.GetPeople().Contains(person)));
+    _modify(GetAll(mi => mi.GetPeople().Contains(person)));
 
   public void ModifyIfContains(KeywordM keyword) =>
-    Modify(GetAll(mi => mi.GetKeywords().Contains(keyword)));
+    _modify(GetAll(mi => mi.GetKeywords().Contains(keyword)));
 
   public void ModifyIfContains(SegmentM[] segments) =>
-    Modify(segments.GetMediaItems());
+    _modify(segments.GetMediaItems());
 
   public void RemovePerson(PersonM person) =>
     TogglePerson(GetAll(mi => mi.People?.Contains(person) == true).ToArray(), person);
 
   public void TogglePerson(SegmentM[] segments) =>
-    ChangeMetadata(segments.GetMediaItems().ToArray(), mi => {
+    _changeMetadata(segments.GetMediaItems().ToArray(), mi => {
       if (mi.People == null) return;
       foreach (var p in mi.Segments!.GetPeople().Intersect(mi.People).ToArray())
         mi.People = mi.People.Toggle(p, true);
     });
 
   public void TogglePerson(MediaItemM[] items, PersonM person) =>
-    ChangeMetadata(items, mi => mi.People = mi.People.Toggle(person, true));
+    _changeMetadata(items, mi => mi.People = mi.People.Toggle(person, true));
 
   public void RemoveKeyword(KeywordM keyword) =>
     ToggleKeyword(GetAll(mi => mi.Keywords?.Contains(keyword) == true).ToArray(), keyword);
@@ -230,7 +230,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   public void ToggleKeyword(MediaItemM[] items, KeywordM keyword) =>
     keyword.Toggle(items, Modify, () => RaiseMetadataChanged(items));
 
-  private void ChangeMetadata(MediaItemM[] items, Action<MediaItemM>? action) {
+  private void _changeMetadata(MediaItemM[] items, Action<MediaItemM>? action) {
     if (items.Length == 0) return;
     foreach (var mi in items) {
       action?.Invoke(mi);
@@ -257,12 +257,12 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   }
 
   public void SetGeoName(MediaItemM[] items, GeoNameM geoName) =>
-    ChangeMetadata(items, mi =>
+    _changeMetadata(items, mi =>
       _coreR.MediaItemGeoLocation.ItemUpdate(new(mi,
         _coreR.GeoLocation.GetOrCreate(null, null, null, geoName).Result)));
 
   public void SetRating(MediaItemM[] items, RatingM rating) =>
-    ChangeMetadata(items, mi => mi.Rating = rating.Value);
+    _changeMetadata(items, mi => mi.Rating = rating.Value);
 
   public IEnumerable<MediaItemM> GetItems(object item, bool recursive) =>
     item switch {
