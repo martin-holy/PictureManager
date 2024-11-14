@@ -31,7 +31,7 @@ public sealed class ImagesToVideoDialog : Dialog {
 
   public ImagesToVideoDialog(ImageM[] items, OnSuccess onSuccess) : base("Images to Video", MH.UI.Res.IconMovieClapper) {
     Buttons = [
-      new(new AsyncRelayCommand(CreateVideo, () => !IsBusy, MH.UI.Res.IconMovieClapper, "Create Video"), true),
+      new(new AsyncRelayCommand(_createVideo, () => !IsBusy, MH.UI.Res.IconMovieClapper, "Create Video"), true),
       new(CloseCommand, false, true)
     ];
 
@@ -49,15 +49,15 @@ public sealed class ImagesToVideoDialog : Dialog {
   protected override Task OnResultChanged(int result) {
     if (result == 0 && _process != null) {
       _process.Kill();
-      DeleteFile(_inputListPath);
-      DeleteFile(_outputFilePath);
+      _deleteFile(_inputListPath);
+      _deleteFile(_outputFilePath);
     }
 
     return Task.CompletedTask;
   }
 
   // create input list of items for FFMPEG
-  private bool CreateTempListFile() {
+  private bool _createTempListFile() {
     try {
       using var sw = new StreamWriter(_inputListPath, false, new UTF8Encoding(false), 65536);
       foreach (var item in _items)
@@ -71,7 +71,7 @@ public sealed class ImagesToVideoDialog : Dialog {
     }
   }
 
-  private static void DeleteFile(string path) {
+  private static void _deleteFile(string path) {
     try {
       if (File.Exists(path))
         File.Delete(path);
@@ -123,7 +123,7 @@ public sealed class ImagesToVideoDialog : Dialog {
     return tcs.Task;
   }
 
-  private async Task CreateVideo(CancellationToken token) {
+  private async Task _createVideo(CancellationToken token) {
     Core.Settings.Save();
 
     // check for FFMPEG
@@ -139,9 +139,9 @@ public sealed class ImagesToVideoDialog : Dialog {
 
     IsBusy = true;
 
-    if (CreateTempListFile()) {
+    if (_createTempListFile()) {
       await CreateVideoAsync();
-      DeleteFile(_inputListPath);
+      _deleteFile(_inputListPath);
       _onSuccess.Invoke(_outputFolder, _outputFileName);
     }
 
