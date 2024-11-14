@@ -63,7 +63,7 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
         var y = (int)Math.Round(d[1] * MediaItem.Height);
         var s = (int)Math.Round(d[2] * MediaItem.Width);
 
-        var segment = RecycleSegment(x, y, s, MediaItem, person, ref oldSegments);
+        var segment = _recycleSegment(x, y, s, MediaItem, person, ref oldSegments);
         if (c.Item2 == null)
           segment.Keywords = null;
         else {
@@ -80,7 +80,7 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
     Core.R.Segment.ItemsDelete(oldSegments?.Except(MediaItem.Segments.EmptyIfNull()).ToList());
   }
 
-  private static SegmentM RecycleSegment(int x, int y, int s, MediaItemM mi, PersonM? person, ref List<SegmentM>? bin) {
+  private static SegmentM _recycleSegment(int x, int y, int s, MediaItemM mi, PersonM? person, ref List<SegmentM>? bin) {
     SegmentM segment;
     if (bin?.Any() == true) {
       segment = bin[^1];
