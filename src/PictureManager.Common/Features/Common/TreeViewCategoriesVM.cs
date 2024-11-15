@@ -22,19 +22,19 @@ public sealed class TreeViewCategoriesVM : TabControl {
 
   public void AddCategories() {
     Tabs.Clear();
-    AddCategory(Core.R.FavoriteFolder.Tree);
-    AddCategory(Core.R.Folder.Tree.Category);
-    AddCategory(RatingsTreeCategory);
-    AddCategory(Core.R.Person.Tree);
-    AddCategory(Core.R.FolderKeyword.Tree.Category);
-    AddCategory(Core.R.Keyword.Tree);
-    AddCategory(Core.R.GeoName.Tree);
-    AddCategory(Core.R.Viewer.Tree);
+    _addCategory(Core.R.FavoriteFolder.Tree);
+    _addCategory(Core.R.Folder.Tree.Category);
+    _addCategory(RatingsTreeCategory);
+    _addCategory(Core.R.Person.Tree);
+    _addCategory(Core.R.FolderKeyword.Tree.Category);
+    _addCategory(Core.R.Keyword.Tree);
+    _addCategory(Core.R.GeoName.Tree);
+    _addCategory(Core.R.Viewer.Tree);
 
     Selected = Tabs[0];
   }
 
-  private void AddCategory(TreeCategory cat) {
+  private void _addCategory(TreeCategory cat) {
     cat.IsExpanded = true;
     Add(new ListItem(cat.Icon, cat.Name, cat.TreeView) { IsNameHidden = true });
   }
@@ -57,26 +57,26 @@ public sealed class TreeViewCategoriesVM : TabControl {
     }
 
     foreach (var mi in mediaItems) {
-      Mark(mi.GetPeople(), true);
-      Mark(mi.GetKeywords(), true);
-      Mark(mi.GetFolders());
-      Mark(mi.Folder.GetFolderKeywords());
-      Mark(mi.GetGeoNames());
-      Mark(RatingsTreeCategory.GetRatingByValue(mi.Rating));
+      _mark(mi.GetPeople(), true);
+      _mark(mi.GetKeywords(), true);
+      _mark(mi.GetFolders());
+      _mark(mi.Folder.GetFolderKeywords());
+      _mark(mi.GetGeoNames());
+      _mark(RatingsTreeCategory.GetRatingByValue(mi.Rating));
     }
 
     OnPropertyChanged(nameof(MarkedTags));
   }
 
-  private void Mark(IEnumerable<object> tags, bool withGroups = false) {
+  private void _mark(IEnumerable<object> tags, bool withGroups = false) {
     foreach (var tag in tags) {
-      Mark(tag);
+      _mark(tag);
       if (withGroups)
-        Mark(((ITreeItem)tag).GetCategoryGroups());
+        _mark(((ITreeItem)tag).GetCategoryGroups());
     }
   }
 
-  private void Mark(object tag) {
+  private void _mark(object tag) {
     if (!MarkedTags.TryAdd(tag, 1))
       MarkedTags[tag]++;
   }
