@@ -33,6 +33,7 @@ public sealed class SlideshowVM : ObservableObject {
     _zoomAndPan = zoomAndPan;
     _mediaViewer = mediaViewer;
     zoomAndPan.AnimationEndedEvent += _onZoomAndPanAnimationEnded;
+    zoomAndPan.ContentMouseDownEvent += _onZoomAndPanContentMouseDown;
     StartCommand = new(_slideshow, MH.UI.Res.IconPlay, "Start slideshow");
     StopCommand = new(_slideshow, MH.UI.Res.IconStop, "Stop slideshow");
   }
@@ -48,6 +49,9 @@ public sealed class SlideshowVM : ObservableObject {
     State = SlideshowState.On;
     _next(false);
   }
+
+  private void _onZoomAndPanContentMouseDown(object? sender, EventArgs e) =>
+    Stop();
 
   public void OnPlayerMediaEnded(object? sender, EventArgs e) {
     if (_state != SlideshowState.Paused) return;
@@ -81,7 +85,7 @@ public sealed class SlideshowVM : ObservableObject {
 
     switch (_current) {
       case ImageM:
-        if (_playPanoramicImages && _zoomAndPan.IsContentPanoramic()) {
+        if (_playPanoramicImages && _zoomAndPan.IsContentPanoramic() && _zoomAndPan.CanStartAnimation()) {
           State = SlideshowState.Paused;
           _zoomAndPan.StartAnimation(_interval * 1000);
         }
