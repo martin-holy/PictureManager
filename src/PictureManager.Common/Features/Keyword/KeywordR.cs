@@ -55,9 +55,9 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
   }
 
   public List<KeywordM>? Link(string csv, IDataAdapter seeker) =>
-    LinkList(csv, GetNotFoundRecord, seeker);
+    LinkList(csv, _getNotFoundRecord, seeker);
 
-  private KeywordM GetNotFoundRecord(int notFoundId) {
+  private KeywordM _getNotFoundRecord(int notFoundId) {
     var id = GetNextId();
     var item = new KeywordM(id, $"{_notFoundRecordNamePrefix}{id} ({notFoundId})", Tree);
     item.Parent!.Items.Add(item);
