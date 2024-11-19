@@ -42,12 +42,12 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
     TreeItemCreate(new(id, name, toponymName, fCode, parent));
 
   public Task<GeoNameM?> CreateGeoNameHierarchy(double lat, double lng) =>
-    CreateGeoNameHierarchy($"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}".Replace(",", "."));
+    _createGeoNameHierarchy($"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}".Replace(",", "."));
 
   public Task<GeoNameM?> CreateGeoNameHierarchy(int id) =>
-    CreateGeoNameHierarchy($"http://api.geonames.org/hierarchy?geonameId={id}");
+    _createGeoNameHierarchy($"http://api.geonames.org/hierarchy?geonameId={id}");
 
-  private async Task<GeoNameM?> CreateGeoNameHierarchy(string url) {
+  private async Task<GeoNameM?> _createGeoNameHierarchy(string url) {
     if (ApiLimitExceeded) return null;
 
     if (!Core.Settings.GeoName.LoadFromWeb) {
