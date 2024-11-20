@@ -143,12 +143,12 @@ public class SegmentR : TableDataAdapter<SegmentM> {
 
   public void ChangePerson(PersonM? person, SegmentM[] segments, PersonM[] people) {
     foreach (var segment in segments)
-      ChangePerson(segment, person);
+      _changePerson(segment, person);
 
     SegmentsPersonChangedEvent(this, (segments, person, people));
   }
 
-  private void ChangePerson(SegmentM segment, PersonM? person) {
+  private void _changePerson(SegmentM segment, PersonM? person) {
     var oldPerson = segment.Person;
     segment.Person = person;
     IsModified = true;
