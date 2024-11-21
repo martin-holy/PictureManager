@@ -20,9 +20,9 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   private List<int> _drawerNotAvailable = [];
 
   public List<SegmentM> Drawer { get; private set; } = [];
-  public event EventHandler<(SegmentM, PersonM?, PersonM?)> SegmentPersonChangedEvent = delegate { };
-  public event EventHandler<(SegmentM[], PersonM?, PersonM[])> SegmentsPersonChangedEvent = delegate { };
-  public event EventHandler<SegmentM[]> SegmentsKeywordsChangedEvent = delegate { };
+  public event EventHandler<(SegmentM, PersonM?, PersonM?)>? SegmentPersonChangedEvent;
+  public event EventHandler<(SegmentM[], PersonM?, PersonM[])>? SegmentsPersonChangedEvent;
+  public event EventHandler<SegmentM[]>? SegmentsKeywordsChangedEvent;
 
   public SegmentR(CoreR coreR) : base(coreR, "Segments", 5) {
     _coreR = coreR;
@@ -132,26 +132,35 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       IsModified = true;
     }
 
-    SegmentsPersonChangedEvent(this, (segments, null, [person]));
+    _raiseSegmentsPersonChanged((segments, null, [person]));
   }
 
   public void RemoveKeyword(KeywordM keyword) =>
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
   public void ToggleKeyword(SegmentM[] segments, KeywordM keyword) =>
-    keyword.Toggle(segments, _ => IsModified = true, () => SegmentsKeywordsChangedEvent(this, segments));
+    keyword.Toggle(segments, _ => IsModified = true, () => _raiseSegmentsKeywordsChanged(segments));
 
   public void ChangePerson(PersonM? person, SegmentM[] segments, PersonM[] people) {
     foreach (var segment in segments)
       _changePerson(segment, person);
 
-    SegmentsPersonChangedEvent(this, (segments, person, people));
+    _raiseSegmentsPersonChanged((segments, person, people));
   }
 
   private void _changePerson(SegmentM segment, PersonM? person) {
     var oldPerson = segment.Person;
     segment.Person = person;
     IsModified = true;
-    SegmentPersonChangedEvent(this, (segment, oldPerson, person));
+    _raiseSegmentPersonChanged((segment, oldPerson, person));
   }
+
+  private void _raiseSegmentPersonChanged((SegmentM, PersonM?, PersonM?) args) =>
+    SegmentPersonChangedEvent?.Invoke(this, args);
+
+  private void _raiseSegmentsPersonChanged((SegmentM[], PersonM?, PersonM[]) args) =>
+    SegmentsPersonChangedEvent?.Invoke(this, args);
+
+  private void _raiseSegmentsKeywordsChanged(SegmentM[] args) =>
+    SegmentsKeywordsChangedEvent?.Invoke(this, args);
 }
