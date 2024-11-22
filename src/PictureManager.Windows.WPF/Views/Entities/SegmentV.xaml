@@ -116,7 +116,7 @@
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="ToolTipOpening">
           <b:InvokeCommandAction
-            Command="ftSegment:SegmentRectVM.SegmentToolTipReloadCommand"
+            Command="ftSegment:SegmentRectVM.ReloadSegmentToolTipCommand"
             CommandParameter="{Binding}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
