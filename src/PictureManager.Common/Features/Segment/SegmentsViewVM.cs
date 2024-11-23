@@ -15,12 +15,6 @@ public sealed class SegmentsViewVM : SegmentCollectionView {
     CanDragFunc = one => _getOneOrSelected(one as SegmentM);
   }
 
-  protected override void _onIsVisibleChanged() {
-    if (!IsVisible) return;
-    ReGroupPendingItems();
-    ScrollTo(TopGroup, TopItem);
-  }
-
   public void OnSegmentsPersonChanged(SegmentM[] segments) {
     Insert(segments);
     var newP = Root.Source.GetPeople().ToArray();
@@ -37,21 +31,9 @@ public sealed class SegmentsViewVM : SegmentCollectionView {
   }
 
   public void RemoveSegments(IList<SegmentM> items) {
-    if (Root.Source.Any(items.Contains)) {
-      TopItem = Root.Source.GetNextOrPreviousItem(items);
-      Remove(items.ToArray());
-    }
-  }
-  
-  public void Shuffle() {
-    var sourceCopy = Root.Source.ToList();
-    sourceCopy.Shuffle();
-    Reload(sourceCopy, GroupMode.ThenByRecursive, null, true);
-  }
-
-  public void Sort() {
-    var sourceCopy = Root.Source.OrderBy(x => x.MediaItem.FileName).ToList();
-    Reload(sourceCopy, GroupMode.ThenByRecursive, null, true);
+    if (!Root.Source.Any(items.Contains)) return;
+    TopItem = Root.Source.GetNextOrPreviousItem(items);
+    Remove(items.ToArray());
   }
 
   private SegmentM[]? _getOneOrSelected(SegmentM? one) {
