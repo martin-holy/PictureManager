@@ -45,7 +45,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       ShowThumbInfo = ThumbScale > 0.4;
   }
 
-  public override void OnIsVisibleChanged() {
+  protected override void _onIsVisibleChanged() {
     if (!IsVisible) return;
     ReGroupPendingItems();
     ScrollTo(TopGroup, TopItem, Core.Settings.MediaItem.ScrollExactlyToMediaItem);

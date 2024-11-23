@@ -15,7 +15,7 @@ public sealed class SegmentsViewVM : SegmentCollectionView {
     CanDragFunc = one => _getOneOrSelected(one as SegmentM);
   }
 
-  public override void OnIsVisibleChanged() {
+  protected override void _onIsVisibleChanged() {
     if (!IsVisible) return;
     ReGroupPendingItems();
     ScrollTo(TopGroup, TopItem);

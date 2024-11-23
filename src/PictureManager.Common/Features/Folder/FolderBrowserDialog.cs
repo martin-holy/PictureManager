@@ -16,7 +16,7 @@ public sealed class FolderBrowserDialog : Dialog {
   public new RelayCommand OkCommand { get; }
 
   public FolderBrowserDialog() : base("Browse For Folder", Res.IconFolder) {
-    TreeView.TreeItemSelectedEvent += (_, e) => SelectedFolder = e.Data;
+    TreeView.ItemSelectedEvent += (_, e) => SelectedFolder = e.Data;
     OkCommand = new(() => SetResult(this, 1), () => SelectedFolder != null, null, "Ok");
     Buttons = [
       new(OkCommand, true),

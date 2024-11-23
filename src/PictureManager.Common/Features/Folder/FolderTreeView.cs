@@ -12,6 +12,6 @@ public sealed class FolderTreeView : TreeView<ITreeItem> {
     Category = new(r, this);
   }
 
-  protected override Task OnItemSelected(ITreeItem item, CancellationToken token) =>
+  protected override Task _onItemSelected(ITreeItem item, CancellationToken token) =>
     Core.VM.MediaItem.Views.LoadByFolder(item);
 }
