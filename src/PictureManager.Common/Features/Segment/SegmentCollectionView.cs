@@ -31,10 +31,10 @@ public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment,
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>
     string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);
 
-  public override void OnItemSelected(SelectionEventArgs<SegmentM> e) =>
+  protected override void _onItemSelected(SelectionEventArgs<SegmentM> e) =>
     Core.S.Segment.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 
-  public override void OnItemOpened(SegmentM item) =>
+  protected override void _onItemOpened(SegmentM item) =>
     Core.S.Segment.ViewMediaItemsWithSegment(this, item);
 
   public override string GetItemTemplateName(ViewMode viewMode) => "PM.DT.Segment";

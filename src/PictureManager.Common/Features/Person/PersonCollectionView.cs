@@ -30,10 +30,10 @@ public class PersonCollectionView()
   public override int SortCompare(PersonM itemA, PersonM itemB) =>
     string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);
 
-  public override void OnItemSelected(SelectionEventArgs<PersonM> e) =>
+  protected override void _onItemSelected(SelectionEventArgs<PersonM> e) =>
     Core.S.Person.Select(e);
 
-  public override void OnItemOpened(PersonM item) =>
+  protected override void _onItemOpened(PersonM item) =>
     Core.S.Segment.ViewMediaItemsWithSegment(this, item.Segment);
 
   public override string GetItemTemplateName(ViewMode viewMode) =>

@@ -28,7 +28,7 @@ public class VideoItemCollectionView() : CollectionView<VideoItemM>(Res.IconImag
   public override int SortCompare(VideoItemM itemA, VideoItemM itemB) =>
     itemA.TimeStart - itemB.TimeStart;
 
-  public override void OnItemSelected(SelectionEventArgs<VideoItemM> e) =>
+  protected override void _onItemSelected(SelectionEventArgs<VideoItemM> e) =>
     Selected.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 
   public override string GetItemTemplateName(ViewMode viewMode) => "PM.DT.VideoItem.Thumb";

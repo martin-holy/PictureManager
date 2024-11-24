@@ -51,7 +51,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     ScrollTo(TopGroup, TopItem, Core.Settings.MediaItem.ScrollExactlyToMediaItem);
   }
 
-  public override void OnItemOpened(MediaItemM item) {
+  protected override void _onItemOpened(MediaItemM item) {
     Selected.DeselectAll();
 
     if (LastSelectedRow?.Parent is not CollectionViewGroup<MediaItemM> group) return;
@@ -59,8 +59,8 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     Core.VM.MediaViewer.SetMediaItems(group.Source.ToList(), item);
   }
 
-  public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) {
-    base.OnItemSelected(e);
+  protected override void _onItemSelected(SelectionEventArgs<MediaItemM> e) {
+    base._onItemSelected(e);
     Core.VM.MediaItem.Current = Selected.Items.Contains(e.Item) ? e.Item : null;
   }
 

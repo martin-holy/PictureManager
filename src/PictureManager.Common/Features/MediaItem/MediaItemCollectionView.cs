@@ -43,7 +43,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
   public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>
     string.Compare(itemA.FileName, itemB.FileName, StringComparison.CurrentCultureIgnoreCase);
 
-  public override void OnItemSelected(SelectionEventArgs<MediaItemM> e) =>
+  protected override void _onItemSelected(SelectionEventArgs<MediaItemM> e) =>
     Selected.Select(e.Items, e.Item, e.IsCtrlOn, e.IsShiftOn);
 
   public override string GetItemTemplateName(ViewMode viewMode) => "PM.DT.MediaItem.Thumb-Full";
