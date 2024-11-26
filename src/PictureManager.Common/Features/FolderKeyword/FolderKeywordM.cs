@@ -15,7 +15,7 @@ public sealed class FolderKeywordM : TreeItem {
     Parent = parent;
   }
 
-  protected override void OnIsExpandedChanged(bool value) {
+  protected override void _onIsExpandedChanged(bool value) {
     if (!value) return;
     foreach (var folder in Folders)
       folder.LoadSubFolders(false);
