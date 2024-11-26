@@ -34,7 +34,7 @@ public sealed class PersonM : TreeItem, IEquatable<PersonM>, IHaveKeywords {
   public ExtObservableCollection<SegmentM>? TopSegments { get; set; }
   public List<KeywordM>? Keywords { get; set; }
   public KeywordM[] DisplayKeywords => Keywords!.GetKeywords().OrderBy(x => x.FullName).ToArray();
-  public bool IsUnknown { get => Bits[BitsMasks.IsUnknown]; set { Bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }
+  public bool IsUnknown { get => _bits[BitsMasks.IsUnknown]; set { _bits[BitsMasks.IsUnknown] = value; OnPropertyChanged(); } }
   public List<SegmentM>? Segments { get; set; }
 
   public PersonM() { }
