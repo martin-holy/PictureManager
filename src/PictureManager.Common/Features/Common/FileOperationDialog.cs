@@ -50,7 +50,7 @@ public sealed class FileOperationDialog : Dialog {
     });
   }
 
-  protected override Task OnResultChanged(int result) {
+  protected override Task _onResultChanged(int result) {
     if (result != 0 || WorkCts == null) return Task.CompletedTask;
     WorkCts.Cancel();
     return WorkTask ?? Task.CompletedTask;
