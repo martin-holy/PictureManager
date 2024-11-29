@@ -222,7 +222,7 @@ public sealed class CoreVM : ObservableObject {
 
   private void _onMediaViewerSlideshowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(SlideshowVM.State)) && ((SlideshowVM)sender!).State == SlideshowState.On)
-      Video.MediaPlayer.PlayType = PlayType.Video;
+      Video.MediaPlayer.PlayType = MediaPlayer.MediaPlayType.Video;
   }
 
   private void _onMediaViewerZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
