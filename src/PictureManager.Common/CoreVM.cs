@@ -156,7 +156,7 @@ public sealed class CoreVM : ObservableObject {
       MediaItem.OnViewSelected(MainTabs.Selected?.Data as MediaItemsViewVM);
   }
 
-  private void _onMainTabsTabClosed(IListItem tab) {
+  private void _onMainTabsTabClosed(object? sender, IListItem tab) {
     switch (tab.Data) {
       case MediaItemsViewVM miView:
         MediaItem.Views.CloseView(miView);

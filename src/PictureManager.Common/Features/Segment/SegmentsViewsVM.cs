@@ -57,7 +57,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
       Current = view;
   }
 
-  private void _onTabsTabClosed(IListItem data) {
+  private void _onTabsTabClosed(object? sender, IListItem data) {
     if (data.Data is not SegmentsViewVM view) return;
     _views.Remove(view);
     if (!ReferenceEquals(view, Current)) return;
