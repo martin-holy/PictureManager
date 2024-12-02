@@ -13,6 +13,6 @@ public sealed class FavoriteFolderTreeCategory : TreeCategory<FavoriteFolderM> {
     AddToFavoritesCommand = new(x => r.ItemCreate(x!), x => x != null, null, "Add to Favorites");
   }
 
-  public override void OnItemSelected(object o) =>
+  protected override void _onItemSelected(object o) =>
     Core.R.Folder.Tree.Category.ScrollTo((o as FavoriteFolderM)?.Folder);
 }

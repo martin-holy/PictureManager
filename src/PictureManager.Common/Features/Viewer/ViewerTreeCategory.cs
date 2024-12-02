@@ -5,6 +5,6 @@ namespace PictureManager.Common.Features.Viewer;
 public sealed class ViewerTreeCategory(ViewerR r)
   : TreeCategory<ViewerM>(new(), Res.IconEye, "Viewers", (int)Category.Viewers, r) {
 
-  public override void OnItemSelected(object o) =>
+  protected override void _onItemSelected(object o) =>
     Core.VM.Viewer.OpenDetail(o as ViewerM);
 }

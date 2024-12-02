@@ -24,7 +24,7 @@ public sealed class PersonTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
     ScrollToAfterCreate = true;
   }
 
-  public override void OnItemSelected(object o) {
+  protected override void _onItemSelected(object o) {
     switch (o) {
       case PersonM p:
         Core.VM.ToggleDialog.Toggle(p);

@@ -5,6 +5,6 @@ namespace PictureManager.Common.Features.GeoName;
 public sealed class GeoNameTreeCategory(GeoNameR r)
   : TreeCategory<GeoNameM>(new(), Res.IconLocationCheckin, "GeoNames", (int)Category.GeoNames, r) {
 
-  public override void OnItemSelected(object o) =>
+  protected override void _onItemSelected(object o) =>
     Core.VM.ToggleDialog.Toggle(o as GeoNameM);
 }

@@ -16,7 +16,7 @@ public sealed class KeywordTreeCategory : TreeCategory<KeywordM, CategoryGroupM>
     ScrollToAfterCreate = true;
   }
 
-  public override void OnItemSelected(object o) =>
+  protected override void _onItemSelected(object o) =>
     Core.VM.ToggleDialog.Toggle(o as KeywordM);
 
   public override bool CanDrop(object? src, ITreeItem? dest) =>
