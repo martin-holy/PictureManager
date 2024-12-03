@@ -33,7 +33,7 @@ public sealed class Settings : UserSettings {
       new(Res.IconImageMultiple, "MediaViewer", mediaViewer)
     ];
 
-    WatchForChanges();
+    _watchForChanges();
   }
 
   public static Settings Load(string filePath) {
