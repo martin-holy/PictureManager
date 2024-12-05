@@ -13,11 +13,11 @@ public sealed class GetGeoNamesFromWebDialog : ProgressDialog<ImageM> {
     base("Getting GeoNames from web ...", Res.IconLocationCheckin, items) {
     _coreR = coreR;
     RunSync = true;
-    AutoRun();
+    _autoRun();
   }
 
-  protected override async Task Do(ImageM item, CancellationToken token) {
-    ReportProgress(item.FileName);
+  protected override async Task _do(ImageM item, CancellationToken token) {
+    _reportProgress(item.FileName);
     if (_coreR.GeoName.ApiLimitExceeded) return;
     var gl = await _coreR.GeoLocation.GetOrCreate(item.GeoLocation?.Lat, item.GeoLocation?.Lng, null, null);
     _coreR.MediaItemGeoLocation.ItemUpdate(new(item, gl));

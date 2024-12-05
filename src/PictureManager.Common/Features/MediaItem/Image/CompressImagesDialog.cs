@@ -22,12 +22,12 @@ public sealed class CompressImagesDialog : ParallelProgressDialog<ImageM> {
     _jpegQualityLevel = quality;
   }
 
-  protected override void CustomProgress(object? args) {
+  protected override void _customProgress(object? args) {
     if (args is not (long[] and [var sourceSize, var compressedSize])) return;
     SetSize(_totalSourceSize + sourceSize, _totalCompressedSize + compressedSize);
   }
 
-  protected override bool DoBefore() {
+  protected override bool _doBefore() {
     SetSize(0, 0);
     return true;
   }
@@ -39,12 +39,12 @@ public sealed class CompressImagesDialog : ParallelProgressDialog<ImageM> {
     OnPropertyChanged(nameof(TotalCompressedSize));
   }
 
-  protected override Task Do(ImageM image, CancellationToken token) {
+  protected override Task _do(ImageM image, CancellationToken token) {
     var sourceSize = new FileInfo(image.FilePath).Length;
     var bSuccess = _imageS.TryWriteMetadata(image, _jpegQualityLevel);
     var compressedSize = bSuccess ? new FileInfo(image.FilePath).Length : sourceSize;
 
-    ReportProgress(image.FileName, new[] { sourceSize, compressedSize });
+    _reportProgress(image.FileName, new[] { sourceSize, compressedSize });
 
     return Task.CompletedTask;
   }

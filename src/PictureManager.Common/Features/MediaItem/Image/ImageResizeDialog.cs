@@ -29,17 +29,17 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
     SetMaxMpx(items);
   }
 
-  protected override bool CanAction() =>
+  protected override bool _canAction() =>
     !string.IsNullOrEmpty(_destDir);
 
-  protected override bool DoBefore() {
+  protected override bool _doBefore() {
     Directory.CreateDirectory(_destDir!);
     _px = Convert.ToInt32(Mpx * 1000000);
     return true;
   }
 
-  protected override Task Do(ImageM image, CancellationToken token) {
-    ReportProgress(image.FileName);
+  protected override Task _do(ImageM image, CancellationToken token) {
+    _reportProgress(image.FileName);
 
     try {
       var dest = Path.Combine(_destDir!, image.FileName);

@@ -259,7 +259,16 @@ public sealed class CoreVM : ObservableObject {
   private void _onMediaItemCreated(object? sender, MediaItemM item) =>
     _updateMediaItemsCount();
 
+  // TODO why current is set when VideoItemM is deleted?
+  // TODO BUG when VideoItem is deleted because Video was deleted => current is set to deleted Video
   private void _onMediaItemsDeleted(object? sender, IList<MediaItemM> items) {
+    /*if (MediaViewer.IsVisible && items.All(x => x is RealMediaItemM)) {
+      MediaItem.Current = MediaViewer.MediaItems.GetNextOrPreviousItem(items);
+    }
+    else {
+
+    }*/
+
     MediaItem.Current = MediaViewer.IsVisible && items.All(x => x is RealMediaItemM)
       ? MediaViewer.MediaItems.GetNextOrPreviousItem(items)
       : items.OfType<VideoItemM>().FirstOrDefault()?.Video;

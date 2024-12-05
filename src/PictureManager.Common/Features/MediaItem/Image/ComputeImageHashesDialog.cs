@@ -15,11 +15,11 @@ public sealed class ComputeImageHashesDialog : ProgressDialog<MediaItemM> {
     base("Computing Hashes ...", Res.IconCompare, items) {
     _hashes = hashes;
     _hashMethod = hashMethod;
-    AutoRun();
+    _autoRun();
   }
 
-  protected override Task Do(MediaItemM item, CancellationToken token) {
-    ReportProgress(item.FilePath);
+  protected override Task _do(MediaItemM item, CancellationToken token) {
+    _reportProgress(item.FilePath);
 
     if (_hashes.ContainsKey(item)) return Task.CompletedTask;
 

@@ -13,15 +13,15 @@ public sealed class ReloadMetadataDialog : ParallelProgressDialog<RealMediaItemM
     base("Reloading metadata...", MH.UI.Res.IconImage, items) {
     _items = items;
     _mediaItemS = mediaItemS;
-    AutoRun();
+    _autoRun();
   }
 
-  protected override Task Do(RealMediaItemM item, CancellationToken token) {
-    ReportProgress(item.FilePath);
+  protected override Task _do(RealMediaItemM item, CancellationToken token) {
+    _reportProgress(item.FilePath);
     return _mediaItemS.ReloadMetadata(item);
   }
 
-  protected override void DoAfter() =>
+  protected override void _doAfter() =>
     _mediaItemS.OnMetadataReloaded(_items);
 
   public static void Open(RealMediaItemM[] items, MediaItemS mediaItemS) {

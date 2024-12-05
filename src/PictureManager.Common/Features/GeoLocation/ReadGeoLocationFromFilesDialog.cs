@@ -10,11 +10,11 @@ public sealed class ReadGeoLocationFromFilesDialog : ProgressDialog<ImageM> {
   public ReadGeoLocationFromFilesDialog(ImageM[] items) :
     base("Reading GeoLocations from files ...", Res.IconLocationCheckin, items) {
     RunSync = true;
-    AutoRun();
+    _autoRun();
   }
 
-  protected override Task Do(ImageM item, CancellationToken token) {
-    ReportProgress(item.FileName);
+  protected override Task _do(ImageM item, CancellationToken token) {
+    _reportProgress(item.FileName);
     var mim = new MediaItemMetadata(item);
     MediaItemS.ReadMetadata(mim, true);
     return mim.Success ? mim.FindGeoLocation(false) : Task.CompletedTask;

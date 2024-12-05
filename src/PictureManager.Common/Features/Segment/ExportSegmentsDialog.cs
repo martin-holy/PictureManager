@@ -18,17 +18,17 @@ public sealed class ExportSegmentsDialog : ParallelProgressDialog<SegmentM> {
     OpenFolderBrowserCommand = new(() => DestDir = CoreVM.BrowseForFolder(), Res.IconFolder, "Select folder");
   }
 
-  protected override bool CanAction() =>
+  protected override bool _canAction() =>
     !string.IsNullOrEmpty(_destDir);
 
-  protected override bool DoBefore() {
+  protected override bool _doBefore() {
     Directory.CreateDirectory(_destDir!);
     return true;
   }
 
-  protected override Task Do(SegmentM segment, CancellationToken token) {
+  protected override Task _do(SegmentM segment, CancellationToken token) {
     var fileName = segment.MediaItem.FileName.Replace(".jpg", "_segment_" + segment.Id + ".jpg", StringComparison.OrdinalIgnoreCase);
-    ReportProgress(fileName);
+    _reportProgress(fileName);
 
     try {
       SegmentS.ExportSegment(segment, Path.Combine(_destDir!, fileName));
