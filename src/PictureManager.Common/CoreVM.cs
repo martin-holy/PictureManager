@@ -259,30 +259,22 @@ public sealed class CoreVM : ObservableObject {
   private void _onMediaItemCreated(object? sender, MediaItemM item) =>
     _updateMediaItemsCount();
 
-  // TODO why current is set when VideoItemM is deleted?
-  // TODO BUG when VideoItem is deleted because Video was deleted => current is set to deleted Video
   private void _onMediaItemsDeleted(object? sender, IList<MediaItemM> items) {
-    /*if (MediaViewer.IsVisible && items.All(x => x is RealMediaItemM)) {
-      MediaItem.Current = MediaViewer.MediaItems.GetNextOrPreviousItem(items);
-    }
-    else {
-
-    }*/
-
-    MediaItem.Current = MediaViewer.IsVisible && items.All(x => x is RealMediaItemM)
-      ? MediaViewer.MediaItems.GetNextOrPreviousItem(items)
-      : items.OfType<VideoItemM>().FirstOrDefault()?.Video;
-
     _updateMediaItemsCount();
     MediaItem.Views.RemoveMediaItems(items);
     Video.CurrentVideoItems.Remove(items.OfType<VideoItemM>().ToArray());
 
-    if (MediaViewer.IsVisible) {
-      if (MediaItem.Current == null)
-        MainWindow.IsInViewMode = false;
-      else
-        MediaViewer.Remove(items[0], MediaItem.Current);
-    }
+    if (!MediaViewer.IsVisible) return;
+
+    if (items.FirstOrDefault() is VideoItemM vi && MediaViewer.MediaItems.Contains(vi.Video))
+      MediaItem.Current = vi.Video;
+    else
+      MediaItem.Current = MediaViewer.MediaItems.GetNextOrPreviousItem(items);
+
+    if (MediaItem.Current == null)
+      MainWindow.IsInViewMode = false;
+    else
+      MediaViewer.Remove(items[0], MediaItem.Current);
   }
 
   private void _onMediaItemRenamed(object? sender, MediaItemM item) {
