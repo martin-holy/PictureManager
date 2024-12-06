@@ -4,6 +4,9 @@
 [B] - Bug fix
 
 Latest:
+ - [B] Not successful MediaItems import when importing from folder with deleted Videos outside of this app containing VideoItems
+
+24.11.17.1717:
  - [U] Main menu: Open Segments View moved to Segments
  - [N] ViewModes for CollectionView applicable to each group separately or for all sub-groups with SHIFT key
  - [N] List ViewMode for all views with people
