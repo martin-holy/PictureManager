@@ -1,6 +1,8 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Common.Features.GeoName;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,15 +14,15 @@ namespace PictureManager.Common.Features.GeoLocation;
 public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>(coreR, "GeoLocations", 4) {
   public override GeoLocationM FromCsv(string[] csv) =>
     new(int.Parse(csv[0])) {
-      Lat = ToDouble(csv[1]),
-      Lng = ToDouble(csv[2])
+      Lat = csv[1].ToDouble(CultureInfo.InvariantCulture),
+      Lng = csv[2].ToDouble(CultureInfo.InvariantCulture)
     };
 
   public override string ToCsv(GeoLocationM gl) =>
     string.Join("|",
       gl.GetHashCode().ToString(),
-      ToString(gl.Lat),
-      ToString(gl.Lng),
+      gl.Lat.ToString(CultureInfo.InvariantCulture),
+      gl.Lng.ToString(CultureInfo.InvariantCulture),
       gl.GeoName?.GetHashCode().ToString());
 
   public override void LinkReferences() {
