@@ -57,14 +57,14 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
     if (item is RealMediaItemM rmi)
       rmi.Folder.MediaItems.Add(rmi);
 
-    RaiseItemCreated(item);
+    _raiseItemCreated(item);
   }
 
   protected override void OnItemDeleted(object? sender, MediaItemM item) =>
-    RaiseItemDeleted(item);
+    _raiseItemDeleted(item);
 
   protected override void OnItemsDeleted(object? sender, IList<MediaItemM> items) =>
-    RaiseItemsDeleted(items);
+    _raiseItemsDeleted(items);
 
   private void _onMediaItemsDeleted<T>(object? sender, IList<T> items) where T : MediaItemM =>
     OnItemsDeleted(this, items.Cast<MediaItemM>().ToArray());

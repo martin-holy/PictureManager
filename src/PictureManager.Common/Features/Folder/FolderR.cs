@@ -34,7 +34,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
 
   public override FolderM FromCsv(string[] csv) =>
     string.IsNullOrEmpty(csv[2])
-      ? new DriveM(int.Parse(csv[0]), csv[1], null, CurrentVolumeSerialNumber!)
+      ? new DriveM(int.Parse(csv[0]), csv[1], null, _currentVolumeSerialNumber!)
       : new FolderM(int.Parse(csv[0]), csv[1], null);
 
   public override string ToCsv(FolderM folder) =>

@@ -63,7 +63,7 @@ public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>(c
 
       if (gl != null && gl.GeoName == null && gn != null) {
         gl.GeoName = gn;
-        RaiseItemUpdated(gl);
+        _raiseItemUpdated(gl);
         IsModified = true;
       }
     }
@@ -81,7 +81,7 @@ public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>(c
 
     foreach (var gl in all.Except(toDelete)) {
       gl.GeoName = null;
-      RaiseItemUpdated(gl);
+      _raiseItemUpdated(gl);
     }
 
     ItemsDelete(toDelete);
