@@ -46,7 +46,7 @@ public sealed class VideoR : TableDataAdapter<VideoM> {
       vid.IsOnlyInDb ? "1" : string.Empty);
 
   public override void LinkReferences() {
-    foreach (var (mi, csv) in AllCsv) {
+    foreach (var (mi, csv) in _allCsv) {
       mi.Folder = _coreR.Folder.GetById(csv[1])!;
       mi.Folder.MediaItems.Add(mi);
       mi.People = _coreR.Person.Link(csv[8], this);

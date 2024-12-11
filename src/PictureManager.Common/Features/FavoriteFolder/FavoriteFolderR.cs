@@ -34,7 +34,7 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
   public override void LinkReferences() {
     Tree.Items.Clear();
 
-    foreach (var (ff, csv) in AllCsv) {
+    foreach (var (ff, csv) in _allCsv) {
       ff.Folder = _coreR.Folder.AllDict[int.Parse(csv[1])];
       ff.Parent = Tree;
       Tree.Items.Add(ff);

@@ -43,7 +43,7 @@ public class ViewerR : TreeDataAdapter<ViewerM> {
   public override void LinkReferences() {
     Tree.Items.Clear();
 
-    foreach (var (viewer, csv) in AllCsv.OrderBy(x => x.Item1.Name)) {
+    foreach (var (viewer, csv) in _allCsv.OrderBy(x => x.Item1.Name)) {
       // reference to IncludedFolders
       if (!string.IsNullOrEmpty(csv[2]))
         foreach (var folderId in csv[2].Split(',').Select(int.Parse)) {

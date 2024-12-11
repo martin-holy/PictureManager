@@ -63,7 +63,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
   public override void LinkReferences() {
     _coreR.CategoryGroup.LinkGroups(Tree, AllDict);
 
-    foreach (var (person, csv) in AllCsv) {
+    foreach (var (person, csv) in _allCsv) {
       // top segments
       if (IdsToRecords(csv[2], _coreR.Segment.AllDict) is { } ts) {
         if (ts.Item1.Count > 0) {
@@ -92,7 +92,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
   public PersonM GetPerson(int id, IDataAdapter seeker) =>
     AllDict.TryGetValue(id, out var person)
       ? person
-      : ResolveNotFoundRecord(id, GetNotFoundRecord, seeker)!;
+      : _resolveNotFoundRecord(id, GetNotFoundRecord, seeker)!;
 
   // the sort order for not available will be lost so take available first
   private string TopSegmentsToCsv(PersonM person) =>

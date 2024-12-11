@@ -47,10 +47,10 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       string.Join(",", ((int)segment.X).ToString(), ((int)segment.Y).ToString(), ((int)segment.Size).ToString()),
       segment.Keywords.ToHashCodes().ToCsv());
 
-  public override void PropsToCsv() {
-    TableProps.Clear();
-    TableProps.Add(nameof(SegmentVM.SegmentSize), SegmentVM.SegmentSize.ToString());
-    TableProps.Add("SegmentsDrawer", string.Join(",",
+  protected override void _propsToCsv() {
+    _tableProps.Clear();
+    _tableProps.Add(nameof(SegmentVM.SegmentSize), SegmentVM.SegmentSize.ToString());
+    _tableProps.Add("SegmentsDrawer", string.Join(",",
       Drawer
         .Select(x => x.GetHashCode())
         .Concat(_drawerNotAvailable)
@@ -60,7 +60,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
   public override void LinkReferences() {
     var withoutMediaItem = new List<SegmentM>();
 
-    foreach (var (segment, csv) in AllCsv) {
+    foreach (var (segment, csv) in _allCsv) {
       var mi = _coreR.MediaItem.GetById(csv[1]);
       if (mi != null) {
         segment.MediaItem = mi;
@@ -88,10 +88,10 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       _ = AllDict.Remove(segment.GetHashCode());
 
     // Table Properties
-    if (TableProps.TryGetValue(nameof(SegmentVM.SegmentSize), out var segmentSize))
+    if (_tableProps.TryGetValue(nameof(SegmentVM.SegmentSize), out var segmentSize))
       SegmentVM.SegmentSize = int.Parse(segmentSize);
 
-    if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer)
+    if (_tableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer)
         && !string.IsNullOrEmpty(segmentsDrawer)
         && IdsToRecords(segmentsDrawer, AllDict) is { } drawer) {
         Drawer = drawer.Item1;
@@ -99,7 +99,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
     }
 
     // table props are not needed any more
-    TableProps.Clear();
+    _tableProps.Clear();
   }
 
   public List<SegmentM>? Link(string csv, IDataAdapter seeker) =>

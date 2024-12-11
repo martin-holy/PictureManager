@@ -37,7 +37,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
   public void LinkGroups<TI>(TreeCategory cat, Dictionary<int, TI> allDict) where TI : class, ITreeItem {
     cat.Items.Clear();
 
-    foreach (var (cg, csv) in AllCsv) {
+    foreach (var (cg, csv) in _allCsv) {
       if (!cat.Id.Equals((int)cg.Category)) continue;
 
       var items = string.IsNullOrEmpty(csv[3]) ? [] : csv[3].Split(',').Select(int.Parse);

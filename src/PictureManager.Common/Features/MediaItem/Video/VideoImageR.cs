@@ -35,7 +35,7 @@ public class VideoImageR : TableDataAdapter<VideoImageM> {
       vi.Keywords.ToHashCodes().ToCsv());
 
   public override void LinkReferences() {
-    foreach (var (vi, csv) in AllCsv) {
+    foreach (var (vi, csv) in _allCsv) {
       vi.Video = _coreR.Video.GetById(csv[1])!;
       vi.Video.VideoImages ??= [];
       vi.Video.VideoImages.Add(vi);

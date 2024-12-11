@@ -26,7 +26,7 @@ public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>(c
       gl.GeoName?.GetHashCode().ToString());
 
   public override void LinkReferences() {
-    foreach (var (gl, csv) in AllCsv)
+    foreach (var (gl, csv) in _allCsv)
       gl.GeoName = coreR.GeoName.GetById(csv[3], true);
   }
 

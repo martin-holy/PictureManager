@@ -44,7 +44,7 @@ public class VideoClipR : TableDataAdapter<VideoClipM> {
       vc.Keywords.ToHashCodes().ToCsv());
 
   public override void LinkReferences() {
-    foreach (var (vc, csv) in AllCsv) {
+    foreach (var (vc, csv) in _allCsv) {
       vc.Video = _coreR.Video.GetById(csv[1])!;
       vc.Video.VideoClips ??= [];
       vc.Video.VideoClips.Add(vc);
