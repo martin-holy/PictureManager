@@ -29,15 +29,15 @@ public class SegmentR : TableDataAdapter<SegmentM> {
     IsDriveRelated = true;
   }
 
-  public override Dictionary<string, IEnumerable<SegmentM>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<SegmentM>> _getAsDriveRelated() =>
     CoreR.GetAsDriveRelated(All, x => x.MediaItem.Folder);
 
-  public override SegmentM FromCsv(string[] csv) {
+  protected override SegmentM _fromCsv(string[] csv) {
     var rect = csv[3].Split(',');
     return new(int.Parse(csv[0]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), MediaItemR.Dummy);
   }
 
-  public override string ToCsv(SegmentM segment) =>
+  protected override string _toCsv(SegmentM segment) =>
     string.Join("|",
       segment.GetHashCode().ToString(),
       segment.MediaItem.GetHashCode().ToString(),
@@ -114,7 +114,7 @@ public class SegmentR : TableDataAdapter<SegmentM> {
       Keywords = item.Keywords?.ToList()
     });
 
-  protected override void OnItemDeleted(object sender, SegmentM item) {
+  protected override void _onItemDeleted(object sender, SegmentM item) {
     File.Delete(item.FilePathCache);
   }
 

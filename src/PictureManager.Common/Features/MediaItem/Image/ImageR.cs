@@ -17,10 +17,10 @@ public sealed class ImageR : TableDataAdapter<ImageM> {
     IsDriveRelated = true;
   }
 
-  public override Dictionary<string, IEnumerable<ImageM>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<ImageM>> _getAsDriveRelated() =>
     CoreR.GetAsDriveRelated(All, x => x.Folder);
 
-  public override ImageM FromCsv(string[] csv) =>
+  protected override ImageM _fromCsv(string[] csv) =>
     new(int.Parse(csv[0]), FolderR.Dummy, csv[2]) {
       Width = csv[3].IntParseOrDefault(0),
       Height = csv[4].IntParseOrDefault(0),
@@ -30,7 +30,7 @@ public sealed class ImageR : TableDataAdapter<ImageM> {
       IsOnlyInDb = csv[10] == "1"
     };
 
-  public override string ToCsv(ImageM img) =>
+  protected override string _toCsv(ImageM img) =>
     string.Join("|",
       img.GetHashCode().ToString(),
       img.Folder.GetHashCode().ToString(),
@@ -59,7 +59,7 @@ public sealed class ImageR : TableDataAdapter<ImageM> {
   public ImageM ItemCreate(FolderM folder, string fileName) =>
     ItemCreate(new(GetNextId(), folder, fileName));
 
-  protected override void OnItemDeleted(object sender, ImageM item) {
+  protected override void _onItemDeleted(object sender, ImageM item) {
     _coreR.MediaItem.OnItemDeletedCommon(item);
   }
 }

@@ -20,7 +20,7 @@ public class ViewerR : TreeDataAdapter<ViewerM> {
     Tree = new(this);
   }
 
-  public override ViewerM FromCsv(string[] csv) {
+  protected override ViewerM _fromCsv(string[] csv) {
     var viewer = new ViewerM(int.Parse(csv[0]), csv[1], Tree) {
       IsDefault = csv[6] == "1"
     };
@@ -28,7 +28,7 @@ public class ViewerR : TreeDataAdapter<ViewerM> {
     return viewer;
   }
 
-  public override string ToCsv(ViewerM viewer) =>
+  protected override string _toCsv(ViewerM viewer) =>
     string.Join("|",
       viewer.GetHashCode().ToString(),
       viewer.Name,
@@ -80,7 +80,7 @@ public class ViewerR : TreeDataAdapter<ViewerM> {
   public override ViewerM ItemCreate(ITreeItem parent, string name) =>
     TreeItemCreate(new(GetNextId(), name, parent));
 
-  protected override void OnItemDeleted(object sender, ViewerM item) {
+  protected override void _onItemDeleted(object sender, ViewerM item) {
     item.Parent!.Items.Remove(item);
     item.Parent = null;
     item.IncludedFolders.Clear();

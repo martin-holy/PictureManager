@@ -12,13 +12,13 @@ namespace PictureManager.Common.Features.GeoLocation;
 /// DB fields: ID|Lat|Lng|GeoName
 /// </summary>
 public sealed class GeoLocationR(CoreR coreR) : TableDataAdapter<GeoLocationM>(coreR, "GeoLocations", 4) {
-  public override GeoLocationM FromCsv(string[] csv) =>
+  protected override GeoLocationM _fromCsv(string[] csv) =>
     new(int.Parse(csv[0])) {
       Lat = csv[1].ToDouble(CultureInfo.InvariantCulture),
       Lng = csv[2].ToDouble(CultureInfo.InvariantCulture)
     };
 
-  public override string ToCsv(GeoLocationM gl) =>
+  protected override string _toCsv(GeoLocationM gl) =>
     string.Join("|",
       gl.GetHashCode().ToString(),
       gl.Lat.ToString(CultureInfo.InvariantCulture),

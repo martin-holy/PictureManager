@@ -22,10 +22,10 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
     Tree = new(this);
   }
 
-  public override GeoNameM FromCsv(string[] csv) =>
+  protected override GeoNameM _fromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1], csv[2], csv[3], null);
 
-  public override string ToCsv(GeoNameM geoName) =>
+  protected override string _toCsv(GeoNameM geoName) =>
     string.Join("|",
       geoName.GetHashCode().ToString(),
       geoName.Name,

@@ -18,10 +18,10 @@ public sealed class VideoR : TableDataAdapter<VideoM> {
     IsDriveRelated = true;
   }
 
-  public override Dictionary<string, IEnumerable<VideoM>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<VideoM>> _getAsDriveRelated() =>
     CoreR.GetAsDriveRelated(All, x => x.Folder);
 
-  public override VideoM FromCsv(string[] csv) =>
+  protected override VideoM _fromCsv(string[] csv) =>
     new(int.Parse(csv[0]), FolderR.Dummy, csv[2]) {
       Width = csv[3].IntParseOrDefault(0),
       Height = csv[4].IntParseOrDefault(0),
@@ -31,7 +31,7 @@ public sealed class VideoR : TableDataAdapter<VideoM> {
       IsOnlyInDb = csv[10] == "1"
     };
 
-  public override string ToCsv(VideoM vid) =>
+  protected override string _toCsv(VideoM vid) =>
     string.Join("|",
       vid.GetHashCode().ToString(),
       vid.Folder.GetHashCode().ToString(),
@@ -60,7 +60,7 @@ public sealed class VideoR : TableDataAdapter<VideoM> {
   public VideoM ItemCreate(FolderM folder, string fileName) =>
     ItemCreate(new(GetNextId(), folder, fileName));
 
-  protected override void OnItemDeleted(object sender, VideoM item) {
+  protected override void _onItemDeleted(object sender, VideoM item) {
     _coreR.VideoClip.ItemsDelete(item.VideoClips?.ToArray());
     _coreR.VideoImage.ItemsDelete(item.VideoImages?.ToArray());
     _coreR.MediaItem.OnItemDeletedCommon(item);

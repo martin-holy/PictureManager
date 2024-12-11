@@ -19,13 +19,13 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
     Tree = new(this);
   }
 
-  public override Dictionary<string, IEnumerable<FavoriteFolderM>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<FavoriteFolderM>> _getAsDriveRelated() =>
     CoreR.GetAsDriveRelated(Tree.Items.Cast<FavoriteFolderM>(), x => x.Folder);
 
-  public override FavoriteFolderM FromCsv(string[] csv) =>
+  protected override FavoriteFolderM _fromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[2], FolderR.Dummy);
 
-  public override string ToCsv(FavoriteFolderM ff) =>
+  protected override string _toCsv(FavoriteFolderM ff) =>
     string.Join("|",
       ff.GetHashCode().ToString(),
       ff.Folder.GetHashCode().ToString(),
@@ -49,7 +49,7 @@ public class FavoriteFolderR : TreeDataAdapter<FavoriteFolderM> {
       ItemDelete(ff);
   }
 
-  protected override void OnItemDeleted(object sender, FavoriteFolderM item) {
+  protected override void _onItemDeleted(object sender, FavoriteFolderM item) {
     item.Parent!.Items.Remove(item);
   }
 }

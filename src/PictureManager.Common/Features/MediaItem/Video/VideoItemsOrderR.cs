@@ -32,7 +32,7 @@ public sealed class VideoItemsOrderR : OneToManyMultiDataAdapter<VideoM, VideoIt
     IsModified = true;
   }
 
-  public override Dictionary<string, IEnumerable<KeyValuePair<VideoM, List<VideoItemM>>>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<KeyValuePair<VideoM, List<VideoItemM>>>> _getAsDriveRelated() =>
     CoreR.GetAsDriveRelated(All, x => x.Key.Folder);
 
   public override VideoItemM? GetValueById(string id) {

@@ -29,15 +29,15 @@ public class FolderR : TreeDataAdapter<FolderM> {
         yield return subItem;
   }
 
-  public override Dictionary<string, IEnumerable<FolderM>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<FolderM>> _getAsDriveRelated() =>
     Tree.Category.Items.ToDictionary(x => x.Name, GetAll<FolderM>);
 
-  public override FolderM FromCsv(string[] csv) =>
+  protected override FolderM _fromCsv(string[] csv) =>
     string.IsNullOrEmpty(csv[2])
       ? new DriveM(int.Parse(csv[0]), csv[1], null, _currentVolumeSerialNumber!)
       : new FolderM(int.Parse(csv[0]), csv[1], null);
 
-  public override string ToCsv(FolderM folder) =>
+  protected override string _toCsv(FolderM folder) =>
     string.Join("|",
       folder.GetHashCode().ToString(),
       folder.Name,
@@ -79,7 +79,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
     return null;
   }
 
-  protected override void OnItemDeleted(object sender, FolderM item) {
+  protected override void _onItemDeleted(object sender, FolderM item) {
     if (!Core.R.IsCopyMoveInProgress) DeleteFromDrive(item);
   }
 

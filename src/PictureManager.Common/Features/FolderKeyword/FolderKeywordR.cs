@@ -26,13 +26,13 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
     Tree = new(this);
   }
 
-  public override Dictionary<string, IEnumerable<FolderM>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<FolderM>> _getAsDriveRelated() =>
     CoreR.GetAsDriveRelated(All, x => x);
 
-  public override FolderM FromCsv(string[] csv) =>
+  protected override FolderM _fromCsv(string[] csv) =>
     new(int.Parse(csv[0]), string.Empty, null);
 
-  public override string ToCsv(FolderM folder) =>
+  protected override string _toCsv(FolderM folder) =>
     folder.GetHashCode().ToString();
 
   public override void LinkReferences() {
@@ -100,6 +100,6 @@ public class FolderKeywordR : TreeDataAdapter<FolderM> {
     Reload();
   }
 
-  protected override void OnItemDeleted(object sender, FolderM item) =>
+  protected override void _onItemDeleted(object sender, FolderM item) =>
     Reload();
 }

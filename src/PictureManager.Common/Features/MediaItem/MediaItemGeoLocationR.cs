@@ -10,14 +10,14 @@ public sealed class MediaItemGeoLocationR : OneToOneDataAdapter<MediaItemM, GeoL
     IsDriveRelated = true;
   }
 
-  public override Dictionary<string, IEnumerable<KeyValuePair<MediaItemM, GeoLocationM>>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<KeyValuePair<MediaItemM, GeoLocationM>>> _getAsDriveRelated() =>
     CoreR.GetAsDriveRelated(
       DataAdapterA
         .GetAll(x => x.GeoLocation != null)
         .Select(x => new KeyValuePair<MediaItemM, GeoLocationM>(x, x.GeoLocation!)),
       x => x.Key.Folder);
 
-  public override void AddItem(KeyValuePair<MediaItemM, GeoLocationM> item, string[] props) =>
+  protected override void _addItem(KeyValuePair<MediaItemM, GeoLocationM> item, string[] props) =>
     item.Key.GeoLocation = item.Value;
 
   public void ItemUpdate(KeyValuePair<MediaItemM, GeoLocationM?> item) {

@@ -39,35 +39,35 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   private void _onDbReady(object? sender, EventArgs e) {
     MaxId = _coreR.Image.MaxId;
 
-    _coreR.Image.ItemCreatedEvent += OnItemCreated;
-    _coreR.Image.ItemDeletedEvent += OnItemDeleted;
+    _coreR.Image.ItemCreatedEvent += _onItemCreated;
+    _coreR.Image.ItemDeletedEvent += _onItemDeleted;
     _coreR.Image.ItemsDeletedEvent += _onMediaItemsDeleted;
-    _coreR.Video.ItemCreatedEvent += OnItemCreated;
-    _coreR.Video.ItemDeletedEvent += OnItemDeleted;
+    _coreR.Video.ItemCreatedEvent += _onItemCreated;
+    _coreR.Video.ItemDeletedEvent += _onItemDeleted;
     _coreR.Video.ItemsDeletedEvent += _onMediaItemsDeleted;
-    _coreR.VideoClip.ItemCreatedEvent += OnItemCreated;
-    _coreR.VideoClip.ItemDeletedEvent += OnItemDeleted;
+    _coreR.VideoClip.ItemCreatedEvent += _onItemCreated;
+    _coreR.VideoClip.ItemDeletedEvent += _onItemDeleted;
     _coreR.VideoClip.ItemsDeletedEvent += _onMediaItemsDeleted;
-    _coreR.VideoImage.ItemCreatedEvent += OnItemCreated;
-    _coreR.VideoImage.ItemDeletedEvent += OnItemDeleted;
+    _coreR.VideoImage.ItemCreatedEvent += _onItemCreated;
+    _coreR.VideoImage.ItemDeletedEvent += _onItemDeleted;
     _coreR.VideoImage.ItemsDeletedEvent += _onMediaItemsDeleted;
   }
 
-  protected override void OnItemCreated(object? sender, MediaItemM item) {
+  protected override void _onItemCreated(object? sender, MediaItemM item) {
     if (item is RealMediaItemM rmi)
       rmi.Folder.MediaItems.Add(rmi);
 
     _raiseItemCreated(item);
   }
 
-  protected override void OnItemDeleted(object? sender, MediaItemM item) =>
+  protected override void _onItemDeleted(object? sender, MediaItemM item) =>
     _raiseItemDeleted(item);
 
-  protected override void OnItemsDeleted(object? sender, IList<MediaItemM> items) =>
+  protected override void _onItemsDeleted(object? sender, IList<MediaItemM> items) =>
     _raiseItemsDeleted(items);
 
   private void _onMediaItemsDeleted<T>(object? sender, IList<T> items) where T : MediaItemM =>
-    OnItemsDeleted(this, items.Cast<MediaItemM>().ToArray());
+    _onItemsDeleted(this, items.Cast<MediaItemM>().ToArray());
 
   public void OnItemDeletedCommon(MediaItemM item) {
     item.People = null;

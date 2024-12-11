@@ -15,10 +15,10 @@ public class VideoClipR : TableDataAdapter<VideoClipM> {
     IsDriveRelated = true;
   }
 
-  public override Dictionary<string, IEnumerable<VideoClipM>> GetAsDriveRelated() =>
+  protected override Dictionary<string, IEnumerable<VideoClipM>> _getAsDriveRelated() =>
     CoreR.GetAsDriveRelated(All, x => x.Folder);
 
-  public override VideoClipM FromCsv(string[] csv) {
+  protected override VideoClipM _fromCsv(string[] csv) {
     var vc = new VideoClipM(int.Parse(csv[0]), VideoR.Dummy, csv[2].IntParseOrDefault(0)) {
       TimeEnd = csv[3].IntParseOrDefault(0),
       Volume = csv[4].IntParseOrDefault(50) / 100.0,
@@ -30,7 +30,7 @@ public class VideoClipR : TableDataAdapter<VideoClipM> {
     return vc;
   }
 
-  public override string ToCsv(VideoClipM vc) =>
+  protected override string _toCsv(VideoClipM vc) =>
     string.Join("|",
       vc.GetHashCode().ToString(),
       vc.Video.GetHashCode().ToString(),
@@ -59,11 +59,11 @@ public class VideoClipR : TableDataAdapter<VideoClipM> {
   public VideoClipM CustomItemCreate(VideoM video, int timeStart) =>
     ItemCreate(new(GetNextId(), video, timeStart));
 
-  protected override void OnItemCreated(object sender, VideoClipM item) {
+  protected override void _onItemCreated(object sender, VideoClipM item) {
     item.Video.Toggle(item);
   }
 
-  protected override void OnItemDeleted(object sender, VideoClipM item) {
+  protected override void _onItemDeleted(object sender, VideoClipM item) {
     _coreR.MediaItem.OnItemDeletedCommon(item);
     item.Video.Toggle(item);
   }

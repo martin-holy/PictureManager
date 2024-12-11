@@ -20,14 +20,14 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
   private readonly List<ITreeItem> _categories = [];
 
   public override void Save() =>
-    SaveToSingleFile(_categories.SelectMany(x => x.Items.OfType<CategoryGroupM>()));
+    _saveToSingleFile(_categories.SelectMany(x => x.Items.OfType<CategoryGroupM>()));
 
-  public override CategoryGroupM FromCsv(string[] csv) {
+  protected override CategoryGroupM _fromCsv(string[] csv) {
     var category = (Category)int.Parse(csv[2]);
     return _getNew(int.Parse(csv[0]), csv[1], category);
   }
 
-  public override string ToCsv(CategoryGroupM cg) =>
+  protected override string _toCsv(CategoryGroupM cg) =>
     string.Join("|",
       cg.GetHashCode().ToString(),
       cg.Name,
@@ -79,7 +79,7 @@ public class CategoryGroupR(CoreR coreR) : TreeDataAdapter<CategoryGroupM>(coreR
         : null;
   }
 
-  protected override void OnItemDeleted(object sender, CategoryGroupM item) {
+  protected override void _onItemDeleted(object sender, CategoryGroupM item) {
     item.Parent?.Items.Remove(item);
   }
 

@@ -32,12 +32,12 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
   }
 
   public override void Save() =>
-    SaveToSingleFile(GetAll<KeywordM>(Tree));
+    _saveToSingleFile(GetAll<KeywordM>(Tree));
 
-  public override KeywordM FromCsv(string[] csv) =>
+  protected override KeywordM _fromCsv(string[] csv) =>
     new(int.Parse(csv[0]), csv[1], null);
 
-  public override string ToCsv(KeywordM keyword) =>
+  protected override string _toCsv(KeywordM keyword) =>
     string.Join("|",
       keyword.GetHashCode().ToString(),
       keyword.Name,

@@ -42,9 +42,9 @@ public class PersonR : TreeDataAdapter<PersonM> {
     All.GetBy(keyword, recursive);
 
   public override void Save() =>
-    SaveToSingleFile(GetAll());
+    _saveToSingleFile(GetAll());
 
-  public override PersonM FromCsv(string[] csv) {
+  protected override PersonM _fromCsv(string[] csv) {
     var person = new PersonM(int.Parse(csv[0]), csv[1]);
 
     if (person.Name.StartsWith(_unknownPersonNamePrefix))
@@ -53,7 +53,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
     return person;
   }
 
-  public override string ToCsv(PersonM person) =>
+  protected override string _toCsv(PersonM person) =>
     string.Join("|",
       person.GetHashCode().ToString(),
       person.Name,
@@ -126,7 +126,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
     if (item.IsUnknown) item.IsUnknown = false;
   }
 
-  protected override void OnItemDeleted(object sender, PersonM item) {
+  protected override void _onItemDeleted(object sender, PersonM item) {
     item.Parent?.Items.Remove(item);
     item.Parent = null;
     item.Segment = null;
