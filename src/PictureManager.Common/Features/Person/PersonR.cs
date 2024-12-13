@@ -122,7 +122,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
     });
   }
 
-  protected override void OnItemRenamed(PersonM item) {
+  protected override void _onItemRenamed(PersonM item) {
     if (item.IsUnknown) item.IsUnknown = false;
   }
 

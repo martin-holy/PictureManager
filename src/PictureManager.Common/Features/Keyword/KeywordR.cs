@@ -45,7 +45,7 @@ public class KeywordR : TreeDataAdapter<KeywordM> {
 
   public override void LinkReferences() {
     _coreR.CategoryGroup.LinkGroups(Tree, AllDict);
-    LinkTree(Tree, 2);
+    _linkTree(Tree, 2);
 
     // group for keywords automatically added from MediaItems metadata
     Tree.AutoAddedGroup = Tree.Items

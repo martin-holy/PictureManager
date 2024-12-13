@@ -45,7 +45,7 @@ public class FolderR : TreeDataAdapter<FolderM> {
 
   public override void LinkReferences() {
     Tree.Category.Items.Clear();
-    LinkTree(Tree.Category, 2);
+    _linkTree(Tree.Category, 2);
   }
 
   public override FolderM ItemCreate(ITreeItem parent, string name) {

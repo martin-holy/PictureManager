@@ -35,7 +35,7 @@ public class GeoNameR : TreeDataAdapter<GeoNameM> {
 
   public override void LinkReferences() {
     Tree.Items.Clear();
-    LinkTree(Tree, 4);
+    _linkTree(Tree, 4);
   }
 
   public GeoNameM ItemCreate(int id, string name, string toponymName, string fCode, ITreeItem parent) =>
