@@ -66,14 +66,14 @@ public sealed class VideoVM : ObservableObject {
       MediaPlayer.SetCurrent(null);
   }
 
-  private void OnMarkerSet(object? sender, ObjectEventArgs<Tuple<IVideoItem, bool>> e) {
-    var item = (VideoItemM)e.Data.Item1;
+  private void OnMarkerSet(object? sender, Tuple<IVideoItem, bool> e) {
+    var item = (VideoItemM)e.Item1;
     Core.R.MediaItem.Modify(item);
 
     if (!ReferenceEquals(item, CurrentVideoItems.Selected.Items.FirstOrDefault()))
       CurrentVideoItems.Selected.Select(item);
 
-    if (item is VideoClipM && !e.Data.Item2) return; // if !start
+    if (item is VideoClipM && !e.Item2) return; // if !start
     CurrentVideoItems.Insert(item);
     File.Delete(item.FilePathCache);
     item.OnPropertyChanged(nameof(item.FilePathCache));
