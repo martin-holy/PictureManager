@@ -251,7 +251,7 @@ public sealed class CoreVM : ObservableObject {
   private void _onFolderRenamed(object? sender, FolderM item) =>
     MainWindow.StatusBar.UpdateFilePath();
 
-  private void _onFolderTreeItemSelected(object? sender, ObjectEventArgs<ITreeItem> e) {
+  private void _onFolderTreeItemSelected(object? sender, ITreeItem item) {
     if (MediaViewer.IsVisible)
       MainWindow.IsInViewMode = false;
   }
