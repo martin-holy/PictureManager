@@ -1,5 +1,5 @@
 ﻿using MH.UI.Controls;
-using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Segment;
 using System;
