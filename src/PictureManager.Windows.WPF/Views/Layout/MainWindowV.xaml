@@ -32,5 +32,5 @@
     </b:EventTrigger>
   </b:Interaction.Triggers>
 
-  <mhc:SlidePanelsGridHost SlidePanelsGrid="{Binding SlidePanelsGrid}"/>
+  <mhc:SlidePanelsGridHost ViewModel="{Binding SlidePanelsGrid}"/>
 </mhc:CustomWindow>
