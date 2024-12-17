@@ -96,7 +96,7 @@ public sealed class MediaViewerVM : ObservableObject {
   }
 
   private void _navigate(MouseWheelEventArgs? e) {
-    if (e == null || e.IsCtrlOn) return;
+    if (e == null || Keyboard.IsCtrlOn()) return;
     if (e.Delta < 0) {
       if (_canNext()) _next();
     }
