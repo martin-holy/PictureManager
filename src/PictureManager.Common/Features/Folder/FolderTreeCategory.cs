@@ -13,7 +13,7 @@ using System.Linq;
 namespace PictureManager.Common.Features.Folder;
 
 public sealed class FolderTreeCategory : TreeCategory<FolderM> {
-  public FolderTreeCategory(FolderR r, TreeView<ITreeItem> treeView) :
+  public FolderTreeCategory(FolderR r, TreeView treeView) :
     base(treeView, Res.IconFolder, "Folders", (int)Category.Folders, r) {
     CanMoveItem = true;
     CanCopyItem = true;

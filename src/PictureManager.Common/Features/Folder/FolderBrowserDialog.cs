@@ -11,12 +11,12 @@ public sealed class FolderBrowserDialog : Dialog {
   private FolderTreeViewItem? _selectedFolder;
 
   public FolderTreeViewItem? SelectedFolder { get => _selectedFolder; private set { _selectedFolder = value; OnPropertyChanged(); } }
-  public TreeView<FolderTreeViewItem> TreeView { get; } = new() { ShowTreeItemSelection = true };
+  public TreeView TreeView { get; } = new() { ShowTreeItemSelection = true };
 
   public new RelayCommand OkCommand { get; }
 
   public FolderBrowserDialog() : base("Browse For Folder", Res.IconFolder) {
-    TreeView.ItemSelectedEvent += (_, item) => SelectedFolder = item;
+    TreeView.ItemSelectedEvent += (_, item) => SelectedFolder = item as FolderTreeViewItem;
     OkCommand = new(() => SetResult(this, 1), () => SelectedFolder != null, null, "Ok");
     Buttons = [
       new(OkCommand, true),

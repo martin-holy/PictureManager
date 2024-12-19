@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Folder;
 
-public sealed class FolderTreeView : TreeView<ITreeItem> {
+public sealed class FolderTreeView : TreeView {
   public FolderTreeCategory Category { get; }
 
   public FolderTreeView(FolderR r) {

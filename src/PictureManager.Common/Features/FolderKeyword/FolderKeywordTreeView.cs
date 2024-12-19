@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.FolderKeyword;
 
-public sealed class FolderKeywordTreeView : TreeView<ITreeItem> {
+public sealed class FolderKeywordTreeView : TreeView {
   public FolderKeywordTreeCategory Category { get; }
 
   public FolderKeywordTreeView(FolderKeywordR r) {
