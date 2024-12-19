@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
-  xmlns:ui="clr-namespace:MH.UI;assembly=MH.UI"
+  xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
@@ -14,7 +14,7 @@
   <DataTemplate DataType="{x:Type ftCommon:TreeViewCategoriesVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        <DataTemplate DataType="{x:Static ui:GenericTypes.TreeViewOfITreeItem}">
+        <DataTemplate DataType="{x:Type uic:TreeView}">
           <c:CatTreeView TreeView="{Binding}"/>
         </DataTemplate>
 
