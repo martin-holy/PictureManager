@@ -5,6 +5,6 @@
   xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type ftPerson:PeopleVM}">
-    <mhc:CollectionView View="{Binding}"/>
+    <mhc:CollectionView ViewModel="{Binding}"/>
   </DataTemplate>
 </ResourceDictionary>

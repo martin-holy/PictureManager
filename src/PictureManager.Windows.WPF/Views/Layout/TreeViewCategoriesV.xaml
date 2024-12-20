@@ -15,7 +15,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <DataTemplate DataType="{x:Type uic:TreeView}">
-          <c:CatTreeView TreeView="{Binding}"/>
+          <c:CatTreeView ViewModel="{Binding}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="BigIcon" DataType="{x:Type uInt:IListItem}">

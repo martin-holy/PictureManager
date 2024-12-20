@@ -48,7 +48,7 @@
 
       <c:CollectionView
         x:Name="view"
-        View="{Binding}"
+        ViewModel="{Binding}"
         VirtualizingPanel.CacheLength="1"
         u:DragDropHelper.IsDragEnabled="True"
         u:DragDropHelper.CanDrag="{Binding CanDragFunc}"
