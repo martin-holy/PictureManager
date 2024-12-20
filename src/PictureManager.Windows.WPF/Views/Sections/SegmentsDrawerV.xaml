@@ -7,7 +7,7 @@
 
   <DataTemplate DataType="{x:Type ftSegment:SegmentsDrawerVM}">
     <mhc:CollectionView
-      View="{Binding}"
+      ViewModel="{Binding}"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.IsDropEnabled="True"
       mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

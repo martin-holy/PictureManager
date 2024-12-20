@@ -9,7 +9,7 @@
     <c:TreeViewBase
       x:Name="tree"
       Style="{StaticResource MH.S.TreeViewBase}"
-      TreeView="{Binding TreeView}"
+      ViewModel="{Binding TreeView}"
       Width="300"
       Height="500"
       Padding="0,5,0,0">

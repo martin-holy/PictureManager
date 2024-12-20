@@ -32,13 +32,13 @@
       </Grid.ColumnDefinitions>
 
       <c:CollectionView
-        View="{Binding}"
+        ViewModel="{Binding}"
         wpfu:DragDropHelper.IsDragEnabled="True"
         wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
 
       <GridSplitter Grid.Column="1"/>
   
-      <c:CollectionView Grid.Column="2" View="{Binding CvPeople}"/>
+      <c:CollectionView Grid.Column="2" ViewModel="{Binding CvPeople}"/>
 
     </Grid>
   </DataTemplate>

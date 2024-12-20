@@ -66,7 +66,7 @@
       <!-- Top Segments -->
       <c:CollectionView
         Grid.Row="2"
-        View="{Binding TopSegments}"
+        ViewModel="{Binding TopSegments}"
         u:DragDropHelper.IsDragEnabled="True"
         u:DragDropHelper.IsDropEnabled="True"
         u:DragDropHelper.DragDataType="{x:Type ftSegment:SegmentM}"
@@ -76,7 +76,7 @@
       <!-- All Segments -->
       <c:CollectionView
         Grid.Row="3"
-        View="{Binding AllSegments}"
+        ViewModel="{Binding AllSegments}"
         u:DragDropHelper.IsDragEnabled="True"
         u:DragDropHelper.DragDataType="{x:Type ftSegment:SegmentM}"/>
 
