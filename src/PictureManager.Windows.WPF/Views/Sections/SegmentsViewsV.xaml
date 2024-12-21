@@ -31,14 +31,14 @@
                   FallbackValue=280}"/>
       </Grid.ColumnDefinitions>
 
-      <c:CollectionView
+      <c:CollectionViewHost
         ViewModel="{Binding}"
         wpfu:DragDropHelper.IsDragEnabled="True"
         wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
 
       <GridSplitter Grid.Column="1"/>
   
-      <c:CollectionView Grid.Column="2" ViewModel="{Binding CvPeople}"/>
+      <c:CollectionViewHost Grid.Column="2" ViewModel="{Binding CvPeople}"/>
 
     </Grid>
   </DataTemplate>

@@ -64,7 +64,7 @@
         Visibility="{Binding PersonM.DisplayKeywords, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
 
       <!-- Top Segments -->
-      <c:CollectionView
+      <c:CollectionViewHost
         Grid.Row="2"
         ViewModel="{Binding TopSegments}"
         u:DragDropHelper.IsDragEnabled="True"
@@ -74,7 +74,7 @@
         u:DragDropHelper.DoDrop="{Binding TopSegmentsDropAction}"/>
 
       <!-- All Segments -->
-      <c:CollectionView
+      <c:CollectionViewHost
         Grid.Row="3"
         ViewModel="{Binding AllSegments}"
         u:DragDropHelper.IsDragEnabled="True"

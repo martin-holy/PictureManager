@@ -39,7 +39,7 @@
         Content="{Binding MediaPlayer}"
         ContentTemplate="{StaticResource MH.S.MediaPlayer.ControlPanel}"/>
 
-      <mhc:CollectionView Grid.Row="3" ViewModel="{Binding CurrentVideoItems}"/>
+      <mhc:CollectionViewHost Grid.Row="3" ViewModel="{Binding CurrentVideoItems}"/>
     </Grid>
 
     <DataTemplate.Triggers>
