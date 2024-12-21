@@ -43,7 +43,7 @@
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
-      <c:ZoomAndPanHost x:Name="zoom" ZoomAndPan="{Binding ZoomAndPan}">
+      <c:ZoomAndPanHost x:Name="zoom" ViewModel="{Binding ZoomAndPan}">
         <Grid>
           <!-- Image -->
           <Image
@@ -79,8 +79,8 @@
 
           <ContentPresenter.RenderTransform>
             <TranslateTransform
-              X="{Binding ElementName=zoom, Path=ZoomAndPan.(uic:ZoomAndPan.TransformX)}"
-              Y="{Binding ElementName=zoom, Path=ZoomAndPan.(uic:ZoomAndPan.TransformY)}"/>
+              X="{Binding ElementName=zoom, Path=ViewModel.(uic:ZoomAndPan.TransformX)}"
+              Y="{Binding ElementName=zoom, Path=ViewModel.(uic:ZoomAndPan.TransformY)}"/>
           </ContentPresenter.RenderTransform>
         </ContentPresenter>
       </Canvas>
