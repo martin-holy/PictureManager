@@ -12,7 +12,7 @@
         <RowDefinition/>
       </Grid.RowDefinitions>
 
-      <mhc:CollectionView ViewModel="{Binding PeopleView}" MaxHeight="160"/>
+      <mhc:CollectionViewHost ViewModel="{Binding PeopleView}" MaxHeight="160"/>
 
       <Border
         Grid.Row="1"
@@ -23,7 +23,7 @@
         <TextBlock Text="{Binding Person.Name}"/>
       </Border>
 
-      <mhc:CollectionView ViewModel="{Binding SegmentsView}" Grid.Row="2"/>
+      <mhc:CollectionViewHost ViewModel="{Binding SegmentsView}" Grid.Row="2"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

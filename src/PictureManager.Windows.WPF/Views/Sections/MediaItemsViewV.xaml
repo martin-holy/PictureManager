@@ -46,7 +46,7 @@
           HorizontalAlignment="Right"/>
       </Grid>
 
-      <c:CollectionView
+      <c:CollectionViewHost
         x:Name="view"
         ViewModel="{Binding}"
         VirtualizingPanel.CacheLength="1"
@@ -54,16 +54,16 @@
         u:DragDropHelper.CanDrag="{Binding CanDragFunc}"
         u:DragDropHelper.DataFormat="FileDrop">
 
-        <c:CollectionView.InputBindings>
+        <c:CollectionViewHost.InputBindings>
           <KeyBinding Modifiers="Control" Key="A" Command="{Binding SelectAllCommand}"/>
-        </c:CollectionView.InputBindings>
+        </c:CollectionViewHost.InputBindings>
 
-        <c:CollectionView.ItemsPanel>
+        <c:CollectionViewHost.ItemsPanel>
           <ItemsPanelTemplate>
             <c:VirtualizingSingleItemScrollStackPanel/>
           </ItemsPanelTemplate>
-        </c:CollectionView.ItemsPanel>
-      </c:CollectionView>
+        </c:CollectionViewHost.ItemsPanel>
+      </c:CollectionViewHost>
     </Grid>
 
     <DataTemplate.Triggers>

@@ -56,7 +56,7 @@
 
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ComboBox.xaml"/><!-- Depends on: TextBoxBase -->
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/CatTreeView.xaml"/><!-- Depends on: TreeViewHost -->
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/CollectionView.xaml"/><!-- Depends on: TreeViewHost -->
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/CollectionViewHost.xaml"/><!-- Depends on: TreeViewHost -->
 
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IListItem.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IHaveName.xaml"/>
@@ -146,7 +146,7 @@
       <Style TargetType="ToolTip" BasedOn="{StaticResource MH.S.ToolTip}"/>
 
       <Style TargetType="mhc:CatTreeView" BasedOn="{StaticResource MH.S.CatTreeView}"/>
-      <Style TargetType="mhc:CollectionView" BasedOn="{StaticResource MH.S.CollectionView}"/>
+      <Style TargetType="mhc:CollectionViewHost" BasedOn="{StaticResource MH.S.CollectionViewHost}"/>
       <Style TargetType="mhc:IconTextBlock" BasedOn="{StaticResource MH.S.IconTextBlock}"/>
       <Style TargetType="mhc:IconButton" BasedOn="{StaticResource MH.S.IconButton}"/>
       <Style TargetType="mhc:IconTextButton" BasedOn="{StaticResource MH.S.IconTextButton}"/>

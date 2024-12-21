@@ -6,7 +6,7 @@
   xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type ftSegment:SegmentsDrawerVM}">
-    <mhc:CollectionView
+    <mhc:CollectionViewHost
       ViewModel="{Binding}"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.IsDropEnabled="True"
