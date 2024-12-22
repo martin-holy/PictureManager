@@ -23,10 +23,10 @@ public sealed class FolderBrowserDialog : Dialog {
       new(CloseCommand, false, true)
     ];
 
-    AddDrives();
+    _addDrives();
   }
 
-  private void AddDrives() {
+  private void _addDrives() {
     var drives = Environment.GetLogicalDrives();
     TreeView.RootHolder.Clear();
     TreeView.SelectedTreeItems.DeselectAll();
@@ -56,18 +56,18 @@ public class FolderTreeViewItem : TreeItem {
   }
 
   protected override void _onIsExpandedChanged(bool value) {
-    if (value) LoadSubFolders();
-    UpdateIcon();
+    if (value) _loadSubFolders();
+    _updateIcon();
   }
 
-  private void UpdateIcon() {
+  private void _updateIcon() {
     if (Parent != null) // not Drive Folder
       Icon = IsExpanded
         ? Res.IconFolderOpen
         : Res.IconFolder;
   }
 
-  private void LoadSubFolders() {
+  private void _loadSubFolders() {
     var fullPath = FullPath + Path.DirectorySeparatorChar;
     Items.Clear();
 
