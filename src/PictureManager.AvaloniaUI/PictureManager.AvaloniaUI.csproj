@@ -27,5 +27,6 @@
     <ProjectReference Include="..\..\..\MH.UI.AvaloniaUI\src\MH.UI.AvaloniaUI\MH.UI.AvaloniaUI.csproj" />
     <ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
     <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
+    <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
   </ItemGroup>
 </Project>
