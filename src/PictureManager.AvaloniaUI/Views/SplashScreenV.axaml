@@ -1,0 +1,43 @@
+﻿<Window
+  x:Class="PictureManager.AvaloniaUI.Views.SplashScreenV"
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  Height="150"
+  Width="500"
+  FontSize="13.333"
+  SystemDecorations="BorderOnly"
+  WindowStartupLocation="CenterScreen"
+  CanResize="False"
+  ShowInTaskbar="False"
+  Background="#FF252525"
+  Foreground="White"
+  BorderThickness="1"
+  BorderBrush="{DynamicResource MH.B.Accent}"
+  DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+  <Grid RowDefinitions="*,20,20,20">
+    <TextBlock
+      Grid.Row="0"
+      Text="Sample Application"
+      FontWeight="Bold"
+      FontSize="30"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Center"/>
+
+    <TextBlock
+      Grid.Row="1"
+      Text="{Binding Version}"
+      HorizontalAlignment="Center"/>
+
+    <TextBlock
+      Grid.Row="2"
+      Text="{Binding Message}"
+      HorizontalAlignment="Center"/>
+
+    <ProgressBar
+      Grid.Row="3"
+      IsIndeterminate="True"
+      Margin="4,0"
+      Height="10"/>
+  </Grid>
+</Window>
