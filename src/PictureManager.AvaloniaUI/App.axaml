@@ -1,0 +1,28 @@
+<Application
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  x:Class="PictureManager.AvaloniaUI.App"
+  RequestedThemeVariant="Default">
+  
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://MH.UI.AvaloniaUI/Resources/Brushes.axaml"/>
+        <ResourceInclude Source="avares://MH.UI.AvaloniaUI/Resources/Effects.axaml"/>
+        <ResourceInclude Source="avares://MH.UI.AvaloniaUI/Resources/DataTypes.axaml"/>
+        <ResourceInclude Source="avares://MH.UI.AvaloniaUI/Resources/Fonts.axaml"/>
+        <ResourceInclude Source="avares://MH.UI.AvaloniaUI/Resources/Icons.axaml"/>
+
+        <ResourceInclude Source="Resources/Brushes.axaml"/>
+        <ResourceInclude Source="Resources/Icons.axaml"/>
+
+        <ResourceInclude Source="avares://MH.UI.AvaloniaUI/Resources/DataTemplates/MHDataTemplates.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://MH.UI.AvaloniaUI/Resources/Controls/MHControls.axaml"/>
+  </Application.Styles>
+</Application>

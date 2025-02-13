@@ -1,0 +1,15 @@
+﻿<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <SolidColorBrush x:Key="PM.B.And" Color="#FF8EC163"/>
+  <SolidColorBrush x:Key="PM.B.Or" Color="#FF1585B5"/>
+  <SolidColorBrush x:Key="PM.B.Not" Color="#FFDE573A"/>
+
+  <SolidColorBrush x:Key="PM.B.Folder" Color="#FFF9DA77"/>
+  <SolidColorBrush x:Key="PM.B.Tag" Color="#FF8EC163"/>
+  <SolidColorBrush x:Key="PM.B.People" Color="#FF137AA6"/>
+  <SolidColorBrush x:Key="PM.B.Drive" Color="#FFC7C7C7"/>
+  <SolidColorBrush x:Key="PM.B.White" Color="#FFFFFFFF"/>
+
+</ResourceDictionary>

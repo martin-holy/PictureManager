@@ -48,6 +48,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.UI.AvaloniaUI.Sample.Bro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MH.UI.AvaloniaUI.Sample.Desktop", "..\MH.UI.AvaloniaUI\src\MH.UI.AvaloniaUI.Sample.Desktop\MH.UI.AvaloniaUI.Sample.Desktop.csproj", "{5BBFACF5-07FD-46F2-B58C-BB3C934ECAAC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.AvaloniaUI", "src\PictureManager.AvaloniaUI\PictureManager.AvaloniaUI.csproj", "{8AEABE3E-8E08-4766-AA27-2E85FACD87AC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.AvaloniaUI.Android", "src\PictureManager.AvaloniaUI.Android\PictureManager.AvaloniaUI.Android.csproj", "{87290607-EB1E-4C9D-9CC8-4476E152574A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.AvaloniaUI.Browser", "src\PictureManager.AvaloniaUI.Browser\PictureManager.AvaloniaUI.Browser.csproj", "{DDC1461C-A316-4902-8797-E7D82F1C92C2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.AvaloniaUI.Desktop", "src\PictureManager.AvaloniaUI.Desktop\PictureManager.AvaloniaUI.Desktop.csproj", "{46BC966A-9CF7-4DA6-8973-55E3E53AC5AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +132,24 @@ Global
 		{5BBFACF5-07FD-46F2-B58C-BB3C934ECAAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BBFACF5-07FD-46F2-B58C-BB3C934ECAAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BBFACF5-07FD-46F2-B58C-BB3C934ECAAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AEABE3E-8E08-4766-AA27-2E85FACD87AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AEABE3E-8E08-4766-AA27-2E85FACD87AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AEABE3E-8E08-4766-AA27-2E85FACD87AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AEABE3E-8E08-4766-AA27-2E85FACD87AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87290607-EB1E-4C9D-9CC8-4476E152574A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87290607-EB1E-4C9D-9CC8-4476E152574A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87290607-EB1E-4C9D-9CC8-4476E152574A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{87290607-EB1E-4C9D-9CC8-4476E152574A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87290607-EB1E-4C9D-9CC8-4476E152574A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87290607-EB1E-4C9D-9CC8-4476E152574A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{DDC1461C-A316-4902-8797-E7D82F1C92C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDC1461C-A316-4902-8797-E7D82F1C92C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDC1461C-A316-4902-8797-E7D82F1C92C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDC1461C-A316-4902-8797-E7D82F1C92C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46BC966A-9CF7-4DA6-8973-55E3E53AC5AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46BC966A-9CF7-4DA6-8973-55E3E53AC5AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46BC966A-9CF7-4DA6-8973-55E3E53AC5AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46BC966A-9CF7-4DA6-8973-55E3E53AC5AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +166,10 @@ Global
 		{1E8CA25F-2DED-48F5-9839-BE0173920EBE} = {32D4868E-3E98-4405-85A4-CD461254D8F9}
 		{7997854C-15A1-47DB-9718-6C69746EA82F} = {32D4868E-3E98-4405-85A4-CD461254D8F9}
 		{5BBFACF5-07FD-46F2-B58C-BB3C934ECAAC} = {32D4868E-3E98-4405-85A4-CD461254D8F9}
+		{8AEABE3E-8E08-4766-AA27-2E85FACD87AC} = {32D4868E-3E98-4405-85A4-CD461254D8F9}
+		{87290607-EB1E-4C9D-9CC8-4476E152574A} = {32D4868E-3E98-4405-85A4-CD461254D8F9}
+		{DDC1461C-A316-4902-8797-E7D82F1C92C2} = {32D4868E-3E98-4405-85A4-CD461254D8F9}
+		{46BC966A-9CF7-4DA6-8973-55E3E53AC5AE} = {32D4868E-3E98-4405-85A4-CD461254D8F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C456C484-3702-4A0E-9458-46475FC39272}
