@@ -1,0 +1,37 @@
+<mhc:CustomWindow
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  x:Class="PictureManager.AvaloniaUI.Views.Layout.MainWindowV"
+  x:DataType="layout:MainWindowVM"
+  DataContext="{ReflectionBinding VM.MainWindow, Source={x:Static pm:App.Core}}"
+  IsFullScreen="{Binding IsFullScreen, Mode=TwoWay}"
+  Icon="/Assets/avalonia-logo.ico"
+  Title="Picture Manager"
+  WindowState="Maximized"
+  CanResize="True"
+  CanFullScreen="True">
+
+  <mhc:CustomWindow.KeyBindings>
+    <KeyBinding Gesture="ctrl+F" Command="{Binding TreeViewCategories.TreeViewSearch.OpenCommand}"/>
+    <KeyBinding Gesture="ctrl+R" Command="{x:Static core:CoreVM.RotateMediaItemsCommand}"/>
+    <KeyBinding Gesture="ctrl+K" Command="{x:Static ftMediaItem:MediaItemVM.CommentCommand}"/>
+    <KeyBinding Gesture="F2" Command="{x:Static ftMediaItem:MediaItemVM.RenameCommand}"/>
+    <KeyBinding Gesture="Delete" Command="{x:Static ftMediaItem:MediaItemVM.DeleteCommand}"/>
+    <!--TODO PORT-->
+    <!--<KeyBinding Gesture="Esc" Command="{x:Static layout:MainWindowVM.SwitchToBrowserCommand}"/>-->
+    <!--<MouseBinding MouseAction="LeftDoubleClick" Command="layout:MainWindowVM.SwitchToBrowserCommand"/>-->
+  </mhc:CustomWindow.KeyBindings>
+
+  <Interaction.Behaviors>
+    <EventTriggerBehavior EventName="Closing">
+      <InvokeCommandAction Command="{x:Static core:CoreVM.AppClosingCommand}"/>
+    </EventTriggerBehavior>
+  </Interaction.Behaviors>
+
+  <mhc:SlidePanelsGridHost ViewModel="{Binding SlidePanelsGrid}"/>
+</mhc:CustomWindow>
