@@ -17,6 +17,8 @@
         <ResourceInclude Source="Resources/Icons.axaml"/>
 
         <ResourceInclude Source="avares://MH.UI.AvaloniaUI/Resources/DataTemplates/MHDataTemplates.axaml"/>
+
+        <ResourceInclude Source="Views/PMDataTemplates.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
