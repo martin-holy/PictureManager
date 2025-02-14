@@ -10,12 +10,12 @@
     <Menu Background="Transparent">
       <MenuItem Padding="6,2,-2,2">
         <MenuItem.Icon>
-          <Path Data="{StaticResource IconThreeBars}" Classes="icon shadow"/>
+          <PathIcon Data="{StaticResource IconThreeBars}" Classes="shadow"/>
         </MenuItem.Icon>
 
         <MenuItem Header="GeoLocation">
           <MenuItem.Icon>
-            <Path Data="{StaticResource IconLocationCheckin}" Classes="icon shadow"/>
+            <PathIcon Data="{StaticResource IconLocationCheckin}" Classes="shadow"/>
           </MenuItem.Icon>
           <MenuItem Command="{x:Static core:CoreVM.GetGeoNamesFromWebCommand}"/>
           <MenuItem Command="{x:Static ftGeoName:GeoNameVM.NewGeoNameFromGpsCommand}"/>
@@ -24,7 +24,7 @@
 
         <MenuItem Header="Media Items">
           <MenuItem.Icon>
-            <Path Data="{StaticResource IconImageMultiple}" Classes="icon shadow"/>
+            <PathIcon Data="{StaticResource IconImageMultiple}" Classes="shadow"/>
           </MenuItem.Icon>
           <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.CommentCommand}" InputGesture="Ctrl+K"/>
           <MenuItem Command="{x:Static core:CoreVM.CompressImagesCommand}"/>
@@ -41,7 +41,7 @@
 
         <MenuItem Header="Segments">
           <MenuItem.Icon>
-            <Path Data="{StaticResource IconSegment}" Classes="icon shadow"/>
+            <PathIcon Data="{StaticResource IconSegment}" Classes="shadow"/>
           </MenuItem.Icon>
           <MenuItem Command="{x:Static core:CoreVM.ExportSegmentsCommand}"/>
           <MenuItem Command="{x:Static core:CoreVM.OpenSegmentsViewsCommand}"/>
