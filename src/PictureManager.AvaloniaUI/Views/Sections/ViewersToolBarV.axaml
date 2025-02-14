@@ -1,0 +1,36 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
+  xmlns:ftViewer="clr-namespace:PictureManager.Common.Features.Viewer;assembly=PictureManager.Common">
+
+  <DataTemplate x:Key="Views.ViewersToolBarV">
+    <Menu Background="Transparent">
+      <MenuItem x:Name="root" Header="{Binding S.Viewer.Current.Name, Source={x:Static pm:App.Core}, FallbackValue=All}">
+        <MenuItem.Icon>
+          <PathIcon Data="{StaticResource IconEye}" Classes="shadow"/>
+        </MenuItem.Icon>
+
+        <MenuItem.Styles>
+          <Style Selector=""></Style>
+        </MenuItem.Styles>
+
+        <!--TODO PORT-->
+        <!--<MenuItem.ItemsSource>
+          <CompositeCollection>
+            <MenuItem Header="All" Command="{x:Static ftViewer:ViewerVM.ChangeCurrentCommand}" DataContext="{x:Null}"/>
+            <CollectionContainer Collection="{Binding VM.Viewer.All, Source={x:Static pm:App.Core}}"/>
+          </CompositeCollection>
+        </MenuItem.ItemsSource>-->
+
+        <MenuItem.ItemContainerTheme>
+          <ControlTheme TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+            <Setter Property="Header" Value="{ReflectionBinding Path=(ftViewer:ViewerM.Name)}"/>
+            <Setter Property="Command" Value="{x:Static ftViewer:ViewerVM.ChangeCurrentCommand}"/>
+            <Setter Property="CommandParameter" Value="{ReflectionBinding}"/>
+          </ControlTheme>
+        </MenuItem.ItemContainerTheme>
+      </MenuItem>
+    </Menu>
+  </DataTemplate>
+</ResourceDictionary>
