@@ -1,0 +1,37 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:utils="clr-namespace:PictureManager.Common.Utils;assembly=PictureManager.Common">
+
+  <DataTemplate x:Key="MH.DT.PluginsMenu" DataType="{x:Static utils:GenericTypes.ListOfIPluginCore}">
+    <Menu Background="Transparent">
+      <MenuItem ItemsSource="{Binding}" Padding="6,2,-2,2">
+        <MenuItem.Icon>
+          <Path Data="{StaticResource IconPuzzle}" Classes="icon shadow"/>
+        </MenuItem.Icon>
+
+        <MenuItem.ItemContainerTheme>
+          <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+            <Setter Property="Header" Value="{ReflectionBinding VM.PluginTitle}"/>
+            <Setter Property="ItemsSource" Value="{ReflectionBinding VM.MainMenuCommands}"/>
+            <Setter Property="Icon">
+              <Setter.Value>
+                <Path
+                  Data="{ReflectionBinding VM.PluginIcon, Converter={x:Static conv:ResourceConverter.Inst}}"
+                  Classes="icon shadow"/>
+              </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerTheme">
+              <Setter.Value>
+                <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                  <Setter Property="Command" Value="{Binding}"/>
+                </ControlTheme>
+              </Setter.Value>
+            </Setter>
+          </ControlTheme>
+        </MenuItem.ItemContainerTheme>
+      </MenuItem>
+    </Menu>
+  </DataTemplate>
+</ResourceDictionary>

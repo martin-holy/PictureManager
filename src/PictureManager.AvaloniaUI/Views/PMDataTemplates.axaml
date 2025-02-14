@@ -3,5 +3,6 @@
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceInclude Source="Sections/MainMenuV.axaml"/>
+    <ResourceInclude Source="Sections/PluginsMenuV.axaml"/>
   </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
