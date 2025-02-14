@@ -66,7 +66,9 @@ public partial class App : Application {
 
   private void _loadDataTemplates() {
     // include files in *.csproj as AvaloniaResource too
-    var files = Array.Empty<string>();
+    var files = new[] {
+      "Layout/ToolBarV.axaml"
+    };
 
     foreach (var file in files) {
       var uri = new Uri($"avares://PictureManager.AvaloniaUI/Views/{file}");

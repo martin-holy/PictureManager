@@ -1,0 +1,131 @@
+﻿<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:u="clr-namespace:MH.Utils;assembly=MH.Utils"
+  xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type layout:ToolBarVM}">
+    <Grid>
+      <ItemsControl ItemsSource="{Binding ToolBars}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel
+              Orientation="Horizontal"
+              HorizontalAlignment="Stretch"
+              Height="30"
+              Background="{DynamicResource MH.B.Black2}"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+
+      <Grid HorizontalAlignment="Right" ColumnDefinitions="*,*">
+        <ContentPresenter Content="{Binding SlidePanelPinButton}"/>
+
+        <ContentPresenter
+          Grid.Column="1"
+          Content="{Binding RelativeSource={RelativeSource AncestorType=c:CustomWindow}}"
+          ContentTemplate="{StaticResource MH.DT.CustomWindow.Buttons}"/>
+      </Grid>
+    </Grid>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:TitleToolBarVM}">
+    <Grid Width="180">
+      <Grid.Background>
+        <LinearGradientBrush>
+          <GradientStop Offset="0" Color="{DynamicResource MH.Color.Accent}"/>
+          <GradientStop Offset="1" Color="Transparent"/>
+        </LinearGradientBrush>
+      </Grid.Background>
+
+      <Grid
+        Background="Transparent"
+        c:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType=c:CustomWindow}}">
+    
+        <!-- App Icon -->
+        <Path
+          Classes="icon shadow"
+          Data="{StaticResource IconImage}"
+          Margin="5,0,0,0"
+          HorizontalAlignment="Left"/>
+
+        <!-- App Title -->
+        <TextBlock
+          Text="Picture Manager"
+          VerticalAlignment="Center"
+          HorizontalAlignment="Center"
+          FontWeight="Bold"
+          Effect="{StaticResource MH.Effects.DropShadow}"/>
+      </Grid>
+
+      <!-- Main Menu -->
+      <ContentPresenter
+        ContentTemplate="{StaticResource PM.DT.MainMenu}"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"/>
+    </Grid>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:MiscToolBarVM}">
+    <StackPanel Orientation="Horizontal" DataContext="{x:Static pm:App.Core}" x:DataType="core:Core">
+      <!-- Plugins Menu -->
+      <ContentPresenter
+        Content="{Binding Inst.Plugins, Mode=OneTime}"
+        ContentTemplate="{StaticResource MH.DT.PluginsMenu}"
+        VerticalAlignment="Center"
+        IsVisible="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
+
+      <!-- Viewers -->
+      <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}" VerticalAlignment="Center"/>
+
+      <Separator/>
+
+      <!-- Media Items Count -->
+      <c:IconTextBlock
+        ap:Icon.Data="{StaticResource IconImageMultiple}"
+        ap:Text.Text="{Binding VM.MediaItem.ItemsCount}"/>
+
+      <c:IconTextButton Command="{x:Static core:CoreVM.SaveDbCommand}" ap:Text.Text="{Binding R.Changes}"/>
+
+      <!-- Log Button -->
+      <c:IconTextButton
+        Command="{x:Static core:CoreVM.OpenLogCommand}"
+        ap:Text.Text="{Binding Count, Source={x:Static u:Log.Items}}"
+        IsVisible="{Binding Count, Source={x:Static u:Log.Items}, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
+    </StackPanel>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftSegment:SegmentToolBarVM}">
+    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+      <Separator/>
+
+      <c:IconToggleButton
+        ToolTip.Tip="Segments edit"
+        ap:Icon.Data="{StaticResource IconPeople}"
+        IsChecked="{Binding SegmentS.Rect.AreVisible}"/>
+
+      <c:IconButton Command="{x:Static ftSegment:SegmentsDrawerVM.OpenCommand}"/>
+      <c:IconButton Command="{x:Static ftSegment:SegmentsDrawerVM.AddSelectedCommand}"/>
+      <c:IconButton Command="{x:Static core:CoreVM.OpenSegmentsViewsCommand}"/>
+      <c:IconButton Command="{x:Static ftSegment:SegmentVM.SetSelectedAsUnknownCommand}"/>
+    </StackPanel>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftPerson:PersonToolBarVM}">
+    <StackPanel Orientation="Horizontal">
+      <Separator/>
+
+      <c:IconButton Command="{x:Static layout:ToolsTabsVM.OpenPeopleTabCommand}"/>
+      <c:IconButton Command="{x:Static ftMediaItem:MediaItemVM.LoadByPeopleOrSegmentsCommand}"/>
+    </StackPanel>
+  </DataTemplate>
+</DataTemplates>
