@@ -8,7 +8,7 @@
     <Menu Background="Transparent">
       <MenuItem ItemsSource="{Binding}" Padding="6,2,-2,2">
         <MenuItem.Icon>
-          <Path Data="{StaticResource IconPuzzle}" Classes="icon shadow"/>
+          <PathIcon Data="{StaticResource IconPuzzle}" Classes="shadow"/>
         </MenuItem.Icon>
 
         <MenuItem.ItemContainerTheme>
