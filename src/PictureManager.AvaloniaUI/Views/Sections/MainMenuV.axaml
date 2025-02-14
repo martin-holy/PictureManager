@@ -1,0 +1,56 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:ftGeoName="clr-namespace:PictureManager.Common.Features.GeoName;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftWhatIsNew="clr-namespace:PictureManager.Common.Features.WhatIsNew;assembly=PictureManager.Common">
+
+  <DataTemplate x:Key="PM.DT.MainMenu">
+    <Menu Background="Transparent">
+      <MenuItem Padding="6,2,-2,2">
+        <MenuItem.Icon>
+          <Path Data="{StaticResource IconThreeBars}" Classes="icon shadow"/>
+        </MenuItem.Icon>
+
+        <MenuItem Header="GeoLocation">
+          <MenuItem.Icon>
+            <Path Data="{StaticResource IconLocationCheckin}" Classes="icon shadow"/>
+          </MenuItem.Icon>
+          <MenuItem Command="{x:Static core:CoreVM.GetGeoNamesFromWebCommand}"/>
+          <MenuItem Command="{x:Static ftGeoName:GeoNameVM.NewGeoNameFromGpsCommand}"/>
+          <MenuItem Command="{x:Static core:CoreVM.ReadGeoLocationFromFilesCommand}"/>
+        </MenuItem>
+
+        <MenuItem Header="Media Items">
+          <MenuItem.Icon>
+            <Path Data="{StaticResource IconImageMultiple}" Classes="icon shadow"/>
+          </MenuItem.Icon>
+          <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.CommentCommand}" InputGesture="Ctrl+K"/>
+          <MenuItem Command="{x:Static core:CoreVM.CompressImagesCommand}"/>
+          <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.CopyPathsCommand}"/>
+          <MenuItem Command="{x:Static core:CoreVM.ImagesToVideoCommand}"/>
+          <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.RebuildThumbnailsCommand}"/>
+          <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.RenameCommand}" InputGesture="F2"/>
+          <MenuItem Command="{x:Static core:CoreVM.ResizeImagesCommand}"/>
+          <MenuItem Command="{x:Static core:CoreVM.ReloadMetadataCommand}"/>
+          <MenuItem Command="{x:Static core:CoreVM.RotateMediaItemsCommand}" InputGesture="Ctrl+R"/>
+          <MenuItem Command="{x:Static core:CoreVM.SaveImageMetadataToFilesCommand}"/>
+          <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.ViewModifiedCommand}"/>
+        </MenuItem>
+
+        <MenuItem Header="Segments">
+          <MenuItem.Icon>
+            <Path Data="{StaticResource IconSegment}" Classes="icon shadow"/>
+          </MenuItem.Icon>
+          <MenuItem Command="{x:Static core:CoreVM.ExportSegmentsCommand}"/>
+          <MenuItem Command="{x:Static core:CoreVM.OpenSegmentsViewsCommand}"/>
+        </MenuItem>
+
+        <MenuItem Command="{x:Static core:CoreVM.OpenSettingsCommand}"/>
+        <MenuItem Command="{x:Static ftWhatIsNew:WhatIsNewVM.OpenCommand}"/>
+        <MenuItem Command="{x:Static core:CoreVM.OpenAboutCommand}"/>
+      </MenuItem>
+    </Menu>
+  </DataTemplate>
+</ResourceDictionary>

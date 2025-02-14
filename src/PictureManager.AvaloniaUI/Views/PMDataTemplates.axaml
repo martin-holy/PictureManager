@@ -1,0 +1,7 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui">
+  <!--This ResourceDictionary is for DataTemplates with x:Key-->
+
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceInclude Source="Sections/MainMenuV.axaml"/>
+  </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>
