@@ -243,4 +243,30 @@
       </c:PopupSlider>-->
     </StackPanel>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftMediaItem:MediaViewerToolBarVM}">
+    <StackPanel
+      Orientation="Horizontal"
+      IsVisible="False"
+      Classes.currentIsNotNull="{Binding MediaViewer.Current, Converter={x:Static ObjectConverters.IsNotNull}}"
+      Classes.mediaViewerIsVisible="{Binding MediaViewer.IsVisible}">
+
+      <StackPanel.Styles>
+        <Style Selector="StackPanel.currentIsNotNull StackPanel.mediaViewerIsVisible">
+          <Setter Property="IsVisible" Value="True"/>
+        </Style>
+      </StackPanel.Styles>
+
+      <Separator/>
+
+      <c:IconToggleButton
+        ToolTip.Tip="Expand to fill"
+        ap:Icon.Data="{StaticResource IconExpandRect}"
+        IsChecked="{Binding MediaViewer.ZoomAndPan.ExpandToFill}"/>
+      <c:IconToggleButton
+        ToolTip.Tip="Shrink to fill"
+        ap:Icon.Data="{StaticResource IconShrinkRect}"
+        IsChecked="{Binding MediaViewer.ZoomAndPan.ShrinkToFill}"/>
+    </StackPanel>
+  </DataTemplate>
 </DataTemplates>
