@@ -128,4 +128,49 @@
       <c:IconButton Command="{x:Static ftMediaItem:MediaItemVM.LoadByPeopleOrSegmentsCommand}"/>
     </StackPanel>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftMediaItem:SlideshowToolBarVM}">
+    <StackPanel
+      VerticalAlignment="Center"
+      Orientation="Horizontal"
+      DataContext="{Binding Slideshow}"
+      IsVisible="{Binding VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
+
+      <Separator/>
+  
+      <!-- Play/Stop -->
+      <Grid>
+        <c:IconButton
+          Command="{Binding StartCommand}"
+          IsVisible="{Binding State,
+                      ConverterParameter={x:Static ftMediaItem:SlideshowState.Stopped},
+                      Converter={x:Static conv:VisibilityConverter.EqualsParamToVisible}}"/>
+        <c:IconButton
+          Command="{Binding StopCommand}"
+          IsVisible="{Binding State,
+                      ConverterParameter={x:Static ftMediaItem:SlideshowState.Stopped},
+                      Converter={x:Static conv:VisibilityConverter.NotEqualsParamToVisible}}"/>
+      </Grid>
+
+      <!-- Interval -->
+      <!--TODO PORT-->
+      <!--<c:PopupSlider
+        Minimum="1"
+        Maximum="10"
+        Value="{Binding Interval, Mode=TwoWay}">
+        <c:PopupSlider.Content>
+          <c:IconTextButton
+            ToolTip.Tip="Slideshow interval"
+            ap:Icon.Data="{StaticResource IconTimer}"
+            ap:Text.Text="{Binding Interval, StringFormat={}{0:G2}}"/>
+        </c:PopupSlider.Content>
+      </c:PopupSlider>-->
+
+      <!-- Play Panoramic Images -->
+      <CheckBox
+        IsChecked="{Binding PlayPanoramicImages}"
+        ToolTip.Tip="Play Panoramic Images"
+        Margin="2"/>
+    </StackPanel>
+  </DataTemplate>
 </DataTemplates>
