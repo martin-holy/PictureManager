@@ -1,0 +1,20 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type layout:MainTabsVM}">
+    <TabControl/>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type layout:MainTabsSlotVM}">
+    <c:IconButton
+      Command="{x:Static ftMediaItem:MediaItemsViewsVM.AddViewCommand}"
+      ap:Icon.Size="13"
+      Width="20"
+      Height="20"/>
+  </DataTemplate>
+</DataTemplates>
