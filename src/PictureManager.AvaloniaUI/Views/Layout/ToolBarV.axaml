@@ -28,7 +28,7 @@
       </ItemsControl>
 
       <Grid HorizontalAlignment="Right" ColumnDefinitions="*,*">
-        <ContentPresenter Content="{Binding SlidePanelPinButton}"/>
+        <ContentPresenter DataContext="{Binding SlidePanelPinButton}" Content="{Binding}"/>
 
         <ContentPresenter
           Grid.Column="1"
