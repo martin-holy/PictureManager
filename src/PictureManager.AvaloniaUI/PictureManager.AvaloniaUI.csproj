@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Views\Layout\MiddleContentV.axaml"/>
     <AvaloniaResource Include="Views\Layout\ToolBarV.axaml"/>
   </ItemGroup>
 
