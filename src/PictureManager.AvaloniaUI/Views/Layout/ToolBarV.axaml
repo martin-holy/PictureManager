@@ -173,4 +173,73 @@
         Margin="2"/>
     </StackPanel>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftMediaItem:MediaItemToolBarVM}">
+    <StackPanel
+      Orientation="Horizontal"
+      IsVisible="False"
+      Classes.currentViewIsNotNull="{Binding MediaItemViews.Current, Converter={x:Static ObjectConverters.IsNotNull}}"
+      Classes.mainWindowIsNotInViewMode="{Binding !MainWindow.IsInViewMode}">
+
+      <StackPanel.Styles>
+        <Style Selector="StackPanel.currentViewIsNotNull StackPanel.mainWindowIsNotInViewMode">
+          <Setter Property="IsVisible" Value="True"/>
+        </Style>
+      </StackPanel.Styles>
+
+      <Separator/>
+
+      <!-- Filters Panel -->
+      <ContentPresenter
+        Content="{Binding MediaItemViews.Current.Filter}"
+        ContentTemplate="{StaticResource PM.DT.MediaItemsFilter}"/>
+
+      <!-- Thumbnails scale -->
+      <!--TODO PORT-->
+      <!--<c:PopupSlider
+        Minimum="0.2"
+        Maximum="2"
+        TickFrequency="0.1"
+        SmallChange="0.1"
+        LargeChange="0.2"
+        Value="{Binding MediaItemViews.Current.ThumbScale, Mode=TwoWay}">
+        <c:PopupSlider.Content>
+          <c:IconTextButton
+            ToolTip.Tip="Thumbnails scale"
+            ap:Icon.Data="{StaticResource IconMagnify}"
+            ap:Text.Text="{Binding MediaItemViews.Current.ThumbScale, StringFormat={}{0:G2}}"/>
+        </c:PopupSlider.Content>
+
+        <b:Interaction.Triggers>
+          <b:EventTrigger EventName="PopupClosedEvent">
+            <b:InvokeCommandAction Command="{Binding MediaItemViews.Current.ThumbScaleChangedCommand}"/>
+          </b:EventTrigger>
+        </b:Interaction.Triggers>
+      </c:PopupSlider>-->
+
+      <!-- Show thumb info -->
+      <c:IconToggleButton
+        ToolTip.Tip="Show thumbnail info"
+        ap:Icon.Data="{StaticResource IconInformation}"
+        IsChecked="{Binding MediaItemViews.Current.ShowThumbInfo}"/>
+
+      <!-- View Selected -->
+      <c:IconButton Command="{x:Static ftMediaItem:MediaItemVM.ViewSelectedCommand}"/>
+
+      <!-- Image Comparer -->
+      <c:IconButton Command="{x:Static ftMediaItem:MediaItemsViewsVM.CompareAverageHashCommand}"/>
+      <c:IconButton Command="{x:Static ftMediaItem:MediaItemsViewsVM.ComparePHashCommand}"/>
+      <!--TODO PORT-->
+      <!--<c:PopupSlider
+        Maximum="25"
+        Value="{Binding MediaItemViews.Current.ImageComparer.Diff, Mode=TwoWay, FallbackValue=0}">
+        <c:PopupSlider.Content>
+          <c:IconTextButton
+            ToolTip.Tip="Compare limit"
+            ap:Icon.Data="{StaticResource IconCompare}"
+            ap:Text.Text="{Binding MediaItemViews.Current.ImageComparer.Diff, FallbackValue=0, StringFormat={}{0:G2}}"/>
+        </c:PopupSlider.Content>
+      </c:PopupSlider>-->
+    </StackPanel>
+  </DataTemplate>
 </DataTemplates>
