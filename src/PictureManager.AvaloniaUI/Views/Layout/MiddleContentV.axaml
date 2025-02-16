@@ -11,7 +11,6 @@
 
       <ContentPresenter
         Content="{Binding VM.MainTabs, Source={x:Static pm:App.Core}}"
-        ContentTemplate="{StaticResource PM.DT.MainTabs}"
         IsVisible="{Binding VM.MediaViewer.IsVisible,
                     Source={x:Static pm:App.Core},
                     Converter={x:Static conv:VisibilityConverter.FalseToVisible}}"/>
