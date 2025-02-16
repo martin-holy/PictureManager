@@ -69,7 +69,8 @@ public partial class App : Application {
     var files = new[] {
       "Layout/MainTabsV.axaml",
       "Layout/MiddleContentV.axaml",
-      "Layout/ToolBarV.axaml"
+      "Layout/ToolBarV.axaml",
+      "Layout/TreeViewCategoriesV.axaml"
     };
 
     foreach (var file in files) {
