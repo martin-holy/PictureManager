@@ -1,0 +1,70 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
+  xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftCommon:TreeViewCategoriesVM}">
+    <Grid Background="{StaticResource MH.B.C.Static.Ba}">
+      <Grid.DataTemplates>
+        <DataTemplate DataType="{x:Type uic:TreeView}">
+          <c:CatTreeView ViewModel="{Binding}"/>
+        </DataTemplate>
+      </Grid.DataTemplates>
+
+      <Grid.Resources>
+        <ResourceDictionary>
+          <DataTemplate x:Key="BigIcon" DataType="{x:Type uInt:IListItem}">
+            <PathIcon
+              Classes="shadow"
+              ap:Icon.Res="{Binding Icon}"
+              Width="24"
+              Height="24"/>
+          </DataTemplate>
+
+          <ControlTheme x:Key="TabItem-BigIcon" TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+            <Setter Property="HeaderTemplate" Value="{StaticResource BigIcon}"/>
+            <Setter Property="Padding" Value="4"/>
+          </ControlTheme>
+        </ResourceDictionary>
+      </Grid.Resources>
+
+      <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="PointerExited">
+          <InvokeCommandAction Command="{Binding TreeViewSearch.CloseCommand}"/>
+        </EventTriggerBehavior>
+      </Interaction.Behaviors>
+
+      <TabControl ItemContainerTheme="{StaticResource TabItem-BigIcon}" Classes.blurEffect="{Binding TreeViewSearch.IsOpen}">
+        <TabControl.Styles>
+          <Style Selector="TabControl.blurEffect">
+            <Setter Property="Effect">
+              <Setter.Value>
+                <BlurEffect Radius="4"/>
+              </Setter.Value>
+            </Setter>
+          </Style>
+        </TabControl.Styles>
+      </TabControl>
+      
+      <ContentPresenter DataContext="{Binding TreeViewSearch}" Content="{Binding}" IsVisible="{Binding IsOpen}"/>
+    </Grid>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:TreeViewCategoriesSlotVM}">
+    <Grid
+      DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=TabControl}}"
+      ColumnDefinitions="*,*">
+
+      <c:IconButton Command="{Binding Path=(ftCommon:TreeViewCategoriesVM).TreeViewSearch.OpenCommand}"/>
+      
+      <ContentPresenter
+        Grid.Column="1"
+        DataContext="{Binding Path=(ftCommon:TreeViewCategoriesVM).SlidePanelPinButton}"
+        Content="{Binding}"/>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
