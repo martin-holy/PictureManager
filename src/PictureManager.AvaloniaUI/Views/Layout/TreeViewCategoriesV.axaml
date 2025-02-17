@@ -4,17 +4,10 @@
   xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
   xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
   xmlns:uInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
-  xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
   xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type ftCommon:TreeViewCategoriesVM}">
     <Grid Background="{StaticResource MH.B.C.Static.Ba}">
-      <Grid.DataTemplates>
-        <DataTemplate DataType="{x:Type uic:TreeView}">
-          <c:CatTreeView ViewModel="{Binding}"/>
-        </DataTemplate>
-      </Grid.DataTemplates>
-
       <Grid.Resources>
         <ResourceDictionary>
           <DataTemplate x:Key="BigIcon" DataType="{x:Type uInt:IListItem}">
@@ -38,7 +31,16 @@
         </EventTriggerBehavior>
       </Interaction.Behaviors>
 
-      <TabControl ItemContainerTheme="{StaticResource TabItem-BigIcon}" Classes.blurEffect="{Binding TreeViewSearch.IsOpen}">
+      <TabControl
+        ItemContainerTheme="{StaticResource TabItem-BigIcon}"
+        Classes.blurEffect="{Binding TreeViewSearch.IsOpen}">
+
+        <TabControl.ContentTemplate>
+          <DataTemplate DataType="{x:Type uInt:IListItem}">
+            <c:CatTreeView ViewModel="{Binding Data}"/>
+          </DataTemplate>
+        </TabControl.ContentTemplate>
+
         <TabControl.Styles>
           <Style Selector="TabControl.blurEffect">
             <Setter Property="Effect">
