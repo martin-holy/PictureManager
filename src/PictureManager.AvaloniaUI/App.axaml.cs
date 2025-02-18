@@ -71,7 +71,8 @@ public partial class App : Application {
       "Layout/MainTabsV.axaml",
       "Layout/MiddleContentV.axaml",
       "Layout/ToolBarV.axaml",
-      "Layout/TreeViewCategoriesV.axaml"
+      "Layout/TreeViewCategoriesV.axaml",
+      "Sections/MediaViewerV.axaml"
     };
 
     foreach (var file in files) {

@@ -1,0 +1,17 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftMediaItem:MediaViewerVM}">
+    <Grid
+      x:Name="Root"
+      Background="Transparent"
+      Focusable="True"
+      FocusAdorner="{x:Null}"
+      IsVisible="{Binding IsVisible}">
+
+      <!--TODO PORT-->
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
