@@ -11,10 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaResource Include="Views\Layout\MainTabsV.axaml"/>
-    <AvaloniaResource Include="Views\Layout\MiddleContentV.axaml"/>
-    <AvaloniaResource Include="Views\Layout\ToolBarV.axaml"/>
-    <AvaloniaResource Include="Views\Layout\TreeViewCategoriesV.axaml"/>
+    <AvaloniaResource Include="Views\Entities\TreeItemV.axaml" />
+    <AvaloniaResource Include="Views\Layout\MainTabsV.axaml" />
+    <AvaloniaResource Include="Views\Layout\MiddleContentV.axaml" />
+    <AvaloniaResource Include="Views\Layout\ToolBarV.axaml" />
+    <AvaloniaResource Include="Views\Layout\TreeViewCategoriesV.axaml" />
   </ItemGroup>
 
   <ItemGroup>
