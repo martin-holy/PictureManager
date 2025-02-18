@@ -16,6 +16,7 @@
     <AvaloniaResource Include="Views\Layout\MiddleContentV.axaml" />
     <AvaloniaResource Include="Views\Layout\ToolBarV.axaml" />
     <AvaloniaResource Include="Views\Layout\TreeViewCategoriesV.axaml" />
+    <AvaloniaResource Include="Views\Sections\MediaViewerV.axaml" />
   </ItemGroup>
 
   <ItemGroup>
