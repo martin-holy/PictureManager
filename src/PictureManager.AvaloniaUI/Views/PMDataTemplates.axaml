@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui">
-  <!--This ResourceDictionary is for DataTemplates with x:Key-->
+  <!--This ResourceDictionary is for DataTemplates with x:Key.
+      Include DataTemplates without x:key in App._loadDataTemplates and project file (.csproj). -->
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceInclude Source="Sections/MainMenuV.axaml"/>
