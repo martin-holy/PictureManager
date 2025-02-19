@@ -1,4 +1,5 @@
 ﻿using PictureManager.Common;
+using PictureManager.Common.Features.MediaItem;
 using AUI = MH.UI.AvaloniaUI;
 
 namespace PictureManager.AvaloniaUI;
@@ -7,6 +8,8 @@ public class CoreUI : ICoreP {
   public CoreUI() {
     AUI.Utils.Init.SetDelegates();
     AUI.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
+
+    MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
   }
 
   public void AfterInit() {
