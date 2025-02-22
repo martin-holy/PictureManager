@@ -72,6 +72,7 @@ public partial class App : Application {
       "Layout/MiddleContentV.axaml",
       "Layout/ToolBarV.axaml",
       "Layout/TreeViewCategoriesV.axaml",
+      "Sections/MediaItemsViewV.axaml",
       "Sections/MediaViewerV.axaml"
     };
 

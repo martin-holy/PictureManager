@@ -1,0 +1,58 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftMediaItem:MediaItemsViewVM}">
+    <Grid
+      Classes.isLoading="{Binding IsLoading}"
+      Classes.isImporting="{Binding Import.IsImporting}">
+
+      <TextBlock
+        IsVisible="{Binding IsLoading}"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Text="Loading ..."
+        FontSize="18"/>
+
+      <Grid
+        RowDefinitions="Auto,Auto,Auto"
+        IsVisible="{Binding Import.IsImporting}"
+        Width="360"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Background="{StaticResource MH.B.C.Static.Ba}">
+
+        <TextBlock
+          Text="{Binding Path=Import.Count, StringFormat='Importing {0} new items ...'}"
+          FontSize="18"
+          Margin="6,0,0,0"/>
+
+        <ProgressBar
+          Grid.Row="1"
+          Minimum="0"
+          Maximum="{Binding Import.Count}"
+          Value="{Binding Import.DoneCount}"/>
+
+        <Button
+          Grid.Row="2"
+          Command="{Binding Import.CancelCommand}"
+          HorizontalAlignment="Right"/>
+      </Grid>
+
+      <!--TODO PORT DragDropHelper--> 
+      <c:CollectionViewHost x:Name="view" ViewModel="{Binding}">
+        <c:CollectionViewHost.KeyBindings>
+          <KeyBinding Gesture="ctrl+A" Command="{Binding SelectAllCommand}"/>
+        </c:CollectionViewHost.KeyBindings>
+      </c:CollectionViewHost>
+
+      <Grid.Styles>
+        <Style Selector="Grid.isLoading /template/ c|CollectionViewHost#view, Grid.isImporting /template/ c|CollectionViewHost#view">
+          <Setter Property="Opacity" Value="0"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
