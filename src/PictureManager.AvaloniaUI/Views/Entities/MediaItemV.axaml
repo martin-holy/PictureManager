@@ -1,0 +1,17 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
+
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Full" DataType="{x:Type ftMediaItem:MediaItemM}">
+    <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Image.Source>
+        <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
+          <Binding Path="FilePathCache"/>
+          <Binding/>
+        </MultiBinding>
+      </Image.Source>
+    </Image>
+  </DataTemplate>
+</ResourceDictionary>
