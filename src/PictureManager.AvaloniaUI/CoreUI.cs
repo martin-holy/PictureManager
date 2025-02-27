@@ -17,5 +17,5 @@ public class CoreUI : ICoreP {
   }
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) =>
-    throw new System.NotImplementedException();
+    Utils.Imaging.CreateImageThumbnail(srcPath, destPath, desiredSize, quality);
 }
