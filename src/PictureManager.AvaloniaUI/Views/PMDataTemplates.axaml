@@ -3,6 +3,7 @@
       Include DataTemplates without x:key in App._loadDataTemplates and project file (.csproj). -->
 
   <ResourceDictionary.MergedDictionaries>
+    <ResourceInclude Source="Entities/MediaItemV.axaml"/>
     <ResourceInclude Source="Sections/MainMenuV.axaml"/>
     <ResourceInclude Source="Sections/PluginsMenuV.axaml"/>
     <ResourceInclude Source="Sections/ViewersToolBarV.axaml"/>
