@@ -22,9 +22,6 @@
     <KeyBinding Gesture="ctrl+K" Command="{x:Static ftMediaItem:MediaItemVM.CommentCommand}"/>
     <KeyBinding Gesture="F2" Command="{x:Static ftMediaItem:MediaItemVM.RenameCommand}"/>
     <KeyBinding Gesture="Delete" Command="{x:Static ftMediaItem:MediaItemVM.DeleteCommand}"/>
-    <!--TODO PORT-->
-    <!--<KeyBinding Gesture="Esc" Command="{x:Static layout:MainWindowVM.SwitchToBrowserCommand}"/>-->
-    <!--<MouseBinding MouseAction="LeftDoubleClick" Command="layout:MainWindowVM.SwitchToBrowserCommand"/>-->
   </mhc:CustomWindow.KeyBindings>
 
   <Interaction.Behaviors>
