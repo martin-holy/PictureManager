@@ -1,6 +1,7 @@
 <DataTemplates
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
   xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
   xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common">
 
@@ -10,7 +11,7 @@
 
       <ContentPresenter
         Content="{Binding VM.MainTabs, Source={x:Static pm:App.Core}}"
-        IsVisible="{Binding !VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}}"/>
+        ap:VisibleInLayout.When="{Binding !VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}}"/>
 
       <ContentPresenter Content="{Binding VM.MediaViewer, Source={x:Static pm:App.Core}}"/>
     </Grid>
