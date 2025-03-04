@@ -8,7 +8,8 @@
   xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
   xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
-  xmlns:ftVideo="clr-namespace:PictureManager.Common.Features.MediaItem.Video;assembly=PictureManager.Common">
+  xmlns:ftVideo="clr-namespace:PictureManager.Common.Features.MediaItem.Video;assembly=PictureManager.Common"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type ftMediaItem:MediaViewerVM}">
     <Grid
@@ -22,9 +23,13 @@
         <KeyBinding Gesture="Right" Command="{Binding NextCommand}"/>
         <KeyBinding Gesture="Left" Command="{Binding PreviousCommand}"/>
         <KeyBinding Gesture="ctrl+P" Command="{Binding Slideshow.StartCommand}"/>
+        <KeyBinding Gesture="Escape" Command="{x:Static layout:MainWindowVM.SwitchToBrowserCommand}"/>
       </Grid.KeyBindings>
 
       <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="DoubleTapped">
+          <InvokeCommandAction Command="{x:Static layout:MainWindowVM.SwitchToBrowserCommand}"/>
+        </EventTriggerBehavior>
         <EventTriggerBehavior EventName="PointerWheelChanged">
           <InvokeCommandAction Command="{Binding NavigateCommand}" InputConverter="{x:Static conv:MouseWheelConverter.Inst}"/>
         </EventTriggerBehavior>
