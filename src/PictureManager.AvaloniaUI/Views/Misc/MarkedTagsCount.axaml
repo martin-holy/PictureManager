@@ -1,0 +1,27 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
+  xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters">
+
+  <ControlTheme x:Key="PM.S.MarkedTagsCount" TargetType="TextBlock">
+    <Setter Property="IsVisible" Value="{Binding Text, RelativeSource={RelativeSource Self},
+                                         Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Margin" Value="5,0,0,0"/>
+    <Setter Property="Padding" Value="5,0"/>
+    <Setter Property="Background" Value="{DynamicResource MH.B.Accent-Dark}"/>
+    <Setter Property="Text">
+      <Setter.Value>
+        <MultiBinding Converter="{x:Static pmConv:MarkedTagsItemsCountConverter.Inst}">
+          <Binding
+            Path="VM.MainWindow.TreeViewCategories.MarkedTags"
+            Source="{x:Static pm:App.Core}" />
+          <Binding DataType="{x:Type sys:Object}"/>
+        </MultiBinding>
+      </Setter.Value>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>
