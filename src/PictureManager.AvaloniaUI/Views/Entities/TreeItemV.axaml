@@ -4,9 +4,10 @@
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI">
 
-  <!--TODO PORT-->
   <TreeDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent" ColumnDefinitions="Auto,Auto,Auto">
+      <!--TODO PORT ContextMenu-->
+
       <PathIcon
         x:Name="icon"
         Grid.Column="0"
@@ -18,6 +19,12 @@
         Text="{Binding Name}"
         VerticalAlignment="Center"
         Margin="5,0,0,0"/>
+
+      <TextBlock
+        Grid.Column="2"
+        Theme="{DynamicResource PM.S.MarkedTagsCount}"/>
+
+      <!--TODO PORT derived types-->
     </Grid>
   </TreeDataTemplate>
 </DataTemplates>
