@@ -12,8 +12,10 @@
   xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common"
   xmlns:ftFavoriteFolder="clr-namespace:PictureManager.Common.Features.FavoriteFolder;assembly=PictureManager.Common">
 
+  <!--TODO PORT ContextMenus-->
+
   <!-- Folder -->
-  <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding PlacementTarget.(Control.DataContext), RelativeSource={RelativeSource Self}}">
+  <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemRenameCommand}" CommandParameter="{Binding}"/>
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemDeleteCommand}" CommandParameter="{Binding}"/>
