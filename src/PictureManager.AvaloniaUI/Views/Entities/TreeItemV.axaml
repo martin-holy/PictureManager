@@ -1,30 +1,41 @@
 <DataTemplates
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
-  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI">
+  xmlns:mhuiint="clr-namespace:MH.UI.Interfaces;assembly=MH.UI">
 
   <TreeDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
-    <Grid x:Name="grid" Background="Transparent" ColumnDefinitions="Auto,Auto,Auto">
+    <Grid
+      Background="Transparent"
+      ColumnDefinitions="Auto,Auto,Auto"
+      Classes.isITreeCategory="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type mhuiint:ITreeCategory}}">
+      
       <!--TODO PORT ContextMenu-->
 
-      <PathIcon
-        x:Name="icon"
-        Grid.Column="0"
-        ap:Icon.Res="{Binding Icon}"/>
-      
-      <TextBlock
-        x:Name="name"
-        Grid.Column="1"
-        Text="{Binding Name}"
-        VerticalAlignment="Center"
-        Margin="5,0,0,0"/>
-
-      <TextBlock
-        Grid.Column="2"
-        Theme="{DynamicResource PM.S.MarkedTagsCount}"/>
+      <PathIcon Grid.Column="0" ap:Icon.Res="{Binding Icon}"/>
+      <TextBlock Grid.Column="1" x:Name="Name" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+      <TextBlock Grid.Column="2" Theme="{DynamicResource PM.S.MarkedTagsCount}"/>
 
       <!--TODO PORT derived types-->
+
+      <Grid.Styles>
+        <Style Selector="Grid.isITreeCategory">
+          <Setter Property="Height" Value="40"/>
+        </Style>
+
+        <Style Selector="Grid.isITreeCategory > PathIcon">
+          <Setter Property="Width" Value="24"/>
+          <Setter Property="Height" Value="24"/>
+          <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+        </Style>
+
+        <Style Selector="Grid.isITreeCategory > TextBlock#Name">
+          <Setter Property="FontSize" Value="18"/>
+          <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+        </Style>
+      </Grid.Styles>
     </Grid>
   </TreeDataTemplate>
 </DataTemplates>
