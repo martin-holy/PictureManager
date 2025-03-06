@@ -4,7 +4,8 @@
   xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
   xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
-  xmlns:mhuiint="clr-namespace:MH.UI.Interfaces;assembly=MH.UI">
+  xmlns:mhuiint="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
+  xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
 
   <TreeDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid
@@ -12,7 +13,14 @@
       ColumnDefinitions="Auto,Auto,Auto"
       Classes.isITreeCategory="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type mhuiint:ITreeCategory}}">
       
-      <!--TODO PORT ContextMenu-->
+      <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="ContextRequested">
+          <ChangePropertyAction
+            PropertyName="ContextMenu"
+            Value="{Binding Converter={x:Static conv:ResourceConverter.Inst},
+                    ConverterParameter={x:Static pmd:Res.TypeToTreeContextMenuDic}}"/>
+        </EventTriggerBehavior>
+      </Interaction.Behaviors>
 
       <PathIcon Grid.Column="0" ap:Icon.Res="{Binding Icon}"/>
       <TextBlock Grid.Column="1" x:Name="Name" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0"/>
