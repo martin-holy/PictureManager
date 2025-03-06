@@ -1,0 +1,43 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+  xmlns:mhuibc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:ftFolderKeyword="clr-namespace:PictureManager.Common.Features.FolderKeyword;assembly=PictureManager.Common"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:ftGeoName="clr-namespace:PictureManager.Common.Features.GeoName;assembly=PictureManager.Common"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common"
+  xmlns:ftFavoriteFolder="clr-namespace:PictureManager.Common.Features.FavoriteFolder;assembly=PictureManager.Common">
+
+  <!-- Folder -->
+  <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding PlacementTarget.(Control.DataContext), RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemRenameCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemDeleteCommand}" CommandParameter="{Binding}"/>
+    <Separator/>
+    <MenuItem Command="{x:Static ftFavoriteFolder:FavoriteFolderTreeCategory.AddToFavoritesCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftFolderKeyword:FolderKeywordTreeCategory.SetAsFolderKeywordCommand}" CommandParameter="{Binding}"/>
+
+    <MenuItem Header="GeoLocation">
+      <MenuItem.Icon>
+        <PathIcon Data="{StaticResource IconLocationCheckin}" Classes="shadow"/>
+      </MenuItem.Icon>
+      <MenuItem Command="{x:Static core:CoreVM.GetGeoNamesFromWebCommand}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{x:Static core:CoreVM.ReadGeoLocationFromFilesCommand}" CommandParameter="{Binding}"/>
+    </MenuItem>
+
+    <MenuItem Header="Media Items">
+      <MenuItem.Icon>
+        <PathIcon Data="{StaticResource IconImageMultiple}" Classes="shadow"/>
+      </MenuItem.Icon>
+      <MenuItem Command="{x:Static core:CoreVM.CompressImagesCommand}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.RebuildThumbnailsCommand}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{x:Static core:CoreVM.ReloadMetadataCommand}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{x:Static core:CoreVM.ResizeImagesCommand}" CommandParameter="{Binding}"/>
+      <MenuItem Command="{x:Static core:CoreVM.SaveImageMetadataToFilesCommand}" CommandParameter="{Binding}"/>
+    </MenuItem>
+  </ContextMenu>
+</ResourceDictionary>
