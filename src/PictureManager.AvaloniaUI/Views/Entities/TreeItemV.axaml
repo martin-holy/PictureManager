@@ -6,13 +6,15 @@
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhuiint="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
   xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
-  xmlns:mhb="clr-namespace:MH.UI.AvaloniaUI.Behaviors;assembly=MH.UI.AvaloniaUI">
+  xmlns:mhb="clr-namespace:MH.UI.AvaloniaUI.Behaviors;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftFavoriteFolder="clr-namespace:PictureManager.Common.Features.FavoriteFolder;assembly=PictureManager.Common">
 
   <TreeDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid
       Background="Transparent"
       ColumnDefinitions="Auto,Auto,Auto"
-      Classes.isITreeCategory="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type mhuiint:ITreeCategory}}">
+      Classes.isITreeCategory="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type mhuiint:ITreeCategory}}"
+      Classes.isFavoriteFolderM="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type ftFavoriteFolder:FavoriteFolderM}}">
       
       <Interaction.Behaviors>
         <mhb:LazyContextMenu MenuValue="{Binding Converter={x:Static conv:ResourceConverter.Inst},
@@ -39,6 +41,12 @@
         <Style Selector="Grid.isITreeCategory > TextBlock#Name">
           <Setter Property="FontSize" Value="18"/>
           <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+        </Style>
+
+        <Style Selector="Grid.isFavoriteFolderM">
+          <Setter
+            Property="ToolTip.Tip"
+            Value="{Binding (ftFavoriteFolder:FavoriteFolderM).Folder.FullPath}"/>
         </Style>
       </Grid.Styles>
     </Grid>
