@@ -5,7 +5,8 @@
   xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhuiint="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
-  xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
+  xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:mhb="clr-namespace:MH.UI.AvaloniaUI.Behaviors;assembly=MH.UI.AvaloniaUI">
 
   <TreeDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid
@@ -14,12 +15,8 @@
       Classes.isITreeCategory="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type mhuiint:ITreeCategory}}">
       
       <Interaction.Behaviors>
-        <EventTriggerBehavior EventName="ContextRequested">
-          <ChangePropertyAction
-            PropertyName="ContextMenu"
-            Value="{Binding Converter={x:Static conv:ResourceConverter.Inst},
-                    ConverterParameter={x:Static pmd:Res.TypeToTreeContextMenuDic}}"/>
-        </EventTriggerBehavior>
+        <mhb:LazyContextMenu MenuValue="{Binding Converter={x:Static conv:ResourceConverter.Inst},
+                                         ConverterParameter={x:Static pmd:Res.TypeToTreeContextMenuDic}}"/>
       </Interaction.Behaviors>
 
       <PathIcon Grid.Column="0" ap:Icon.Res="{Binding Icon}"/>
