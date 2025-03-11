@@ -45,6 +45,13 @@
     <MenuItem Command="{x:Static mhuibc:TreeCategory.GroupCreateCommand}" CommandParameter="{Binding}"/>
   </ContextMenu>
 
+  <!-- GeoNames -->
+  <ContextMenu x:Key="TreeContextMenuGeoNames">
+    <MenuItem Command="{x:Static core:CoreVM.GetGeoNamesFromWebCommand}"/>
+    <MenuItem Command="{x:Static ftGeoName:GeoNameVM.NewGeoNameFromGpsCommand}"/>
+    <MenuItem Command="{x:Static core:CoreVM.ReadGeoLocationFromFilesCommand}"/>
+  </ContextMenu>
+
   <!-- Folder -->
   <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
