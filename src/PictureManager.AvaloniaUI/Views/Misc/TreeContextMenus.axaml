@@ -20,6 +20,20 @@
     <MenuItem Command="{x:Static mhuibc:TreeCategory.GroupCreateCommand}" CommandParameter="{Binding}"/>
   </ContextMenu>
 
+  <!-- Person -->
+  <ContextMenu x:Key="TreeContextMenuPerson" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="{x:Static layout:ToolsTabsVM.OpenPersonTabCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemRenameCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemDeleteCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemMoveToGroupCommand}" CommandParameter="{Binding}"/>
+    <Separator/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.LoadByPersonCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftSegment:SegmentVM.LoadByPersonCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetAndCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetOrCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetNotCommand}" CommandParameter="{Binding}"/>
+  </ContextMenu>
+
   <!-- Folder -->
   <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
@@ -47,5 +61,11 @@
       <MenuItem Command="{x:Static core:CoreVM.ResizeImagesCommand}" CommandParameter="{Binding}"/>
       <MenuItem Command="{x:Static core:CoreVM.SaveImageMetadataToFilesCommand}" CommandParameter="{Binding}"/>
     </MenuItem>
+  </ContextMenu>
+
+  <!-- Favorite Folder -->
+  <ContextMenu x:Key="TreeContextMenuFavoriteFolder" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemRenameCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemDeleteCommand}" CommandParameter="{Binding}"/>
   </ContextMenu>
 </ResourceDictionary>
