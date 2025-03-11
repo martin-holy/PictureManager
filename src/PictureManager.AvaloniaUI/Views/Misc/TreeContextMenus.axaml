@@ -112,4 +112,12 @@
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemRenameCommand}" CommandParameter="{Binding}"/>
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemDeleteCommand}" CommandParameter="{Binding}"/>
   </ContextMenu>
+
+  <!-- GeoName -->
+  <ContextMenu x:Key="TreeContextMenuGeoName" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.LoadByGeoNameCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetAndCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetOrCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetNotCommand}" CommandParameter="{Binding}"/>
+  </ContextMenu>
 </ResourceDictionary>
