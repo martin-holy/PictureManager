@@ -1,7 +1,6 @@
 <ResourceDictionary
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:mhuibc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
   xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
@@ -11,8 +10,6 @@
   xmlns:ftGeoName="clr-namespace:PictureManager.Common.Features.GeoName;assembly=PictureManager.Common"
   xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common"
   xmlns:ftFavoriteFolder="clr-namespace:PictureManager.Common.Features.FavoriteFolder;assembly=PictureManager.Common">
-
-  <!--TODO PORT ContextMenus-->
 
   <!-- People -->
   <ContextMenu x:Key="TreeContextMenuPeople" DataContext="{Binding $self.Parent.DataContext}">
@@ -119,5 +116,25 @@
     <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetAndCommand}" CommandParameter="{Binding}"/>
     <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetOrCommand}" CommandParameter="{Binding}"/>
     <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetNotCommand}" CommandParameter="{Binding}"/>
+  </ContextMenu>
+
+  <!-- Keyword -->
+  <ContextMenu x:Key="TreeContextMenuKeyword" DataContext="{Binding $self.Parent.DataContext}">
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemRenameCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemDeleteCommand}" CommandParameter="{Binding}"/>
+    <Separator/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.LoadByKeywordCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftPerson:PersonVM.LoadByKeywordCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftSegment:SegmentVM.LoadByKeywordCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetAndCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetOrCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetNotCommand}" CommandParameter="{Binding}"/>
+  </ContextMenu>
+
+  <!-- Viewer -->
+  <ContextMenu x:Key="TreeContextMenuViewer" DataContext="{Binding $self.Parent.DataContext}">
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemRenameCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemDeleteCommand}" CommandParameter="{Binding}"/>
   </ContextMenu>
 </ResourceDictionary>
