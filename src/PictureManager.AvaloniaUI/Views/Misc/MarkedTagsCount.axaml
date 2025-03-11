@@ -7,8 +7,7 @@
   xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters">
 
   <ControlTheme x:Key="PM.S.MarkedTagsCount" TargetType="TextBlock">
-    <Setter Property="IsVisible" Value="{Binding Text, RelativeSource={RelativeSource Self},
-                                         Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
+    <Setter Property="IsVisible" Value="{Binding $self.Text, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="Margin" Value="5,0,0,0"/>
     <Setter Property="Padding" Value="5,0"/>
