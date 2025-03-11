@@ -52,6 +52,11 @@
     <MenuItem Command="{x:Static core:CoreVM.ReadGeoLocationFromFilesCommand}"/>
   </ContextMenu>
 
+  <!-- Viewers -->
+  <ContextMenu x:Key="TreeContextMenuViewers" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
+  </ContextMenu>
+
   <!-- Folder -->
   <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
