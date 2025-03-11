@@ -39,6 +39,12 @@
     <MenuItem Command="{x:Static ftFolderKeyword:FolderKeywordsDialog.OpenCommand}"/>
   </ContextMenu>
 
+  <!-- Keywords -->
+  <ContextMenu x:Key="TreeContextMenuKeywords" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.GroupCreateCommand}" CommandParameter="{Binding}"/>
+  </ContextMenu>
+
   <!-- Folder -->
   <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
