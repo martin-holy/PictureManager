@@ -34,6 +34,11 @@
     <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetNotCommand}" CommandParameter="{Binding}"/>
   </ContextMenu>
 
+  <!-- Folder Keywords -->
+  <ContextMenu x:Key="TreeContextMenuFolderKeywords">
+    <MenuItem Command="{x:Static ftFolderKeyword:FolderKeywordsDialog.OpenCommand}"/>
+  </ContextMenu>
+
   <!-- Folder -->
   <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
