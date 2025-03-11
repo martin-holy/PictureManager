@@ -57,6 +57,13 @@
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
   </ContextMenu>
 
+  <!-- Tree Category Keyword Group -->
+  <ContextMenu x:Key="TreeContextMenuKeywordGroup" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.GroupRenameCommand}" CommandParameter="{Binding}"/>
+    <MenuItem Command="{x:Static mhuibc:TreeCategory.GroupDeleteCommand}" CommandParameter="{Binding}"/>
+  </ContextMenu>
+
   <!-- Folder -->
   <ContextMenu x:Key="TreeContextMenuFolder" DataContext="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}">
     <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemCreateCommand}" CommandParameter="{Binding}"/>
