@@ -177,13 +177,16 @@
   <DataTemplate DataType="{x:Type ftMediaItem:MediaItemToolBarVM}">
     <!--TODO PORT move IsVisible state to VM-->
     <StackPanel
+      x:Name="Root"
       Orientation="Horizontal"
-      IsVisible="False"
       Classes.currentViewIsNotNull="{Binding MediaItemViews.Current, Converter={x:Static ObjectConverters.IsNotNull}}"
       Classes.mainWindowIsNotInViewMode="{Binding !MainWindow.IsInViewMode}">
 
       <StackPanel.Styles>
-        <Style Selector="StackPanel.currentViewIsNotNull StackPanel.mainWindowIsNotInViewMode">
+        <Style Selector="StackPanel#Root">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="StackPanel.currentViewIsNotNull.mainWindowIsNotInViewMode">
           <Setter Property="IsVisible" Value="True"/>
         </Style>
       </StackPanel.Styles>
