@@ -1,4 +1,6 @@
-﻿using PictureManager.AvaloniaUI.Controls;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using PictureManager.AvaloniaUI.Controls;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using AUI = MH.UI.AvaloniaUI;
@@ -13,11 +15,17 @@ public class CoreUI : ICoreP {
     AUI.Controls.CollectionViewHost.GroupByDialogDataTemplateSelector = new GroupByDialogDataTemplateSelector();
 
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
+    CoreVM.DisplayScale = _getDisplayScale();
   }
 
   public void AfterInit() {
     // TODO PORT
   }
+
+  private static double _getDisplayScale() =>
+    Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window }
+      ? window.DesktopScaling
+      : 1.0;
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) =>
     Utils.Imaging.CreateImageThumbnail(srcPath, destPath, desiredSize, quality);
