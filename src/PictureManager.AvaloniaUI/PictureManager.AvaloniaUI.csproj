@@ -18,6 +18,7 @@
     <AvaloniaResource Include="Views\Layout\TreeViewCategoriesV.axaml" />
     <AvaloniaResource Include="Views\Sections\MediaItemsViewV.axaml" />
     <AvaloniaResource Include="Views\Sections\MediaViewerV.axaml" />
+    <AvaloniaResource Include="Views\Sections\PeopleV.axaml" />
   </ItemGroup>
 
   <ItemGroup>
