@@ -22,6 +22,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   private readonly CoreR _coreR;
   private static readonly string[] _supportedImageExts = [".jpg", ".jpeg"];
   private static readonly string[] _supportedVideoExts = [".mp4"];
+  public bool VideoSupport { get; set; } = true;
 
   public event EventHandler<MediaItemM> ItemRenamedEvent = delegate { };
   public event EventHandler<MediaItemM[]> MetadataChangedEvent = delegate { };
@@ -112,6 +113,8 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   public RealMediaItemM? ItemCreate(FolderM folder, string fileName) {
     if (_supportedImageExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
       return _coreR.Image.ItemCreate(folder, fileName);
+
+    if (!VideoSupport) return null;
 
     if (_supportedVideoExts.Any(x => fileName.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
       return _coreR.Video.ItemCreate(folder, fileName);
