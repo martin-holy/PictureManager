@@ -4,11 +4,8 @@
   xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
   xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
   xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
-  xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
   xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
-  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
-  xmlns:ftVideo="clr-namespace:PictureManager.Common.Features.MediaItem.Video;assembly=PictureManager.Common"
   xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common">
 
   <DataTemplate DataType="{x:Type ftMediaItem:MediaViewerVM}">
@@ -39,22 +36,11 @@
 
       <c:ZoomAndPanHost x:Name="zoom" ViewModel="{Binding ZoomAndPan}">
         <Grid>
-          <!-- Image -->
           <Image
             x:Name="image"
             Source="{Binding Current, Converter={x:Static pmConv:MediaViewerImageSourceConverter.Inst}}"
             Width="{Binding ContentWidth}"
-            Height="{Binding ContentHeight}"
-            IsVisible="{Binding Current, Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type ftImage:ImageM}}"/>
-
-          <!-- Video -->
-          <ContentControl
-            x:Name="player"
-            Content="{Binding Path=VM.UiFullVideo, Source={x:Static pm:App.Core}}"
-            IsVisible="{Binding Current, Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type ftVideo:VideoM}}">
-
-            <!--TODO PORT rotation-->
-          </ContentControl>
+            Height="{Binding ContentHeight}"/>
         </Grid>
       </c:ZoomAndPanHost>
 
