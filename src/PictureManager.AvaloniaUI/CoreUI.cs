@@ -21,6 +21,7 @@ public class CoreUI : ICoreP {
 
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     CoreVM.DisplayScale = _getDisplayScale();
+    Core.R.MediaItem.VideoSupport = false;
   }
 
   public void AfterInit() {
