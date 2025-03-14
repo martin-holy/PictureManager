@@ -21,28 +21,28 @@ public sealed class SegmentRectVM : ObservableObject {
     SegmentRectS = segmentRectS;
 
     SetViewCommand = new(x => _view = (IInputElement)x!.Source, x => x != null);
-    SetCurrentCommand = new(SetCurrent);
-    CreateCommand = new(Create, () => SegmentRectS.AreVisible);
-    EditCommand = new(Edit);
+    SetCurrentCommand = new(_setCurrent);
+    CreateCommand = new(_create, () => SegmentRectS.AreVisible);
+    EditCommand = new(_edit);
     EndEditCommand = new(SegmentRectS.EndEdit);
     DeleteCommand = new(x => SegmentRectS.Delete(x!), x => x != null, MH.UI.Res.IconXCross, "Delete");
   }
 
-  private void SetCurrent(MouseEventArgs? e) {
+  private void _setCurrent(MouseEventArgs? e) {
     if (e?.Source is FrameworkElement fe && (fe.Name.Equals("PART_MovePoint") || fe.Name.Equals("PART_ResizeBorder"))) {
       var pos = e.GetPosition(_view);
       SegmentRectS.SetCurrent((SegmentRectM)fe.DataContext, pos.X, pos.Y);
     }
   }
 
-  private void Create(MouseButtonEventArgs? e) {
+  private void _create(MouseButtonEventArgs? e) {
     if (e != null && ((Keyboard.Modifiers & ModifierKeys.Control) > 0 || e.RightButton == MouseButtonState.Pressed)) {
       var pos = e.GetPosition(_view);
       SegmentRectS.CreateNew(pos.X, pos.Y);
     }
   }
 
-  private void Edit(MouseEventArgs? e) {
+  private void _edit(MouseEventArgs? e) {
     if (e == null || SegmentRectS.Current == null) return;
 
     if (e.RightButton != MouseButtonState.Pressed && e.LeftButton != MouseButtonState.Pressed) {
