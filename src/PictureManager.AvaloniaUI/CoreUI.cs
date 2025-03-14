@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using PictureManager.AvaloniaUI.Controls;
+using PictureManager.AvaloniaUI.Converters;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ using AUI = MH.UI.AvaloniaUI;
 namespace PictureManager.AvaloniaUI;
 
 public class CoreUI : ICoreP {
+  //TODO PORT public WPF.ViewModels.SegmentRectVM SegmentRectVM { get; private set; } = null!;
+
   public CoreUI() {
     CoreR.FileOperationDelete = FileOperationDelete;
 
@@ -20,12 +23,23 @@ public class CoreUI : ICoreP {
     AUI.Controls.CollectionViewHost.GroupByDialogDataTemplateSelector = new GroupByDialogDataTemplateSelector();
 
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
+    //TODO PORT ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
+    //TODO PORT Not supported VideoVM.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
     CoreVM.DisplayScale = _getDisplayScale();
+    //TODO PORT Not supported CoreVM.UiFullVideo = new MediaPlayer();
+    //TODO PORT Not supported CoreVM.UiDetailVideo = new MediaPlayer();
+    //TODO PORT Not supported CoreVM.VideoFrameSaver = new VideoFrameSaver();
     Core.R.MediaItem.VideoSupport = false;
+
+    //TODO PORT SegmentS.ExportSegment = Utils.Imaging.ExportSegment;
+    //TODO PORT SegmentVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
+    MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
   }
 
   public void AfterInit() {
     // TODO PORT
+    //LoadPlugins();
+    //SegmentRectVM = new(Core.S.Segment.Rect);
   }
 
   private static double _getDisplayScale() =>
