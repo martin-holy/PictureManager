@@ -19,6 +19,7 @@
         <ResourceInclude Source="avares://MH.UI.AvaloniaUI/Resources/DataTemplates/MHDataTemplates.axaml"/>
 
         <ResourceInclude Source="Views/PMDataTemplates.axaml"/>
+        <MergeResourceInclude Source="avares://PictureManager.AvaloniaUI/Views/Misc/SegmentsRectsV.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
