@@ -1,0 +1,27 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:pmc="clr-namespace:PictureManager.AvaloniaUI.Controls">
+
+  <!--TODO PORT-->
+  <DataTemplate DataType="{x:Type ftSegment:SegmentRectM}">
+    <pmc:SegmentRectBorder
+      x:Name="PART_ResizeBorder"
+      MinWidth="{Binding Size}"
+      MinHeight="{Binding Size}"
+      ToolTip.Tip="{Binding Segment.Person.Name}"
+      Background="Transparent"
+      BorderBrush="White"
+      BorderThickness="1"
+      Cursor="SizeAll"
+      Classes="shadow"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Top">
+
+      <pmc:SegmentRectBorder.RenderTransform>
+        <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
+      </pmc:SegmentRectBorder.RenderTransform>
+    </pmc:SegmentRectBorder>
+  </DataTemplate>
+</DataTemplates>
