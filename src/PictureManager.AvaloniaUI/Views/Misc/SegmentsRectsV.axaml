@@ -1,0 +1,23 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:misc="clr-namespace:PictureManager.AvaloniaUI.Views.Misc"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
+
+  <ControlTheme x:Key="{x:Type misc:SegmentsRectsV}" TargetType="misc:SegmentsRectsV">
+    <Setter Property="ItemsSource" Value="{Binding MediaItemSegmentsRects, DataType=ftSegment:SegmentRectS}"/>
+    <Setter Property="IsVisible" Value="{Binding AreVisible, DataType=ftSegment:SegmentRectS}"/>
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <Grid/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

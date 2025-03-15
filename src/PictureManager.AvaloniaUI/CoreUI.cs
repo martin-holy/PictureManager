@@ -12,8 +12,6 @@ using AUI = MH.UI.AvaloniaUI;
 namespace PictureManager.AvaloniaUI;
 
 public class CoreUI : ICoreP {
-  //TODO PORT public WPF.ViewModels.SegmentRectVM SegmentRectVM { get; private set; } = null!;
-
   public CoreUI() {
     CoreR.FileOperationDelete = FileOperationDelete;
 
@@ -37,9 +35,7 @@ public class CoreUI : ICoreP {
   }
 
   public void AfterInit() {
-    // TODO PORT
-    //LoadPlugins();
-    //SegmentRectVM = new(Core.S.Segment.Rect);
+    // TODO PORT LoadPlugins();
   }
 
   private static double _getDisplayScale() =>
