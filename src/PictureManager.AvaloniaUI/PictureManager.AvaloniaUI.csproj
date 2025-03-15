@@ -39,8 +39,4 @@
     <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
     <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Misc\" />
-  </ItemGroup>
 </Project>
