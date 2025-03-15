@@ -4,9 +4,12 @@
   xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
   xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
   xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
   xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
-  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common">
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
+  xmlns:misc="clr-namespace:PictureManager.AvaloniaUI.Views.Misc">
 
   <DataTemplate DataType="{x:Type ftMediaItem:MediaViewerVM}">
     <Grid
@@ -44,7 +47,22 @@
         </Grid>
       </c:ZoomAndPanHost>
 
-      <!--TODO PORT Segments Rects -->
+      <!-- Segments Rects -->
+      <Canvas>
+        <misc:SegmentsRectsV
+          DataContext="{ReflectionBinding S.Segment.Rect, Source={x:Static pm:App.Core}}"
+          Width="{Binding #image.Bounds.Width}"
+          Height="{Binding #image.Bounds.Height}"
+          HorizontalAlignment="Left"
+          VerticalAlignment="Top">
+
+          <misc:SegmentsRectsV.RenderTransform>
+            <TranslateTransform
+              X="{Binding #zoom.((uic:ZoomAndPan)ViewModel).TransformX}"
+              Y="{Binding #zoom.((uic:ZoomAndPan)ViewModel).TransformY}"/>
+          </misc:SegmentsRectsV.RenderTransform>
+        </misc:SegmentsRectsV>
+      </Canvas>
 
       <!--TODO PORT focus on mouse over-->
     </Grid>
