@@ -7,8 +7,6 @@
 
   <DataTemplate DataType="{x:Type layout:MiddleContentVM}">
     <Grid>
-      <ContentControl Content="{Binding VM.VideoFrameSaver, Source={x:Static pm:App.Core}}"/>
-
       <ContentPresenter
         Content="{Binding VM.MainTabs, Source={x:Static pm:App.Core}}"
         ap:VisibleInLayout.When="{Binding !VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}}"/>
