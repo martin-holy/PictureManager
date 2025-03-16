@@ -35,7 +35,7 @@ public sealed class SegmentsRectsV : ItemsControl {
     var point = e.GetCurrentPoint(this);
 
     if (e.Source is Control { DataContext: SegmentRectM sr } c
-        && ("PART_MovePoint".Equals(c.Name) || "PART_ResizeBorder".Equals(c.Name))) {
+        && ("PART_ResizeBorder".Equals(c.Name) || c.FindAncestorOfType<PathIcon>() is { Name: "PART_MovePoint" })) {
       _segmentRectS.SetCurrent(sr, point.Position.X, point.Position.Y);
       return;
     }
