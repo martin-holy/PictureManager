@@ -12,16 +12,29 @@
       MinHeight="{Binding Size}"
       ToolTip.Tip="{Binding Segment.Person.Name}"
       Background="Transparent"
-      BorderBrush="White"
       BorderThickness="1"
       Cursor="SizeAll"
       Classes="shadow"
+      Classes.personIsNotNull="{Binding Segment.Person, Converter={x:Static ObjectConverters.IsNotNull}}"
+      Classes.isSelected="{Binding Segment.IsSelected}"
       HorizontalAlignment="Left"
       VerticalAlignment="Top">
 
       <pmc:SegmentRectBorder.RenderTransform>
         <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
       </pmc:SegmentRectBorder.RenderTransform>
+      <pmc:SegmentRectBorder.Styles>
+        <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder">
+          <Setter Property="BorderBrush" Value="Red"/>
+        </Style>
+        <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder.personIsNotNull">
+          <Setter Property="ToolTip.Tip" Value="{Binding Segment.Person.Name}"/>
+          <Setter Property="BorderBrush" Value="White"/>
+        </Style>
+        <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder.isSelected">
+          <Setter Property="BorderBrush" Value="LimeGreen"/>
+        </Style>
+      </pmc:SegmentRectBorder.Styles>
     </pmc:SegmentRectBorder>
   </DataTemplate>
 </DataTemplates>
