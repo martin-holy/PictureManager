@@ -1,0 +1,9 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type layout:ToolsTabsVM}">
+    <TabControl/>
+  </DataTemplate>
+</DataTemplates>
