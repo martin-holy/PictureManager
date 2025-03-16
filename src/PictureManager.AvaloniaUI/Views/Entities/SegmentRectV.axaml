@@ -12,7 +12,6 @@
       MinHeight="{Binding Size}"
       ToolTip.Tip="{Binding Segment.Person.Name}"
       Background="Transparent"
-      BorderThickness="1"
       Cursor="SizeAll"
       Classes="shadow"
       Classes.personIsNotNull="{Binding Segment.Person, Converter={x:Static ObjectConverters.IsNotNull}}"
@@ -26,6 +25,7 @@
       <pmc:SegmentRectBorder.Styles>
         <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder">
           <Setter Property="BorderBrush" Value="Red"/>
+          <Setter Property="BorderThickness" Value="1"/>
         </Style>
         <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder.personIsNotNull">
           <Setter Property="ToolTip.Tip" Value="{Binding Segment.Person.Name}"/>
@@ -33,6 +33,9 @@
         </Style>
         <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder.isSelected">
           <Setter Property="BorderBrush" Value="LimeGreen"/>
+        </Style>
+        <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder:pointerover">
+          <Setter Property="BorderThickness" Value="2"/>
         </Style>
       </pmc:SegmentRectBorder.Styles>
     </pmc:SegmentRectBorder>
