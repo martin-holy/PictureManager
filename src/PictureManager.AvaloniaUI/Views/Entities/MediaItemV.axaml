@@ -4,6 +4,8 @@
   xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
 
+  <!--TODO PORT MediaItem templates-->
+
   <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Full" DataType="{x:Type ftMediaItem:MediaItemM}">
     <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
       <Image.Source>
