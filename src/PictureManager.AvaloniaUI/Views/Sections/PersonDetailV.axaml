@@ -1,0 +1,67 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:mhuibc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI">
+
+  <DataTemplate DataType="{x:Type ftPerson:PersonDetailVM}">
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+      <!-- Heather -->
+      <Grid Background="{DynamicResource MH.B.Black5}" ColumnDefinitions="Auto,*">
+        <!-- Menu -->
+        <Menu
+          Grid.Row="0"
+          HorizontalAlignment="Left"
+          VerticalAlignment="Center"
+          Background="Transparent"
+          Margin="4">
+
+          <MenuItem Padding="6,2,-2,2">
+            <MenuItem.Icon>
+              <PathIcon Data="{StaticResource IconThreeBars}" Classes="shadow"/>
+            </MenuItem.Icon>
+
+            <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.LoadByPersonCommand}" CommandParameter="{Binding PersonM}"/>
+            <MenuItem Command="{x:Static mhuibc:TreeCategory.ItemRenameCommand}" CommandParameter="{Binding PersonM}"/>
+            <MenuItem Command="{x:Static ftSegment:SegmentVM.SetSelectedAsUnknownCommand}"/>
+          </MenuItem>
+        </Menu>
+
+        <TextBlock
+          Grid.Column="1"
+          Text="{Binding PersonM.Name}"
+          FontSize="20"
+          Padding="2"
+          TextAlignment="Center"
+          VerticalAlignment="Center"
+          TextWrapping="Wrap"/>
+      </Grid>
+
+      <!--TODO PORT wrong DataTemplate for keywords-->
+      <!-- Keywords -->
+      <c:IconTextBlockItemsControl
+        Grid.Row="1"
+        ap:Icon.Res="IconTag"
+        ItemsSource="{Binding PersonM.DisplayKeywords}"
+        ItemTemplate="{DynamicResource MH.T.IHaveName.Border.RoundDarker}"
+        IsVisible="{Binding PersonM.DisplayKeywords, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
+
+      <!--TODO PORT drag&drop segments-->
+
+      <!-- Top Segments -->
+      <c:CollectionViewHost
+        Grid.Row="2"
+        ViewModel="{Binding TopSegments}"/>
+
+      <!-- All Segments -->
+      <c:CollectionViewHost
+        Grid.Row="3"
+        ViewModel="{Binding AllSegments}"/>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
