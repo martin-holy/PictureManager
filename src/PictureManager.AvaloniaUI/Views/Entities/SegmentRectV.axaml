@@ -1,16 +1,17 @@
 <DataTemplates
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
-  xmlns:pmc="clr-namespace:PictureManager.AvaloniaUI.Controls">
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:mhc="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
+  xmlns:pmc="clr-namespace:PictureManager.AvaloniaUI.Controls"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
 
-  <!--TODO PORT-->
   <DataTemplate DataType="{x:Type ftSegment:SegmentRectM}">
     <pmc:SegmentRectBorder
       x:Name="PART_ResizeBorder"
       MinWidth="{Binding Size}"
       MinHeight="{Binding Size}"
-      ToolTip.Tip="{Binding Segment.Person.Name}"
       Background="Transparent"
       Cursor="SizeAll"
       Classes="shadow"
@@ -22,6 +23,32 @@
       <pmc:SegmentRectBorder.RenderTransform>
         <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
       </pmc:SegmentRectBorder.RenderTransform>
+
+      <Grid
+        x:Name="buttons"
+        Classes.editIsNotOn="{ReflectionBinding !S.Segment.Rect.IsEditOn, Source={x:Static pm:App.Core}}"
+        Classes.mouseIsOver="{Binding #PART_ResizeBorder.IsMouseOver2}">
+
+        <!-- Move Point -->
+        <PathIcon
+          x:Name="PART_MovePoint"
+          Width="12"
+          Height="12"
+          Data="{StaticResource IconDot}"/>
+
+        <!-- Delete Segment -->
+        <mhc:IconButton
+          Command="{x:Static ftSegment:SegmentRectVM.DeleteCommand}"
+          CommandParameter="{Binding}"
+          Width="16"
+          Height="16"
+          ap:Icon.Size="10"
+          VerticalAlignment="Top"
+          HorizontalAlignment="Right"
+          Margin="2"
+          Cursor="Arrow"/>
+      </Grid>
+
       <pmc:SegmentRectBorder.Styles>
         <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder">
           <Setter Property="BorderBrush" Value="Red"/>
@@ -36,6 +63,12 @@
         </Style>
         <Style Selector="pmc|SegmentRectBorder#PART_ResizeBorder:pointerover">
           <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        <Style Selector="Grid#buttons">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="Grid#buttons.editIsNotOn.mouseIsOver">
+          <Setter Property="IsVisible" Value="True"/>
         </Style>
       </pmc:SegmentRectBorder.Styles>
     </pmc:SegmentRectBorder>
