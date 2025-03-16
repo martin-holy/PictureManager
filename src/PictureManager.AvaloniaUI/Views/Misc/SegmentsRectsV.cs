@@ -34,10 +34,10 @@ public sealed class SegmentsRectsV : ItemsControl {
     if (_segmentRectS is not { AreVisible: true }) return;
     var point = e.GetCurrentPoint(this);
 
+    // TODO PORT select/edit segment covered by other segment
     if (e.Source is Control { DataContext: SegmentRectM sr } c
         && ("PART_ResizeBorder".Equals(c.Name) || c.FindAncestorOfType<PathIcon>() is { Name: "PART_MovePoint" })) {
       _segmentRectS.SetCurrent(sr, point.Position.X, point.Position.Y);
-      return;
     }
 
     if ((point.Properties.IsLeftButtonPressed && KeyboardHelper.IsCtrlOn) || point.Properties.IsRightButtonPressed)
