@@ -21,7 +21,7 @@ public sealed class SegmentVM : ObservableObject {
   public static IImageSourceConverter<SegmentM> ThumbConverter { get; set; } = null!;
 
   public SegmentsViewsVM Views { get; }
-  public SegmentRectVM Rect { get; } = new();
+  public SegmentRectVM Rect { get; }
 
   public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
   public static RelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
@@ -33,6 +33,7 @@ public sealed class SegmentVM : ObservableObject {
     _s = s;
     _r = r;
     Views = new(_s);
+    Rect = new(_s.Rect);
 
     LoadByKeywordCommand = new(x => LoadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new(x => LoadBy(x!), x => x != null, Res.IconSegment, "Load Segments");

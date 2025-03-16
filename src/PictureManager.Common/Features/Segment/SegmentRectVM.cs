@@ -9,7 +9,7 @@ public sealed class SegmentRectVM : ObservableObject {
 
   public static RelayCommand<SegmentM> ReloadSegmentToolTipCommand { get; set; } = null!;
 
-  public SegmentRectVM() {
+  public SegmentRectVM(SegmentRectS s) {
     ReloadSegmentToolTipCommand = new(_reloadSegmentToolTip);
   }
 
