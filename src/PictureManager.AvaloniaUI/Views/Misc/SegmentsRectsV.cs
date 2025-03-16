@@ -33,6 +33,13 @@ public sealed class SegmentsRectsV : ItemsControl {
   private void _onPointerPressed(object? sender, PointerPressedEventArgs e) {
     if (_segmentRectS is not { AreVisible: true }) return;
     var point = e.GetCurrentPoint(this);
+
+    if (e.Source is Control { DataContext: SegmentRectM sr } c
+        && ("PART_MovePoint".Equals(c.Name) || "PART_ResizeBorder".Equals(c.Name))) {
+      _segmentRectS.SetCurrent(sr, point.Position.X, point.Position.Y);
+      return;
+    }
+
     if ((point.Properties.IsLeftButtonPressed && KeyboardHelper.IsCtrlOn) || point.Properties.IsRightButtonPressed)
       _segmentRectS.CreateNew(point.Position.X, point.Position.Y);
   }
