@@ -1,0 +1,113 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common">
+
+  <DataTemplate x:Key="PM.DT.Segment.Lite" DataType="{x:Type ftSegment:SegmentM}">
+    <Border BorderThickness="1" BorderBrush="Black" Margin="1">
+      <Image
+        Stretch="Fill"
+        Width="{Binding Source={x:Static ftSegment:SegmentVM.SegmentUiSize}}"
+        Height="{Binding Source={x:Static ftSegment:SegmentVM.SegmentUiSize}}">
+
+        <Image.Source>
+          <MultiBinding Converter="{x:Static pmConv:SegmentThumbnailSourceConverter.Inst}">
+            <Binding Path="FilePathCache"/>
+            <Binding/>
+          </MultiBinding>
+        </Image.Source>
+      </Image>
+    </Border>
+  </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.Segment.ToolTip" DataType="{x:Type ftSegment:SegmentM}">
+    <Grid MaxWidth="{Binding MediaItem.ThumbWidth}" RowDefinitions="Auto,Auto,Auto">
+      <!-- MediaItem Thumbnail with Segments Rects -->
+      <Grid>
+        <ContentPresenter
+          DataContext="{Binding MediaItem}"
+          Content="{Binding}"
+          ContentTemplate="{DynamicResource PM.DT.MediaItem.Thumb-Lite}"/>
+
+        <ItemsControl
+          ItemsSource="{ReflectionBinding VM.Segment.Rect.SegmentToolTipRects, Source={x:Static pm:App.Core}}">
+
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <Canvas/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+
+          <ItemsControl.ItemContainerTheme>
+            <ControlTheme TargetType="{x:Type ContentPresenter}">
+              <Setter Property="Canvas.Left" Value="{ReflectionBinding Item1, Mode=OneTime}"/>
+              <Setter Property="Canvas.Top" Value="{ReflectionBinding Item2, Mode=OneTime}"/>
+            </ControlTheme>
+          </ItemsControl.ItemContainerTheme>
+
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Rectangle
+                x:Name="rect"
+                Width="{ReflectionBinding Item3, Mode=OneTime}"
+                Height="{ReflectionBinding Item3, Mode=OneTime}" 
+                StrokeThickness="1"
+                Classes="shadow"
+                Classes.marked="{ReflectionBinding Item4, Mode=OneTime}">
+
+                <Rectangle.Styles>
+                  <Style Selector="Rectangle">
+                    <Setter Property="Stroke" Value="White"/>
+                  </Style>
+                  <Style Selector="Rectangle.marked">
+                    <Setter Property="Stroke" Value="LimeGreen"/>
+                  </Style>
+                </Rectangle.Styles>
+              </Rectangle>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock
+          Text="{Binding MediaItem.FileName}"
+          MaxWidth="{Binding MediaItem.ThumbWidth}"
+          VerticalAlignment="Bottom"
+          HorizontalAlignment="Center"
+          Margin="0,0,0,4"
+          TextWrapping="Wrap"
+          Classes="shadow"/>
+      </Grid>
+
+      <!-- Name -->
+      <Border
+        Grid.Row="1"
+        BorderThickness="1"
+        BorderBrush="Black"
+        Background="{DynamicResource MH.B.Black5}"
+        IsVisible="{Binding Person, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}">
+
+        <TextBlock Text="{Binding Person.Name}" FontSize="18" Margin="5,2"/>
+      </Border>
+
+      <!-- TopSegments -->
+      <ItemsControl
+        Grid.Row="2"
+        ItemsSource="{Binding Person.TopSegments}"
+        IsVisible="{Binding Person.TopSegments, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"
+        ItemTemplate="{DynamicResource PM.DT.Segment.Lite}">
+
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>
