@@ -1,12 +1,39 @@
 <ResourceDictionary
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:pm="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
   xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
 
+  <ControlTheme x:Key="PM.S.ItemsControl.MediaItem.ThumbInfo" TargetType="ItemsControl">
+    <Setter Property="Margin" Value="2"/>
+    <Setter Property="ItemTemplate" Value="{StaticResource MH.DT.TextBlock.Border.RoundDark}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ItemsControl">
+          <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="ItemContainerTheme">
+      <Setter.Value>
+        <ControlTheme TargetType="Control">
+          <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+        </ControlTheme>
+      </Setter.Value>
+    </Setter>
+  </ControlTheme>
+
   <!--TODO PORT MediaItem templates-->
 
-  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Full" DataType="{x:Type ftMediaItem:MediaItemM}">
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Fill" DataType="{x:Type ftMediaItem:MediaItemM}">
     <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
       <Image.Source>
         <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
@@ -15,5 +42,34 @@
         </MultiBinding>
       </Image.Source>
     </Image>
+  </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Full" DataType="{x:Type ftMediaItem:MediaItemM}">
+    <Grid
+      x:Name="grid"
+      Classes.hideThumbInfo="{ReflectionBinding !MediaItem.Views.Current.ShowThumbInfo, Source={x:Static pm:Core.VM}, FallbackValue=False}">
+      
+      <!-- Thumbnail Image -->
+      <Image Stretch="Fill">
+        <Image.Source>
+          <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
+            <Binding Path="FilePathCache"/>
+            <Binding/>
+          </MultiBinding>
+        </Image.Source>
+      </Image>
+
+      <!-- Thumbnail Info Box -->
+      <ItemsControl
+        x:Name="info"
+        ItemsSource="{Binding InfoBoxThumb}"
+        Theme="{StaticResource PM.S.ItemsControl.MediaItem.ThumbInfo}"/>
+
+      <Grid.Styles>
+        <Style Selector="Grid#grid:pointerover ItemsControl#info, Grid#grid.hideThumbInfo ItemsControl#info">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>
