@@ -31,7 +31,16 @@
     </Setter>
   </ControlTheme>
 
-  <!--TODO PORT MediaItem templates-->
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb" DataType="{x:Type ftMediaItem:MediaItemM}">
+    <Image Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Image.Source>
+        <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
+          <Binding Path="FilePathCache"/>
+          <Binding/>
+        </MultiBinding>
+      </Image.Source>
+    </Image>
+  </DataTemplate>
 
   <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Fill" DataType="{x:Type ftMediaItem:MediaItemM}">
     <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
