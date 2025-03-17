@@ -4,6 +4,7 @@
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceInclude Source="Entities/MediaItemV.axaml"/>
+    <ResourceInclude Source="Entities/SegmentV.axaml"/>
     <ResourceInclude Source="Misc/MarkedTagsCount.axaml"/>
     <ResourceInclude Source="Misc/TreeContextMenus.axaml"/>
     <ResourceInclude Source="Sections/MainMenuV.axaml"/>
