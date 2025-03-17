@@ -53,6 +53,39 @@
     </Image>
   </DataTemplate>
 
+  <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Lite" DataType="{x:Type ftMediaItem:MediaItemM}">
+    <Border
+      x:Name="root"
+      Width="{Binding ThumbWidth}"
+      Height="{Binding ThumbHeight}"
+      BorderThickness="2"
+      BorderBrush="Black"
+      ClipToBounds="True">
+
+      <Grid>
+        <Image Stretch="Fill">
+          <Image.Source>
+            <MultiBinding Converter="{x:Static pmConv:MediaItemThumbSourceConverter.Inst}">
+              <Binding Path="FilePathCache"/>
+              <Binding/>
+            </MultiBinding>
+          </Image.Source>
+        </Image>
+
+        <ItemsControl
+          x:Name="info"
+          ItemsSource="{Binding InfoBoxThumb}"
+          Theme="{StaticResource PM.S.ItemsControl.MediaItem.ThumbInfo}"/>
+      </Grid>
+
+      <Border.Styles>
+        <Style Selector="Border#root:pointerover ItemsControl#info">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+      </Border.Styles>
+    </Border>
+  </DataTemplate>
+
   <DataTemplate x:Key="PM.DT.MediaItem.Thumb-Full" DataType="{x:Type ftMediaItem:MediaItemM}">
     <Grid
       x:Name="grid"
