@@ -110,4 +110,117 @@
       </ItemsControl>
     </Grid>
   </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.Segment" DataType="{x:Type ftSegment:SegmentM}">
+    <Grid
+      x:Name="root"
+      Background="Transparent"
+      Classes.personIsNull="{Binding Person, Converter={x:Static ObjectConverters.IsNull}}"
+      Classes.isSelected="{Binding IsSelected}"
+      Classes.canSetAsSamePerson="{ReflectionBinding S.Segment.CanSetAsSamePerson, Source={x:Static pm:App.Core}}">
+
+      <Interaction.Behaviors>
+        <RoutedEventTriggerBehavior RoutedEvent="{x:Static ToolTip.ToolTipOpeningEvent}">
+          <InvokeCommandAction
+            Command="{x:Static ftSegment:SegmentRectVM.ReloadSegmentToolTipCommand}"
+            CommandParameter="{Binding}"/>
+        </RoutedEventTriggerBehavior>
+      </Interaction.Behaviors>
+
+      <ToolTip.Tip>
+        <ToolTip Padding="0" BorderThickness="0">
+          <ContentPresenter
+            Content="{Binding}"
+            ContentTemplate="{StaticResource PM.DT.Segment.ToolTip}"/>
+        </ToolTip>
+      </ToolTip.Tip>
+
+      <Image Stretch="Fill">
+        <Image.Source>
+          <MultiBinding Converter="{x:Static pmConv:SegmentThumbnailSourceConverter.Inst}">
+            <Binding Path="FilePathCache"/>
+            <Binding/>
+          </MultiBinding>
+        </Image.Source>
+      </Image>
+
+      <PathIcon
+        x:Name="noPersonIcon"
+        Classes="shadow"
+        Data="{StaticResource IconPeople}"
+        Foreground="Red"
+        Margin="5"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"/>
+
+      <Grid x:Name="buttons" VerticalAlignment="Top" ColumnDefinitions="Auto,Auto,*">
+        <Border
+          x:Name="boSelectedCount"
+          Grid.Column="0"
+          Classes="round darker"
+          Background="{DynamicResource MH.B.Accent}">
+
+          <TextBlock
+            HorizontalAlignment="Center"
+            Classes="shadow"
+            Text="{ReflectionBinding S.Segment.Selected.Items.Count, Source={x:Static pm:App.Core}}"/>
+        </Border>
+
+        <c:IconButton
+          x:Name="btnSamePerson"
+          Grid.Column="1"
+          Command="{x:Static ftSegment:SegmentVM.SetSelectedAsSamePersonCommand}"
+          Width="20"
+          Height="20"
+          ap:Icon.Size="13"/>
+
+        <c:IconButton
+          x:Name="btnPersonDetail"
+          Grid.Column="2"
+          Command="{x:Static layout:ToolsTabsVM.OpenPersonTabCommand}"
+          CommandParameter="{Binding Person}"
+          HorizontalAlignment="Right"
+          Width="20"
+          Height="20"
+          ap:Icon.Size="13"/>
+      </Grid>
+
+      <Grid.Styles>
+        <Style Selector="PathIcon#noPersonIcon">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="Grid#root.personIsNull PathIcon#noPersonIcon">
+          <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="Grid#root:pointerover PathIcon#noPersonIcon">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+
+        <Style Selector="Grid#buttons">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="Grid#root:pointerover Grid#buttons">
+          <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="Border#boSelectedCount">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="Grid#root.isSelected.canSetAsSamePerson Border#boSelectedCount">
+          <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="c|IconButton#btnSamePerson">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="Grid#root.isSelected.canSetAsSamePerson c|IconButton#btnSamePerson">
+          <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="Grid#root.personIsNull c|IconButton#btnPersonDetail">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
 </ResourceDictionary>
