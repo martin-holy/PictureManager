@@ -1,0 +1,62 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
+
+  <DataTemplate x:Key="PM.DT.SelectedItemsStatusBar" DataType="{x:Type pmd:Core}">
+    <Border
+      BorderThickness="1"
+      BorderBrush="Black"
+      Margin="1,0,0,0"
+      CornerRadius="3"
+      VerticalAlignment="Center"
+      Background="{DynamicResource MH.B.Accent}">
+
+      <Grid ColumnDefinitions="Auto,Auto,Auto">
+        <ContentControl
+          ap:Text.Text="{Binding VM.MediaItem.Views.Current.Selected.Items.Count, FallbackValue=0}"
+          ap:Icon.Data="{StaticResource IconImage}"/>
+        <ContentControl
+          Grid.Column="1"
+          ap:Text.Text="{Binding S.Person.Selected.Items.Count}"
+          ap:Icon.Data="{StaticResource IconPeople}"/>
+        <ContentControl
+          Grid.Column="2"
+          ap:Text.Text="{Binding S.Segment.Selected.Items.Count}"
+          ap:Icon.Data="{StaticResource IconSegment}"/>
+
+        <Grid.Styles>
+          <Style Selector="Grid > ContentControl">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+              <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                  <Border
+                    Background="{DynamicResource MH.B.Black5}"
+                    CornerRadius="3"
+                    BorderThickness="1"
+                    BorderBrush="Black"
+                    Margin="1">
+
+                    <c:IconTextBlock
+                      DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                      Shadow="Text"
+                      ap:Icon.Data="{Binding (ap:Icon.Data)}"
+                      ap:Icon.Size="15"
+                      ap:Text.Text="{Binding (ap:Text.Text)}"
+                      Compact="True"
+                      Margin="0"
+                      Width="24"
+                      Height="24"/>
+                  </Border>
+                </ControlTemplate>
+              </Setter.Value>
+            </Setter>
+          </Style>
+        </Grid.Styles>
+      </Grid>
+    </Border>
+  </DataTemplate>
+</ResourceDictionary>

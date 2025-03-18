@@ -9,6 +9,7 @@
     <ResourceInclude Source="Misc/TreeContextMenus.axaml"/>
     <ResourceInclude Source="Sections/MainMenuV.axaml"/>
     <ResourceInclude Source="Sections/PluginsMenuV.axaml"/>
+    <ResourceInclude Source="Sections/SelectedItemsStatusBar.axaml"/>
     <ResourceInclude Source="Sections/ViewersToolBarV.axaml"/>
   </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
