@@ -71,6 +71,7 @@ public partial class App : Application {
       "Entities/TreeItemV.axaml",
       "Layout/MainTabsV.axaml",
       "Layout/MiddleContentV.axaml",
+      "Layout/StatusBarV.axaml",
       "Layout/ToolBarV.axaml",
       "Layout/ToolsTabsV.axaml",
       "Layout/TreeViewCategoriesV.axaml",
