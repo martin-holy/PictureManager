@@ -1,0 +1,170 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.Controls;assembly=MH.UI"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:b="clr-namespace:MH.UI.AvaloniaUI.Behaviors;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type layout:StatusBarVM}">
+    <Grid
+      Background="{DynamicResource MH.B.Black2}"
+      Classes.mediaViewerIsVisible="{Binding Core.VM.MediaViewer.IsVisible}">
+
+      <Grid.Resources>
+        <ResourceDictionary>
+          <DataTemplate x:Key="_person" DataType="{x:Type ftPerson:PersonM}">
+            <Border Classes="bordersRoundDark" Cursor="Hand">
+              <Interaction.Behaviors>
+                <b:ExecuteCommandOnLeftPointerReleasedBehavior
+                  Command="{x:Static layout:ToolsTabsVM.OpenPersonTabCommand}"
+                  CommandParameter="{Binding}"/>
+              </Interaction.Behaviors>
+
+              <TextBlock Text="{Binding Name}"/>
+            </Border>
+          </DataTemplate>
+        </ResourceDictionary>
+      </Grid.Resources>
+
+      <Interaction.Behaviors>
+        <b:ExecuteCommandOnLeftPointerReleasedBehavior
+          Command="{x:Static mhc:SlidePanelsGrid.PinCommand}"
+          CommandParameter="{Binding Core.VM.MainWindow.SlidePanelsGrid.PanelBottom}"/>
+      </Interaction.Behaviors>
+
+      <WrapPanel Margin="1,0,0,0" VerticalAlignment="Center">
+        <!-- Selected items -->
+        <ContentPresenter
+          Height="32"
+          DataContext="{Binding Core}"
+          Content="{Binding}"
+          ContentTemplate="{StaticResource PM.DT.SelectedItemsStatusBar}"/>
+
+        <!-- PositionSlashCount -->
+        <c:IconTextBlock
+          x:Name="tbPositionSlashCount"
+          Classes="bordersRoundDark"
+          ap:Icon.Res="IconImageMultiple"
+          ap:Text.Text="{Binding Core.VM.MediaItem.Views.Current.PositionSlashCount}"
+          IsVisible="{Binding IsCountVisible}"/>
+
+        <!-- Dimension -->
+        <c:IconTextBlock
+          ap:Icon.Res="IconRuler"
+          IsVisible="{Binding Core.VM.MediaItem.Current, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"
+          Classes="bordersRoundDark">
+          <c:IconTextBlock.Theme>
+            <ControlTheme TargetType="c:IconTextBlock" BasedOn="{StaticResource {x:Type c:IconTextBlock}}">
+              <Setter Property="ap:Text.Text">
+                <Setter.Value>
+                  <MultiBinding StringFormat="{}{0}x{1}">
+                    <Binding Path="Core.VM.MediaItem.Current.Width"/>
+                    <Binding Path="Core.VM.MediaItem.Current.Height"/>
+                  </MultiBinding>
+                </Setter.Value>
+              </Setter>
+            </ControlTheme>
+          </c:IconTextBlock.Theme>
+        </c:IconTextBlock>
+
+        <!-- File Size -->
+        <c:IconTextBlock
+          Classes="bordersRoundDark"
+          ap:Icon.Res="IconPageUpload"
+          ap:Text.Text="{Binding FileSize}"
+          IsVisible="{Binding FileSize, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
+
+        <!-- ImageActualZoom -->
+        <c:IconTextBlock
+          Classes="bordersRoundDark"
+          ap:Icon.Res="IconMagnify"
+          ap:Text.Text="{Binding Core.VM.MediaViewer.ZoomAndPan.ActualZoom, StringFormat={}{0:####}%}"
+          IsVisible="{Binding Core.VM.MediaViewer.IsVisible}"/>
+
+        <!-- Rating -->
+        <c:IconTextBlock
+          Classes="bordersRoundDark"
+          ap:Icon.Res="IconStar"
+          ap:Text.Text="{Binding Rating.Count}"
+          Compact="True"
+          Padding="0"
+          Width="28"
+          Height="28"
+          IsVisible="{Binding Rating.Count, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
+
+        <!-- GeoName -->
+        <c:IconTextBlock
+          Classes="bordersRoundDark"
+          ap:Icon.Res="IconLocationCheckin"
+          ToolTip.Tip="{Binding Core.VM.MediaItem.CurrentGeoName.FullName}"
+          IsVisible="{Binding Core.VM.MediaItem.CurrentGeoName, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
+
+        <!-- FilePath -->
+        <c:IconTextBlockItemsControl
+          Classes="bordersRoundDark"
+          ItemsSource="{Binding FilePath}"
+          ap:Icon.Res="IconFolder"
+          IsVisible="{Binding FilePath, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"
+          ToolTip.Tip="{Binding Core.VM.MediaItem.Current.FilePath}"/>
+
+        <!-- DateAndTime -->
+        <c:IconTextBlock
+          Classes="bordersRoundDark"
+          ap:Icon.Res="IconCalendar"
+          ap:Text.Text="{Binding DateAndTime}"
+          IsVisible="{Binding DateAndTime, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
+
+        <!-- People -->
+        <c:IconTextBlockItemsControl
+          x:Name="people"
+          Classes="bordersRoundDark"
+          ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayPeople}"
+          ItemTemplate="{StaticResource _person}"
+          ap:Icon.Res="IconPeople"/>
+
+        <!-- Keywords -->
+        <c:IconTextBlockItemsControl
+          x:Name="keywords"
+          Classes="bordersRoundDark"
+          ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayKeywords}"
+          ap:Icon.Res="IconTag"/>
+
+        <!-- Comment -->
+        <c:IconTextBlock
+          x:Name="comment"
+          Classes="bordersRoundDark"
+          Classes.show="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"
+          ap:Icon.Res="IconNotification"
+          ap:Text.Text="{Binding Core.VM.MediaItem.Current.Comment}"/>
+      </WrapPanel>
+
+      <Grid.Styles>
+        <Style Selector="Grid.mediaViewerIsVisible c|IconTextBlock#tbPositionSlashCount">
+          <Setter Property="(ap:Text.Text)" Value="{Binding Core.VM.MediaViewer.PositionSlashCount}"/>
+        </Style>
+
+        <Style Selector="c|IconTextBlockItemsControl#keywords">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="Grid.mediaViewerIsVisible c|IconTextBlockItemsControl#keywords:not(:empty)">
+          <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="c|IconTextBlock#comment">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="Grid.mediaViewerIsVisible c|IconTextBlock#comment.show">
+          <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="c|IconTextBlockItemsControl#people:empty">
+          <Setter Property="IsVisible" Value="False"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>

@@ -15,6 +15,7 @@
     <AvaloniaResource Include="Views\Entities\TreeItemV.axaml" />
     <AvaloniaResource Include="Views\Layout\MainTabsV.axaml" />
     <AvaloniaResource Include="Views\Layout\MiddleContentV.axaml" />
+    <AvaloniaResource Include="Views\Layout\StatusBarV.axaml" />
     <AvaloniaResource Include="Views\Layout\ToolBarV.axaml" />
     <AvaloniaResource Include="Views\Layout\ToolsTabsV.axaml" />
     <AvaloniaResource Include="Views\Layout\TreeViewCategoriesV.axaml" />
