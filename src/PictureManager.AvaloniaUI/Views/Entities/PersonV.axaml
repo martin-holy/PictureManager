@@ -1,0 +1,29 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
+
+  <DataTemplate x:Key="PM.DT.Person.Thumb" DataType="{x:Type ftPerson:PersonM}">
+    <Grid>
+      <Grid
+        ToolTip.Tip="{Binding Name}"
+        Background="Transparent"
+        IsVisible="{Binding Segment, Converter={x:Static conv:VisibilityConverter.NullToVisible}}">
+
+        <PathIcon
+          Data="{StaticResource IconPeople}"
+          Width="40"
+          Height="40"
+          Foreground="Gray"/>
+      </Grid>
+
+      <ContentControl
+        Content="{Binding Segment}"
+        ContentTemplate="{DynamicResource PM.DT.Segment}"
+        IsVisible="{Binding Segment, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>
