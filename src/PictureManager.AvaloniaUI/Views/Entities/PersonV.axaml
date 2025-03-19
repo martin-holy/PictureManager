@@ -26,4 +26,33 @@
         IsVisible="{Binding Segment, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
     </Grid>
   </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.Person.ListItem" DataType="{x:Type ftPerson:PersonM}">
+    <c:IconTextBlock
+      Shadow="None"
+      ap:Text.Text="{Binding Name}"
+      ap:Icon.Res="{Binding Icon}"
+      Classes.segmentIsNotNull="{Binding Segment, Converter={x:Static ObjectConverters.IsNotNull}}"
+      VerticalAlignment="Stretch"
+      HorizontalAlignment="Stretch"
+      Background="Transparent">
+
+      <c:IconTextBlock.Styles>
+        <Style Selector="c|IconTextBlock.segmentIsNotNull">
+          <Setter Property="ToolTip.Tip">
+            <Setter.Value>
+              <Template>
+                <ToolTip BorderThickness="0" Padding="0">
+                  <ContentPresenter
+                    DataContext="{Binding Segment}"
+                    Content="{Binding}"
+                    ContentTemplate="{DynamicResource PM.DT.Segment.Lite}"/>
+                </ToolTip>
+              </Template>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </c:IconTextBlock.Styles>
+    </c:IconTextBlock>
+  </DataTemplate>
 </ResourceDictionary>
