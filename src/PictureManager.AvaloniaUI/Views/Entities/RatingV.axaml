@@ -1,0 +1,44 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
+  xmlns:mhb="clr-namespace:MH.UI.AvaloniaUI.Behaviors;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftRating="clr-namespace:PictureManager.Common.Features.Rating;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftRating:RatingM}">
+    <Grid ColumnDefinitions="*,*,*,*,*">
+      <PathIcon Grid.Column="0" Foreground="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=0, Mode=OneTime}"/>
+      <PathIcon Grid.Column="1" Foreground="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=1, Mode=OneTime}"/>
+      <PathIcon Grid.Column="2" Foreground="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=2, Mode=OneTime}"/>
+      <PathIcon Grid.Column="3" Foreground="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=3, Mode=OneTime}"/>
+      <PathIcon Grid.Column="4" Foreground="{Binding Value, Converter={x:Static pmConv:RatingConverter.Inst}, ConverterParameter=4, Mode=OneTime}"/>
+
+      <Grid.Styles>
+        <Style Selector="PathIcon">
+          <Setter Property="Data" Value="{StaticResource IconStar}"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
+
+  <TreeDataTemplate DataType="{x:Type ftRating:RatingTreeM}">
+    <Grid Background="Transparent">
+      <Grid.Resources>
+        <ContextMenu x:Key="_contextMenu" DataContext="{Binding $self.Parent.DataContext}">
+          <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.LoadByTagCommand}" CommandParameter="{Binding}"/>
+          <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.FilterSetOrCommand}" CommandParameter="{Binding (ftRating:RatingTreeM).Rating}"/>
+        </ContextMenu>
+      </Grid.Resources>
+
+      <Interaction.Behaviors>
+        <mhb:LazyContextMenu MenuValue="{StaticResource _contextMenu}"/>
+      </Interaction.Behaviors>
+
+      <Grid ColumnDefinitions="Auto,Auto">
+        <ContentPresenter DataContext="{Binding Rating}" Content="{Binding}"/>
+        <TextBlock Grid.Column="1" Theme="{DynamicResource PM.S.MarkedTagsCount}"/>
+      </Grid>
+    </Grid>
+  </TreeDataTemplate>
+</DataTemplates>
