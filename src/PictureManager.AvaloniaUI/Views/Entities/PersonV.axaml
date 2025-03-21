@@ -55,4 +55,23 @@
       </c:IconTextBlock.Styles>
     </c:IconTextBlock>
   </DataTemplate>
+
+  <DataTemplate x:Key="PM.DT.Person.Tile" DataType="{x:Type ftPerson:PersonM}">
+    <Grid Background="Transparent">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="{Binding Source={x:Static ftPerson:PersonVM.PersonTileSegmentWidth},
+                                  Converter={x:Static conv:GridLengthConverter.Inst}}"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PM.DT.Person.Thumb}"/>
+
+      <TextBlock
+        Grid.Column="1"
+        Text="{Binding Name}"
+        TextWrapping="Wrap"
+        VerticalAlignment="Center"
+        Margin="4,0,4,0"/>
+    </Grid>
+  </DataTemplate>
 </ResourceDictionary>
