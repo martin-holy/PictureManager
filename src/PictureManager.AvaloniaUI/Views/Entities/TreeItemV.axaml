@@ -3,18 +3,21 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
   xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:mhb="clr-namespace:MH.UI.AvaloniaUI.Behaviors;assembly=MH.UI.AvaloniaUI"
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhuiint="clr-namespace:MH.UI.Interfaces;assembly=MH.UI"
   xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
-  xmlns:mhb="clr-namespace:MH.UI.AvaloniaUI.Behaviors;assembly=MH.UI.AvaloniaUI"
-  xmlns:ftFavoriteFolder="clr-namespace:PictureManager.Common.Features.FavoriteFolder;assembly=PictureManager.Common">
+  xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
+  xmlns:ftFavoriteFolder="clr-namespace:PictureManager.Common.Features.FavoriteFolder;assembly=PictureManager.Common"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
 
   <TreeDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid
       Background="Transparent"
       ColumnDefinitions="Auto,Auto,Auto"
       Classes.isITreeCategory="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type mhuiint:ITreeCategory}}"
-      Classes.isFavoriteFolderM="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type ftFavoriteFolder:FavoriteFolderM}}">
+      Classes.isFavoriteFolderM="{Binding Converter={x:Static conv:DataTypeConverter.Inst}, ConverterParameter={x:Type ftFavoriteFolder:FavoriteFolderM}}"
+      Classes.isPersonWithSegment="{Binding Converter={x:Static pmConv:PersonHasSegmentConverter.Inst}}">
       
       <Interaction.Behaviors>
         <mhb:LazyContextMenu MenuValue="{Binding Converter={x:Static conv:ResourceConverter.Inst},
@@ -24,8 +27,6 @@
       <PathIcon Grid.Column="0" ap:Icon.Res="{Binding Icon}"/>
       <TextBlock Grid.Column="1" x:Name="Name" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0"/>
       <TextBlock Grid.Column="2" Theme="{DynamicResource PM.S.MarkedTagsCount}"/>
-
-      <!--TODO PORT derived types-->
 
       <Grid.Styles>
         <Style Selector="Grid.isITreeCategory">
@@ -47,6 +48,21 @@
           <Setter
             Property="ToolTip.Tip"
             Value="{Binding (ftFavoriteFolder:FavoriteFolderM).Folder.FullPath}"/>
+        </Style>
+
+        <Style Selector="Grid.isPersonWithSegment">
+          <Setter Property="ToolTip.Tip">
+            <Setter.Value>
+              <Template>
+                <ToolTip BorderThickness="0" Padding="0">
+                  <ContentPresenter
+                    DataContext="{Binding (ftPerson:PersonM).Segment}"
+                    Content="{Binding}"
+                    ContentTemplate="{DynamicResource PM.DT.Segment.Lite}"/>
+                </ToolTip>
+              </Template>
+            </Setter.Value>
+          </Setter>
         </Style>
       </Grid.Styles>
     </Grid>
