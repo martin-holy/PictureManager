@@ -2,6 +2,7 @@
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:u="clr-namespace:MH.UI.AvaloniaUI.Utils;assembly=MH.UI.AvaloniaUI"
   xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
   xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
   xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common"
@@ -51,17 +52,22 @@
         ItemTemplate="{DynamicResource MH.T.IHaveName.Border.RoundDarker}"
         IsVisible="{Binding PersonM.DisplayKeywords, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
 
-      <!--TODO PORT drag&drop segments-->
-
       <!-- Top Segments -->
       <c:CollectionViewHost
         Grid.Row="2"
-        ViewModel="{Binding TopSegments}"/>
+        ViewModel="{Binding TopSegments}"
+        u:DragDropHelper.IsDragEnabled="True"
+        u:DragDropHelper.IsDropEnabled="True"
+        u:DragDropHelper.DragDataType="{x:Type ftSegment:SegmentM}"
+        u:DragDropHelper.CanDrop="{Binding CanDropFunc}"
+        u:DragDropHelper.DoDrop="{Binding TopSegmentsDropAction}"/>
 
       <!-- All Segments -->
       <c:CollectionViewHost
         Grid.Row="3"
-        ViewModel="{Binding AllSegments}"/>
+        ViewModel="{Binding AllSegments}"
+        u:DragDropHelper.IsDragEnabled="True"
+        u:DragDropHelper.DragDataType="{x:Type ftSegment:SegmentM}"/>
     </Grid>
   </DataTemplate>
 </DataTemplates>
