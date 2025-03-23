@@ -82,6 +82,7 @@ public partial class App : Application {
       "Sections/PeopleV.axaml",
       "Sections/PersonDetailV.axaml",
       "Sections/SegmentsDrawerV.axaml",
+      "Sections/SegmentsViewsV.axaml",
       "Sections/WhatIsNewV.axaml"
     };
 
