@@ -1,0 +1,49 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:u="clr-namespace:MH.UI.AvaloniaUI.Utils;assembly=MH.UI.AvaloniaUI"
+  xmlns:pmConv="clr-namespace:PictureManager.AvaloniaUI.Converters"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftSegment:SegmentsViewsTabsVM}">
+    <TabControl/>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftSegment:SegmentsViewsTabsSlotVM}">
+    <c:IconButton
+      Command="{x:Static ftSegment:SegmentsViewsVM.AddViewCommand}"
+      ap:Icon.Size="13"
+      Width="20"
+      Height="20"/>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftSegment:SegmentsViewVM}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="3"/>
+        <ColumnDefinition
+          Width="{Binding Source={x:Static ftSegment:SegmentVM.SegmentUiFullWidth},
+                  Converter={x:Static pmConv:SegmentsViewWidthConverter.Inst},
+                  ConverterParameter=3,
+                  FallbackValue=280}"/>
+      </Grid.ColumnDefinitions>
+
+      <c:CollectionViewHost
+        ViewModel="{Binding}"
+        u:DragDropHelper.IsDragEnabled="True"
+        u:DragDropHelper.CanDrag="{Binding CanDragFunc}"/>
+
+      <GridSplitter Grid.Column="1"/>
+  
+      <c:CollectionViewHost Grid.Column="2" ViewModel="{Binding CvPeople}"/>
+
+    </Grid>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftSegment:SegmentsViewsVM}">
+    <ContentPresenter DataContext="{Binding Tabs}" Content="{Binding}"/>
+  </DataTemplate>
+</DataTemplates>
