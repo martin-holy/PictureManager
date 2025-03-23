@@ -22,6 +22,7 @@
     <AvaloniaResource Include="Views\Layout\TreeViewCategoriesV.axaml" />
     <AvaloniaResource Include="Views\Sections\MediaItemsViewV.axaml" />
     <AvaloniaResource Include="Views\Sections\MediaViewerV.axaml" />
+    <AvaloniaResource Include="Views\Sections\PeopleToolsTabV.axaml" />
     <AvaloniaResource Include="Views\Sections\PeopleV.axaml" />
     <AvaloniaResource Include="Views\Sections\PersonDetailV.axaml" />
   </ItemGroup>
