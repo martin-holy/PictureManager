@@ -1,0 +1,15 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ftWhatIsNew="clr-namespace:PictureManager.Common.Features.WhatIsNew;assembly=PictureManager.Common">
+    
+  <DataTemplate DataType="{x:Type ftWhatIsNew:WhatIsNewVM}">
+    <ScrollViewer>
+      <TextBox
+        Text="{Binding Content}"
+        VerticalAlignment="Top"
+        IsReadOnly="True"
+        BorderThickness="0"/>
+    </ScrollViewer>
+  </DataTemplate>
+</DataTemplates>

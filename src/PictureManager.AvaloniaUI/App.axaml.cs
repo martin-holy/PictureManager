@@ -81,7 +81,8 @@ public partial class App : Application {
       "Sections/PeopleToolsTabV.axaml",
       "Sections/PeopleV.axaml",
       "Sections/PersonDetailV.axaml",
-      "Sections/SegmentsDrawerV.axaml"
+      "Sections/SegmentsDrawerV.axaml",
+      "Sections/WhatIsNewV.axaml"
     };
 
     foreach (var file in files) {
