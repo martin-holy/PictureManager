@@ -25,6 +25,7 @@
     <AvaloniaResource Include="Views\Sections\PeopleToolsTabV.axaml" />
     <AvaloniaResource Include="Views\Sections\PeopleV.axaml" />
     <AvaloniaResource Include="Views\Sections\PersonDetailV.axaml" />
+    <AvaloniaResource Include="Views\Sections\SegmentsDrawerV.axaml" />
   </ItemGroup>
 
   <ItemGroup>
