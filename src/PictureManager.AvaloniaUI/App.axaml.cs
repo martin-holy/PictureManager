@@ -78,6 +78,7 @@ public partial class App : Application {
       "Layout/TreeViewCategoriesV.axaml",
       "Sections/MediaItemsViewV.axaml",
       "Sections/MediaViewerV.axaml",
+      "Sections/PeopleToolsTabV.axaml",
       "Sections/PeopleV.axaml",
       "Sections/PersonDetailV.axaml"
     };
