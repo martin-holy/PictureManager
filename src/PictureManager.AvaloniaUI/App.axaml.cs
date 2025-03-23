@@ -80,7 +80,8 @@ public partial class App : Application {
       "Sections/MediaViewerV.axaml",
       "Sections/PeopleToolsTabV.axaml",
       "Sections/PeopleV.axaml",
-      "Sections/PersonDetailV.axaml"
+      "Sections/PersonDetailV.axaml",
+      "Sections/SegmentsDrawerV.axaml"
     };
 
     foreach (var file in files) {
