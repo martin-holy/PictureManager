@@ -137,7 +137,7 @@
         <c:IconTextBlock
           x:Name="comment"
           Classes="bordersRoundDark"
-          Classes.show="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"
+          Classes.showIt="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"
           ap:Icon.Res="IconNotification"
           ap:Text.Text="{Binding Core.VM.MediaItem.Current.Comment}"/>
       </WrapPanel>
@@ -157,7 +157,7 @@
         <Style Selector="c|IconTextBlock#comment">
           <Setter Property="IsVisible" Value="False"/>
         </Style>
-        <Style Selector="Grid.mediaViewerIsVisible c|IconTextBlock#comment.show">
+        <Style Selector="Grid.mediaViewerIsVisible c|IconTextBlock#comment.showIt">
           <Setter Property="IsVisible" Value="True"/>
         </Style>
 
