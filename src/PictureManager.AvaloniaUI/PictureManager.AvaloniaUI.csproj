@@ -45,4 +45,10 @@
     <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
     <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="WhatIsNew.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
