@@ -73,4 +73,18 @@
   <DataTemplate DataType="{x:Type ftCommon:Settings}">
     <c:IconButton Command="{Binding SaveCommand}" HorizontalAlignment="Right"/>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:CommonSettings}">
+    <StackPanel Orientation="Vertical">
+      <c:TextLabel Text="Cache path:">
+        <TextBox Text="{Binding CachePath, Mode=TwoWay}"/>
+      </c:TextLabel>
+      <c:TextLabel Text="FFMPEG path:">
+        <TextBox Text="{Binding FfmpegPath, Mode=TwoWay}"/>
+      </c:TextLabel>
+      <c:TextLabel Text="{Binding JpegQuality, StringFormat='Jpeg quality: {0}'}">
+        <Slider Minimum="80" Maximum="95" Value="{Binding JpegQuality, Mode=TwoWay}"/>
+      </c:TextLabel>
+    </StackPanel>
+  </DataTemplate>
 </DataTemplates>
