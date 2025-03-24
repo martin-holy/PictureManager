@@ -1,0 +1,76 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:bc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftCommon:AllSettings}">
+    <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+
+      <ScrollViewer.Styles>
+        <Style Selector="c|TextLabel TextBlock#Text">
+          <Setter Property="FontSize" Value="13"/>
+          <Setter Property="FontWeight" Value="DemiBold"/>
+          <Setter Property="Margin" Value="0,0,0,2"/>
+        </Style>
+
+        <Style Selector="c|TextLabel Slider">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="IsTabStop" Value="True"/>
+          <Setter Property="IsSnapToTickEnabled" Value="True"/>
+          <Setter Property="TickFrequency" Value="1"/>
+          <Setter Property="SmallChange" Value="1"/>
+        </Style>
+      </ScrollViewer.Styles>
+
+      <ItemsControl ItemsSource="{Binding Groups}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel Orientation="Vertical"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Grid
+              Width="400"
+              Margin="2,10,2,2"
+              RowDefinitions="Auto,*"
+              Classes.isUserSettings="{Binding Data, Converter={x:Static conv:DataTypeConverter.Inst},
+                                       ConverterParameter={x:Type bc:UserSettings}}">
+
+              <Border Background="{DynamicResource MH.B.Black2}" CornerRadius="3">
+                <c:IconTextBlock
+                  ap:Icon.Res="{Binding Icon}"
+                  ap:Text.Text="{Binding Name}"
+                  Shadow="Icon"
+                  Margin="2"
+                  FontSize="18"
+                  FontWeight="DemiBold"
+                  HorizontalAlignment="Left"/>
+              </Border>
+
+              <ContentPresenter x:Name="dataPresenter" DataContext="{Binding Data}" Content="{Binding}"/>
+
+              <Grid.Styles>
+                <Style Selector="ContentPresenter#dataPresenter">
+                  <Setter Property="(Grid.Row)" Value="1"/>
+                </Style>
+                <Style Selector="Grid.isUserSettings ContentPresenter#dataPresenter">
+                  <Setter Property="(Grid.Row)" Value="0"/>
+                </Style>
+              </Grid.Styles>
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:Settings}">
+    <c:IconButton Command="{Binding SaveCommand}" HorizontalAlignment="Right"/>
+  </DataTemplate>
+</DataTemplates>
