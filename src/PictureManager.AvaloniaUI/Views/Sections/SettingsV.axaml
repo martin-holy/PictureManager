@@ -118,4 +118,12 @@
       </c:TextLabel>
     </StackPanel>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:SegmentSettings}">
+    <StackPanel Orientation="Vertical">
+      <c:TextLabel Text="{Binding GroupSize, StringFormat='Group size: {0}'}">
+        <Slider Minimum="100" Maximum="1000" TickFrequency="50" Value="{Binding GroupSize, Mode=TwoWay}"/>
+      </c:TextLabel>
+    </StackPanel>
+  </DataTemplate>
 </DataTemplates>
