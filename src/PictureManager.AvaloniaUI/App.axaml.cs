@@ -67,29 +67,29 @@ public partial class App : Application {
   private void _loadDataTemplates() {
     // include files in *.csproj as AvaloniaResource too
     var files = new[] {
-      "Entities/RatingV.axaml",
-      "Entities/SegmentRectV.axaml",
-      "Entities/TreeItemV.axaml",
-      "Layout/MainTabsV.axaml",
-      "Layout/MiddleContentV.axaml",
-      "Layout/StatusBarV.axaml",
-      "Layout/ToolBarV.axaml",
-      "Layout/ToolsTabsV.axaml",
-      "Layout/TreeViewCategoriesV.axaml",
-      "Sections/MediaItemsViewV.axaml",
-      "Sections/MediaViewerV.axaml",
-      "Sections/PeopleToolsTabV.axaml",
-      "Sections/PeopleV.axaml",
-      "Sections/PersonDetailV.axaml",
-      "Sections/SegmentsDrawerV.axaml",
-      "Sections/SegmentsViewsV.axaml",
-      "Sections/SettingsV.axaml",
-      "Sections/TreeViewSearchV.axaml",
-      "Sections/WhatIsNewV.axaml"
+      "Entities/RatingV",
+      "Entities/SegmentRectV",
+      "Entities/TreeItemV",
+      "Layout/MainTabsV",
+      "Layout/MiddleContentV",
+      "Layout/StatusBarV",
+      "Layout/ToolBarV",
+      "Layout/ToolsTabsV",
+      "Layout/TreeViewCategoriesV",
+      "Sections/MediaItemsViewV",
+      "Sections/MediaViewerV",
+      "Sections/PeopleToolsTabV",
+      "Sections/PeopleV",
+      "Sections/PersonDetailV",
+      "Sections/SegmentsDrawerV",
+      "Sections/SegmentsViewsV",
+      "Sections/SettingsV",
+      "Sections/TreeViewSearchV",
+      "Sections/WhatIsNewV"
     };
 
     foreach (var file in files) {
-      var uri = new Uri($"avares://PictureManager.AvaloniaUI/Views/{file}");
+      var uri = new Uri($"avares://PictureManager.AvaloniaUI/Views/{file}.axaml");
       if (AvaloniaXamlLoader.Load(uri) is DataTemplates dts)
         DataTemplates.AddRange(dts);
     }
