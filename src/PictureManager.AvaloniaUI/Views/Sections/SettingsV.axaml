@@ -98,4 +98,24 @@
       </c:TextLabel>
     </StackPanel>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:MediaItemSettings}">
+    <StackPanel Orientation="Vertical">
+      <c:TextLabel Text="{Binding MediaItemThumbScale, StringFormat='Media item thumbnail scale: {0:G2}'}">
+        <Slider
+          Minimum="0.2"
+          Maximum="2"
+          TickFrequency="0.1"
+          SmallChange="0.1"
+          LargeChange="0.2"
+          Value="{Binding MediaItemThumbScale, Mode=TwoWay}"/>
+      </c:TextLabel>
+      <c:TextLabel Text="Scroll exactly to MediaItem in thumbnails:">
+        <CheckBox IsChecked="{Binding ScrollExactlyToMediaItem, Mode=TwoWay}"/>
+      </c:TextLabel>
+      <c:TextLabel Text="{Binding ThumbSize, StringFormat='Thumbnail size: {0}'}">
+        <Slider Minimum="200" Maximum="500" Value="{Binding ThumbSize, Mode=TwoWay}"/>
+      </c:TextLabel>
+    </StackPanel>
+  </DataTemplate>
 </DataTemplates>
