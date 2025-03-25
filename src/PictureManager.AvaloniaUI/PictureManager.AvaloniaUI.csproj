@@ -28,6 +28,7 @@
     <AvaloniaResource Include="Views\Sections\SegmentsDrawerV.axaml" />
     <AvaloniaResource Include="Views\Sections\SegmentsViewsV.axaml" />
     <AvaloniaResource Include="Views\Sections\SettingsV.axaml" />
+    <AvaloniaResource Include="Views\Sections\TreeViewSearchV.axaml" />
     <AvaloniaResource Include="Views\Sections\WhatIsNewV.axaml" />
   </ItemGroup>
 

@@ -1,0 +1,55 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:b="clr-namespace:MH.UI.AvaloniaUI.Behaviors;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftCommon:TreeViewSearchVM}">
+    <Grid x:Name="root" Margin="4,7,4,4" RowDefinitions="Auto,Auto">
+
+      <Grid.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{Binding CloseCommand}"/>
+        <KeyBinding Gesture="Enter" Command="{Binding NavigateToCommand}"/>
+      </Grid.KeyBindings>
+
+      <TextBox x:Name="search" Grid.Row="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+        <Interaction.Behaviors>
+          <b:FocusControlBehavior When="{Binding IsOpen}"/>
+        </Interaction.Behaviors>
+      </TextBox>
+
+      <ListBox
+        x:Name="result"
+        Grid.Row="1"
+        MaxHeight="400"
+        ItemsSource="{Binding SearchResult}"
+        ItemTemplate="{StaticResource MH.DT.IListItem}"
+        IsVisible="{Binding SearchResult.Count, Converter={x:Static conv:VisibilityConverter.IntToVisible}}">
+
+        <ListBox.KeyBindings>
+          <KeyBinding
+            Gesture="Enter"
+            Command="{Binding NavigateToCommand}"
+            CommandParameter="{Binding #result.SelectedItem}"/>
+        </ListBox.KeyBindings>
+
+        <Interaction.Behaviors>
+          <b:ExecuteCommandOnLeftPointerReleasedBehavior
+            Command="{Binding NavigateToCommand}"
+            CommandParameter="{Binding #result.SelectedItem}"/>
+        </Interaction.Behaviors>
+
+        <ListBox.ItemContainerTheme>
+          <ControlTheme
+            TargetType="ListBoxItem"
+            BasedOn="{StaticResource {x:Type ListBoxItem}}"
+            x:DataType="ftCommon:TreeViewSearchItemM">
+
+            <Setter Property="ToolTip.Tip" Value="{Binding ToolTip}"/>
+          </ControlTheme>
+        </ListBox.ItemContainerTheme>
+      </ListBox>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
