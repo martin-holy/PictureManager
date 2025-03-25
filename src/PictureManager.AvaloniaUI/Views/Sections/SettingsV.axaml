@@ -87,4 +87,15 @@
       </c:TextLabel>
     </StackPanel>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:GeoNameSettings}">
+    <StackPanel Orientation="Vertical">
+      <c:TextLabel Text="Load from web:">
+        <CheckBox IsChecked="{Binding LoadFromWeb, Mode=TwoWay}"/>
+      </c:TextLabel>
+      <c:TextLabel Text="User name:">
+        <TextBox Text="{Binding UserName, Mode=TwoWay}"/>
+      </c:TextLabel>
+    </StackPanel>
+  </DataTemplate>
 </DataTemplates>
