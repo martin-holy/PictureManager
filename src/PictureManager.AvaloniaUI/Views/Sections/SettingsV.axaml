@@ -126,4 +126,15 @@
       </c:TextLabel>
     </StackPanel>
   </DataTemplate>
+
+  <DataTemplate DataType="{x:Type ftCommon:MediaViewerSettings}">
+    <StackPanel Orientation="Vertical">
+      <c:TextLabel Text="Expand content to fill:">
+        <CheckBox IsChecked="{Binding ExpandToFill, Mode=TwoWay}"/>
+      </c:TextLabel>
+      <c:TextLabel Text="Shrink content to fill:">
+        <CheckBox IsChecked="{Binding ShrinkToFill, Mode=TwoWay}"/>
+      </c:TextLabel>
+    </StackPanel>
+  </DataTemplate>
 </DataTemplates>
