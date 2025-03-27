@@ -1,0 +1,134 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:pmc="clr-namespace:PictureManager.AvaloniaUI.Controls"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
+
+  <DataTemplate x:Key="PM.DT.MediaItemsFilter" DataType="{x:Type ftMediaItem:MediaItemsFilterVM}">
+    <Grid x:Name="root" Background="Transparent">
+
+      <Grid.Resources>
+        <ControlTheme x:Key="AndOrNotText" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBox}}">
+          <Setter Property="TextAlignment" Value="Center"/>
+          <Setter Property="Margin" Value="2"/>
+          <Setter Property="Height" Value="20"/>
+          <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+        </ControlTheme>
+
+        <ControlTheme x:Key="SizeTexts" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="Margin" Value="0,0,8,0"/>
+        </ControlTheme>
+      </Grid.Resources>
+
+      <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="PointerEntered">
+          <ChangePropertyAction TargetObject="popup" PropertyName="IsOpen" Value="True"/>
+        </EventTriggerBehavior>
+      </Interaction.Behaviors>
+
+      <Popup
+        x:Name="popup"
+        Placement="Bottom"
+        PlacementTarget="{Binding #root}"
+        IsLightDismissEnabled="True"
+        WindowManagerAddShadowHint="True">
+        
+        <Border
+          x:Name="popupBorder"
+          BorderThickness="1"
+          BorderBrush="{DynamicResource MH.B.Accent}"
+          Background="{StaticResource MH.B.C.Static.Ba}">
+
+          <Interaction.Behaviors>
+            <EventTriggerBehavior EventName="PointerExited">
+              <ChangePropertyAction TargetObject="popup" PropertyName="IsOpen" Value="False"/>
+            </EventTriggerBehavior>
+          </Interaction.Behaviors>
+          
+          <DockPanel>
+            <Button
+              DockPanel.Dock="Bottom"
+              HorizontalAlignment="Right"
+              Command="{Binding ClearCommand}"/>
+
+            <Grid MinWidth="300" Margin="4" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+
+              <!-- And - Or - Not -->
+              <UniformGrid Grid.ColumnSpan="2" Columns="3" Margin="0,2">
+                <DockPanel>
+                  <Border
+                    DockPanel.Dock="Top"
+                    Margin="2,0"
+                    Background="{StaticResource PM.B.And}">
+                    <TextBlock Text="And" Theme="{StaticResource AndOrNotText}"/>
+                  </Border>
+                  <ItemsControl ItemsSource="{Binding FilterAnd}"/>
+                </DockPanel>
+
+                <DockPanel>
+                  <Border
+                    DockPanel.Dock="Top"
+                    Margin="2,0"
+                    Background="{StaticResource PM.B.Or}">
+                    <TextBlock Text="Or" Theme="{StaticResource AndOrNotText}"/>
+                  </Border>
+                  <ItemsControl ItemsSource="{Binding FilterOr}"/>
+                </DockPanel>
+
+                <DockPanel>
+                  <Border
+                    DockPanel.Dock="Top"
+                    Margin="2,0"
+                    Background="{StaticResource PM.B.Not}">
+                    <TextBlock Text="Not" Theme="{StaticResource AndOrNotText}"/>
+                  </Border>
+                  <ItemsControl ItemsSource="{Binding FilterNot}"/>
+                </DockPanel>
+              </UniformGrid>
+
+              <TextBlock Text="Height:" Grid.Row="1" Grid.Column="0" Theme="{StaticResource SizeTexts}"/>
+              <c:RangeSlider Range="{Binding Height}" Grid.Row="1" Grid.Column="1"/>
+
+              <TextBlock Text="Width:" Grid.Row="2" Grid.Column="0" Theme="{StaticResource SizeTexts}"/>
+              <c:RangeSlider Range="{Binding Width}" Grid.Row="2" Grid.Column="1"/>
+
+              <TextBlock Text="Size Mpx:" Grid.Row="3" Grid.Column="0" Theme="{StaticResource SizeTexts}"/>
+              <c:RangeSlider Range="{Binding Size}" Grid.Row="3" Grid.Column="1" TickFrequency="0.1"/>
+            </Grid>
+          </DockPanel>
+        </Border>
+      </Popup>
+
+      <PathIcon
+        Classes="shadow"
+        Data="{StaticResource IconFilter}"
+        Margin="2"/>
+
+      <Grid.Styles>
+        <Style Selector="ItemsControl">
+          <Setter Property="ItemTemplate">
+            <Setter.Value>
+              <pmc:MediaItemsFilterDataTemplateSelector/>
+            </Setter.Value>
+          </Setter>
+          <Setter Property="ItemContainerTheme">
+            <Setter.Value>
+              <ControlTheme TargetType="Control">
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+              </ControlTheme>
+            </Setter.Value>
+          </Setter>
+          <Setter Property="ItemsPanel">
+            <Setter.Value>
+              <ItemsPanelTemplate>
+                <StackPanel/>
+              </ItemsPanelTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>
