@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Views\Dialogs\AboutDialogV.axaml" />
     <AvaloniaResource Include="Views\Entities\RatingV.axaml" />
     <AvaloniaResource Include="Views\Entities\SegmentRectV.axaml" />
     <AvaloniaResource Include="Views\Entities\TreeItemV.axaml" />
