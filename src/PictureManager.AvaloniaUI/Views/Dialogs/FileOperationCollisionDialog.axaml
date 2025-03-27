@@ -1,0 +1,135 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:conv="clr-namespace:MH.UI.AvaloniaUI.Converters;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftCommon:FileOperationCollisionDialog}">
+    <Grid Margin="4,4,4,0" ColumnDefinitions="*,5,*,5,Auto">
+
+      <Grid.Resources>
+        <ResourceDictionary>
+          <Border x:Key="UnknownFile1" Classes="UnknownFileBorder">
+            <PathIcon Classes="UnknownFilePath"/>
+          </Border>
+          <Border x:Key="UnknownFile2" Classes="UnknownFileBorder">
+            <PathIcon Classes="UnknownFilePath"/>
+          </Border>
+        </ResourceDictionary>
+      </Grid.Resources>
+
+      <!-- Source Thumbnail -->
+      <ContentControl
+        Content="{Binding SrcMediaItem, TargetNullValue={StaticResource UnknownFile1}}"
+        ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"
+        ToolTip.Tip="{Binding SrcPath}"
+        Grid.Column="0"/>
+
+      <!-- Destination Thumbnail -->
+      <ContentControl
+        Content="{Binding DestMediaItem, TargetNullValue={StaticResource UnknownFile2}}"
+        ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"
+        ToolTip.Tip="{Binding DestPath}"
+        Grid.Column="2"/>
+
+      <!-- Info -->
+      <Grid
+        Grid.Column="4"
+        Width="260"
+        VerticalAlignment="Bottom"
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+        ColumnDefinitions="Auto,*">
+
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Classes="InfoBackground"/>
+        <TextBlock Text="Dimensions:" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Classes="InfoText"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Classes="InfoValue">
+          <TextBlock.Text>
+            <MultiBinding StringFormat="{}{0}x{1}">
+              <Binding Path="SrcMediaItem.Width" FallbackValue="0"/>
+              <Binding Path="SrcMediaItem.Height" FallbackValue="0"/>
+            </MultiBinding>
+          </TextBlock.Text>
+        </TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" Classes="InfoValue">
+          <TextBlock.Text>
+            <MultiBinding StringFormat="{}{0}x{1}">
+              <Binding Path="DestMediaItem.Width" FallbackValue="0"/>
+              <Binding Path="DestMediaItem.Height" FallbackValue="0"/>
+            </MultiBinding>
+          </TextBlock.Text>
+        </TextBlock>
+
+        <Rectangle Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Classes="InfoBackground"/>
+        <TextBlock Text="File size:" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Classes="InfoText"/>
+        <TextBlock Text="{Binding SrcSize}" Grid.Row="2" Grid.Column="1" Classes="InfoValue"/>
+        <TextBlock Text="{Binding DestSize}" Grid.Row="3" Grid.Column="1" Classes="InfoValue"/>
+
+        <Rectangle Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Classes="InfoBackground"/>
+        <TextBlock Text="Modified:" Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Classes="InfoText"/>
+        <TextBlock Text="{Binding SrcLastWrite}" Grid.Row="4" Grid.Column="1" Classes="InfoValue"/>
+        <TextBlock Text="{Binding DestLastWrite}" Grid.Row="5" Grid.Column="1" Classes="InfoValue"/>
+
+        <Rectangle Grid.Row="6" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Classes="InfoBackground"/>
+        <TextBlock
+          Text="File name:"
+          Grid.Row="6"
+          Grid.Column="0"
+          VerticalAlignment="Bottom"
+          Margin="4"/>
+        <TextBox
+          x:Name="fileName"
+          Text="{Binding FileName}"
+          Grid.Row="7"
+          Grid.Column="0"
+          Grid.ColumnSpan="2"
+          Classes.Error="{Binding Error, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"
+          Margin="4,6"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Center"/>
+      </Grid>
+
+      <Grid.Styles>
+        <Style Selector="TextBlock.InfoText">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="Margin" Value="4"/>
+        </Style>
+
+        <Style Selector="TextBlock.InfoValue">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="HorizontalAlignment" Value="Right"/>
+          <Setter Property="Margin" Value="4"/>
+        </Style>
+
+        <Style Selector="Rectangle.InfoBackground">
+          <Setter Property="Margin" Value="0,2"/>
+          <Setter Property="Fill" Value="{DynamicResource MH.B.Black2}"/>
+          <Setter Property="Stroke" Value="Black"/>
+          <Setter Property="StrokeThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Border.UnknownFileBorder">
+          <Setter Property="BorderThickness" Value="1"/>
+          <Setter Property="BorderBrush" Value="Black"/>
+          <Setter Property="Width" Value="100"/>
+          <Setter Property="Height" Value="100"/>
+        </Style>
+
+        <Style Selector="PathIcon.UnknownFilePath">
+          <Setter Property="Data" Value="{StaticResource IconFileSolid}"/>
+          <Setter Property="Foreground" Value="{StaticResource MH.B.C.Static.Fo}"/>
+          <Setter Property="Margin" Value="10"/>
+          <Setter Property="HorizontalAlignment" Value="Center"/>
+          <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBox#fileName">
+          <Setter Property="ToolTip.Tip" Value="{x:Null}"/>
+        </Style>
+        <Style Selector="TextBox#fileName.Error">
+          <Setter Property="Background" Value="#7FFF0000"/>
+          <Setter Property="ToolTip.Tip" Value="{Binding Error}"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>

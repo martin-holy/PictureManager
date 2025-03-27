@@ -71,6 +71,7 @@ public partial class App : Application {
       "Dialogs/CompressImagesDialog",
       "Dialogs/ErrorDialog",
       "Dialogs/ExportSegmentsDialog",
+      "Dialogs/FileOperationCollisionDialog",
       "Entities/RatingV",
       "Entities/SegmentRectV",
       "Entities/TreeItemV",

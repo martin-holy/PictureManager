@@ -15,6 +15,7 @@
     <AvaloniaResource Include="Views\Dialogs\CompressImagesDialog.axaml" />
     <AvaloniaResource Include="Views\Dialogs\ErrorDialog.axaml" />
     <AvaloniaResource Include="Views\Dialogs\ExportSegmentsDialog.axaml" />
+    <AvaloniaResource Include="Views\Dialogs\FileOperationCollisionDialog.axaml" />
     <AvaloniaResource Include="Views\Entities\RatingV.axaml" />
     <AvaloniaResource Include="Views\Entities\SegmentRectV.axaml" />
     <AvaloniaResource Include="Views\Entities\TreeItemV.axaml" />
