@@ -69,6 +69,7 @@ public partial class App : Application {
     var files = new[] {
       "Dialogs/AboutDialogV",
       "Dialogs/CompressImagesDialogV",
+      "Dialogs/ErrorDialogV",
       "Entities/RatingV",
       "Entities/SegmentRectV",
       "Entities/TreeItemV",
