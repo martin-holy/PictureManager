@@ -1,0 +1,30 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftCommon:AboutDialog}">
+    <StackPanel Orientation="Vertical" Width="310">
+      <TextBlock Text="Picture Manager" FontSize="26"/>
+      <TextBlock Text="{Binding Version.FileVersion, StringFormat='File Version: {0}'}"/>
+      <TextBlock Text="{Binding Version.LegalCopyright}"/>
+      <TextBlock Text="{Binding HomePageUrl}" Cursor="Hand" Foreground="SteelBlue">
+        <Interaction.Behaviors>
+          <ExecuteCommandOnPointerReleasedBehavior Command="{Binding OpenHomePageCommand}"/>
+        </Interaction.Behaviors>
+      </TextBlock>
+      <TextBlock Text="{Binding TelegramUrl}" Cursor="Hand" Foreground="SteelBlue">
+        <Interaction.Behaviors>
+          <ExecuteCommandOnPointerReleasedBehavior Command="{Binding OpenTelegramCommand}"/>
+        </Interaction.Behaviors>
+      </TextBlock>
+
+      <StackPanel.Styles>
+        <Style Selector="TextBlock">
+          <Setter Property="Margin" Value="5"/>
+          <Setter Property="FontSize" Value="13"/>
+        </Style>
+      </StackPanel.Styles>
+    </StackPanel>
+  </DataTemplate>
+</DataTemplates>
