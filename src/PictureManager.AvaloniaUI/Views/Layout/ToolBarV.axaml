@@ -194,7 +194,8 @@
 
       <!-- Filters Panel -->
       <ContentPresenter
-        Content="{Binding MediaItemViews.Current.Filter}"
+        DataContext="{Binding MediaItemViews.Current.Filter}"
+        Content="{Binding}"
         ContentTemplate="{StaticResource PM.DT.MediaItemsFilter}"/>
 
       <!-- Thumbnails scale -->
