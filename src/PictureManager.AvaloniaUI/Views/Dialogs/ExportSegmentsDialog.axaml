@@ -1,0 +1,51 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ap="clr-namespace:MH.UI.AvaloniaUI.AttachedProperties;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftSegment="clr-namespace:PictureManager.Common.Features.Segment;assembly=PictureManager.Common"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftSegment:ExportSegmentsDialog}">
+    <Grid
+      Margin="5"
+      Width="515"
+      RowDefinitions="40,40,40"
+      ColumnDefinitions="Auto,*">
+
+      <TextBlock Text="Export to:" Grid.Row="0" Grid.Column="0"/>
+
+      <DockPanel Grid.Row="0" Grid.Column="1">
+        <mhc:IconButton
+          Command="{Binding OpenFolderBrowserCommand}"
+          ap:Icon.Fill="{StaticResource PM.B.Folder}"
+          VerticalAlignment="Center"
+          DockPanel.Dock="Right"/>
+
+        <ComboBox
+          ItemsSource="{Binding Path=Common.DirectorySelectFolders, Source={x:Static core:Core.Settings}}"
+          SelectedValue="{Binding DestDir}"/>
+      </DockPanel>
+
+      <TextBlock
+        Grid.Column="0"
+        Grid.Row="1"
+        Grid.ColumnSpan="2"
+        Text="{Binding ProgressText}"/>
+
+      <ProgressBar
+        Grid.Column="0"
+        Grid.Row="2"
+        Grid.ColumnSpan="2"
+        Maximum="{Binding ProgressMax}"
+        Value="{Binding ProgressValue}"/>
+
+      <Grid.Styles>
+        <Style Selector="TextBlock">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="Margin" Value="5"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
