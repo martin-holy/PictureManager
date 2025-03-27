@@ -1,0 +1,29 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftCommon:FileOperationDialog}">
+    <StackPanel Margin="5,5,5,0" Width="500">
+      <Grid VerticalAlignment="Center" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="From: "/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="To: "/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="File: "/>
+
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DirFrom}"/>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DirTo}"/>
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FileName}"/>
+      </Grid>
+
+      <ProgressBar
+        IsIndeterminate="{Binding IsIndeterminate}"
+        Value="{Binding ProgressValue}"/>
+
+      <StackPanel.Styles>
+        <Style Selector="TextBlock">
+          <Setter Property="Margin" Value="5"/>
+        </Style>
+      </StackPanel.Styles>
+    </StackPanel>
+  </DataTemplate>
+</DataTemplates>
