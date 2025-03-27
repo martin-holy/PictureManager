@@ -29,7 +29,7 @@
           <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.CommentCommand}" InputGesture="Ctrl+K"/>
           <MenuItem Command="{x:Static core:CoreVM.CompressImagesCommand}"/>
           <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.CopyPathsCommand}"/>
-          <MenuItem Command="{x:Static core:CoreVM.ImagesToVideoCommand}"/>
+          <!--<MenuItem Command="{x:Static core:CoreVM.ImagesToVideoCommand}"/>-->
           <MenuItem Command="{x:Static ftMediaItem:MediaItemsViewsVM.RebuildThumbnailsCommand}"/>
           <MenuItem Command="{x:Static ftMediaItem:MediaItemVM.RenameCommand}" InputGesture="F2"/>
           <MenuItem Command="{x:Static core:CoreVM.ResizeImagesCommand}"/>
