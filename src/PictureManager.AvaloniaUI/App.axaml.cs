@@ -70,6 +70,7 @@ public partial class App : Application {
       "Dialogs/AboutDialog",
       "Dialogs/CompressImagesDialog",
       "Dialogs/ErrorDialog",
+      "Dialogs/ExportSegmentsDialog",
       "Entities/RatingV",
       "Entities/SegmentRectV",
       "Entities/TreeItemV",
