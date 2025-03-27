@@ -68,6 +68,7 @@ public partial class App : Application {
     // include files in *.csproj as AvaloniaResource too
     var files = new[] {
       "Dialogs/AboutDialogV",
+      "Dialogs/CompressImagesDialogV",
       "Entities/RatingV",
       "Entities/SegmentRectV",
       "Entities/TreeItemV",

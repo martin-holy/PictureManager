@@ -1,0 +1,73 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftImage:CompressImagesDialog}">
+    <Grid Width="320" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+
+      <DockPanel
+        Grid.Column="0"
+        Grid.Row="0"
+        Grid.ColumnSpan="2"
+        Margin="10,5,10,20">
+
+        <TextBlock
+          DockPanel.Dock="Left"
+          VerticalAlignment="Center"
+          Text="{Binding JpegQualityLevel, StringFormat='JPG quality level: {0}'}"/>
+
+        <Slider
+          Margin="10,0,0,0"
+          Minimum="70"
+          Maximum="95"
+          VerticalAlignment="Center"
+          IsTabStop="True"
+          SmallChange="1"
+          Value="{Binding JpegQualityLevel}"/>
+      </DockPanel>
+
+      <Label
+        Grid.Column="0"
+        Grid.Row="1"
+        HorizontalAlignment="Center"
+        Content="Original"/>
+    
+      <Label
+        Grid.Column="1"
+        Grid.Row="1"
+        HorizontalAlignment="Center"
+        Content="Compressed"/>
+
+      <Label
+        Grid.Column="0"
+        Grid.Row="2"
+        HorizontalAlignment="Center"
+        FontSize="20"
+        Content="{Binding TotalSourceSize}"/>
+    
+      <Label
+        Grid.Column="1"
+        Grid.Row="2"
+        HorizontalAlignment="Center"
+        FontSize="20"
+        Content="{Binding TotalCompressedSize}"/>
+
+      <TextBlock
+        Grid.Column="0"
+        Grid.Row="3"
+        Grid.ColumnSpan="2"
+        Margin="10"
+        HorizontalAlignment="Left"
+        Text="{Binding ProgressText}"/>
+
+      <ProgressBar
+        Grid.Column="0"
+        Grid.Row="4"
+        Grid.ColumnSpan="2"
+        Margin="10,0,10,5"
+        Maximum="{Binding ProgressMax}"
+        Value="{Binding ProgressValue}"/>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
