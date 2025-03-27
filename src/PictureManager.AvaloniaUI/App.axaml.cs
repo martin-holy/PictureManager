@@ -67,9 +67,9 @@ public partial class App : Application {
   private void _loadDataTemplates() {
     // include files in *.csproj as AvaloniaResource too
     var files = new[] {
-      "Dialogs/AboutDialogV",
-      "Dialogs/CompressImagesDialogV",
-      "Dialogs/ErrorDialogV",
+      "Dialogs/AboutDialog",
+      "Dialogs/CompressImagesDialog",
+      "Dialogs/ErrorDialog",
       "Entities/RatingV",
       "Entities/SegmentRectV",
       "Entities/TreeItemV",
