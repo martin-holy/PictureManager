@@ -73,6 +73,7 @@ public partial class App : Application {
       "Dialogs/ExportSegmentsDialog",
       "Dialogs/FileOperationCollisionDialog",
       "Dialogs/FileOperationDialog",
+      "Dialogs/FolderBrowserDialog",
       "Entities/RatingV",
       "Entities/SegmentRectV",
       "Entities/TreeItemV",
