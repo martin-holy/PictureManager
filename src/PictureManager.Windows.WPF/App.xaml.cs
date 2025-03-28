@@ -25,7 +25,7 @@ public partial class App {
     MainWindow = splashScreen;
     MainWindow.Show();
 
-    await Core.Inst.InitAsync(splashScreen.ProgressMessage);
+    await Core.Inst.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
 
     Core = Core.Inst;
     Ui = new();
