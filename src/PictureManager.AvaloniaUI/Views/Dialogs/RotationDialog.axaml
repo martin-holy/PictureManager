@@ -1,0 +1,21 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftMediaItem:RotationDialog}">
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+      <Button Command="{Binding Rotate90Command}"/>
+      <Button Command="{Binding Rotate180Command}"/>
+      <Button Command="{Binding Rotate270Command}"/>
+
+      <StackPanel.Styles>
+        <Style Selector="Button">
+          <Setter Property="MinWidth" Value="60"/>
+          <Setter Property="MinHeight" Value="60"/>
+          <Setter Property="Margin" Value="5"/>
+        </Style>
+      </StackPanel.Styles>
+    </StackPanel>
+  </DataTemplate>
+</DataTemplates>

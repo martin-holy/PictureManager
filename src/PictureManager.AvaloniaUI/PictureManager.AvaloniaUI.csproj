@@ -22,6 +22,7 @@
     <AvaloniaResource Include="Views\Dialogs\LogDialog.axaml" />
     <AvaloniaResource Include="Views\Dialogs\MergePeopleDialog.axaml" />
     <AvaloniaResource Include="Views\Dialogs\ImageResizeDialog.axaml" />
+    <AvaloniaResource Include="Views\Dialogs\RotationDialog.axaml" />
     <AvaloniaResource Include="Views\Entities\RatingV.axaml" />
     <AvaloniaResource Include="Views\Entities\SegmentRectV.axaml" />
     <AvaloniaResource Include="Views\Entities\TreeItemV.axaml" />
