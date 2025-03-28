@@ -1,0 +1,24 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftPerson:MergePeopleDialog}">
+    <Grid Margin="2" MinWidth="364" Height="450" RowDefinitions="Auto,Auto,*">
+
+      <mhc:CollectionViewHost ViewModel="{Binding PeopleView}" MaxHeight="160"/>
+
+      <Border
+        Grid.Row="1"
+        Classes="RoundDarker"
+        Margin="2"
+        HorizontalAlignment="Left">
+
+        <TextBlock Text="{Binding Person.Name}"/>
+      </Border>
+
+      <mhc:CollectionViewHost ViewModel="{Binding SegmentsView}" Grid.Row="2"/>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
