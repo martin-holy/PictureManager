@@ -76,6 +76,7 @@ public partial class App : Application {
       "Dialogs/FolderBrowserDialog",
       "Dialogs/FolderKeywordsDialog",
       "Dialogs/LogDialog",
+      "Dialogs/MergePeopleDialog",
       "Entities/RatingV",
       "Entities/SegmentRectV",
       "Entities/TreeItemV",
