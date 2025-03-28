@@ -1,0 +1,50 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:u="clr-namespace:MH.Utils;assembly=MH.Utils"
+  xmlns:bc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
+  xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftCommon:LogDialog}">
+    <Grid Margin="5" Width="600" Height="300" RowDefinitions="100,3,*,Auto">
+
+      <ListBox
+        x:Name="listBoxLog"
+        Grid.Row="0"
+        ItemsSource="{Binding Source={x:Static u:Log.Items}}"
+        ItemTemplate="{StaticResource MH.DT.LogItem}"/>
+
+      <GridSplitter Grid.Row="1" ResizeDirection="Rows"/>
+
+      <TextBox
+        x:Name="text"
+        Grid.Row="2"
+        Classes.wrap="{Binding #wrap.IsChecked}"
+        IsVisible="{Binding #listBoxLog.SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}"
+        BorderThickness="1"
+        MaxLines="10"
+        IsReadOnly="False"
+        VerticalAlignment="Top"
+        ScrollViewer.VerticalScrollBarVisibility="Auto"
+        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+        Text="{Binding #listBoxLog.((bc:LogItem)SelectedItem).Detail, Mode=OneWay}"/>
+
+      <CheckBox
+        x:Name="wrap"
+        Grid.Row="3"
+        Content="Wrap text"
+        IsChecked="False"
+        HorizontalAlignment="Left"/>
+
+      <!--TODO PORT wrap-->
+      <Grid.Styles>
+        <Style Selector="TextBox#text">
+          <Setter Property="TextWrapping" Value="NoWrap"/>
+        </Style>
+        <Style Selector="TextBox#text.wrap">
+          <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>

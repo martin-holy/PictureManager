@@ -19,6 +19,7 @@
     <AvaloniaResource Include="Views\Dialogs\FileOperationDialog.axaml" />
     <AvaloniaResource Include="Views\Dialogs\FolderBrowserDialog.axaml" />
     <AvaloniaResource Include="Views\Dialogs\FolderKeywordsDialog.axaml" />
+    <AvaloniaResource Include="Views\Dialogs\LogDialog.axaml" />
     <AvaloniaResource Include="Views\Entities\RatingV.axaml" />
     <AvaloniaResource Include="Views\Entities\SegmentRectV.axaml" />
     <AvaloniaResource Include="Views\Entities\TreeItemV.axaml" />
