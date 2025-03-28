@@ -56,7 +56,8 @@ public partial class App : Application {
   }
 
   private static async Task _initCore(IProgress<string> progress) {
-    await Core.Inst.InitAsync(progress);
+    var drives = Environment.GetLogicalDrives();
+    await Core.Inst.InitAsync(progress, AppDomain.CurrentDomain.BaseDirectory);
 
     Core = Core.Inst;
     CoreUI = new();
