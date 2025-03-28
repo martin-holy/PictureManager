@@ -1,0 +1,73 @@
+<DataTemplates
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
+  xmlns:ftImage="clr-namespace:PictureManager.Common.Features.MediaItem.Image;assembly=PictureManager.Common"
+  xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common">
+
+  <DataTemplate DataType="{x:Type ftImage:ImageResizeDialog}">
+    <Grid Margin="5" Width="515" RowDefinitions="40,40,40,40,40" ColumnDefinitions="Auto,*">
+
+      <!-- Preserve Thumbnail/Metadata -->
+      <TextBlock Text="Preserve:" Grid.Row="0" Grid.Column="0"/>
+      <StackPanel
+        Orientation="Horizontal"
+        Grid.Row="0"
+        Grid.Column="1"
+        VerticalAlignment="Center">
+
+        <CheckBox Content="Thumbnail" IsChecked="{Binding PreserveThumbnail}"/>
+        <CheckBox Content="Metadata" IsChecked="{Binding PreserveMetadata}" Margin="15,0,0,0"/>
+      </StackPanel>
+
+      <!-- Resize to -->
+      <TextBlock Text="Resize to:" Grid.Row="1" Grid.Column="0"/>
+      <DockPanel Grid.Row="1" Grid.Column="1">
+        <c:IconButton
+          Command="{Binding OpenFolderBrowserCommand}"
+          VerticalAlignment="Center"
+          DockPanel.Dock="Right"/>
+
+        <ComboBox
+          ItemsSource="{Binding Path=Common.DirectorySelectFolders, Source={x:Static core:Core.Settings}}"
+          SelectedValue="{Binding DestDir}"/>
+      </DockPanel>
+
+      <!-- Slider MPx -->
+      <TextBlock
+        Grid.Row="2"
+        Grid.Column="0"
+        Text="{Binding Mpx, StringFormat={}{0:F1} MPx}"/>
+
+      <Slider
+        Grid.Row="2"
+        Grid.Column="1"
+        Maximum="{Binding MaxMpx}"
+        Minimum="0.1"
+        Value="{Binding Mpx}"
+        TickFrequency="0.1"
+        IsSnapToTickEnabled="True"
+        VerticalAlignment="Center"/>
+
+      <TextBlock
+        Grid.Row="3"
+        Grid.Column="0"
+        Grid.ColumnSpan="2"
+        Text="{Binding ProgressText}"/>
+
+      <ProgressBar
+        Grid.Row="4"
+        Grid.Column="0"
+        Grid.ColumnSpan="2"
+        Maximum="{Binding ProgressMax}"
+        Value="{Binding ProgressValue}"/>
+
+      <Grid.Styles>
+        <Style Selector="TextBlock">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="Margin" Value="5"/>
+        </Style>
+      </Grid.Styles>
+    </Grid>
+  </DataTemplate>
+</DataTemplates>
