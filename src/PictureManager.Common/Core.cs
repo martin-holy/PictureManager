@@ -17,7 +17,7 @@ public sealed class Core {
   public static Core Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   public static ICoreP P { get; private set; } = null!;
-  public static CoreR R { get; } = new();
+  public static CoreR R { get; private set; } = null!;
   public static CoreS S { get; private set; } = null!;
   public static CoreVM VM { get; private set; } = null!;
   public static Settings Settings { get; } = Settings.Load("settings.json");
@@ -28,7 +28,8 @@ public sealed class Core {
     Tasks.SetUiTaskScheduler();
   }
 
-  public Task InitAsync(IProgress<string> progress) {
+  public Task InitAsync(IProgress<string> progress, string appDir) {
+    R = new(appDir);
     return Task.Run(async () => {
       R.AddDataAdapters();
       Drives.UpdateSerialNumbers();

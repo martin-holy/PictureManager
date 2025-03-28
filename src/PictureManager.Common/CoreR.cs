@@ -44,7 +44,7 @@ public sealed class CoreR : SimpleDB {
   public MediaItemGeoLocationR MediaItemGeoLocation { get; }
   public VideoItemsOrderR VideoItemsOrder { get; }
 
-  public CoreR() : base("db") {
+  public CoreR(string appDir) : base(Path.Combine(appDir, "db")) {
     CategoryGroup = new(this);
     FavoriteFolder = new(this);
     FolderKeyword = new(this);
