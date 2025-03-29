@@ -1,7 +1,9 @@
 ﻿using MH.UI.WPF.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Common;
+using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
@@ -106,4 +108,7 @@ public sealed class AppCore : ObservableObject, ICoreP {
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) =>
     Utils.Imaging.CreateImageThumbnail(srcPath, destPath, desiredSize, quality);
+
+  public string GetFilePathCache(FolderM folder, string fileNameCache) =>
+    IOExtensions.PathCombine(folder.FullPathCache, fileNameCache);
 }
