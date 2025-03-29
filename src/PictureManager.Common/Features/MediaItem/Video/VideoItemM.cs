@@ -1,6 +1,5 @@
 ﻿using MH.UI.Interfaces;
 using MH.Utils;
-using MH.Utils.Extensions;
 using PictureManager.Common.Features.Folder;
 
 namespace PictureManager.Common.Features.MediaItem.Video;
@@ -26,5 +25,5 @@ public class VideoItemM : MediaItemM, IVideoItem {
   public override int ThumbHeight { get => Video.ThumbHeight; set => Video.ThumbHeight = value; }
 
   public override string FilePathCache =>
-    IOExtensions.PathCombine(Video.Folder.FullPathCache, FileNameCache(Video.FileName));
+    Core.P.GetFilePathCache(Video.Folder, FileNameCache(Video.FileName));
 }
