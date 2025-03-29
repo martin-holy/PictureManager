@@ -1,8 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using MH.Utils.Extensions;
 using PictureManager.AvaloniaUI.Controls;
 using PictureManager.AvaloniaUI.Converters;
 using PictureManager.Common;
+using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 using System.Collections.Generic;
 using System.IO;
@@ -51,4 +53,7 @@ public class CoreUI : ICoreP {
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) =>
     Utils.Imaging.CreateImageThumbnail(srcPath, destPath, desiredSize, quality);
+
+  public string GetFilePathCache(FolderM folder, string fileNameCache) =>
+    IOExtensions.PathCombine(folder.FullPathCache, fileNameCache);
 }
