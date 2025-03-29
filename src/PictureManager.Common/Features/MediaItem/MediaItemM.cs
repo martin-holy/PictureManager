@@ -46,7 +46,7 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
   public abstract string FileName { get; set; }
   public virtual string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
   public virtual string FileNameCache(string fileName) => fileName;
-  public virtual string FilePathCache => IOExtensions.PathCombine(Folder.FullPathCache, FileNameCache(FileName));
+  public virtual string FilePathCache => Core.P.GetFilePathCache(Folder, FileNameCache(FileName));
   public abstract int Width { get; set; }
   public abstract int Height { get; set; }
   public abstract int ThumbWidth { get; set; }
