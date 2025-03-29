@@ -111,4 +111,7 @@ public sealed class AppCore : ObservableObject, ICoreP {
 
   public string GetFilePathCache(FolderM folder, string fileNameCache) =>
     IOExtensions.PathCombine(folder.FullPathCache, fileNameCache);
+
+  public string GetFolderPathCache(FolderM folder) =>
+    folder.FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath);
 }
