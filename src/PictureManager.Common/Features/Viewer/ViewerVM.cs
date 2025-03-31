@@ -32,18 +32,18 @@ public sealed class ViewerVM : ObservableObject {
   public ViewerVM(ViewerR r, ViewerS s) {
     _r = r;
     CanDragFolder = source => source is FolderM ? source : null;
-    CanDropFolderIncluded = (a, b, c) => CanDropFolder(a, b, c, true);
-    CanDropFolderExcluded = (a, b, c) => CanDropFolder(a, b, c, false);
-    DoDropFolderIncluded = (a, b) => DoDropFolder(a, b, true);
-    DoDropFolderExcluded = (a, b) => DoDropFolder(a, b, false);
-    CanDropKeyword = CanDropKeywordMethod;
-    DoDropKeyword = DoDropKeywordMethod;
+    CanDropFolderIncluded = (a, b, c) => _canDropFolder(a, b, c, true);
+    CanDropFolderExcluded = (a, b, c) => _canDropFolder(a, b, c, false);
+    DoDropFolderIncluded = (a, b) => _doDropFolder(a, b, true);
+    DoDropFolderExcluded = (a, b) => _doDropFolder(a, b, false);
+    CanDropKeyword = _canDropKeywordMethod;
+    DoDropKeyword = _doDropKeywordMethod;
 
-    UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
+    UpdateExcludedCategoryGroupsCommand = new(_updateExcludedCategoryGroups);
     ChangeCurrentCommand = new(s.ChangeCurrent, Res.IconEye);
   }
 
-  private void UpdateExcludedCategoryGroups() {
+  private void _updateExcludedCategoryGroups() {
     Selected.ExcludedCategoryGroups.Clear();
     foreach (var cg in CategoryGroups.Where(x => !x.IsSelected))
       Selected.ExcludedCategoryGroups.Add(cg.Content);
@@ -70,7 +70,7 @@ public sealed class ViewerVM : ObservableObject {
       licg.IsSelected = !Selected.ExcludedCategoryGroups.Contains(licg.Content);
   }
 
-  private DragDropEffects CanDropFolder(object? target, object? data, bool haveSameOrigin, bool included) {
+  private DragDropEffects _canDropFolder(object? target, object? data, bool haveSameOrigin, bool included) {
     if (data is not FolderM folder)
       return DragDropEffects.None;
 
@@ -87,14 +87,14 @@ public sealed class ViewerVM : ObservableObject {
       : DragDropEffects.Move;
   }
 
-  private void DoDropFolder(object data, bool haveSameOrigin, bool included) {
+  private void _doDropFolder(object data, bool haveSameOrigin, bool included) {
     if (haveSameOrigin)
       _r.RemoveFolder(Selected, (FolderM)data, included);
     else
       _r.AddFolder(Selected, (FolderM)data, included);
   }
 
-  private DragDropEffects CanDropKeywordMethod(object? target, object? data, bool haveSameOrigin) {
+  private DragDropEffects _canDropKeywordMethod(object? target, object? data, bool haveSameOrigin) {
     if (data is not KeywordM keyword)
       return DragDropEffects.None;
 
@@ -108,7 +108,7 @@ public sealed class ViewerVM : ObservableObject {
       : DragDropEffects.Copy;
   }
 
-  private void DoDropKeywordMethod(object data, bool haveSameOrigin) {
+  private void _doDropKeywordMethod(object data, bool haveSameOrigin) {
     if (haveSameOrigin)
       _r.RemoveKeyword(Selected, (KeywordM)data);
     else
