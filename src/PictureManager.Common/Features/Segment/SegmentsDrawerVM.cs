@@ -25,16 +25,16 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
     Items = items;
 
     CanDragFunc = one => _segmentS.GetOneOrSelected(one as SegmentM);
-    CanDropFunc = CanDrop;
-    DoDropAction = DoDrop;
+    CanDropFunc = _canDrop;
+    DoDropAction = _doDrop;
 
     AddSelectedCommand = new(
-      () => AddOrRemove(_segmentS.Selected.Items.ToArray(), true),
+      () => _addOrRemove(_segmentS.Selected.Items.ToArray(), true),
       () => _segmentS.Selected.Items.Count > 0, Res.IconDrawerAdd, "Add selected to Segments drawer");
-    OpenCommand = new(() => Open(Core.VM.MainWindow.ToolsTabs), Res.IconDrawer, "Open Segments drawer");
+    OpenCommand = new(() => _open(Core.VM.MainWindow.ToolsTabs), Res.IconDrawer, "Open Segments drawer");
   }
 
-  private DragDropEffects CanDrop(object? target, object? data, bool haveSameOrigin) {
+  private DragDropEffects _canDrop(object? target, object? data, bool haveSameOrigin) {
     if (!haveSameOrigin && !Items.Contains(data))
       return DragDropEffects.Copy;
     if (haveSameOrigin && (data as SegmentM[])?.Contains(target as SegmentM) == false)
@@ -42,10 +42,10 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
     return DragDropEffects.None;
   }
 
-  private void DoDrop(object data, bool haveSameOrigin) =>
-    AddOrRemove(data as SegmentM[] ?? (data is SegmentM s ? [s] : []), !haveSameOrigin);
+  private void _doDrop(object data, bool haveSameOrigin) =>
+    _addOrRemove(data as SegmentM[] ?? (data is SegmentM s ? [s] : []), !haveSameOrigin);
 
-  private void AddOrRemove(SegmentM[] segments, bool add) {
+  private void _addOrRemove(SegmentM[] segments, bool add) {
     if (!add && Dialog.Show(new MessageDialog(
           "Segments Drawer",
           "Do you want to remove segments from drawer?",
@@ -82,7 +82,7 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
     Remove(segments);
   }
 
-  private void Open(TabControl tt) {
+  private void _open(TabControl tt) {
     var source = Items
       .OrderBy(x => x.MediaItem.Folder.FullPath)
       .ThenBy(x => x.MediaItem.FileName)
