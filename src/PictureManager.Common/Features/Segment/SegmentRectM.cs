@@ -17,8 +17,8 @@ namespace PictureManager.Common.Features.Segment {
       }
     }
 
-    public double X => GetX(Segment) * Scale;
-    public double Y => GetY(Segment) * Scale;
+    public double X => _getX(Segment) * Scale;
+    public double Y => _getY(Segment) * Scale;
     public double Size => Segment.Size * Scale;
     public SegmentM Segment { get; set; }
 
@@ -27,7 +27,7 @@ namespace PictureManager.Common.Features.Segment {
       Scale = scale;
     }
 
-    private static double GetX(SegmentM s) =>
+    private static double _getX(SegmentM s) =>
       s.MediaItem.Orientation.SwapRotateIf(s.MediaItem is not ImageM) switch {
         Orientation.Rotate90 => s.Y,
         Orientation.Rotate180 => s.MediaItem.Width - s.X - s.Size,
@@ -35,7 +35,7 @@ namespace PictureManager.Common.Features.Segment {
         _ => s.X
       };
 
-    private static double GetY(SegmentM s) =>
+    private static double _getY(SegmentM s) =>
       s.MediaItem.Orientation.SwapRotateIf(s.MediaItem is not ImageM) switch {
         Orientation.Rotate90 => s.MediaItem.Width - s.X - s.Size,
         Orientation.Rotate180 => s.MediaItem.Height - s.Y - s.Size,
