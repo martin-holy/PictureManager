@@ -5,13 +5,13 @@ namespace PictureManager.Common.Features.Rating;
 
 public sealed class RatingTreeCategory : TreeCategory {
   public RatingTreeCategory() : base(new(), Res.IconStar, "Ratings", (int)Category.Ratings) {
-    Load();
+    _load();
   }
 
   protected override void _onItemSelected(object o) =>
     Core.VM.ToggleDialog.Toggle(o as RatingTreeM);
 
-  private void Load() {
+  private void _load() {
     for (var i = 0; i < 6; i++)
       Items.Add(new RatingTreeM(i));
   }
