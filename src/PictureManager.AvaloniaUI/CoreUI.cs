@@ -9,11 +9,14 @@ using PictureManager.Common.Features.MediaItem;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PictureManager.AvaloniaUI.Utils;
 using AUI = MH.UI.AvaloniaUI;
 
 namespace PictureManager.AvaloniaUI;
 
 public class CoreUI : ICoreP {
+  public IImagingP ImagingP { get; }
+
   public CoreUI() {
     CoreR.FileOperationDelete = FileOperationDelete;
 
@@ -34,6 +37,8 @@ public class CoreUI : ICoreP {
     //TODO PORT SegmentS.ExportSegment = Utils.Imaging.ExportSegment;
     //TODO PORT SegmentVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
     MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
+
+    ImagingP = ImagingPFactory.Create();
   }
 
   public void AfterInit() {
