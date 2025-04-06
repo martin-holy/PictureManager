@@ -1,19 +1,28 @@
-using System.IO;
-using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
+using SkiaSharp;
+using System.Runtime.InteropServices;
 using AndroidBitmap = Android.Graphics.Bitmap;
+using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace PictureManager.AvaloniaUI.Android.Extensions;
 
 public static class BitmapExtensions {
-  public static AvaloniaBitmap ToAvaloniaBitmap(this AndroidBitmap bmp) {
-    var width = bmp.Width;
-    var height = bmp.Height;
-    var stride = width * (bmp.HasAlpha ? 4 : 3);
-    var bmpData = new byte[stride * height];
+  public static AvaloniaBitmap ToAvaloniaBitmap(this AndroidBitmap androidBitmap) {
+    var info = new SKImageInfo(androidBitmap.Width, androidBitmap.Height, SKColorType.Rgba8888);
+    var skBitmap = new SKBitmap(info);
 
-    bmp.CopyPixelsToBuffer(Java.Nio.ByteBuffer.Wrap(bmpData));
+    // Copy pixels
+    var pixels = new byte[androidBitmap.ByteCount];
+    androidBitmap.CopyPixelsToBuffer(Java.Nio.ByteBuffer.Wrap(pixels));
 
-    using var stream = new MemoryStream(bmpData);
-    return new(stream);
+    // Pin array and set pixels
+    var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
+    try {
+      skBitmap.InstallPixels(info, handle.AddrOfPinnedObject());
+    }
+    finally {
+      handle.Free();
+    }
+
+    return new(SKImage.FromBitmap(skBitmap).Encode().AsStream());
   }
 }
