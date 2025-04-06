@@ -32,3 +32,14 @@ public static class Imaging {
     data.SaveTo(outputStream);
   }
 }
+
+public static class ImagingPFactory {
+  private static Func<IImagingP>? _creator;
+
+  public static void Register(Func<IImagingP> creator) {
+    _creator = creator;
+  }
+
+  public static IImagingP Create() =>
+    _creator?.Invoke() ?? throw new InvalidOperationException("IImagingP not registered");
+}
