@@ -1,5 +1,4 @@
-﻿using Avalonia.Media.Imaging;
-using MH.UI.AvaloniaUI.Converters;
+﻿using MH.UI.AvaloniaUI.Converters;
 using MH.Utils;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
@@ -18,27 +17,29 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
   private static MediaItemThumbSourceConverter? _inst;
   public static MediaItemThumbSourceConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
-  private readonly TaskQueue<MediaItemM> _taskQueue = new(8, CreateImageThumbnail, TriggerChanged);
+  private readonly TaskQueue<MediaItemM> _taskQueue =
+    new(Environment.ProcessorCount, _createImageThumbnail, _triggerChanged);
 
   public HashSet<MediaItemM> ErrorCache { get; } = [];
   public HashSet<MediaItemM> IgnoreCache { get; } = [];
 
   public override object? Convert(IList<object?> values, object? parameter) {
-    try {
-      if (values is not [_, MediaItemM mi]) return null;
-      if (ErrorCache.Contains(mi)) return null;
+    if (values is not [_, MediaItemM mi]) return null;
+    if (ErrorCache.Contains(mi)) return null;
 
-      if (!File.Exists(mi.FilePathCache)) {
+    try {
+      var thumb = App.CoreUI.ImagingP.GetImageThumbnail(mi);
+      if (thumb == null) {
         if (!File.Exists(mi.FilePath)) {
           Core.R.MediaItem.ItemDelete(mi is VideoItemM vmi ? vmi.Video : mi);
           return null;
         }
 
-        CreateThumbnail(mi);
+        _createThumbnail(mi);
         return null;
       }
 
-      return new Bitmap(mi.FilePathCache);
+      return thumb;
 
       // TODO PORT rotation and cache
     }
@@ -53,7 +54,7 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
     }
   }
 
-  private void CreateThumbnail(MediaItemM mi) {
+  private void _createThumbnail(MediaItemM mi) {
     IgnoreCache.Add(mi);
 
     switch (mi) {
@@ -65,19 +66,15 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
         VideoThumbsU.Create([mi]);
         break;
       case VideoItemM vi:
-        CreateVideoItemThumbnail(vi);
+        _createVideoItemThumbnail(vi);
         break;
     }
   }
 
-  private static void CreateImageThumbnail(MediaItemM mi) =>
-    Utils.Imaging.CreateImageThumbnail(
-      mi.FilePath,
-      mi.FilePathCache,
-      Core.Settings.MediaItem.ThumbSize,
-      Core.Settings.Common.JpegQuality);
+  private static void _createImageThumbnail(MediaItemM mi) =>
+    App.CoreUI.ImagingP.CreateImageThumbnail(mi);
 
-  private static void CreateVideoItemThumbnail(VideoItemM vi) {
+  private static void _createVideoItemThumbnail(VideoItemM vi) {
     // TODO PORT
     /*if (ReferenceEquals(Core.VM.Video.MediaPlayer.CurrentItem, vi)) {
       AppCore.CurrentMediaPlayer()
@@ -91,6 +88,6 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
       VideoThumbsU.Create([vi.Video]);*/
   }
 
-  private static void TriggerChanged(MediaItemM mi) =>
+  private static void _triggerChanged(MediaItemM mi) =>
     mi.OnPropertyChanged(nameof(mi.FilePathCache));
 }
