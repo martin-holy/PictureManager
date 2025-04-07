@@ -23,6 +23,10 @@ public class MainActivity : AvaloniaMainActivity<App> {
   }
 
   protected override void OnCreate(Bundle? savedInstanceState) {
+    RequestPermissions([
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.WRITE_EXTERNAL_STORAGE"], 1);
+
     ImagingPFactory.Register(() => new Imaging());
     base.OnCreate(savedInstanceState);
   }
