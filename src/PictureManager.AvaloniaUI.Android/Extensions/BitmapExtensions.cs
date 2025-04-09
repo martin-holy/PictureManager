@@ -8,7 +8,7 @@ public static class BitmapExtensions {
   public static AvaloniaBitmap? ToAvaloniaBitmap(this AndroidBitmap? androidBitmap) {
     if (androidBitmap == null) return null;
     using var stream = new MemoryStream();
-    androidBitmap.Compress(AndroidBitmap.CompressFormat.Jpeg, 85, stream);
+    androidBitmap.Compress(AndroidBitmap.CompressFormat.Jpeg, 80, stream);
     stream.Position = 0;
     return new(stream);
   }
