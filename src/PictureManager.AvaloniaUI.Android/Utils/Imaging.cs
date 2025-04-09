@@ -50,7 +50,7 @@ public class Imaging : IImagingP {
 
     using var stream = new MemoryStream();
     var thumb = AndroidBitmap.CreateScaledBitmap(bitmap, 512, 384, true);
-    thumb.Compress(AndroidBitmap.CompressFormat.Jpeg, 85, stream);
+    thumb.Compress(AndroidBitmap.CompressFormat.Jpeg, 80, stream);
 
     var values = new ContentValues(3);
     values.Put(MediaStore.Images.Thumbnails.ImageId, id);
