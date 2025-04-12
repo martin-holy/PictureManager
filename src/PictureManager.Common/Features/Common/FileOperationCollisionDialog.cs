@@ -7,6 +7,7 @@ using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Utils;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Common;
 
@@ -50,24 +51,21 @@ public sealed class FileOperationCollisionDialog : Dialog {
     ]; 
   }
 
-  public static CollisionResult Open(FolderM src, FolderM dest, RealMediaItemM? srcMi, ref string fileName, ref RealMediaItemM? replacedMi) {
+  public static async Task<(CollisionResult, string, RealMediaItemM?)> Open(FolderM src, FolderM dest, RealMediaItemM? srcMi, string fileName, RealMediaItemM? replacedMi) {
     var result = CollisionResult.Skip;
     var outFileName = fileName;
     var outReplacedMi = replacedMi;
 
     InitThumb(srcMi);
 
-    Tasks.RunOnUiThread(() => {
+    await Tasks.RunOnUiThread(async () => {
       var cd = new FileOperationCollisionDialog(src, dest, srcMi, outFileName);
-      result = (CollisionResult)Show(cd);
+      result = (CollisionResult)await ShowAsync(cd);
       outFileName = cd.FileName;
       outReplacedMi = cd.DestMediaItem;
-    }).GetAwaiter().GetResult();
+    });
 
-    fileName = outFileName;
-    replacedMi = outReplacedMi;
-
-    return result;
+    return new(result, outFileName, outReplacedMi);
   }
 
   private static void InitThumb(RealMediaItemM? mi) {
