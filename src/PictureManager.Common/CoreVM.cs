@@ -23,6 +23,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common;
 
@@ -54,17 +56,17 @@ public sealed class CoreVM : ObservableObject {
 
   public event EventHandler AppClosingEvent = delegate { };
 
-  public static RelayCommand AppClosingCommand { get; private set; } = null!;
+  public static AsyncRelayCommand AppClosingCommand { get; private set; } = null!;
   public static RelayCommand ExportSegmentsCommand { get; private set; } = null!;
-  public static RelayCommand OpenAboutCommand { get; } = new(() => Dialog.Show(new AboutDialog()), null, "About");
-  public static RelayCommand OpenLogCommand { get; } = new(() => Dialog.Show(new LogDialog()), MH.UI.Res.IconSort, "Open log");
+  public static RelayCommand OpenAboutCommand { get; } = new(() => _ = Dialog.ShowAsync(new AboutDialog()), null, "About");
+  public static RelayCommand OpenLogCommand { get; } = new(() => _ = Dialog.ShowAsync(new LogDialog()), MH.UI.Res.IconSort, "Open log");
   public static RelayCommand OpenSegmentsViewsCommand { get; private set; } = null!;
   public static RelayCommand OpenSettingsCommand { get; private set; } = null!;
   public static RelayCommand SaveDbCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> CompressImagesCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> ImagesToVideoCommand { get; private set; } = null!;
-  public static RelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; private set; } = null!;
+  public static AsyncRelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> ReloadMetadataCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> ResizeImagesCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> RotateMediaItemsCommand { get; private set; } = null!;
@@ -100,7 +102,7 @@ public sealed class CoreVM : ObservableObject {
     CompressImagesCommand = new(x => _compressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
     GetGeoNamesFromWebCommand = new(x => _getGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
     ImagesToVideoCommand = new(x => _imagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");
-    ReadGeoLocationFromFilesCommand = new(x => _readGeoLocationFromFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
+    ReadGeoLocationFromFilesCommand = new((f, _) => _readGeoLocationFromFiles(GetActive<ImageM>(f)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
     ReloadMetadataCommand = new(x => MediaItem.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
     ResizeImagesCommand = new(x => _resizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
     RotateMediaItemsCommand = new(x => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
@@ -342,11 +344,11 @@ public sealed class CoreVM : ObservableObject {
     Segment.Views.OnSegmentsPersonChanged(e.Item1);
   }
 
-  private void _onAppClosing() {
+  private async Task _onAppClosing(CancellationToken token) {
     AppClosingEvent.Invoke(this, EventArgs.Empty);
 
     if (_coreR.Changes > 0 &&
-        Dialog.Show(new MessageDialog(
+        await Dialog.ShowAsync(new MessageDialog(
           "Database changes",
           "There are some changes in Picture Manager database.\nDo you want to save them?",
           Res.IconDatabase,
@@ -357,7 +359,7 @@ public sealed class CoreVM : ObservableObject {
   }
 
   private void _exportSegments() =>
-    Dialog.Show(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray()));
+    _ = Dialog.ShowAsync(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray()));
 
   private void _openSettings() =>
     MainTabs.Activate(Res.IconSettings, "Settings", Core.Inst.AllSettings);
@@ -381,7 +383,7 @@ public sealed class CoreVM : ObservableObject {
   }
 
   private void _compressImages(ImageM[] items) =>
-    Dialog.Show(new CompressImagesDialog(items, _coreS.Image, Core.Settings.Common.JpegQuality));
+    _ = Dialog.ShowAsync(new CompressImagesDialog(items, _coreS.Image, Core.Settings.Common.JpegQuality));
 
   private void _getGeoNamesFromWeb(ImageM[] items) {
     if (GetGeoNamesFromWebDialog.Open(items, _coreR))
@@ -390,7 +392,7 @@ public sealed class CoreVM : ObservableObject {
 
   private void _imagesToVideo(ImageM[] items) {
     if (items.Length < 2) return;
-    Dialog.Show(new ImagesToVideoDialog(
+    _ = Dialog.ShowAsync(new ImagesToVideoDialog(
       items,
       (folder, fileName) => {
         var mi = _coreR.Video.ItemCreate(folder, fileName);
@@ -405,13 +407,13 @@ public sealed class CoreVM : ObservableObject {
     );
   }
 
-  private void _readGeoLocationFromFiles(ImageM[] items) {
-    Dialog.Show(new ReadGeoLocationFromFilesDialog(items));
+  private async Task _readGeoLocationFromFiles(ImageM[] items) {
+    await Dialog.ShowAsync(new ReadGeoLocationFromFilesDialog(items));
     _coreR.MediaItem.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
   }
 
   private static void _resizeImages(ImageM[] items) =>
-    Dialog.Show(new ImageResizeDialog(items));
+    _ = Dialog.ShowAsync(new ImageResizeDialog(items));
 
   private void _rotateMediaItems(RealMediaItemM[] items) {
     if (RotationDialog.Open(out var rotation))
