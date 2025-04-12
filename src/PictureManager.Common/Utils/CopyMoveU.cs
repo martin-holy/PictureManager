@@ -85,13 +85,13 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     return true;
   }
 
-  private Task CopyMoveFolderRecursive(FolderM src, FolderM dest) {
+  private async Task CopyMoveFolderRecursive(FolderM src, FolderM dest) {
     // create target folder and reload sub folders to update DB
     Directory.CreateDirectory(IOExtensions.PathCombine(dest.FullPath, src.Name));
-    Tasks.RunOnUiThread(() => {
+    await Tasks.RunOnUiThread(() => {
       src.LoadSubFolders(false);
       dest.LoadSubFolders(false);
-    }).Wait();
+    });
 
     var srcPath = src.FullPath;
     var srcPathCache = src.FullPathCache;
@@ -112,8 +112,10 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
 
       _dlg.Progress.Report([0, srcPath, targetPath, srcFileName]);
 
-      if (ResolveTargetFileName(src, target, srcFileName, targetPath, ref mi) is not var (targetFilePath, targetFileName))
+      if (await ResolveTargetFileName(src, target, srcFileName, targetPath, mi) is not var (targetFilePath, targetFileName, createdMi))
         continue;
+
+      if (mi == null) mi = createdMi;
 
       try {
         CopyMoveFileOnDrive(srcFilePath, targetFilePath);
@@ -128,9 +130,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
 
     if (src.HasSubFolders) // recursive copy/move
       foreach (var srcSub in src.Items.OfType<FolderM>())
-        CopyMoveFolderRecursive(srcSub, target);
-
-    return Task.CompletedTask;
+        await CopyMoveFolderRecursive(srcSub, target);
   }
 
   private void CopyMoveFolderInDBRecursive(FolderM src, FolderM dest) {
@@ -175,7 +175,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   private void CopyMoveMediaItemsInDB(IEnumerable<RealMediaItemM> items, FolderM dest, Action<RealMediaItemM, FolderM> action) =>
     items.Except(Skipped).Cast<RealMediaItemM>().ToList().ForEach(mi => action(mi, dest));
 
-  private Task CopyMoveMediaItemsFiles(IReadOnlyList<RealMediaItemM> items, FolderM dest) {
+  private async Task CopyMoveMediaItemsFiles(IReadOnlyList<RealMediaItemM> items, FolderM dest) {
     var count = items.Count;
     var targetPathCache = dest.FullPathCache;
 
@@ -192,7 +192,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
 
       _dlg.Progress.Report([Convert.ToInt32((double)i / count * 100), srcPath, targetPath, mi.FileName]);
 
-      if (ResolveTargetFileName(mi.Folder, dest, mi.FileName, targetPath, ref mi!) is not var (targetFilePath, targetFileName))
+      if (await ResolveTargetFileName(mi.Folder, dest, mi.FileName, targetPath, mi) is not var (targetFilePath, targetFileName, _))
         continue;
 
       try {
@@ -205,20 +205,20 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
 
       CopyMoveCacheOnDrive(mi, srcPathCache, targetPathCache, targetFileName);
     }
-
-    return Task.CompletedTask;
   }
 
-  private (string, string)? ResolveTargetFileName(FolderM src, FolderM target, string srcFileName, string targetPath, ref RealMediaItemM? mi) {
+  private async Task<(string, string, RealMediaItemM?)?> ResolveTargetFileName(FolderM src, FolderM target, string srcFileName, string targetPath, RealMediaItemM? mi) {
     var targetFileName = srcFileName;
     var targetFilePath = IOExtensions.PathCombine(targetPath, targetFileName);
-    if (!File.Exists(targetFilePath)) return new(targetFilePath, targetFileName);
+    if (!File.Exists(targetFilePath)) return new(targetFilePath, targetFileName, mi);
 
     if (mi == null) mi = CreateMediaItemAndReadMetadata(src, srcFileName);
     RealMediaItemM? replacedMi = null;
-    var result = FileOperationCollisionDialog.Open(src, target, mi, ref targetFileName, ref replacedMi);
+    var result = await FileOperationCollisionDialog.Open(src, target, mi, targetFileName, replacedMi);
+    targetFileName = result.Item2;
+    replacedMi = result.Item3;
 
-    switch (result) {
+    switch (result.Item1) {
       case CollisionResult.Rename: {
         if (mi != null) _renamed.Add(mi, targetFileName);
         targetFilePath = IOExtensions.PathCombine(targetPath, targetFileName);
@@ -234,7 +234,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
       }
     }
 
-    return new(targetFilePath, targetFileName);
+    return new(targetFilePath, targetFileName, mi);
   }
 
   private void CopyMoveFileOnDrive(string src, string dest) {
