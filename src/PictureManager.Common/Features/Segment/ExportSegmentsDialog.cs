@@ -12,10 +12,10 @@ public sealed class ExportSegmentsDialog : ParallelProgressDialog<SegmentM> {
   private string? _destDir;
 
   public string? DestDir { get => _destDir; set { _destDir = value; OnPropertyChanged(); } }
-  public RelayCommand OpenFolderBrowserCommand { get; }
+  public AsyncRelayCommand OpenFolderBrowserCommand { get; }
 
   public ExportSegmentsDialog(SegmentM[] items) : base("Export Segments", Res.IconSegment, items, null, "Export") {
-    OpenFolderBrowserCommand = new(() => DestDir = CoreVM.BrowseForFolder(), Res.IconFolder, "Select folder");
+    OpenFolderBrowserCommand = new(_openFolderBrowser, Res.IconFolder, "Select folder");
   }
 
   protected override bool _canAction() =>
@@ -38,5 +38,9 @@ public sealed class ExportSegmentsDialog : ParallelProgressDialog<SegmentM> {
     }
 
     return Task.CompletedTask;
+  }
+
+  private async Task _openFolderBrowser(CancellationToken token) {
+    DestDir = await CoreVM.BrowseForFolder();
   }
 }

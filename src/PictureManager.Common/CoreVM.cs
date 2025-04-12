@@ -495,9 +495,9 @@ public sealed class CoreVM : ObservableObject {
     MediaViewer.SetMediaItems(items.ToList(), item);
   }
 
-  public static string? BrowseForFolder() {
+  public static async Task<string?> BrowseForFolder() {
     var dir = new FolderBrowserDialog();
-    if (Dialog.Show(dir) != 1 || dir.SelectedFolder == null) return null;
+    if (await Dialog.ShowAsync(dir) != 1 || dir.SelectedFolder == null) return null;
     var dirPath = dir.SelectedFolder.FullPath;
     Core.Settings.Common.AddDirectorySelectFolder(dirPath);
     return dirPath;

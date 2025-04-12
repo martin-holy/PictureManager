@@ -22,10 +22,10 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
   public double Mpx { get => _mpx; set { _mpx = value; OnPropertyChanged(); } }
   public double MaxMpx { get => _maxMpx; set { _maxMpx = value; OnPropertyChanged(); } }
 
-  public RelayCommand OpenFolderBrowserCommand { get; }
+  public AsyncRelayCommand OpenFolderBrowserCommand { get; }
 
   public ImageResizeDialog(ImageM[] items) : base("Resize Images", Res.IconImageMultiple, items, null, "Resize") {
-    OpenFolderBrowserCommand = new(() => DestDir = CoreVM.BrowseForFolder(), Res.IconFolder, "Select folder");
+    OpenFolderBrowserCommand = new(_openFolderBrowser, Res.IconFolder, "Select folder");
     SetMaxMpx(items);
   }
 
@@ -61,5 +61,9 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
 
     MaxMpx = Math.Round(maxPx / 1000000.0, 1);
     Mpx = MaxMpx;
+  }
+
+  private async Task _openFolderBrowser(CancellationToken token) {
+    DestDir = await CoreVM.BrowseForFolder();
   }
 }
