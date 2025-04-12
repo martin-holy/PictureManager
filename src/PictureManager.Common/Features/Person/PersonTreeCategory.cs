@@ -27,7 +27,7 @@ public sealed class PersonTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
   protected override void _onItemSelected(object o) {
     switch (o) {
       case PersonM p:
-        Core.VM.ToggleDialog.Toggle(p);
+        _ = Core.VM.ToggleDialog.Toggle(p);
         break;
       case PersonTreeCategory:
         Core.VM.OpenPeopleView();

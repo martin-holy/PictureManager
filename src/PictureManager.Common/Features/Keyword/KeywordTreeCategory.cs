@@ -17,7 +17,7 @@ public sealed class KeywordTreeCategory : TreeCategory<KeywordM, CategoryGroupM>
   }
 
   protected override void _onItemSelected(object o) =>
-    Core.VM.ToggleDialog.Toggle(o as KeywordM);
+    _ = Core.VM.ToggleDialog.Toggle(o as KeywordM);
 
   public override bool CanDrop(object? src, ITreeItem? dest) =>
     base.CanDrop(src, dest) && src is ITreeItem srcItem &&

@@ -6,5 +6,5 @@ public sealed class GeoNameTreeCategory(GeoNameR r)
   : TreeCategory<GeoNameM>(new(), Res.IconLocationCheckin, "GeoNames", (int)Category.GeoNames, r) {
 
   protected override void _onItemSelected(object o) =>
-    Core.VM.ToggleDialog.Toggle(o as GeoNameM);
+    _ = Core.VM.ToggleDialog.Toggle(o as GeoNameM);
 }

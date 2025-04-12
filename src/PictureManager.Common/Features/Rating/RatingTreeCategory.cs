@@ -9,7 +9,7 @@ public sealed class RatingTreeCategory : TreeCategory {
   }
 
   protected override void _onItemSelected(object o) =>
-    Core.VM.ToggleDialog.Toggle(o as RatingTreeM);
+    _ = Core.VM.ToggleDialog.Toggle(o as RatingTreeM);
 
   private void _load() {
     for (var i = 0; i < 6; i++)
