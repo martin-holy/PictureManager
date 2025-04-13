@@ -64,7 +64,7 @@ public sealed class CoreVM : ObservableObject {
   public static RelayCommand OpenSettingsCommand { get; private set; } = null!;
   public static RelayCommand SaveDbCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> CompressImagesCommand { get; private set; } = null!;
-  public static RelayCommand<FolderM> GetGeoNamesFromWebCommand { get; private set; } = null!;
+  public static AsyncRelayCommand<FolderM> GetGeoNamesFromWebCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> ImagesToVideoCommand { get; private set; } = null!;
   public static AsyncRelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> ReloadMetadataCommand { get; private set; } = null!;
@@ -100,7 +100,7 @@ public sealed class CoreVM : ObservableObject {
     OpenSegmentsViewsCommand = new(() => OpenSegmentsViews(null, string.Empty), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
     CompressImagesCommand = new(x => _compressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
-    GetGeoNamesFromWebCommand = new(x => _getGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
+    GetGeoNamesFromWebCommand = new((x, _) => _getGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
     ImagesToVideoCommand = new(x => _imagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");
     ReadGeoLocationFromFilesCommand = new((f, _) => _readGeoLocationFromFiles(GetActive<ImageM>(f)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
     ReloadMetadataCommand = new(x => MediaItem.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
@@ -385,8 +385,8 @@ public sealed class CoreVM : ObservableObject {
   private void _compressImages(ImageM[] items) =>
     _ = Dialog.ShowAsync(new CompressImagesDialog(items, _coreS.Image, Core.Settings.Common.JpegQuality));
 
-  private void _getGeoNamesFromWeb(ImageM[] items) {
-    if (GetGeoNamesFromWebDialog.Open(items, _coreR))
+  private async Task _getGeoNamesFromWeb(ImageM[] items) {
+    if (await GetGeoNamesFromWebDialog.Open(items, _coreR))
       _coreR.MediaItem.RaiseMetadataChanged(items.Cast<MediaItemM>().ToArray());
   }
 

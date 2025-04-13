@@ -23,10 +23,10 @@ public sealed class GetGeoNamesFromWebDialog : ProgressDialog<ImageM> {
     _coreR.MediaItemGeoLocation.ItemUpdate(new(item, gl));
   }
 
-  public static bool Open(ImageM[] items, CoreR coreR) {
+  public static async Task<bool> Open(ImageM[] items, CoreR coreR) {
     items = items.Where(x => x.GeoLocation is { GeoName: null, Lat: not null, Lng: not null }).ToArray();
     if (items.Length == 0) return false;
-    Show(new GetGeoNamesFromWebDialog(items, coreR));
+    await ShowAsync(new GetGeoNamesFromWebDialog(items, coreR));
     return true;
   }
 }
