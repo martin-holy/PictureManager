@@ -237,13 +237,13 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     Insert(item);
   }
 
-  public void CompareImages(Func<ImageComparerVM, List<MediaItemM>> method) {
+  public async Task CompareImages(Func<ImageComparerVM, Task<List<MediaItemM>>> method) {
     if (ImageComparer == null) {
       ImageComparer = new(Root.Source.ToArray());
       OnPropertyChanged(nameof(ImageComparer));
     }
 
     Selected.DeselectAll();
-    Reload(method(ImageComparer), GroupMode.ThenByRecursive, null, true);
+    Reload(await method(ImageComparer), GroupMode.ThenByRecursive, null, true);
   }
 }

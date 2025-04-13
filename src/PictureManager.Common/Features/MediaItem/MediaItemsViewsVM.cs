@@ -29,8 +29,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public static AsyncRelayCommand<object> LoadByTagCommand { get; set; } = null!;
   public static RelayCommand<FolderM> RebuildThumbnailsCommand { get; set; } = null!;
   public static AsyncRelayCommand ViewModifiedCommand { get; set; } = null!;
-  public static RelayCommand CompareAverageHashCommand { get; set; } = null!;
-  public static RelayCommand ComparePHashCommand { get; set; } = null!;
+  public static AsyncRelayCommand CompareAverageHashCommand { get; set; } = null!;
+  public static AsyncRelayCommand ComparePHashCommand { get; set; } = null!;
 
   public MediaItemsViewsVM() {
     FilterSetAndCommand = new(item => Current!.Filter.Set(item, DisplayFilter.And), _ => Current != null, Res.IconFilter, "Filter And");
@@ -46,8 +46,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
       x => _rebuildThumbnails(x, Keyboard.IsShiftOn()),
       x => x != null || Current?.Root.Source.Count > 0, null, "Rebuild Thumbnails");
     ViewModifiedCommand = new(_viewModified, Res.IconImageMultiple, "Show modified");
-    CompareAverageHashCommand = new(() => _current!.CompareImages(c => c.CompareAverageHash()), () => _current != null, Res.IconCompare, "Compare images using average hash");
-    ComparePHashCommand = new(() => _current!.CompareImages(c => c.ComparePHash()), () => _current != null, Res.IconCompare, "Compare images using perceptual hash");
+    CompareAverageHashCommand = new(_ => _current!.CompareImages(c => c.CompareAverageHash()), () => _current != null, Res.IconCompare, "Compare images using average hash");
+    ComparePHashCommand = new(_ => _current!.CompareImages(c => c.ComparePHash()), () => _current != null, Res.IconCompare, "Compare images using perceptual hash");
   }
 
   public void RemoveMediaItems(IList<MediaItemM> items) {
