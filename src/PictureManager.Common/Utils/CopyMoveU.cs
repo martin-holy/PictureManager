@@ -23,17 +23,17 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
 
   public HashSet<MediaItemM> Skipped = [];
 
-  public T Do<T>(Task<T> work) {
+  public async Task<T> Do<T>(Task<T> work) {
     _dlg.SetWorkTask(work);
-    Dialog.Show(_dlg);
+    await Dialog.ShowAsync(_dlg);
     return work.Result;
   }
 
-  public static void CopyMoveFolder(FolderM src, FolderM dest, FileOperationMode mode) {
+  public static async Task CopyMoveFolder(FolderM src, FolderM dest, FileOperationMode mode) {
     try {
       Core.R.IsCopyMoveInProgress = true;
       var cm = new CopyMoveU(mode, Core.R);
-      if (!cm.Do(cm.CopyMoveFolder(src, dest))) return;
+      if (!await cm.Do(cm.CopyMoveFolder(src, dest))) return;
 
       Core.R.FolderKeyword.Reload();
       if (mode == FileOperationMode.Move)
@@ -47,11 +47,11 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     }
   }
 
-  public static void CopyMoveMediaItems(RealMediaItemM[] items, FolderM dest, FileOperationMode mode) {
+  public static async Task CopyMoveMediaItems(RealMediaItemM[] items, FolderM dest, FileOperationMode mode) {
     try {
       Core.R.IsCopyMoveInProgress = true;
       var cm = new CopyMoveU(mode, Core.R);
-      if (!cm.Do(cm.CopyMoveMediaItems(items, dest))) return;
+      if (!await cm.Do(cm.CopyMoveMediaItems(items, dest))) return;
 
       if (mode == FileOperationMode.Move) {
         var mis = items.Except(cm.Skipped).ToList();

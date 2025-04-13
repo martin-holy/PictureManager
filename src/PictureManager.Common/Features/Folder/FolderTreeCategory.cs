@@ -67,7 +67,7 @@ public sealed class FolderTreeCategory : TreeCategory<FolderM> {
               true)) != 1)
           return;
 
-        CopyMoveU.CopyMoveFolder(srcData, destFolder, mode);
+        await CopyMoveU.CopyMoveFolder(srcData, destFolder, mode);
 
         break;
 
@@ -81,7 +81,7 @@ public sealed class FolderTreeCategory : TreeCategory<FolderM> {
               true)) != 1)
           return;
 
-        CopyMoveU.CopyMoveMediaItems(items, destFolder, mode);
+        await CopyMoveU.CopyMoveMediaItems(items, destFolder, mode);
 
         break;
     }
