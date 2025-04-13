@@ -29,7 +29,7 @@ public sealed class GeoNameVM {
           : string.Empty;
       });
 
-    if (Dialog.Show(inputDialog) != 1) return;
+    if (await Dialog.ShowAsync(inputDialog) != 1) return;
 
     var (lat, lng) = GeoNameR.ParseLatLng(inputDialog.Answer);
     await _r.CreateGeoNameHierarchy(lat, lng);
