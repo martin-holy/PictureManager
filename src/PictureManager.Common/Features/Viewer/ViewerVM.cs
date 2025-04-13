@@ -6,6 +6,7 @@ using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.Keyword;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Common.Features.Viewer;
@@ -87,11 +88,13 @@ public sealed class ViewerVM : ObservableObject {
       : DragDropEffects.Move;
   }
 
-  private void _doDropFolder(object data, bool haveSameOrigin, bool included) {
+  private Task _doDropFolder(object data, bool haveSameOrigin, bool included) {
     if (haveSameOrigin)
       _r.RemoveFolder(Selected, (FolderM)data, included);
     else
       _r.AddFolder(Selected, (FolderM)data, included);
+
+    return Task.CompletedTask;
   }
 
   private DragDropEffects _canDropKeywordMethod(object? target, object? data, bool haveSameOrigin) {
@@ -108,10 +111,12 @@ public sealed class ViewerVM : ObservableObject {
       : DragDropEffects.Copy;
   }
 
-  private void _doDropKeywordMethod(object data, bool haveSameOrigin) {
+  private Task _doDropKeywordMethod(object data, bool haveSameOrigin) {
     if (haveSameOrigin)
       _r.RemoveKeyword(Selected, (KeywordM)data);
     else
       _r.AddKeyword(Selected, (KeywordM)data);
+
+    return Task.CompletedTask;
   }
 }

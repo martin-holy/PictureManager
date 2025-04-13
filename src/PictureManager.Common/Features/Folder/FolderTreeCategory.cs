@@ -9,6 +9,7 @@ using PictureManager.Common.Utils;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Folder;
 
@@ -53,13 +54,13 @@ public sealed class FolderTreeCategory : TreeCategory<FolderM> {
     return false;
   }
 
-  public override void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy) {
+  public override async Task OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy) {
     if (dest is not FolderM destFolder) return;
     var mode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
 
     switch (src) {
       case FolderM srcData: // Folder
-        if (Dialog.Show(new MessageDialog(
+        if (await Dialog.ShowAsync(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} folder",
               $"Do you really want to {(copy ? "copy" : "move")} folder\n'{srcData.Name}' to '{dest.Name}'?",
               MH.UI.Res.IconQuestion,
@@ -73,7 +74,7 @@ public sealed class FolderTreeCategory : TreeCategory<FolderM> {
       case string[]: // MediaItems
         var items = Core.VM.MediaItem.Views.Current?.Selected.Items.OfType<RealMediaItemM>().ToArray();
         if (items == null || items.Length == 0) return;
-        if (Dialog.Show(new MessageDialog(
+        if (await Dialog.ShowAsync(new MessageDialog(
               $"{(copy ? "Copy" : "Move")} media items",
               $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Length)} to\n'{dest.Name}'?",
               MH.UI.Res.IconQuestion,

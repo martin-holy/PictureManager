@@ -4,6 +4,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using PictureManager.Common.Features.Common;
 using static MH.Utils.DragDropHelper;
 
@@ -17,7 +18,7 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction DoDropAction { get; }
 
-  public static RelayCommand AddSelectedCommand { get; set; } = null!;
+  public static AsyncRelayCommand AddSelectedCommand { get; set; } = null!;
   public static RelayCommand OpenCommand { get; set; } = null!;
 
   public SegmentsDrawerVM(SegmentS segmentS, List<SegmentM> items) {
@@ -29,7 +30,7 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
     DoDropAction = _doDrop;
 
     AddSelectedCommand = new(
-      () => _addOrRemove(_segmentS.Selected.Items.ToArray(), true),
+      _ => _addOrRemove(_segmentS.Selected.Items.ToArray(), true),
       () => _segmentS.Selected.Items.Count > 0, Res.IconDrawerAdd, "Add selected to Segments drawer");
     OpenCommand = new(() => _open(Core.VM.MainWindow.ToolsTabs), Res.IconDrawer, "Open Segments drawer");
   }
@@ -42,11 +43,11 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
     return DragDropEffects.None;
   }
 
-  private void _doDrop(object data, bool haveSameOrigin) =>
+  private Task _doDrop(object data, bool haveSameOrigin) =>
     _addOrRemove(data as SegmentM[] ?? (data is SegmentM s ? [s] : []), !haveSameOrigin);
 
-  private void _addOrRemove(SegmentM[] segments, bool add) {
-    if (!add && Dialog.Show(new MessageDialog(
+  private async Task _addOrRemove(SegmentM[] segments, bool add) {
+    if (!add && await Dialog.ShowAsync(new MessageDialog(
           "Segments Drawer",
           "Do you want to remove segments from drawer?",
           MH.UI.Res.IconQuestion,

@@ -4,6 +4,7 @@ using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Segment;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Common.Features.Person;
@@ -35,11 +36,12 @@ public sealed class PersonDetailVM : ObservableObject {
     return MH.Utils.DragDropEffects.None;
   }
 
-  private void TopSegmentsDrop(object data, bool haveSameOrigin) {
+  private Task TopSegmentsDrop(object data, bool haveSameOrigin) {
     var segment = (SegmentM)data;
     _personS.ToggleTopSegment(PersonM!, segment);
     if (haveSameOrigin) TopSegments.Remove(segment);
     else TopSegments.Insert(segment);
+    return Task.CompletedTask;
   }
 
   public void Reload(PersonM? person) {
