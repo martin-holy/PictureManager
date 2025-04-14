@@ -23,13 +23,13 @@ public sealed class SaveMetadataDialog : ParallelProgressDialog<ImageM> {
     return Task.CompletedTask;
   }
 
-  public static void Open(ImageM[] items, ImageS imageS, int quality) {
-    if (Show(new MessageDialog(
+  public static async Task Open(ImageM[] items, ImageS imageS, int quality) {
+    if (await ShowAsync(new MessageDialog(
           "Save metadata to files",
           "Do you really want to save image metadata to {0} file{1}?".Plural(items.Length),
           MH.UI.Res.IconQuestion,
           true)) != 1) return;
 
-    Show(new SaveMetadataDialog(items, imageS, quality));
+    await ShowAsync(new SaveMetadataDialog(items, imageS, quality));
   }
 }

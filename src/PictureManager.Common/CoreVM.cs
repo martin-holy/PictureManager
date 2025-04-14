@@ -70,7 +70,7 @@ public sealed class CoreVM : ObservableObject {
   public static RelayCommand<FolderM> ReloadMetadataCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> ResizeImagesCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> RotateMediaItemsCommand { get; private set; } = null!;
-  public static RelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; private set; } = null!;
+  public static AsyncRelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; private set; } = null!;
 
   internal CoreVM(CoreS coreS, CoreR coreR) {
     _coreS = coreS;
@@ -106,7 +106,7 @@ public sealed class CoreVM : ObservableObject {
     ReloadMetadataCommand = new(x => MediaItem.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
     ResizeImagesCommand = new(x => _resizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
     RotateMediaItemsCommand = new(x => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
-    SaveImageMetadataToFilesCommand = new(x => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
+    SaveImageMetadataToFilesCommand = new((x, _) => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
   }
 
   public bool AnyActive<T>(FolderM? folder = null) where T : MediaItemM =>
@@ -420,8 +420,8 @@ public sealed class CoreVM : ObservableObject {
       _coreR.MediaItem.Rotate(items, rotation);
   }
 
-  private void _saveImageMetadataToFiles(ImageM[] items) {
-    SaveMetadataDialog.Open(items, _coreS.Image, Core.Settings.Common.JpegQuality);
+  private async Task _saveImageMetadataToFiles(ImageM[] items) {
+    await SaveMetadataDialog.Open(items, _coreS.Image, Core.Settings.Common.JpegQuality);
     _ = MainWindow.StatusBar.UpdateFileSize();
   }
 
