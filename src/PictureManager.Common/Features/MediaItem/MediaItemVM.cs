@@ -29,7 +29,7 @@ public sealed class MediaItemVM : ObservableObject {
   public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
 
   public static AsyncRelayCommand CommentCommand { get; set; } = null!;
-  public static RelayCommand DeleteCommand { get; set; } = null!;
+  public static AsyncRelayCommand DeleteCommand { get; set; } = null!;
   public static AsyncRelayCommand<GeoNameM> LoadByGeoNameCommand { get; set; } = null!;
   public static AsyncRelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
   public static AsyncRelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
@@ -41,7 +41,7 @@ public sealed class MediaItemVM : ObservableObject {
     _coreVM = coreVM;
     _s = s;
     CommentCommand = new(_ => Comment(Current!), () => Current != null, Res.IconNotification, "Comment");
-    DeleteCommand = new(() => Delete(_coreVM.GetActive<MediaItemM>()), () => _coreVM.AnyActive<MediaItemM>());
+    DeleteCommand = new(_ => Delete(_coreVM.GetActive<MediaItemM>()), () => _coreVM.AnyActive<MediaItemM>());
     LoadByGeoNameCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPersonCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
@@ -108,8 +108,8 @@ public sealed class MediaItemVM : ObservableObject {
   private bool CanViewSelected() =>
     Views.Current?.Selected.Items.Count > 1;
 
-  public bool Delete(MediaItemM[] items) {
-    if (items.Length == 0 || Dialog.Show(new MessageDialog(
+  public async Task<bool> Delete(MediaItemM[] items) {
+    if (items.Length == 0 || await Dialog.ShowAsync(new MessageDialog(
           "Delete Confirmation",
           "Do you really want to delete {0} item{1}?".Plural(items.Length),
           MH.UI.Res.IconQuestion,

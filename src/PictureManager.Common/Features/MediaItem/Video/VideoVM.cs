@@ -61,8 +61,8 @@ public sealed class VideoVM : ObservableObject {
   private IVideoImage? GetNewImage(int timeStart) =>
     Current == null ? null : Core.R.VideoImage.CustomItemCreate(Current, timeStart);
 
-  private void OnItemDelete() {
-    if (Core.VM.MediaItem.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
+  private async void OnItemDelete() {
+    if (await Core.VM.MediaItem.Delete(CurrentVideoItems.Selected.Items.Cast<MediaItemM>().ToArray()))
       MediaPlayer.SetCurrent(null);
   }
 
