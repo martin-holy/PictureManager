@@ -28,7 +28,7 @@ public sealed class MediaItemVM : ObservableObject {
   public MediaItemsViewsVM Views { get; } = new();
   public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
 
-  public static RelayCommand CommentCommand { get; set; } = null!;
+  public static AsyncRelayCommand CommentCommand { get; set; } = null!;
   public static RelayCommand DeleteCommand { get; set; } = null!;
   public static AsyncRelayCommand<GeoNameM> LoadByGeoNameCommand { get; set; } = null!;
   public static AsyncRelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
@@ -40,7 +40,7 @@ public sealed class MediaItemVM : ObservableObject {
   public MediaItemVM(CoreVM coreVM, MediaItemS s) {
     _coreVM = coreVM;
     _s = s;
-    CommentCommand = new(() => Comment(Current!), () => Current != null, Res.IconNotification, "Comment");
+    CommentCommand = new(_ => Comment(Current!), () => Current != null, Res.IconNotification, "Comment");
     DeleteCommand = new(() => Delete(_coreVM.GetActive<MediaItemM>()), () => _coreVM.AnyActive<MediaItemM>());
     LoadByGeoNameCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
@@ -50,7 +50,7 @@ public sealed class MediaItemVM : ObservableObject {
     ViewSelectedCommand = new(ViewSelected, CanViewSelected, Res.IconImageMultiple, "View selected");
   }
 
-  private void Comment(MediaItemM mi) {
+  private async Task Comment(MediaItemM mi) {
     var commentDialog = new InputDialog(
       "Comment",
       "Add a comment.",
@@ -62,7 +62,7 @@ public sealed class MediaItemVM : ObservableObject {
           ? "Comment is too long!"
           : null);
 
-    if (Dialog.Show(commentDialog) == 1)
+    if (await Dialog.ShowAsync(commentDialog) == 1)
       _s.SetComment(mi, StringUtils.NormalizeComment(commentDialog.Answer!));
   }
 
