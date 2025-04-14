@@ -73,7 +73,7 @@ public sealed class MediaItemVM : ObservableObject {
     return _coreVM.MediaItem.Views.LoadByTag(o, token);
   }
 
-  private Task LoadByPeopleOrSegments(CancellationToken token) {
+  private async Task LoadByPeopleOrSegments(CancellationToken token) {
     var md = new MessageDialog(
       "Load Media items",
       "Do you want to load Media items from selected People or Segments?",
@@ -85,8 +85,8 @@ public sealed class MediaItemVM : ObservableObject {
       new(md.SetResult(2, Res.IconSegment, "Segments"))
     ];
 
-    var result = Dialog.Show(md);
-    if (result < 1) return Task.CompletedTask;
+    var result = await Dialog.ShowAsync(md);
+    if (result < 1) return;
 
     var items = result switch {
       1 => Core.S.Person.Selected.Items.ToArray(),
@@ -94,9 +94,9 @@ public sealed class MediaItemVM : ObservableObject {
       _ => Array.Empty<object>()
     };
 
-    return items.Length == 0
-      ? Task.CompletedTask
-      : _coreVM.MediaItem.Views.LoadByTag(items, token);
+    if (items.Length == 0) return;
+
+    await _coreVM.MediaItem.Views.LoadByTag(items, token);
   }
 
   private void ViewSelected() {
