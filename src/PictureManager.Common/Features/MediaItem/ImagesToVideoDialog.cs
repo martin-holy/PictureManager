@@ -128,7 +128,7 @@ public sealed class ImagesToVideoDialog : Dialog {
 
     // check for FFMPEG
     if (!File.Exists(Core.Settings.Common.FfmpegPath)) {
-      Show(new MessageDialog(
+      await ShowAsync(new MessageDialog(
         "FFMPEG not found",
         "FFMPEG was not found. Install it and set the path in the settings.",
         Res.IconInformation,
