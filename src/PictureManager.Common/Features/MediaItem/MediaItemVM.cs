@@ -119,7 +119,7 @@ public sealed class MediaItemVM : ObservableObject {
     return true;
   }
 
-  public void ReloadMetadata(RealMediaItemM[] items) =>
+  public Task ReloadMetadata(RealMediaItemM[] items) =>
     ReloadMetadataDialog.Open(items, _s);
 
   public async Task Rename(RealMediaItemM current) {

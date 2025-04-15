@@ -24,13 +24,13 @@ public sealed class ReloadMetadataDialog : ParallelProgressDialog<RealMediaItemM
   protected override void _doAfter() =>
     _mediaItemS.OnMetadataReloaded(_items);
 
-  public static void Open(RealMediaItemM[] items, MediaItemS mediaItemS) {
-    if (items.Length == 0 || Show(new MessageDialog(
+  public static async Task Open(RealMediaItemM[] items, MediaItemS mediaItemS) {
+    if (items.Length == 0 || await ShowAsync(new MessageDialog(
           "Reload metadata from files",
           "Do you really want to reload image metadata for {0} file{1}?".Plural(items.Length),
           MH.UI.Res.IconQuestion,
           true)) != 1) return;
 
-    Show(new ReloadMetadataDialog(items, mediaItemS));
+    await ShowAsync(new ReloadMetadataDialog(items, mediaItemS));
   }
 }
