@@ -34,7 +34,7 @@ public sealed class MediaItemVM : ObservableObject {
   public static AsyncRelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
   public static AsyncRelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
   public static AsyncRelayCommand LoadByPeopleOrSegmentsCommand { get; set; } = null!;
-  public static RelayCommand RenameCommand { get; set; } = null!;
+  public static AsyncRelayCommand RenameCommand { get; set; } = null!;
   public static RelayCommand ViewSelectedCommand { get; set; } = null!;
 
   public MediaItemVM(CoreVM coreVM, MediaItemS s) {
@@ -46,7 +46,7 @@ public sealed class MediaItemVM : ObservableObject {
     LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPersonCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPeopleOrSegmentsCommand = new(LoadByPeopleOrSegments, Res.IconImageMultiple, "Load Media items with selected People or Segments");
-    RenameCommand = new(() => Rename((RealMediaItemM)Current!), () => Current is RealMediaItemM, null, "Rename");
+    RenameCommand = new(_ => Rename((RealMediaItemM)Current!), () => Current is RealMediaItemM, null, "Rename");
     ViewSelectedCommand = new(ViewSelected, CanViewSelected, Res.IconImageMultiple, "View selected");
   }
 
@@ -122,7 +122,7 @@ public sealed class MediaItemVM : ObservableObject {
   public void ReloadMetadata(RealMediaItemM[] items) =>
     ReloadMetadataDialog.Open(items, _s);
 
-  public void Rename(RealMediaItemM current) {
+  public async Task Rename(RealMediaItemM current) {
     var ext = Path.GetExtension(current.FileName);
     var dlg = new InputDialog(
       "Rename",
@@ -141,7 +141,7 @@ public sealed class MediaItemVM : ObservableObject {
         return string.Empty;
       });
 
-    if (Dialog.Show(dlg) != 1) return;
+    if (await Dialog.ShowAsync(dlg) != 1) return;
     _s.Rename(current, dlg.Answer + ext);
   }
 
