@@ -69,7 +69,7 @@ public sealed class CoreVM : ObservableObject {
   public static AsyncRelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; private set; } = null!;
   public static AsyncRelayCommand<FolderM> ReloadMetadataCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> ResizeImagesCommand { get; private set; } = null!;
-  public static RelayCommand<FolderM> RotateMediaItemsCommand { get; private set; } = null!;
+  public static AsyncRelayCommand<FolderM> RotateMediaItemsCommand { get; private set; } = null!;
   public static AsyncRelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; private set; } = null!;
 
   internal CoreVM(CoreS coreS, CoreR coreR) {
@@ -105,7 +105,7 @@ public sealed class CoreVM : ObservableObject {
     ReadGeoLocationFromFilesCommand = new((f, _) => _readGeoLocationFromFiles(GetActive<ImageM>(f)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
     ReloadMetadataCommand = new((x, _) => MediaItem.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
     ResizeImagesCommand = new(x => _resizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
-    RotateMediaItemsCommand = new(x => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
+    RotateMediaItemsCommand = new((x, _) => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
     SaveImageMetadataToFilesCommand = new((x, _) => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
   }
 
@@ -415,9 +415,10 @@ public sealed class CoreVM : ObservableObject {
   private static void _resizeImages(ImageM[] items) =>
     _ = Dialog.ShowAsync(new ImageResizeDialog(items));
 
-  private void _rotateMediaItems(RealMediaItemM[] items) {
-    if (RotationDialog.Open(out var rotation))
-      _coreR.MediaItem.Rotate(items, rotation);
+  private async Task _rotateMediaItems(RealMediaItemM[] items) {
+    var rotation = await RotationDialog.Open();
+    if (rotation == Orientation.Normal) return;
+    _coreR.MediaItem.Rotate(items, rotation);
   }
 
   private async Task _saveImageMetadataToFiles(ImageM[] items) {

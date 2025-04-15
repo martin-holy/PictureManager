@@ -1,4 +1,5 @@
-﻿using MH.UI.Controls;
+﻿using System.Threading.Tasks;
+using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 
@@ -17,10 +18,12 @@ public sealed class RotationDialog : Dialog {
     Rotate270Command = new(() => Result = (int)Orientation.Rotate270, Res.IconRotateRight);
   }
 
-  public static bool Open(out Orientation rotation) {
+  public static async Task<Orientation> Open() {
     _inst ??= new();
-    var result = Show(_inst);
-    rotation = result == 0 ? Orientation.Normal : (Orientation)result;
-    return result != 0;
+    var result = await ShowAsync(_inst);
+
+    return result == 0
+      ? Orientation.Normal
+      : (Orientation)result;
   }
 }
