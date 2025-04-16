@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Segment;
 
@@ -187,8 +188,8 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     Current = null;
   }
 
-  public void Delete(SegmentRectM item) {
-    if (Dialog.Show(new MessageDialog(
+  public async Task Delete(SegmentRectM item) {
+    if (await Dialog.ShowAsync(new MessageDialog(
           "Delete Segment",
           "Do you really want to delete this segment?",
           MH.UI.Res.IconQuestion,
