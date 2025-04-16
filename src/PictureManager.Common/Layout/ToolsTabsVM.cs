@@ -1,6 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Person;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common.Layout;
 
@@ -9,16 +10,16 @@ public sealed class ToolsTabsVM : TabControl {
   public PersonDetailVM? PersonDetailTab { get; private set; }
 
   public static RelayCommand<PersonM> OpenPersonTabCommand { get; set; } = null!;
-  public static RelayCommand OpenPeopleTabCommand { get; set; } = null!;
+  public static AsyncRelayCommand OpenPeopleTabCommand { get; set; } = null!;
 
   public ToolsTabsVM() : base(new(Dock.Top, Dock.Right, new SlidePanelPinButton()) { JustifyTabSize = true }) {
     OpenPersonTabCommand = new(OpenPersonTab, Res.IconInformation, "Detail");
-    OpenPeopleTabCommand = new(() => OpenPeopleTab(null), Res.IconPeopleMultiple, "People");
+    OpenPeopleTabCommand = new(_ => OpenPeopleTab(null), Res.IconPeopleMultiple, "People");
   }
 
-  public void OpenPeopleTab(PersonM[]? people) {
+  public async Task OpenPeopleTab(PersonM[]? people) {
     PeopleTab ??= new();
-    PeopleTab.Reload(people);
+    await PeopleTab.Reload(people);
     Activate(Res.IconPeopleMultiple, "People", PeopleTab);
   }
 

@@ -4,11 +4,12 @@ using MH.Utils.Extensions;
 using PictureManager.Common.Features.MediaItem;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Person;
 
 public sealed class PeopleToolsTabVM : PersonCollectionView {
-  private static IEnumerable<PersonM> GetPeople() {
+  private static async Task<IEnumerable<PersonM>> GetPeople() {
     var md = new MessageDialog(
       "Reload People",
       "From which source do you want to load the people?",
@@ -21,7 +22,7 @@ public sealed class PeopleToolsTabVM : PersonCollectionView {
       new(md.SetResult(3, null, "All people"))
     ];
 
-    var result = Dialog.Show(md);
+    var result = await Dialog.ShowAsync(md);
     if (result < 1) return [];
 
     return result switch {
@@ -32,8 +33,8 @@ public sealed class PeopleToolsTabVM : PersonCollectionView {
     };
   }
 
-  public void Reload(PersonM[]? people) {
-    var src = (people ?? GetPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList();
+  public async Task Reload(PersonM[]? people) {
+    var src = (people ?? await GetPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList();
     if (src.Count == 0) return;
     Reload(src, GroupMode.ThenByRecursive, null, true);
   }
