@@ -7,6 +7,8 @@ using PictureManager.Common.Features.Keyword;
 using PictureManager.Common.Features.Person;
 using PictureManager.Common.Interfaces;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Segment;
 
@@ -25,7 +27,7 @@ public sealed class SegmentVM : ObservableObject {
 
   public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
   public static RelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
-  public static RelayCommand SetSelectedAsSamePersonCommand { get; set; } = null!;
+  public static AsyncRelayCommand SetSelectedAsSamePersonCommand { get; set; } = null!;
   public static RelayCommand SetSelectedAsUnknownCommand { get; set; } = null!;
 
   public SegmentVM(CoreVM coreVM, SegmentS s, SegmentR r) {
@@ -47,7 +49,7 @@ public sealed class SegmentVM : ObservableObject {
   private void _loadBy(PersonM p) =>
     _coreVM.OpenSegmentsViews(_r.GetBy(p).ToArray(), p.Name);
 
-  private void _setSelectedAsSamePerson() =>
+  private Task _setSelectedAsSamePerson(CancellationToken token) =>
     _s.SetSelectedAsSamePerson(_s.Selected.Items.ToArray());
 
   private void _setSelectedAsUnknown() =>

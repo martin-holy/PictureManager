@@ -1,8 +1,10 @@
 ﻿using MH.UI.Controls;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Segment;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Person;
 
@@ -28,36 +30,32 @@ public sealed class MergePeopleDialog : Dialog {
     ];
   }
 
-  public static bool Open(PersonS personS, SegmentS segmentS, PersonM[] people, out PersonM? person, out SegmentM[]? segmentsToUpdate) {
+  public static Task<(PersonM, SegmentM[])?> Open(PersonS personS, SegmentS segmentS, PersonM[] people) {
     if (_inst == null) {
       _inst = new(segmentS);
       _inst.PeopleView.ItemSelectedEvent += (_, e) =>
         _inst._setPerson(e.Item);
     }
 
-    return _inst._open(personS, segmentS, people, out person, out segmentsToUpdate);
+    return _inst._open(personS, segmentS, people);
   }
 
-  private bool _open(PersonS personS, SegmentS segmentS, PersonM[] people, out PersonM? person, out SegmentM[]? segmentsToUpdate) {
+  private async Task<(PersonM, SegmentM[])?> _open(PersonS personS, SegmentS segmentS, PersonM[] people) {
     _people = people;
     _unknownSelected = segmentS.Selected.Items.Where(x => x.Person == null).ToArray();
     personS.Selected.Select(people[0]);
     _setPerson(people[0]);
     PeopleView.Reload(people.ToList(), GroupMode.ThenByRecursive, null, true);
 
-    if (Show(this) != 1) {
+    if (await ShowAsync(this) != 1) {
       _clear();
-      person = null;
-      segmentsToUpdate = null;
-      return false;
+      return null;
     }
 
     personS.MergePeople(Person, people.Where(x => !ReferenceEquals(x, Person)).ToArray());
     _clear();
-    person = Person;
-    segmentsToUpdate = _segmentsToUpdate;
 
-    return true;
+    return new ValueTuple<PersonM, SegmentM[]>(Person, _segmentsToUpdate);
   }
 
   private void _setPerson(PersonM person) {

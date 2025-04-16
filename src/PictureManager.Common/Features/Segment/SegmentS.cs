@@ -4,6 +4,7 @@ using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Person;
@@ -64,7 +65,7 @@ public sealed class SegmentS : ObservableObject {
     DataAdapter.ChangePerson(person, segments, people);
   }
 
-  public void SetSelectedAsSamePerson(SegmentM[] items) {
+  public async Task SetSelectedAsSamePerson(SegmentM[] items) {
     if (!CanSetAsSamePerson) return;
 
     PersonM newPerson;
@@ -80,9 +81,9 @@ public sealed class SegmentS : ObservableObject {
       toUpdate = items.Where(x => x.Person == null).ToArray();
     }
     else {
-      if (!MergePeopleDialog.Open(Core.S.Person, this, people, out var newP, out var toU)) return;
-      newPerson = newP!;
-      toUpdate = toU!;
+      if (await MergePeopleDialog.Open(Core.S.Person, this, people) is not var (newP, toU)) return;
+      newPerson = newP;
+      toUpdate = toU;
     }
 
     Core.S.Person.Selected.DeselectAll();
