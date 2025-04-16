@@ -16,7 +16,7 @@ public partial class App {
     base.OnStartup(e);
 
     AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs args) {
-      Dialog.Show(new ErrorDialog((Exception)args.ExceptionObject));
+      Dialog.ShowAsync(new ErrorDialog((Exception)args.ExceptionObject));
     };
 
     MH.UI.WPF.Utils.ColorHelper.AddColorsToResources();
