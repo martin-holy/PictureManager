@@ -28,7 +28,7 @@ public sealed class SegmentVM : ObservableObject {
   public static AsyncRelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
   public static AsyncRelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
   public static AsyncRelayCommand SetSelectedAsSamePersonCommand { get; set; } = null!;
-  public static RelayCommand SetSelectedAsUnknownCommand { get; set; } = null!;
+  public static AsyncRelayCommand SetSelectedAsUnknownCommand { get; set; } = null!;
 
   public SegmentVM(CoreVM coreVM, SegmentS s, SegmentR r) {
     _coreVM = coreVM;
@@ -52,15 +52,15 @@ public sealed class SegmentVM : ObservableObject {
   private Task _setSelectedAsSamePerson(CancellationToken token) =>
     _s.SetSelectedAsSamePerson(_s.Selected.Items.ToArray());
 
-  private void _setSelectedAsUnknown() =>
+  private Task _setSelectedAsUnknown(CancellationToken token) =>
     _setAsUnknown(_s.Selected.Items.ToArray(), _r);
 
   private bool _canSetSelectedAsUnknown() =>
     _s.Selected.Items.Count > 0;
 
-  private static void _setAsUnknown(SegmentM[] segments, SegmentR r) {
+  private static async Task _setAsUnknown(SegmentM[] segments, SegmentR r) {
     var msg = "Do you want to set {0} segment{1} as unknown?".Plural(segments.Length);
-    if (Dialog.Show(new MessageDialog("Set as unknown", msg, MH.UI.Res.IconQuestion, true)) != 1) return;
+    if (await Dialog.ShowAsync(new MessageDialog("Set as unknown", msg, MH.UI.Res.IconQuestion, true)) != 1) return;
     r.ChangePerson(null, segments, segments.GetPeople().ToArray());
   }
 
