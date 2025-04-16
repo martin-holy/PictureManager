@@ -10,6 +10,7 @@ using PictureManager.Common.Features.Person;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Segment;
 
@@ -97,7 +98,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
       view.Update(segments);
   }
 
-  public static int GetSegmentsToLoadUserInput() {
+  public static Task<int> GetSegmentsToLoadUserInput() {
     var md = new MessageDialog("Segments", "Load segments from ...", Res.IconSegment, true);
 
     md.Buttons = [
@@ -106,7 +107,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
       new(md.SetResult(3, Res.IconSegment, "Segments"))
     ];
 
-    return Dialog.Show(md);
+    return Dialog.ShowAsync(md);
   }
 
   public static IEnumerable<SegmentM> GetSegments(int mode) {

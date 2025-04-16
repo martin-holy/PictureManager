@@ -60,7 +60,7 @@ public sealed class CoreVM : ObservableObject {
   public static RelayCommand ExportSegmentsCommand { get; private set; } = null!;
   public static RelayCommand OpenAboutCommand { get; } = new(() => _ = Dialog.ShowAsync(new AboutDialog()), null, "About");
   public static RelayCommand OpenLogCommand { get; } = new(() => _ = Dialog.ShowAsync(new LogDialog()), MH.UI.Res.IconSort, "Open log");
-  public static RelayCommand OpenSegmentsViewsCommand { get; private set; } = null!;
+  public static AsyncRelayCommand OpenSegmentsViewsCommand { get; private set; } = null!;
   public static RelayCommand OpenSettingsCommand { get; private set; } = null!;
   public static RelayCommand SaveDbCommand { get; private set; } = null!;
   public static RelayCommand<FolderM> CompressImagesCommand { get; private set; } = null!;
@@ -97,7 +97,7 @@ public sealed class CoreVM : ObservableObject {
     AppClosingCommand = new(_onAppClosing);
     ExportSegmentsCommand = new(_exportSegments, () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export Segments");
     OpenSettingsCommand = new(_openSettings, Res.IconSettings, "Settings");
-    OpenSegmentsViewsCommand = new(() => OpenSegmentsViews(null, string.Empty), Res.IconSegment, "Segments View");
+    OpenSegmentsViewsCommand = new(_ => OpenSegmentsViews(null, string.Empty), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
     CompressImagesCommand = new(x => _compressImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Compress Images");
     GetGeoNamesFromWebCommand = new((x, _) => _getGeoNamesFromWeb(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconLocationCheckin, "Get GeoNames from web");
@@ -370,9 +370,9 @@ public sealed class CoreVM : ObservableObject {
     MainTabs.Activate(Res.IconPeopleMultiple, "People", People);
   }
 
-  public void OpenSegmentsViews(SegmentM[]? segments, string tabTitle) {
+  public async Task OpenSegmentsViews(SegmentM[]? segments, string tabTitle) {
     if (segments == null) {
-      var result = SegmentsViewsVM.GetSegmentsToLoadUserInput();
+      var result = await SegmentsViewsVM.GetSegmentsToLoadUserInput();
       if (result < 1) return;
       segments = SegmentsViewsVM.GetSegments(result).ToArray();
     }

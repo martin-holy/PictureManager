@@ -25,8 +25,8 @@ public sealed class SegmentVM : ObservableObject {
   public SegmentsViewsVM Views { get; }
   public SegmentRectVM Rect { get; }
 
-  public static RelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
-  public static RelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
+  public static AsyncRelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
+  public static AsyncRelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
   public static AsyncRelayCommand SetSelectedAsSamePersonCommand { get; set; } = null!;
   public static RelayCommand SetSelectedAsUnknownCommand { get; set; } = null!;
 
@@ -37,16 +37,16 @@ public sealed class SegmentVM : ObservableObject {
     Views = new(_s);
     Rect = new(_s.Rect);
 
-    LoadByKeywordCommand = new(x => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
-    LoadByPersonCommand = new(x => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
+    LoadByKeywordCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
+    LoadByPersonCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     SetSelectedAsSamePersonCommand = new(_setSelectedAsSamePerson, Res.IconEquals, "Set selected as same person");
     SetSelectedAsUnknownCommand = new(_setSelectedAsUnknown, _canSetSelectedAsUnknown, Res.IconUnknownSegment, "Set selected as Unknown");
   }
 
-  private void _loadBy(KeywordM k) =>
+  private Task _loadBy(KeywordM k) =>
     _coreVM.OpenSegmentsViews(_r.GetBy(k, Keyboard.IsShiftOn()).ToArray(), k.GetFullName("-", x => x.Name));
 
-  private void _loadBy(PersonM p) =>
+  private Task _loadBy(PersonM p) =>
     _coreVM.OpenSegmentsViews(_r.GetBy(p).ToArray(), p.Name);
 
   private Task _setSelectedAsSamePerson(CancellationToken token) =>
