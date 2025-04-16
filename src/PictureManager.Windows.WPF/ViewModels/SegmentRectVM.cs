@@ -15,7 +15,7 @@ public sealed class SegmentRectVM : ObservableObject {
   public static RelayCommand<MouseButtonEventArgs> CreateCommand { get; set; } = null!;
   public static RelayCommand<MouseEventArgs> EditCommand { get; set; } = null!;
   public static RelayCommand EndEditCommand { get; set; } = null!;
-  public static RelayCommand<SegmentRectM> DeleteCommand { get; set; } = null!;
+  public static AsyncRelayCommand<SegmentRectM> DeleteCommand { get; set; } = null!;
 
   public SegmentRectVM(SegmentRectS segmentRectS) {
     SegmentRectS = segmentRectS;
@@ -25,7 +25,7 @@ public sealed class SegmentRectVM : ObservableObject {
     CreateCommand = new(_create, () => SegmentRectS.AreVisible);
     EditCommand = new(_edit);
     EndEditCommand = new(SegmentRectS.EndEdit);
-    DeleteCommand = new(x => SegmentRectS.Delete(x!), x => x != null, MH.UI.Res.IconXCross, "Delete");
+    DeleteCommand = new((x, _) => SegmentRectS.Delete(x!), x => x != null, MH.UI.Res.IconXCross, "Delete");
   }
 
   private void _setCurrent(MouseEventArgs? e) {
