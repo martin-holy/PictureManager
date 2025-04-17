@@ -22,7 +22,6 @@ public class CoreUI : ICoreP {
 
     AUI.Utils.Init.SetDelegates();
     AUI.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
-    AUI.Controls.DialogHost.ContentTemplateSelector = new DialogHostContentTemplateSelector();
     AUI.Controls.CollectionViewHost.GroupByDialogDataTemplateSelector = new GroupByDialogDataTemplateSelector();
 
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
