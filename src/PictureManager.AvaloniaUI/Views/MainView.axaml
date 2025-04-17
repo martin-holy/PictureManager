@@ -4,6 +4,7 @@
   xmlns:mhc="clr-namespace:MH.UI.AvaloniaUI.Controls;assembly=MH.UI.AvaloniaUI"
   xmlns:pm="clr-namespace:PictureManager.AvaloniaUI"
   xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  xmlns:pmc="clr-namespace:PictureManager.AvaloniaUI.Controls"
   x:Class="PictureManager.AvaloniaUI.Views.MainView"
   x:DataType="layout:MainWindowVM"
   DataContext="{ReflectionBinding VM.MainWindow, Source={x:Static pm:App.Core}}"
@@ -13,5 +14,13 @@
   FontFamily="{StaticResource MH.FontFamily}"
   UseLayoutRounding="True">
 
-  <mhc:SlidePanelsGridHost ViewModel="{Binding SlidePanelsGrid}"/>
+  <Grid>
+    <mhc:SlidePanelsGridHost ViewModel="{Binding SlidePanelsGrid}"/>
+
+    <mhc:DialogHost>
+      <mhc:DialogHost.DialogTemplate>
+        <pmc:DialogHostContentTemplateSelector/>
+      </mhc:DialogHost.DialogTemplate>
+    </mhc:DialogHost>
+  </Grid>
 </UserControl>

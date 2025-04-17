@@ -6,6 +6,7 @@
   xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
   xmlns:core="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
   xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
+  xmlns:pmc="clr-namespace:PictureManager.AvaloniaUI.Controls"
   x:Class="PictureManager.AvaloniaUI.Views.Layout.MainWindowV"
   x:DataType="layout:MainWindowVM"
   DataContext="{ReflectionBinding VM.MainWindow, Source={x:Static pm:App.Core}}"
@@ -30,5 +31,13 @@
     </EventTriggerBehavior>
   </Interaction.Behaviors>
 
-  <mhc:SlidePanelsGridHost ViewModel="{Binding SlidePanelsGrid}"/>
+  <Grid>
+    <mhc:SlidePanelsGridHost ViewModel="{Binding SlidePanelsGrid}"/>
+
+    <mhc:DialogHost>
+      <mhc:DialogHost.DialogTemplate>
+        <pmc:DialogHostContentTemplateSelector/>
+      </mhc:DialogHost.DialogTemplate>
+    </mhc:DialogHost>
+  </Grid>
 </mhc:CustomWindow>
