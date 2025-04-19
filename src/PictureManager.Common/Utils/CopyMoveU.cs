@@ -120,7 +120,8 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
       try {
         CopyMoveFileOnDrive(srcFilePath, targetFilePath);
       }
-      catch (Exception) {
+      catch (Exception ex) {
+        Log.Error(ex, mi?.FilePath ?? "MediaItem is null");
         if (mi != null) Skipped.Add(mi);
         continue;
       }
