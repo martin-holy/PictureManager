@@ -39,40 +39,54 @@
   </DataTemplate>
 
   <DataTemplate DataType="{x:Type ftCommon:TitleToolBarVM}">
-    <Grid Width="180">
-      <Grid.Background>
-        <LinearGradientBrush>
-          <GradientStop Offset="0" Color="{DynamicResource MH.Color.Accent}"/>
-          <GradientStop Offset="1" Color="Transparent"/>
-        </LinearGradientBrush>
-      </Grid.Background>
+    <Panel>
+      <OnFormFactor>
+        <OnFormFactor.Mobile>
+          <!-- Main Menu -->
+          <ContentPresenter
+            ContentTemplate="{StaticResource PM.DT.MainMenu}"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"/>
+        </OnFormFactor.Mobile>
 
-      <Grid
-        Background="Transparent"
-        c:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType=c:CustomWindow}}">
+        <OnFormFactor.Default>
+          <Grid Width="180">
+            <Grid.Background>
+              <LinearGradientBrush>
+                <GradientStop Offset="0" Color="{DynamicResource MH.Color.Accent}"/>
+                <GradientStop Offset="1" Color="Transparent"/>
+              </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid
+              Background="Transparent"
+              c:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType=c:CustomWindow}}">
     
-        <!-- App Icon -->
-        <Path
-          Classes="icon shadow"
-          Data="{StaticResource IconImage}"
-          Margin="5,0,0,0"
-          HorizontalAlignment="Left"/>
+              <!-- App Icon -->
+              <Path
+                Classes="icon shadow"
+                Data="{StaticResource IconImage}"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"/>
 
-        <!-- App Title -->
-        <TextBlock
-          Text="Picture Manager"
-          VerticalAlignment="Center"
-          HorizontalAlignment="Center"
-          FontWeight="Bold"
-          Effect="{StaticResource MH.Effects.DropShadow}"/>
-      </Grid>
+              <!-- App Title -->
+              <TextBlock
+                Text="Picture Manager"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                FontWeight="Bold"
+                Effect="{StaticResource MH.Effects.DropShadow}"/>
+            </Grid>
 
-      <!-- Main Menu -->
-      <ContentPresenter
-        ContentTemplate="{StaticResource PM.DT.MainMenu}"
-        HorizontalAlignment="Right"
-        VerticalAlignment="Center"/>
-    </Grid>
+            <!-- Main Menu -->
+            <ContentPresenter
+              ContentTemplate="{StaticResource PM.DT.MainMenu}"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Center"/>
+          </Grid>
+        </OnFormFactor.Default>
+      </OnFormFactor>
+    </Panel>
   </DataTemplate>
 
   <DataTemplate DataType="{x:Type ftCommon:MiscToolBarVM}">
@@ -85,14 +99,18 @@
         IsVisible="{Binding Plugins.Count, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.IntToVisible}}"/>
 
       <!-- Viewers -->
-      <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}" VerticalAlignment="Center"/>
+      <ContentPresenter
+        ContentTemplate="{StaticResource Views.ViewersToolBarV}"
+        VerticalAlignment="Center"
+        IsVisible="{OnFormFactor Desktop=True, Mobile=False}"/>
 
       <Separator/>
 
       <!-- Media Items Count -->
       <c:IconTextBlock
         ap:Icon.Data="{StaticResource IconImageMultiple}"
-        ap:Text.Text="{Binding VM.MediaItem.ItemsCount}"/>
+        ap:Text.Text="{Binding VM.MediaItem.ItemsCount}"
+        IsVisible="{OnFormFactor Desktop=True, Mobile=False}"/>
 
       <c:IconTextButton Command="{x:Static core:CoreVM.SaveDbCommand}" ap:Text.Text="{Binding R.Changes}"/>
 
