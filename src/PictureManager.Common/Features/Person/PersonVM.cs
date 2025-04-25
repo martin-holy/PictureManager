@@ -18,13 +18,13 @@ public sealed class PersonVM {
   public PersonVM(CoreVM coreVM, PersonR r) {
     _coreVM = coreVM;
     _r = r;
-    LoadByCategoryGroupCommand = new((x, _) => LoadBy(x!), x => x != null, Res.IconPeopleMultiple, "Load People");
-    LoadByKeywordCommand = new((x, _) => LoadBy(x!), x => x != null, Res.IconPeopleMultiple, "Load People");
+    LoadByCategoryGroupCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconPeopleMultiple, "Load People");
+    LoadByKeywordCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconPeopleMultiple, "Load People");
   }
 
-  private Task LoadBy(CategoryGroupM cg) =>
+  private Task _loadBy(CategoryGroupM cg) =>
     _coreVM.MainWindow.ToolsTabs.OpenPeopleTab(cg.Items.OfType<PersonM>().ToArray());
 
-  private Task LoadBy(KeywordM k) =>
+  private Task _loadBy(KeywordM k) =>
     _coreVM.MainWindow.ToolsTabs.OpenPeopleTab(_r.GetBy(k, Keyboard.IsShiftOn()).ToArray());
 }
