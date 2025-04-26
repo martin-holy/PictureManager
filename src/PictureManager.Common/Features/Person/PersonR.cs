@@ -57,7 +57,7 @@ public class PersonR : TreeDataAdapter<PersonM> {
     string.Join("|",
       person.GetHashCode().ToString(),
       person.Name,
-      TopSegmentsToCsv(person),
+      _topSegmentsToCsv(person),
       person.Keywords.ToHashCodes().ToCsv());
 
   public override void LinkReferences() {
@@ -87,20 +87,20 @@ public class PersonR : TreeDataAdapter<PersonM> {
   }
 
   public List<PersonM>? Link(string csv, IDataAdapter seeker) =>
-    LinkList(csv, GetNotFoundRecord, seeker);
+    LinkList(csv, _getNotFoundRecord, seeker);
 
   public PersonM GetPerson(int id, IDataAdapter seeker) =>
     AllDict.TryGetValue(id, out var person)
       ? person
-      : _resolveNotFoundRecord(id, GetNotFoundRecord, seeker)!;
+      : _resolveNotFoundRecord(id, _getNotFoundRecord, seeker)!;
 
   // the sort order for not available will be lost so take available first
-  private string TopSegmentsToCsv(PersonM person) =>
+  private string _topSegmentsToCsv(PersonM person) =>
     _notAvailableTopSegments.TryGetValue(person, out var ts)
       ? (person.TopSegments.ToHashCodes() ?? Array.Empty<int>()).Concat(ts).ToCsv()
       : person.TopSegments.ToHashCodes().ToCsv();
 
-  private PersonM GetNotFoundRecord(int notFoundId) {
+  private PersonM _getNotFoundRecord(int notFoundId) {
     var id = GetNextId();
     var item = new PersonM(id, $"{_notFoundRecordNamePrefix}{id} ({notFoundId})") {
       Parent = Tree
