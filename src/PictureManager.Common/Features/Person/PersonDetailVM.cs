@@ -23,11 +23,11 @@ public sealed class PersonDetailVM : ObservableObject {
   public PersonDetailVM(PersonS personS, SegmentS segmentS) {
     _personS = personS;
     _segmentS = segmentS;
-    CanDropFunc = CanDrop;
-    TopSegmentsDropAction = TopSegmentsDrop;
+    CanDropFunc = _canDrop;
+    TopSegmentsDropAction = _topSegmentsDrop;
   }
 
-  private MH.Utils.DragDropEffects CanDrop(object? target, object? data, bool haveSameOrigin) {
+  private MH.Utils.DragDropEffects _canDrop(object? target, object? data, bool haveSameOrigin) {
     if (!haveSameOrigin && data is SegmentM segment && PersonM != null && PersonM.TopSegments?.Contains(segment) != true)
       return MH.Utils.DragDropEffects.Copy;
     if (haveSameOrigin && data != target)
@@ -36,7 +36,7 @@ public sealed class PersonDetailVM : ObservableObject {
     return MH.Utils.DragDropEffects.None;
   }
 
-  private Task TopSegmentsDrop(object data, bool haveSameOrigin) {
+  private Task _topSegmentsDrop(object data, bool haveSameOrigin) {
     var segment = (SegmentM)data;
     _personS.ToggleTopSegment(PersonM!, segment);
     if (haveSameOrigin) TopSegments.Remove(segment);
@@ -53,11 +53,11 @@ public sealed class PersonDetailVM : ObservableObject {
       return;
     }
 
-    ReloadAllSegments(_segmentS.DataAdapter.GetBy(PersonM).ToList());
-    ReloadTopSegments();
+    _reloadAllSegments(_segmentS.DataAdapter.GetBy(PersonM).ToList());
+    _reloadTopSegments();
   }
 
-  private void ReloadAllSegments(IReadOnlyCollection<SegmentM> items) {
+  private void _reloadAllSegments(IReadOnlyCollection<SegmentM> items) {
     var source = items
       .OrderBy(x => x.MediaItem.FileName)
       .ToList();
@@ -68,7 +68,7 @@ public sealed class PersonDetailVM : ObservableObject {
     AllSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true, "All");
   }
 
-  private void ReloadTopSegments() =>
+  private void _reloadTopSegments() =>
     TopSegments.Reload(
       PersonM!.TopSegments == null
         ? []
