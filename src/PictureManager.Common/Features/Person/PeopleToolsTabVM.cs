@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PictureManager.Common.Features.Person;
 
 public sealed class PeopleToolsTabVM : PersonCollectionView {
-  private static async Task<IEnumerable<PersonM>> GetPeople() {
+  private static async Task<IEnumerable<PersonM>> _getPeople() {
     var md = new MessageDialog(
       "Reload People",
       "From which source do you want to load the people?",
@@ -34,7 +34,7 @@ public sealed class PeopleToolsTabVM : PersonCollectionView {
   }
 
   public async Task Reload(PersonM[]? people) {
-    var src = (people ?? await GetPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList();
+    var src = (people ?? await _getPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList();
     if (src.Count == 0) return;
     Reload(src, GroupMode.ThenByRecursive, null, true);
   }
