@@ -40,17 +40,17 @@ public sealed class MediaItemVM : ObservableObject {
   public MediaItemVM(CoreVM coreVM, MediaItemS s) {
     _coreVM = coreVM;
     _s = s;
-    CommentCommand = new(_ => Comment(Current!), () => Current != null, Res.IconNotification, "Comment");
+    CommentCommand = new(_ => _comment(Current!), () => Current != null, Res.IconNotification, "Comment");
     DeleteCommand = new(_ => Delete(_coreVM.GetActive<MediaItemM>()), () => _coreVM.AnyActive<MediaItemM>());
-    LoadByGeoNameCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
-    LoadByKeywordCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
-    LoadByPersonCommand = new(LoadBy, Res.IconImageMultiple, "Load Media items");
-    LoadByPeopleOrSegmentsCommand = new(LoadByPeopleOrSegments, Res.IconImageMultiple, "Load Media items with selected People or Segments");
+    LoadByGeoNameCommand = new(_loadBy, Res.IconImageMultiple, "Load Media items");
+    LoadByKeywordCommand = new(_loadBy, Res.IconImageMultiple, "Load Media items");
+    LoadByPersonCommand = new(_loadBy, Res.IconImageMultiple, "Load Media items");
+    LoadByPeopleOrSegmentsCommand = new(_loadByPeopleOrSegments, Res.IconImageMultiple, "Load Media items with selected People or Segments");
     RenameCommand = new(_ => Rename((RealMediaItemM)Current!), () => Current is RealMediaItemM, null, "Rename");
-    ViewSelectedCommand = new(ViewSelected, CanViewSelected, Res.IconImageMultiple, "View selected");
+    ViewSelectedCommand = new(_viewSelected, _canViewSelected, Res.IconImageMultiple, "View selected");
   }
 
-  private async Task Comment(MediaItemM mi) {
+  private async Task _comment(MediaItemM mi) {
     var commentDialog = new InputDialog(
       "Comment",
       "Add a comment.",
@@ -66,14 +66,14 @@ public sealed class MediaItemVM : ObservableObject {
       _s.SetComment(mi, StringUtils.NormalizeComment(commentDialog.Answer!));
   }
 
-  private Task LoadBy(object? o, CancellationToken token) {
+  private Task _loadBy(object? o, CancellationToken token) {
     if (_coreVM.MediaViewer.IsVisible)
       _coreVM.MainWindow.IsInViewMode = false;
 
     return _coreVM.MediaItem.Views.LoadByTag(o, token);
   }
 
-  private async Task LoadByPeopleOrSegments(CancellationToken token) {
+  private async Task _loadByPeopleOrSegments(CancellationToken token) {
     var md = new MessageDialog(
       "Load Media items",
       "Do you want to load Media items from selected People or Segments?",
@@ -99,13 +99,13 @@ public sealed class MediaItemVM : ObservableObject {
     await _coreVM.MediaItem.Views.LoadByTag(items, token);
   }
 
-  private void ViewSelected() {
+  private void _viewSelected() {
     var items = Views.Current!.Selected.Items.ToList();
     _coreVM.MainWindow.IsInViewMode = true;
     _coreVM.MediaViewer.SetMediaItems(items, items[0]);
   }
 
-  private bool CanViewSelected() =>
+  private bool _canViewSelected() =>
     Views.Current?.Selected.Items.Count > 1;
 
   public async Task<bool> Delete(MediaItemM[] items) {
