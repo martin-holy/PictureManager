@@ -25,7 +25,7 @@ public sealed class MediaItemsImport : ObservableObject {
 
   public MediaItemsImport() {
     _progress = new Progress<int>(x => DoneCount += x);
-    CancelCommand = new(CancelImport, null, "Cancel");
+    CancelCommand = new(_cancelImport, null, "Cancel");
   }
 
   public async Task Import(List<MediaItemMetadata> items) {
@@ -35,7 +35,7 @@ public sealed class MediaItemsImport : ObservableObject {
     DoneCount = 0;
 
     try {
-      await _task.Start(new(() => ReadMetadata(items)));
+      await _task.Start(new(() => _readMetadata(items)));
 
       Tasks.Dispatch(delegate { DoneCount = 0; }); // new counter for loading GeoNames if any
 
@@ -56,7 +56,7 @@ public sealed class MediaItemsImport : ObservableObject {
     }
   }
 
-  private void ReadMetadata(List<MediaItemMetadata> items) {
+  private void _readMetadata(List<MediaItemMetadata> items) {
     try {
       var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _task.Token };
       Parallel.ForEach(items.Where(x => x.MediaItem is ImageM), po, mim => {
@@ -75,6 +75,6 @@ public sealed class MediaItemsImport : ObservableObject {
     }
   }
 
-  private async void CancelImport() =>
+  private async void _cancelImport() =>
     await _task.Cancel();
 }
