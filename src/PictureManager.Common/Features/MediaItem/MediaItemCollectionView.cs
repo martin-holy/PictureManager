@@ -19,10 +19,10 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
 
   public MediaItemCollectionView(double thumbScale) : base(Res.IconImageMultiple, "Media Items", [ViewMode.ThumbBig]) {
     ThumbScale = thumbScale;
-    ThumbScaleChangedCommand = new(OnThumbScaleChanged);
+    ThumbScaleChangedCommand = new(_onThumbScaleChanged);
   }
 
-  private void OnThumbScaleChanged() =>
+  private void _onThumbScaleChanged() =>
     ReWrapAll();
 
   public override IEnumerable<GroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
