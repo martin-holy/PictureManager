@@ -10,23 +10,23 @@ public sealed class VideoItemsOrderR : OneToManyMultiDataAdapter<VideoM, VideoIt
   public VideoItemsOrderR(CoreR coreR) : base(coreR, "VideoItemsOrder", coreR.Video) {
     _coreR = coreR;
     IsDriveRelated = true;
-    coreR.ReadyEvent += delegate { OnDbReady(); };
+    coreR.ReadyEvent += delegate { _onDbReady(); };
   }
 
-  private void OnDbReady() {
-    _coreR.VideoClip.ItemDeletedEvent += (_, e) => RemoveValueItem(e);
-    _coreR.VideoImage.ItemDeletedEvent += (_, e) => RemoveValueItem(e);
-    _coreR.VideoClip.ItemCreatedEvent += (_, e) => OnValueItemCreated(e);
-    _coreR.VideoImage.ItemCreatedEvent += (_, e) => OnValueItemCreated(e);
+  private void _onDbReady() {
+    _coreR.VideoClip.ItemDeletedEvent += (_, e) => _onValueItemDeleted(e);
+    _coreR.VideoImage.ItemDeletedEvent += (_, e) => _onValueItemDeleted(e);
+    _coreR.VideoClip.ItemCreatedEvent += (_, e) => _onValueItemCreated(e);
+    _coreR.VideoImage.ItemCreatedEvent += (_, e) => _onValueItemCreated(e);
   }
 
-  private void RemoveValueItem(VideoItemM item) {
+  private void _onValueItemDeleted(VideoItemM item) {
     if (!All.TryGetValue(item.Video, out var value)) return;
     if (!value.Remove(item)) return;
     IsModified = true;
   }
 
-  private void OnValueItemCreated(VideoItemM item) {
+  private void _onValueItemCreated(VideoItemM item) {
     if (!All.TryGetValue(item.Video, out var value)) return;
     value.AddInOrder(item, (a, b) => a.TimeStart - b.TimeStart);
     IsModified = true;
