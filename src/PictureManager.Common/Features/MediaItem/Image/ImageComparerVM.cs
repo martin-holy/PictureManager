@@ -15,12 +15,12 @@ public sealed class ImageComparerVM(MediaItemM[] items) : ObservableObject {
   public int Diff { get => _diff; set { _diff = value; OnPropertyChanged(); } }
 
   public async Task<List<MediaItemM>> CompareAverageHash() =>
-    (await GetSimilar(items, Diff, _avgHashes, Imaging.GetBitmapAvgHash)).Cast<MediaItemM>().ToList();
+    (await _getSimilar(items, Diff, _avgHashes, Imaging.GetBitmapAvgHash)).Cast<MediaItemM>().ToList();
 
   public async Task<List<MediaItemM>> ComparePHash() =>
-    (await GetSimilar(items, Diff, _pHashes, Imaging.GetBitmapPerceptualHash)).Cast<MediaItemM>().ToList();
+    (await _getSimilar(items, Diff, _pHashes, Imaging.GetBitmapPerceptualHash)).Cast<MediaItemM>().ToList();
 
-  private static async Task<List<object>> GetSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
+  private static async Task<List<object>> _getSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
     // get hashes
     var newItems = items.Where(x => !hashes.ContainsKey(x)).ToArray();
     if (newItems.Length > 0)
