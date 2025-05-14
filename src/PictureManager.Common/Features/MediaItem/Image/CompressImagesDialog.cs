@@ -24,15 +24,15 @@ public sealed class CompressImagesDialog : ParallelProgressDialog<ImageM> {
 
   protected override void _customProgress(object? args) {
     if (args is not (long[] and [var sourceSize, var compressedSize])) return;
-    SetSize(_totalSourceSize + sourceSize, _totalCompressedSize + compressedSize);
+    _setSize(_totalSourceSize + sourceSize, _totalCompressedSize + compressedSize);
   }
 
   protected override bool _doBefore() {
-    SetSize(0, 0);
+    _setSize(0, 0);
     return true;
   }
 
-  private void SetSize(long source, long compressed) {
+  private void _setSize(long source, long compressed) {
     _totalSourceSize = source;
     _totalCompressedSize = compressed;
     OnPropertyChanged(nameof(TotalSourceSize));
