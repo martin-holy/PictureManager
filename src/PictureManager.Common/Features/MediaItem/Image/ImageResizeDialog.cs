@@ -26,7 +26,7 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
 
   public ImageResizeDialog(ImageM[] items) : base("Resize Images", Res.IconImageMultiple, items, null, "Resize") {
     OpenFolderBrowserCommand = new(_openFolderBrowser, Res.IconFolder, "Select folder");
-    SetMaxMpx(items);
+    _setMaxMpx(items);
   }
 
   protected override bool _canAction() =>
@@ -52,7 +52,7 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
     return Task.CompletedTask;
   }
 
-  private void SetMaxMpx(ImageM[] items) {
+  private void _setMaxMpx(ImageM[] items) {
     var maxPx = 0;
     foreach (var mi in items) {
       var px = mi.Width * mi.Height;
