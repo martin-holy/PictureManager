@@ -21,7 +21,7 @@ public sealed class FolderKeywordsDialog : Dialog {
   public FolderKeywordsDialog() : base("Folder Keywords", Res.IconFolderPuzzle) {
     SelectCommand = new(x => SelectedFolder = x);
     Buttons = [
-      new(new AsyncRelayCommand(_ => Remove(SelectedFolder!), () => SelectedFolder != null, MH.UI.Res.IconXCross, "Remove")),
+      new(new AsyncRelayCommand(_ => _remove(SelectedFolder!), () => SelectedFolder != null, MH.UI.Res.IconXCross, "Remove")),
       new(CloseCommand, false, true)
     ];
 
@@ -29,7 +29,7 @@ public sealed class FolderKeywordsDialog : Dialog {
       Items.Add(folder);
   }
 
-  private async Task Remove(FolderM folder) {
+  private async Task _remove(FolderM folder) {
     if (await ShowAsync(new MessageDialog("Remove Confirmation", "Are you sure?", MH.UI.Res.IconQuestion, true)) != 1) return;
 
     Core.R.FolderKeyword.ItemDelete(folder);
