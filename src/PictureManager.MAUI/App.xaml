@@ -1,0 +1,24 @@
+﻿<Application
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:mhr="clr-namespace:MH.UI.MAUI.Resources;assembly=MH.UI.MAUI"
+  xmlns:mhrc="clr-namespace:MH.UI.MAUI.Resources.Controls;assembly=MH.UI.MAUI"
+  xmlns:mhrdt="clr-namespace:MH.UI.MAUI.Resources.DataTemplates;assembly=MH.UI.MAUI"
+  x:Class="PictureManager.MAUI.App">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <mhr:Brushes/>
+        <mhr:Icons/>
+
+        <ResourceDictionary Source="Resources/Styles/Colors.xaml"/>
+        <ResourceDictionary Source="Resources/Styles/Styles.xaml"/>
+        <ResourceDictionary Source="Resources/Brushes.xaml"/>
+        <ResourceDictionary Source="Resources/Icons.xaml"/>
+        <mhrc:MHControls/>
+        <mhrdt:MHDataTemplates/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

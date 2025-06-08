@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:views="clr-namespace:PictureManager.MAUI.Views"
+  x:Class="PictureManager.MAUI.Views.SplashScreenV"
+  x:DataType="views:SplashScreenV"
+  BackgroundColor="#FF333333">
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition Height="20"/>
+      <RowDefinition Height="20"/>
+      <RowDefinition Height="20"/>
+    </Grid.RowDefinitions>
+  
+    <Label
+      Grid.Row="0"
+      Text="Picture Manager"
+      FontAttributes="Bold"
+      FontSize="30"
+      HorizontalOptions="Center"
+      VerticalOptions="Center"/>
+  
+    <Label Grid.Row="1" Text="{Binding Version}" HorizontalOptions="Center"/>
+    <Label Grid.Row="2" Text="{Binding Message}" HorizontalOptions="Center"/>
+
+    <!--TODO PORT-->
+    <!--<ProgressBar Grid.Row="3" IsIndeterminate="True" Margin="4,0" Height="10"/>-->
+  </Grid>
+</ContentPage>
