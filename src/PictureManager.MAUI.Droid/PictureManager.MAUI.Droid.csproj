@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PictureManager.MAUI.Droid</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UseMaui>true</UseMaui>
+    <Authors>Martin Holý</Authors>
+    <Copyright>Martin Holý</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.70" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MH.UI.MAUI\src\MH.UI.MAUI.Droid\MH.UI.MAUI.Droid.csproj" />
+    <ProjectReference Include="..\..\..\MH.UI.MAUI\src\MH.UI.MAUI\MH.UI.MAUI.csproj" />
+    <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
+    <ProjectReference Include="..\PictureManager.MAUI\PictureManager.MAUI.csproj" />
+  </ItemGroup>
+
+</Project>

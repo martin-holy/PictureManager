@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.MAUI.Controls;assembly=MH.UI.MAUI"
+  xmlns:cl="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
+  x:Class="PictureManager.MAUI.Views.Layout.MainPage"
+  x:DataType="cl:MainWindowVM">
+
+  <!--<mhc:SlidePanelsGridHost ViewModel="{Binding SlidePanelsGrid}"/>-->
+  
+  <mhc:TreeViewHost ViewModel="{Binding Folders}"/>
+
+</ContentPage>
