@@ -16,6 +16,7 @@ public class MainWindowVM : ObservableObject {
   public ToolBarVM ToolBar { get; } = new();
   public ToolsTabsVM ToolsTabs { get; } = new() { CanCloseTabs = true };
   public TreeViewCategoriesVM TreeViewCategories { get; } = new();
+  public MainMenuVM MainMenu { get; } = new();
 
   public bool IsFullScreen {
     get => _isFullScreen;

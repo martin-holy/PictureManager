@@ -107,6 +107,8 @@ public sealed class CoreVM : ObservableObject {
     ResizeImagesCommand = new(x => _resizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
     RotateMediaItemsCommand = new((x, _) => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
     SaveImageMetadataToFilesCommand = new((x, _) => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
+
+    MainWindow.MainMenu.Build();
   }
 
   public bool AnyActive<T>(FolderM? folder = null) where T : MediaItemM =>
