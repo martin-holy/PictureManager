@@ -82,6 +82,7 @@
 
       <!-- Main Menu -->
       <ContentPresenter
+        Content="{Binding MainWindow.MainMenu, Source={x:Static core:Core.VM}}"
         ContentTemplate="{StaticResource PM.DT.MainMenu}"
         HorizontalAlignment="Right"
         VerticalAlignment="Center"/>
