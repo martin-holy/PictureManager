@@ -55,9 +55,10 @@ public static class Res {
   public const string IconSettings = "IconSettings";
   public const string IconStar = "IconStar";
   public const string IconTag = "IconTag";
+  public const string IconThreeBars = "IconThreeBars";
   public const string IconTagLabel = "IconTagLabel";
   public const string IconUnknownSegment = "IconUnknownSegment";
-
+  
   public static readonly Dictionary<object, object> IconToBrushDic = new() {
     { _default, BrushWhite },
     { IconFolder, BrushFolder },
