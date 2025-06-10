@@ -10,9 +10,9 @@ using System.Collections.Specialized;
 namespace PictureManager.Common.Layout;
 
 public class MainMenuVM {
-  private readonly MenuItem _leftTabs = new(Res.IconBug, "Left tabs");
-  private readonly MenuItem _middleTabs = new(Res.IconBug, "Middle tabs");
-  private readonly MenuItem _rightTabs = new(Res.IconBug, "Right tabs");
+  private readonly MenuItem _leftTabs = new(Res.IconTabLeft, "Left tabs");
+  private readonly MenuItem _middleTabs = new(Res.IconTabMiddle, "Middle tabs");
+  private readonly MenuItem _rightTabs = new(Res.IconTabRight, "Right tabs");
 
   public MenuItem Root { get; } = new MenuItem(Res.IconThreeBars, string.Empty);
 
