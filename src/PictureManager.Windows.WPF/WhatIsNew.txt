@@ -6,6 +6,7 @@
 Latest:
  - [B] Not successful MediaItems import when importing from folder with deleted Videos outside of this app containing VideoItems
  - [B] Reload Video VideoItems after VideoItem delete
+ - [N] MainMenu: Left, Middle and Right Tabs in menu
 
 24.11.17.1717:
  - [U] Main menu: Open Segments View moved to Segments
