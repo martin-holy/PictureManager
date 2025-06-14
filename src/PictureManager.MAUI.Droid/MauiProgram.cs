@@ -10,6 +10,7 @@ public static class MauiProgram {
       .UseSharedMauiApp()
       .ConfigureMauiHandlers(MH.UI.MAUI.Droid.MauiProgram.ConfigureHandlers);
 
+    MH.UI.Android.Utils.Init.SetDelegates();
     MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
 
     return builder.Build();
