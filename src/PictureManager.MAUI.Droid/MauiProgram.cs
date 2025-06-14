@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Hosting;
+using PictureManager.Common.Features.MediaItem;
 
 namespace PictureManager.MAUI.Droid;
 
@@ -12,6 +13,7 @@ public static class MauiProgram {
 
     MH.UI.Android.Utils.Init.SetDelegates();
     MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
+    MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
 
     return builder.Build();
   }
