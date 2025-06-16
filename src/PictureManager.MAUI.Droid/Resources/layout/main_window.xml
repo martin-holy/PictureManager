@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:a="http://schemas.android.com/apk/res/android"
+  a:id="@+id/root_container"
+  a:layout_width="match_parent"
+  a:layout_height="match_parent"
+  a:orientation="horizontal">
+    
+  <MH.UI.Android.Controls.TreeViewHost
+    a:id="@+id/tree_view_folders"
+    a:layout_width="0dp"
+    a:layout_height="match_parent"
+    a:layout_weight="1"/>
+    
+  <MH.UI.Android.Controls.CollectionViewHost
+    a:id="@+id/collection_view_media_items"
+    a:layout_width="0dp"
+    a:layout_height="match_parent"
+    a:layout_weight="1"/>
+</merge>
