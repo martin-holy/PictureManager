@@ -6,9 +6,7 @@
   xmlns:cl="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
   x:Class="PictureManager.MAUI.Views.Layout.MainPage"
   x:DataType="cl:MainWindowVM">
-
-  <!--<mhc:SlidePanelsGridHost ViewModel="{Binding SlidePanelsGrid}"/>-->
   
-  <mhc:TreeViewHost ViewModel="{Binding Folders}"/>
+  <mhc:MyShell BindingContext="{Binding}"/>
 
 </ContentPage>
