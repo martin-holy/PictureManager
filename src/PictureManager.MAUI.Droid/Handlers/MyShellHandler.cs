@@ -19,7 +19,7 @@ public class MyShellHandler : ViewHandler<MyShell, FrameLayout> {
     base.ConnectHandler(platformView);
 
     if (VirtualView.BindingContext is MainWindowVM viewModel)
-      platformView.AddView(new MainWindowV(Context) { ViewModel = viewModel });
+      platformView.AddView(new MainWindowV(Context) { DataContext = viewModel });
   }
 
   protected override void DisconnectHandler(FrameLayout platformView) {
