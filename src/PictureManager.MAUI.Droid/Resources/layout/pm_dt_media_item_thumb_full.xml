@@ -6,11 +6,9 @@
   a:layout_height="match_parent"
   a:orientation="horizontal">
     
-  <TextView
-    a:id="@+id/name"
+  <ImageView
+    a:id="@+id/image"
     a:layout_width="wrap_content"
     a:layout_height="wrap_content"
-    a:layout_marginStart="8dp"
-    a:textColor="@color/c_static_fo"
     a:layout_gravity="center_vertical"/>
 </merge>
