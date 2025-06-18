@@ -9,7 +9,7 @@ public class CoreUI: ICoreP {
   }
 
   public void AfterInit() {
-
+    Core.Settings.MediaItem.MediaItemThumbScale = 0.2;
   }
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) => throw new System.NotImplementedException();
