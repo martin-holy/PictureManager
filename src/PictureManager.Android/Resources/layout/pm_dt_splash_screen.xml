@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<merge xmlns:a="http://schemas.android.com/apk/res/android">
+  <TextView
+    a:layout_width="wrap_content"
+    a:layout_height="wrap_content"
+    a:textColor="@color/c_static_fo"
+    a:layout_gravity="center_horizontal"
+    a:padding="4dp"
+    a:textFontWeight="700"
+    a:textSize="24dp"
+    a:text="@string/app_name"/>
+  
+  <TextView
+    a:id="@+id/version"
+    a:layout_width="wrap_content"
+    a:layout_height="wrap_content"
+    a:padding="4dp"
+    a:textColor="@color/c_static_fo"
+    a:layout_gravity="center_horizontal"/>
+  
+  <TextView
+    a:id="@+id/message"
+    a:layout_width="wrap_content"
+    a:layout_height="wrap_content"
+    a:padding="4dp"
+    a:textColor="@color/c_static_fo"
+    a:layout_gravity="center_horizontal"/>
+</merge>

@@ -10,8 +10,6 @@ namespace PictureManager.Android;
 
 [Activity(Label = "@string/app_name", MainLauncher = true)]
 public class MainActivity : Activity {
-  private IProgress<string> _progressMessage;
-
   public static Core Core { get; private set; } = null!;
   public static CoreUI CoreUI { get; private set; } = null!;
 
@@ -21,11 +19,10 @@ public class MainActivity : Activity {
     if (CheckSelfPermission(Perm.ReadExternalStorage) != Permission.Granted)
       RequestPermissions([Perm.ReadExternalStorage], 1);
 
-    _progressMessage = new Progress<string>(msg => System.Diagnostics.Debug.WriteLine(msg));
+    var splashScreen = new SplashScreenV(this);
+    SetContentView(splashScreen);
 
-    SetContentView(Resource.Layout.activity_main);
-
-    await Core.Inst.InitAsync(_progressMessage, AppDomain.CurrentDomain.BaseDirectory);
+    await Core.Inst.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
     Core = Core.Inst;
     CoreUI = new();
     Core.AfterInit(CoreUI);
@@ -33,15 +30,5 @@ public class MainActivity : Activity {
 
     var mainWindow = new MainWindowV(this) { DataContext = Core.VM.MainWindow };
     SetContentView(mainWindow);
-
-    //Core.Inst.InitAsync(_progressMessage, AppDomain.CurrentDomain.BaseDirectory).ContinueWith(_ => {
-    //  Core = Core.Inst;
-    //  CoreUI = new();
-    //  Core.AfterInit(CoreUI);
-    //  CoreUI.AfterInit();
-
-    //  var mainWindow = new MainWindowV(this) { DataContext = Core.VM.MainWindow };
-    //  SetContentView(mainWindow);
-    //});
   }
 }
