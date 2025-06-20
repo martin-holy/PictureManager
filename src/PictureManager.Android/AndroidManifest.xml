@@ -5,7 +5,8 @@
     android:icon="@mipmap/appicon"
     android:label="@string/app_name"
     android:roundIcon="@mipmap/appicon_round"
-    android:supportsRtl="true">
+    android:supportsRtl="true"
+    android:theme="@style/SplashTheme">
   </application>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
