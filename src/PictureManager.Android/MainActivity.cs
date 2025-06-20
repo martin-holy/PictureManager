@@ -4,6 +4,7 @@ using Android.OS;
 using PictureManager.Android.Views;
 using PictureManager.Common;
 using System;
+using System.Threading.Tasks;
 using Perm = Android.Manifest.Permission;
 
 namespace PictureManager.Android;
@@ -13,7 +14,7 @@ public class MainActivity : Activity {
   public static Core Core { get; private set; } = null!;
   public static CoreUI CoreUI { get; private set; } = null!;
 
-  protected override async void OnCreate(Bundle? savedInstanceState) {
+  protected override void OnCreate(Bundle? savedInstanceState) {
     base.OnCreate(savedInstanceState);
 
     if (CheckSelfPermission(Perm.ReadExternalStorage) != Permission.Granted)
@@ -22,13 +23,17 @@ public class MainActivity : Activity {
     var splashScreen = new SplashScreenV(this);
     SetContentView(splashScreen);
 
-    await Core.Inst.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
     Core = Core.Inst;
-    CoreUI = new();
-    Core.AfterInit(CoreUI);
-    CoreUI.AfterInit();
+    Task.Run(async () => {
+      await Core.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
+      CoreUI = new();
+      Core.AfterInit(CoreUI);
+      CoreUI.AfterInit();
 
-    var mainWindow = new MainWindowV(this) { DataContext = Core.VM.MainWindow };
-    SetContentView(mainWindow);
+      MH.Utils.Tasks.Dispatch(() => {
+        var mainWindow = new MainWindowV(this) { DataContext = Core.VM.MainWindow };
+        SetContentView(mainWindow);
+      });
+    });
   }
 }
