@@ -7,10 +7,12 @@ using MH.UI.Android.Controls;
 using MH.UI.Interfaces;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Layout;
+using System;
 
 namespace PictureManager.Android.Views;
 
 public class MainWindowV : LinearLayout {
+  private SlidePanelsGridHost _slidePanels;
   private TreeViewHost _folders = null!;
   private CollectionViewHost _collectionViewMediaItems = null!;
   private MainWindowVM _dataContext = null!;
@@ -31,10 +33,24 @@ public class MainWindowV : LinearLayout {
   protected MainWindowV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
 
   private void _initialize(Context context, IAttributeSet? attrs) {
-    LayoutInflater.From(context)!.Inflate(Resource.Layout.main_window, this, true);
-    _folders = FindViewById<TreeViewHost>(Resource.Id.tree_view_folders)!;
-    _collectionViewMediaItems = FindViewById<CollectionViewHost>(Resource.Id.collection_view_media_items)!;
+    _slidePanels = new SlidePanelsGridHost(context);
+    AddView(_slidePanels);
+
+    _folders = new TreeViewHost(context);
+    _collectionViewMediaItems = new CollectionViewHost(context);
     _collectionViewMediaItems.GetItemView = _getItemView;
+
+    _slidePanels.SetPanelFactory(position => {
+      return position switch {
+        0 => _folders,
+        1 => _collectionViewMediaItems,
+        2 => new TextView(context) { Text = "Right Panel" },
+        _ => throw new ArgumentOutOfRangeException(nameof(position))
+      };
+    });
+
+    _slidePanels.SetTopPanel(new TextView(context) { Text = "Top Panel" });
+    _slidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
   }
 
   private void _bind(MainWindowVM dataContext) {
