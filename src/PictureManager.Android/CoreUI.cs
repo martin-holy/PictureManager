@@ -1,4 +1,5 @@
-﻿using PictureManager.Common;
+﻿using Android.App;
+using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 
@@ -9,6 +10,7 @@ public class CoreUI: ICoreP {
     // TODO PORT
     MH.UI.Android.Utils.Init.SetDelegates();
     MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
+    MH.UI.Android.Utils.DisplayU.Init(Application.Context!.Resources!.DisplayMetrics!);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
   }
 
