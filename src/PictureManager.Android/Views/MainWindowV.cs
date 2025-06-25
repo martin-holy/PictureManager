@@ -49,11 +49,12 @@ public class MainWindowV : LinearLayout {
       };
     });
 
-    _slidePanels.SetTopPanel(new TextView(context) { Text = "Top Panel" });
     _slidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
   }
 
   private void _bind(MainWindowVM dataContext) {
+    _slidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = dataContext.MainMenu.Root });
+
     _folders.ViewModel = Folders;
     // BUG this is null so I need to set it after select (fake it until you make it)
     //_collectionViewMediaItems.ViewModel = _viewModel.MediaItemsTestView;
