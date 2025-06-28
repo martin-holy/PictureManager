@@ -65,7 +65,7 @@ public class MainWindowV : LinearLayout {
     if (item is not MediaItemM mi) return null;
 
     return group.GetItemTemplateName() switch {
-      "PM.DT.MediaItem.Thumb-Full" => new MediaItemThumbFullV(container.Context!) { DataContext = mi },
+      "PM.DT.MediaItem.Thumb-Full" => new MediaItemThumbFullV(container.Context!).Bind(mi, MediaItemsTestView, group),
       _ => null,
     };
   }
