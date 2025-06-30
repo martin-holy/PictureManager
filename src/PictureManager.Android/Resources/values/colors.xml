@@ -6,6 +6,7 @@
 
   <color name="colorFolder">#FFF9DA77</color>
   <color name="colorTag">#FF8EC163</color>
+  <color name="colorPeople">#FF137AA6</color>
   <color name="colorDrive">#FFC7C7C7</color>
   <color name="colorWhite">#FFFFFFFF</color>
 </resources>
