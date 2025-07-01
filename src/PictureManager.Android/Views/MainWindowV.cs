@@ -5,46 +5,34 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Controls;
-using MH.UI.Interfaces;
-using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Layout;
 using System;
 
 namespace PictureManager.Android.Views;
 
 public class MainWindowV : LinearLayout {
-  private SlidePanelsGridHost _slidePanels;
+  private SlidePanelsGridHost _slidePanels = null!;
   private TabControlHost _treeViewCategories = null!;
-  private CollectionViewHost _collectionViewMediaItems = null!;
+  private MiddleContentV _middleContent = null!;
   private MainWindowVM _dataContext = null!;
 
   public MainWindowVM DataContext { get => _dataContext; set { _dataContext = value; _bind(value); } }
-
-  // TODO test - delete later
-  public Common.Features.MediaItem.MediaItemsViewVM? MediaItemsTestView => Common.Core.VM.MainTabs.Selected?.Data as Common.Features.MediaItem.MediaItemsViewVM;
-
-  // TODO test - delete later
-  private void _mainTabs_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
-    _collectionViewMediaItems.ViewModel = MediaItemsTestView;
-  }
 
   public MainWindowV(Context context) : base(context) => _initialize(context, null);
   public MainWindowV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
   protected MainWindowV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
 
   private void _initialize(Context context, IAttributeSet? attrs) {
-    _slidePanels = new SlidePanelsGridHost(context);
+    _slidePanels = new(context);
     AddView(_slidePanels);
 
-    _treeViewCategories = new TabControlHost(context);
-    _treeViewCategories.GetItemView = _getTreeViewCategoriesView;
-    _collectionViewMediaItems = new CollectionViewHost(context);
-    _collectionViewMediaItems.GetItemView = _getItemView;
+    _treeViewCategories = new(context) { GetItemView = _getTreeViewCategoriesView };
+    _middleContent = new(context);
 
     _slidePanels.SetPanelFactory(position => {
       return position switch {
         0 => _treeViewCategories,
-        1 => _collectionViewMediaItems,
+        1 => _middleContent,
         2 => new TextView(context) { Text = "Right Panel" },
         _ => throw new ArgumentOutOfRangeException(nameof(position))
       };
@@ -56,19 +44,7 @@ public class MainWindowV : LinearLayout {
   private void _bind(MainWindowVM dataContext) {
     _slidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = dataContext.MainMenu.Root });
     _treeViewCategories.DataContext = _dataContext.TreeViewCategories;
-
-    // BUG this is null so I need to set it after select (fake it until you make it)
-    //_collectionViewMediaItems.ViewModel = _viewModel.MediaItemsTestView;
-    Common.Core.VM.MainTabs.PropertyChanged += _mainTabs_PropertyChanged;
-  }
-
-  private View? _getItemView(LinearLayout container, ICollectionViewGroup group, object? item) {
-    if (item is not MediaItemM mi) return null;
-
-    return group.GetItemTemplateName() switch {
-      "PM.DT.MediaItem.Thumb-Full" => new MediaItemThumbFullV(container.Context!).Bind(mi, MediaItemsTestView, group),
-      _ => null,
-    };
+    _middleContent.Bind(Common.Core.VM.MainTabs);
   }
 
   private View? _getTreeViewCategoriesView(LinearLayout container, object? item) {
