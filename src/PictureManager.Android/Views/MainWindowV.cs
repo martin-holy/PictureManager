@@ -51,6 +51,6 @@ public class MainWindowV : LinearLayout {
 
   private View? _getTreeViewCategoriesView(LinearLayout container, object? item) {
     if (item is not TreeView tv) return null;
-    return new TreeViewHost(container.Context!) { ViewModel = tv };
+    return new TreeViewHost(container.Context!).Bind(tv);
   }
 }

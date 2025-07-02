@@ -19,6 +19,7 @@ public class MediaItemsViewV : LinearLayout {
   protected MediaItemsViewV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
   private void _initialize(Context context) {
+    LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
     _host = new(context) { GetItemView = _getItemView };
     AddView(_host);
   }
