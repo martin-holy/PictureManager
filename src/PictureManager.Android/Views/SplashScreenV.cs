@@ -13,11 +13,11 @@ public class SplashScreenV : LinearLayout {
 
   public IProgress<string> ProgressMessage { get; private set; } = null!;
 
-  public SplashScreenV(Context context) : base(context) => _initialize(context, null);
-  public SplashScreenV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
-  protected SplashScreenV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
+  public SplashScreenV(Context context) : base(context) => _initialize(context);
+  public SplashScreenV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected SplashScreenV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
-  private void _initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context) {
     LayoutInflater.From(context)!.Inflate(Resource.Layout.pm_dt_splash_screen, this, true);
     SetBackgroundResource(Resource.Color.c_static_ba);
     SetGravity(GravityFlags.Top);
@@ -27,6 +27,7 @@ public class SplashScreenV : LinearLayout {
 
     // TODO PORT version from elsewhere
     _version = FindViewById<TextView>(Resource.Id.version)!;
+    _version.Text = "0.0.0";
     //_version.Text = $"ver.: {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
 
     _message = FindViewById<TextView>(Resource.Id.message)!;
