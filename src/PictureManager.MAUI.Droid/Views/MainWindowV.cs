@@ -38,7 +38,7 @@ public class MainWindowV : LinearLayout {
   }
 
   private void _bind(MainWindowVM dataContext) {
-    _folders.ViewModel = Folders;
+    _folders.Bind(Folders);
     // BUG this is null so I need to set it after select (fake it until you make it)
     //_collectionViewMediaItems.ViewModel = _viewModel.MediaItemsTestView;
     Common.Core.VM.MainTabs.PropertyChanged += _mainTabs_PropertyChanged;
