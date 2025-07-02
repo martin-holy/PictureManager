@@ -18,11 +18,11 @@ public class MainWindowV : LinearLayout {
 
   public MainWindowVM DataContext { get => _dataContext; set { _dataContext = value; _bind(value); } }
 
-  public MainWindowV(Context context) : base(context) => _initialize(context, null);
-  public MainWindowV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
-  protected MainWindowV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
+  public MainWindowV(Context context) : base(context) => _initialize(context);
+  public MainWindowV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected MainWindowV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
-  private void _initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context) {
     _slidePanels = new(context);
     AddView(_slidePanels);
 
