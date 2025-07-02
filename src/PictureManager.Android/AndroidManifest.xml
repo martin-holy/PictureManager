@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <application
     android:allowBackup="true"
-    android:icon="@mipmap/appicon"
+    android:icon="@drawable/icon_app"
     android:label="@string/app_name"
-    android:roundIcon="@mipmap/appicon_round"
+    android:roundIcon="@drawable/icon_app"
     android:supportsRtl="true"
     android:theme="@style/MHAppTheme">
   </application>
