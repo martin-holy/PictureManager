@@ -26,7 +26,7 @@ public class MiddleContentV : LinearLayout {
     mainTabsVM.Add("IconFolder", "Test", new TextView(Context) { Text = "Test Panel Folder" });
     mainTabsVM.Add("IconTag", "Test Tag", new TextView(Context) { Text = "Test Panel Tag" });
 
-    _mainTabs.DataContext = mainTabsVM;
+    _mainTabs.Bind(mainTabsVM);
   }
 
   private View? _getMainTabsView(LinearLayout container, object? item) =>

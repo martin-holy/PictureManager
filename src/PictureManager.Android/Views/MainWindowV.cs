@@ -43,7 +43,7 @@ public class MainWindowV : LinearLayout {
 
   private void _bind(MainWindowVM dataContext) {
     _slidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = dataContext.MainMenu.Root });
-    _treeViewCategories.DataContext = _dataContext.TreeViewCategories;
+    _treeViewCategories.Bind(_dataContext.TreeViewCategories);
     _middleContent.Bind(Common.Core.VM.MainTabs);
   }
 
