@@ -39,5 +39,30 @@ csharp_new_line_before_open_brace=none
 # ReSharper properties
 resharper_other_braces=end_of_line
 
+# Define symbols for private/protected methods
+dotnet_naming_symbols.private_protected_methods.applicable_kinds = method
+dotnet_naming_symbols.private_protected_methods.applicable_accessibilities = private, protected, protected_internal
+
+# Define naming style: underscore prefix and camelCase
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+
+# Apply naming rule
+dotnet_naming_rule.private_protected_methods_underscore.severity = warning
+dotnet_naming_rule.private_protected_methods_underscore.symbols = private_protected_methods
+dotnet_naming_rule.private_protected_methods_underscore.style = underscore_camel_case
+csharp_indent_labels = one_less_than_current
+csharp_using_directive_placement = outside_namespace:silent
+csharp_prefer_simple_using_statement = true:suggestion
+csharp_prefer_braces = false:silent
+csharp_style_namespace_declarations = file_scoped:silent
+csharp_style_prefer_method_group_conversion = true:silent
+csharp_style_prefer_top_level_statements = true:silent
+csharp_style_prefer_primary_constructors = true:suggestion
+csharp_prefer_system_threading_lock = true:suggestion
+
 [*.{cs,vb}]
 dotnet_style_parentheses_in_other_operators=always_for_clarity:silent
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+tab_width = 2
+indent_size = 2
