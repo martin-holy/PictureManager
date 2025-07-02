@@ -23,7 +23,7 @@ public class MainWindowV : LinearLayout {
 
   // TODO test - delete later
   private void _mainTabs_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
-    _collectionViewMediaItems.ViewModel = MediaItemsTestView;
+    _collectionViewMediaItems.Bind(MediaItemsTestView);
   }
 
   public MainWindowV(Context context) : base(context) => _initialize(context, null);
