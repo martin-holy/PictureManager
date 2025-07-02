@@ -15,11 +15,11 @@ public class MediaItemThumbFullV : LinearLayout {
 
   public MediaItemM? DataContext { get; private set; }
 
-  public MediaItemThumbFullV(Context context) : base(context) => _initialize(context, null);
-  public MediaItemThumbFullV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
-  protected MediaItemThumbFullV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
+  public MediaItemThumbFullV(Context context) : base(context) => _initialize(context);
+  public MediaItemThumbFullV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected MediaItemThumbFullV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
-  private void _initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context) {
     LayoutInflater.From(context)!.Inflate(Resource.Layout.pm_dt_media_item_thumb_full, this, true);
     _image = FindViewById<ImageView>(Resource.Id.image)!;
   }
@@ -38,7 +38,7 @@ public class MediaItemThumbFullV : LinearLayout {
     return this;
   }
 
-  private async void _loadThumbnailAsync(string imagePath, ImageView imageView, Context context) {
+  private static async void _loadThumbnailAsync(string imagePath, ImageView imageView, Context context) {
     var thumbnail = await Task.Run(() => MediaStoreU.GetThumbnailBitmap(imagePath, context));
     MH.Utils.Tasks.Dispatch(() => imageView.SetImageBitmap(thumbnail));
   }
