@@ -12,11 +12,11 @@ namespace PictureManager.Android.Views;
 public class MiddleContentV : LinearLayout {
   private TabControlHost _mainTabs = null!;
 
-  public MiddleContentV(Context context) : base(context) => _initialize(context, null);
-  public MiddleContentV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
-  protected MiddleContentV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
+  public MiddleContentV(Context context) : base(context) => _initialize(context);
+  public MiddleContentV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected MiddleContentV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
-  private void _initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context) {
     _mainTabs = new(context) { GetItemView = _getMainTabsView };
     AddView(_mainTabs);
   }
