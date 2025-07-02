@@ -14,11 +14,11 @@ public class MediaItemsViewV : LinearLayout {
 
   public MediaItemsViewVM? DataContext { get; private set; }
 
-  public MediaItemsViewV(Context context) : base(context) => _initialize(context, null);
-  public MediaItemsViewV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
-  protected MediaItemsViewV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
+  public MediaItemsViewV(Context context) : base(context) => _initialize(context);
+  public MediaItemsViewV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected MediaItemsViewV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
-  private void _initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context) {
     _host = new(context) { GetItemView = _getItemView };
     AddView(_host);
   }
