@@ -36,7 +36,7 @@ public class MediaItemsViewV : LinearLayout {
   public MediaItemsViewV Bind(MediaItemsViewVM? dataContext) {
     DataContext = dataContext;
     if (DataContext == null) return this;
-    _host.ViewModel = DataContext;
+    _host.Bind(DataContext);
     return this;
   }
 }
