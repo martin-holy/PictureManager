@@ -14,9 +14,8 @@ public class MainWindowV : LinearLayout {
   private SlidePanelsGridHost _slidePanels = null!;
   private TabControlHost _treeViewCategories = null!;
   private MiddleContentV _middleContent = null!;
-  private MainWindowVM _dataContext = null!;
 
-  public MainWindowVM DataContext { get => _dataContext; set { _dataContext = value; _bind(value); } }
+  public MainWindowVM? DataContext { get; private set; }
 
   public MainWindowV(Context context) : base(context) => _initialize(context);
   public MainWindowV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
@@ -41,10 +40,13 @@ public class MainWindowV : LinearLayout {
     _slidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
   }
 
-  private void _bind(MainWindowVM dataContext) {
-    _slidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = dataContext.MainMenu.Root });
-    _treeViewCategories.Bind(_dataContext.TreeViewCategories);
+  public MainWindowV Bind(MainWindowVM? dataContext) {
+    DataContext = dataContext;
+    if (DataContext == null) return this;
+    _slidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = DataContext.MainMenu.Root });
+    _treeViewCategories.Bind(DataContext.TreeViewCategories);
     _middleContent.Bind(Common.Core.VM.MainTabs);
+    return this;
   }
 
   private View? _getTreeViewCategoriesView(LinearLayout container, object? item) {

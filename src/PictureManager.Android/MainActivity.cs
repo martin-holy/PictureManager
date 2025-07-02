@@ -30,10 +30,8 @@ public class MainActivity : Activity {
       Core.AfterInit(CoreUI);
       CoreUI.AfterInit();
 
-      MH.Utils.Tasks.Dispatch(() => {
-        var mainWindow = new MainWindowV(this) { DataContext = Core.VM.MainWindow };
-        SetContentView(mainWindow);
-      });
+      MH.Utils.Tasks.Dispatch(() =>
+        SetContentView(new MainWindowV(this).Bind(Core.VM.MainWindow)));
     });
   }
 }
