@@ -17,7 +17,10 @@ public class MiddleContentV : LinearLayout {
   protected MiddleContentV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
   private void _initialize(Context context) {
-    _mainTabs = new(context) { GetItemView = _getMainTabsView };
+    _mainTabs = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
+      GetItemView = _getMainTabsView
+    };
     AddView(_mainTabs);
   }
 

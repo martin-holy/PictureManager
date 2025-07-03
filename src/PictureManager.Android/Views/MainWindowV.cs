@@ -25,8 +25,14 @@ public class MainWindowV : LinearLayout {
     _slidePanels = new(context);
     AddView(_slidePanels);
 
-    _treeViewCategories = new(context) { GetItemView = _getTreeViewCategoriesView };
-    _middleContent = new(context);
+    _treeViewCategories = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
+      GetItemView = _getTreeViewCategoriesView
+    };
+
+    _middleContent = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
+    };
 
     _slidePanels.SetPanelFactory(position => {
       return position switch {
