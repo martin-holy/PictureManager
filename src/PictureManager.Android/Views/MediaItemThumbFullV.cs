@@ -32,8 +32,8 @@ public class MediaItemThumbFullV : LinearLayout {
     }
 
     LayoutParameters = new ViewGroup.LayoutParams(
-      DisplayU.DpToPx(view.GetItemSize(group.ViewMode, mi, true)),
-      DisplayU.DpToPx(view.GetItemSize(group.ViewMode, mi, false)));
+      view.GetItemSize(group.ViewMode, mi, true),
+      view.GetItemSize(group.ViewMode, mi, false));
     _loadThumbnailAsync(mi.FilePath, _image, Context!);
     return this;
   }
