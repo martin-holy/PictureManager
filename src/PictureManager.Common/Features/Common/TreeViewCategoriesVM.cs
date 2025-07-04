@@ -16,7 +16,8 @@ public sealed class TreeViewCategoriesVM : TabControl {
   public RatingTreeCategory RatingsTreeCategory { get; } = new();
   public SlidePanelPinButton SlidePanelPinButton { get; } = new();
 
-  public TreeViewCategoriesVM() : base(new(Dock.Top, Dock.Right, new TreeViewCategoriesSlotVM())) {
+  public TreeViewCategoriesVM() :
+    base(new(Dock.Top, Dock.Right, new TreeViewCategoriesSlotVM()) { IconTextVisibility = IconTextVisibility.Icon }) {
     TreeViewSearch = new(this);
   }
 
