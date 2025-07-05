@@ -13,11 +13,13 @@ public sealed class MediaViewerVM : ObservableObject {
   private int _contentHeight;
   private MediaItemM? _current;
   private bool _isVisible;
+  private bool _isSwipeEnabled;
 
   public int ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
   public int ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
   public MediaItemM? Current { get => _current; set => _onCurrentChanged(value); }
   public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
+  public bool IsSwipeEnabled { get => _isSwipeEnabled; set { _isSwipeEnabled = value; OnPropertyChanged(); } }
   public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
   public List<MediaItemM> MediaItems { get; private set; } = [];
   public SlideshowVM Slideshow { get; }
