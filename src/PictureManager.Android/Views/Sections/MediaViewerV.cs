@@ -5,8 +5,8 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
-using MH.Utils.Extensions;
 using PictureManager.Common.Features.MediaItem;
+using System;
 using System.ComponentModel;
 using BitmapFactory = Android.Graphics.BitmapFactory;
 
@@ -14,7 +14,6 @@ namespace PictureManager.Android.Views.Sections;
 
 public class MediaViewerV : LinearLayout {
   private ViewPager2 _viewPager = null!;
-
   private MediaViewerVM? _dataContext;
 
   public MediaViewerVM? DataContext {
@@ -48,38 +47,54 @@ public class MediaViewerV : LinearLayout {
   }
 
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(MediaViewerVM.MediaItems))) {
-      _viewPager.Adapter = new MediaViewerAdapter(DataContext!);
-      _viewPager.Adapter?.NotifyDataSetChanged();
+    switch (e.PropertyName) {
+      case nameof(MediaViewerVM.IsVisible):
+        _dataContext!.IsSwipeEnabled = _dataContext!.IsVisible;
+        break;
+      case nameof(MediaViewerVM.MediaItems):
+        _viewPager.Adapter = new MediaViewerAdapter(DataContext!);
+        _viewPager.Adapter?.NotifyDataSetChanged();
+        break;
+      case nameof(MediaViewerVM.IsSwipeEnabled):
+        _viewPager.UserInputEnabled = _dataContext!.IsSwipeEnabled;
+        break;
     }
   }
 }
 
-public class MediaViewerAdapter(MediaViewerVM vm) : RecyclerView.Adapter {
-  public override int ItemCount => vm.MediaItems.Count;
+public class MediaViewerAdapter(MediaViewerVM mediaViewer) : RecyclerView.Adapter {
+  public override int ItemCount => mediaViewer.MediaItems.Count;
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-    MediaViewerMediaItemViewHolder.Create(parent);
+    MediaViewerMediaItemViewHolder.Create(parent, mediaViewer);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-    ((MediaViewerMediaItemViewHolder)holder).Bind(vm.MediaItems[position]);
+    ((MediaViewerMediaItemViewHolder)holder).Bind(mediaViewer.MediaItems[position]);
 }
 
 public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
+  private readonly MediaViewerVM _mediaViewer;
   private readonly ImageView _image;
 
-  public MediaViewerMediaItemViewHolder(LinearLayout itemView) : base(itemView) {
+  public MediaViewerMediaItemViewHolder(LinearLayout itemView, MediaViewerVM mediaViewer) : base(itemView) {
+    _mediaViewer = mediaViewer;
     _image = new(itemView.Context) {
       LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent)
     };
 
     itemView.AddView(_image);
+    itemView.Clickable = true;
+    itemView.Click += _itemView_Click;
   }
 
-  public static MediaViewerMediaItemViewHolder Create(ViewGroup parent) =>
+  private void _itemView_Click(object? sender, EventArgs e) {
+    _mediaViewer.IsSwipeEnabled = !_mediaViewer.IsSwipeEnabled;
+  }
+
+  public static MediaViewerMediaItemViewHolder Create(ViewGroup parent, MediaViewerVM mediaViewer) =>
     new(new LinearLayout(parent.Context) {
       LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
-    });
+    }, mediaViewer);
 
   public void Bind(MediaItemM? mi) {
     if (mi == null) {

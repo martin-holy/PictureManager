@@ -3,6 +3,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls;
 using MH.Utils.Extensions;
 using PictureManager.Android.Views.Sections;
@@ -14,6 +15,7 @@ namespace PictureManager.Android.Views;
 public class MiddleContentV : LinearLayout {
   private TabControlHost _mainTabs = null!;
   private MediaViewerV _mediaViewer = null!;
+  private ViewPager2? _mainViewPager;
 
   public MiddleContentV(Context context) : base(context) => _initialize(context);
   public MiddleContentV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
@@ -32,7 +34,8 @@ public class MiddleContentV : LinearLayout {
     AddView(_mediaViewer);
   }
 
-  public void Bind(CoreVM coreVM) {
+  public void Bind(CoreVM coreVM, ViewPager2 mainViewPager) {
+    _mainViewPager = mainViewPager;
     // TODO remove test data
     coreVM.MainTabs.Add("IconFolder", "Test", new TextView(Context) { Text = "Test Panel Folder" });
     coreVM.MainTabs.Add("IconTag", "Test Tag", new TextView(Context) { Text = "Test Panel Tag" });
@@ -44,6 +47,8 @@ public class MiddleContentV : LinearLayout {
     coreVM.MediaViewer.PropertyChanged += (_, e) => {
       if (e.Is(nameof(MediaViewerVM.IsVisible)))
         _updateVisibility(coreVM.MediaViewer.IsVisible);
+      else if (e.Is(nameof(MediaViewerVM.IsSwipeEnabled)))
+        _mainViewPager.UserInputEnabled = !coreVM.MediaViewer.IsSwipeEnabled;
     };
   }
 

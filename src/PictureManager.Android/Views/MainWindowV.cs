@@ -51,7 +51,7 @@ public class MainWindowV : LinearLayout {
     if (DataContext == null) return this;
     _slidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = DataContext.MainMenu.Root });
     _treeViewCategories.Bind(DataContext.TreeViewCategories);
-    _middleContent.Bind(Common.Core.VM);
+    _middleContent.Bind(Common.Core.VM, _slidePanels.ViewPager);
     return this;
   }
 
