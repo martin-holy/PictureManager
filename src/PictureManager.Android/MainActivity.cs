@@ -3,6 +3,7 @@ using Android.Content.PM;
 using Android.OS;
 using PictureManager.Android.Views;
 using PictureManager.Common;
+using PictureManager.Common.Layout;
 using System;
 using System.Threading.Tasks;
 using Perm = Android.Manifest.Permission;
@@ -33,5 +34,13 @@ public class MainActivity : Activity {
       MH.Utils.Tasks.Dispatch(() =>
         SetContentView(new MainWindowV(this).Bind(Core.VM.MainWindow)));
     });
+  }
+
+  public override void OnBackPressed() {
+    if (MainWindowVM.SwitchToBrowserCommand.CanExecute(null)) {
+      MainWindowVM.SwitchToBrowserCommand.Execute(null);
+      return;
+    }
+    base.OnBackPressed();
   }
 }
