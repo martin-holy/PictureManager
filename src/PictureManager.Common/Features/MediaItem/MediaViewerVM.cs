@@ -57,6 +57,7 @@ public sealed class MediaViewerVM : ObservableObject {
   public void Deactivate() {
     Slideshow.Stop();
     MediaItems.Clear();
+    OnPropertyChanged(nameof(MediaItems));
   }
 
   public void SetMediaItems(List<MediaItemM>? mediaItems, MediaItemM current) {
@@ -72,6 +73,7 @@ public sealed class MediaViewerVM : ObservableObject {
       MediaItems = mediaItems;
       Current = current;
     }
+    OnPropertyChanged(nameof(MediaItems));
   }
 
   public bool Next() {
@@ -109,5 +111,6 @@ public sealed class MediaViewerVM : ObservableObject {
     if (!MediaItems.Remove(oldMi) || newMi == null) return;
     _indexOfCurrent = MediaItems.IndexOf(newMi);
     Current = newMi;
+    OnPropertyChanged(nameof(MediaItems));
   }
 }
