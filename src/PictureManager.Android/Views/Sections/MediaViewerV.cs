@@ -47,16 +47,22 @@ public class MediaViewerV : LinearLayout {
   }
 
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (_dataContext == null) return;
+
     switch (e.PropertyName) {
       case nameof(MediaViewerVM.IsVisible):
-        _dataContext!.IsSwipeEnabled = _dataContext!.IsVisible;
+        _dataContext.IsSwipeEnabled = _dataContext.IsVisible;
         break;
       case nameof(MediaViewerVM.MediaItems):
-        _viewPager.Adapter = new MediaViewerAdapter(DataContext!);
+        _viewPager.Adapter = new MediaViewerAdapter(_dataContext);
         _viewPager.Adapter?.NotifyDataSetChanged();
         break;
       case nameof(MediaViewerVM.IsSwipeEnabled):
-        _viewPager.UserInputEnabled = _dataContext!.IsSwipeEnabled;
+        _viewPager.UserInputEnabled = _dataContext.IsSwipeEnabled;
+        break;
+      case nameof(MediaViewerVM.Current):
+        if (_dataContext.IsVisible)
+          _viewPager.SetCurrentItem(_dataContext.IndexOfCurrent, false);
         break;
     }
   }
