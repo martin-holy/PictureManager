@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
@@ -6,7 +7,12 @@ using PictureManager.Common.Features.MediaItem;
 namespace PictureManager.Android;
 
 public class CoreUI: ICoreP {
-  public CoreUI() {
+  private readonly MainActivity _mainActivity;
+
+  public MainWindowV MainWindow { get; private set; } = null!;
+
+  public CoreUI(MainActivity mainActivity) {
+    _mainActivity = mainActivity;
     // TODO PORT
     MH.UI.Android.Utils.Init.SetDelegates();
     MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
@@ -16,6 +22,7 @@ public class CoreUI: ICoreP {
 
   public void AfterInit() {
     Core.Settings.MediaItem.MediaItemThumbScale = 0.5;
+    MainWindow = new MainWindowV(_mainActivity).Bind(Core.VM.MainWindow);
   }
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) => throw new System.NotImplementedException();

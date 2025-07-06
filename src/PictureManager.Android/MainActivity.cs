@@ -27,12 +27,10 @@ public class MainActivity : Activity {
     Core = Core.Inst;
     Task.Run(async () => {
       await Core.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
-      CoreUI = new();
+      CoreUI = new(this);
       Core.AfterInit(CoreUI);
       CoreUI.AfterInit();
-
-      MH.Utils.Tasks.Dispatch(() =>
-        SetContentView(new MainWindowV(this).Bind(Core.VM.MainWindow)));
+      MH.Utils.Tasks.Dispatch(() => SetContentView(CoreUI.MainWindow));
     });
   }
 
