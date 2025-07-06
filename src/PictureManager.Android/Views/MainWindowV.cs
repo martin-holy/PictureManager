@@ -11,10 +11,9 @@ using System;
 namespace PictureManager.Android.Views;
 
 public class MainWindowV : LinearLayout {
-  private SlidePanelsGridHost _slidePanels = null!;
-  private TabControlHost _treeViewCategories = null!;
-  private MiddleContentV _middleContent = null!;
-
+  public SlidePanelsGridHost SlidePanels { get; private set; } = null!;
+  public TabControlHost TreeViewCategories { get; private set; } = null!;
+  public MiddleContentV MiddleContent { get; private set; } = null!;
   public MainWindowVM? DataContext { get; private set; }
 
   public MainWindowV(Context context) : base(context) => _initialize(context);
@@ -22,36 +21,36 @@ public class MainWindowV : LinearLayout {
   protected MainWindowV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
   private void _initialize(Context context) {
-    _slidePanels = new(context);
-    AddView(_slidePanels);
+    SlidePanels = new(context);
+    AddView(SlidePanels);
 
-    _treeViewCategories = new(context) {
+    TreeViewCategories = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
       GetItemView = _getTreeViewCategoriesView
     };
 
-    _middleContent = new(context) {
+    MiddleContent = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
 
-    _slidePanels.SetPanelFactory(position => {
+    SlidePanels.SetPanelFactory(position => {
       return position switch {
-        0 => _treeViewCategories,
-        1 => _middleContent,
+        0 => TreeViewCategories,
+        1 => MiddleContent,
         2 => new TextView(context) { Text = "Right Panel" },
         _ => throw new ArgumentOutOfRangeException(nameof(position))
       };
     });
 
-    _slidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
+    SlidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
   }
 
   public MainWindowV Bind(MainWindowVM? dataContext) {
     DataContext = dataContext;
     if (DataContext == null) return this;
-    _slidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = DataContext.MainMenu.Root });
-    _treeViewCategories.Bind(DataContext.TreeViewCategories);
-    _middleContent.Bind(Common.Core.VM, _slidePanels.ViewPager);
+    SlidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = DataContext.MainMenu.Root });
+    TreeViewCategories.Bind(DataContext.TreeViewCategories);
+    MiddleContent.Bind(Common.Core.VM, SlidePanels.ViewPager);
     return this;
   }
 
