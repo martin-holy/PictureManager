@@ -64,12 +64,11 @@ public class MediaItemsViewV : LinearLayout {
 
     _importText = new TextView(context) {
       LayoutParameters = new LayoutParams(LayoutParams.WrapContent, LayoutParams.WrapContent) {
-        LeftMargin = DisplayU.DpToPx(8)
-      },
-      TextSize = 18
+        BottomMargin = DisplayU.DpToPx(6)
+      }
     };
 
-    _importProgress = new ProgressBar(context, null, global::Android.Resource.Attribute.ProgressBarStyleHorizontal) {
+    _importProgress = new ProgressBar(context) {
       LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent) {
         LeftMargin = DisplayU.DpToPx(6),
         RightMargin = DisplayU.DpToPx(6)
@@ -108,7 +107,6 @@ public class MediaItemsViewV : LinearLayout {
     _host.Bind(dataContext);
     _importCancelButton.Click += delegate { dataContext.Import.CancelCommand.Execute(null); };
     _updateVisibility();
-    _updateImportUI();
     return this;
   }
 
@@ -118,10 +116,18 @@ public class MediaItemsViewV : LinearLayout {
   }
 
   private void _onImportPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(MediaItemsViewVM.Import.IsImporting)))
-      _updateVisibility();
-    else if (e.Is(nameof(MediaItemsViewVM.Import.Count)) || e.Is(nameof(MediaItemsViewVM.Import.DoneCount)))
-      _updateImportUI();
+    switch (e.PropertyName) {
+      case nameof(MediaItemsViewVM.Import.IsImporting):
+        _updateVisibility();
+        break;
+      case nameof(MediaItemsViewVM.Import.Count):
+        _importText.Text = $"Importing {_dataContext!.Import.Count} new items ...";
+        _importProgress.Max = _dataContext.Import.Count;    
+        break;
+      case nameof(MediaItemsViewVM.Import.DoneCount):
+        _importProgress.Progress = _dataContext!.Import.DoneCount;
+        break;
+    }
   }
 
   private void _updateVisibility() {
@@ -129,12 +135,5 @@ public class MediaItemsViewV : LinearLayout {
     _loadingText.Visibility = _dataContext.IsLoading && !_dataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
     _importContainer.Visibility = _dataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
     _host.Visibility = !_dataContext.IsLoading && !_dataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
-  }
-
-  private void _updateImportUI() {
-    if (_dataContext?.Import == null) return;
-    _importText.Text = $"Importing {_dataContext.Import.Count} new items ...";
-    _importProgress.Max = _dataContext.Import.Count;
-    _importProgress.Progress = _dataContext.Import.DoneCount;
   }
 }
