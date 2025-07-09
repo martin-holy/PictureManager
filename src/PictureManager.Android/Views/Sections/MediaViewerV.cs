@@ -5,10 +5,12 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
+using MH.UI.Android.Controls;
+using MH.UI.Controls;
+using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using System;
 using System.ComponentModel;
-using BitmapFactory = Android.Graphics.BitmapFactory;
 
 namespace PictureManager.Android.Views.Sections;
 
@@ -36,6 +38,7 @@ public class MediaViewerV : LinearLayout {
     _viewPager = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
+    _viewPager.RegisterOnPageChangeCallback(new PageChangeCallback(this));
     AddView(_viewPager);
   }
 
@@ -66,6 +69,18 @@ public class MediaViewerV : LinearLayout {
         break;
     }
   }
+
+  private class PageChangeCallback : ViewPager2.OnPageChangeCallback {
+    private readonly MediaViewerV _viewer;
+
+    public PageChangeCallback(MediaViewerV viewer) => _viewer = viewer;
+
+    public override void OnPageSelected(int position) {
+      /*if (_viewer._dataContext != null && position < _viewer._dataContext.MediaItems.Count) {
+        _viewer._dataContext.Current = _viewer._dataContext.MediaItems[position];
+      }*/
+    }
+  }
 }
 
 public class MediaViewerAdapter(MediaViewerVM mediaViewer) : RecyclerView.Adapter {
@@ -80,15 +95,20 @@ public class MediaViewerAdapter(MediaViewerVM mediaViewer) : RecyclerView.Adapte
 
 public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
   private readonly MediaViewerVM _mediaViewer;
-  private readonly ImageView _image;
+  private readonly ZoomAndPan _zoomAndPan;
+  private readonly ZoomAndPanHost _zoomAndPanHost;
 
   public MediaViewerMediaItemViewHolder(LinearLayout itemView, MediaViewerVM mediaViewer) : base(itemView) {
     _mediaViewer = mediaViewer;
-    _image = new(itemView.Context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent)
+    _zoomAndPan = new() {
+      ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
+      ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
+    };
+    _zoomAndPanHost = new ZoomAndPanHost(itemView.Context!) {
+      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
 
-    itemView.AddView(_image);
+    itemView.AddView(_zoomAndPanHost);
     itemView.Clickable = true;
     itemView.Click += _itemView_Click;
   }
@@ -104,10 +124,15 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
 
   public void Bind(MediaItemM? mi) {
     if (mi == null) {
-      _image.SetImageBitmap(null);
+      _zoomAndPanHost.SetImageBitmap(null);
       return;
     }
 
-    _image.SetImageBitmap(BitmapFactory.DecodeFile(mi.FilePath));
+    var rotated = mi.Orientation is MH.Utils.Orientation.Rotate90 or MH.Utils.Orientation.Rotate270;
+    var width = rotated ? mi.Height : mi.Width;
+    var height = rotated ? mi.Width : mi.Height;
+    _zoomAndPan.ScaleToFitContent(width, height);
+    _zoomAndPanHost.Bind(_zoomAndPan);
+    _zoomAndPanHost.SetImageBitmap(global::Android.Graphics.BitmapFactory.DecodeFile(mi.FilePath));
   }
 }
