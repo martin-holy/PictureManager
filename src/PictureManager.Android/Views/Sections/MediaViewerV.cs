@@ -57,15 +57,12 @@ public class MediaViewerV : LinearLayout {
         _dataContext.IsSwipeEnabled = _dataContext.IsVisible;
         break;
       case nameof(MediaViewerVM.MediaItems):
+        if (_dataContext.MediaItems.Count == 0) return;
         _viewPager.Adapter = new MediaViewerAdapter(_dataContext);
-        _viewPager.Adapter?.NotifyDataSetChanged();
+        _viewPager.SetCurrentItem(_dataContext.IndexOfCurrent, false);
         break;
       case nameof(MediaViewerVM.IsSwipeEnabled):
         _viewPager.UserInputEnabled = _dataContext.IsSwipeEnabled;
-        break;
-      case nameof(MediaViewerVM.Current):
-        if (_dataContext.IsVisible)
-          _viewPager.SetCurrentItem(_dataContext.IndexOfCurrent, false);
         break;
     }
   }
@@ -76,9 +73,8 @@ public class MediaViewerV : LinearLayout {
     public PageChangeCallback(MediaViewerV viewer) => _viewer = viewer;
 
     public override void OnPageSelected(int position) {
-      /*if (_viewer._dataContext != null && position < _viewer._dataContext.MediaItems.Count) {
+      if (_viewer._dataContext != null)
         _viewer._dataContext.Current = _viewer._dataContext.MediaItems[position];
-      }*/
     }
   }
 }
@@ -131,8 +127,11 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
     var rotated = mi.Orientation is MH.Utils.Orientation.Rotate90 or MH.Utils.Orientation.Rotate270;
     var width = rotated ? mi.Height : mi.Width;
     var height = rotated ? mi.Width : mi.Height;
-    _zoomAndPan.ScaleToFitContent(width, height);
+
+    // TODO try set Content size only and let do ScaleToFit on HostSizeChanged
     _zoomAndPanHost.Bind(_zoomAndPan);
+    _zoomAndPan.ScaleToFitContent(width, height);
+    _zoomAndPanHost.UpdateImageTransform();
     _zoomAndPanHost.SetImageBitmap(global::Android.Graphics.BitmapFactory.DecodeFile(mi.FilePath));
   }
 }
