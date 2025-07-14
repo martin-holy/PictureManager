@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<vector
+  xmlns:a="http://schemas.android.com/apk/res/android"
+  a:width="24dp"
+  a:height="24dp"
+  a:viewportWidth="48"
+  a:viewportHeight="48">
+  <path
+    a:pathData="M0 48V0h48v48Zm3.015-3.014h41.97V3.014H3.015Z"
+    a:fillColor="@color/icon_default"/>
+</vector>
