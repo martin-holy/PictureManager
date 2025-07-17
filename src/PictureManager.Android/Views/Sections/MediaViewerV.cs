@@ -73,8 +73,15 @@ public class MediaViewerV : LinearLayout {
     public PageChangeCallback(MediaViewerV viewer) => _viewer = viewer;
 
     public override void OnPageSelected(int position) {
-      if (_viewer._dataContext != null)
-        _viewer._dataContext.Current = _viewer._dataContext.MediaItems[position];
+      if (_viewer._dataContext == null) return;
+
+      var current = _viewer._dataContext.MediaItems[position];
+      _viewer._dataContext.Current = current;
+
+      if ((_viewer._viewPager.GetChildAt(0) as RecyclerView)?.FindViewHolderForAdapterPosition(position) as MediaViewerMediaItemViewHolder is { } view) {
+        view.ScaleToFitContent(current);
+        view.UpdateImageTransform();
+      }
     }
   }
 }
@@ -127,11 +134,19 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
     var rotated = mi.Orientation is MH.Utils.Orientation.Rotate90 or MH.Utils.Orientation.Rotate270;
     var width = rotated ? mi.Height : mi.Width;
     var height = rotated ? mi.Width : mi.Height;
-
-    // TODO try set Content size only and let do ScaleToFit on HostSizeChanged
+    _zoomAndPan.ContentWidth = width;
+    _zoomAndPan.ContentHeight = height;
     _zoomAndPanHost.Bind(_zoomAndPan);
-    _zoomAndPan.ScaleToFitContent(width, height);
-    _zoomAndPanHost.UpdateImageTransform();
     _zoomAndPanHost.SetImageBitmap(global::Android.Graphics.BitmapFactory.DecodeFile(mi.FilePath));
+  }
+
+  public void UpdateImageTransform() =>
+    _zoomAndPanHost.UpdateImageTransform();
+
+  public void ScaleToFitContent(MediaItemM mi) {
+    var rotated = mi.Orientation is MH.Utils.Orientation.Rotate90 or MH.Utils.Orientation.Rotate270;
+    var width = rotated ? mi.Height : mi.Width;
+    var height = rotated ? mi.Width : mi.Height;
+    _zoomAndPan.ScaleToFitContent(width, height);
   }
 }
