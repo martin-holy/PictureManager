@@ -46,7 +46,7 @@ public sealed class MediaViewerVM : ObservableObject {
     OnPropertyChanged(nameof(Current));
     OnPropertyChanged(nameof(PositionSlashCount));
 
-    if (current != null) {
+    if (current != null && !System.OperatingSystem.IsAndroid()) {
       var rotated = current.Orientation is Orientation.Rotate90 or Orientation.Rotate270;
 
       ContentWidth = rotated ? current.Height : current.Width;
