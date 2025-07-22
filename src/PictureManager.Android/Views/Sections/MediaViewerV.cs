@@ -103,13 +103,12 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
     _zoomAndPanHost = new ZoomAndPanHost(itemView.Context!) {
       LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
+    _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
 
     itemView.AddView(_zoomAndPanHost);
-    itemView.Clickable = true;
-    itemView.Click += _itemView_Click;
   }
 
-  private void _itemView_Click(object? sender, EventArgs e) {
+  private void _onSingleTap(object? sender, EventArgs e) {
     _mediaViewer.IsSwipeEnabled = !_mediaViewer.IsSwipeEnabled;
   }
 
