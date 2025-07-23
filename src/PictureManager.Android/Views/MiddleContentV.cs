@@ -47,8 +47,8 @@ public class MiddleContentV : LinearLayout {
     coreVM.MediaViewer.PropertyChanged += (_, e) => {
       if (e.Is(nameof(MediaViewerVM.IsVisible)))
         _updateVisibility(coreVM.MediaViewer.IsVisible);
-      else if (e.Is(nameof(MediaViewerVM.IsSwipeEnabled)))
-        _mainViewPager.UserInputEnabled = !coreVM.MediaViewer.IsSwipeEnabled;
+      else if (e.Is(nameof(MediaViewerVM.UserInputMode)))
+        _mainViewPager.UserInputEnabled = coreVM.MediaViewer.UserInputMode == MediaViewerVM.UserInputModes.Disabled;
     };
   }
 

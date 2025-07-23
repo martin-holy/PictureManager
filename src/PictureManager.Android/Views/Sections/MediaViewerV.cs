@@ -7,6 +7,7 @@ using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Controls;
+using MH.Utils.Extensions;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using System;
@@ -54,15 +55,16 @@ public class MediaViewerV : LinearLayout {
 
     switch (e.PropertyName) {
       case nameof(MediaViewerVM.IsVisible):
-        _dataContext.IsSwipeEnabled = _dataContext.IsVisible;
+        if (_dataContext.IsVisible)
+          _dataContext.UserInputMode = MediaViewerVM.UserInputModes.Browse;
         break;
       case nameof(MediaViewerVM.MediaItems):
         if (_dataContext.MediaItems.Count == 0) return;
         _viewPager.Adapter = new MediaViewerAdapter(_dataContext);
         _viewPager.SetCurrentItem(_dataContext.IndexOfCurrent, false);
         break;
-      case nameof(MediaViewerVM.IsSwipeEnabled):
-        _viewPager.UserInputEnabled = _dataContext.IsSwipeEnabled;
+      case nameof(MediaViewerVM.UserInputMode):
+        _viewPager.UserInputEnabled = _dataContext.UserInputMode == MediaViewerVM.UserInputModes.Browse;
         break;
     }
   }
@@ -100,6 +102,13 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
       ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
       ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
     };
+    _zoomAndPan.PropertyChanged += (o, e) => {
+      if (e.Is(nameof(ZoomAndPan.IsZoomed)))
+        _mediaViewer.UserInputMode = (o as ZoomAndPan)!.IsZoomed
+          ? MediaViewerVM.UserInputModes.Transform
+          : MediaViewerVM.UserInputModes.Browse;
+    };
+
     _zoomAndPanHost = new ZoomAndPanHost(itemView.Context!) {
       LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
@@ -109,7 +118,11 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
   }
 
   private void _onSingleTap(object? sender, EventArgs e) {
-    _mediaViewer.IsSwipeEnabled = !_mediaViewer.IsSwipeEnabled;
+    _mediaViewer.UserInputMode = _mediaViewer.UserInputMode != MediaViewerVM.UserInputModes.Disabled
+      ? MediaViewerVM.UserInputModes.Disabled
+      : _zoomAndPan.IsZoomed
+        ? MediaViewerVM.UserInputModes.Transform
+        : MediaViewerVM.UserInputModes.Browse;
   }
 
   public static MediaViewerMediaItemViewHolder Create(ViewGroup parent, MediaViewerVM mediaViewer) =>
