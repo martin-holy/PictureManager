@@ -8,7 +8,7 @@ using MH.UI.Interfaces;
 using PictureManager.Common.Features.MediaItem;
 using System.Threading.Tasks;
 
-namespace PictureManager.Android.Views;
+namespace PictureManager.Android.Views.Entities;
 
 public class MediaItemThumbFullV : LinearLayout {
   private ImageView _image = null!;

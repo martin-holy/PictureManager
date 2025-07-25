@@ -7,6 +7,7 @@ using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils.Extensions;
+using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.MediaItem;
 using System.ComponentModel;
 
