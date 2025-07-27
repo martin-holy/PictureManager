@@ -97,7 +97,7 @@ public class MediaItemsViewV : LinearLayout {
   private View? _getItemView(LinearLayout container, ICollectionViewGroup group, object? item) {
     if (item is not MediaItemM mi) return null;
     return group.GetItemTemplateName() switch {
-      "PM.DT.MediaItem.Thumb-Full" => new MediaItemThumbFullV(container.Context!).Bind(mi, DataContext!, group),
+      "PM.DT.MediaItem.Thumb-Full" => new MediaItemThumbFullV(container.Context!).Bind(mi),
       _ => null
     };
   }

@@ -4,7 +4,6 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
-using MH.UI.Interfaces;
 using PictureManager.Common.Features.MediaItem;
 using System.Threading.Tasks;
 
@@ -24,16 +23,13 @@ public class MediaItemThumbFullV : LinearLayout {
     _image = FindViewById<ImageView>(Resource.Id.image)!;
   }
 
-  public MediaItemThumbFullV Bind(MediaItemM? mi, MediaItemCollectionView view, ICollectionViewGroup group) {
+  public MediaItemThumbFullV Bind(MediaItemM? mi) {
     DataContext = mi;
     if (mi == null) {
       _image.SetImageBitmap(null);
       return this;
     }
 
-    LayoutParameters = new ViewGroup.LayoutParams(
-      view.GetItemSize(group.ViewMode, mi, true),
-      view.GetItemSize(group.ViewMode, mi, false));
     _loadThumbnailAsync(mi.FilePath, _image, Context!);
     return this;
   }
