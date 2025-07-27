@@ -18,6 +18,7 @@ public class CoreUI: ICoreP {
     MH.UI.Android.Utils.Init.SetDelegates();
     MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
     MH.UI.Android.Utils.DisplayU.Init(Application.Context!.Resources!.DisplayMetrics!);
+    MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
   }
 
