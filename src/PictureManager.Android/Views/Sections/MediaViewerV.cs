@@ -105,12 +105,12 @@ public class MediaViewerAdapter(MediaViewerVM mediaViewer) : RecyclerView.Adapte
 
 public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder, IDisposable {
   private bool _disposed;
-  private readonly MediaViewerVM _mediaViewer;
+  private readonly WeakReference<MediaViewerVM> _mediaViewerWeakRef;
   private readonly ZoomAndPan _zoomAndPan;
   private readonly ZoomAndPanHost _zoomAndPanHost;
 
   public MediaViewerMediaItemViewHolder(LinearLayout itemView, MediaViewerVM mediaViewer) : base(itemView) {
-    _mediaViewer = mediaViewer;
+    _mediaViewerWeakRef = new WeakReference<MediaViewerVM>(mediaViewer);
     _zoomAndPan = new() {
       ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
       ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
@@ -126,14 +126,15 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder, IDisposab
   }
 
   private void _onZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(ZoomAndPan.IsZoomed)))
-      _mediaViewer.UserInputMode = (sender as ZoomAndPan)!.IsZoomed
+    if (e.Is(nameof(ZoomAndPan.IsZoomed)) && _mediaViewerWeakRef.TryGetTarget(out var mediaViewer))
+      mediaViewer.UserInputMode = (sender as ZoomAndPan)!.IsZoomed
         ? MediaViewerVM.UserInputModes.Transform
         : MediaViewerVM.UserInputModes.Browse;
   }
 
   private void _onSingleTap(object? sender, EventArgs e) {
-    _mediaViewer.UserInputMode = _mediaViewer.UserInputMode != MediaViewerVM.UserInputModes.Disabled
+    if (!_mediaViewerWeakRef.TryGetTarget(out var mediaViewer)) return;
+    mediaViewer.UserInputMode = mediaViewer.UserInputMode != MediaViewerVM.UserInputModes.Disabled
       ? MediaViewerVM.UserInputModes.Disabled
       : _zoomAndPan.IsZoomed
         ? MediaViewerVM.UserInputModes.Transform
