@@ -16,7 +16,8 @@ using System.ComponentModel;
 
 namespace PictureManager.Android.Views.Sections;
 
-public class MediaViewerV : LinearLayout {
+public class MediaViewerV : LinearLayout, IDisposable {
+  private bool _disposed;
   private ViewPager2 _viewPager = null!;
   private MediaViewerAdapter _adapter = null!;
   private MediaViewerVM? _dataContext;
@@ -39,7 +40,7 @@ public class MediaViewerV : LinearLayout {
   public MediaViewerV Bind(MediaViewerVM dataContext) {
     _updateEvents(_dataContext, dataContext);
     _dataContext = dataContext;
-    if (_dataContext == null) return this;   
+    if (_dataContext == null) return this;
     _adapter = new MediaViewerAdapter(dataContext);
     _viewPager.Adapter = _adapter;
     return this;
@@ -68,6 +69,19 @@ public class MediaViewerV : LinearLayout {
     }
   }
 
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+
+    if (disposing) {
+      _viewPager.Adapter = null;
+      _viewPager.Dispose();
+      _adapter.Dispose();
+    }
+
+    _disposed = true;
+    base.Dispose(disposing);
+  }
+
   private class PageChangeCallback : ViewPager2.OnPageChangeCallback {
     private readonly MediaViewerV _viewer;
 
@@ -89,7 +103,8 @@ public class MediaViewerAdapter(MediaViewerVM mediaViewer) : RecyclerView.Adapte
     ((MediaViewerMediaItemViewHolder)holder).Bind(mediaViewer.MediaItems[position]);
 }
 
-public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
+public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder, IDisposable {
+  private bool _disposed;
   private readonly MediaViewerVM _mediaViewer;
   private readonly ZoomAndPan _zoomAndPan;
   private readonly ZoomAndPanHost _zoomAndPanHost;
@@ -100,12 +115,7 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
       ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
       ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
     };
-    _zoomAndPan.PropertyChanged += (o, e) => {
-      if (e.Is(nameof(ZoomAndPan.IsZoomed)))
-        _mediaViewer.UserInputMode = (o as ZoomAndPan)!.IsZoomed
-          ? MediaViewerVM.UserInputModes.Transform
-          : MediaViewerVM.UserInputModes.Browse;
-    };
+    _zoomAndPan.PropertyChanged += _onZoomAndPanPropertyChanged;
 
     _zoomAndPanHost = new ZoomAndPanHost(itemView.Context!) {
       LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
@@ -113,6 +123,13 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
     _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
 
     itemView.AddView(_zoomAndPanHost);
+  }
+
+  private void _onZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(ZoomAndPan.IsZoomed)))
+      _mediaViewer.UserInputMode = (sender as ZoomAndPan)!.IsZoomed
+        ? MediaViewerVM.UserInputModes.Transform
+        : MediaViewerVM.UserInputModes.Browse;
   }
 
   private void _onSingleTap(object? sender, EventArgs e) {
@@ -143,5 +160,17 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
     _zoomAndPan.ScaleToFitContent(width, height);
     _zoomAndPanHost.SetImageBitmap(global::Android.Graphics.BitmapFactory.DecodeFile(mi.FilePath));
     _zoomAndPanHost.UpdateImageTransform();
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+
+    if (disposing) {
+      _zoomAndPanHost.Dispose();
+      _zoomAndPan.PropertyChanged -= _onZoomAndPanPropertyChanged;
+    }
+
+    _disposed = true;
+    base.Dispose(disposing);
   }
 }
