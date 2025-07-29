@@ -6,6 +6,7 @@ using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.Extensions;
 using PictureManager.Common;
@@ -20,16 +21,7 @@ public class MediaViewerV : LinearLayout {
   private MediaViewerAdapter _adapter = null!;
   private MediaViewerVM? _dataContext;
 
-  public MediaViewerVM? DataContext {
-    get => _dataContext;
-    private set {
-      if (_dataContext != null)
-        _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
-      _dataContext = value;
-      if (_dataContext != null)
-        _dataContext.PropertyChanged += _onDataContextPropertyChanged;
-    }
-  }
+  public MediaViewerVM DataContext { get => _dataContext ?? throw new InvalidOperationException(ErrorMessages.DataContextNotInitialized); }
 
   public MediaViewerV(Context context) : base(context) => _initialize(context);
   public MediaViewerV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
@@ -45,29 +37,33 @@ public class MediaViewerV : LinearLayout {
   }
 
   public MediaViewerV Bind(MediaViewerVM dataContext) {
-    DataContext = dataContext;
-    if (dataContext == null) return this;
+    _updateEvents(_dataContext, dataContext);
+    _dataContext = dataContext;
+    if (_dataContext == null) return this;   
     _adapter = new MediaViewerAdapter(dataContext);
     _viewPager.Adapter = _adapter;
     return this;
   }
 
-  private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (_dataContext == null) return;
+  private void _updateEvents(MediaViewerVM? oldValue, MediaViewerVM? newValue) {
+    if (oldValue != null) oldValue.PropertyChanged -= _onDataContextPropertyChanged;
+    if (newValue != null) newValue.PropertyChanged += _onDataContextPropertyChanged;
+  }
 
+  private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     switch (e.PropertyName) {
       case nameof(MediaViewerVM.IsVisible):
-        _dataContext.UserInputMode = _dataContext.IsVisible
+        DataContext.UserInputMode = DataContext.IsVisible
           ? MediaViewerVM.UserInputModes.Browse
           : MediaViewerVM.UserInputModes.Disabled;
         break;
       case nameof(MediaViewerVM.MediaItems):
         _adapter.NotifyDataSetChanged();
-        if (_dataContext.MediaItems.Count > 0)
-          _viewPager.SetCurrentItem(_dataContext.IndexOfCurrent, false);
+        if (DataContext.MediaItems.Count > 0)
+          _viewPager.SetCurrentItem(DataContext.IndexOfCurrent, false);
         break;
       case nameof(MediaViewerVM.UserInputMode):
-        _viewPager.UserInputEnabled = _dataContext.UserInputMode == MediaViewerVM.UserInputModes.Browse;
+        _viewPager.UserInputEnabled = DataContext.UserInputMode == MediaViewerVM.UserInputModes.Browse;
         break;
     }
   }
@@ -78,8 +74,7 @@ public class MediaViewerV : LinearLayout {
     public PageChangeCallback(MediaViewerV viewer) => _viewer = viewer;
 
     public override void OnPageSelected(int position) {
-      if (_viewer._dataContext == null) return;
-      _viewer._dataContext.Current = _viewer._dataContext.MediaItems[position];
+      _viewer.DataContext.Current = _viewer.DataContext.MediaItems[position];
     }
   }
 }
