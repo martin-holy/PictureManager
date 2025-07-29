@@ -17,6 +17,7 @@ namespace PictureManager.Android.Views.Sections;
 
 public class MediaViewerV : LinearLayout {
   private ViewPager2 _viewPager = null!;
+  private MediaViewerAdapter _adapter = null!;
   private MediaViewerVM? _dataContext;
 
   public MediaViewerVM? DataContext {
@@ -46,7 +47,8 @@ public class MediaViewerV : LinearLayout {
   public MediaViewerV Bind(MediaViewerVM dataContext) {
     DataContext = dataContext;
     if (dataContext == null) return this;
-    _viewPager.Adapter = new MediaViewerAdapter(dataContext);
+    _adapter = new MediaViewerAdapter(dataContext);
+    _viewPager.Adapter = _adapter;
     return this;
   }
 
@@ -55,13 +57,14 @@ public class MediaViewerV : LinearLayout {
 
     switch (e.PropertyName) {
       case nameof(MediaViewerVM.IsVisible):
-        if (_dataContext.IsVisible)
-          _dataContext.UserInputMode = MediaViewerVM.UserInputModes.Browse;
+        _dataContext.UserInputMode = _dataContext.IsVisible
+          ? MediaViewerVM.UserInputModes.Browse
+          : MediaViewerVM.UserInputModes.Disabled;
         break;
       case nameof(MediaViewerVM.MediaItems):
-        if (_dataContext.MediaItems.Count == 0) return;
-        _viewPager.Adapter = new MediaViewerAdapter(_dataContext);
-        _viewPager.SetCurrentItem(_dataContext.IndexOfCurrent, false);
+        _adapter.NotifyDataSetChanged();
+        if (_dataContext.MediaItems.Count > 0)
+          _viewPager.SetCurrentItem(_dataContext.IndexOfCurrent, false);
         break;
       case nameof(MediaViewerVM.UserInputMode):
         _viewPager.UserInputEnabled = _dataContext.UserInputMode == MediaViewerVM.UserInputModes.Browse;
