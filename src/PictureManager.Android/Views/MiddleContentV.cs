@@ -62,7 +62,7 @@ public class MiddleContentV : LinearLayout {
 
   private View? _getMainTabsView(LinearLayout container, object? item) =>
     item switch {
-      MediaItemsViewVM miv => new MediaItemsViewV(container.Context!).Bind(miv),
+      MediaItemsViewVM miv => new MediaItemsViewV(container.Context!, miv),
       View view => view,
       _ => null
     };

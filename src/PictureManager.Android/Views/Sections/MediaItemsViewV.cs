@@ -1,51 +1,34 @@
 ﻿using Android.Content;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils.Extensions;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.MediaItem;
+using System;
 using System.ComponentModel;
 
 namespace PictureManager.Android.Views.Sections;
 
-public class MediaItemsViewV : LinearLayout {
-  private CollectionViewHost _host = null!;
-  private TextView _loadingText = null!;
-  private LinearLayout _importContainer = null!;
-  private TextView _importText = null!;
-  private ProgressBar _importProgress = null!;
-  private Button _importCancelButton = null!;
-  private MediaItemsViewVM? _dataContext;
+public class MediaItemsViewV : LinearLayout, IDisposable {
+  private bool _disposed;
+  private readonly CollectionViewHost _host;
+  private readonly TextView _loadingText;
+  private readonly LinearLayout _importContainer;
+  private readonly TextView _importText;
+  private readonly ProgressBar _importProgress;
+  private readonly Button _importCancelButton;
 
-  public MediaItemsViewVM? DataContext {
-    get => _dataContext;
-    private set {
-      if (_dataContext != null) {
-        _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
-        _dataContext.Import.PropertyChanged -= _onImportPropertyChanged;
-      }
-      _dataContext = value;
-      if (_dataContext != null) {
-        _dataContext.PropertyChanged += _onDataContextPropertyChanged;
-        _dataContext.Import.PropertyChanged += _onImportPropertyChanged;
-      }
-    }
-  }
+  public MediaItemsViewVM DataContext { get; }
 
-  public MediaItemsViewV(Context context) : base(context) => _initialize(context);
-  public MediaItemsViewV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected MediaItemsViewV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
-
-  private void _initialize(Context context) {
+  public MediaItemsViewV(Context context, MediaItemsViewVM dataContext) : base(context) {
+    DataContext = dataContext;
     Orientation = Orientation.Vertical;
     LayoutParameters = new(LayoutParams.MatchParent, LayoutParams.MatchParent);
     SetBackgroundResource(Resource.Color.c_static_ba);
-    var genPadding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
 
     _loadingText = new TextView(context) {
       LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent) {
@@ -61,7 +44,7 @@ public class MediaItemsViewV : LinearLayout {
       Orientation = Orientation.Vertical
     };
     _importContainer.SetGravity(GravityFlags.Center);
-    _importContainer.SetPadding(genPadding, genPadding, genPadding, genPadding);
+    _importContainer.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
 
     _importText = new TextView(context) {
       LayoutParameters = new LayoutParams(LayoutParams.WrapContent, LayoutParams.WrapContent) {
@@ -84,15 +67,43 @@ public class MediaItemsViewV : LinearLayout {
       },
       Text = "Cancel"
     };
+    _importCancelButton.Click += _onImportCancelButtonClick;
 
     _importContainer.AddView(_importText);
     _importContainer.AddView(_importProgress);
     _importContainer.AddView(_importCancelButton);
     AddView(_importContainer);
 
-    _host = new CollectionViewHost(context) { GetItemView = _getItemView };
+    _host = new CollectionViewHost(context, dataContext, _getItemView);
     AddView(_host);
+
+    dataContext.PropertyChanged += _onDataContextPropertyChanged;
+    dataContext.Import.PropertyChanged += _onImportPropertyChanged;
+
+    _updateVisibility();
   }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      _importCancelButton.Click -= _onImportCancelButtonClick;
+      DataContext.PropertyChanged -= _onDataContextPropertyChanged;
+      DataContext.Import.PropertyChanged -= _onImportPropertyChanged;
+
+      _host.Dispose();
+      _loadingText.Dispose();      
+      _importText.Dispose();
+      _importProgress.Dispose();
+      _importCancelButton.Dispose();
+      _importContainer.RemoveAllViews();
+      _importContainer.Dispose();
+    }
+    _disposed = true;
+    base.Dispose(disposing);
+  }
+
+  private void _onImportCancelButtonClick(object? sender, EventArgs e) =>
+    DataContext.Import.CancelCommand.Execute(null);
 
   private View? _getItemView(LinearLayout container, ICollectionViewGroup group, object? item) {
     if (item is not MediaItemM mi) return null;
@@ -100,15 +111,6 @@ public class MediaItemsViewV : LinearLayout {
       "PM.DT.MediaItem.Thumb-Full" => new MediaItemThumbFullV(container.Context!).Bind(mi),
       _ => null
     };
-  }
-
-  public MediaItemsViewV Bind(MediaItemsViewVM? dataContext) {
-    DataContext = dataContext;
-    if (dataContext == null) return this;
-    _host.Bind(dataContext);
-    _importCancelButton.Click += delegate { dataContext.Import.CancelCommand.Execute(null); };
-    _updateVisibility();
-    return this;
   }
 
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
@@ -122,19 +124,18 @@ public class MediaItemsViewV : LinearLayout {
         _updateVisibility();
         break;
       case nameof(MediaItemsViewVM.Import.Count):
-        _importText.Text = $"Importing {_dataContext!.Import.Count} new items ...";
-        _importProgress.Max = _dataContext.Import.Count;    
+        _importText.Text = $"Importing {DataContext!.Import.Count} new items ...";
+        _importProgress.Max = DataContext.Import.Count;    
         break;
       case nameof(MediaItemsViewVM.Import.DoneCount):
-        _importProgress.Progress = _dataContext!.Import.DoneCount;
+        _importProgress.Progress = DataContext!.Import.DoneCount;
         break;
     }
   }
 
   private void _updateVisibility() {
-    if (_dataContext == null) return;
-    _loadingText.Visibility = _dataContext.IsLoading && !_dataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
-    _importContainer.Visibility = _dataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
-    _host.Visibility = !_dataContext.IsLoading && !_dataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
+    _loadingText.Visibility = DataContext.IsLoading && !DataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
+    _importContainer.Visibility = DataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
+    _host.Visibility = !DataContext.IsLoading && !DataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
   }
 }
