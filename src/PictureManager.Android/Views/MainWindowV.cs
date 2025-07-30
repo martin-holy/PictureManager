@@ -1,6 +1,4 @@
 ﻿using Android.Content;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
@@ -11,16 +9,15 @@ using System;
 namespace PictureManager.Android.Views;
 
 public class MainWindowV : LinearLayout {
-  public SlidePanelsGridHost SlidePanels { get; private set; } = null!;
-  public TabControlHost TreeViewCategories { get; private set; } = null!;
-  public MiddleContentV MiddleContent { get; private set; } = null!;
-  public MainWindowVM? DataContext { get; private set; }
+  private bool _disposed;
 
-  public MainWindowV(Context context) : base(context) => _initialize(context);
-  public MainWindowV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected MainWindowV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
+  public SlidePanelsGridHost SlidePanels { get; }
+  public TabControlHost TreeViewCategories { get; }
+  public MiddleContentV MiddleContent { get; }
+  public MainWindowVM DataContext { get; }
 
-  private void _initialize(Context context) {
+  public MainWindowV(Context context, MainWindowVM dataContext) : base(context) {
+    DataContext = dataContext;
     SlidePanels = new(context);
     AddView(SlidePanels);
 
@@ -28,10 +25,12 @@ public class MainWindowV : LinearLayout {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
       GetItemView = _getTreeViewCategoriesView
     };
+    TreeViewCategories.Bind(DataContext.TreeViewCategories);
 
     MiddleContent = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
+    MiddleContent.Bind(Common.Core.VM, SlidePanels.ViewPager);
 
     SlidePanels.SetPanelFactory(position => {
       return position switch {
@@ -42,16 +41,19 @@ public class MainWindowV : LinearLayout {
       };
     });
 
+    SlidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = DataContext.MainMenu.Root });
     SlidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
   }
 
-  public MainWindowV Bind(MainWindowVM? dataContext) {
-    DataContext = dataContext;
-    if (DataContext == null) return this;
-    SlidePanels.SetTopPanel(new ButtonMenu(Context!) { Root = DataContext.MainMenu.Root });
-    TreeViewCategories.Bind(DataContext.TreeViewCategories);
-    MiddleContent.Bind(Common.Core.VM, SlidePanels.ViewPager);
-    return this;
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      SlidePanels?.Dispose();
+      TreeViewCategories?.Dispose();
+      MiddleContent?.Dispose();
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 
   private View? _getTreeViewCategoriesView(LinearLayout container, object? item) {

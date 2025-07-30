@@ -24,7 +24,7 @@ public class CoreUI: ICoreP {
 
   public void AfterInit() {
     Core.Settings.MediaItem.MediaItemThumbScale = 0.5;
-    MainWindow = new MainWindowV(_mainActivity).Bind(Core.VM.MainWindow);
+    MainWindow = new MainWindowV(_mainActivity, Core.VM.MainWindow);
     _attachEvents();
   }
 
