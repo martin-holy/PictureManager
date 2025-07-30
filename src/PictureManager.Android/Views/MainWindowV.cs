@@ -27,10 +27,9 @@ public class MainWindowV : LinearLayout {
     };
     TreeViewCategories.Bind(DataContext.TreeViewCategories);
 
-    MiddleContent = new(context) {
+    MiddleContent = new(context, Common.Core.VM, SlidePanels.ViewPager) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
-    MiddleContent.Bind(Common.Core.VM, SlidePanels.ViewPager);
 
     SlidePanels.SetPanelFactory(position => {
       return position switch {
