@@ -23,11 +23,9 @@ public class MiddleContentV : LinearLayout {
     _coreVM = coreVM;
     _mainViewPager = mainViewPager;
 
-    _mainTabs = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
-      GetItemView = _getMainTabsView
+    _mainTabs = new(context, coreVM.MainTabs, _getMainTabsView) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
-    _mainTabs.Bind(coreVM.MainTabs);
     AddView(_mainTabs);
 
     _mediaViewer = new(context, coreVM.MediaViewer) {

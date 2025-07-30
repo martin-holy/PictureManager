@@ -21,11 +21,9 @@ public class MainWindowV : LinearLayout {
     SlidePanels = new(context);
     AddView(SlidePanels);
 
-    TreeViewCategories = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
-      GetItemView = _getTreeViewCategoriesView
+    TreeViewCategories = new(context, DataContext.TreeViewCategories, _getTreeViewCategoriesView) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
-    TreeViewCategories.Bind(DataContext.TreeViewCategories);
 
     MiddleContent = new(context, Common.Core.VM, SlidePanels.ViewPager) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
