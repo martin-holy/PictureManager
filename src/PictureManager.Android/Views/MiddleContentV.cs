@@ -30,10 +30,9 @@ public class MiddleContentV : LinearLayout {
     _mainTabs.Bind(coreVM.MainTabs);
     AddView(_mainTabs);
 
-    _mediaViewer = new(context) {
+    _mediaViewer = new(context, coreVM.MediaViewer) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
-    _mediaViewer.Bind(coreVM.MediaViewer);
     AddView(_mediaViewer);
 
     // TODO remove test data

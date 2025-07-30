@@ -1,12 +1,9 @@
 ﻿using Android.Content;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls;
-using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.Extensions;
 using PictureManager.Common;
@@ -18,37 +15,25 @@ namespace PictureManager.Android.Views.Sections;
 
 public class MediaViewerV : LinearLayout, IDisposable {
   private bool _disposed;
-  private ViewPager2 _viewPager = null!;
-  private MediaViewerAdapter _adapter = null!;
-  private MediaViewerVM? _dataContext;
+  private readonly ViewPager2 _viewPager;
+  private readonly MediaViewerAdapter _adapter;
 
-  public MediaViewerVM DataContext { get => _dataContext ?? throw new InvalidOperationException(ErrorMessages.DataContextNotInitialized); }
+  public MediaViewerVM DataContext { get; }
 
-  public MediaViewerV(Context context) : base(context) => _initialize(context);
-  public MediaViewerV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected MediaViewerV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
+  public MediaViewerV(Context context, MediaViewerVM dataContext) : base(context) {
+    DataContext = dataContext;
+    _adapter = new MediaViewerAdapter(dataContext);
 
-  private void _initialize(Context context) {
     SetBackgroundResource(Resource.Color.c_static_ba);
+
     _viewPager = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
+      Adapter = _adapter
     };
     _viewPager.RegisterOnPageChangeCallback(new PageChangeCallback(this));
     AddView(_viewPager);
-  }
 
-  public MediaViewerV Bind(MediaViewerVM dataContext) {
-    _updateEvents(_dataContext, dataContext);
-    _dataContext = dataContext;
-    if (_dataContext == null) return this;
-    _adapter = new MediaViewerAdapter(dataContext);
-    _viewPager.Adapter = _adapter;
-    return this;
-  }
-
-  private void _updateEvents(MediaViewerVM? oldValue, MediaViewerVM? newValue) {
-    if (oldValue != null) oldValue.PropertyChanged -= _onDataContextPropertyChanged;
-    if (newValue != null) newValue.PropertyChanged += _onDataContextPropertyChanged;
+    dataContext.PropertyChanged += _onDataContextPropertyChanged;
   }
 
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
@@ -73,6 +58,7 @@ public class MediaViewerV : LinearLayout, IDisposable {
     if (_disposed) return;
 
     if (disposing) {
+      DataContext.PropertyChanged -= _onDataContextPropertyChanged;
       _viewPager.Adapter = null;
       _viewPager.Dispose();
       _adapter.Dispose();
@@ -82,25 +68,21 @@ public class MediaViewerV : LinearLayout, IDisposable {
     base.Dispose(disposing);
   }
 
-  private class PageChangeCallback : ViewPager2.OnPageChangeCallback {
-    private readonly MediaViewerV _viewer;
-
-    public PageChangeCallback(MediaViewerV viewer) => _viewer = viewer;
-
+  private class PageChangeCallback(MediaViewerV _viewer) : ViewPager2.OnPageChangeCallback {
     public override void OnPageSelected(int position) {
       _viewer.DataContext.Current = _viewer.DataContext.MediaItems[position];
     }
   }
 }
 
-public class MediaViewerAdapter(MediaViewerVM mediaViewer) : RecyclerView.Adapter {
-  public override int ItemCount => mediaViewer.MediaItems.Count;
+public class MediaViewerAdapter(MediaViewerVM _mediaViewer) : RecyclerView.Adapter {
+  public override int ItemCount => _mediaViewer.MediaItems.Count;
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-    MediaViewerMediaItemViewHolder.Create(parent, mediaViewer);
+    MediaViewerMediaItemViewHolder.Create(parent, _mediaViewer);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-    ((MediaViewerMediaItemViewHolder)holder).Bind(mediaViewer.MediaItems[position]);
+    ((MediaViewerMediaItemViewHolder)holder).Bind(_mediaViewer.MediaItems[position]);
 }
 
 public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder, IDisposable {
