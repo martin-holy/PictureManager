@@ -1,6 +1,7 @@
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Views;
 using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Layout;
@@ -12,11 +13,20 @@ namespace PictureManager.Android;
 
 [Activity(Label = "@string/app_name", MainLauncher = true)]
 public class MainActivity : Activity {
+  private static bool _inited;
+
   public static Core Core { get; private set; } = null!;
   public static CoreUI CoreUI { get; private set; } = null!;
 
   protected override void OnCreate(Bundle? savedInstanceState) {
     base.OnCreate(savedInstanceState);
+
+    if (_inited && CoreUI.MainWindow.Parent is ViewGroup parent) {
+      parent.RemoveView(CoreUI.MainWindow);
+      SetContentView(CoreUI.MainWindow);
+      return;
+    }
+    _inited = true;
 
     if (CheckSelfPermission(Perm.ReadExternalStorage) != Permission.Granted)
       RequestPermissions([Perm.ReadExternalStorage], 1);
