@@ -3,6 +3,7 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Controls;
+using PictureManager.Android.Utils;
 using PictureManager.Common.Layout;
 using System;
 
@@ -55,6 +56,6 @@ public class MainWindowV : LinearLayout {
 
   private View? _getTreeViewCategoriesView(LinearLayout container, object? item) {
     if (item is not TreeView tv) return null;
-    return new TreeViewHost(container.Context!).Bind(tv);
+    return new TreeViewHost(container.Context!, tv, MenuFactory.GetMenu);
   }
 }
