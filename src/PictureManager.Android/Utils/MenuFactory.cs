@@ -2,6 +2,7 @@
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.BaseClasses;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Folder;
 using System;
@@ -10,24 +11,32 @@ using System.Collections.Generic;
 namespace PictureManager.Android.Utils;
 
 public static class MenuFactory {
-  private static readonly Dictionary<Type, PopupWindow> _menus = [];
+  private static readonly Dictionary<Type, (MenuItem menuRootVM, PopupWindow menuV)> _menus = [];
 
   public static PopupWindow? GetMenu(View parent, object? item) {
     if (item == null) return null;
     var type = item.GetType();
-    if (_menus.TryGetValue(type, out var menu)) return menu; // TODO bind item before return
+    if (_menus.TryGetValue(type, out var menu))
+      return _bindMenu(menu.menuRootVM, menu.menuV, item);
 
-    var root = item switch {
+    var menuRootVM = item switch {
       DriveM => _createDriveMenu(),
       FolderM => _createFolderMenu(),
       _ => null
     };
 
-    if (root == null) return null;
-    menu = ButtonMenu.CreateMenu(parent.Context!, parent, root);
-    _menus.Add(type, menu);
+    if (menuRootVM == null) return null;
+    var menuV = ButtonMenu.CreateMenu(parent.Context!, parent, menuRootVM);
+    _menus.Add(type, new(menuRootVM, menuV));
 
-    return menu; // TODO bind item before return
+    return _bindMenu(menuRootVM, menuV, item);
+  }
+
+  private static PopupWindow? _bindMenu(MenuItem menuRootVM, PopupWindow menuV, object? item) {
+    foreach (var menuItem in menuRootVM.Flatten())
+      menuItem.CommandParameter = item;
+
+    return menuV;
   }
 
   private static MenuItem _createDriveMenu() {
