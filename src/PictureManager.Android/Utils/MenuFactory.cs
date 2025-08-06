@@ -1,6 +1,5 @@
 ﻿using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Controls;
 using MH.UI.BaseClasses;
 using MH.Utils;
 using MH.Utils.BaseClasses;
@@ -26,7 +25,7 @@ public static class MenuFactory {
     };
 
     if (menuRootVM == null) return null;
-    var menuV = ButtonMenu.CreateMenu(parent.Context!, parent, menuRootVM);
+    var menuV = MH.UI.Android.Utils.MenuFactory.CreateMenu(parent.Context!, parent, menuRootVM);
     _menus.Add(type, new(menuRootVM, menuV));
 
     return _bindMenu(menuRootVM, menuV, item);
