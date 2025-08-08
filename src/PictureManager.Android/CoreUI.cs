@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using MH.Utils.Interfaces;
+using PictureManager.Android.Utils;
 using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
@@ -20,6 +21,7 @@ public class CoreUI: ICoreP {
     MH.UI.Android.Utils.DisplayU.Init(Application.Context!.Resources!.DisplayMetrics!);
     MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
+    MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialogView);
   }
 
   public void AfterInit() {

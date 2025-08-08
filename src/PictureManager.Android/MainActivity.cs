@@ -2,6 +2,7 @@ using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Views;
+using AndroidX.Fragment.App;
 using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Layout;
@@ -12,7 +13,7 @@ using Perm = Android.Manifest.Permission;
 namespace PictureManager.Android;
 
 [Activity(Label = "@string/app_name", MainLauncher = true)]
-public class MainActivity : Activity {
+public class MainActivity : FragmentActivity {
   private static bool _inited;
 
   public static Core Core { get; private set; } = null!;
