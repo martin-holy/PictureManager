@@ -28,7 +28,7 @@ public static class MenuFactory {
       DriveM => _createDriveMenu(),
       FolderM => _createFolderMenu(),
       FavoriteFolderM => null,
-      PersonTreeCategory => null,
+      PersonTreeCategory => _createPersonTreeCategoryMenu(),
       PersonM => null,
       FolderKeywordTreeCategory => null,
       KeywordTreeCategory => null,
@@ -67,6 +67,13 @@ public static class MenuFactory {
     root.Add(new(TreeCategory.ItemCreateCommand));
     root.Add(new(TreeCategory.ItemRenameCommand));
     root.Add(new(TreeCategory.ItemDeleteCommand));
+    return root;
+  }
+
+  private static MenuItem _createPersonTreeCategoryMenu() {
+    var root = new MenuItem(null, string.Empty);
+    root.Add(new(TreeCategory.ItemCreateCommand));
+    root.Add(new(TreeCategory.GroupCreateCommand));
     return root;
   }
 }
