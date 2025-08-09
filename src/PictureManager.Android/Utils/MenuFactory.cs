@@ -3,7 +3,13 @@ using Android.Widget;
 using MH.UI.BaseClasses;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using PictureManager.Common.Features.FavoriteFolder;
 using PictureManager.Common.Features.Folder;
+using PictureManager.Common.Features.FolderKeyword;
+using PictureManager.Common.Features.GeoName;
+using PictureManager.Common.Features.Keyword;
+using PictureManager.Common.Features.Person;
+using PictureManager.Common.Features.Viewer;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +27,18 @@ public static class MenuFactory {
     var menuRootVM = item switch {
       DriveM => _createDriveMenu(),
       FolderM => _createFolderMenu(),
+      FavoriteFolderM => null,
+      PersonTreeCategory => null,
+      PersonM => null,
+      FolderKeywordTreeCategory => null,
+      KeywordTreeCategory => null,
+      KeywordM => null,
+      GeoNameTreeCategory => null,
+      GeoNameM => null,
+      ViewerTreeCategory => null,
+      ViewerM => null,
+      KeywordCategoryGroupM => null,
+      PersonCategoryGroupM => null,
       _ => null
     };
 
