@@ -21,7 +21,7 @@ public class CoreUI: ICoreP {
     MH.UI.Android.Utils.DisplayU.Init(Application.Context!.Resources!.DisplayMetrics!);
     MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
-    MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialogView);
+    MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
   }
 
   public void AfterInit() {
