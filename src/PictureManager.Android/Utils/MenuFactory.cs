@@ -56,12 +56,14 @@ public static class MenuFactory {
     return menuV;
   }
 
+  // Drive
   private static MenuItem _createDriveMenu() {
     var root = new MenuItem(null, string.Empty);
     root.Add(new(TreeCategory.ItemCreateCommand));
     return root;
   }
 
+  // Folder
   private static MenuItem _createFolderMenu() {
     var root = new MenuItem(null, string.Empty);
     root.Add(new(TreeCategory.ItemCreateCommand));
@@ -70,6 +72,7 @@ public static class MenuFactory {
     return root;
   }
 
+  // Person TreeCategory
   private static MenuItem _createPersonTreeCategoryMenu() {
     var root = new MenuItem(null, string.Empty);
     root.Add(new(TreeCategory.ItemCreateCommand));
