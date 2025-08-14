@@ -31,7 +31,7 @@ public static class MenuFactory {
       PersonTreeCategory => _createPersonTreeCategoryMenu(),
       PersonM => null,
       FolderKeywordTreeCategory => null,
-      KeywordTreeCategory => null,
+      KeywordTreeCategory => _createKeywordTreeCategoryMenu(),
       KeywordM => null,
       GeoNameTreeCategory => null,
       GeoNameM => null,
@@ -74,6 +74,14 @@ public static class MenuFactory {
 
   // Person TreeCategory
   private static MenuItem _createPersonTreeCategoryMenu() {
+    var root = new MenuItem(null, string.Empty);
+    root.Add(new(TreeCategory.ItemCreateCommand));
+    root.Add(new(TreeCategory.GroupCreateCommand));
+    return root;
+  }
+
+  // Keyword TreeCategory
+  private static MenuItem _createKeywordTreeCategoryMenu() {
     var root = new MenuItem(null, string.Empty);
     root.Add(new(TreeCategory.ItemCreateCommand));
     root.Add(new(TreeCategory.GroupCreateCommand));
