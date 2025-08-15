@@ -30,7 +30,7 @@ public static class MenuFactory {
       FavoriteFolderM => null,
       PersonTreeCategory => _createPersonTreeCategoryMenu(),
       PersonM => null,
-      FolderKeywordTreeCategory => null,
+      FolderKeywordTreeCategory => _createFolderKeywordTreeCategoryMenu(),
       KeywordTreeCategory => _createKeywordTreeCategoryMenu(),
       KeywordM => null,
       GeoNameTreeCategory => null,
@@ -77,6 +77,13 @@ public static class MenuFactory {
     var root = new MenuItem(null, string.Empty);
     root.Add(new(TreeCategory.ItemCreateCommand));
     root.Add(new(TreeCategory.GroupCreateCommand));
+    return root;
+  }
+
+  // Folder Keywords
+  private static MenuItem _createFolderKeywordTreeCategoryMenu() {
+    var root = new MenuItem(null, string.Empty);
+    root.Add(new(FolderKeywordsDialog.OpenCommand));
     return root;
   }
 
