@@ -3,6 +3,7 @@ using Android.Widget;
 using MH.UI.BaseClasses;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using PictureManager.Common;
 using PictureManager.Common.Features.FavoriteFolder;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.FolderKeyword;
@@ -33,7 +34,7 @@ public static class MenuFactory {
       FolderKeywordTreeCategory => _createFolderKeywordTreeCategoryMenu(),
       KeywordTreeCategory => _createKeywordTreeCategoryMenu(),
       KeywordM => null,
-      GeoNameTreeCategory => null,
+      GeoNameTreeCategory => _createGeoNamesTreeCategoryMenu(),
       GeoNameM => null,
       ViewerTreeCategory => null,
       ViewerM => null,
@@ -92,6 +93,15 @@ public static class MenuFactory {
     var root = new MenuItem(null, string.Empty);
     root.Add(new(TreeCategory.ItemCreateCommand));
     root.Add(new(TreeCategory.GroupCreateCommand));
+    return root;
+  }
+
+  // GeoNames TreeCategory
+  private static MenuItem _createGeoNamesTreeCategoryMenu() {
+    var root = new MenuItem(null, string.Empty);
+    root.Add(new(CoreVM.GetGeoNamesFromWebCommand));
+    root.Add(new(GeoNameVM.NewGeoNameFromGpsCommand));
+    root.Add(new(CoreVM.ReadGeoLocationFromFilesCommand));
     return root;
   }
 }
