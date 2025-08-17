@@ -9,8 +9,11 @@ using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.FolderKeyword;
 using PictureManager.Common.Features.GeoName;
 using PictureManager.Common.Features.Keyword;
+using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.Person;
+using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Features.Viewer;
+using PictureManager.Common.Layout;
 using System;
 using System.Collections.Generic;
 
@@ -30,7 +33,7 @@ public static class MenuFactory {
       FolderM => _createFolderMenu(),
       FavoriteFolderM => null,
       PersonTreeCategory => _createPersonTreeCategoryMenu(),
-      PersonM => null,
+      PersonM => _createPersonTreeMenu(),
       FolderKeywordTreeCategory => _createFolderKeywordTreeCategoryMenu(),
       KeywordTreeCategory => _createKeywordTreeCategoryMenu(),
       KeywordM => null,
@@ -78,6 +81,21 @@ public static class MenuFactory {
     var root = new MenuItem(null, string.Empty);
     root.Add(new(TreeCategory.ItemCreateCommand));
     root.Add(new(TreeCategory.GroupCreateCommand));
+    return root;
+  }
+
+  // Person Tree
+  private static MenuItem _createPersonTreeMenu() {
+    var root = new MenuItem(null, string.Empty);
+    root.Add(new(ToolsTabsVM.OpenPersonTabCommand));
+    root.Add(new(TreeCategory.ItemRenameCommand));
+    root.Add(new(TreeCategory.ItemDeleteCommand));
+    root.Add(new(TreeCategory.ItemMoveToGroupCommand));
+    root.Add(new(MediaItemVM.LoadByPersonCommand));
+    root.Add(new(SegmentVM.LoadByPersonCommand));
+    root.Add(new(MediaItemsViewsVM.FilterSetAndCommand));
+    root.Add(new(MediaItemsViewsVM.FilterSetOrCommand));
+    root.Add(new(MediaItemsViewsVM.FilterSetNotCommand));
     return root;
   }
 
