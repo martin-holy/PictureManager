@@ -1,7 +1,7 @@
 using Android.App;
 using Android.Content.PM;
+using Android.Content.Res;
 using Android.OS;
-using Android.Views;
 using AndroidX.Fragment.App;
 using PictureManager.Android.Views;
 using PictureManager.Common;
@@ -12,22 +12,13 @@ using Perm = Android.Manifest.Permission;
 
 namespace PictureManager.Android;
 
-[Activity(Label = "@string/app_name", MainLauncher = true)]
+[Activity(Label = "@string/app_name", MainLauncher = true, ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
 public class MainActivity : FragmentActivity {
-  private static bool _inited;
-
   public static Core Core { get; private set; } = null!;
   public static CoreUI CoreUI { get; private set; } = null!;
 
   protected override void OnCreate(Bundle? savedInstanceState) {
     base.OnCreate(savedInstanceState);
-
-    if (_inited && CoreUI.MainWindow.Parent is ViewGroup parent) {
-      parent.RemoveView(CoreUI.MainWindow);
-      SetContentView(CoreUI.MainWindow);
-      return;
-    }
-    _inited = true;
 
     if (CheckSelfPermission(Perm.ReadExternalStorage) != Permission.Granted)
       RequestPermissions([Perm.ReadExternalStorage], 1);
@@ -40,8 +31,8 @@ public class MainActivity : FragmentActivity {
       await Core.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
       CoreUI = new(this);
       Core.AfterInit(CoreUI);
-      CoreUI.AfterInit();
-      MH.Utils.Tasks.Dispatch(() => SetContentView(CoreUI.MainWindow));
+      CoreUI.AfterInit(this);
+      RunOnUiThread(() => SetContentView(CoreUI.MainWindow));
     });
   }
 
@@ -51,5 +42,10 @@ public class MainActivity : FragmentActivity {
       return;
     }
     base.OnBackPressed();
+  }
+
+  public override void OnConfigurationChanged(Configuration newConfig) {
+    base.OnConfigurationChanged(newConfig);
+    // TODO CollectionView ReWrap, ...
   }
 }
