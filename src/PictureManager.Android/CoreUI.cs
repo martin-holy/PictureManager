@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.Content;
 using MH.Utils.Interfaces;
 using PictureManager.Android.Utils;
 using PictureManager.Android.Views;
@@ -8,13 +9,10 @@ using PictureManager.Common.Features.MediaItem;
 
 namespace PictureManager.Android;
 
-public class CoreUI: ICoreP {
-  private readonly MainActivity _mainActivity;
-
+public class CoreUI : ICoreP {
   public MainWindowV MainWindow { get; private set; } = null!;
 
   public CoreUI(MainActivity mainActivity) {
-    _mainActivity = mainActivity;
     // TODO PORT
     MH.UI.Android.Utils.Init.SetDelegates();
     MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
@@ -24,9 +22,9 @@ public class CoreUI: ICoreP {
     MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
   }
 
-  public void AfterInit() {
+  public void AfterInit(Context context) {
     Core.Settings.MediaItem.MediaItemThumbScale = 0.5;
-    MainWindow = new MainWindowV(_mainActivity, Core.VM.MainWindow);
+    MainWindow = new MainWindowV(context, Core.VM.MainWindow);
     _attachEvents();
   }
 
