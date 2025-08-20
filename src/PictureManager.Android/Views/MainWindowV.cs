@@ -39,7 +39,7 @@ public class MainWindowV : LinearLayout {
       };
     });
 
-    SlidePanels.SetTopPanel(new ButtonMenu(Context!, DataContext.MainMenu.Root));
+    SlidePanels.SetTopPanel(new ButtonMenu(Context!, DataContext.MainMenu, DataContext.MainMenu.Icon));
     SlidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
   }
 
