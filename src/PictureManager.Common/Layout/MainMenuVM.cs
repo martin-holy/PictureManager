@@ -9,14 +9,17 @@ using System.Collections.Specialized;
 
 namespace PictureManager.Common.Layout;
 
-public class MainMenuVM {
+// TODO use this for WPF as well
+public class MainMenuVM : TreeView {
   private readonly MenuItem _leftTabs = new(Res.IconTabLeft, "Left tabs");
   private readonly MenuItem _middleTabs = new(Res.IconTabMiddle, "Middle tabs");
   private readonly MenuItem _rightTabs = new(Res.IconTabRight, "Right tabs");
 
-  public MenuItem Root { get; } = new MenuItem(Res.IconThreeBars, string.Empty);
+  public string Icon { get; } = Res.IconThreeBars;
 
   public void Build(CoreVM coreVM) {
+    RootHolder.Clear();
+
     var geoLocation = new MenuItem(Res.IconLocationCheckin, "GeoLocation");
     geoLocation.Add(new(CoreVM.GetGeoNamesFromWebCommand));
     geoLocation.Add(new(GeoNameVM.NewGeoNameFromGpsCommand));
@@ -43,15 +46,15 @@ public class MainMenuVM {
     _initTabs(coreVM.MainTabs, _middleTabs);
     _initTabs(coreVM.ToolsTabs, _rightTabs);
 
-    Root.Add(geoLocation);
-    Root.Add(mediaItem);
-    Root.Add(segments);
-    Root.Add(_leftTabs);
-    Root.Add(_middleTabs);
-    Root.Add(_rightTabs);
-    Root.Add(new(CoreVM.OpenSettingsCommand));
-    Root.Add(new(WhatIsNewVM.OpenCommand));
-    Root.Add(new(CoreVM.OpenAboutCommand));
+    RootHolder.Add(geoLocation);
+    RootHolder.Add(mediaItem);
+    RootHolder.Add(segments);
+    RootHolder.Add(_leftTabs);
+    RootHolder.Add(_middleTabs);
+    RootHolder.Add(_rightTabs);
+    RootHolder.Add(new MenuItem(CoreVM.OpenSettingsCommand));
+    RootHolder.Add(new MenuItem(WhatIsNewVM.OpenCommand));
+    RootHolder.Add(new MenuItem(CoreVM.OpenAboutCommand));
   }
 
   private void _initTabs(TabControl tabControl, MenuItem root) {
