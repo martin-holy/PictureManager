@@ -16,10 +16,8 @@ using System.Collections.Generic;
 namespace PictureManager.Android.Utils;
 
 public static class MenuFactory {
-  public static IEnumerable<MenuItem>? GetMenu(object? item) {
-    if (item == null) return null;
-
-    return item switch {
+  public static IEnumerable<MenuItem>? GetMenu(object item) =>
+    item switch {
       DriveM => _createDriveMenu(item),
       FolderM => _createFolderMenu(item),
       FavoriteFolderM => [],
@@ -36,47 +34,46 @@ public static class MenuFactory {
       PersonCategoryGroupM => [],
       _ => []
     };
-  }
 
   // Drive
   private static IEnumerable<MenuItem> _createDriveMenu(object item) => [
-    new MenuItem(TreeCategory.ItemCreateCommand, item)];
+    new(TreeCategory.ItemCreateCommand, item)];
 
   // Folder
   private static IEnumerable<MenuItem> _createFolderMenu(object item) => [
-    new MenuItem(TreeCategory.ItemCreateCommand, item),
-    new MenuItem(TreeCategory.ItemRenameCommand, item),
-    new MenuItem(TreeCategory.ItemDeleteCommand, item)];
+    new(TreeCategory.ItemCreateCommand, item),
+    new(TreeCategory.ItemRenameCommand, item),
+    new(TreeCategory.ItemDeleteCommand, item)];
 
   // Person TreeCategory
   private static IEnumerable<MenuItem> _createPersonTreeCategoryMenu(object item) => [
-    new MenuItem(TreeCategory.ItemCreateCommand, item),
-    new MenuItem(TreeCategory.GroupCreateCommand, item)];
+    new(TreeCategory.ItemCreateCommand, item),
+    new(TreeCategory.GroupCreateCommand, item)];
 
   // Person Tree
   private static IEnumerable<MenuItem> _createPersonTreeMenu(object item) => [
-    new MenuItem(ToolsTabsVM.OpenPersonTabCommand, item),
-    new MenuItem(TreeCategory.ItemRenameCommand, item),
-    new MenuItem(TreeCategory.ItemDeleteCommand, item),
-    new MenuItem(TreeCategory.ItemMoveToGroupCommand, item),
-    new MenuItem(MediaItemVM.LoadByPersonCommand, item),
-    new MenuItem(SegmentVM.LoadByPersonCommand, item),
-    new MenuItem(MediaItemsViewsVM.FilterSetAndCommand, item),
-    new MenuItem(MediaItemsViewsVM.FilterSetOrCommand, item),
-    new MenuItem(MediaItemsViewsVM.FilterSetNotCommand, item)];
+    new(ToolsTabsVM.OpenPersonTabCommand, item),
+    new(TreeCategory.ItemRenameCommand, item),
+    new(TreeCategory.ItemDeleteCommand, item),
+    new(TreeCategory.ItemMoveToGroupCommand, item),
+    new(MediaItemVM.LoadByPersonCommand, item),
+    new(SegmentVM.LoadByPersonCommand, item),
+    new(MediaItemsViewsVM.FilterSetAndCommand, item),
+    new(MediaItemsViewsVM.FilterSetOrCommand, item),
+    new(MediaItemsViewsVM.FilterSetNotCommand, item)];
 
   // Folder Keywords
   private static IEnumerable<MenuItem> _createFolderKeywordTreeCategoryMenu(object item) => [
-    new MenuItem(FolderKeywordsDialog.OpenCommand, item)];
+    new(FolderKeywordsDialog.OpenCommand, item)];
 
   // Keyword TreeCategory
   private static IEnumerable<MenuItem> _createKeywordTreeCategoryMenu(object item) => [
-    new MenuItem(TreeCategory.ItemCreateCommand, item),
-    new MenuItem(TreeCategory.GroupCreateCommand, item)];
+    new(TreeCategory.ItemCreateCommand, item),
+    new(TreeCategory.GroupCreateCommand, item)];
 
   // GeoNames TreeCategory
   private static IEnumerable<MenuItem> _createGeoNamesTreeCategoryMenu(object item) => [
-    new MenuItem(CoreVM.GetGeoNamesFromWebCommand, item),
-    new MenuItem(GeoNameVM.NewGeoNameFromGpsCommand, item),
-    new MenuItem(CoreVM.ReadGeoLocationFromFilesCommand, item)];
+    new(CoreVM.GetGeoNamesFromWebCommand, item),
+    new(GeoNameVM.NewGeoNameFromGpsCommand, item),
+    new(CoreVM.ReadGeoLocationFromFilesCommand, item)];
 }
