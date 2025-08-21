@@ -1,8 +1,10 @@
 ﻿using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Controls;
 using MH.UI.BaseClasses;
-using MH.Utils;
+using MH.UI.Controls;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Common;
 using PictureManager.Common.Features.FavoriteFolder;
 using PictureManager.Common.Features.Folder;
@@ -14,112 +16,82 @@ using PictureManager.Common.Features.Person;
 using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Features.Viewer;
 using PictureManager.Common.Layout;
-using System;
-using System.Collections.Generic;
 
 namespace PictureManager.Android.Utils;
 
+// TODO create just TreeView and attach it to one TreeMenuHost
 public static class MenuFactory {
-  private static readonly Dictionary<Type, (MenuItem menuRootVM, PopupWindow menuV)> _menus = [];
-
   public static PopupWindow? GetMenu(View parent, object? item) {
     if (item == null) return null;
-    var type = item.GetType();
-    if (_menus.TryGetValue(type, out var menu))
-      return _bindMenu(menu.menuRootVM, menu.menuV, item);
+    var menuVM = new TreeView();
 
-    var menuRootVM = item switch {
-      DriveM => _createDriveMenu(),
-      FolderM => _createFolderMenu(),
-      FavoriteFolderM => null,
-      PersonTreeCategory => _createPersonTreeCategoryMenu(),
-      PersonM => _createPersonTreeMenu(),
-      FolderKeywordTreeCategory => _createFolderKeywordTreeCategoryMenu(),
-      KeywordTreeCategory => _createKeywordTreeCategoryMenu(),
-      KeywordM => null,
-      GeoNameTreeCategory => _createGeoNamesTreeCategoryMenu(),
-      GeoNameM => null,
-      ViewerTreeCategory => null,
-      ViewerM => null,
-      KeywordCategoryGroupM => null,
-      PersonCategoryGroupM => null,
-      _ => null
+    switch (item) {
+      case DriveM: _createDriveMenu(menuVM.RootHolder, item); break;
+      case FolderM: _createFolderMenu(menuVM.RootHolder, item); break;
+      case FavoriteFolderM: break;
+      case PersonTreeCategory: _createPersonTreeCategoryMenu(menuVM.RootHolder, item); break;
+      case PersonM: _createPersonTreeMenu(menuVM.RootHolder, item); break;
+      case FolderKeywordTreeCategory: _createFolderKeywordTreeCategoryMenu(menuVM.RootHolder, item); break;
+      case KeywordTreeCategory: _createKeywordTreeCategoryMenu(menuVM.RootHolder, item); break;
+      case KeywordM: break;
+      case GeoNameTreeCategory: _createGeoNamesTreeCategoryMenu(menuVM.RootHolder, item); break;
+      case GeoNameM: break;
+      case ViewerTreeCategory: break;
+      case ViewerM: break;
+      case KeywordCategoryGroupM: break;
+      case PersonCategoryGroupM: break;
     };
 
-    if (menuRootVM == null) return null;
-    var menuV = MH.UI.Android.Utils.MenuFactory.CreateMenu(parent.Context!, parent, menuRootVM);
-    _menus.Add(type, new(menuRootVM, menuV));
-
-    return _bindMenu(menuRootVM, menuV, item);
-  }
-
-  private static PopupWindow? _bindMenu(MenuItem menuRootVM, PopupWindow menuV, object? item) {
-    foreach (var menuItem in menuRootVM.Flatten())
-      menuItem.CommandParameter = item;
-
-    return menuV;
+    var host = new TreeMenuHost(parent.Context!, menuVM, parent);
+    return host.Popup;
   }
 
   // Drive
-  private static MenuItem _createDriveMenu() {
-    var root = new MenuItem(null, string.Empty);
-    root.Add(new(TreeCategory.ItemCreateCommand));
-    return root;
+  private static void _createDriveMenu(ExtObservableCollection<ITreeItem> root, object item) {
+    root.Add(new MenuItem(TreeCategory.ItemCreateCommand, item));
   }
 
   // Folder
-  private static MenuItem _createFolderMenu() {
-    var root = new MenuItem(null, string.Empty);
-    root.Add(new(TreeCategory.ItemCreateCommand));
-    root.Add(new(TreeCategory.ItemRenameCommand));
-    root.Add(new(TreeCategory.ItemDeleteCommand));
-    return root;
+  private static void _createFolderMenu(ExtObservableCollection<ITreeItem> root, object item) {
+    root.Add(new MenuItem(TreeCategory.ItemCreateCommand, item));
+    root.Add(new MenuItem(TreeCategory.ItemRenameCommand, item));
+    root.Add(new MenuItem(TreeCategory.ItemDeleteCommand, item));
   }
 
   // Person TreeCategory
-  private static MenuItem _createPersonTreeCategoryMenu() {
-    var root = new MenuItem(null, string.Empty);
-    root.Add(new(TreeCategory.ItemCreateCommand));
-    root.Add(new(TreeCategory.GroupCreateCommand));
-    return root;
+  private static void _createPersonTreeCategoryMenu(ExtObservableCollection<ITreeItem> root, object item) {
+    root.Add(new MenuItem(TreeCategory.ItemCreateCommand, item));
+    root.Add(new MenuItem(TreeCategory.GroupCreateCommand, item));
   }
 
   // Person Tree
-  private static MenuItem _createPersonTreeMenu() {
-    var root = new MenuItem(null, string.Empty);
-    root.Add(new(ToolsTabsVM.OpenPersonTabCommand));
-    root.Add(new(TreeCategory.ItemRenameCommand));
-    root.Add(new(TreeCategory.ItemDeleteCommand));
-    root.Add(new(TreeCategory.ItemMoveToGroupCommand));
-    root.Add(new(MediaItemVM.LoadByPersonCommand));
-    root.Add(new(SegmentVM.LoadByPersonCommand));
-    root.Add(new(MediaItemsViewsVM.FilterSetAndCommand));
-    root.Add(new(MediaItemsViewsVM.FilterSetOrCommand));
-    root.Add(new(MediaItemsViewsVM.FilterSetNotCommand));
-    return root;
+  private static void _createPersonTreeMenu(ExtObservableCollection<ITreeItem> root, object item) {
+    root.Add(new MenuItem(ToolsTabsVM.OpenPersonTabCommand, item));
+    root.Add(new MenuItem(TreeCategory.ItemRenameCommand, item));
+    root.Add(new MenuItem(TreeCategory.ItemDeleteCommand, item));
+    root.Add(new MenuItem(TreeCategory.ItemMoveToGroupCommand, item));
+    root.Add(new MenuItem(MediaItemVM.LoadByPersonCommand, item));
+    root.Add(new MenuItem(SegmentVM.LoadByPersonCommand, item));
+    root.Add(new MenuItem(MediaItemsViewsVM.FilterSetAndCommand, item));
+    root.Add(new MenuItem(MediaItemsViewsVM.FilterSetOrCommand, item));
+    root.Add(new MenuItem(MediaItemsViewsVM.FilterSetNotCommand, item));
   }
 
   // Folder Keywords
-  private static MenuItem _createFolderKeywordTreeCategoryMenu() {
-    var root = new MenuItem(null, string.Empty);
-    root.Add(new(FolderKeywordsDialog.OpenCommand));
-    return root;
+  private static void _createFolderKeywordTreeCategoryMenu(ExtObservableCollection<ITreeItem> root, object item) {
+    root.Add(new MenuItem(FolderKeywordsDialog.OpenCommand, item));
   }
 
   // Keyword TreeCategory
-  private static MenuItem _createKeywordTreeCategoryMenu() {
-    var root = new MenuItem(null, string.Empty);
-    root.Add(new(TreeCategory.ItemCreateCommand));
-    root.Add(new(TreeCategory.GroupCreateCommand));
-    return root;
+  private static void _createKeywordTreeCategoryMenu(ExtObservableCollection<ITreeItem> root, object item) {
+    root.Add(new MenuItem(TreeCategory.ItemCreateCommand, item));
+    root.Add(new MenuItem(TreeCategory.GroupCreateCommand, item));
   }
 
   // GeoNames TreeCategory
-  private static MenuItem _createGeoNamesTreeCategoryMenu() {
-    var root = new MenuItem(null, string.Empty);
-    root.Add(new(CoreVM.GetGeoNamesFromWebCommand));
-    root.Add(new(GeoNameVM.NewGeoNameFromGpsCommand));
-    root.Add(new(CoreVM.ReadGeoLocationFromFilesCommand));
-    return root;
+  private static void _createGeoNamesTreeCategoryMenu(ExtObservableCollection<ITreeItem> root, object item) {
+    root.Add(new MenuItem(CoreVM.GetGeoNamesFromWebCommand, item));
+    root.Add(new MenuItem(GeoNameVM.NewGeoNameFromGpsCommand, item));
+    root.Add(new MenuItem(CoreVM.ReadGeoLocationFromFilesCommand, item));
   }
 }
