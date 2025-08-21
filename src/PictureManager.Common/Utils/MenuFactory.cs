@@ -13,7 +13,7 @@ using PictureManager.Common.Features.Viewer;
 using PictureManager.Common.Layout;
 using System.Collections.Generic;
 
-namespace PictureManager.Android.Utils;
+namespace PictureManager.Common.Utils;
 
 public static class MenuFactory {
   public static IEnumerable<MenuItem>? GetMenu(object item) =>

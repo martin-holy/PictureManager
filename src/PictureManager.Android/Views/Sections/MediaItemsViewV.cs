@@ -8,6 +8,7 @@ using MH.UI.Interfaces;
 using MH.Utils.Extensions;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Utils;
 using System;
 using System.ComponentModel;
 
@@ -74,7 +75,7 @@ public class MediaItemsViewV : LinearLayout, IDisposable {
     _importContainer.AddView(_importCancelButton);
     AddView(_importContainer);
 
-    _host = new CollectionViewHost(context, dataContext, Utils.MenuFactory.GetMenu, _getItemView);
+    _host = new CollectionViewHost(context, dataContext, MenuFactory.GetMenu, _getItemView);
     AddView(_host);
 
     dataContext.PropertyChanged += _onDataContextPropertyChanged;
