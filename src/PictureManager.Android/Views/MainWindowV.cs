@@ -3,6 +3,7 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Controls;
+using PictureManager.Android.Views.Layout;
 using PictureManager.Common.Layout;
 using PictureManager.Common.Utils;
 using System;
@@ -39,7 +40,7 @@ public class MainWindowV : LinearLayout {
       };
     });
 
-    SlidePanels.SetTopPanel(new ButtonMenu(Context!, DataContext.MainMenu, DataContext.MainMenu.Icon));
+    SlidePanels.SetTopPanel(new ToolBarV(context, dataContext));
     SlidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
   }
 
