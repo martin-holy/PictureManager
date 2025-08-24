@@ -52,6 +52,7 @@ public class MainMenuVM : TreeView {
     RootHolder.Add(_leftTabs);
     RootHolder.Add(_middleTabs);
     RootHolder.Add(_rightTabs);
+    RootHolder.Add(new MenuItem(CoreVM.SaveDbCommand));
     RootHolder.Add(new MenuItem(CoreVM.OpenSettingsCommand));
     RootHolder.Add(new MenuItem(WhatIsNewVM.OpenCommand));
     RootHolder.Add(new MenuItem(CoreVM.OpenAboutCommand));
