@@ -27,7 +27,7 @@ public static class MenuFactory {
       KeywordTreeCategory => _createKeywordTreeCategoryMenu(item),
       KeywordM => _createKeywordTreeMenu(item),
       GeoNameTreeCategory => _createGeoNamesTreeCategoryMenu(item),
-      GeoNameM => [],
+      GeoNameM => _createGeoNameTreeMenu(item),
       ViewerTreeCategory => [],
       ViewerM => [],
       KeywordCategoryGroupM => [],
@@ -104,4 +104,11 @@ public static class MenuFactory {
     new(CoreVM.GetGeoNamesFromWebCommand, item),
     new(GeoNameVM.NewGeoNameFromGpsCommand, item),
     new(CoreVM.ReadGeoLocationFromFilesCommand, item)];
+
+  // GeoName Tree
+  private static IEnumerable<MenuItem> _createGeoNameTreeMenu(object item) => [
+    new(MediaItemVM.LoadByGeoNameCommand, item),
+    new(MediaItemsViewsVM.FilterSetAndCommand, item),
+    new(MediaItemsViewsVM.FilterSetOrCommand, item),
+    new(MediaItemsViewsVM.FilterSetNotCommand, item)];
 }
