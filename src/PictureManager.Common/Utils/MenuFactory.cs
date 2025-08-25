@@ -25,7 +25,7 @@ public static class MenuFactory {
       PersonM => _createPersonTreeMenu(item),
       FolderKeywordTreeCategory => _createFolderKeywordTreeCategoryMenu(item),
       KeywordTreeCategory => _createKeywordTreeCategoryMenu(item),
-      KeywordM => [],
+      KeywordM => _createKeywordTreeMenu(item),
       GeoNameTreeCategory => _createGeoNamesTreeCategoryMenu(item),
       GeoNameM => [],
       ViewerTreeCategory => [],
@@ -86,6 +86,18 @@ public static class MenuFactory {
   private static IEnumerable<MenuItem> _createKeywordTreeCategoryMenu(object item) => [
     new(TreeCategory.ItemCreateCommand, item),
     new(TreeCategory.GroupCreateCommand, item)];
+
+  // Keyword tree
+  private static IEnumerable<MenuItem> _createKeywordTreeMenu(object item) => [
+    new(TreeCategory.ItemCreateCommand, item),
+    new(TreeCategory.ItemRenameCommand, item),
+    new(TreeCategory.ItemDeleteCommand, item),
+    new(MediaItemVM.LoadByKeywordCommand, item),
+    new(PersonVM.LoadByKeywordCommand, item),
+    new(SegmentVM.LoadByKeywordCommand, item),
+    new(MediaItemsViewsVM.FilterSetAndCommand, item),
+    new(MediaItemsViewsVM.FilterSetOrCommand, item),
+    new(MediaItemsViewsVM.FilterSetNotCommand, item)];
 
   // GeoNames TreeCategory
   private static IEnumerable<MenuItem> _createGeoNamesTreeCategoryMenu(object item) => [
