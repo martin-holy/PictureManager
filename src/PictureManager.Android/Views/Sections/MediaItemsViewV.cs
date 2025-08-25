@@ -75,7 +75,7 @@ public class MediaItemsViewV : LinearLayout, IDisposable {
     _importContainer.AddView(_importCancelButton);
     AddView(_importContainer);
 
-    _host = new CollectionViewHost(context, dataContext, MenuFactory.GetMenu, _getItemView);
+    _host = new CollectionViewHost(context, dataContext, _getItemView);
     AddView(_host);
 
     dataContext.PropertyChanged += _onDataContextPropertyChanged;
