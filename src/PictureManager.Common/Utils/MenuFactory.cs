@@ -16,7 +16,7 @@ using System.Collections.Generic;
 namespace PictureManager.Common.Utils;
 
 public static class MenuFactory {
-  public static IEnumerable<MenuItem>? GetMenu(object item) =>
+  public static IEnumerable<MenuItem> GetMenu(object item) =>
     item switch {
       DriveM => _createDriveMenu(item),
       FolderM => _createFolderMenu(item),
