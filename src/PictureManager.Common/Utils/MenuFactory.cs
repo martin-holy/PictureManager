@@ -43,7 +43,18 @@ public static class MenuFactory {
   private static IEnumerable<MenuItem> _createFolderMenu(object item) => [
     new(TreeCategory.ItemCreateCommand, item),
     new(TreeCategory.ItemRenameCommand, item),
-    new(TreeCategory.ItemDeleteCommand, item)];
+    new(TreeCategory.ItemDeleteCommand, item),
+    new(FavoriteFolderTreeCategory.AddToFavoritesCommand, item),
+    new(FolderKeywordTreeCategory.SetAsFolderKeywordCommand, item),
+    new(Res.IconLocationCheckin, "GeoLocation", [
+      new(CoreVM.GetGeoNamesFromWebCommand, item),
+      new(CoreVM.ReadGeoLocationFromFilesCommand, item)]),
+    new(Res.IconImageMultiple, "Media Items", [
+      new(CoreVM.CompressImagesCommand, item),
+      new(MediaItemsViewsVM.RebuildThumbnailsCommand, item),
+      new(CoreVM.ReloadMetadataCommand, item),
+      new(CoreVM.ResizeImagesCommand, item),
+      new(CoreVM.SaveImageMetadataToFilesCommand, item)])];
 
   // Person TreeCategory
   private static IEnumerable<MenuItem> _createPersonTreeCategoryMenu(object item) => [
