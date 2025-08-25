@@ -31,7 +31,7 @@ public static class MenuFactory {
       ViewerTreeCategory => _createViewerTreeCategoryMenu(item),
       ViewerM => _createViewerTreeMenu(item),
       KeywordCategoryGroupM => _createKeywordCategoryGroupMenu(item),
-      PersonCategoryGroupM => [],
+      PersonCategoryGroupM => _createPersonCategoryGroupMenu(item),
       _ => []
     };
 
@@ -126,4 +126,11 @@ public static class MenuFactory {
     new(TreeCategory.ItemCreateCommand, item),
     new(TreeCategory.GroupRenameCommand, item),
     new(TreeCategory.GroupDeleteCommand, item)];
+
+  // Person Category Group
+  private static IEnumerable<MenuItem> _createPersonCategoryGroupMenu(object item) => [
+    new(TreeCategory.ItemCreateCommand, item),
+    new(TreeCategory.GroupRenameCommand, item),
+    new(TreeCategory.GroupDeleteCommand, item),
+    new(PersonVM.LoadByCategoryGroupCommand, item)];
 }
