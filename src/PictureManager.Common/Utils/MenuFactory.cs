@@ -20,7 +20,7 @@ public static class MenuFactory {
     item switch {
       DriveM => _createDriveMenu(item),
       FolderM => _createFolderMenu(item),
-      FavoriteFolderM => [],
+      FavoriteFolderM => _createFavoriteFolderMenu(item),
       PersonTreeCategory => _createPersonTreeCategoryMenu(item),
       PersonM => _createPersonTreeMenu(item),
       FolderKeywordTreeCategory => _createFolderKeywordTreeCategoryMenu(item),
@@ -55,6 +55,11 @@ public static class MenuFactory {
       new(CoreVM.ReloadMetadataCommand, item),
       new(CoreVM.ResizeImagesCommand, item),
       new(CoreVM.SaveImageMetadataToFilesCommand, item)])];
+
+  // Favorite Folder
+  private static IEnumerable<MenuItem> _createFavoriteFolderMenu(object item) => [
+    new(TreeCategory.ItemRenameCommand, item),
+    new(TreeCategory.ItemDeleteCommand, item)];
 
   // Person TreeCategory
   private static IEnumerable<MenuItem> _createPersonTreeCategoryMenu(object item) => [
