@@ -29,7 +29,7 @@ public static class MenuFactory {
       GeoNameTreeCategory => _createGeoNamesTreeCategoryMenu(item),
       GeoNameM => _createGeoNameTreeMenu(item),
       ViewerTreeCategory => _createViewerTreeCategoryMenu(item),
-      ViewerM => [],
+      ViewerM => _createViewerTreeMenu(item),
       KeywordCategoryGroupM => [],
       PersonCategoryGroupM => [],
       _ => []
@@ -115,4 +115,9 @@ public static class MenuFactory {
   // Viewer TreeCategory
   private static IEnumerable<MenuItem> _createViewerTreeCategoryMenu(object item) => [
     new(TreeCategory.ItemCreateCommand, item)];
+
+  // Viewer tree
+  private static IEnumerable<MenuItem> _createViewerTreeMenu(object item) => [
+    new(TreeCategory.ItemRenameCommand, item),
+    new(TreeCategory.ItemDeleteCommand, item)];
 }
