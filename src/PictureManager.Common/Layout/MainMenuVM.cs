@@ -9,7 +9,6 @@ using System.Collections.Specialized;
 
 namespace PictureManager.Common.Layout;
 
-// TODO use this for WPF as well
 public class MainMenuVM : TreeView {
   private readonly MenuItem _leftTabs = new(Res.IconTabLeft, "Left tabs");
   private readonly MenuItem _middleTabs = new(Res.IconTabMiddle, "Middle tabs");
