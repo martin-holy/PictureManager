@@ -17,10 +17,10 @@
     </DataTemplate.Resources>
     
     <Menu Background="Transparent">
-      <MenuItem ItemsSource="{Binding Root.Items}" Padding="6,2,-2,2">
+      <MenuItem ItemsSource="{Binding RootHolder}" Padding="6,2,-2,2">
         <MenuItem.Icon>
           <Path
-            Data="{Binding Root.Icon, Converter={x:Static conv:ResourceConverter.Inst}}"
+            Data="{StaticResource IconThreeBars}"
             Style="{StaticResource MH.S.Icon.Shadow}"/>
         </MenuItem.Icon>
         
