@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 namespace PictureManager.Common.Features.MediaItem;
 
 public sealed class ReloadMetadataDialog : ParallelProgressDialog<RealMediaItemM> {
-  private readonly RealMediaItemM[] _items;
   private readonly MediaItemS _mediaItemS;
 
   public ReloadMetadataDialog(RealMediaItemM[] items, MediaItemS mediaItemS) :
     base("Reloading metadata...", MH.UI.Res.IconImage, items) {
-    _items = items;
     _mediaItemS = mediaItemS;
     _autoRun();
   }
