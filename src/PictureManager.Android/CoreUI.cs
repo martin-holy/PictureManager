@@ -30,7 +30,7 @@ public class CoreUI : ICoreP {
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) => throw new System.NotImplementedException();
   public string GetFilePathCache(FolderM folder, string fileNameCache) => throw new System.NotImplementedException();
-  public string GetFolderPathCache(FolderM folder) => throw new System.NotImplementedException();
+  public string GetFolderPathCache(FolderM folder) => string.Empty; // TODO PORT
 
   private void _attachEvents() {
     Core.R.Folder.Tree.ItemSelectedEvent += _onFolderTreeItemSelected;
