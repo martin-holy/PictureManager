@@ -20,13 +20,14 @@
         <RowDefinition Height="40"/>
         <RowDefinition Height="40"/>
         <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto"/>
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
 
-      <!-- Preserve Thumbnail/Metadata -->
+      <!-- Preserve Thumbnail/Metadata/Folders -->
       <TextBlock Text="Preserve:" Grid.Row="0" Grid.Column="0"/>
       <StackPanel
         Orientation="Horizontal"
@@ -36,6 +37,7 @@
 
         <CheckBox Content="Thumbnail" IsChecked="{Binding PreserveThumbnail}"/>
         <CheckBox Content="Metadata" IsChecked="{Binding PreserveMetadata}" Margin="15,0,0,0"/>
+        <CheckBox Content="Folders" IsChecked="{Binding PreserveFolders}" Margin="15,0,0,0"/>
       </StackPanel>
 
       <!-- Resize to -->
@@ -66,15 +68,23 @@
         TickFrequency="0.1"
         IsSnapToTickEnabled="True"
         VerticalAlignment="Center"/>
+      
+      <CheckBox
+        Grid.Row="3"
+        Grid.Column="0"
+        Grid.ColumnSpan="2"
+        Content="Skip if file exists"
+        IsChecked="{Binding SkipIfExists}"
+        Margin="4,0,0,0"/>
 
       <TextBlock
-        Grid.Row="3"
+        Grid.Row="4"
         Grid.Column="0"
         Grid.ColumnSpan="2"
         Text="{Binding ProgressText}"/>
 
       <ProgressBar
-        Grid.Row="4"
+        Grid.Row="5"
         Grid.Column="0"
         Grid.ColumnSpan="2"
         Maximum="{Binding ProgressMax}"
