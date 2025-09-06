@@ -75,10 +75,10 @@ public class MainMenuVM : TreeView {
 
   private MenuItem _createTabMenuItem(TabControl tabControl, IListItem tab) =>
     new(new RelayCommand<IListItem>(
-      x => tabControl.Activate(((IListItem)x!.Data!).Data!),
-      x => x is { Data : IListItem { Data : { } } },
+      x => tabControl.Activate(x!.Data!),
+      x => x is { Data : { } },
       tab.Icon,
-      tab.Name)) { Data = tab };
+      tab.Name), tab) { Data = tab };
 
   private void _onTabsChanged(TabControl tabControl, MenuItem root, NotifyCollectionChangedEventArgs e) {
     switch (e.Action) {
