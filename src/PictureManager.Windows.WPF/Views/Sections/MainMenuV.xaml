@@ -10,7 +10,7 @@
         <Setter Property="Icon" Value="{Binding Icon, Converter={x:Static conv:IconConverter.Inst}}"/>
         <Setter Property="Header" Value="{Binding Name}"/>
         <Setter Property="Command" Value="{Binding Command}"/>
-        <Setter Property="CommandParameter" Value="{Binding}"/>
+        <Setter Property="CommandParameter" Value="{Binding Data}"/>
         <Setter Property="ItemsSource" Value="{Binding Items}"/>
         <Setter Property="InputGestureText" Value="{Binding InputGestureText}"/>            
       </Style>
