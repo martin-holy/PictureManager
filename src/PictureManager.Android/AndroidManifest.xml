@@ -6,9 +6,11 @@
     android:label="@string/app_name"
     android:roundIcon="@drawable/icon_app"
     android:supportsRtl="true"
-    android:theme="@style/MHAppTheme">
+    android:theme="@style/MHAppTheme"
+    android:requestLegacyExternalStorage="true">
   </application>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

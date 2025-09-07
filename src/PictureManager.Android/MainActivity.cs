@@ -2,11 +2,15 @@ using Android.App;
 using Android.Content.PM;
 using Android.Content.Res;
 using Android.OS;
+using AndroidX.Core.App;
+using AndroidX.Core.Content;
 using AndroidX.Fragment.App;
 using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Layout;
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Perm = Android.Manifest.Permission;
 
@@ -20,8 +24,13 @@ public class MainActivity : FragmentActivity {
   protected override void OnCreate(Bundle? savedInstanceState) {
     base.OnCreate(savedInstanceState);
 
-    if (CheckSelfPermission(Perm.ReadExternalStorage) != Permission.Granted)
-      RequestPermissions([Perm.ReadExternalStorage], 1);
+    var permissions = new string[] {
+      Perm.ReadExternalStorage,
+      Perm.WriteExternalStorage
+    };
+
+    if (permissions.Any(p => ContextCompat.CheckSelfPermission(this, p) != Permission.Granted))
+      ActivityCompat.RequestPermissions(this, permissions, 0);
 
     var splashScreen = new SplashScreenV(this);
     SetContentView(splashScreen);
