@@ -43,6 +43,7 @@ public static class Res {
   public const string IconInformation = "IconInformation";
   public const string IconLocationCheckin = "IconLocationCheckin";
   public const string IconMagnify = "IconMagnify";
+  public const string IconMove = "IconMove";
   public const string IconNotification = "IconNotification";
   public const string IconPeople = "IconPeople";
   public const string IconPeopleMultiple = "IconPeopleMultiple";
