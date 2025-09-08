@@ -23,6 +23,7 @@ public static class Res {
   public const string IconCalendar = "IconCalendar";
   public const string IconCd = "IconCd";
   public const string IconCompare = "IconCompare";
+  public const string IconCopy = "IconCopy";
   public const string IconDatabase = "IconDatabase";
   public const string IconDrawer = "IconDrawer";
   public const string IconDrawerAdd = "IconDrawerAdd";
