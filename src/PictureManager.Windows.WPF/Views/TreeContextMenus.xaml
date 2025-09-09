@@ -114,6 +114,7 @@
         <Path Data="{StaticResource IconImageMultiple}" Style="{StaticResource MH.S.Icon.Shadow}"/>
       </MenuItem.Icon>
       <MenuItem Command="ftMediaItem:MediaItemVM.CopySelectedToFolderCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="ftMediaItem:MediaItemVM.MoveSelectedToFolderCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="core:CoreVM.CompressImagesCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="ftMediaItem:MediaItemsViewsVM.RebuildThumbnailsCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="core:CoreVM.ReloadMetadataCommand" CommandParameter="{Binding}"/>
