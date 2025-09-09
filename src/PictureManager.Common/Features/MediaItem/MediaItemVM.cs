@@ -38,6 +38,7 @@ public sealed class MediaItemVM : ObservableObject {
   public static AsyncRelayCommand RenameCommand { get; set; } = null!;
   public static RelayCommand ViewSelectedCommand { get; set; } = null!;
   public static AsyncRelayCommand<FolderM> CopySelectedToFolderCommand { get; private set; } = null!;
+  public static AsyncRelayCommand<FolderM> MoveSelectedToFolderCommand { get; private set; } = null!;
 
   public MediaItemVM(CoreVM coreVM, MediaItemS s) {
     _coreVM = coreVM;
@@ -51,6 +52,7 @@ public sealed class MediaItemVM : ObservableObject {
     RenameCommand = new(_ => Rename((RealMediaItemM)Current!), () => Current is RealMediaItemM, null, "Rename");
     ViewSelectedCommand = new(_viewSelected, _canViewSelected, Res.IconImageMultiple, "View selected");
     CopySelectedToFolderCommand = new(_copySelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconCopy, "Copy selected");
+    MoveSelectedToFolderCommand = new(_moveSelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconMove, "Move selected");
   }
 
   private async Task _comment(MediaItemM mi) {
@@ -113,6 +115,9 @@ public sealed class MediaItemVM : ObservableObject {
 
   private Task _copySelectedToFolder(FolderM? folder, CancellationToken token) =>
     CopyMoveSelectedToFolder(folder, true);
+
+  private Task _moveSelectedToFolder(FolderM? folder, CancellationToken token) =>
+    CopyMoveSelectedToFolder(folder, false);
 
   private bool _canCopyMoveSelectedToFolder(FolderM? folder) =>
     folder is { IsAccessible: true } && Views.Current?.Selected.Items.OfType<RealMediaItemM>().Any() == true;
