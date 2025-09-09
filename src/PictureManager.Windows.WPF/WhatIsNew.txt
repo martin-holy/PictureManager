@@ -4,6 +4,9 @@
 [B] - Bug fix
 
 Latest:
+ - [N] MediaItems: CopySelectedToFolderCommand in folder menu
+
+25.09.02.0938:
  - [B] Not successful MediaItems import when importing from folder with deleted Videos outside of this app containing VideoItems
  - [B] Reload Video VideoItems after VideoItem delete
  - [N] MainMenu: Left, Middle and Right Tabs in menu
