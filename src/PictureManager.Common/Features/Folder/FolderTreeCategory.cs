@@ -72,17 +72,7 @@ public sealed class FolderTreeCategory : TreeCategory<FolderM> {
         break;
 
       case string[]: // MediaItems
-        var items = Core.VM.MediaItem.Views.Current?.Selected.Items.OfType<RealMediaItemM>().ToArray();
-        if (items == null || items.Length == 0) return;
-        if (await Dialog.ShowAsync(new MessageDialog(
-              $"{(copy ? "Copy" : "Move")} media items",
-              $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Length)} to\n'{dest.Name}'?",
-              MH.UI.Res.IconQuestion,
-              true)) != 1)
-          return;
-
-        await CopyMoveU.CopyMoveMediaItems(items, destFolder, mode);
-
+        if (!await Core.VM.MediaItem.CopyMoveSelectedToFolder(destFolder, copy)) return;
         break;
     }
 
