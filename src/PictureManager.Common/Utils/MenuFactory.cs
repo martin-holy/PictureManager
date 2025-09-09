@@ -50,6 +50,7 @@ public static class MenuFactory {
       new(CoreVM.GetGeoNamesFromWebCommand, item),
       new(CoreVM.ReadGeoLocationFromFilesCommand, item)]),
     new(Res.IconImageMultiple, "Media Items", [
+      new(MediaItemVM.CopySelectedToFolderCommand, item),
       new(CoreVM.CompressImagesCommand, item),
       new(MediaItemsViewsVM.RebuildThumbnailsCommand, item),
       new(CoreVM.ReloadMetadataCommand, item),
