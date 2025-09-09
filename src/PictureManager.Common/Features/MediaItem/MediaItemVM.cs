@@ -2,6 +2,7 @@
 using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.GeoName;
 using PictureManager.Common.Features.Keyword;
 using PictureManager.Common.Features.Person;
@@ -36,6 +37,7 @@ public sealed class MediaItemVM : ObservableObject {
   public static AsyncRelayCommand LoadByPeopleOrSegmentsCommand { get; set; } = null!;
   public static AsyncRelayCommand RenameCommand { get; set; } = null!;
   public static RelayCommand ViewSelectedCommand { get; set; } = null!;
+  public static AsyncRelayCommand<FolderM> CopySelectedToFolderCommand { get; private set; } = null!;
 
   public MediaItemVM(CoreVM coreVM, MediaItemS s) {
     _coreVM = coreVM;
@@ -48,6 +50,7 @@ public sealed class MediaItemVM : ObservableObject {
     LoadByPeopleOrSegmentsCommand = new(_loadByPeopleOrSegments, Res.IconImageMultiple, "Load Media items with selected People or Segments");
     RenameCommand = new(_ => Rename((RealMediaItemM)Current!), () => Current is RealMediaItemM, null, "Rename");
     ViewSelectedCommand = new(_viewSelected, _canViewSelected, Res.IconImageMultiple, "View selected");
+    CopySelectedToFolderCommand = new(_copySelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconCopy, "Copy selected");
   }
 
   private async Task _comment(MediaItemM mi) {
@@ -107,6 +110,25 @@ public sealed class MediaItemVM : ObservableObject {
 
   private bool _canViewSelected() =>
     Views.Current?.Selected.Items.Count > 1;
+
+  private Task _copySelectedToFolder(FolderM? folder, CancellationToken token) =>
+    CopyMoveSelectedToFolder(folder, true);
+
+  private bool _canCopyMoveSelectedToFolder(FolderM? folder) =>
+    folder is { IsAccessible: true } && Views.Current?.Selected.Items.OfType<RealMediaItemM>().Any() == true;
+
+  public async Task<bool> CopyMoveSelectedToFolder(FolderM? folder, bool copy) {
+    if (folder == null || Views.Current?.Selected.Items.OfType<RealMediaItemM>().ToArray() is not { Length: > 0 } items) return false;
+    if (await Dialog.ShowAsync(new MessageDialog(
+          $"{(copy ? "Copy" : "Move")} media items",
+          $"Do you really want to {(copy ? "copy" : "move")} {"{0} media item{1}".Plural(items.Length)} to\n'{folder.Name}'?",
+          MH.UI.Res.IconQuestion,
+          true)) != 1)
+      return false;
+
+    await CopyMoveU.CopyMoveMediaItems(items, folder, copy ? FileOperationMode.Copy : FileOperationMode.Move);
+    return true;
+  }
 
   public async Task<bool> Delete(MediaItemM[] items) {
     if (items.Length == 0 || await Dialog.ShowAsync(new MessageDialog(
