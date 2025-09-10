@@ -51,8 +51,8 @@ public sealed class MediaItemVM : ObservableObject {
     LoadByPeopleOrSegmentsCommand = new(_loadByPeopleOrSegments, Res.IconImageMultiple, "Load Media items with selected People or Segments");
     RenameCommand = new(_ => Rename((RealMediaItemM)Current!), () => Current is RealMediaItemM, null, "Rename");
     ViewSelectedCommand = new(_viewSelected, _canViewSelected, Res.IconImageMultiple, "View selected");
-    CopySelectedToFolderCommand = new(_copySelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconCopy, "Copy selected");
-    MoveSelectedToFolderCommand = new(_moveSelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconMove, "Move selected");
+    CopySelectedToFolderCommand = new(_copySelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconCopy, "Copy");
+    MoveSelectedToFolderCommand = new(_moveSelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconMove, "Move");
   }
 
   private async Task _comment(MediaItemM mi) {
