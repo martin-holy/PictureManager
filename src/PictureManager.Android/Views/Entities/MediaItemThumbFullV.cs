@@ -35,7 +35,7 @@ public class MediaItemThumbFullV : LinearLayout {
   }
 
   private static async void _loadThumbnailAsync(string imagePath, ImageView imageView, Context context) {
-    var thumbnail = await Task.Run(() => MediaStoreU.GetThumbnailBitmap(imagePath, context));
+    var thumbnail = await Task.Run(() => MediaStoreU.GetThumbnailBitmapAsync(imagePath, context));
     MH.Utils.Tasks.Dispatch(() => imageView.SetImageBitmap(thumbnail));
   }
 }
