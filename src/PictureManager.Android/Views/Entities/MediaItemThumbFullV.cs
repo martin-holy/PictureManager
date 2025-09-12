@@ -3,7 +3,6 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Utils;
 using PictureManager.Common.Features.MediaItem;
 using System.Threading.Tasks;
 
@@ -30,12 +29,12 @@ public class MediaItemThumbFullV : LinearLayout {
       return this;
     }
 
-    _loadThumbnailAsync(mi.FilePath, _image, Context!);
+    _loadThumbnailAsync(mi, _image, Context!);
     return this;
   }
 
-  private static async void _loadThumbnailAsync(string imagePath, ImageView imageView, Context context) {
-    var thumbnail = await Task.Run(() => MediaStoreU.GetThumbnailBitmapAsync(imagePath, context));
+  private static async void _loadThumbnailAsync(MediaItemM mi, ImageView imageView, Context context) {
+    var thumbnail = await Task.Run(() => Utils.MediaStoreU.GetThumbnailBitmapAsync(mi, context));
     MH.Utils.Tasks.Dispatch(() => imageView.SetImageBitmap(thumbnail));
   }
 }
