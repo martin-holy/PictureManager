@@ -34,7 +34,8 @@ public class CoreUI : ICoreP {
     _attachEvents();
   }
 
-  public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) => throw new System.NotImplementedException();
+  public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) =>
+    MH.UI.Android.Utils.ImagingU.CreateImageThumbnail(srcPath, destPath, desiredSize, quality);
   public string GetFilePathCache(FolderM folder, string fileNameCache) => throw new System.NotImplementedException();
   
   public string GetFolderPathCache(FolderM folder) {
