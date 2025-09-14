@@ -20,7 +20,9 @@ public class MainWindowV : LinearLayout {
 
   public MainWindowV(Context context, MainWindowVM dataContext) : base(context) {
     DataContext = dataContext;
-    SlidePanels = new(context);
+    SlidePanels = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
+    };
     AddView(SlidePanels);
 
     TreeViewCategories = new(context, DataContext.TreeViewCategories, _getTreeViewCategoriesView) {
