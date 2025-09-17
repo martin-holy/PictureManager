@@ -20,31 +20,23 @@ public class MainWindowV : LinearLayout {
 
   public MainWindowV(Context context, MainWindowVM dataContext) : base(context) {
     DataContext = dataContext;
-    SlidePanels = new(context) {
+    SlidePanels = new(context, _slidePanelsFactory) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
     };
-    AddView(SlidePanels);
-
-    TreeViewCategories = new(context, DataContext.TreeViewCategories, _getTreeViewCategoriesView) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
-    };
-
-    MiddleContent = new(context, Common.Core.VM, SlidePanels.ViewPager) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
-    };
-
-    SlidePanels.SetPanelFactory(position => {
-      return position switch {
-        0 => TreeViewCategories,
-        1 => MiddleContent,
-        2 => new TextView(context) { Text = "Right Panel" },
-        _ => throw new ArgumentOutOfRangeException(nameof(position))
-      };
-    });
-
+    TreeViewCategories = new(context, DataContext.TreeViewCategories, _getTreeViewCategoriesView);
+    MiddleContent = new(context, Common.Core.VM, SlidePanels.ViewPager);
     SlidePanels.SetTopPanel(new ToolBarV(context, dataContext));
     SlidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
+    AddView(SlidePanels);
   }
+
+  private View _slidePanelsFactory(int position) =>
+    position switch {
+      0 => TreeViewCategories,
+      1 => MiddleContent,
+      2 => new TextView(Context) { Text = "Right Panel" },
+      _ => throw new ArgumentOutOfRangeException(nameof(position))
+    };
 
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
