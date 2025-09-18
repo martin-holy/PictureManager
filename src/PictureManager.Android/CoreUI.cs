@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.OS;
 using MH.Utils;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Android.Utils;
 using PictureManager.Android.Views;
@@ -35,16 +36,18 @@ public class CoreUI : ICoreP {
   }
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) =>
-    MH.UI.Android.Utils.ImagingU.CreateImageThumbnail(srcPath, destPath, desiredSize, quality);
-  public string GetFilePathCache(FolderM folder, string fileNameCache) => throw new System.NotImplementedException();
-  
+    throw new System.NotImplementedException();
+
+  public string GetFilePathCache(FolderM folder, string fileNameCache) =>
+    IOExtensions.PathCombine(folder.FullPathCache, fileNameCache);
+
   public string GetFolderPathCache(FolderM folder) {
     var parts = folder.GetThisAndParents().Reverse().Select(x => x.Name).ToArray();
     var driveRoot = parts[0];
     var relativePath = string.Join(Path.DirectorySeparatorChar, parts.Skip(1));
-    var cacheSubPath = Core.Settings.Common.CachePath.TrimStart(':').Replace('\\', Path.DirectorySeparatorChar);
+    var cacheSubPath = Core.Settings.Common.CachePath.TrimStart(':').Replace('\\', Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
 
-    return Path.Combine(driveRoot, cacheSubPath, relativePath);
+    return string.Concat(driveRoot, cacheSubPath, relativePath);
   }
 
   public bool IsFolderPathCacheableInMediaStore(FolderM folder) {
