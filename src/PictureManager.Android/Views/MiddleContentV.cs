@@ -3,9 +3,11 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Views;
 using MH.Utils.Extensions;
 using PictureManager.Android.Views.Sections;
 using PictureManager.Common;
+using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.MediaItem;
 using System.ComponentModel;
 
@@ -63,6 +65,7 @@ public class MiddleContentV : LinearLayout {
   private View? _getMainTabsView(LinearLayout container, object? item) =>
     item switch {
       MediaItemsViewVM miv => new MediaItemsViewV(container.Context!, miv),
+      LogVM log => new LogV(container.Context!, log.Items),
       View view => view,
       _ => null
     };
