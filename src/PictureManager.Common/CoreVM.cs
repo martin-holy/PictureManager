@@ -47,6 +47,7 @@ public sealed class CoreVM : ObservableObject {
   public PeopleVM? People { get; set; }
   public SegmentsDrawerVM SegmentsDrawer { get; }
   public TitleProgressBarVM TitleProgressBar { get; } = new();
+  public LogVM Log { get; } = new();
 
   public TabControl ToolsTabs => MainWindow.ToolsTabs;
   public static double DisplayScale { get; set; }
@@ -59,7 +60,7 @@ public sealed class CoreVM : ObservableObject {
   public static AsyncRelayCommand AppClosingCommand { get; private set; } = null!;
   public static RelayCommand ExportSegmentsCommand { get; private set; } = null!;
   public static RelayCommand OpenAboutCommand { get; } = new(() => _ = Dialog.ShowAsync(new AboutDialog()), null, "About");
-  public static RelayCommand OpenLogCommand { get; } = new(() => _ = Dialog.ShowAsync(new LogDialog()), MH.UI.Res.IconSort, "Open log");
+  public static RelayCommand OpenLogCommand { get; private set; } = null!;
   public static AsyncRelayCommand OpenSegmentsViewsCommand { get; private set; } = null!;
   public static RelayCommand OpenSettingsCommand { get; private set; } = null!;
   public static RelayCommand SaveDbCommand { get; private set; } = null!;
@@ -96,6 +97,7 @@ public sealed class CoreVM : ObservableObject {
 
     AppClosingCommand = new(_onAppClosing);
     ExportSegmentsCommand = new(_exportSegments, () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export Segments");
+    OpenLogCommand = new(_openLog, MH.UI.Res.IconSort, "Open log");
     OpenSettingsCommand = new(_openSettings, Res.IconSettings, "Settings");
     OpenSegmentsViewsCommand = new(_ => OpenSegmentsViews(null, string.Empty), Res.IconSegment, "Segments View");
     SaveDbCommand = new(() => _coreR.SaveAllTables(), () => _coreR.Changes > 0, Res.IconDatabase, "Save changes");
@@ -362,6 +364,13 @@ public sealed class CoreVM : ObservableObject {
 
   private void _exportSegments() =>
     _ = Dialog.ShowAsync(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray()));
+
+  private void _openLog() {
+    if (System.OperatingSystem.IsWindows())
+      Dialog.ShowAsync(new LogDialog());
+    else
+      MainTabs.Activate(MH.UI.Res.IconSort, "Log", Log);
+  }
 
   private void _openSettings() =>
     MainTabs.Activate(Res.IconSettings, "Settings", Core.Inst.AllSettings);
