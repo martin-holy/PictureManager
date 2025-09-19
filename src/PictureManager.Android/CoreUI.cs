@@ -67,6 +67,11 @@ public class CoreUI : ICoreP {
 
   private void _attachEvents() {
     Core.R.Folder.Tree.ItemSelectedEvent += _onFolderTreeItemSelected;
+    Core.VM.MainTabs.TabActivatedEvent += _onMainTabsTabActivated;
+  }
+
+  private void _onMainTabsTabActivated(object? sender, IListItem e) {
+    MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
   }
 
   private void _onFolderTreeItemSelected(object? sender, ITreeItem e) {
