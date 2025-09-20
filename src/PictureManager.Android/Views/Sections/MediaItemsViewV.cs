@@ -8,7 +8,6 @@ using MH.UI.Interfaces;
 using MH.Utils.Extensions;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.MediaItem;
-using PictureManager.Common.Utils;
 using System;
 using System.ComponentModel;
 
@@ -60,7 +59,7 @@ public class MediaItemsViewV : LinearLayout, IDisposable {
       }
     };
 
-    _importCancelButton = new Button(context) {
+    _importCancelButton = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0) {
       LayoutParameters = new LayoutParams(LayoutParams.WrapContent, LayoutParams.WrapContent) {
         Gravity = GravityFlags.End,
         TopMargin = DisplayU.DpToPx(6),
