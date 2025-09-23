@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
@@ -19,6 +20,11 @@ public class ToolBarV : LinearLayout {
     var logBtn = new IconButton(context);
     logBtn.SetImageDrawable(Icons.GetIcon(context, CoreVM.OpenLogCommand.Icon));
     _commandBindings.Add(new(logBtn, CoreVM.OpenLogCommand));
+
+    BindingU.Bind(Core.VM.Log.Items, x => x.Count, count => {
+      logBtn.Visibility = count > 0 ? ViewStates.Visible : ViewStates.Gone;
+    });
+
     AddView(logBtn);
   }
 
