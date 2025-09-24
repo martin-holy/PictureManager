@@ -24,6 +24,11 @@ public class MainActivity : FragmentActivity {
   protected override void OnCreate(Bundle? savedInstanceState) {
     base.OnCreate(savedInstanceState);
 
+    global::Android.Runtime.AndroidEnvironment.UnhandledExceptionRaiser += (_, e) => {
+      MH.Utils.Log.Error(e.Exception, "Unhandled Exception");
+      e.Handled = true;
+    };
+
     var permissions = new string[] {
       Perm.ReadExternalStorage,
       Perm.WriteExternalStorage
