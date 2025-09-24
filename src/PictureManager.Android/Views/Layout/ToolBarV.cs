@@ -17,7 +17,7 @@ public class ToolBarV : LinearLayout {
     BindingU.Bind(logBtn, CoreVM.OpenLogCommand);
     BindingU.Bind(Core.VM.Log.Items, x => x.Count, count => {
       logBtn.Visibility = count > 0 ? ViewStates.Visible : ViewStates.Gone;
-    });
+    }, this);
     AddView(logBtn);
   }
 }
