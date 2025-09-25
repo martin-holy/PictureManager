@@ -33,7 +33,7 @@ public class MediaItemsViewV : LinearLayout, IDisposable {
     _importText = new TextView(context);
     _importProgress = new ProgressBar(context);
     _importCancelButton = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0);
-    BindingU.Bind(_importCancelButton, DataContext.Import.CancelCommand);
+    _importCancelButton.Bind(DataContext.Import.CancelCommand);
     _importContainer = new LinearLayout(context) { Orientation = Orientation.Vertical };
     _importContainer.SetGravity(GravityFlags.Center);
     _importContainer.SetPadding(DimensU.Spacing);

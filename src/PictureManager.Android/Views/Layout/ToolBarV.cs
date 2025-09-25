@@ -14,7 +14,7 @@ public class ToolBarV : LinearLayout {
     AddView(new ButtonMenu(Context!, mainWindowVM.MainMenu, mainWindowVM.MainMenu.Icon));
 
     var logBtn = new IconButton(context);
-    BindingU.Bind(logBtn, CoreVM.OpenLogCommand);
+    logBtn.Bind(CoreVM.OpenLogCommand);
     BindingU.Bind(Core.VM.Log.Items, x => x.Count, count => {
       logBtn.Visibility = count > 0 ? ViewStates.Visible : ViewStates.Gone;
     }, this);
