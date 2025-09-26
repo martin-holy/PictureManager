@@ -45,13 +45,13 @@ public class MediaItemsViewV : LinearLayout, IDisposable {
     _host = new CollectionViewHost(context, dataContext, _getItemView);
     AddView(_host);
 
-    BindingU.Bind(dataContext, x => x.IsLoading, _ => _updateVisibility(), this);
-    BindingU.Bind(dataContext.Import, x => x.IsImporting, _ => _updateVisibility(), this);
-    BindingU.Bind(dataContext.Import, x => x.Count, count => {
+    this.Bind(dataContext, x => x.IsLoading, (_, _) => _updateVisibility());
+    this.Bind(dataContext.Import, x => x.IsImporting, (_, _) => _updateVisibility());
+    this.Bind(dataContext.Import, x => x.Count, (_, count) => {
       _importText.Text = $"Importing {count} new items ...";
       _importProgress.Max = count;
-    }, this);
-    BindingU.Bind(dataContext.Import, x => x.DoneCount, doneCount => _importProgress.Progress = doneCount, this);
+    });
+    _importProgress.Bind(dataContext.Import, x => x.DoneCount, (view, doneCount) => view.Progress = doneCount);
   }
 
   protected override void Dispose(bool disposing) {
