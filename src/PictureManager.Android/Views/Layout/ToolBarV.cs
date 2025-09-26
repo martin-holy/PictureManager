@@ -13,12 +13,19 @@ public class ToolBarV : LinearLayout {
     Orientation = Orientation.Horizontal;
     AddView(new ButtonMenu(Context!, mainWindowVM.MainMenu, mainWindowVM.MainMenu.Icon));
 
-    var logBtn = new CompactIconTextButton(context);
-    logBtn.Bind(CoreVM.OpenLogCommand);
-    BindingU.Bind(Core.VM.Log.Items, x => x.Count, count => {
-      logBtn.Visibility = count > 0 ? ViewStates.Visible : ViewStates.Gone;
-      logBtn.Text.Text = count.ToString();
-    }, this);
-    AddView(logBtn);
+    AddView(new CompactIconTextButton(context)
+      .WithCommand(CoreVM.OpenLogCommand)
+      .WithBind(Core.VM.Log.Items, x => x.Count, (view, count) => {
+        view.Visibility = count > 0 ? ViewStates.Visible : ViewStates.Gone;
+        view.Text.Text = count.ToString();
+      }));
+
+    AddView(new CompactIconTextButton(context)
+      .WithCommand(CoreVM.SaveDbCommand)
+      .WithBind(Core.R, x => x.Changes, (view, changes) => {
+        view.Visibility = changes > 0 ? ViewStates.Visible : ViewStates.Gone;
+        view.Text.Text = changes.ToString();
+        view.Enabled = changes > 0;
+      }));
   }
 }
