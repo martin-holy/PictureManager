@@ -26,7 +26,6 @@ public class ToolBarV : LinearLayout {
       .WithBind(Core.R, x => x.Changes, (view, changes) => {
         view.Visibility = changes > 0 ? ViewStates.Visible : ViewStates.Gone;
         view.Text.Text = changes.ToString();
-        view.Enabled = changes > 0;
       }));
   }
 }
