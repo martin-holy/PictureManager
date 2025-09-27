@@ -1,5 +1,4 @@
 ﻿using MH.UI.WPF.Extensions;
-using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Common;
 using PictureManager.Common.Features.Segment;
@@ -8,6 +7,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Windows.WPF.Utils;
 
