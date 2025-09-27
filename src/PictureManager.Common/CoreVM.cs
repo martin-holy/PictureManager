@@ -156,6 +156,8 @@ public sealed class CoreVM : ObservableObject {
     _coreR.Segment.ItemsDeletedEvent += _onSegmentsDeleted;
     _coreR.Segment.SegmentsKeywordsChangedEvent += _onSegmentsKeywordsChanged;
     _coreR.Segment.SegmentsPersonChangedEvent += _onSegmentsPersonChanged;
+
+    SaveDbCommand.Bind(_coreR, x => x.Changes, (cmd, _) => cmd.RaiseCanExecuteChanged());
   }
 
   private void _onMainTabsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
