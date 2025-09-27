@@ -24,7 +24,7 @@ public sealed class ImageR : TableDataAdapter<ImageM> {
     new(int.Parse(csv[0]), FolderR.Dummy, csv[2]) {
       Width = csv[3].IntParseOrDefault(0),
       Height = csv[4].IntParseOrDefault(0),
-      Orientation = (Orientation)csv[5].IntParseOrDefault(1),
+      Orientation = (Imaging.Orientation)csv[5].IntParseOrDefault(1),
       Rating = csv[6].IntParseOrDefault(0),
       Comment = string.IsNullOrEmpty(csv[7]) ? null : csv[7],
       IsOnlyInDb = csv[10] == "1"

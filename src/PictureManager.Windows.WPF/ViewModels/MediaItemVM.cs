@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
+using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Windows.WPF.ViewModels;
 

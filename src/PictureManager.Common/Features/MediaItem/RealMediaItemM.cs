@@ -1,5 +1,5 @@
-﻿using MH.Utils;
-using PictureManager.Common.Features.Folder;
+﻿using PictureManager.Common.Features.Folder;
+using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Common.Features.MediaItem;
 

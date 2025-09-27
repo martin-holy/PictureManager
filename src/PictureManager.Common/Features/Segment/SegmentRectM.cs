@@ -1,7 +1,7 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common.Features.MediaItem.Image;
+using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Common.Features.Segment {
   public sealed class SegmentRectM : ObservableObject {

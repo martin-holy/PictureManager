@@ -429,7 +429,7 @@ public sealed class CoreVM : ObservableObject {
 
   private async Task _rotateMediaItems(RealMediaItemM[] items) {
     var rotation = await RotationDialog.Open();
-    if (rotation == Orientation.Normal) return;
+    if (rotation == Imaging.Orientation.Normal) return;
     _coreR.MediaItem.Rotate(items, rotation);
   }
 

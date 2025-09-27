@@ -2,7 +2,6 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
-using System;
 using System.Collections.Generic;
 
 namespace PictureManager.Common.Features.MediaItem;
@@ -53,7 +52,7 @@ public sealed class MediaViewerVM : ObservableObject {
     OnPropertyChanged(nameof(PositionSlashCount));
 
     if (current != null && !System.OperatingSystem.IsAndroid()) {
-      var rotated = current.Orientation is Orientation.Rotate90 or Orientation.Rotate270;
+      var rotated = current.Orientation is Imaging.Orientation.Rotate90 or Imaging.Orientation.Rotate270;
 
       ContentWidth = rotated ? current.Height : current.Width;
       ContentHeight = rotated ? current.Width : current.Height;

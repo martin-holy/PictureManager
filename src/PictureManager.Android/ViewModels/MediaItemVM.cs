@@ -5,6 +5,7 @@ using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
 using System;
 using System.IO;
+using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Android.ViewModels;
 

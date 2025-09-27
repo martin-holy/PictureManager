@@ -10,5 +10,5 @@ public class OrientationToAngleConverter : BaseConverter {
   public static OrientationToAngleConverter Inst { get { lock (_lock) { return _inst ??= new(); } } }
 
   public override object Convert(object? value, object? parameter) =>
-    (value is Orientation o ? o : Orientation.Normal).ToAngle();
+    (value is Imaging.Orientation o ? o : Imaging.Orientation.Normal).ToAngle();
 }

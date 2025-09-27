@@ -5,6 +5,7 @@ using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
@@ -134,7 +135,7 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder, IDisposab
       return;
     }
 
-    var rotated = mi.Orientation is MH.Utils.Orientation.Rotate90 or MH.Utils.Orientation.Rotate270;
+    var rotated = mi.Orientation is Imaging.Orientation.Rotate90 or Imaging.Orientation.Rotate270;
     var width = rotated ? mi.Height : mi.Width;
     var height = rotated ? mi.Width : mi.Height;
     _zoomAndPan.ContentWidth = width;

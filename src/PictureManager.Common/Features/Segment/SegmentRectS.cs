@@ -1,6 +1,5 @@
 ﻿using MH.UI.Controls;
 using MH.UI.Dialogs;
-using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common.Features.MediaItem;
@@ -11,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Common.Features.Segment;
 

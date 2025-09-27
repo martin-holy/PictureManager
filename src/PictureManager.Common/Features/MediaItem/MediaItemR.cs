@@ -302,7 +302,7 @@ public sealed class MediaItemR : TableDataAdapter<MediaItemM> {
   public IEnumerable<MediaItemM> GetItems(SegmentM[] segments) =>
     segments.GetMediaItems();
 
-  public void Rotate(RealMediaItemM[] items, Orientation rotation) {
+  public void Rotate(RealMediaItemM[] items, Imaging.Orientation rotation) {
     foreach (var mi in items) {
       mi.Orientation = rotation.SwapRotateIf(mi is not ImageM).Rotate(mi.Orientation);
       Modify(mi);

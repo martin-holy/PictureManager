@@ -2,10 +2,6 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Common.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.GeoLocation;
 using PictureManager.Common.Features.GeoName;
@@ -13,6 +9,11 @@ using PictureManager.Common.Features.Keyword;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Person;
 using PictureManager.Common.Features.Segment;
+using PictureManager.Common.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Common.Features.MediaItem;
 
