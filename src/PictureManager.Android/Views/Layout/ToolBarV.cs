@@ -3,6 +3,7 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
+using MH.Utils;
 using PictureManager.Common;
 using PictureManager.Common.Layout;
 
