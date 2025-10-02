@@ -4,13 +4,12 @@ using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
-using MH.Utils.Extensions;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using System;
-using System.ComponentModel;
 
 namespace PictureManager.Android.Views.Sections;
 
@@ -18,6 +17,7 @@ public class MediaViewerV : LinearLayout, IDisposable {
   private bool _disposed;
   private readonly ViewPager2 _viewPager;
   private readonly MediaViewerAdapter _adapter;
+  private readonly PageChangeCallback _pageChangeCallback;
 
   public MediaViewerVM DataContext { get; }
 
@@ -27,44 +27,34 @@ public class MediaViewerV : LinearLayout, IDisposable {
 
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _viewPager = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
-      Adapter = _adapter
-    };
-    _viewPager.RegisterOnPageChangeCallback(new PageChangeCallback(this));
-    AddView(_viewPager);
+    _pageChangeCallback = new PageChangeCallback(this);
+    _viewPager = new(context) { Adapter = _adapter };
+    _viewPager.RegisterOnPageChangeCallback(_pageChangeCallback);
+    AddView(_viewPager, new LayoutParams(LPU.Match, LPU.Match));
 
-    dataContext.PropertyChanged += _onDataContextPropertyChanged;
-  }
+    this.Bind(dataContext, x => x.IsVisible, (v, p) =>
+      v.DataContext.UserInputMode = p
+      ? MediaViewerVM.UserInputModes.Browse
+      : MediaViewerVM.UserInputModes.Disabled);
 
-  private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    switch (e.PropertyName) {
-      case nameof(MediaViewerVM.IsVisible):
-        DataContext.UserInputMode = DataContext.IsVisible
-          ? MediaViewerVM.UserInputModes.Browse
-          : MediaViewerVM.UserInputModes.Disabled;
-        break;
-      case nameof(MediaViewerVM.MediaItems):
-        _adapter.NotifyDataSetChanged();
-        if (DataContext.MediaItems.Count > 0)
-          _viewPager.SetCurrentItem(DataContext.IndexOfCurrent, false);
-        break;
-      case nameof(MediaViewerVM.UserInputMode):
-        _viewPager.UserInputEnabled = DataContext.UserInputMode == MediaViewerVM.UserInputModes.Browse;
-        break;
-    }
+    this.Bind(dataContext, x => x.MediaItems, (v, p) => {
+      v._adapter.NotifyDataSetChanged();
+      if (p.Count > 0)
+        v._viewPager.SetCurrentItem(v.DataContext.IndexOfCurrent, false);
+    });
+
+    this.Bind(dataContext, x => x.UserInputMode, (v, p) =>
+      v._viewPager.UserInputEnabled = p == MediaViewerVM.UserInputModes.Browse);
   }
 
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
-
     if (disposing) {
-      DataContext.PropertyChanged -= _onDataContextPropertyChanged;
+      _viewPager.UnregisterOnPageChangeCallback(_pageChangeCallback);
       _viewPager.Adapter = null;
-      _viewPager.Dispose();
       _adapter.Dispose();
+      _pageChangeCallback.Dispose();
     }
-
     _disposed = true;
     base.Dispose(disposing);
   }
@@ -80,54 +70,51 @@ public class MediaViewerAdapter(MediaViewerVM _mediaViewer) : RecyclerView.Adapt
   public override int ItemCount => _mediaViewer.MediaItems.Count;
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-    MediaViewerMediaItemViewHolder.Create(parent, _mediaViewer);
+    new MediaViewerMediaItemViewHolder(parent.Context!, _mediaViewer);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
     ((MediaViewerMediaItemViewHolder)holder).Bind(_mediaViewer.MediaItems[position]);
 }
 
-public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder, IDisposable {
-  private bool _disposed;
-  private readonly WeakReference<MediaViewerVM> _mediaViewerWeakRef;
+public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
+  private readonly MediaViewerVM _mediaViewer;
   private readonly ZoomAndPan _zoomAndPan;
   private readonly ZoomAndPanHost _zoomAndPanHost;
+  private bool _disposed;
 
-  public MediaViewerMediaItemViewHolder(LinearLayout itemView, MediaViewerVM mediaViewer) : base(itemView) {
-    _mediaViewerWeakRef = new WeakReference<MediaViewerVM>(mediaViewer);
+  public MediaViewerMediaItemViewHolder(Context context, MediaViewerVM mediaViewer) : base(_createContainerView(context)) {
+    _mediaViewer = mediaViewer;
     _zoomAndPan = new() {
       ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
       ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
     };
-    _zoomAndPan.PropertyChanged += _onZoomAndPanPropertyChanged;
 
-    _zoomAndPanHost = new ZoomAndPanHost(itemView.Context!) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
-    };
-    _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
-
-    itemView.AddView(_zoomAndPanHost);
-  }
-
-  private void _onZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(ZoomAndPan.IsZoomed)) && _mediaViewerWeakRef.TryGetTarget(out var mediaViewer))
-      mediaViewer.UserInputMode = (sender as ZoomAndPan)!.IsZoomed
+    this.Bind(_zoomAndPan, x => x.IsZoomed, (v, p) => {
+      v._mediaViewer.UserInputMode = p
         ? MediaViewerVM.UserInputModes.Transform
         : MediaViewerVM.UserInputModes.Browse;
+    });
+
+    _zoomAndPanHost = new(context, _zoomAndPan);
+    _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
+
+    var container = (LinearLayout)ItemView;
+    container.AddView(_zoomAndPanHost, new LinearLayout.LayoutParams(LPU.Match, LPU.Match));
+  }
+
+  private static LinearLayout _createContainerView(Context context) {
+    return new(context) {
+      LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match),
+    };
   }
 
   private void _onSingleTap(object? sender, EventArgs e) {
-    if (!_mediaViewerWeakRef.TryGetTarget(out var mediaViewer)) return;
-    mediaViewer.UserInputMode = mediaViewer.UserInputMode != MediaViewerVM.UserInputModes.Disabled
+    _mediaViewer.UserInputMode = _mediaViewer.UserInputMode != MediaViewerVM.UserInputModes.Disabled
       ? MediaViewerVM.UserInputModes.Disabled
       : _zoomAndPan.IsZoomed
         ? MediaViewerVM.UserInputModes.Transform
         : MediaViewerVM.UserInputModes.Browse;
   }
-
-  public static MediaViewerMediaItemViewHolder Create(ViewGroup parent, MediaViewerVM mediaViewer) =>
-    new(new LinearLayout(parent.Context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
-    }, mediaViewer);
 
   public void Bind(MediaItemM? mi) {
     if (mi == null) {
@@ -140,7 +127,6 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder, IDisposab
     var height = rotated ? mi.Width : mi.Height;
     _zoomAndPan.ContentWidth = width;
     _zoomAndPan.ContentHeight = height;
-    _zoomAndPanHost.Bind(_zoomAndPan);
     _zoomAndPan.ScaleToFitContent(width, height);
     _zoomAndPanHost.SetImageBitmap(global::Android.Graphics.BitmapFactory.DecodeFile(mi.FilePath));
     _zoomAndPanHost.UpdateImageTransform();
@@ -148,12 +134,9 @@ public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder, IDisposab
 
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
-
     if (disposing) {
-      _zoomAndPanHost.Dispose();
-      _zoomAndPan.PropertyChanged -= _onZoomAndPanPropertyChanged;
+      _zoomAndPanHost.SingleTapConfirmedEvent -= _onSingleTap;
     }
-
     _disposed = true;
     base.Dispose(disposing);
   }
