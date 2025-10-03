@@ -13,11 +13,11 @@ using System;
 
 namespace PictureManager.Android.Views.Sections;
 
-public class MediaViewerV : LinearLayout, IDisposable {
-  private bool _disposed;
+public class MediaViewerV : LinearLayout {
   private readonly ViewPager2 _viewPager;
   private readonly MediaViewerAdapter _adapter;
   private readonly PageChangeCallback _pageChangeCallback;
+  private bool _disposed;
 
   public MediaViewerVM DataContext { get; }
 
@@ -64,80 +64,80 @@ public class MediaViewerV : LinearLayout, IDisposable {
       _viewer.DataContext.Current = _viewer.DataContext.MediaItems[position];
     }
   }
-}
 
-public class MediaViewerAdapter(MediaViewerVM _mediaViewer) : RecyclerView.Adapter {
-  public override int ItemCount => _mediaViewer.MediaItems.Count;
+  private class MediaViewerAdapter(MediaViewerVM _mediaViewer) : RecyclerView.Adapter {
+    public override int ItemCount => _mediaViewer.MediaItems.Count;
 
-  public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-    new MediaViewerMediaItemViewHolder(parent.Context!, _mediaViewer);
+    public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
+      new MediaViewerMediaItemViewHolder(parent.Context!, _mediaViewer);
 
-  public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-    ((MediaViewerMediaItemViewHolder)holder).Bind(_mediaViewer.MediaItems[position]);
-}
-
-public class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
-  private readonly MediaViewerVM _mediaViewer;
-  private readonly ZoomAndPan _zoomAndPan;
-  private readonly ZoomAndPanHost _zoomAndPanHost;
-  private bool _disposed;
-
-  public MediaViewerMediaItemViewHolder(Context context, MediaViewerVM mediaViewer) : base(_createContainerView(context)) {
-    _mediaViewer = mediaViewer;
-    _zoomAndPan = new() {
-      ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
-      ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
-    };
-
-    this.Bind(_zoomAndPan, x => x.IsZoomed, (v, p) => {
-      v._mediaViewer.UserInputMode = p
-        ? MediaViewerVM.UserInputModes.Transform
-        : MediaViewerVM.UserInputModes.Browse;
-    });
-
-    _zoomAndPanHost = new(context, _zoomAndPan);
-    _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
-
-    var container = (LinearLayout)ItemView;
-    container.AddView(_zoomAndPanHost, new LinearLayout.LayoutParams(LPU.Match, LPU.Match));
+    public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
+      ((MediaViewerMediaItemViewHolder)holder).Bind(_mediaViewer.MediaItems[position]);
   }
 
-  private static LinearLayout _createContainerView(Context context) {
-    return new(context) {
-      LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match),
-    };
-  }
+  private class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
+    private readonly MediaViewerVM _mediaViewer;
+    private readonly ZoomAndPan _zoomAndPan;
+    private readonly ZoomAndPanHost _zoomAndPanHost;
+    private bool _disposed;
 
-  private void _onSingleTap(object? sender, EventArgs e) {
-    _mediaViewer.UserInputMode = _mediaViewer.UserInputMode != MediaViewerVM.UserInputModes.Disabled
-      ? MediaViewerVM.UserInputModes.Disabled
-      : _zoomAndPan.IsZoomed
-        ? MediaViewerVM.UserInputModes.Transform
-        : MediaViewerVM.UserInputModes.Browse;
-  }
+    public MediaViewerMediaItemViewHolder(Context context, MediaViewerVM mediaViewer) : base(_createContainerView(context)) {
+      _mediaViewer = mediaViewer;
+      _zoomAndPan = new() {
+        ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
+        ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
+      };
 
-  public void Bind(MediaItemM? mi) {
-    if (mi == null) {
-      _zoomAndPanHost.SetImageBitmap(null);
-      return;
+      this.Bind(_zoomAndPan, x => x.IsZoomed, (v, p) => {
+        v._mediaViewer.UserInputMode = p
+          ? MediaViewerVM.UserInputModes.Transform
+          : MediaViewerVM.UserInputModes.Browse;
+      });
+
+      _zoomAndPanHost = new(context, _zoomAndPan);
+      _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
+
+      var container = (LinearLayout)ItemView;
+      container.AddView(_zoomAndPanHost, new LinearLayout.LayoutParams(LPU.Match, LPU.Match));
     }
 
-    var rotated = mi.Orientation is Imaging.Orientation.Rotate90 or Imaging.Orientation.Rotate270;
-    var width = rotated ? mi.Height : mi.Width;
-    var height = rotated ? mi.Width : mi.Height;
-    _zoomAndPan.ContentWidth = width;
-    _zoomAndPan.ContentHeight = height;
-    _zoomAndPan.ScaleToFitContent(width, height);
-    _zoomAndPanHost.SetImageBitmap(global::Android.Graphics.BitmapFactory.DecodeFile(mi.FilePath));
-    _zoomAndPanHost.UpdateImageTransform();
-  }
-
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) {
-      _zoomAndPanHost.SingleTapConfirmedEvent -= _onSingleTap;
+    private static LinearLayout _createContainerView(Context context) {
+      return new(context) {
+        LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match),
+      };
     }
-    _disposed = true;
-    base.Dispose(disposing);
+
+    private void _onSingleTap(object? sender, EventArgs e) {
+      _mediaViewer.UserInputMode = _mediaViewer.UserInputMode != MediaViewerVM.UserInputModes.Disabled
+        ? MediaViewerVM.UserInputModes.Disabled
+        : _zoomAndPan.IsZoomed
+          ? MediaViewerVM.UserInputModes.Transform
+          : MediaViewerVM.UserInputModes.Browse;
+    }
+
+    public void Bind(MediaItemM? mi) {
+      if (mi == null) {
+        _zoomAndPanHost.SetImageBitmap(null);
+        return;
+      }
+
+      var rotated = mi.Orientation is Imaging.Orientation.Rotate90 or Imaging.Orientation.Rotate270;
+      var width = rotated ? mi.Height : mi.Width;
+      var height = rotated ? mi.Width : mi.Height;
+      _zoomAndPan.ContentWidth = width;
+      _zoomAndPan.ContentHeight = height;
+      _zoomAndPan.ScaleToFitContent(width, height);
+      _zoomAndPanHost.SetImageBitmap(global::Android.Graphics.BitmapFactory.DecodeFile(mi.FilePath));
+      _zoomAndPanHost.UpdateImageTransform();
+    }
+
+    protected override void Dispose(bool disposing) {
+      if (_disposed) return;
+      if (disposing) {
+        _zoomAndPanHost.SingleTapConfirmedEvent -= _onSingleTap;
+      }
+      _disposed = true;
+      base.Dispose(disposing);
+    }
   }
 }
