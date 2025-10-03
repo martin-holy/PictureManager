@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
 using PictureManager.Common;
@@ -16,7 +15,7 @@ public class MediaItemThumbFullV : LinearLayout {
 
   public MediaItemThumbFullV(Context context) : base(context) {
     _image = new(context);
-    AddView(_image, new LayoutParams(LPU.Match, LPU.Match) { Gravity = GravityFlags.CenterVertical });
+    AddView(_image, new LayoutParams(LPU.Match, LPU.Match));
   }
 
   public MediaItemThumbFullV Bind(MediaItemM? mi) {
