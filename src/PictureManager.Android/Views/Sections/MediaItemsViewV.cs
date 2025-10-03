@@ -13,7 +13,6 @@ using System;
 namespace PictureManager.Android.Views.Sections;
 
 public class MediaItemsViewV : LinearLayout, IDisposable {
-  private bool _disposed;
   private readonly CollectionViewHost _host;
   private readonly TextView _loadingText;
   private readonly LinearLayout _importContainer;
@@ -53,15 +52,6 @@ public class MediaItemsViewV : LinearLayout, IDisposable {
       _importProgress.Max = count;
     });
     _importProgress.Bind(dataContext.Import, x => x.DoneCount, (view, doneCount) => view.Progress = doneCount);
-  }
-
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) {
-      _host.Dispose();
-    }
-    _disposed = true;
-    base.Dispose(disposing);
   }
 
   private View? _getItemView(LinearLayout container, ICollectionViewGroup group, object? item) {
