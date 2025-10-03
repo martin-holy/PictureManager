@@ -2,8 +2,11 @@
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Utils;
 using MH.UI.Controls;
+using MH.Utils;
 using PictureManager.Android.Views.Layout;
+using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Layout;
 using PictureManager.Common.Utils;
 using System;
@@ -11,8 +14,6 @@ using System;
 namespace PictureManager.Android.Views;
 
 public class MainWindowV : LinearLayout {
-  private bool _disposed;
-
   public SlidePanelsGridHost SlidePanels { get; }
   public TabControlHost TreeViewCategories { get; }
   public MiddleContentV MiddleContent { get; }
@@ -20,14 +21,15 @@ public class MainWindowV : LinearLayout {
 
   public MainWindowV(Context context, MainWindowVM dataContext) : base(context) {
     DataContext = dataContext;
-    SlidePanels = new(context, _slidePanelsFactory) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
-    };
+    SlidePanels = new(context, _slidePanelsFactory);
     TreeViewCategories = new(context, DataContext.TreeViewCategories, _getTreeViewCategoriesView);
-    MiddleContent = new(context, Common.Core.VM, SlidePanels.ViewPager);
+    MiddleContent = new(context, Common.Core.VM);
     SlidePanels.SetTopPanel(new ToolBarV(context, dataContext));
     SlidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
-    AddView(SlidePanels);
+    AddView(SlidePanels, new LayoutParams(LPU.Match, LPU.Match));
+
+    this.Bind(Common.Core.VM.MediaViewer, x => x.UserInputMode, (v, p) =>
+      v.SlidePanels.ViewPager.UserInputEnabled = p == MediaViewerVM.UserInputModes.Disabled);
   }
 
   private View _slidePanelsFactory(int position) =>
@@ -37,17 +39,6 @@ public class MainWindowV : LinearLayout {
       2 => new TextView(Context) { Text = "Right Panel" },
       _ => throw new ArgumentOutOfRangeException(nameof(position))
     };
-
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) {
-      SlidePanels?.Dispose();
-      TreeViewCategories?.Dispose();
-      MiddleContent?.Dispose();
-    }
-    _disposed = true;
-    base.Dispose(disposing);
-  }
 
   private View? _getTreeViewCategoriesView(LinearLayout container, object? item) {
     if (item is not TreeView tv) return null;
