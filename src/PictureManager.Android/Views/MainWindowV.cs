@@ -9,7 +9,6 @@ using PictureManager.Android.Views.Layout;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Layout;
 using PictureManager.Common.Utils;
-using System;
 
 namespace PictureManager.Android.Views;
 
@@ -21,24 +20,23 @@ public class MainWindowV : LinearLayout {
 
   public MainWindowV(Context context, MainWindowVM dataContext) : base(context) {
     DataContext = dataContext;
-    SlidePanels = new(context, _slidePanelsFactory);
-    TreeViewCategories = new(context, DataContext.TreeViewCategories, _getTreeViewCategoriesView);
+    
+    TreeViewCategories = new(context, dataContext.TreeViewCategories, _getTreeViewCategoriesView);
     MiddleContent = new(context, Common.Core.VM);
-    SlidePanels.SetTopPanel(new ToolBarV(context, dataContext));
-    SlidePanels.SetBottomPanel(new TextView(context) { Text = "Bottom Panel" }, false);
+    SlidePanels = new(
+      context,
+      dataContext.SlidePanelsGrid,
+      TreeViewCategories,
+      new ToolBarV(context, dataContext),
+      new TextView(Context) { Text = "Right Panel" },
+      new TextView(context) { Text = "Bottom Panel" },
+      MiddleContent);
+
     AddView(SlidePanels, new LayoutParams(LPU.Match, LPU.Match));
 
     this.Bind(Common.Core.VM.MediaViewer, x => x.UserInputMode, (v, p) =>
       v.SlidePanels.ViewPager.UserInputEnabled = p == MediaViewerVM.UserInputModes.Disabled);
   }
-
-  private View _slidePanelsFactory(int position) =>
-    position switch {
-      0 => TreeViewCategories,
-      1 => MiddleContent,
-      2 => new TextView(Context) { Text = "Right Panel" },
-      _ => throw new ArgumentOutOfRangeException(nameof(position))
-    };
 
   private View? _getTreeViewCategoriesView(LinearLayout container, object? item) {
     if (item is not TreeView tv) return null;
