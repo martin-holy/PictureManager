@@ -1,5 +1,4 @@
-﻿using Android.App;
-using Android.Content;
+﻿using Android.Content;
 using Android.OS;
 using MH.Utils;
 using MH.Utils.Extensions;
@@ -23,7 +22,7 @@ public class CoreUI : ICoreP {
     // TODO PORT
     MH.UI.Android.Utils.Init.Utils(mainActivity);
     MH.UI.Android.Utils.Init.SetDelegates();
-    MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;    
+    MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
     MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
@@ -31,6 +30,11 @@ public class CoreUI : ICoreP {
 
   public void AfterInit(Context context) {
     Core.Settings.MediaItem.MediaItemThumbScale = 0.5;
+    Core.VM.MainWindow.SlidePanelsGrid.PinLayouts = [
+        [true, true, true, false, false], // browse mode
+        [true, true, true, false, false]  // view mode
+      ];
+    Core.VM.MainWindow.SlidePanelsGrid.ActiveLayout = 0;
     MainWindow = new MainWindowV(context, Core.VM.MainWindow);
     _attachEvents();
   }
@@ -53,7 +57,7 @@ public class CoreUI : ICoreP {
   public bool IsFolderPathCacheableInMediaStore(FolderM folder) {
     if (Build.VERSION.SdkInt < BuildVersionCodes.Q) return true;
 
-    var parts = folder.GetThisAndParents().Reverse().ToArray();    
+    var parts = folder.GetThisAndParents().Reverse().ToArray();
     if (parts.Length > 1) {
       var driveRoot = parts[0].Name;
       var rootFolder = parts[1].Name;
