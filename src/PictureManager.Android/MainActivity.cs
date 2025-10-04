@@ -18,8 +18,9 @@ namespace PictureManager.Android;
 
 [Activity(Label = "@string/app_name", MainLauncher = true, ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
 public class MainActivity : FragmentActivity {
-  public static Core Core { get; private set; } = null!;
-  public static CoreUI CoreUI { get; private set; } = null!;
+  private Core _core = null!;
+  private CoreUI _coreUI = null!;
+  private bool _disposed;
 
   protected override void OnCreate(Bundle? savedInstanceState) {
     base.OnCreate(savedInstanceState);
@@ -40,13 +41,13 @@ public class MainActivity : FragmentActivity {
     var splashScreen = new SplashScreenV(this);
     SetContentView(splashScreen);
 
-    Core = Core.Inst;
+    _core = Core.Inst;
     Task.Run(async () => {
-      await Core.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
-      CoreUI = new(this);
-      Core.AfterInit(CoreUI);
-      CoreUI.AfterInit(this);
-      RunOnUiThread(() => SetContentView(CoreUI.MainWindow));
+      await _core.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
+      _coreUI = new(this);
+      _core.AfterInit(_coreUI);
+      _coreUI.AfterInit(this);
+      RunOnUiThread(() => SetContentView(_coreUI.MainWindow));
     });
   }
 
@@ -61,5 +62,14 @@ public class MainActivity : FragmentActivity {
   public override void OnConfigurationChanged(Configuration newConfig) {
     base.OnConfigurationChanged(newConfig);
     // TODO CollectionView ReWrap, ...
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      _coreUI.Dispose();
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 }

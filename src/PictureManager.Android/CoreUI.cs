@@ -8,13 +8,15 @@ using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
+using System;
 using System.IO;
 using System.Linq;
 
 namespace PictureManager.Android;
 
-public class CoreUI : ICoreP {
+public class CoreUI : ICoreP, IDisposable {
   private readonly string[] _mediaRoots = ["DCIM", "Pictures"];
+  private bool _disposed;
 
   public MainWindowV MainWindow { get; private set; } = null!;
 
@@ -40,7 +42,7 @@ public class CoreUI : ICoreP {
   }
 
   public void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) =>
-    throw new System.NotImplementedException();
+    throw new NotImplementedException();
 
   public string GetFilePathCache(FolderM folder, string fileNameCache) =>
     IOExtensions.PathCombine(folder.FullPathCache, fileNameCache);
@@ -62,7 +64,7 @@ public class CoreUI : ICoreP {
       var driveRoot = parts[0].Name;
       var rootFolder = parts[1].Name;
       var deviceRoot = global::Android.OS.Environment.ExternalStorageDirectory?.AbsolutePath;
-      if (driveRoot.Equals(deviceRoot, System.StringComparison.OrdinalIgnoreCase) && _mediaRoots.Contains(rootFolder))
+      if (driveRoot.Equals(deviceRoot, StringComparison.OrdinalIgnoreCase) && _mediaRoots.Contains(rootFolder))
         return true;
     }
 
@@ -80,5 +82,12 @@ public class CoreUI : ICoreP {
 
   private void _onFolderTreeItemSelected(object? sender, ITreeItem e) {
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
+  }
+
+  public void Dispose() {
+    if (_disposed) return;
+    Core.R.Folder.Tree.ItemSelectedEvent -= _onFolderTreeItemSelected;
+    Core.VM.MainTabs.TabActivatedEvent -= _onMainTabsTabActivated;
+    _disposed = true;
   }
 }
