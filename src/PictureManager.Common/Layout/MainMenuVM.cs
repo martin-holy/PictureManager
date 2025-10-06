@@ -28,6 +28,7 @@ public class MainMenuVM : TreeView {
     mediaItem.Add(new(MediaItemVM.CommentCommand) { InputGestureText = "Ctrl+K"});
     mediaItem.Add(new(CoreVM.CompressImagesCommand));
     mediaItem.Add(new(MediaItemsViewsVM.CopyPathsCommand));
+    mediaItem.Add(new(MediaItemVM.DeleteCommand));
     mediaItem.Add(new(CoreVM.ImagesToVideoCommand));
     mediaItem.Add(new(MediaItemsViewsVM.RebuildThumbnailsCommand));
     mediaItem.Add(new(MediaItemVM.RenameCommand) { InputGestureText = "F2"});
