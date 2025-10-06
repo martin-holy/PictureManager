@@ -454,3 +454,5 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 /Temp
 /Flowcharts/.$MediaItem - Delete.drawio.bkp
+*.keystore
+/src/PictureManager.Android/Directory.Build.props
