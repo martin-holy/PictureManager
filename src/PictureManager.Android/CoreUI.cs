@@ -9,18 +9,22 @@ using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace PictureManager.Android;
 
 public class CoreUI : ICoreP, IDisposable {
+  private readonly MainActivity _mainActivity;
   private readonly string[] _mediaRoots = ["DCIM", "Pictures"];
   private bool _disposed;
 
   public MainWindowV MainWindow { get; private set; } = null!;
 
   public CoreUI(MainActivity mainActivity) {
+    _mainActivity = mainActivity;
+    CoreR.FileOperationDelete = _fileOperationDelete;
     // TODO PORT
     MH.UI.Android.Utils.Init.Utils(mainActivity);
     MH.UI.Android.Utils.Init.SetDelegates();
@@ -89,5 +93,10 @@ public class CoreUI : ICoreP, IDisposable {
     Core.R.Folder.Tree.ItemSelectedEvent -= _onFolderTreeItemSelected;
     Core.VM.MainTabs.TabActivatedEvent -= _onMainTabsTabActivated;
     _disposed = true;
+  }
+
+  private Dictionary<string, string>? _fileOperationDelete(List<string> items, bool recycle, bool silent) {
+    MH.UI.Android.Utils.MediaStoreU.DeleteFiles(items, _mainActivity);
+    return null;
   }
 }
