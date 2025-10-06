@@ -14,6 +14,15 @@
       To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/trimming-options#trimming-granularity
     -->
     <TrimMode>full</TrimMode>
+    <AndroidSigningKeyStore>PictureManager.Android.keystore</AndroidSigningKeyStore>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AndroidKeyStore>True</AndroidKeyStore>
+    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+    <AndroidSigningStorePass>$(AndroidSigningStorePass)</AndroidSigningStorePass>
+    <AndroidSigningKeyPass>$(AndroidSigningKeyPass)</AndroidSigningKeyPass>
+    <AndroidSigningKeyAlias>PictureManagerAndroidKeystore</AndroidSigningKeyAlias>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\MH.UI.Android\src\MH.UI.Android\MH.UI.Android.csproj" />
