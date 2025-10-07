@@ -8,6 +8,7 @@ using MH.UI.ViewModels;
 using MH.Utils;
 using PictureManager.Android.Views.Sections;
 using PictureManager.Common;
+using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.MediaItem;
 
 namespace PictureManager.Android.Views;
@@ -32,6 +33,7 @@ public class MiddleContentV : LinearLayout {
 
   private View? _getMainTabsView(LinearLayout container, object? item) =>
     item switch {
+      AllSettings allSettings => new SettingsV(container.Context!, allSettings),
       MediaItemsViewVM miv => new MediaItemsViewV(container.Context!, miv),
       LogVM log => new LogV(container.Context!, log),
       View view => view,
