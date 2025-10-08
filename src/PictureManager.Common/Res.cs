@@ -52,7 +52,6 @@ public static class Res {
   public const string IconRotateLeft = "IconRotateLeft";
   public const string IconRotateRight = "IconRotateRight";
   public const string IconRuler = "IconRuler";
-  public const string IconSave = "IconSave";
   public const string IconSegment = "IconSegment";
   public const string IconSettings = "IconSettings";
   public const string IconStar = "IconStar";

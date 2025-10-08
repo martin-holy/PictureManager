@@ -109,7 +109,7 @@ public sealed class CoreVM : ObservableObject {
     ReloadMetadataCommand = new((x, _) => MediaItem.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
     ResizeImagesCommand = new(x => _resizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
     RotateMediaItemsCommand = new((x, _) => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
-    SaveImageMetadataToFilesCommand = new((x, _) => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, Res.IconSave, "Save Image metadata to files");
+    SaveImageMetadataToFilesCommand = new((x, _) => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, MH.UI.Res.IconSave, "Save Image metadata to files");
 
     MainWindow.MainMenu.Build(this);
   }
