@@ -2,11 +2,11 @@
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
-using MH.UI.Android.Extensions;
 
 namespace PictureManager.Android.Views.Sections;
 
@@ -18,19 +18,33 @@ public sealed class SettingsV : LinearLayout {
       AddView(_createGroup(context, group), new LayoutParams(LPU.Match, LPU.Wrap));
   }
 
-  private View _createGroup(Context context, ListItem group) {
+  private static LinearLayout _createGroup(Context context, ListItem group) {
     var container = new LinearLayout(context) { Orientation = Orientation.Vertical };
     var header = new IconTextView(context).BindIcon(group.Icon).BindText(group.Name);
-    container.AddView(header, new LayoutParams(LPU.Match, LPU.Wrap));
+    header.Background = BackgroundFactory.Dark();
+    container.AddView(header, new LayoutParams(LPU.Match, DimensU.MenuItemHeight).WithMargin(DimensU.Spacing));
 
     switch (group.Data) {
+      case Settings settings: _createSettings(context, container, settings); break;
       case CommonSettings common: _createCommonSettings(context, container, common); break;
     }
 
     return container;
   }
 
-  private void _createCommonSettings(Context context, LinearLayout container, CommonSettings settings) {
+  private static void _createSettings(Context context, LinearLayout container, Settings settings) {
+    var index = container.ChildCount - 1;
+    var header = container.GetChildAt(index);
+    var saveBtn = new IconButton(context).WithCommand(settings.SaveCommand);
+    var frame = new FrameLayout(context);
+
+    container.RemoveViewAt(index);
+    frame.AddView(header, new FrameLayout.LayoutParams(LPU.Match, DimensU.MenuItemHeight).WithMargin(DimensU.Spacing));
+    frame.AddView(saveBtn, new FrameLayout.LayoutParams(LPU.Wrap, LPU.Wrap, GravityFlags.Right).WithMargin(DimensU.Spacing));
+    container.AddView(frame, new LayoutParams(LPU.Match, LPU.Wrap));
+  }
+
+  private static void _createCommonSettings(Context context, LinearLayout container, CommonSettings settings) {
     const int jpgQmin = 80, jpgQmax = 95;
 
     var jpgQText = new TextView(context)
@@ -39,7 +53,7 @@ public sealed class SettingsV : LinearLayout {
     var jpgQValue = new SeekBar(context) { Max = jpgQmax - jpgQmin, Progress = settings.JpegQuality - jpgQmin };
     jpgQValue.ProgressChanged += (s, e) => settings.JpegQuality = e.Progress + jpgQmin;
 
-    container.AddView(jpgQText);
+    container.AddView(jpgQText, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
     container.AddView(jpgQValue, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 }
