@@ -35,7 +35,6 @@ public class CoreUI : ICoreP, IDisposable {
   }
 
   public void AfterInit(Context context) {
-    Core.Settings.MediaItem.MediaItemThumbScale = 0.5;
     Core.VM.MainWindow.SlidePanelsGrid.PinLayouts = [
         [true, true, true, false, false], // browse mode
         [true, true, true, false, false]  // view mode
