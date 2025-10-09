@@ -27,6 +27,7 @@ public sealed class SettingsV : LinearLayout {
     switch (group.Data) {
       case Settings settings: _createSettings(context, container, settings); break;
       case CommonSettings common: _createCommonSettings(context, container, common); break;
+      case MediaItemSettings mi: _createMediaItemSettings(context, container, mi); break;
     }
 
     return container;
@@ -55,5 +56,20 @@ public sealed class SettingsV : LinearLayout {
 
     container.AddView(jpgQText, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
     container.AddView(jpgQValue, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+  }
+
+  private static void _createMediaItemSettings(Context context, LinearLayout container, MediaItemSettings settings) {
+    const double miThumbScaleMin = 0.2, miThumbScaleMax = 2;
+
+    var miThumbScaleText = new TextView(context)
+      .WithBind(settings, x => x.MediaItemThumbScale, (v, p) => v.Text = $"Media item thumbnail scale: {p:G2}");
+
+    var miThumbScaleValue = new SeekBar(context) {
+      Max = (int)((miThumbScaleMax - miThumbScaleMin) * 10),
+      Progress = (int)((settings.MediaItemThumbScale - miThumbScaleMin) * 10) };
+    miThumbScaleValue.ProgressChanged += (s, e) => settings.MediaItemThumbScale = e.Progress / 10.0 + miThumbScaleMin;
+
+    container.AddView(miThumbScaleText, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    container.AddView(miThumbScaleValue, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 }
