@@ -20,7 +20,7 @@ public sealed class Core {
   public static CoreR R { get; private set; } = null!;
   public static CoreS S { get; private set; } = null!;
   public static CoreVM VM { get; private set; } = null!;
-  public static Settings Settings { get; } = Settings.Load("settings.json");
+  public static Settings Settings { get; private set; } = null!;
   public AllSettings AllSettings { get; private set; } = null!;
   public List<IPluginCore> Plugins { get; } = [];
 
@@ -29,6 +29,7 @@ public sealed class Core {
   }
 
   public Task InitAsync(IProgress<string> progress, string appDir) {
+    Settings = Settings.Load(Path.Combine(appDir, "settings.json"));
     R = new(appDir);
     return Task.Run(async () => {
       R.AddDataAdapters();
