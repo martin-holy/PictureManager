@@ -46,30 +46,18 @@ public sealed class SettingsV : LinearLayout {
   }
 
   private static void _createCommonSettings(Context context, LinearLayout container, CommonSettings settings) {
-    const int jpgQmin = 80, jpgQmax = 95;
-
-    var jpgQText = new TextView(context)
-      .WithBind(settings, x => x.JpegQuality, (v, p) => v.Text = $"Jpeg quality: {p}");
-
-    var jpgQValue = new SeekBar(context) { Max = jpgQmax - jpgQmin, Progress = settings.JpegQuality - jpgQmin };
-    jpgQValue.ProgressChanged += (s, e) => settings.JpegQuality = e.Progress + jpgQmin;
-
-    container.AddView(jpgQText, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    container.AddView(jpgQValue, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    container.AddView(new TextView(context)
+      .WithBind(settings, x => x.JpegQuality, (v, p) => v.Text = $"Jpeg quality: {p}"),
+      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    container.AddView(new Slider(context, 80, 95, settings.JpegQuality, x => settings.JpegQuality = (int)x),
+      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 
   private static void _createMediaItemSettings(Context context, LinearLayout container, MediaItemSettings settings) {
-    const double miThumbScaleMin = 0.2, miThumbScaleMax = 2;
-
-    var miThumbScaleText = new TextView(context)
-      .WithBind(settings, x => x.MediaItemThumbScale, (v, p) => v.Text = $"Media item thumbnail scale: {p:G2}");
-
-    var miThumbScaleValue = new SeekBar(context) {
-      Max = (int)((miThumbScaleMax - miThumbScaleMin) * 10),
-      Progress = (int)((settings.MediaItemThumbScale - miThumbScaleMin) * 10) };
-    miThumbScaleValue.ProgressChanged += (s, e) => settings.MediaItemThumbScale = e.Progress / 10.0 + miThumbScaleMin;
-
-    container.AddView(miThumbScaleText, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    container.AddView(miThumbScaleValue, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    container.AddView(new TextView(context)
+      .WithBind(settings, x => x.MediaItemThumbScale, (v, p) => v.Text = $"Media item thumbnail scale: {p:G2}"),
+      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    container.AddView(new Slider(context, 0.2, 2, settings.MediaItemThumbScale, x => settings.MediaItemThumbScale = x),
+      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 }
