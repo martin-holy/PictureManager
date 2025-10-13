@@ -50,7 +50,7 @@ public sealed class SettingsV : LinearLayout {
     container.AddView(new TextView(context)
       .WithBind(settings, x => x.JpegQuality, (v, p) => v.Text = $"Jpeg quality: {p}"),
       new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    container.AddView(new Slider(context, 80, 95, settings.JpegQuality, x => settings.JpegQuality = (int)x),
+    container.AddView(new Slider(context, 80, 95).BindProgress(settings, x => x.JpegQuality),
       new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 
@@ -58,8 +58,8 @@ public sealed class SettingsV : LinearLayout {
     container.AddView(new TextView(context)
       .WithBind(settings, x => x.MediaItemThumbScale, (v, p) => v.Text = $"Media item thumbnail scale: {p:G2}"),
       new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    container.AddView(new Slider(context, 0.2, 2, settings.MediaItemThumbScale, x => settings.MediaItemThumbScale = x),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    container.AddView(new Slider(context, 0.2, 2).BindProgress(settings, x => x.MediaItemThumbScale),
+     new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 
   private static void _createSegmentSettings(Context context, LinearLayout container, SegmentSettings settings) {
@@ -67,7 +67,7 @@ public sealed class SettingsV : LinearLayout {
       .WithBind(settings, x => x.GroupSize, (v, p) => v.Text = $"Group size: {p}"),
       new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
     // TODO TickFrequency 50
-    container.AddView(new Slider(context, 100, 1000, settings.GroupSize, x => settings.GroupSize = (int)x),
+    container.AddView(new Slider(context, 100, 1000).BindProgress(settings, x => x.GroupSize),
       new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 }
