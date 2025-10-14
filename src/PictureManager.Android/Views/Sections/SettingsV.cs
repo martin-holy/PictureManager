@@ -47,27 +47,24 @@ public sealed class SettingsV : LinearLayout {
   }
 
   private static void _createCommonSettings(Context context, LinearLayout container, CommonSettings settings) {
-    container.AddView(new TextView(context)
-      .WithBind(settings, x => x.JpegQuality, (v, p) => v.Text = $"Jpeg quality: {p}"),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    container.AddView(new Slider(context, 80, 95).BindProgress(settings, x => x.JpegQuality),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    _addView(container, new TextView(context)
+      .WithBind(settings, x => x.JpegQuality, (v, p) => v.Text = $"Jpeg quality: {p}"));
+    _addView(container, new Slider(context, 80, 95).BindProgress(settings, x => x.JpegQuality));
   }
 
   private static void _createMediaItemSettings(Context context, LinearLayout container, MediaItemSettings settings) {
-    container.AddView(new TextView(context)
-      .WithBind(settings, x => x.MediaItemThumbScale, (v, p) => v.Text = $"Media item thumbnail scale: {p:G2}"),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    container.AddView(new Slider(context, 0.2, 2).BindProgress(settings, x => x.MediaItemThumbScale),
-     new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    _addView(container, new TextView(context)
+      .WithBind(settings, x => x.MediaItemThumbScale, (v, p) => v.Text = $"Media item thumbnail scale: {p:G2}"));
+    _addView(container, new Slider(context, 0.2, 2).BindProgress(settings, x => x.MediaItemThumbScale));
   }
 
   private static void _createSegmentSettings(Context context, LinearLayout container, SegmentSettings settings) {
-    container.AddView(new TextView(context)
-      .WithBind(settings, x => x.GroupSize, (v, p) => v.Text = $"Group size: {p}"),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    _addView(container, new TextView(context)
+      .WithBind(settings, x => x.GroupSize, (v, p) => v.Text = $"Group size: {p}"));
     // TODO TickFrequency 50
-    container.AddView(new Slider(context, 100, 1000).BindProgress(settings, x => x.GroupSize),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    _addView(container, new Slider(context, 100, 1000).BindProgress(settings, x => x.GroupSize));
   }
+
+  private static void _addView(LinearLayout container, View view) =>
+    container.AddView(view, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
 }
