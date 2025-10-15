@@ -47,20 +47,17 @@ public sealed class SettingsV : LinearLayout {
   }
 
   private static void _createCommonSettings(Context context, LinearLayout container, CommonSettings settings) {
-    _addView(container, new TextView(context)
-      .WithBind(settings, x => x.JpegQuality, (v, p) => v.Text = $"Jpeg quality: {p}"));
+    _addView(container, new TextView(context).BindText(settings, x => x.JpegQuality, x => $"Jpeg quality: {x}"));
     _addView(container, new Slider(context, 80, 95).BindProgress(settings, x => x.JpegQuality));
   }
 
   private static void _createMediaItemSettings(Context context, LinearLayout container, MediaItemSettings settings) {
-    _addView(container, new TextView(context)
-      .WithBind(settings, x => x.MediaItemThumbScale, (v, p) => v.Text = $"Media item thumbnail scale: {p:G2}"));
+    _addView(container, new TextView(context).BindText(settings, x => x.MediaItemThumbScale, x => $"Media item thumbnail scale: {x:G2}"));
     _addView(container, new Slider(context, 0.2, 2).BindProgress(settings, x => x.MediaItemThumbScale));
   }
 
   private static void _createSegmentSettings(Context context, LinearLayout container, SegmentSettings settings) {
-    _addView(container, new TextView(context)
-      .WithBind(settings, x => x.GroupSize, (v, p) => v.Text = $"Group size: {p}"));
+    _addView(container, new TextView(context).BindText(settings, x => x.GroupSize, x => $"Group size: {x}"));
     // TODO TickFrequency 50
     _addView(container, new Slider(context, 100, 1000).BindProgress(settings, x => x.GroupSize));
   }
