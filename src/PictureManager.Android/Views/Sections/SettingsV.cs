@@ -54,6 +54,9 @@ public sealed class SettingsV : LinearLayout {
   private static void _createMediaItemSettings(Context context, LinearLayout container, MediaItemSettings settings) {
     _addView(container, new TextView(context).BindText(settings, x => x.MediaItemThumbScale, x => $"Media item thumbnail scale: {x:G2}"));
     _addView(container, new Slider(context, 0.2, 2, 0.1).BindProgress(settings, x => x.MediaItemThumbScale));
+
+    _addView(container, new TextView(context).BindText(settings, x => x.ScrollExactlyToMediaItem, _ => "Scroll exactly to MediaItem in thumbnails:"));
+    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ScrollExactlyToMediaItem));
   }
 
   private static void _createSegmentSettings(Context context, LinearLayout container, SegmentSettings settings) {
