@@ -2,9 +2,12 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace PictureManager.Common.Features.Common;
 
@@ -41,17 +44,15 @@ public sealed class Settings : UserSettings {
     try {
       using var doc = JsonDocument.Parse(File.ReadAllText(filePath));
       var root = doc.RootElement;
+      var ctx = SettingsJsonContext.Default;
+      var common = DeserializeGroup(root, "Common", ctx.CommonSettings) ?? new();
+      var geoName = DeserializeGroup(root, "GeoName", ctx.GeoNameSettings) ?? new();
+      var imagesToVideo = DeserializeGroup(root, "ImagesToVideo", ctx.ImagesToVideoSettings) ?? new();
+      var mediaItem = DeserializeGroup(root, "MediaItem", ctx.MediaItemSettings) ?? new();
+      var segment = DeserializeGroup(root, "Segment", ctx.SegmentSettings) ?? new();
+      var mediaViewer = DeserializeGroup(root, "MediaViewer", ctx.MediaViewerSettings) ?? new();
 
-      var common = DeserializeGroup<CommonSettings>(root, "Common") ?? new();
-      var geoName = DeserializeGroup<GeoNameSettings>(root, "GeoName") ?? new();
-      var imagesToVideo = DeserializeGroup<ImagesToVideoSettings>(root, "ImagesToVideo") ?? new();
-      var mediaItem = DeserializeGroup<MediaItemSettings>(root, "MediaItem") ?? new();
-      var segment = DeserializeGroup<SegmentSettings>(root, "Segment") ?? new();
-      var mediaViewer = DeserializeGroup<MediaViewerSettings>(root, "MediaViewer") ?? new();
-
-      var settings = new Settings(filePath, common, geoName, imagesToVideo, mediaItem, segment, mediaViewer);
-
-      return settings;
+      return new Settings(filePath, common, geoName, imagesToVideo, mediaItem, segment, mediaViewer);
     }
     catch (Exception ex) {
       Log.Error(ex);
@@ -59,11 +60,17 @@ public sealed class Settings : UserSettings {
     }
   }
 
+  private static T? DeserializeGroup<T>(JsonElement root, string name, JsonTypeInfo<T> typeInfo) {
+    if (root.TryGetProperty(name, out var elm))
+      return JsonSerializer.Deserialize(elm.GetRawText(), typeInfo);
+    return default;
+  }
+
   private static Settings CreateNew(string filePath) =>
     new(filePath, new(), new(), new(), new(), new(), new());
 
-  protected override string Serialize(JsonSerializerOptions options) =>
-    JsonSerializer.Serialize(this, options);
+  protected override string Serialize() =>
+    JsonSerializer.Serialize(this, SettingsJsonContext.Default.Settings);
 }
 
 public sealed class CommonSettings : ObservableObject {
