@@ -9,19 +9,21 @@ using PictureManager.Common.Features.Common;
 
 namespace PictureManager.Android.Views.Sections;
 
-public sealed class SettingsV : LinearLayout {
+public sealed class SettingsV : ScrollView {
   public SettingsV(Context context, AllSettings allSettings) : base(context) {
-    Orientation = Orientation.Vertical;
+    var container = new LinearLayout(context) { Orientation = Orientation.Vertical };
 
     foreach (var group in allSettings.Groups)
-      AddView(_createGroup(context, group), new LayoutParams(LPU.Match, LPU.Wrap));
+      container.AddView(_createGroup(context, group), new LinearLayout.LayoutParams(LPU.Match, LPU.Wrap));
+
+    AddView(container);
   }
 
   private static LinearLayout _createGroup(Context context, ListItem group) {
     var container = new LinearLayout(context) { Orientation = Orientation.Vertical };
     var header = new IconTextView(context).BindIcon(group.Icon).BindText(group.Name);
     header.Background = BackgroundFactory.Dark();
-    container.AddView(header, new LayoutParams(LPU.Match, DimensU.MenuItemHeight).WithMargin(DimensU.Spacing));
+    container.AddView(header, new LinearLayout.LayoutParams(LPU.Match, DimensU.MenuItemHeight).WithMargin(DimensU.Spacing));
 
     switch (group.Data) {
       case Settings settings: _createSettings(context, container, settings); break;
@@ -43,7 +45,7 @@ public sealed class SettingsV : LinearLayout {
     container.RemoveViewAt(index);
     frame.AddView(header, new FrameLayout.LayoutParams(LPU.Match, DimensU.MenuItemHeight).WithMargin(DimensU.Spacing));
     frame.AddView(saveBtn, new FrameLayout.LayoutParams(LPU.Wrap, LPU.Wrap, GravityFlags.Right).WithMargin(DimensU.Spacing));
-    container.AddView(frame, new LayoutParams(LPU.Match, LPU.Wrap));
+    container.AddView(frame, new LinearLayout.LayoutParams(LPU.Match, LPU.Wrap));
   }
 
   private static void _createCommonSettings(Context context, LinearLayout container, CommonSettings settings) {
@@ -73,5 +75,5 @@ public sealed class SettingsV : LinearLayout {
   }
 
   private static void _addView(LinearLayout container, View view) =>
-    container.AddView(view, new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    container.AddView(view, new LinearLayout.LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
 }
