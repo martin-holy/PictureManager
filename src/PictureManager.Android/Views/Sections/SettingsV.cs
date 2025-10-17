@@ -31,6 +31,7 @@ public sealed class SettingsV : ScrollView {
       case GeoNameSettings geoName: _createGeoNameSettings(context, container, geoName); break;
       case MediaItemSettings mi: _createMediaItemSettings(context, container, mi); break;
       case SegmentSettings segment: _createSegmentSettings(context, container, segment); break;
+      case MediaViewerSettings mediaViewer: _createMediaViewerSettings(context, container, mediaViewer); break;
     }
 
     return container;
@@ -65,13 +66,21 @@ public sealed class SettingsV : ScrollView {
     _addView(container, new TextView(context).BindText(settings, x => x.MediaItemThumbScale, x => $"Media item thumbnail scale: {x:G2}"));
     _addView(container, new Slider(context, 0.2, 2, 0.1).BindProgress(settings, x => x.MediaItemThumbScale));
 
-    _addView(container, new TextView(context).BindText(settings, x => x.ScrollExactlyToMediaItem, _ => "Scroll exactly to MediaItem in thumbnails:"));
+    _addView(container, new TextView(context) { Text = "Scroll exactly to MediaItem in thumbnails:" });
     _addView(container, new CheckBox(context).BindChecked(settings, x => x.ScrollExactlyToMediaItem));
   }
 
   private static void _createSegmentSettings(Context context, LinearLayout container, SegmentSettings settings) {
     _addView(container, new TextView(context).BindText(settings, x => x.GroupSize, x => $"Group size: {x}"));
     _addView(container, new Slider(context, 100, 1000, 50).BindProgress(settings, x => x.GroupSize));
+  }
+
+  private static void _createMediaViewerSettings(Context context, LinearLayout container, MediaViewerSettings settings) {
+    _addView(container, new TextView(context) { Text = "Expand content to fill:" });
+    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ExpandToFill));
+
+    _addView(container, new TextView(context) { Text = "Shrink content to fill:" });
+    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ShrinkToFill));
   }
 
   private static void _addView(LinearLayout container, View view) =>
