@@ -4,7 +4,6 @@ using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
-using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
 
@@ -27,6 +26,7 @@ public sealed class SettingsV : LinearLayout {
     switch (group.Data) {
       case Settings settings: _createSettings(context, container, settings); break;
       case CommonSettings common: _createCommonSettings(context, container, common); break;
+      case GeoNameSettings geoName: _createGeoNameSettings(context, container, geoName); break;
       case MediaItemSettings mi: _createMediaItemSettings(context, container, mi); break;
       case SegmentSettings segment: _createSegmentSettings(context, container, segment); break;
     }
@@ -49,6 +49,14 @@ public sealed class SettingsV : LinearLayout {
   private static void _createCommonSettings(Context context, LinearLayout container, CommonSettings settings) {
     _addView(container, new TextView(context).BindText(settings, x => x.JpegQuality, x => $"Jpeg quality: {x}"));
     _addView(container, new Slider(context, 80, 95, 1.0).BindProgress(settings, x => x.JpegQuality));
+  }
+
+  private static void _createGeoNameSettings(Context context, LinearLayout container, GeoNameSettings settings) {
+    _addView(container, new TextView(context) { Text = "Load from web:" });
+    _addView(container, new CheckBox(context).BindChecked(settings, x => x.LoadFromWeb));
+
+    _addView(container, new TextView(context) { Text = "User name:" });
+    _addView(container, new EditText(context).BindText(settings, x => x.UserName));
   }
 
   private static void _createMediaItemSettings(Context context, LinearLayout container, MediaItemSettings settings) {
