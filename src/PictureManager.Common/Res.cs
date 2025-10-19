@@ -54,6 +54,7 @@ public static class Res {
   public const string IconRuler = "IconRuler";
   public const string IconSegment = "IconSegment";
   public const string IconSettings = "IconSettings";
+  public const string IconShare = "IconShare";
   public const string IconStar = "IconStar";
   public const string IconTabLeft = "IconTabLeft";
   public const string IconTabMiddle = "IconTabMiddle";
