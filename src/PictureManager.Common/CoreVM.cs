@@ -130,8 +130,9 @@ public sealed class CoreVM : ObservableObject {
     MainTabs.PropertyChanged += _onMainTabsPropertyChanged;
     MainTabs.TabClosedEvent += _onMainTabsTabClosed;
     MainWindow.PropertyChanged += _onMainWindowPropertyChanged;
-    MediaItem.PropertyChanged += _onMediaItemPropertyChanged;
+    MediaItem.PropertyChanged += _onMediaItemPropertyChanged;    
     MediaItem.Views.PropertyChanged += _onMediaItemViewsPropertyChanged;
+    MediaItem.Views.CurrentViewSelectionChangedEvent += (_, _) => _updateMediaItemCommands();
     MediaViewer.PropertyChanged += _onMediaViewerPropertyChanged;
     MediaViewer.Slideshow.PropertyChanged += _onMediaViewerSlideshowPropertyChanged;
     MediaViewer.ZoomAndPan.PropertyChanged += _onMediaViewerZoomAndPanPropertyChanged;
@@ -158,6 +159,17 @@ public sealed class CoreVM : ObservableObject {
     _coreR.Segment.SegmentsPersonChangedEvent += _onSegmentsPersonChanged;
 
     SaveDbCommand.Bind(_coreR, x => x.Changes, (cmd, _) => cmd.RaiseCanExecuteChanged());
+  }
+
+  private void _updateMediaItemCommands() {
+    CompressImagesCommand.RaiseCanExecuteChanged();
+    GetGeoNamesFromWebCommand.RaiseCanExecuteChanged();
+    ImagesToVideoCommand.RaiseCanExecuteChanged();
+    ReadGeoLocationFromFilesCommand.RaiseCanExecuteChanged();
+    ReloadMetadataCommand.RaiseCanExecuteChanged();
+    ResizeImagesCommand.RaiseCanExecuteChanged();
+    RotateMediaItemsCommand.RaiseCanExecuteChanged();
+    SaveImageMetadataToFilesCommand.RaiseCanExecuteChanged();
   }
 
   private void _onMainTabsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
@@ -196,12 +208,14 @@ public sealed class CoreVM : ObservableObject {
     }
 
     MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
+    _updateMediaItemCommands();
   }
 
   private void _onMediaItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (!e.Is(nameof(MediaItem.Current))) return;
     MainWindow.StatusBar.Update();
     Video.SetCurrent(MediaItem.Current);
+    _updateMediaItemCommands();
 
     if (!MainWindow.IsInViewMode) return;
     MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
