@@ -72,6 +72,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   }
 
   private void _selectionChanged() {
+    // TODO move this condition up
     if (!ReferenceEquals(this, Core.VM.MediaItem.Views.Current) || Core.VM.MediaViewer.IsVisible) return;
 
     SelectionChangedEvent(this, EventArgs.Empty);
