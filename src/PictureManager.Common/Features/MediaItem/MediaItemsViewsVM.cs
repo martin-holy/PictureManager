@@ -32,6 +32,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   public static AsyncRelayCommand CompareAverageHashCommand { get; set; } = null!;
   public static AsyncRelayCommand ComparePHashCommand { get; set; } = null!;
 
+  public event EventHandler? CurrentViewSelectionChangedEvent;
+
   public MediaItemsViewsVM() {
     FilterSetAndCommand = new(item => Current!.Filter.Set(item, DisplayFilter.And), _ => Current != null, Res.IconFilter, "Filter And");
     FilterSetOrCommand = new(item => Current!.Filter.Set(item, DisplayFilter.Or), _ => Current != null, Res.IconFilter, "Filter Or");
@@ -91,6 +93,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private void _onViewSelectionChanged(object? o, EventArgs e) {
+    CurrentViewSelectionChangedEvent?.Invoke(this, EventArgs.Empty);
     Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
     _ = Core.VM.MainWindow.StatusBar.UpdateFileSize();
   }
