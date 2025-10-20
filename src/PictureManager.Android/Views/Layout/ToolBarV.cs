@@ -27,5 +27,7 @@ public class ToolBarV : LinearLayout {
         view.Visibility = changes > 0 ? ViewStates.Visible : ViewStates.Gone;
         view.Text.Text = changes.ToString();
       }));
+
+    AddView(new IconButton(context).WithCommand(CoreUI.ShareMediaItemsCommand));
   }
 }
