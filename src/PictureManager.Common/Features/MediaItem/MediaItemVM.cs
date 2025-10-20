@@ -24,7 +24,15 @@ public sealed class MediaItemVM : ObservableObject {
 
   public static IImageSourceConverter<MediaItemM> ThumbConverter { get; set; } = null!;
 
-  public MediaItemM? Current { get => _current; set { _current = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentGeoName)); } }
+  public MediaItemM? Current {
+    get => _current;
+    set {
+      _current = value;
+      _updateCommands();
+      OnPropertyChanged();
+      OnPropertyChanged(nameof(CurrentGeoName));
+    }
+  }
   public GeoNameM? CurrentGeoName => Current?.GeoLocation?.GeoName;
   public MediaItemsViewsVM Views { get; } = new();
   public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
@@ -53,6 +61,15 @@ public sealed class MediaItemVM : ObservableObject {
     ViewSelectedCommand = new(_viewSelected, _canViewSelected, Res.IconImageMultiple, "View selected");
     CopySelectedToFolderCommand = new(_copySelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconCopy, "Copy");
     MoveSelectedToFolderCommand = new(_moveSelectedToFolder, _canCopyMoveSelectedToFolder, Res.IconMove, "Move");
+
+    Views.CurrentViewSelectionChangedEvent += (_, _) => _updateCommands();
+  }
+
+  private void _updateCommands() {
+    CommentCommand.RaiseCanExecuteChanged();
+    DeleteCommand.RaiseCanExecuteChanged();
+    RenameCommand.RaiseCanExecuteChanged();
+    ViewSelectedCommand.RaiseCanExecuteChanged();
   }
 
   private async Task _comment(MediaItemM mi) {
