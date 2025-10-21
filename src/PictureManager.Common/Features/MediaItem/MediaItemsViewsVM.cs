@@ -93,6 +93,8 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private void _onViewSelectionChanged(object? o, EventArgs e) {
+    if (!ReferenceEquals(o, Current) || Core.VM.MediaViewer.IsVisible) return;
+
     CurrentViewSelectionChangedEvent?.Invoke(this, EventArgs.Empty);
     Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
     _ = Core.VM.MainWindow.StatusBar.UpdateFileSize();
