@@ -10,6 +10,11 @@ namespace PictureManager.Common.Features.Person;
 
 public class PersonCollectionView()
   : CollectionView<PersonM>(Res.IconPeopleMultiple, "People", [ViewMode.ThumbSmall, ViewMode.List, ViewMode.Tiles]) {
+
+  private static readonly IReadOnlyList<SortField<PersonM>> _sortFields = [
+    new SortField<PersonM>("Name", x => x.Name, StringComparer.CurrentCultureIgnoreCase)
+  ];
+
   public override IEnumerable<GroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
     var src = source.ToArray();
     var top = new List<GroupByItem<PersonM>>();
@@ -26,6 +31,8 @@ public class PersonCollectionView()
       ViewMode.Tiles => getWidth ? 173 + SegmentVM.SegmentUiFullWidth : SegmentVM.SegmentUiFullWidth,
       _ => SegmentVM.SegmentUiFullWidth
     };
+
+  public override IEnumerable<SortField<PersonM>> GetSortFields() => _sortFields;
 
   public override int SortCompare(PersonM itemA, PersonM itemB) =>
     string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);

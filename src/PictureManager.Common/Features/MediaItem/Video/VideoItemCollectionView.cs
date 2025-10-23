@@ -2,12 +2,18 @@
 using MH.Utils;
 using MH.Utils.EventsArgs;
 using PictureManager.Common.Features.Common;
+using PictureManager.Common.Features.Person;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Common.Features.MediaItem.Video;
 
 public class VideoItemCollectionView() : CollectionView<VideoItemM>(Res.IconImageMultiple, "Video Items", [ViewMode.ThumbBig]) {
+  private static readonly IReadOnlyList<SortField<VideoItemM>> _sortFields = [
+    new SortField<VideoItemM>("Time", x => x.TimeStart, StringComparer.CurrentCultureIgnoreCase)
+  ];
+
   public Selecting<VideoItemM> Selected { get; } = new();
 
   public override int GetItemSize(ViewMode viewMode, VideoItemM item, bool getWidth) =>
@@ -24,6 +30,8 @@ public class VideoItemCollectionView() : CollectionView<VideoItemM>(Res.IconImag
 
     return top;
   }
+
+  public override IEnumerable<SortField<VideoItemM>> GetSortFields() => _sortFields;
 
   public override int SortCompare(VideoItemM itemA, VideoItemM itemB) =>
     itemA.TimeStart - itemB.TimeStart;

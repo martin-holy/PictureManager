@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using PictureManager.Common.Features.Common;
+using PictureManager.Common.Features.Person;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace PictureManager.Common.Features.MediaItem;
 
 public class MediaItemCollectionView : CollectionView<MediaItemM> {
   private double _thumbScale;
+  private static readonly IReadOnlyList<SortField<MediaItemM>> _sortFields = [
+    new SortField<MediaItemM>("File name", x => x.FileName, StringComparer.CurrentCultureIgnoreCase)
+  ];
 
   public double ThumbScale { get => _thumbScale; set { _thumbScale = value; OnPropertyChanged(); } }
   public Selecting<MediaItemM> Selected { get; } = new();
@@ -40,6 +44,8 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
 
   public override int GetItemSize(ViewMode viewMode, MediaItemM item, bool getWidth) =>
     (int)((getWidth ? item.ThumbWidth : item.ThumbHeight) * ThumbScale);
+
+  public override IEnumerable<SortField<MediaItemM>> GetSortFields() => _sortFields;
 
   public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>
     string.Compare(itemA.FileName, itemB.FileName, StringComparison.CurrentCultureIgnoreCase);

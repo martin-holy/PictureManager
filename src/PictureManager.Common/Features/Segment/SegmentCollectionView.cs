@@ -1,6 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.EventsArgs;
 using PictureManager.Common.Features.Common;
+using PictureManager.Common.Features.MediaItem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,10 @@ using System.Linq;
 namespace PictureManager.Common.Features.Segment;
 
 public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment, "Segments", [ViewMode.ThumbSmall]) {
+  private static readonly IReadOnlyList<SortField<SegmentM>> _sortFields = [
+    new SortField<SegmentM>("File name", x => x.MediaItem.FileName, StringComparer.CurrentCultureIgnoreCase)
+  ];
+
   public void Reload(List<SegmentM> source, GroupMode groupMode, GroupByItem<SegmentM>[]? groupByItems, bool expandAll, string rootTitle, bool removeEmpty = true) {
     Name = rootTitle;
     Reload(source, groupMode, groupByItems, expandAll, removeEmpty);
@@ -27,6 +32,8 @@ public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment,
 
   public override int GetItemSize(ViewMode viewMode, SegmentM item, bool getWidth) =>
     SegmentVM.SegmentUiFullWidth;
+
+  public override IEnumerable<SortField<SegmentM>> GetSortFields() => _sortFields;
 
   public override int SortCompare(SegmentM itemA, SegmentM itemB) =>
     string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);
