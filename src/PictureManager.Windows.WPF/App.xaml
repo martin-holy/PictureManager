@@ -50,6 +50,7 @@
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TextBlock.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TextBoxBase.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ToolTip.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TreeMenuHost.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/TreeViewHost.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/WindowButtons.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Controls/ZoomAndPanHost.xaml"/>
@@ -157,6 +158,7 @@
       <Style TargetType="mhc:RangeSlider" BasedOn="{StaticResource MH.S.RangeSlider}"/>
       <Style TargetType="mhc:SlidePanelHost" BasedOn="{StaticResource MH.S.SlidePanelHost}"/>
       <Style TargetType="mhc:SlidePanelsGridHost" BasedOn="{StaticResource MH.S.SlidePanelsGridHost}"/>
+      <Style TargetType="mhc:TreeMenuHost" BasedOn="{StaticResource MH.S.TreeMenuHost}"/>
       <Style TargetType="mhc:TreeViewHost" BasedOn="{StaticResource MH.S.TreeViewHost}"/>
       <Style TargetType="mhc:ZoomAndPanHost" BasedOn="{StaticResource MH.S.ZoomAndPanHost}"/>
 
