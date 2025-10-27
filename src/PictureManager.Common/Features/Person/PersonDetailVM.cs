@@ -58,22 +58,22 @@ public sealed class PersonDetailVM : ObservableObject {
   }
 
   private void _reloadAllSegments(IReadOnlyCollection<SegmentM> items) {
-    var source = items
-      .OrderBy(x => x.MediaItem.FileName)
-      .ToList();
     var groupByItems = new[] {
       GroupByItems.GetKeywordsInGroup(items)
     };
 
-    AllSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true, "All");
+    AllSegments.Name = "All";
+    AllSegments.Reload([.. items], GroupMode.ThenByRecursive, groupByItems, true, true);
   }
 
-  private void _reloadTopSegments() =>
+  private void _reloadTopSegments() {
+    TopSegments.Name = "Top";
     TopSegments.Reload(
       PersonM!.TopSegments == null
         ? []
         : PersonM.TopSegments.ToList(),
-      GroupMode.GroupBy, null, true, "Top");
+      GroupMode.GroupBy, null, true, false);
+  }
 
   public void Update(SegmentM[] segments) {
     Update(segments, true, false);

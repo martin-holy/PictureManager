@@ -70,7 +70,7 @@ public sealed class SegmentS : ObservableObject {
 
     PersonM newPerson;
     SegmentM[] toUpdate;
-    var people = items.GetPeople().OrderBy(x => x.Name).ToArray();
+    var people = items.GetPeople().ToArray();
 
     if (people.Length == 0) {
       newPerson = Core.R.Person.ItemCreateUnknown();

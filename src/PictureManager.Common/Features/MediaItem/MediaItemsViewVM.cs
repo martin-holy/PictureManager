@@ -100,9 +100,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
   public List<MediaItemM> GetSelectedOrAll() =>
     Selected.Items.Count == 0 ? Root.Source : Selected.Items.ToList();
 
-  public static IEnumerable<MediaItemM> GetSorted(IEnumerable<MediaItemM> items) =>
-    items.OrderBy(x => x.FileName);
-
   private MediaItemM? _getItemToScrollTo() =>
     Core.VM.MediaItem.Current is { } current && Root.Source.Contains(current)
       ? current
@@ -192,7 +189,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
       if (and)
         Insert(items);
       else
-        Reload(GetSorted(items).ToList(), GroupMode.ThenByRecursive, null, true);
+        Reload([.. items], GroupMode.ThenByRecursive, null, true, true);
     }
 
     Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
@@ -242,6 +239,6 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     }
 
     Selected.DeselectAll();
-    Reload(await method(ImageComparer), GroupMode.ThenByRecursive, null, true);
+    Reload(await method(ImageComparer), GroupMode.ThenByRecursive, null, true, false);
   }
 }

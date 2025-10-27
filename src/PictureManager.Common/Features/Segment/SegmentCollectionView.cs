@@ -8,14 +8,13 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.Segment;
 
-public class SegmentCollectionView() : CollectionView<SegmentM>(Res.IconSegment, "Segments", [ViewMode.ThumbSmall]) {
+public class SegmentCollectionView : CollectionView<SegmentM> {
   private static readonly IReadOnlyList<SortField<SegmentM>> _sortFields = [
     new SortField<SegmentM>("File name", x => x.MediaItem.FileName, StringComparer.CurrentCultureIgnoreCase)
   ];
 
-  public void Reload(List<SegmentM> source, GroupMode groupMode, GroupByItem<SegmentM>[]? groupByItems, bool expandAll, string rootTitle, bool removeEmpty = true) {
-    Name = rootTitle;
-    Reload(source, groupMode, groupByItems, expandAll, removeEmpty);
+  public SegmentCollectionView() : base(Res.IconSegment, "Segments", [ViewMode.ThumbSmall]) {
+    DefaultSortField = _sortFields[0];
   }
 
   public override IEnumerable<GroupByItem<SegmentM>> GetGroupByItems(IEnumerable<SegmentM> source) {

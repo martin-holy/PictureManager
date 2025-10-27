@@ -26,8 +26,7 @@ public sealed class SegmentsViewVM : SegmentCollectionView {
   }
 
   public void ReloadPeople() {
-    var people = Root.Source.GetPeople().OrderBy(x => x.Name).ToList();
-    CvPeople.Reload(people, GroupMode.GroupByRecursive, null, true);
+    CvPeople.Reload(Root.Source.GetPeople().ToList(), GroupMode.GroupByRecursive, null, true, true);
   }
 
   public void RemoveSegments(IList<SegmentM> items) {

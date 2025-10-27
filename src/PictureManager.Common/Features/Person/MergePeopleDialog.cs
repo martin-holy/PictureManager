@@ -11,7 +11,7 @@ namespace PictureManager.Common.Features.Person;
 public sealed class MergePeopleDialog : Dialog {
   private static MergePeopleDialog? _inst;
   private readonly SegmentS _segmentS;
-  private PersonM[] _people = null!;
+  private List<PersonM> _people = null!;
   private SegmentM[] _unknownSelected = null!;
   private SegmentM[] _segmentsToUpdate = null!;
   private PersonM _person = null!;
@@ -41,11 +41,11 @@ public sealed class MergePeopleDialog : Dialog {
   }
 
   private async Task<(PersonM, SegmentM[])?> _open(PersonS personS, SegmentS segmentS, PersonM[] people) {
-    _people = people;
+    _people = PeopleView.Sort(people.ToList());
     _unknownSelected = segmentS.Selected.Items.Where(x => x.Person == null).ToArray();
-    personS.Selected.Select(people[0]);
-    _setPerson(people[0]);
-    PeopleView.Reload(people.ToList(), GroupMode.ThenByRecursive, null, true);
+    personS.Selected.Select(_people[0]);
+    _setPerson(_people[0]);
+    PeopleView.Reload(_people, GroupMode.ThenByRecursive, null, true, true);
 
     if (await ShowAsync(this) != 1) {
       _clear();
@@ -61,10 +61,10 @@ public sealed class MergePeopleDialog : Dialog {
   private void _setPerson(PersonM person) {
     Person = person;
     _segmentsToUpdate = _getSegmentsToUpdate(Person, _people);
-    var source = _segmentsToUpdate.OrderBy(x => x.MediaItem.FileName).ToList();
     var groupByItems = GroupByItems.GetPeople(_segmentsToUpdate).ToArray();
 
-    SegmentsView.Reload(source, GroupMode.GroupBy, groupByItems, true, "Segments to update");
+    SegmentsView.Name = "Segments to update";
+    SegmentsView.Reload([.. _segmentsToUpdate], GroupMode.GroupBy, groupByItems, true, true);
   }
 
   private SegmentM[] _getSegmentsToUpdate(PersonM person, IEnumerable<PersonM> people) {

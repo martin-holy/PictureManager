@@ -1,6 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.UI.Dialogs;
 using MH.Utils.Extensions;
+using PictureManager.Common.Features.CategoryGroup;
 using PictureManager.Common.Features.MediaItem;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,14 +29,14 @@ public sealed class PeopleToolsTabVM : PersonCollectionView {
     return result switch {
       1 => Core.VM.MediaItem.Views.Current?.GetSelectedOrAll().GetPeople() ?? [],
       2 => Core.VM.MediaViewer.MediaItems.GetPeople(),
-      3 => PersonS.GetAll(),
+      3 => Core.R.Person.All.Where(x => x.Parent is not CategoryGroupM { IsHidden: true }),
       _ => []
     };
   }
 
   public async Task Reload(PersonM[]? people) {
-    var src = (people ?? await _getPeople()).EmptyIfNull().OrderBy(x => x.Name).ToList();
+    var src = (people ?? await _getPeople()).EmptyIfNull().ToList();
     if (src.Count == 0) return;
-    Reload(src, GroupMode.ThenByRecursive, null, true);
+    Reload(src, GroupMode.ThenByRecursive, null, true, true);
   }
 }

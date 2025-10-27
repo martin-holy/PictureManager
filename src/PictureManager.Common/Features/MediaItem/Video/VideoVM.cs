@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using PictureManager.Common.Features.Common;
+using System.Collections.Generic;
 
 namespace PictureManager.Common.Features.MediaItem.Video;
 
@@ -46,13 +47,20 @@ public sealed class VideoVM : ObservableObject {
   }
 
   private void _reloadCurrentVideoItems() {
-    var items = Current == null
-      ? []
-      : Core.R.VideoItemsOrder.All.TryGetValue(Current, out var list)
-        ? list.ToList()
-        : Current.GetVideoItems().OrderBy(x => x.TimeStart).ToList();
+    List<VideoItemM> items = [];
+    var sortSource = true;
+
+    if (Current != null) {
+      if (Core.R.VideoItemsOrder.All.TryGetValue(Current, out var list)) {
+        items = list.ToList();
+        sortSource = false;
+      }
+      else
+        items = Current.GetVideoItems().ToList();
+    }
+
     var groupByItems = new[] { GroupByItems.GetKeywordsInGroup(items) };
-    CurrentVideoItems.Reload(items, GroupMode.ThenByRecursive, groupByItems, true);
+    CurrentVideoItems.Reload(items, GroupMode.ThenByRecursive, groupByItems, true, sortSource);
   }
 
   private IVideoClip? _getNewClip(int timeStart) =>

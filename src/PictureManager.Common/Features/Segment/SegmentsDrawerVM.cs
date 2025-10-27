@@ -90,7 +90,7 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
       .ToList();
     var groupByItems = GroupByItems.GetFolders(source).ToArray();
 
-    Reload(source, GroupMode.GroupByRecursive, groupByItems, true);
+    Reload(source, GroupMode.GroupByRecursive, groupByItems, true, false);
     tt.Activate(Res.IconDrawer, "Segments", this);
   }
 }

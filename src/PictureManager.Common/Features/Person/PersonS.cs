@@ -62,10 +62,4 @@ public sealed class PersonS(PersonR r) : ObservableObject {
 
     r.ToggleKeywords(person, keywords);
   }
-
-  public static PersonM[] GetAll() =>
-    Core.R.Person.All
-      .Where(x => x.Parent is not CategoryGroupM { IsHidden: true })
-      .OrderBy(x => x.Name)
-      .ToArray();
 }

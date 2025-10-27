@@ -24,6 +24,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
   public MediaItemCollectionView(double thumbScale) : base(Res.IconImageMultiple, "Media Items", [ViewMode.ThumbBig]) {
     ThumbScale = thumbScale;
     ThumbScaleChangedCommand = new(_onThumbScaleChanged);
+    DefaultSortField = _sortFields[0];
   }
 
   private void _onThumbScaleChanged() =>

@@ -8,12 +8,14 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.Person;
 
-public class PersonCollectionView()
-  : CollectionView<PersonM>(Res.IconPeopleMultiple, "People", [ViewMode.ThumbSmall, ViewMode.List, ViewMode.Tiles]) {
-
+public class PersonCollectionView : CollectionView<PersonM> {
   private static readonly IReadOnlyList<SortField<PersonM>> _sortFields = [
     new SortField<PersonM>("Name", x => x.Name, StringComparer.CurrentCultureIgnoreCase)
   ];
+
+  public PersonCollectionView() : base(Res.IconPeopleMultiple, "People", [ViewMode.ThumbSmall, ViewMode.List, ViewMode.Tiles]) {
+    DefaultSortField = _sortFields[0];
+  }
 
   public override IEnumerable<GroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
     var src = source.ToArray();

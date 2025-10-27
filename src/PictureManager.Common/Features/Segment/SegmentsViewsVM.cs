@@ -151,17 +151,14 @@ public sealed class SegmentsViewsVM : ObservableObject {
       tabTitle = $"Segments {_views.Count + 1}";
 
     var and = Keyboard.IsCtrlOn() && Current != null;
-    var source = _sort(and ? items.Union(Current!.Root.Source) : items).ToList();
+    var source = (and ? items.Union(Current!.Root.Source) : items).ToList();
     var view = and ? _addViewIfNotActive(tabTitle) : _addView(tabTitle);
     var groupByItems = new[] {
       GroupByItems.GetPeopleInGroup(source),
       GroupByItems.GetKeywordsInGroup(source)
     };
 
-    view.Reload(source, GroupMode.ThenByRecursive, groupByItems, true);
+    view.Reload(source, GroupMode.ThenByRecursive, groupByItems, true, true);
     view.ReloadPeople();
   }
-
-  private static IEnumerable<SegmentM> _sort(IEnumerable<SegmentM> items) =>
-    items.OrderBy(x => x.MediaItem.FileName);
 }

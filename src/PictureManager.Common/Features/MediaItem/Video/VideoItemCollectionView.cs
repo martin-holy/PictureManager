@@ -9,12 +9,16 @@ using System.Linq;
 
 namespace PictureManager.Common.Features.MediaItem.Video;
 
-public class VideoItemCollectionView() : CollectionView<VideoItemM>(Res.IconImageMultiple, "Video Items", [ViewMode.ThumbBig]) {
+public class VideoItemCollectionView : CollectionView<VideoItemM> {
   private static readonly IReadOnlyList<SortField<VideoItemM>> _sortFields = [
     new SortField<VideoItemM>("Time", x => x.TimeStart, StringComparer.CurrentCultureIgnoreCase)
   ];
 
   public Selecting<VideoItemM> Selected { get; } = new();
+
+  public VideoItemCollectionView() : base(Res.IconImageMultiple, "Video Items", [ViewMode.ThumbBig]) {
+    DefaultSortField = _sortFields[0];
+  }
 
   public override int GetItemSize(ViewMode viewMode, VideoItemM item, bool getWidth) =>
     (int)((getWidth ? item.ThumbWidth : item.ThumbHeight) * Core.Settings.MediaItem.VideoItemThumbScale);
