@@ -11,6 +11,7 @@ Latest:
  - [U] MediaViewer: ScaleToFit when min scale reached
  - [U] MediaViewer: Pan limits
  - [N] Sort asc/desc in all CollectionViews
+ - [N] Settings: Default sort order for MediaItems
 
 25.09.02.0938:
  - [B] Not successful MediaItems import when importing from folder with deleted Videos outside of this app containing VideoItems
