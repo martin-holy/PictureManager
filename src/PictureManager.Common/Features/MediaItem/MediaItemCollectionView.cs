@@ -25,6 +25,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
     ThumbScale = thumbScale;
     ThumbScaleChangedCommand = new(_onThumbScaleChanged);
     DefaultSortField = _sortFields[0];
+    DefaultSortOrder = Core.Settings.MediaItem.SortOrder;
   }
 
   private void _onThumbScaleChanged() =>

@@ -1,4 +1,5 @@
 ﻿using MH.UI.BaseClasses;
+using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
@@ -120,11 +121,13 @@ public sealed class ImagesToVideoSettings : ObservableObject {
 public sealed class MediaItemSettings : ObservableObject {
   private double _mediaItemThumbScale = 0.8;
   private bool _scrollExactlyToMediaItem;
+  private CollectionView.SortOrder _sortOrder = CollectionView.SortOrder.Ascending;
   private int _thumbSize = 400;
   private double _videoItemThumbScale = 0.28;
   
   public double MediaItemThumbScale { get => _mediaItemThumbScale; set { _mediaItemThumbScale = value; OnPropertyChanged(); } }
   public bool ScrollExactlyToMediaItem { get => _scrollExactlyToMediaItem; set { _scrollExactlyToMediaItem = value; OnPropertyChanged(); } }
+  public CollectionView.SortOrder SortOrder { get => _sortOrder; set { _sortOrder = value; OnPropertyChanged(); } }
   public int ThumbSize { get => _thumbSize; set { _thumbSize = value; OnPropertyChanged(); } }
   public double VideoItemThumbScale { get => _videoItemThumbScale; set { _videoItemThumbScale = value; OnPropertyChanged(); } }
 }
