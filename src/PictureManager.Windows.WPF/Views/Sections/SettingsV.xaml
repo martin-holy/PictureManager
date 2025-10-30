@@ -6,7 +6,8 @@
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
-  xmlns:bc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI">
+  xmlns:bc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI"
+  xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI">
 
   <Style x:Key="PM.S.ItemsControl.Settings.Items" TargetType="ItemsControl">
     <Style.Resources>
@@ -176,6 +177,14 @@
           <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="Scroll exactly to MediaItem in thumbnails:"/>
             <CheckBox IsChecked="{Binding ScrollExactlyToMediaItem, Mode=TwoWay}"/>
+          </x:Array>
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Sort order:"/>
+            <ComboBox
+              ItemsSource="{Binding Source={x:Static uic:CollectionView.SortOrderTextMap}}"
+              DisplayMemberPath="Value"
+              SelectedValuePath="Key"
+              SelectedValue="{Binding SortOrder, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="{Binding ThumbSize, StringFormat='Thumbnail size: {0}'}"/>
