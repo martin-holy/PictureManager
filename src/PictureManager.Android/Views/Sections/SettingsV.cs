@@ -4,6 +4,7 @@ using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
+using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
 
@@ -68,6 +69,9 @@ public sealed class SettingsV : ScrollView {
 
     _addView(container, new TextView(context) { Text = "Scroll exactly to MediaItem in thumbnails:" });
     _addView(container, new CheckBox(context).BindChecked(settings, x => x.ScrollExactlyToMediaItem));
+
+    _addView(container, new TextView(context) { Text = "Sort order:" });
+    _addView(container, new Spinner(context).BindSelected(settings, x => x.SortOrder, CollectionView.SortOrderTextMap));
   }
 
   private static void _createSegmentSettings(Context context, LinearLayout container, SegmentSettings settings) {
