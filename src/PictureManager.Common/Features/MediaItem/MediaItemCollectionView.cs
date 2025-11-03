@@ -14,7 +14,8 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
   private double _thumbScale;
   private static readonly IReadOnlyList<SortField<MediaItemM>> _sortFields = [
     new SortField<MediaItemM>("File name", x => x.FileName, StringComparer.CurrentCultureIgnoreCase),
-    new SortField<MediaItemM>("Modified", x => new System.IO.FileInfo(x.FilePath).LastWriteTime)
+    new SortField<MediaItemM>("Modified", x => new System.IO.FileInfo(x.FilePath).LastWriteTime),
+    new SortField<MediaItemM>("Created", x => new System.IO.FileInfo(x.FilePath).CreationTime)
   ];
 
   public double ThumbScale { get => _thumbScale; set { _thumbScale = value; OnPropertyChanged(); } }
