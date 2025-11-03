@@ -7,6 +7,9 @@ using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
+using PictureManager.Common.Features.MediaItem;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Android.Views.Sections;
 
@@ -69,6 +72,10 @@ public sealed class SettingsV : ScrollView {
 
     _addView(container, new TextView(context) { Text = "Scroll exactly to MediaItem in thumbnails:" });
     _addView(container, new CheckBox(context).BindChecked(settings, x => x.ScrollExactlyToMediaItem));
+
+    var sortFields = MediaItemCollectionView.SortFields.Select(x => new KeyValuePair<string, string>(x.Name, x.Name)).ToArray();
+    _addView(container, new TextView(context) { Text = "Sort field:" });
+    _addView(container, new Spinner(context).BindSelected(settings, x => x.SortField, sortFields));
 
     _addView(container, new TextView(context) { Text = "Sort order:" });
     _addView(container, new Spinner(context).BindSelected(settings, x => x.SortOrder, CollectionView.SortOrderTextMap));
