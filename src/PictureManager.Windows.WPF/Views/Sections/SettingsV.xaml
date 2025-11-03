@@ -5,6 +5,7 @@
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:ftCommon="clr-namespace:PictureManager.Common.Features.Common;assembly=PictureManager.Common"
+  xmlns:ftMediaItem="clr-namespace:PictureManager.Common.Features.MediaItem;assembly=PictureManager.Common"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:bc="clr-namespace:MH.UI.BaseClasses;assembly=MH.UI"
   xmlns:uic="clr-namespace:MH.UI.Controls;assembly=MH.UI">
@@ -177,7 +178,15 @@
           <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="Scroll exactly to MediaItem in thumbnails:"/>
             <CheckBox IsChecked="{Binding ScrollExactlyToMediaItem, Mode=TwoWay}"/>
-          </x:Array>
+          </x:Array>          
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Sort field:"/>
+            <ComboBox
+              ItemsSource="{Binding Source={x:Static ftMediaItem:MediaItemCollectionView.SortFields}}"
+              DisplayMemberPath="Name"
+              SelectedValuePath="Name"
+              SelectedValue="{Binding SortField, Mode=TwoWay}"/>
+          </x:Array>          
           <x:Array Type="{x:Type sys:Object}">
             <TextBlock Text="Sort order:"/>
             <ComboBox
