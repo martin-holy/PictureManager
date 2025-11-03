@@ -24,11 +24,7 @@ public class MiddleContentV : LinearLayout {
     AddView(_mainTabs, new LayoutParams(LPU.Match, LPU.Match));
     AddView(_mediaViewer, new LayoutParams(LPU.Match, LPU.Match));
 
-    this.Bind(coreVM.MediaViewer, x => x.IsVisible, (v, p) => v._updateVisibility(p));
-
-    // TODO remove test data
-    coreVM.MainTabs.Add("IconFolder", "Test", new TextView(Context) { Text = "Test Panel Folder" });
-    coreVM.MainTabs.Add("IconTag", "Test Tag", new TextView(Context) { Text = "Test Panel Tag" });
+    this.Bind(coreVM.MediaViewer, x => x.IsVisible, (t, p) => t._updateVisibility(p));
   }
 
   private View? _getMainTabsView(LinearLayout container, object? item) =>
