@@ -12,7 +12,8 @@ namespace PictureManager.Common.Features.MediaItem;
 
 public class MediaItemCollectionView : CollectionView<MediaItemM> {
   private double _thumbScale;
-  private static readonly IReadOnlyList<SortField<MediaItemM>> _sortFields = [
+
+  public static readonly IReadOnlyList<SortField<MediaItemM>> SortFields = [
     new SortField<MediaItemM>("File name", x => x.FileName, StringComparer.CurrentCultureIgnoreCase),
     new SortField<MediaItemM>("Modified", x => new System.IO.FileInfo(x.FilePath).LastWriteTime),
     new SortField<MediaItemM>("Created", x => new System.IO.FileInfo(x.FilePath).CreationTime)
@@ -26,7 +27,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
   public MediaItemCollectionView(double thumbScale) : base(Res.IconImageMultiple, "Media Items", [ViewMode.ThumbBig]) {
     ThumbScale = thumbScale;
     ThumbScaleChangedCommand = new(_onThumbScaleChanged);
-    DefaultSortField = _sortFields[0];
+    DefaultSortField = SortFields.SingleOrDefault(x => x.Name.Equals(Core.Settings.MediaItem.SortField), SortFields[0]);
     DefaultSortOrder = Core.Settings.MediaItem.SortOrder;
   }
 
@@ -49,7 +50,7 @@ public class MediaItemCollectionView : CollectionView<MediaItemM> {
   public override int GetItemSize(ViewMode viewMode, MediaItemM item, bool getWidth) =>
     (int)((getWidth ? item.ThumbWidth : item.ThumbHeight) * ThumbScale);
 
-  public override IEnumerable<SortField<MediaItemM>> GetSortFields() => _sortFields;
+  public override IEnumerable<SortField<MediaItemM>> GetSortFields() => SortFields;
 
   public override int SortCompare(MediaItemM itemA, MediaItemM itemB) =>
     string.Compare(itemA.FileName, itemB.FileName, StringComparison.CurrentCultureIgnoreCase);
