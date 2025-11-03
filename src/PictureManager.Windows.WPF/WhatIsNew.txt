@@ -14,6 +14,7 @@ Latest:
  - [N] Settings: Default sort order for MediaItems
  - [N] MediaItemCollectionView: sort by modified
  - [N] MediaItemCollectionView: sort by created
+ - [N] MediaItemCollectionView: DefaultSortField in settings
 
 25.09.02.0938:
  - [B] Not successful MediaItems import when importing from folder with deleted Videos outside of this app containing VideoItems
