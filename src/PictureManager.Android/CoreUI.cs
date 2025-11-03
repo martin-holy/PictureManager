@@ -28,6 +28,7 @@ public class CoreUI : ICoreP, IDisposable {
   public CoreUI(MainActivity mainActivity) {
     _mainActivity = mainActivity;
     CoreR.FileOperationDelete = _fileOperationDelete;
+    Core.R.MediaItem.VideoSupport = false; // TODO video support
     // TODO PORT
     MH.UI.Android.Utils.Init.Utils(mainActivity);
     MH.UI.Android.Utils.Init.SetDelegates();
