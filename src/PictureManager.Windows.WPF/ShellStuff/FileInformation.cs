@@ -1,4 +1,5 @@
-﻿using MH.Utils.Extensions;
+﻿using MH.Utils;
+using MH.Utils.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,23 +8,29 @@ using System.Runtime.InteropServices;
 
 namespace PictureManager.Windows.WPF.ShellStuff {
   public static class FileInformation {
-    internal static object[] GetVideoMetadata(string dirPath, string fileName) {
-      var shl = new Shell32.Shell();
-      var fldr = shl.NameSpace(dirPath);
-      var itm = fldr.ParseName(fileName);
-      // INFO I am not sure, but it looks like that the iColumn numbers are not the same all the time
-      string[] data = {
-        fldr.GetDetailsOf(itm, 314), // height
-        fldr.GetDetailsOf(itm, 316), // width
-        fldr.GetDetailsOf(itm, 319), // orientation
-        fldr.GetDetailsOf(itm, 315)  // FPS
-      };
-      int.TryParse(data[0], out var h);
-      int.TryParse(data[1], out var w);
-      int.TryParse(data[2], out var o);
-      data[3].TryParseDoubleUniversal(out var fps);
+    internal static object[]? GetVideoMetadata(string dirPath, string fileName) {
+      try {
+        var shl = new Shell32.Shell();
+        var fldr = shl.NameSpace(dirPath);
+        var itm = fldr.ParseName(fileName);
+        // INFO I am not sure, but it looks like that the iColumn numbers are not the same all the time
+        string[] data = {
+          fldr.GetDetailsOf(itm, 314), // height
+          fldr.GetDetailsOf(itm, 316), // width
+          fldr.GetDetailsOf(itm, 319), // orientation
+          fldr.GetDetailsOf(itm, 315)  // FPS
+        };
+        int.TryParse(data[0], out var h);
+        int.TryParse(data[1], out var w);
+        int.TryParse(data[2], out var o);
+        data[3].TryParseDoubleUniversal(out var fps);
 
-      return new object[] { h, w, o, fps };
+        return new object[] { h, w, o, fps };
+      }
+      catch (Exception ex) {
+        Log.Error(ex);
+        return null;
+      }      
     }
 
     internal static List<string> GetAllVideoMetadata(string filePath) {
