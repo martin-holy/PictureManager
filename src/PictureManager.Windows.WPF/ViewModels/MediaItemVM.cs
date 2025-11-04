@@ -63,23 +63,22 @@ public static class MediaItemVM {
   }
 
   private static void ReadVideoMetadata(MediaItemMetadata mim) {
-    try {
-      var size = ShellStuff.FileInformation.GetVideoMetadata(mim.MediaItem.Folder.FullPath, mim.MediaItem.FileName);
-      mim.Height = (int)size[0];
-      mim.Width = (int)size[1];
-      mim.Orientation = (int)size[2] switch {
-        90 => Orientation.Rotate90,
-        180 => Orientation.Rotate180,
-        270 => Orientation.Rotate270,
-        _ => Orientation.Normal,
-      };
-
-      mim.Success = true;
-    }
-    catch (Exception ex) {
-      Log.Error(ex, mim.MediaItem.FilePath);
+    if (ShellStuff.FileInformation.GetVideoMetadata(mim.MediaItem.Folder.FullPath, mim.MediaItem.FileName) is not { } data) {
       mim.Success = false;
+      Log.Error("Can't read video metadata", mim.MediaItem.FilePath);
+      return;
     }
+
+    mim.Height = (int)data[0];
+    mim.Width = (int)data[1];
+    mim.Orientation = (int)data[2] switch {
+      90 => Orientation.Rotate90,
+      180 => Orientation.Rotate180,
+      270 => Orientation.Rotate270,
+      _ => Orientation.Normal,
+    };
+
+    mim.Success = true;
   }
 
   private static void ReadImageMetadata(MediaItemMetadata mim, BitmapMetadata bm, bool gpsOnly) {
