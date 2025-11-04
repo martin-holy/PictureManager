@@ -10,6 +10,7 @@ using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.MediaItem.Video;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,13 +29,13 @@ public class CoreUI : ICoreP, IDisposable {
   public CoreUI(MainActivity mainActivity) {
     _mainActivity = mainActivity;
     CoreR.FileOperationDelete = _fileOperationDelete;
-    Core.R.MediaItem.VideoSupport = false; // TODO video support
     // TODO PORT
     MH.UI.Android.Utils.Init.Utils(mainActivity);
     MH.UI.Android.Utils.Init.SetDelegates();
     MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
     MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
+    VideoVM.GetVideoMetadataFunc = ImagingU.GetVideoMetadata;
     MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
   }
 
