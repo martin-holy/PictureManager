@@ -16,7 +16,7 @@ public sealed class VideoVM : ObservableObject {
   public VideoM? Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
   public MediaPlayer MediaPlayer { get; } = new();
 
-  public static Func<string, string, object[]> GetVideoMetadataFunc { get; set; } = null!;
+  public static Func<string, string, object[]?> GetVideoMetadataFunc { get; set; } = null!;
 
   public VideoVM() {
     MediaPlayer.SelectNextItemAction = CurrentVideoItems.SelectNextOrFirstItem;
@@ -93,8 +93,9 @@ public sealed class VideoVM : ObservableObject {
       return;
     }
 
-    var data = GetVideoMetadataFunc(vid.Folder.FullPath, vid.FileName);
-    var fps = (double)data[3] > 0 ? (double)data[3] : 30.0;
+    var fps = GetVideoMetadataFunc(vid.Folder.FullPath, vid.FileName) is { } data && (double)data[3] > 0
+      ? (double)data[3]
+      : 30.0;
     var smallChange = Math.Round(1000 / fps, 0);
 
     MediaPlayer.Source = vid.FilePath;
