@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Graphics;
 using Android.Widget;
 using MH.UI.Android.Utils;
 using PictureManager.Common;
@@ -35,8 +34,13 @@ public class MediaItemThumbFullV : LinearLayout {
   private static async void _loadThumbnailAsync(MediaItemM mi, ImageView imageView, Context context) {
     var thumbnail = await Task.Run(async () => {
       try {
-        return await MediaStoreU.GetThumbnailBitmapAsync(mi.FilePath, context, 512)
-        ?? _createThumbnail(mi);
+        return mi switch {
+          ImageM => await MediaStoreU.GetImageThumbnail(mi.FilePath, context, 512)
+                      ?? ImagingU.CreateImageThumbnail(mi.FilePath, Core.Settings.MediaItem.ThumbSize),
+          VideoM => await MediaStoreU.GetVideoThumbnail(mi.FilePath, context, 512)
+                      ?? ImagingU.CreateVideoThumbnail(mi.FilePath, Core.Settings.MediaItem.ThumbSize),
+          _ => null,
+        };
       }
       catch (Exception ex) {
         MH.Utils.Log.Error(ex);
@@ -46,11 +50,4 @@ public class MediaItemThumbFullV : LinearLayout {
 
     MH.Utils.Tasks.Dispatch(() => imageView.SetImageBitmap(thumbnail));
   }
-
-  private static Bitmap? _createThumbnail(MediaItemM mi) =>
-     mi switch {
-       ImageM => ImagingU.CreateImageThumbnail(mi.FilePath, Core.Settings.MediaItem.ThumbSize),
-       VideoM => ImagingU.CreateVideoThumbnail(mi.FilePath, Core.Settings.MediaItem.ThumbSize),
-       _ => null
-     };
 }
