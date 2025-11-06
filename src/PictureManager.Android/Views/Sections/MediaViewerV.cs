@@ -9,6 +9,8 @@ using MH.UI.Controls;
 using MH.Utils;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.MediaItem.Image;
+using PictureManager.Common.Features.MediaItem.Video;
 using System;
 
 namespace PictureManager.Android.Views.Sections;
@@ -117,7 +119,8 @@ public class MediaViewerV : LinearLayout {
 
     public void Bind(MediaItemM? mi) {
       if (mi == null) {
-        _zoomAndPanHost.SetImageBitmap(null);
+        _zoomAndPanHost.SetImagePath(null);
+        _zoomAndPanHost.SetVideoPath(null);
         return;
       }
 
@@ -127,7 +130,12 @@ public class MediaViewerV : LinearLayout {
       _zoomAndPan.ContentWidth = width;
       _zoomAndPan.ContentHeight = height;
       _zoomAndPan.ScaleToFitContent(width, height);
-      _zoomAndPanHost.SetImageBitmap(global::Android.Graphics.BitmapFactory.DecodeFile(mi.FilePath));
+
+      if (mi is ImageM)
+        _zoomAndPanHost.SetImagePath(mi.FilePath);
+      else if (mi is VideoM)
+        _zoomAndPanHost.SetVideoPath(mi.FilePath);
+
       _zoomAndPanHost.UpdateImageTransform();
     }
 
