@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
 using PictureManager.Common;
@@ -10,23 +11,30 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Android.Views.Entities;
 
-public class MediaItemThumbFullV : LinearLayout {
+public class MediaItemThumbFullV : FrameLayout {
   private readonly ImageView _image;
+  private readonly ImageView _videoOverlayer;
 
   public MediaItemM? DataContext { get; private set; }
 
   public MediaItemThumbFullV(Context context) : base(context) {
     _image = new(context);
+    _videoOverlayer = new(context) { Visibility = ViewStates.Gone };
+    _videoOverlayer.SetImageResource(Resource.Drawable.icon_play_circle);
+
     AddView(_image, new LayoutParams(LPU.Match, LPU.Match));
+    AddView(_videoOverlayer, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Center });
   }
 
   public MediaItemThumbFullV Bind(MediaItemM? mi) {
     DataContext = mi;
+    _videoOverlayer.Visibility = mi is VideoM ? ViewStates.Visible : ViewStates.Gone;
+
     if (mi == null) {
       _image.SetImageBitmap(null);
       return this;
     }
-
+    
     _loadThumbnailAsync(mi, _image, Context!);
     return this;
   }
