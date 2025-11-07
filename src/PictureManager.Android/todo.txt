@@ -1,0 +1,1 @@
+- RebuildThumbnailsCommand: remove from menu because FilePathCache is not used
