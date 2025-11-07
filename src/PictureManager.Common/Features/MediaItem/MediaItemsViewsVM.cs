@@ -156,7 +156,9 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     var mediaItems = (folder == null
         ? Current!.GetSelectedOrAll().OfType<RealMediaItemM>()
         : folder.GetMediaItems(recursive))
-      .Cast<MediaItemM>().ToArray();
+      .Cast<MediaItemM>()
+      .Where(x => File.Exists(x.FilePathCache))
+      .ToArray();
 
     foreach (var mi in mediaItems) {
       File.Delete(mi.FilePathCache);
