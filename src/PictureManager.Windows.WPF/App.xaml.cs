@@ -10,7 +10,7 @@ namespace PictureManager.Windows.WPF;
 
 public partial class App {
   public static Core Core { get; private set; } = null!;
-  public static AppCore Ui { get; private set; } = null!;
+  public static CoreUI Ui { get; private set; } = null!;
     
   protected override async void OnStartup(StartupEventArgs e) {
     base.OnStartup(e);
