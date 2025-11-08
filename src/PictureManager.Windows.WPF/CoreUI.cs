@@ -22,12 +22,12 @@ using System.Windows;
 
 namespace PictureManager.Windows.WPF;
 
-public sealed class AppCore : ObservableObject, ICoreP {
+public sealed class CoreUI : ObservableObject, ICoreP {
   public WPF.ViewModels.SegmentRectVM SegmentRectVM { get; private set; } = null!;
 
   public static RelayCommand TestButtonCommand { get; } = new(Tests.Run, Res.IconBug, "Test Button");
 
-  public AppCore() {
+  public CoreUI() {
     CoreR.FileOperationDelete = FileOperationDelete;
 
     MH.UI.WPF.Utils.Init.SetDelegates();
