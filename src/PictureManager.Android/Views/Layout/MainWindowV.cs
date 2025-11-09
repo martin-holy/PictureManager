@@ -5,12 +5,11 @@ using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
-using PictureManager.Android.Views.Layout;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Layout;
 using PictureManager.Common.Utils;
 
-namespace PictureManager.Android.Views;
+namespace PictureManager.Android.Views.Layout;
 
 public class MainWindowV : LinearLayout {
   public SlidePanelsGridHost SlidePanels { get; }

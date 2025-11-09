@@ -11,7 +11,7 @@ using PictureManager.Common;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.MediaItem;
 
-namespace PictureManager.Android.Views;
+namespace PictureManager.Android.Views.Layout;
 
 public class MiddleContentV : LinearLayout {
   private readonly TabControlHost _mainTabs;

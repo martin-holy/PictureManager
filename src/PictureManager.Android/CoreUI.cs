@@ -6,7 +6,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Android.Utils;
-using PictureManager.Android.Views;
+using PictureManager.Android.Views.Layout;
 using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
