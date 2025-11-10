@@ -172,10 +172,8 @@ public sealed class CoreR : SimpleDB {
   }
 
   private void OnMediaItemsOrientationChanged(object? sender, RealMediaItemM[] items) {
-    foreach (var rmi in items) {
+    foreach (var rmi in items)
       rmi.SetThumbSize(true);
-      File.Delete(rmi.FilePathCache);
-    }
   }
 
   private void OnPersonDeleted(object? sender, PersonM item) {
