@@ -56,6 +56,6 @@ public class MediaItemThumbFullV : FrameLayout {
       }
     });
 
-    MH.Utils.Tasks.Dispatch(() => imageView.SetImageBitmap(thumbnail));
+    MH.Utils.Tasks.Dispatch(() => imageView.SetImageBitmap(thumbnail?.ApplyOrientation(mi.Orientation)));
   }
 }
