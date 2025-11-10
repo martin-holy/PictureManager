@@ -132,7 +132,7 @@ public class MediaViewerV : LinearLayout {
       _zoomAndPan.ScaleToFitContent(width, height);
 
       if (mi is ImageM)
-        _zoomAndPanHost.SetImagePath(mi.FilePath);
+        _zoomAndPanHost.SetImagePath(mi.FilePath, mi.Orientation);
       else if (mi is VideoM)
         _zoomAndPanHost.SetVideoPath(mi.FilePath);
 
