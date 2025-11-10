@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Android.ViewModels;
 
@@ -53,10 +52,10 @@ public static class MediaItemVM {
     mim.Height = (int)data[0];
     mim.Width = (int)data[1];
     mim.Orientation = (int)data[2] switch {
-      90 => Orientation.Rotate90,
-      180 => Orientation.Rotate180,
-      270 => Orientation.Rotate270,
-      _ => Orientation.Normal,
+      90 => MH.Utils.Imaging.Orientation.Rotate90,
+      180 => MH.Utils.Imaging.Orientation.Rotate180,
+      270 => MH.Utils.Imaging.Orientation.Rotate270,
+      _ => MH.Utils.Imaging.Orientation.Normal,
     };
 
     mim.Success = true;
@@ -83,13 +82,8 @@ public static class MediaItemVM {
 
     if (gpsOnly) return;
 
-    var orientationTag = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Orientation.Normal);
-    mim.Orientation = orientationTag switch {
-      (int)Orientation.Rotate90 => Orientation.Rotate90,
-      (int)Orientation.Rotate180 => Orientation.Rotate180,
-      (int)Orientation.Rotate270 => Orientation.Rotate270,
-      _ => Orientation.Normal
-    };
+    var orientationTag = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)global::Android.Media.Orientation.Normal);
+    mim.Orientation = ImagingU.ConvertOrientationFromAndroidToMH(orientationTag);
 
     mim.Comment = StringUtils.NormalizeComment(exif.GetAttribute(ExifInterface.TagUserComment));
 
