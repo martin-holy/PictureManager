@@ -1,4 +1,5 @@
 - RebuildThumbnailsCommand: remove from menu because FilePathCache is not used
+- open MediaItems in new tab command
 
 # DialogHost custom dialogs:
 	ftGeoLocation:GetGeoNamesFromWebDialog
@@ -25,53 +26,45 @@
  - FullScreen
  - TreeViewCategories.TreeViewSearch.OpenCommand
  - CoreVM.AppClosingCommand
- - Right panel
- - StatusBar
 
-# Views (review the list)
- - Views/Entities/MediaItemV.xaml
- - Views/Entities/PersonV.xaml
- - Views/Entities/RatingV.xaml
- - Views/Entities/SegmentRectV.xaml
- - Views/Entities/SegmentV.xaml
- - Views/Entities/TreeItemV.xaml
- - Views/Entities/VideoItemV.xaml
- - Views/Entities/ViewerV.xaml
- - Views/Dialogs/AboutDialogV.xaml
- - Views/Dialogs/CompressImagesDialogV.xaml
- - Views/Dialogs/ErrorDialogV.xaml
- - Views/Dialogs/ExportSegmentsDialogV.xaml
- - Views/Dialogs/FileOperationCollisionDialogV.xaml
- - Views/Dialogs/FileOperationDialogV.xaml
- - Views/Dialogs/FolderBrowserDialogV.xaml
- - Views/Dialogs/FolderKeywordsDialogV.xaml
- - Views/Dialogs/ImagesToVideoDialogV.xaml
- - Views/Dialogs/LogDialogV.xaml
- - Views/Dialogs/MergePeopleDialogV.xaml
- - Views/Dialogs/ResizeImagesDialogV.xaml
- - Views/Dialogs/RotationDialogV.xaml
- - Views/Sections/MainMenuV.xaml
- - Views/Sections/MediaItemsFilterV.xaml
- - Views/Sections/MediaItemsViewV.xaml
- - Views/Sections/MediaViewerV.xaml
- - Views/Sections/PeopleToolsTabV.xaml
- - Views/Sections/PeopleV.xaml
- - Views/Sections/PersonDetailV.xaml
- - Views/Sections/PluginsMenuV.xaml
- - Views/Sections/SegmentsDrawerV.xaml
- - Views/Sections/SegmentsViewsV.xaml
- - Views/Sections/SelectedItemsStatusBarV.xaml
- - Views/Sections/SettingsV.xaml
- - Views/Sections/TitleProgressBarV.xaml
- - Views/Sections/TreeViewSearchV.xaml
- - Views/Sections/VideoDetailV.xaml
- - Views/Sections/ViewersToolBarV.xaml
- - Views/Sections/WhatIsNewV.xaml
- - Views/SegmentsRectsV.xaml
- - Views/TreeContextMenus.xaml
- - Views/Layout/MainTabsV.xaml
- - Views/Layout/MiddleContentV.xaml
- - Views/Layout/StatusBarV.xaml
- - Views/Layout/ToolBarV.xaml
- - Views/Layout/ToolsTabsV.xaml
- - Views/Layout/TreeViewCategoriesV.xaml
+# Views
+ - SplashScreen
+ - Entities/MediaItemV
+ - Entities/PersonV
+ - Entities/RatingV
+ - Entities/SegmentRectV
+ - Entities/SegmentV
+ - Entities/TreeItemV
+ - Entities/VideoItemV
+ - Entities/ViewerV
+ - Dialogs/AboutDialogV
+ - Dialogs/CompressImagesDialogV
+ - Dialogs/ExportSegmentsDialogV
+ - Dialogs/FileOperationCollisionDialogV
+ - Dialogs/FileOperationDialogV
+ - Dialogs/FolderBrowserDialogV
+ - Dialogs/FolderKeywordsDialogV
+ - Dialogs/ImagesToVideoDialogV
+ - Dialogs/MergePeopleDialogV
+ - Dialogs/ResizeImagesDialogV
+ - Dialogs/RotationDialogV
+ - Sections/MediaItemsFilterV
+ - Sections/MediaItemsViewV
+ - Sections/MediaViewerV
+ - Sections/PeopleToolsTabV
+ - Sections/PeopleV
+ - Sections/PersonDetailV
+ - Sections/SegmentsDrawerV
+ - Sections/SegmentsViewsV
+ - Sections/SelectedItemsStatusBarV
+ - Sections/SettingsV
+ - Sections/TreeViewSearchV
+ - Sections/VideoDetailV
+ - Sections/ViewersToolBarV
+ - Sections/WhatIsNewV
+ - SegmentsRectsV
+ - Layout/StatusBarV
+ - Layout/ToolBarV
+ - Layout/ToolsTabsV
+ - Layout/TreeViewCategoriesV
+   - VM.MainWindow.TreeViewCategories.MarkedTags
