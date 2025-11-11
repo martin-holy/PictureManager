@@ -1,13 +1,6 @@
 - RebuildThumbnailsCommand: remove from menu because FilePathCache is not used
 - open MediaItems in new tab command
 
-# DialogHost custom dialogs:
-	ftGeoLocation:GetGeoNamesFromWebDialog
-	ftGeoLocation:ReadGeoLocationFromFilesDialog
-	ftImage:ComputeImageHashesDialog
-	ftMediaItem:ReloadMetadataDialog
-	ftImage:SaveMetadataDialog
-
 # icons
 
 # CoreUI:
@@ -57,7 +50,6 @@
  - Sections/SegmentsDrawerV
  - Sections/SegmentsViewsV
  - Sections/SelectedItemsStatusBarV
- - Sections/SettingsV
  - Sections/TreeViewSearchV
  - Sections/VideoDetailV
  - Sections/ViewersToolBarV
