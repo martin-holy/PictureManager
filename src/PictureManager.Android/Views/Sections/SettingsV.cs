@@ -25,8 +25,9 @@ public sealed class SettingsV : ScrollView {
 
   private static LinearLayout _createGroup(Context context, ListItem group) {
     var container = new LinearLayout(context) { Orientation = Orientation.Vertical };
-    var header = new IconTextView(context).BindIcon(group.Icon).BindText(group.Name);
-    header.Background = BackgroundFactory.Dark();
+    var header = new IconTextView(context, group.Icon, group.Name) {
+      Background = BackgroundFactory.Dark()
+    };
     container.AddView(header, new LinearLayout.LayoutParams(LPU.Match, DimensU.MenuItemHeight).WithMargin(DimensU.Spacing));
 
     switch (group.Data) {
