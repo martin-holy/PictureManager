@@ -55,44 +55,44 @@ public sealed class SettingsV : ScrollView {
   }
 
   private static void _createCommonSettings(Context context, LinearLayout container, CommonSettings settings) {
-    _addView(container, new TextView(context).BindText(settings, x => x.JpegQuality, x => $"Jpeg quality: {x}"));
-    _addView(container, new Slider(context, 80, 95, 1.0).BindProgress(settings, x => x.JpegQuality));
+    _addView(container, new TextView(context).BindText(settings, x => x.JpegQuality, x => $"Jpeg quality: {x}", out _));
+    _addView(container, new Slider(context, 80, 95, 1.0).BindProgress(settings, x => x.JpegQuality, out _));
   }
 
   private static void _createGeoNameSettings(Context context, LinearLayout container, GeoNameSettings settings) {
     _addView(container, new TextView(context) { Text = "Load from web:" });
-    _addView(container, new CheckBox(context).BindChecked(settings, x => x.LoadFromWeb));
+    _addView(container, new CheckBox(context).BindChecked(settings, x => x.LoadFromWeb, out _));
 
     _addView(container, new TextView(context) { Text = "User name:" });
-    _addView(container, new EditText(context).BindText(settings, x => x.UserName));
+    _addView(container, new EditText(context).BindText(settings, x => x.UserName, out _));
   }
 
   private static void _createMediaItemSettings(Context context, LinearLayout container, MediaItemSettings settings) {
-    _addView(container, new TextView(context).BindText(settings, x => x.MediaItemThumbScale, x => $"Media item thumbnail scale: {x:G2}"));
-    _addView(container, new Slider(context, 0.2, 2, 0.1).BindProgress(settings, x => x.MediaItemThumbScale));
+    _addView(container, new TextView(context).BindText(settings, x => x.MediaItemThumbScale, x => $"Media item thumbnail scale: {x:G2}", out _));
+    _addView(container, new Slider(context, 0.2, 2, 0.1).BindProgress(settings, x => x.MediaItemThumbScale, out _));
 
     _addView(container, new TextView(context) { Text = "Scroll exactly to MediaItem in thumbnails:" });
-    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ScrollExactlyToMediaItem));
+    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ScrollExactlyToMediaItem, out _));
 
     var sortFields = MediaItemCollectionView.SortFields.Select(x => new KeyValuePair<string, string>(x.Name, x.Name)).ToArray();
     _addView(container, new TextView(context) { Text = "Sort field:" });
-    _addView(container, new Spinner(context).BindSelected(settings, x => x.SortField, sortFields));
+    _addView(container, new Spinner(context).BindSelected(settings, x => x.SortField, sortFields, out _));
 
     _addView(container, new TextView(context) { Text = "Sort order:" });
-    _addView(container, new Spinner(context).BindSelected(settings, x => x.SortOrder, CollectionView.SortOrderTextMap));
+    _addView(container, new Spinner(context).BindSelected(settings, x => x.SortOrder, CollectionView.SortOrderTextMap, out _));
   }
 
   private static void _createSegmentSettings(Context context, LinearLayout container, SegmentSettings settings) {
-    _addView(container, new TextView(context).BindText(settings, x => x.GroupSize, x => $"Group size: {x}"));
-    _addView(container, new Slider(context, 100, 1000, 50).BindProgress(settings, x => x.GroupSize));
+    _addView(container, new TextView(context).BindText(settings, x => x.GroupSize, x => $"Group size: {x}", out _));
+    _addView(container, new Slider(context, 100, 1000, 50).BindProgress(settings, x => x.GroupSize, out _));
   }
 
   private static void _createMediaViewerSettings(Context context, LinearLayout container, MediaViewerSettings settings) {
     _addView(container, new TextView(context) { Text = "Expand content to fill:" });
-    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ExpandToFill));
+    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ExpandToFill, out _));
 
     _addView(container, new TextView(context) { Text = "Shrink content to fill:" });
-    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ShrinkToFill));
+    _addView(container, new CheckBox(context).BindChecked(settings, x => x.ShrinkToFill, out _));
   }
 
   private static void _addView(LinearLayout container, View view) =>
