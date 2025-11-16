@@ -16,6 +16,7 @@
     <TrimMode>full</TrimMode>
     <AndroidSigningKeyStore>PictureManager.Android.keystore</AndroidSigningKeyStore>
   </PropertyGroup>
+	
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AndroidKeyStore>True</AndroidKeyStore>
     <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
@@ -24,7 +25,13 @@
     <AndroidSigningKeyAlias>PictureManagerAndroidKeystore</AndroidSigningKeyAlias>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
   </PropertyGroup>
-  <ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<ApplicationVersion>$(CurrentDateTimeVersion.Replace(".", ""))</ApplicationVersion>
+		<ApplicationDisplayVersion>$(CurrentDateTimeVersion)</ApplicationDisplayVersion>		
+	</PropertyGroup>
+
+	<ItemGroup>
     <ProjectReference Include="..\..\..\MH.UI.Android\src\MH.UI.Android\MH.UI.Android.csproj" />
     <ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
     <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
