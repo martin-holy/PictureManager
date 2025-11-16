@@ -1,36 +1,43 @@
 ﻿using Android.Content;
-using Android.Runtime;
+using Android.Graphics;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Extensions;
+using MH.UI.Android.Utils;
 using System;
 
 namespace PictureManager.Android.Views;
 
 public class SplashScreenV : LinearLayout {
-  private TextView _version = null!;
-  private TextView _message = null!;
+  private readonly DisplayMetrics _dm;
 
   public IProgress<string> ProgressMessage { get; private set; } = null!;
 
-  public SplashScreenV(Context context) : base(context) => _initialize(context);
-  public SplashScreenV(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected SplashScreenV(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
-
-  private void _initialize(Context context) {
-    LayoutInflater.From(context)!.Inflate(Resource.Layout.pm_dt_splash_screen, this, true);
+  public SplashScreenV(Context context) : base(context) {
+    _dm = Resources!.DisplayMetrics!;
     SetBackgroundResource(Resource.Color.c_static_ba);
-    SetGravity(GravityFlags.Top);
-    var screenHeight = Resources!.DisplayMetrics!.HeightPixels;
-    SetPadding(0, (int)(screenHeight * 0.2), 0, 0);
+    SetGravity(GravityFlags.Center);
     Orientation = Orientation.Vertical;
 
-    // TODO PORT version from elsewhere
-    _version = FindViewById<TextView>(Resource.Id.version)!;
-    _version.Text = "0.0.0";
-    //_version.Text = $"ver.: {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
+    var appName = new TextView(context) {
+      Text = Resources.GetString(Resource.String.app_name, null),
+      TextSize = _dpToPx(14)
+    };
+    appName.SetTypeface(null, TypefaceStyle.Bold);
 
-    _message = FindViewById<TextView>(Resource.Id.message)!;
-    ProgressMessage = new Progress<string>(msg => _message.SetText(msg, TextView.BufferType.Normal));
+    var version = new TextView(context) {
+      Text = context.PackageManager!.GetPackageInfo(context.PackageName!, 0)?.VersionName ?? "?.?"
+    };
+
+    var message = new TextView(context);
+
+    ProgressMessage = new Progress<string>(msg => message.SetText(msg, TextView.BufferType.Normal));
+
+    AddView(appName, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterHorizontal }.WithMargin(_dpToPx(4)));
+    AddView(version, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterHorizontal }.WithMargin(_dpToPx(4)));
+    AddView(message, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterHorizontal }.WithMargin(_dpToPx(4)));
   }
+
+  private int _dpToPx(float dp) => (int)(dp * _dm.Density);
 }
