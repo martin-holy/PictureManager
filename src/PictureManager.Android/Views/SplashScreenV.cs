@@ -32,7 +32,7 @@ public class SplashScreenV : LinearLayout {
 
     var message = new TextView(context);
 
-    ProgressMessage = new Progress<string>(msg => message.SetText(msg, TextView.BufferType.Normal));
+    ProgressMessage = new Progress<string>(msg => message.Text = msg);
 
     AddView(appName, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterHorizontal }.WithMargin(_dpToPx(4)));
     AddView(version, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterHorizontal }.WithMargin(_dpToPx(4)));
