@@ -15,6 +15,7 @@ Latest:
  - [N] MediaItemCollectionView: sort by modified
  - [N] MediaItemCollectionView: sort by created
  - [N] MediaItemCollectionView: DefaultSortField in settings
+ - [B] Loading MediaItems when folder is empty
 
 25.09.02.0938:
  - [B] Not successful MediaItems import when importing from folder with deleted Videos outside of this app containing VideoItems
