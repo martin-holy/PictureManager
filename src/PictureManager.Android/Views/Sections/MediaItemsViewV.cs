@@ -8,11 +8,10 @@ using MH.UI.Interfaces;
 using MH.Utils;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.MediaItem;
-using System;
 
 namespace PictureManager.Android.Views.Sections;
 
-public class MediaItemsViewV : LinearLayout, IDisposable {
+public class MediaItemsViewV : LinearLayout {
   private readonly CollectionViewHost _host;
   private readonly TextView _loadingText;
   private readonly LinearLayout _importContainer;
