@@ -8,6 +8,7 @@ using MH.UI.ViewModels;
 using PictureManager.Android.Views.Sections;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.Person;
 
 namespace PictureManager.Android.Views.Layout;
 
@@ -16,6 +17,7 @@ public sealed class MainTabsV(Context context, TabControl dataContext) : TabCont
     item switch {
       AllSettings allSettings => new SettingsV(container.Context!, allSettings),
       MediaItemsViewVM miv => new MediaItemsViewV(container.Context!, miv),
+      PeopleVM people => new PeopleV(container.Context!, people),
       LogVM log => new LogV(container.Context!, log),
       View view => view,
       _ => null
