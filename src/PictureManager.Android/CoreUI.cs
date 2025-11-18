@@ -36,6 +36,7 @@ public class CoreUI : ICoreP, IDisposable {
     MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     VideoVM.GetVideoMetadataFunc = ImagingU.GetVideoMetadata;
+    CoreVM.DisplayScale = DisplayU.Metrics.Density / 3.0;
     MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
   }
 

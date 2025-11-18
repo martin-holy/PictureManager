@@ -7,7 +7,6 @@
  - SegmentRectVM
  - MH.UI.Android.Utils.Init.SetDelegates()
  - ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata
- - CoreVM.DisplayScale = GetDisplayScale()
  - CoreVM.UiFullVideo = new MediaPlayer()
  - CoreVM.UiDetailVideo = new MediaPlayer()
  - CoreVM.VideoFrameSaver = new VideoFrameSaver()
