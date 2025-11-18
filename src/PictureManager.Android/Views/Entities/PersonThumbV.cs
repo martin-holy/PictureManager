@@ -7,12 +7,14 @@ using PictureManager.Common.Features.Person;
 namespace PictureManager.Android.Views.Entities;
 
 public sealed class PersonThumbV : FrameLayout {
-  private readonly ImageView _noSegmentIcon;
-
   public PersonThumbV(Context context, PersonM person) : base(context) {
-    _noSegmentIcon = new(context);
-    _noSegmentIcon.SetImageResource(Resource.Drawable.icon_people);
-
-    AddView(_noSegmentIcon, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Center });
+    if (person.Segment is { } segment) {
+      AddView(new SegmentV(context, segment), new LayoutParams(LPU.Match, LPU.Match));
+    }
+    else {
+      var noSegmentIcon = new ImageView(context);
+      noSegmentIcon.SetImageResource(Resource.Drawable.icon_people);
+      AddView(noSegmentIcon, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Center });
+    }
   }
 }
