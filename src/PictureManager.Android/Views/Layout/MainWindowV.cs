@@ -24,7 +24,7 @@ public class MainWindowV : LinearLayout {
       dataContext.SlidePanelsGrid,
       TreeViewCategories,
       new ToolBarV(context, dataContext),
-      new TextView(Context) { Text = "Right Panel" },
+      new ToolsTabsV(context, dataContext.ToolsTabs),
       new TextView(context) { Text = "Bottom Panel" },
       MiddleContent);
 
