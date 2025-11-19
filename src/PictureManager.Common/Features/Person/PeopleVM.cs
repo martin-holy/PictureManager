@@ -8,7 +8,9 @@ namespace PictureManager.Common.Features.Person;
 public sealed class PeopleVM : PersonCollectionView {
   public void Reload() {
     var source = Core.R.Person.All.Where(x => x.Parent is not CategoryGroupM { IsHidden: true }).ToList();
-    var groupByItems = new[] { GroupByItems.GetPeopleGroupsInGroup(source) };
+    var groupByItems = source.Any(x => x.Parent is CategoryGroupM)
+      ? new[] { GroupByItems.GetPeopleGroupsInGroup(source) }
+      : null;
 
     Reload(source, GroupMode.ThenByRecursive, groupByItems, false, true);
     Root.IsExpanded = true;
