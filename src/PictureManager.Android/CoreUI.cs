@@ -89,16 +89,26 @@ public class CoreUI : ICoreP, IDisposable {
   private void _attachEvents() {
     Core.R.Folder.Tree.ItemSelectedEvent += _onFolderTreeItemSelected;
     Core.VM.MainTabs.TabActivatedEvent += _onMainTabsTabActivated;
+    Core.VM.ToolsTabs.TabActivatedEvent += _onToolsTabsTabActivated;
     Core.VM.MediaItem.Views.CurrentViewSelectionChangedEvent += (_, _) => _updateMediaItemCommands();
     this.Bind(Core.VM.MediaItem, x => x.Current, (t, _) => t._updateMediaItemCommands(), false);
-    this.Bind(Core.VM.MainWindow, x => x.IsInViewMode, (t, _) => t._updateMediaItemCommands(), false);
+    this.Bind(Core.VM.MainWindow, x => x.IsInViewMode, _onMainWindowIsInViewModeChanged, false);
   }
 
   private void _onMainTabsTabActivated(object? sender, IListItem e) {
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
   }
 
+  private void _onToolsTabsTabActivated(object? sender, IListItem e) {
+    MainWindow.SlidePanels.ViewPager.SetCurrentItem(2, true);
+  }
+
   private void _onFolderTreeItemSelected(object? sender, ITreeItem e) {
+    MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
+  }
+
+  private void _onMainWindowIsInViewModeChanged(CoreUI coreUI, bool isInViewMode) {
+    coreUI._updateMediaItemCommands();
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
   }
 
@@ -106,6 +116,7 @@ public class CoreUI : ICoreP, IDisposable {
     if (_disposed) return;
     Core.R.Folder.Tree.ItemSelectedEvent -= _onFolderTreeItemSelected;
     Core.VM.MainTabs.TabActivatedEvent -= _onMainTabsTabActivated;
+    Core.VM.ToolsTabs.TabActivatedEvent -= _onToolsTabsTabActivated;
     _disposed = true;
   }
 
