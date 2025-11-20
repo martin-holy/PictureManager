@@ -89,7 +89,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
     var view = new SegmentsViewVM();
     _views.Add(view, []);
     Current = view;
-    Tabs.Add(Res.IconSegment, tabName, view);
+    Tabs.Activate(Res.IconSegment, tabName, view);
     return view;
   }
 
