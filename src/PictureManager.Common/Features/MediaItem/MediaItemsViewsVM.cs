@@ -88,7 +88,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     Current = view;
     view.SelectionChangedEvent += _onViewSelectionChanged;
     view.FilteredChangedEvent += _onViewFilteredChanged;
-    Core.VM.MainTabs.Add(Res.IconImageMultiple, tabName, view);
+    Core.VM.MainTabs.Activate(Res.IconImageMultiple, tabName, view);
     return view;
   }
 
