@@ -38,6 +38,8 @@ public class MainActivity : FragmentActivity {
     if (permissions.Any(p => ContextCompat.CheckSelfPermission(this, p) != Permission.Granted))
       ActivityCompat.RequestPermissions(this, permissions, 0);
 
+    Core.UiVersion = PackageManager!.GetPackageInfo(PackageName!, 0)?.VersionName ?? "?";
+
     var splashScreen = new SplashScreenV(this);
     SetContentView(splashScreen);
 

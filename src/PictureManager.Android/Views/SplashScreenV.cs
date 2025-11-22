@@ -5,6 +5,7 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
+using PictureManager.Common;
 using System;
 
 namespace PictureManager.Android.Views;
@@ -27,7 +28,7 @@ public class SplashScreenV : LinearLayout {
     appName.SetTypeface(null, TypefaceStyle.Bold);
 
     var version = new TextView(context) {
-      Text = context.PackageManager!.GetPackageInfo(context.PackageName!, 0)?.VersionName ?? "?.?"
+      Text = $"Version: {Core.UiVersion} (Core: {Core.Version})"
     };
 
     var message = new TextView(context);

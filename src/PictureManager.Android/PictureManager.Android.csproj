@@ -4,16 +4,19 @@
     <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
+		<TrimMode>full</TrimMode>
+		
     <ApplicationId>cz.martinholy.picturemanager.android</ApplicationId>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <ApplicationVersion>1</ApplicationVersion>
-    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <!--
-      Enables trim analyzers and full trimming during Release mode.
-      To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/trimming-options#trimming-granularity
-    -->
-    <TrimMode>full</TrimMode>
+		
+		<Version>1.0.0</Version>
+		<Major>$([System.Version]::Parse($(Version)).Major)</Major>
+		<Minor>$([System.Version]::Parse($(Version)).Minor)</Minor>
+		<Build>$([System.Version]::Parse($(Version)).Build)</Build>
+		<ApplicationVersion>$([MSBuild]::Add($([MSBuild]::Multiply($(Major),10000)),$([MSBuild]::Add($([MSBuild]::Multiply($(Minor),100)),$(Build)))))</ApplicationVersion>
+		<ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
+		
     <AndroidSigningKeyStore>PictureManager.Android.keystore</AndroidSigningKeyStore>
   </PropertyGroup>
 	
@@ -26,15 +29,18 @@
     <AndroidPackageFormat>apk</AndroidPackageFormat>
   </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<ApplicationVersion>$(CurrentDateTimeVersion.Replace(".", ""))</ApplicationVersion>
-		<ApplicationDisplayVersion>$(CurrentDateTimeVersion)</ApplicationDisplayVersion>		
-	</PropertyGroup>
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<PackageReference Include="MH.UI" Version="4.0.0" />
+		<PackageReference Include="MH.Utils" Version="3.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
+		<ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
+	</ItemGroup>
 
 	<ItemGroup>
-    <ProjectReference Include="..\..\..\MH.UI.Android\src\MH.UI.Android\MH.UI.Android.csproj" />
-    <ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
-    <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
+    <ProjectReference Include="..\..\..\MH.UI.Android\src\MH.UI.Android\MH.UI.Android.csproj" />    
     <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
   </ItemGroup>
 </Project>
