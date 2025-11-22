@@ -1,13 +1,14 @@
 using MH.Utils;
 using MH.Utils.Extensions;
+using PictureManager.Common.Features.Common;
 using PictureManager.Common.Interfaces.Plugin;
+using PictureManager.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using PictureManager.Common.Features.Common;
-using PictureManager.Common.Utils;
 
 namespace PictureManager.Common;
 
@@ -23,6 +24,8 @@ public sealed class Core {
   public static Settings Settings { get; private set; } = null!;
   public AllSettings AllSettings { get; private set; } = null!;
   public List<IPluginCore> Plugins { get; } = [];
+  public static string Version => GetVersionWithoutHash(Assembly.GetExecutingAssembly());
+  public static string UiVersion { get; set; } = "?";
 
   private Core() {
     Tasks.SetUiTaskScheduler();
@@ -92,5 +95,11 @@ public sealed class Core {
       if (e.Is(nameof(Settings.GeoName.UserName)))
         R.GeoName.ApiLimitExceeded = false;
     };
+  }
+
+  public static string GetVersionWithoutHash(Assembly? assembly) {
+    var ver = assembly?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "?";
+    var plusIndex = ver.IndexOf('+');
+    return plusIndex > 0 ? ver[..plusIndex] : ver;
   }
 }

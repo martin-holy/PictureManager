@@ -6,26 +6,24 @@
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
+
+		<Authors>Martin Holý</Authors>
+		<Company>Martin Holý</Company>
+		<Copyright>Martin Holý (2015 - 2025)</Copyright>
+
+		<Version>2.31.0</Version>
+		<AssemblyVersion>2.31.0.0</AssemblyVersion>
+		<FileVersion>2.31.0.0</FileVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <Version>$(CurrentDateTimeVersion)</Version>
-    <AssemblyVersion>$(CurrentDateTimeVersion)</AssemblyVersion>
-    <FileVersion>$(CurrentDateTimeVersion)</FileVersion>
-  </PropertyGroup>
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<PackageReference Include="MH.UI" Version="4.0.0" />
+		<PackageReference Include="MH.Utils" Version="3.0.0" />
+	</ItemGroup>
 
-  <PropertyGroup>
-    <Authors>Martin Holý</Authors>
-    <Copyright>Martin Holý (2015 - 2024)</Copyright>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" >
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj">
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
+		<ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
+	</ItemGroup>
 
 </Project>

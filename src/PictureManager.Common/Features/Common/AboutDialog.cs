@@ -6,7 +6,8 @@ using System.Reflection;
 namespace PictureManager.Common.Features.Common;
 
 public sealed class AboutDialog : Dialog {
-  public FileVersionInfo Version { get; }
+  public string Version => $"Version: {Core.UiVersion} (Core: {Core.Version})";
+  public string? Copyright => FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).LegalCopyright;
   public string HomePageUrl => "https://github.com/martin-holy/PictureManager";
   public string TelegramUrl => "https://t.me/PictureManager";
 
@@ -14,8 +15,6 @@ public sealed class AboutDialog : Dialog {
   public RelayCommand OpenTelegramCommand { get; }
     
   public AboutDialog() : base("About", MH.UI.Res.IconImage) {
-    Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-
     OpenHomePageCommand = new(() => OpenUrl(HomePageUrl));
     OpenTelegramCommand = new(() => OpenUrl(TelegramUrl));
   }
