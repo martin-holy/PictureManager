@@ -3,35 +3,24 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
+		<PlatformTarget>x86</PlatformTarget>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
-  </PropertyGroup>
+		<RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+		<RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <Version>$(CurrentDateTimeVersion)</Version>
-    <AssemblyVersion>$(CurrentDateTimeVersion)</AssemblyVersion>
-    <FileVersion>$(CurrentDateTimeVersion)</FileVersion>
-  </PropertyGroup>
+		<Authors>Martin Holý</Authors>
+		<Company>Martin Holý</Company>
+		<Copyright>Martin Holý (2015 - 2025)</Copyright>
 
-  <PropertyGroup>
-    <Authors>Martin Holý</Authors>
-    <Copyright>Martin Holý (2015 - 2024)</Copyright>
-    <ApplicationIcon>modryhory.ico</ApplicationIcon>
-    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
-    <EnableNETAnalyzers>True</EnableNETAnalyzers>
-    <AssemblyName>PictureManager</AssemblyName>
-    <BaseOutputPath>C:\Programs\PictureManager</BaseOutputPath>
-  </PropertyGroup>
+		<Version>2.31.0</Version>
+		<AssemblyVersion>2.31.0.0</AssemblyVersion>
+		<FileVersion>2.31.0.0</FileVersion>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisRuleSet />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisRuleSet />
+		<ApplicationIcon>modryhory.ico</ApplicationIcon>
+		<AssemblyName>PictureManager</AssemblyName>
+		<BaseOutputPath>C:\Programs\PictureManager</BaseOutputPath><!--this if build output folder-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,12 +35,21 @@
     </COMReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
-    <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
-    <ProjectReference Include="..\..\..\MH.UI.WPF\src\MH.UI.WPF\MH.UI.WPF.csproj" />
-    <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<PackageReference Include="MH.UI" Version="4.0.0" />
+		<PackageReference Include="MH.UI.WPF" Version="3.0.0" />
+		<PackageReference Include="MH.Utils" Version="3.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
+		<ProjectReference Include="..\..\..\MH.UI.WPF\src\MH.UI.WPF\MH.UI.WPF.csproj" />
+		<ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
+	</ItemGroup>
 
   <ItemGroup>
     <None Update="App.config">

@@ -13,8 +13,8 @@
 
     <StackPanel Orientation="Vertical" Width="310">
       <TextBlock Text="Picture Manager" FontSize="26"/>
-      <TextBlock Text="{Binding Version.FileVersion, StringFormat='File Version: {0}'}"/>
-      <TextBlock Text="{Binding Version.LegalCopyright}"/>
+      <TextBlock Text="{Binding Version}"/>
+      <TextBlock Text="{Binding Copyright}"/>
       <TextBlock Text="{Binding HomePageUrl}" Cursor="Hand" Foreground="SteelBlue">
         <TextBlock.InputBindings>
           <MouseBinding MouseAction="LeftClick" Command="{Binding OpenHomePageCommand}"/>
