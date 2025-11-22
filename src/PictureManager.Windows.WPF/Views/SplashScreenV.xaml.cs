@@ -1,7 +1,6 @@
-﻿using System;
+﻿using PictureManager.Common;
+using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace PictureManager.Windows.WPF.Views;
@@ -13,15 +12,12 @@ public partial class SplashScreenV : INotifyPropertyChanged {
 
   private string? _message;
 
-  public string Version { get; }
+  public string Version => $"Version: {Core.UiVersion} (Core: {Core.Version})";
   public string? Message { get => _message; set { _message = value; OnPropertyChanged(); } }
-  public IProgress<string> ProgressMessage { get; set; }
+  public IProgress<string> ProgressMessage { get; }
 
   public SplashScreenV() {
     InitializeComponent();
-
     ProgressMessage = new Progress<string>(msg => Message = msg);
-
-    Version = $"ver.: {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
   }
 }

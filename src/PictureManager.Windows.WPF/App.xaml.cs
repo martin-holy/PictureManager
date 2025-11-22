@@ -4,6 +4,7 @@ using PictureManager.Common.Features.Common;
 using PictureManager.Windows.WPF.Views;
 using PictureManager.Windows.WPF.Views.Layout;
 using System;
+using System.Reflection;
 using System.Windows;
 
 namespace PictureManager.Windows.WPF;
@@ -20,6 +21,7 @@ public partial class App {
     };
 
     MH.UI.WPF.Utils.ColorHelper.AddColorsToResources();
+    Core.UiVersion = Core.GetVersionWithoutHash(Assembly.GetEntryAssembly());
 
     var splashScreen = new SplashScreenV();
     MainWindow = splashScreen;
