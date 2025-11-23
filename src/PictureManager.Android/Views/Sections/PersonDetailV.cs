@@ -5,27 +5,55 @@ using MH.UI.Android.Controls;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
+using MH.Utils;
 using PictureManager.Android.Views.Entities;
+using PictureManager.Common;
 using PictureManager.Common.Features.Person;
 using PictureManager.Common.Features.Segment;
+using System;
 
 namespace PictureManager.Android.Views.Sections;
 
 public sealed class PersonDetailV : LinearLayout {
+  private readonly PersonDetailVM _dataContext;
+  private readonly TreeMenu _menu;
+  private readonly TextView _personName;
+  private IDisposable? _personBind;
+
   public PersonDetailV(Context context, PersonDetailVM dataContext) : base(context) {
     Orientation = Orientation.Vertical;
 
-    var name = new TextView(context) {
-      Text = dataContext.PersonM?.Name,
+    _dataContext = dataContext;
+    _menu = new(context, _ => dataContext.Menu);
+
+    var iconMenu = new IconButton(context)
+      .WithClickAction(this, (o, s) => o._menu.ShowItemMenu(s, o._dataContext.PersonM));
+    iconMenu.SetImageDrawable(Icons.GetIcon(context, Res.IconThreeBars));
+
+    _personName = new TextView(context) {
       TextSize = DisplayU.DpToPx(12),
-      Background = BackgroundFactory.Dark(),
       TextAlignment = TextAlignment.Center
     };
-    name.SetPadding(DimensU.Spacing);
+    _personName.SetPadding(DimensU.Spacing);
 
-    AddView(name, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(2, 0, 2, 0));
+    var iconMenuAndName = new FrameLayout(context) {
+      Background = BackgroundFactory.Dark()
+    };
+    iconMenuAndName.AddView(iconMenu, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterVertical }.WithDpMargin(2, 0, 2, 0));
+    iconMenuAndName.AddView(_personName, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(2, 0, 2, 0));
 
+    AddView(iconMenuAndName, new LayoutParams(LPU.Match, LPU.Wrap));
     AddView(new CollectionViewHost(context, dataContext.AllSegments, _getSegmentView));
+
+    // TODO Binding: review this. try to create nested binding. what if x.PersonM is null?
+    // maybe: if person is null, than bind to x.PersonM to know when to drop the bind to x.PersonM and bind to PersonM.Name
+    this.Bind(dataContext, x => x.PersonM, (pd, person) => {
+      pd._personName.Text = person?.Name;
+      _personBind?.Dispose();
+
+      if (person != null)
+        _personBind = pd.Bind(person, x => x.Name, (pd, name) => pd._personName.Text = name);
+    });
   }
 
   private SegmentV? _getSegmentView(LinearLayout container, ICollectionViewGroup group, object? item) =>
