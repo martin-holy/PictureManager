@@ -11,9 +11,9 @@
 		<Company>Martin Holý</Company>
 		<Copyright>Martin Holý (2015 - 2025)</Copyright>
 
-		<Version>2.31.0</Version>
-		<AssemblyVersion>2.31.0.0</AssemblyVersion>
-		<FileVersion>2.31.0.0</FileVersion>
+		<Version>2.32.0</Version>
+		<AssemblyVersion>2.32.0.0</AssemblyVersion>
+		<FileVersion>2.32.0.0</FileVersion>
   </PropertyGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
