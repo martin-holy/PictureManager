@@ -1,10 +1,13 @@
 ﻿using MH.UI.BaseClasses;
 using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.Segment;
+using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using static MH.Utils.DragDropHelper;
@@ -17,6 +20,10 @@ public sealed class PersonDetailVM : ObservableObject {
   private PersonM? _personM;
   private readonly MenuItem _miLoadByPerson = new(MediaItemVM.LoadByPersonCommand);
   private readonly MenuItem _miItemRename = new(TreeCategory.ItemRenameCommand);
+  private readonly MenuItem _miAddTopSegments = new(SegmentVM.AddSelectedToPersonsTopSegmentsCommand);
+  private readonly MenuItem _miRemoveTopSegments = new(SegmentVM.RemoveSelectedFromPersonsTopSegmentsCommand);
+  private IDisposable? _topSegmentsBind;
+  private IDisposable? _topSegmentsCollectionBind;
 
   public SegmentCollectionView AllSegments { get; } = new();
   public SegmentCollectionView TopSegments { get; } = new() { AddInOrder = false };
@@ -33,11 +40,13 @@ public sealed class PersonDetailVM : ObservableObject {
     Menu = [
       _miLoadByPerson,
       _miItemRename,
-      new(SegmentVM.SetSelectedAsUnknownCommand)];
+      new(SegmentVM.SetSelectedAsUnknownCommand),
+      _miAddTopSegments,
+      _miRemoveTopSegments];
   }
 
   private MH.Utils.DragDropEffects _canDrop(object? target, object? data, bool haveSameOrigin) {
-    if (!haveSameOrigin && data is SegmentM segment && PersonM != null && PersonM.TopSegments?.Contains(segment) != true)
+    if (!haveSameOrigin && data is SegmentM segment && PersonM != null && ReferenceEquals(segment.Person, PersonM) && PersonM.TopSegments?.Contains(segment) != true)
       return MH.Utils.DragDropEffects.Copy;
     if (haveSameOrigin && data != target)
       return MH.Utils.DragDropEffects.Move;
@@ -48,8 +57,6 @@ public sealed class PersonDetailVM : ObservableObject {
   private Task _topSegmentsDrop(object data, bool haveSameOrigin) {
     var segment = (SegmentM)data;
     _personS.ToggleTopSegment(PersonM!, segment);
-    if (haveSameOrigin) TopSegments.Remove(segment);
-    else TopSegments.Insert(segment);
     return Task.CompletedTask;
   }
 
@@ -58,6 +65,10 @@ public sealed class PersonDetailVM : ObservableObject {
 
     _miLoadByPerson.CommandParameter = person;
     _miItemRename.CommandParameter = person;
+    _miAddTopSegments.CommandParameter = person;
+    _miRemoveTopSegments.CommandParameter = person;
+
+    _topSegmentsBind?.Dispose();
 
     if (PersonM == null) {
       AllSegments.Root.Clear();
@@ -67,6 +78,27 @@ public sealed class PersonDetailVM : ObservableObject {
 
     _reloadAllSegments(_segmentS.DataAdapter.GetBy(PersonM).ToList());
     _reloadTopSegments();
+
+    _topSegmentsBind = this.Bind(person!, x => x.TopSegments, (t, p) => {
+      _topSegmentsCollectionBind?.Dispose();
+      if (p == null) return;
+
+      _topSegmentsCollectionBind = t.Bind(p, (t, p) => {
+        switch (p.Action) {
+          case NotifyCollectionChangedAction.Add:
+            if (p.NewItems?.Cast<SegmentM>().ToArray() is { } toAdd)
+              t.TopSegments.Insert(toAdd);
+            break;
+          case NotifyCollectionChangedAction.Remove:
+            if (p.OldItems?.Cast<SegmentM>().ToArray() is { } toRemove)
+              t.TopSegments.Remove(toRemove);
+            break;
+          case NotifyCollectionChangedAction.Reset:
+            _reloadTopSegments();
+            break;
+        }
+      });
+    });
   }
 
   private void _reloadAllSegments(IReadOnlyCollection<SegmentM> items) {
