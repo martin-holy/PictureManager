@@ -42,6 +42,8 @@
             <MenuItem Command="ftMediaItem:MediaItemVM.LoadByPersonCommand" CommandParameter="{Binding PersonM}"/>
             <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding PersonM}"/>
             <MenuItem Command="ftSegment:SegmentVM.SetSelectedAsUnknownCommand"/>
+            <MenuItem Command="ftSegment:SegmentVM.AddSelectedToPersonsTopSegmentsCommand" CommandParameter="{Binding PersonM}"/>
+            <MenuItem Command="ftSegment:SegmentVM.RemoveSelectedFromPersonsTopSegmentsCommand" CommandParameter="{Binding PersonM}"/>
           </MenuItem>
         </Menu>
 
