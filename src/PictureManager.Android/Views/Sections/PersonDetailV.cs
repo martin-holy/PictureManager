@@ -4,6 +4,7 @@ using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
+using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils;
 using PictureManager.Android.Views.Entities;
@@ -36,14 +37,13 @@ public sealed class PersonDetailV : LinearLayout {
     };
     _personName.SetPadding(DimensU.Spacing);
 
-    var iconMenuAndName = new FrameLayout(context) {
-      Background = BackgroundFactory.Dark()
-    };
-    iconMenuAndName.AddView(iconMenu, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterVertical }.WithDpMargin(2, 0, 2, 0));
-    iconMenuAndName.AddView(_personName, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(2, 0, 2, 0));
+    var iconMenuAndName = new FrameLayout(context) { Background = BackgroundFactory.Dark() };
+    iconMenuAndName.AddView(_personName, new FrameLayout.LayoutParams(LPU.Match, LPU.Wrap));
+    iconMenuAndName.AddView(iconMenu, new FrameLayout.LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterVertical | GravityFlags.Left }.WithDpMargin(2));
 
-    AddView(iconMenuAndName, new LayoutParams(LPU.Match, LPU.Wrap));
-    AddView(new CollectionViewHost(context, dataContext.AllSegments, _getSegmentView));
+    AddView(iconMenuAndName, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(2, 0, 2, 0));
+    AddView(new CollectionViewHost(context, dataContext.TopSegments, _getSegmentView), new LayoutParams(LPU.Match, _getTopSegmentsHeight()));
+    AddView(new CollectionViewHost(context, dataContext.AllSegments, _getSegmentView), new LayoutParams(LPU.Match, LPU.Wrap));
 
     // TODO Binding: review this. try to create nested binding. what if x.PersonM is null?
     // maybe: if person is null, than bind to x.PersonM to know when to drop the bind to x.PersonM and bind to PersonM.Name
@@ -58,4 +58,9 @@ public sealed class PersonDetailV : LinearLayout {
 
   private SegmentV? _getSegmentView(LinearLayout container, ICollectionViewGroup group, object? item) =>
     item is SegmentM segment ? new SegmentV(container.Context!, segment) : null;
+
+  private static int _getTopSegmentsHeight() =>
+    SegmentVM.SegmentUiFullWidth + (CollectionView.ItemBorderSize * 2) + // segment with border
+    DimensU.IconButtonSize + (DimensU.Spacing * 2) + // group height
+    DimensU.Spacing; // spacing
 }
