@@ -6,6 +6,7 @@ using MH.Utils.Extensions;
 using PictureManager.Common.Features.Keyword;
 using PictureManager.Common.Features.Person;
 using PictureManager.Common.Interfaces;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +28,8 @@ public sealed class SegmentVM : ObservableObject {
 
   public static AsyncRelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
   public static AsyncRelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
+  public static RelayCommand<PersonM> AddSelectedToPersonsTopSegmentsCommand { get; set; } = null!;
+  public static RelayCommand<PersonM> RemoveSelectedFromPersonsTopSegmentsCommand { get; set; } = null!;
   public static AsyncRelayCommand SetSelectedAsSamePersonCommand { get; set; } = null!;
   public static AsyncRelayCommand SetSelectedAsUnknownCommand { get; set; } = null!;
 
@@ -39,8 +42,12 @@ public sealed class SegmentVM : ObservableObject {
 
     LoadByKeywordCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
+    AddSelectedToPersonsTopSegmentsCommand = new(_addSelectedToPersonsTopSegments, _canAddSelectedToPersonsTopSegments, null, "Add selected to Top segments");
+    RemoveSelectedFromPersonsTopSegmentsCommand = new(_removeSelectedFromPersonsTopSegments, _canRemoveSelectedFromPersonsTopSegments, null, "Remove selected from Top segments");
     SetSelectedAsSamePersonCommand = new(_setSelectedAsSamePerson, Res.IconEquals, "Set selected as same person");
     SetSelectedAsUnknownCommand = new(_setSelectedAsUnknown, _canSetSelectedAsUnknown, Res.IconUnknownSegment, "Set selected as Unknown");
+
+    _s.Selected.ItemsChangedEvent += _onSelectedSegmentsChanged;
   }
 
   private Task _loadBy(KeywordM k) =>
@@ -48,6 +55,21 @@ public sealed class SegmentVM : ObservableObject {
 
   private Task _loadBy(PersonM p) =>
     _coreVM.OpenSegmentsViews(_r.GetBy(p).ToArray(), p.Name);
+
+  private void _addSelectedToPersonsTopSegments(PersonM? person) {
+    Core.S.Person.AddToTopSegments(person!, _s.Selected.Items);
+  }
+
+  private bool _canAddSelectedToPersonsTopSegments(PersonM? person) =>
+    person != null && _s.Selected.Items.Any(x => ReferenceEquals(person, x.Person)
+      && (person.TopSegments == null || !person.TopSegments.Contains(x)));
+
+  private void _removeSelectedFromPersonsTopSegments(PersonM? person) {
+    Core.S.Person.RemoveFromTopSegments(person!, _s.Selected.Items);
+  }
+
+  private bool _canRemoveSelectedFromPersonsTopSegments(PersonM? person) =>
+     person?.TopSegments?.Any(_s.Selected.Items.Contains) == true;
 
   private Task _setSelectedAsSamePerson(CancellationToken token) =>
     _s.SetSelectedAsSamePerson(_s.Selected.Items.ToArray());
@@ -62,6 +84,13 @@ public sealed class SegmentVM : ObservableObject {
     var msg = "Do you want to set {0} segment{1} as unknown?".Plural(segments.Length);
     if (await Dialog.ShowAsync(new MessageDialog("Set as unknown", msg, MH.UI.Res.IconQuestion, true)) != 1) return;
     r.ChangePerson(null, segments, segments.GetPeople().ToArray());
+  }
+
+  private void _onSelectedSegmentsChanged(object? sender, SegmentM[] e) {
+    AddSelectedToPersonsTopSegmentsCommand.RaiseCanExecuteChanged();
+    RemoveSelectedFromPersonsTopSegmentsCommand.RaiseCanExecuteChanged();
+    SetSelectedAsSamePersonCommand.RaiseCanExecuteChanged();
+    SetSelectedAsUnknownCommand.RaiseCanExecuteChanged();
   }
 
   public static void SetSegmentUiSize(double scale) {
