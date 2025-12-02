@@ -79,18 +79,18 @@ public sealed class PersonDetailVM : ObservableObject {
     _reloadAllSegments(_segmentS.DataAdapter.GetBy(PersonM).ToList());
     _reloadTopSegments();
 
-    _topSegmentsBind = this.Bind(person!, x => x.TopSegments, (t, p) => {
-      _topSegmentsCollectionBind?.Dispose();
-      if (p == null) return;
-
-      _topSegmentsCollectionBind = t.Bind(p, (t, p) => {
-        switch (p.Action) {
+    _topSegmentsBind = this.Bind<PersonDetailVM, PersonM, ExtObservableCollection<SegmentM>>(
+      PersonM,
+      nameof(PersonM.TopSegments),
+      x => x.TopSegments,
+      (t, c, e) => {
+        switch (e.Action) {
           case NotifyCollectionChangedAction.Add:
-            if (p.NewItems?.Cast<SegmentM>().ToArray() is { } toAdd)
+            if (e.NewItems?.Cast<SegmentM>().ToArray() is { } toAdd)
               t.TopSegments.Insert(toAdd);
             break;
           case NotifyCollectionChangedAction.Remove:
-            if (p.OldItems?.Cast<SegmentM>().ToArray() is { } toRemove)
+            if (e.OldItems?.Cast<SegmentM>().ToArray() is { } toRemove)
               t.TopSegments.Remove(toRemove);
             break;
           case NotifyCollectionChangedAction.Reset:
@@ -98,7 +98,6 @@ public sealed class PersonDetailVM : ObservableObject {
             break;
         }
       });
-    });
   }
 
   private void _reloadAllSegments(IReadOnlyCollection<SegmentM> items) {
