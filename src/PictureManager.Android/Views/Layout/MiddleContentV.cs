@@ -5,6 +5,7 @@ using MH.UI.Android.Utils;
 using MH.Utils;
 using PictureManager.Android.Views.Sections;
 using PictureManager.Common;
+using PictureManager.Common.Features.MediaItem;
 
 namespace PictureManager.Android.Views.Layout;
 
@@ -19,7 +20,7 @@ public class MiddleContentV : LinearLayout {
     AddView(_mainTabs, new LayoutParams(LPU.Match, LPU.Match));
     AddView(_mediaViewer, new LayoutParams(LPU.Match, LPU.Match));
 
-    this.Bind(coreVM.MediaViewer, x => x.IsVisible, (t, p) => t._updateVisibility(p));
+    this.Bind(coreVM.MediaViewer, nameof(MediaViewerVM.IsVisible), x => x.IsVisible, (t, p) => t._updateVisibility(p));
   }
 
   private void _updateVisibility(bool viewerIsVisible) {

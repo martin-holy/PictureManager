@@ -34,18 +34,18 @@ public class MediaViewerV : LinearLayout {
     _viewPager.RegisterOnPageChangeCallback(_pageChangeCallback);
     AddView(_viewPager, new LayoutParams(LPU.Match, LPU.Match));
 
-    this.Bind(dataContext, x => x.IsVisible, (v, p) =>
+    this.Bind(dataContext, nameof(MediaViewerVM.IsVisible), x => x.IsVisible, (v, p) =>
       v.DataContext.UserInputMode = p
       ? MediaViewerVM.UserInputModes.Browse
       : MediaViewerVM.UserInputModes.Disabled);
 
-    this.Bind(dataContext, x => x.MediaItems, (v, p) => {
+    this.Bind(dataContext, nameof(MediaViewerVM.MediaItems), x => x.MediaItems, (v, p) => {
       v._adapter.NotifyDataSetChanged();
       if (p.Count > 0)
         v._viewPager.SetCurrentItem(v.DataContext.IndexOfCurrent, false);
     });
 
-    this.Bind(dataContext, x => x.UserInputMode, (v, p) =>
+    this.Bind(dataContext, nameof(MediaViewerVM.UserInputMode), x => x.UserInputMode, (v, p) =>
       v._viewPager.UserInputEnabled = p == MediaViewerVM.UserInputModes.Browse);
   }
 
@@ -90,7 +90,7 @@ public class MediaViewerV : LinearLayout {
         ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
       };
 
-      this.Bind(_zoomAndPan, x => x.IsZoomed, (v, p) => {
+      this.Bind(_zoomAndPan, nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, (v, p) => {
         v._mediaViewer.UserInputMode = p
           ? MediaViewerVM.UserInputModes.Transform
           : MediaViewerVM.UserInputModes.Browse;

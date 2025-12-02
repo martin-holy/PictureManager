@@ -11,6 +11,7 @@ using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Video;
+using PictureManager.Common.Layout;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -91,8 +92,8 @@ public class CoreUI : ICoreP, IDisposable {
     Core.VM.MainTabs.TabActivatedEvent += _onMainTabsTabActivated;
     Core.VM.ToolsTabs.TabActivatedEvent += _onToolsTabsTabActivated;
     Core.VM.MediaItem.Views.CurrentViewSelectionChangedEvent += (_, _) => _updateMediaItemCommands();
-    this.Bind(Core.VM.MediaItem, x => x.Current, (t, _) => t._updateMediaItemCommands(), false);
-    this.Bind(Core.VM.MainWindow, x => x.IsInViewMode, _onMainWindowIsInViewModeChanged, false);
+    this.Bind(Core.VM.MediaItem, nameof(MediaItemVM.Current), x => x.Current, (t, _) => t._updateMediaItemCommands(), false);
+    this.Bind(Core.VM.MainWindow, nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _onMainWindowIsInViewModeChanged, false);
   }
 
   private void _onMainTabsTabActivated(object? sender, IListItem e) {

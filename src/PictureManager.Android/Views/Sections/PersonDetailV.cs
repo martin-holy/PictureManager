@@ -47,13 +47,19 @@ public sealed class PersonDetailV : LinearLayout {
 
     // TODO Binding: review this. try to create nested binding. what if x.PersonM is null?
     // maybe: if person is null, than bind to x.PersonM to know when to drop the bind to x.PersonM and bind to PersonM.Name
-    this.Bind(dataContext, x => x.PersonM, (pd, person) => {
+    /*this.Bind(dataContext, x => x.PersonM, (pd, person) => {
       pd._personName.Text = person?.Name;
       _personBind?.Dispose();
 
       if (person != null)
         _personBind = pd.Bind(person, x => x.Name, (pd, name) => pd._personName.Text = name);
-    });
+    });*/
+
+    this.Bind<PersonDetailV, PersonDetailVM, string>(
+      dataContext,
+      [nameof(PersonDetailVM.PersonM), nameof(PersonM.Name)],
+      [s => (s as PersonDetailVM)?.PersonM, s => (s as PersonM)?.Name],
+      (t, v) => t._personName.Text = v);
   }
 
   private SegmentV? _getSegmentView(LinearLayout container, ICollectionViewGroup group, object? item) =>

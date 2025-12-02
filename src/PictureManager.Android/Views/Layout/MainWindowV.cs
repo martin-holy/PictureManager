@@ -30,7 +30,7 @@ public class MainWindowV : LinearLayout {
 
     AddView(SlidePanels, new LayoutParams(LPU.Match, LPU.Match));
 
-    this.Bind(Common.Core.VM.MediaViewer, x => x.UserInputMode, (v, p) =>
+    this.Bind(Common.Core.VM.MediaViewer, nameof(MediaViewerVM.UserInputMode), x => x.UserInputMode, (v, p) =>
       v.SlidePanels.ViewPager.UserInputEnabled = p == MediaViewerVM.UserInputModes.Disabled);
   }
 }
