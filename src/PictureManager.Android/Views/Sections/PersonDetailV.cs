@@ -51,19 +51,20 @@ public sealed class PersonDetailV : LinearLayout {
     AddView(new CollectionViewHost(context, dataContext.TopSegments, _getSegmentView), new LayoutParams(LPU.Match, _getTopSegmentsHeight()));
     AddView(new CollectionViewHost(context, dataContext.AllSegments, _getSegmentView), new LayoutParams(LPU.Match, LPU.Wrap));
 
-    this.Bind<PersonDetailV, PersonDetailVM, string>(
+    this.Bind<PersonDetailV, string>(
       dataContext,
       [nameof(PersonDetailVM.PersonM), nameof(PersonM.Name)],
       [s => (s as PersonDetailVM)?.PersonM, s => (s as PersonM)?.Name],
       (t, v) => t._personName.Text = v);
 
-    this.Bind<PersonDetailV, PersonDetailVM, KeywordM[]>(
+    this.Bind<PersonDetailV, KeywordM[]>(
       dataContext,
       [nameof(PersonDetailVM.PersonM), nameof(PersonM.DisplayKeywords)],
       [s => (s as PersonDetailVM)?.PersonM, s => (s as PersonM)?.DisplayKeywords],
       (t, v) => {
-        _keywords.Visibility = v.Length == 0 ? ViewStates.Gone : ViewStates.Visible;
-        _keywords.WrapLayout.Items = v.Length == 0 ? null : v;
+        var empty = v == null || v.Length == 0;
+        _keywords.Visibility = empty ? ViewStates.Gone : ViewStates.Visible;
+        _keywords.WrapLayout.Items = empty ? null : v;
       });
   }
 
