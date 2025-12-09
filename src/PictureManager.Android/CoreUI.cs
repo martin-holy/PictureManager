@@ -72,6 +72,7 @@ public class CoreUI : ICoreP, IDisposable {
     return string.Concat(driveRoot, cacheSubPath, relativePath);
   }
 
+  // TODO currently not used. remove it?
   public bool IsFolderPathCacheableInMediaStore(FolderM folder) {
     if (Build.VERSION.SdkInt < BuildVersionCodes.Q) return true;
 
