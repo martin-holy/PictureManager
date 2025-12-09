@@ -20,7 +20,6 @@
  - CoreVM.AppClosingCommand
 
 # Views
- - SplashScreen
  - Entities/MediaItemV
  - Entities/PersonV
  - Entities/RatingV
@@ -41,11 +40,8 @@
  - Dialogs/ResizeImagesDialogV
  - Dialogs/RotationDialogV
  - Sections/MediaItemsFilterV
- - Sections/MediaItemsViewV
  - Sections/MediaViewerV
  - Sections/PeopleToolsTabV
- - Sections/PeopleV
- - Sections/PersonDetailV
  - Sections/SegmentsDrawerV
  - Sections/SegmentsViewsV
  - Sections/SelectedItemsStatusBarV
@@ -56,6 +52,5 @@
  - SegmentsRectsV
  - Layout/StatusBarV
  - Layout/ToolBarV
- - Layout/ToolsTabsV
  - Layout/TreeViewCategoriesV
    - VM.MainWindow.TreeViewCategories.MarkedTags
