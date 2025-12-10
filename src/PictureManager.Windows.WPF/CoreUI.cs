@@ -8,6 +8,7 @@ using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Segment;
+using PictureManager.Common.Layout;
 using PictureManager.Windows.WPF.Converters;
 using PictureManager.Windows.WPF.ShellStuff;
 using System;
@@ -23,7 +24,7 @@ using System.Windows;
 namespace PictureManager.Windows.WPF;
 
 public sealed class CoreUI : ObservableObject, ICoreP {
-  public WPF.ViewModels.SegmentRectVM SegmentRectVM { get; private set; } = null!;
+  public WPF.ViewModels.SegmentRectUiVM SegmentRectUiVM { get; private set; } = null!;
 
   public static RelayCommand TestButtonCommand { get; } = new(Tests.Run, Res.IconBug, "Test Button");
 
@@ -49,7 +50,31 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
   public void AfterInit() {
     LoadPlugins();
-    SegmentRectVM = new(Core.S.Segment.Rect);
+    SegmentRectUiVM = new(Core.VM.Segment.Rect, new(Core.S.Segment));
+
+    this.Bind(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
+      (t, p) => { if (p) t.SegmentRectUiVM.SegmentRectS.ReloadMediaItemSegmentRects(); });
+
+    this.Bind(Core.VM.MainWindow, nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, (t, p) => {
+      if (p) t.SegmentRectUiVM.SegmentRectS.SetMediaItem(Core.VM.MediaItem.Current, Core.VM.Segment.Rect.ShowOverMediaItem);
+    });
+
+    this.Bind(Core.VM.MediaItem, nameof(MediaItemVM.Current), x => x.Current, (t, p) => {
+      if (Core.VM.MainWindow.IsInViewMode)
+        t.SegmentRectUiVM.SegmentRectS.SetMediaItem(p, Core.VM.Segment.Rect.ShowOverMediaItem);
+    });
+
+    this.Bind(Core.VM.MediaViewer.ZoomAndPan, nameof(MH.UI.Controls.ZoomAndPan.ScaleX), x => x.ScaleX,
+      (t, p) => t.SegmentRectUiVM.SegmentRectS.UpdateScale(p));
+
+    this.Bind(Core.VM.Video.MediaPlayer, nameof(MH.UI.Controls.MediaPlayer.TimelinePosition), x => x.TimelinePosition, (t, p) => {
+      var vm = Core.VM;
+      if (!vm.Segment.Rect.ShowOverMediaItem || !vm.MediaViewer.IsVisible || vm.MediaItem.Current == null) return;
+
+      var pos = vm.MediaItem.Current is VideoItemM vi ? vi.TimeStart : 0;
+      MediaItemM? mi = vm.Video.MediaPlayer.TimelinePosition == pos ? vm.MediaItem.Current : null;
+      t.SegmentRectUiVM.SegmentRectS.SetMediaItem(mi, true);
+    });
   }
 
   private static double GetDisplayScale() =>

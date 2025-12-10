@@ -125,7 +125,7 @@
       <c:IconToggleButton
         ToolTip="Segments edit"
         ap:Icon.Data="{StaticResource IconPeople}"
-        IsChecked="{Binding SegmentS.Rect.AreVisible}"/>
+        IsChecked="{Binding SegmentVM.Rect.ShowOverMediaItem}"/>
 
       <c:IconButton Command="ftSegment:SegmentsDrawerVM.OpenCommand"/>
       <c:IconButton Command="ftSegment:SegmentsDrawerVM.AddSelectedCommand"/>

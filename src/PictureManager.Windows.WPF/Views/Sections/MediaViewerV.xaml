@@ -33,13 +33,13 @@
             EventArgsConverter="{x:Static conv:MouseWheelConverter.Inst}"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseDown">
-          <b:InvokeCommandAction Command="vmWin:SegmentRectVM.CreateCommand" PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentRectUiVM.CreateCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseMove">
-          <b:InvokeCommandAction Command="vmWin:SegmentRectVM.EditCommand" PassEventArgsToCommand="True"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentRectUiVM.EditCommand" PassEventArgsToCommand="True"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseUp">
-          <b:InvokeCommandAction Command="vmWin:SegmentRectVM.EndEditCommand"/>
+          <b:InvokeCommandAction Command="vmWin:SegmentRectUiVM.EndEditCommand"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -75,7 +75,7 @@
         <ContentPresenter
           HorizontalAlignment="Left"
           VerticalAlignment="Top"
-          Content="{Binding SegmentRectVM, Source={x:Static pm:App.Ui}}">
+          Content="{Binding SegmentRectUiVM, Source={x:Static pm:App.Ui}}">
 
           <ContentPresenter.RenderTransform>
             <TranslateTransform

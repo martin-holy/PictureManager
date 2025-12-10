@@ -5,11 +5,12 @@ using System.Windows.Input;
 
 namespace PictureManager.Windows.WPF.ViewModels;
 
-public sealed class SegmentRectVM : ObservableObject {
+public sealed class SegmentRectUiVM : ObservableObject {
   private IInputElement _view = null!;
     
   public SegmentRectS SegmentRectS { get; }
-    
+  public SegmentRectVM SegmentRectVM { get; }
+
   public RelayCommand<RoutedEventArgs> SetViewCommand { get; }
   public static RelayCommand<MouseEventArgs> SetCurrentCommand { get; set; } = null!;
   public static RelayCommand<MouseButtonEventArgs> CreateCommand { get; set; } = null!;
@@ -17,12 +18,13 @@ public sealed class SegmentRectVM : ObservableObject {
   public static RelayCommand EndEditCommand { get; set; } = null!;
   public static AsyncRelayCommand<SegmentRectM> DeleteCommand { get; set; } = null!;
 
-  public SegmentRectVM(SegmentRectS segmentRectS) {
+  public SegmentRectUiVM(SegmentRectVM segmentRectVM, SegmentRectS segmentRectS) {
+    SegmentRectVM = segmentRectVM;
     SegmentRectS = segmentRectS;
 
     SetViewCommand = new(x => _view = (IInputElement)x!.Source, x => x != null);
     SetCurrentCommand = new(_setCurrent);
-    CreateCommand = new(_create, () => SegmentRectS.AreVisible);
+    CreateCommand = new(_create, () => SegmentRectVM.ShowOverMediaItem);
     EditCommand = new(_edit);
     EndEditCommand = new(SegmentRectS.EndEdit);
     DeleteCommand = new((x, _) => SegmentRectS.Delete(x!), x => x != null, MH.UI.Res.IconXCross, "Delete");
