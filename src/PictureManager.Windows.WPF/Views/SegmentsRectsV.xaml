@@ -5,10 +5,10 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <DataTemplate DataType="{x:Type vm:SegmentRectVM}">
+  <DataTemplate DataType="{x:Type vm:SegmentRectUiVM}">
     <ItemsControl
       ItemsSource="{Binding SegmentRectS.MediaItemSegmentsRects}"
-      Visibility="{Binding SegmentRectS.AreVisible,
+      Visibility="{Binding SegmentRectVM.ShowOverMediaItem,
                    Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
 
       <ItemsControl.ItemsPanel>
