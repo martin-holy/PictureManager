@@ -2,6 +2,10 @@
 
 namespace PictureManager.Common.Features.Segment;
 
-public sealed class SegmentToolBarVM(SegmentS segmentS) : ObservableObject {
-  public SegmentS SegmentS { get; } = segmentS;
+public sealed class SegmentToolBarVM : ObservableObject {
+  public SegmentVM SegmentVM { get; }
+
+  public SegmentToolBarVM(SegmentVM segmentVM) {
+    SegmentVM = segmentVM;
+  }
 }

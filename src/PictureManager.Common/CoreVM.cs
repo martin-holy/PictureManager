@@ -135,9 +135,7 @@ public sealed class CoreVM : ObservableObject {
     MediaItem.Views.CurrentViewSelectionChangedEvent += (_, _) => _updateMediaItemCommands();
     MediaViewer.PropertyChanged += _onMediaViewerPropertyChanged;
     MediaViewer.Slideshow.PropertyChanged += _onMediaViewerSlideshowPropertyChanged;
-    MediaViewer.ZoomAndPan.PropertyChanged += _onMediaViewerZoomAndPanPropertyChanged;
     Video.MediaPlayer.MediaEndedEvent += MediaViewer.Slideshow.OnPlayerMediaEnded;
-    Video.MediaPlayer.PropertyChanged += _onVideoMediaPlayerPropertyChanged;
     Video.CurrentVideoItems.Selected.ItemsChangedEvent += _onVideoItemsSelectionChanged;
 
     _coreR.Folder.ItemRenamedEvent += _onFolderRenamed;
@@ -199,7 +197,6 @@ public sealed class CoreVM : ObservableObject {
 
     if (isInViewMode) {
       Video.MediaPlayer.SetView(UiFullVideo);
-      _coreS.Segment.Rect.MediaItem = MediaItem.Current;
     }
     else {
       MediaItem.Views.SelectAndScrollToCurrentMediaItem();
@@ -219,7 +216,6 @@ public sealed class CoreVM : ObservableObject {
 
     if (!MainWindow.IsInViewMode) return;
     MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
-    _coreS.Segment.Rect.MediaItem = MediaItem.Current;
   }
 
   private void _onMediaItemViewsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
@@ -248,27 +244,10 @@ public sealed class CoreVM : ObservableObject {
       Video.MediaPlayer.PlayType = MediaPlayer.MediaPlayType.Video;
   }
 
-  private void _onMediaViewerZoomAndPanPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (sender is not ZoomAndPan zap) return;
-    if (e.Is(nameof(ZoomAndPan.ScaleX)))
-      _coreS.Segment.Rect.UpdateScale(zap.ScaleX);
-  }
-
   private void _onVideoItemsSelectionChanged(object? sender, VideoItemM[] e) {
     var vi = e.FirstOrDefault();
     MediaItem.Current = vi as MediaItemM ?? Video.Current;
     Video.MediaPlayer.SetCurrent(vi);
-  }
-
-  private void _onVideoMediaPlayerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (!_coreS.Segment.Rect.AreVisible || !MediaViewer.IsVisible ||
-        MediaItem.Current == null || !e.Is(nameof(MediaPlayer.TimelinePosition))) return;
-
-    var pos = MediaItem.Current is VideoItemM vi ? vi.TimeStart : 0;
-    MediaItemM? mi = Video.MediaPlayer.TimelinePosition == pos ? MediaItem.Current : null;
-
-    if (!ReferenceEquals(mi, _coreS.Segment.Rect.MediaItem))
-      _coreS.Segment.Rect.MediaItem = mi;
   }
 
   private void _onFolderRenamed(object? sender, FolderM item) =>
@@ -460,7 +439,7 @@ public sealed class CoreVM : ObservableObject {
   private void _addToolBars(ObservableCollection<object> toolBars) {
     toolBars.Add(new TitleToolBarVM());
     toolBars.Add(new MiscToolBarVM());
-    toolBars.Add(new SegmentToolBarVM(_coreS.Segment));
+    toolBars.Add(new SegmentToolBarVM(Segment));
     toolBars.Add(new PersonToolBarVM());
     toolBars.Add(new SlideshowToolBarVM(MediaViewer.Slideshow));
     toolBars.Add(new MediaItemToolBarVM(MediaItem.Views, MainWindow));

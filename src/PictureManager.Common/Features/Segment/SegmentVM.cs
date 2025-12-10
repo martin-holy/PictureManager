@@ -38,7 +38,7 @@ public sealed class SegmentVM : ObservableObject {
     _s = s;
     _r = r;
     Views = new(_s);
-    Rect = new(_s.Rect);
+    Rect = new();
 
     LoadByKeywordCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");

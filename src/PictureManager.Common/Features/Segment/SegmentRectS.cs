@@ -24,30 +24,17 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   private SegmentEditMode _editMode;
 
   private bool _isEditOn;
-  private bool _areVisible;
-  private MediaItemM? _mediaItem;
 
   public bool IsEditOn { get => _isEditOn; set { _isEditOn = value; OnPropertyChanged(); } }
-
-  public bool AreVisible {
-    get => _areVisible;
-    set {
-      _areVisible = value;
-      if (value) _reloadMediaItemSegmentRects();
-      OnPropertyChanged();
-    }
-  }
-
-  public MediaItemM? MediaItem {
-    get => _mediaItem;
-    set {
-      _mediaItem = value;
-      if (AreVisible) _reloadMediaItemSegmentRects();
-    }
-  }
-
+  public MediaItemM? MediaItem { get; private set; }
   public SegmentRectM? Current { get; set; }
   public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = [];
+
+  public void SetMediaItem(MediaItemM? mediaItem, bool reloadRects) {
+    if (ReferenceEquals(MediaItem, mediaItem)) return;
+    MediaItem = mediaItem;
+    if (reloadRects) ReloadMediaItemSegmentRects();
+  }
 
   public void CreateNew(double x, double y) {
     if (MediaItem == null) return;
@@ -228,7 +215,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     if (y > mediaItem.Height) y = mediaItem.Height;
   }
 
-  private void _reloadMediaItemSegmentRects() {
+  public void ReloadMediaItemSegmentRects() {
     Current = null;
     MediaItemSegmentsRects.Clear();
     if (MediaItem?.Segments == null) return;

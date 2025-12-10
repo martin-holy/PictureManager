@@ -13,7 +13,6 @@ namespace PictureManager.Common.Features.Segment;
 
 public sealed class SegmentS : ObservableObject {
   public SegmentR DataAdapter { get; }
-  public SegmentRectS Rect { get; }
   public Selecting<SegmentM> Selected { get; } = new();
   public static Action<SegmentM, string> ExportSegment { get; set; } = null!;
 
@@ -26,7 +25,6 @@ public sealed class SegmentS : ObservableObject {
 
   public SegmentS(SegmentR r) {
     DataAdapter = r;
-    Rect = new(this);
   }
 
   public void Select(List<SegmentM>? segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
