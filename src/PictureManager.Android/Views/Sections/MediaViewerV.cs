@@ -11,6 +11,7 @@ using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
+using PictureManager.Common.Features.Segment;
 using System;
 
 namespace PictureManager.Android.Views.Sections;
@@ -41,7 +42,7 @@ public class MediaViewerV : LinearLayout {
 
     this.Bind(dataContext, nameof(MediaViewerVM.MediaItems), x => x.MediaItems, (v, p) => {
       v._adapter.NotifyDataSetChanged();
-      if (p.Count > 0)
+      if (p!.Count > 0)
         v._viewPager.SetCurrentItem(v.DataContext.IndexOfCurrent, false);
     });
 
@@ -81,6 +82,8 @@ public class MediaViewerV : LinearLayout {
     private readonly MediaViewerVM _mediaViewer;
     private readonly ZoomAndPan _zoomAndPan;
     private readonly ZoomAndPanHost _zoomAndPanHost;
+    private readonly SegmentsRectsV _segmentsRectsV;
+    private readonly SegmentRectS _segmentRectS;
     private bool _disposed;
 
     public MediaViewerMediaItemViewHolder(Context context, MediaViewerVM mediaViewer) : base(_createContainerView(context)) {
@@ -90,20 +93,37 @@ public class MediaViewerV : LinearLayout {
         ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
       };
 
-      this.Bind(_zoomAndPan, nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, (v, p) => {
-        v._mediaViewer.UserInputMode = p
+      _zoomAndPanHost = new(context, _zoomAndPan);
+      _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
+      _zoomAndPanHost.ImageTransformUpdatedEvent += _onImageTransformUpdated;
+
+      _segmentRectS = new(Core.S.Segment);
+      _segmentsRectsV = new SegmentsRectsV(context, new ViewModels.SegmentRectUiVM(Core.VM.Segment.Rect, _segmentRectS));
+
+      var container = (FrameLayout)ItemView;
+      container.SetClipChildren(false);
+      container.SetClipToPadding(false);
+      container.AddView(_zoomAndPanHost, new FrameLayout.LayoutParams(LPU.Match, LPU.Match));
+      container.AddView(_segmentsRectsV, new FrameLayout.LayoutParams(LPU.Match, LPU.Match));
+
+      this.Bind(_zoomAndPan, nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, (t, p) => {
+        t._mediaViewer.UserInputMode = p
           ? MediaViewerVM.UserInputModes.Transform
           : MediaViewerVM.UserInputModes.Browse;
       });
 
-      _zoomAndPanHost = new(context, _zoomAndPan);
-      _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
+      this.Bind(_zoomAndPan, nameof(ZoomAndPan.ScaleX), x => x.ScaleX,
+        (t, p) => _segmentRectS.UpdateScale(p));
 
-      var container = (LinearLayout)ItemView;
-      container.AddView(_zoomAndPanHost, new LinearLayout.LayoutParams(LPU.Match, LPU.Match));
+      this.Bind(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
+        (t, p) => {
+          if (!p) return;
+          _onImageTransformUpdated(null, EventArgs.Empty);
+          t._segmentRectS.ReloadMediaItemSegmentRects();
+        });
     }
 
-    private static LinearLayout _createContainerView(Context context) {
+    private static FrameLayout _createContainerView(Context context) {
       return new(context) {
         LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match),
       };
@@ -115,6 +135,13 @@ public class MediaViewerV : LinearLayout {
         : _zoomAndPan.IsZoomed
           ? MediaViewerVM.UserInputModes.Transform
           : MediaViewerVM.UserInputModes.Browse;
+    }
+
+    private void _onImageTransformUpdated(object? sender, EventArgs e) {
+      if (!Core.VM.Segment.Rect.ShowOverMediaItem) return;
+      _segmentRectS.UpdateScale(_zoomAndPan.ScaleX);
+      _segmentsRectsV.SetX((float)_zoomAndPan.TransformX);
+      _segmentsRectsV.SetY((float)_zoomAndPan.TransformY);
     }
 
     public void Bind(MediaItemM? mi) {
@@ -129,20 +156,25 @@ public class MediaViewerV : LinearLayout {
       var height = rotated ? mi.Width : mi.Height;
       _zoomAndPan.ContentWidth = width;
       _zoomAndPan.ContentHeight = height;
-      _zoomAndPan.ScaleToFitContent(width, height);
+      
 
       if (mi is ImageM)
         _zoomAndPanHost.SetImagePath(mi.FilePath, mi.Orientation);
       else if (mi is VideoM)
         _zoomAndPanHost.SetVideoPath(mi.FilePath);
 
-      _zoomAndPanHost.UpdateImageTransform();
+      _zoomAndPanHost.Post(() => {
+        _zoomAndPan.ScaleToFitContent(width, height);
+        _zoomAndPanHost.UpdateImageTransform();
+        _segmentRectS.SetMediaItem(mi, Core.VM.Segment.Rect.ShowOverMediaItem);
+      });
     }
 
     protected override void Dispose(bool disposing) {
       if (_disposed) return;
       if (disposing) {
         _zoomAndPanHost.SingleTapConfirmedEvent -= _onSingleTap;
+        _zoomAndPanHost.ImageTransformUpdatedEvent -= _onImageTransformUpdated;
       }
       _disposed = true;
       base.Dispose(disposing);

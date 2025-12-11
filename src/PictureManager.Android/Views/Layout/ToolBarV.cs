@@ -5,6 +5,7 @@ using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
 using MH.Utils;
 using PictureManager.Common;
+using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Layout;
 using System.Collections;
 
@@ -30,5 +31,8 @@ public class ToolBarV : LinearLayout {
       }));
 
     AddView(new IconButton(context).WithCommand(CoreUI.ShareMediaItemsCommand));
+
+    AddView(new CheckBox(context).BindChecked(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem),
+      x => x.ShowOverMediaItem, (s, p) => s.ShowOverMediaItem = p, out var _));
   }
 }
