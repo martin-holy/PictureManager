@@ -9,4 +9,8 @@
   <color name="colorPeople">#FF137AA6</color>
   <color name="colorDrive">#FFC7C7C7</color>
   <color name="colorWhite">#FFFFFFFF</color>
+
+	<color name="segmentRectSelected">#32CD32</color>
+	<color name="segmentRectWithPerson">#FFFFFF</color>
+	<color name="segmentRectWithoutPerson">#FF0000</color>
 </resources>
