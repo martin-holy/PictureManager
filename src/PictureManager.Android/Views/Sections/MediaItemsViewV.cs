@@ -44,11 +44,11 @@ public class MediaItemsViewV : LinearLayout {
     _host = new CollectionViewHost(context, dataContext, _getItemView);
     AddView(_host);
 
-    this.Bind(dataContext, nameof(MediaItemsViewVM.IsLoading), x => x.IsLoading, (_, _) => _updateVisibility());
-    this.Bind(dataContext.Import, nameof(MediaItemsImport.IsImporting), x => x.IsImporting, (_, _) => _updateVisibility());
-    this.Bind(dataContext.Import, nameof(MediaItemsImport.Count), x => x.Count, (_, count) => {
-      _importText.Text = $"Importing {count} new items ...";
-      _importProgress.Max = count;
+    this.Bind(dataContext, nameof(MediaItemsViewVM.IsLoading), x => x.IsLoading, (t, _) => t._updateVisibility());
+    this.Bind(dataContext.Import, nameof(MediaItemsImport.IsImporting), x => x.IsImporting, (t, _) => t._updateVisibility());
+    this.Bind(dataContext.Import, nameof(MediaItemsImport.Count), x => x.Count, (t, count) => {
+      t._importText.Text = $"Importing {count} new items ...";
+      t._importProgress.Max = count;
     });
     _importProgress.Bind(dataContext.Import, nameof(MediaItemsImport.DoneCount), x => x.DoneCount, (view, doneCount) => view.Progress = doneCount);
   }
