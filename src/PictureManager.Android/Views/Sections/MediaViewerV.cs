@@ -113,12 +113,12 @@ public class MediaViewerV : LinearLayout {
       });
 
       this.Bind(_zoomAndPan, nameof(ZoomAndPan.ScaleX), x => x.ScaleX,
-        (t, p) => _segmentRectS.UpdateScale(p));
+        (t, p) => t._segmentRectS.UpdateScale(p));
 
       this.Bind(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
         (t, p) => {
           if (!p) return;
-          _onImageTransformUpdated(null, EventArgs.Empty);
+          t._onImageTransformUpdated(null, EventArgs.Empty);
           t._segmentRectS.ReloadMediaItemSegmentRects();
         });
     }
