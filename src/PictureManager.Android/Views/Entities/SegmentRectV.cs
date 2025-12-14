@@ -10,12 +10,19 @@ namespace PictureManager.Android.Views.Entities;
 
 public class SegmentRectV : View {
   private readonly SegmentRectM _dataContext;
+  private readonly SegmentRectS _segmentRectS;
+  private static int _borderHitSize = 6;
+  private static float _moveHitSize = 24;
   private Drawable? _bgSelected;
   private Drawable? _bgWithPerson;
   private Drawable? _bgWithoutPerson;
 
-  public SegmentRectV(Context context, SegmentRectM dataContext) : base(context) {
+  public SegmentRectV(Context context, SegmentRectM dataContext, SegmentRectS segmentRectS) : base(context) {
     _dataContext = dataContext;
+    _segmentRectS = segmentRectS;
+    _borderHitSize = DisplayU.DpToPx(2);
+    _moveHitSize = DisplayU.DpToPx(16) / 2f;
+    Clickable = true;
 
     this.Bind(dataContext, nameof(SegmentRectM.Size), x => x.Size,
       (t, p) => t.LayoutParameters = new FrameLayout.LayoutParams((int)p, (int)p));
@@ -40,4 +47,31 @@ public class SegmentRectV : View {
       Resource.Dimension.border_stroke_width,
       -1,
       Resource.Color.c_black5);
+
+  public override bool OnTouchEvent(MotionEvent? e) {
+    if (e?.ActionMasked != MotionEventActions.Down) return false;
+
+    var x = e.GetX();
+    var y = e.GetY();
+    var w = Width;
+    var h = Height;
+
+    if (_isBorderHit(x, y, w, h) || _isMoveHit(x, y, w, h))
+      _segmentRectS.SetCurrent(_dataContext, e.RawX, e.RawY);
+
+    return false;
+  }
+
+  private static bool _isBorderHit(float x, float y, float w, float h) =>
+    x <= _borderHitSize || x >= w - _borderHitSize ||
+    y <= _borderHitSize || y >= h - _borderHitSize;
+
+  private static bool _isMoveHit(float x, float y, float w, float h) {
+    var cx = w / 2f;
+    var cy = h / 2f;
+
+    return
+      x >= cx - _moveHitSize && x <= cx + _moveHitSize &&
+      y >= cy - _moveHitSize && y <= cy + _moveHitSize;
+  }
 }
