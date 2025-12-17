@@ -6,8 +6,10 @@ namespace PictureManager.Common.Features.Segment;
 
 public sealed class SegmentRectVM : ObservableObject {
   private bool _showOverMediaItem;
+  private bool _isEditEnabled;
 
   public bool ShowOverMediaItem { get => _showOverMediaItem; set { _showOverMediaItem = value; OnPropertyChanged(); } }
+  public bool IsEditEnabled { get => _isEditEnabled; set { _isEditEnabled = value; OnPropertyChanged(); } }
   public List<Tuple<int, int, int, bool>>? SegmentToolTipRects { get; private set; }
 
   public static RelayCommand<SegmentM> ReloadSegmentToolTipCommand { get; set; } = null!;
