@@ -49,13 +49,14 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     MediaItemSegmentsRects.Add(Current);
   }
 
-  public void SetCurrent(SegmentRectM current, double x, double y) {
-    if (MediaItem == null) return;
+  public bool SetCurrent(SegmentRectM current, double x, double y) {
+    if (MediaItem == null) return false;
     MousePosToRawImage(ref x, ref y, _scale, MediaItem);
     _editMode = _getEditMode(x, y, current.Segment);
-    if (_editMode == SegmentEditMode.None) return;
+    if (_editMode == SegmentEditMode.None) return false;
     Current = current;
     segmentS.Select(null, current.Segment, false, false);
+    return true;
   }
 
   private SegmentEditMode _getEditMode(double x, double y, SegmentM segment) {
