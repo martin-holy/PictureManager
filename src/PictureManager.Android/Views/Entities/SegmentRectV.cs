@@ -16,7 +16,7 @@ public class SegmentRectV : View {
   private Drawable? _bgWithPerson;
   private Drawable? _bgWithoutPerson;
 
-  public delegate void OnTouchAction(MotionEvent? e, int width, int height, SegmentRectM segmentRect);
+  public delegate bool OnTouchAction(SegmentRectM segmentRect, double x, double y);
 
   public SegmentRectV(Context context, SegmentRectM dataContext, OnTouchAction onTouchAction) : base(context) {
     _dataContext = dataContext;
@@ -47,8 +47,7 @@ public class SegmentRectV : View {
       -1,
       Resource.Color.c_black5);
 
-  public override bool OnTouchEvent(MotionEvent? e) {
-    _onTouchAction(e, Width, Height, _dataContext);
-    return false;
-  }
+  public override bool OnTouchEvent(MotionEvent? e) =>
+    (e?.ActionMasked) == MotionEventActions.Down
+    && _onTouchAction(_dataContext, e.GetX() + _dataContext.X, e.GetY() + _dataContext.Y);
 }

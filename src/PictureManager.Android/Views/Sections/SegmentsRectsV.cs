@@ -3,54 +3,54 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
 using MH.Utils;
-using PictureManager.Android.ViewModels;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.Segment;
 
 namespace PictureManager.Android.Views.Sections;
 
 public class SegmentsRectsV : FrameLayout {
-  private readonly SegmentRectUiVM _dataContext;
-  private readonly int _borderHitSize = DisplayU.DpToPx(2);
-  private readonly float _moveHitSize = DisplayU.DpToPx(16) / 2f;
+  private readonly SegmentRectVM _segmentRectVM;
+  private readonly SegmentRectS _segmentRectS;
 
-  public SegmentsRectsV(Context context, SegmentRectUiVM dataContext) : base(context) {
-    _dataContext = dataContext;
+  public SegmentsRectsV(Context context, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS) : base(context) {
+    _segmentRectVM = segmentRectVM;
+    _segmentRectS = segmentRectS;
 
     SetClipChildren(false);
     SetClipToPadding(false);
 
-    this.BindVisibility(_dataContext.SegmentRectVM, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem);
+    this.BindVisibility(_segmentRectVM, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem);
 
     // TODO optimize it for adding one by one
-    this.Bind(_dataContext.SegmentRectS.MediaItemSegmentsRects, (t, c, e) => {
+    this.Bind(_segmentRectS.MediaItemSegmentsRects, (t, c, e) => {
       t.RemoveAllViews();
       if (c == null) return;
       foreach (var item in c)
-        t.AddView(new SegmentRectV(t.Context!, item, t._onSegmentRectTouch));
+        t.AddView(new SegmentRectV(t.Context!, item, t._segmentRectS.SetCurrent));
     });
   }
 
-  private void _onSegmentRectTouch(MotionEvent? e, int width, int height, SegmentRectM segmentRect) {
-    if (e?.ActionMasked != MotionEventActions.Down) return;
+  public override bool OnTouchEvent(MotionEvent? e) {
+    if (!_segmentRectVM.ShowOverMediaItem || !_segmentRectVM.IsEditEnabled || e == null)
+      return false;
 
-    var x = e.GetX();
-    var y = e.GetY();
+    switch (e.ActionMasked) {
+      case MotionEventActions.Down:
+        _segmentRectS.CreateNew(e.GetX(), e.GetY());
+        return true;
 
-    if (_isBorderHit(x, y, width, height) || _isMoveHit(x, y, width, height))
-      _dataContext.SegmentRectS.SetCurrent(segmentRect, e.RawX, e.RawY);
-  }
+      case MotionEventActions.Move:
+        if (_segmentRectS.Current == null) return false;
+        _segmentRectS.Edit(e.GetX(), e.GetY());
+        return true;
 
-  private bool _isBorderHit(float x, float y, float w, float h) =>
-    x <= _borderHitSize || x >= w - _borderHitSize ||
-    y <= _borderHitSize || y >= h - _borderHitSize;
+      case MotionEventActions.Up:
+      case MotionEventActions.Cancel:
+        _segmentRectS.EndEdit();
+        return true;
 
-  private bool _isMoveHit(float x, float y, float w, float h) {
-    var cx = w / 2f;
-    var cy = h / 2f;
-
-    return
-      x >= cx - _moveHitSize && x <= cx + _moveHitSize &&
-      y >= cy - _moveHitSize && y <= cy + _moveHitSize;
+      default:
+        return false;
+    }
   }
 }

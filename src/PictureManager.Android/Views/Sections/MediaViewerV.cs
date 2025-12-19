@@ -98,7 +98,7 @@ public class MediaViewerV : LinearLayout {
       _zoomAndPanHost.ImageTransformUpdatedEvent += _onImageTransformUpdated;
 
       _segmentRectS = new(Core.S.Segment);
-      _segmentsRectsV = new SegmentsRectsV(context, new ViewModels.SegmentRectUiVM(Core.VM.Segment.Rect, _segmentRectS));
+      _segmentsRectsV = new SegmentsRectsV(context, Core.VM.Segment.Rect, _segmentRectS);
 
       var container = (FrameLayout)ItemView;
       container.SetClipChildren(false);
