@@ -26,22 +26,29 @@ public class SegmentsRectsV : FrameLayout {
       t.RemoveAllViews();
       if (c == null) return;
       foreach (var item in c)
-        t.AddView(new SegmentRectV(t.Context!, item, t._segmentRectS.SetCurrent));
+        t.AddView(new SegmentRectV(t.Context!, item));
     });
   }
 
-  public override bool OnTouchEvent(MotionEvent? e) {
-    if (!_segmentRectVM.ShowOverMediaItem || !_segmentRectVM.IsEditEnabled || e == null)
-      return false;
+  public bool HandleTouchEvent(MotionEvent e, double x, double y) {
+    if (!_segmentRectVM.ShowOverMediaItem) return false;
+
+    if (e.ActionMasked == MotionEventActions.Down) {
+      if (_segmentRectS.GetBy(x, y) is not { } rect) return false;
+      _segmentRectS.SetCurrent(rect, x, y);
+      return true;
+    }
+
+    if (!_segmentRectVM.IsEditEnabled) return false;
 
     switch (e.ActionMasked) {
       case MotionEventActions.Down:
-        _segmentRectS.CreateNew(e.GetX(), e.GetY());
+        _segmentRectS.CreateNew(x, y);
         return true;
 
       case MotionEventActions.Move:
         if (_segmentRectS.Current == null) return false;
-        _segmentRectS.Edit(e.GetX(), e.GetY());
+        _segmentRectS.Edit(x, y);
         return true;
 
       case MotionEventActions.Up:

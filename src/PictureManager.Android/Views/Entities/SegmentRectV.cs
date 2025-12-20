@@ -10,7 +10,6 @@ namespace PictureManager.Android.Views.Entities;
 
 public class SegmentRectV : View {
   private readonly SegmentRectM _dataContext;
-  private readonly OnTouchAction _onTouchAction;
   
   private Drawable? _bgSelected;
   private Drawable? _bgWithPerson;
@@ -18,10 +17,8 @@ public class SegmentRectV : View {
 
   public delegate bool OnTouchAction(SegmentRectM segmentRect, double x, double y);
 
-  public SegmentRectV(Context context, SegmentRectM dataContext, OnTouchAction onTouchAction) : base(context) {
+  public SegmentRectV(Context context, SegmentRectM dataContext) : base(context) {
     _dataContext = dataContext;
-    _onTouchAction = onTouchAction;
-    Clickable = true;
 
     this.Bind(dataContext, nameof(SegmentRectM.Size), x => x.Size,
       (t, p) => t.LayoutParameters = new FrameLayout.LayoutParams((int)p, (int)p));
@@ -46,8 +43,4 @@ public class SegmentRectV : View {
       Resource.Dimension.border_stroke_width,
       -1,
       Resource.Color.c_black5);
-
-  public override bool OnTouchEvent(MotionEvent? e) =>
-    (e?.ActionMasked) == MotionEventActions.Down
-    && _onTouchAction(_dataContext, e.GetX() + _dataContext.X, e.GetY() + _dataContext.Y);
 }

@@ -79,14 +79,28 @@ public class MediaViewerV : LinearLayout {
   }
 
   private class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
+    public MediaViewerMediaItemViewHolder(Context context, MediaViewerVM mediaViewer)
+      : base(_createContainerView(context, mediaViewer)) { }
+
+    private static MediaViewerMediaItemView _createContainerView(Context context, MediaViewerVM mediaViewer) =>
+      new(context, mediaViewer) { LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match) };
+
+    public void Bind(MediaItemM? mi) {
+      if (ItemView is MediaViewerMediaItemView view)
+        view.Bind(mi);
+    }
+  }
+
+  private class MediaViewerMediaItemView : FrameLayout {
     private readonly MediaViewerVM _mediaViewer;
     private readonly ZoomAndPan _zoomAndPan;
     private readonly ZoomAndPanHost _zoomAndPanHost;
     private readonly SegmentsRectsV _segmentsRectsV;
     private readonly SegmentRectS _segmentRectS;
+    private readonly SegmentRectVM _segmentRectVM;
     private bool _disposed;
 
-    public MediaViewerMediaItemViewHolder(Context context, MediaViewerVM mediaViewer) : base(_createContainerView(context)) {
+    public MediaViewerMediaItemView(Context context, MediaViewerVM mediaViewer) : base(context) {
       _mediaViewer = mediaViewer;
       _zoomAndPan = new() {
         ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
@@ -98,13 +112,15 @@ public class MediaViewerV : LinearLayout {
       _zoomAndPanHost.ImageTransformUpdatedEvent += _onImageTransformUpdated;
 
       _segmentRectS = new(Core.S.Segment);
-      _segmentsRectsV = new SegmentsRectsV(context, Core.VM.Segment.Rect, _segmentRectS);
+      _segmentRectVM = Core.VM.Segment.Rect;
+      _segmentsRectsV = new SegmentsRectsV(context, _segmentRectVM, _segmentRectS);      
 
-      var container = (FrameLayout)ItemView;
-      container.SetClipChildren(false);
-      container.SetClipToPadding(false);
-      container.AddView(_zoomAndPanHost, new FrameLayout.LayoutParams(LPU.Match, LPU.Match));
-      container.AddView(_segmentsRectsV, new FrameLayout.LayoutParams(LPU.Match, LPU.Match));
+      Clickable = true;
+      Focusable = true;
+      SetClipChildren(false);
+      SetClipToPadding(false);
+      AddView(_zoomAndPanHost, new LayoutParams(LPU.Match, LPU.Match));
+      AddView(_segmentsRectsV, new LayoutParams(LPU.Match, LPU.Match));
 
       this.Bind(_zoomAndPan, nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, (t, p) => {
         t._mediaViewer.UserInputMode = p
@@ -115,7 +131,7 @@ public class MediaViewerV : LinearLayout {
       this.Bind(_zoomAndPan, nameof(ZoomAndPan.ScaleX), x => x.ScaleX,
         (t, p) => t._segmentRectS.UpdateScale(p));
 
-      this.Bind(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
+      this.Bind(_segmentRectVM, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
         (t, p) => {
           if (!p) return;
           t._onImageTransformUpdated(null, EventArgs.Empty);
@@ -123,10 +139,26 @@ public class MediaViewerV : LinearLayout {
         });
     }
 
-    private static FrameLayout _createContainerView(Context context) {
-      return new(context) {
-        LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match),
-      };
+    public override bool OnInterceptTouchEvent(MotionEvent? e) {
+      if (e == null) return false;
+      if (!_segmentRectVM.ShowOverMediaItem) return false;
+
+      var x = e.GetX() - _zoomAndPan.TransformX;
+      var y = e.GetY() - _zoomAndPan.TransformY;
+
+      if (e.ActionMasked == MotionEventActions.Down)
+        return _segmentRectS.GetBy(x, y) != null;
+
+      if (_segmentRectVM.IsEditEnabled) return true;
+
+      return false;
+    }
+
+    public override bool OnTouchEvent(MotionEvent? e) {
+      if (e == null) return false;
+      var x = e.GetX() - _zoomAndPan.TransformX;
+      var y = e.GetY() - _zoomAndPan.TransformY;
+      return _segmentsRectsV.HandleTouchEvent(e, x, y);
     }
 
     private void _onSingleTap(object? sender, EventArgs e) {
@@ -138,7 +170,7 @@ public class MediaViewerV : LinearLayout {
     }
 
     private void _onImageTransformUpdated(object? sender, EventArgs e) {
-      if (!Core.VM.Segment.Rect.ShowOverMediaItem) return;
+      if (!_segmentRectVM.ShowOverMediaItem) return;
       _segmentRectS.UpdateScale(_zoomAndPan.ScaleX);
       _segmentsRectsV.SetX((float)_zoomAndPan.TransformX);
       _segmentsRectsV.SetY((float)_zoomAndPan.TransformY);
@@ -156,7 +188,7 @@ public class MediaViewerV : LinearLayout {
       var height = rotated ? mi.Width : mi.Height;
       _zoomAndPan.ContentWidth = width;
       _zoomAndPan.ContentHeight = height;
-      
+
 
       if (mi is ImageM)
         _zoomAndPanHost.SetImagePath(mi.FilePath, mi.Orientation);
@@ -166,7 +198,7 @@ public class MediaViewerV : LinearLayout {
       _zoomAndPanHost.Post(() => {
         _zoomAndPan.ScaleToFitContent(width, height);
         _zoomAndPanHost.UpdateImageTransform();
-        _segmentRectS.SetMediaItem(mi, Core.VM.Segment.Rect.ShowOverMediaItem);
+        _segmentRectS.SetMediaItem(mi, _segmentRectVM.ShowOverMediaItem);
       });
     }
 
