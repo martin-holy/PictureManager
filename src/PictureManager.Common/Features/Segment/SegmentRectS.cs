@@ -59,6 +59,27 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     return true;
   }
 
+  public SegmentRectM? GetBy(double x, double y) {
+    if (MediaItem == null) return null;
+
+    // iterate from top-most to bottom-most
+    for (int i = MediaItemSegmentsRects.Count - 1; i >= 0; i--) {
+      var rect = MediaItemSegmentsRects[i];
+
+      var left = rect.X;
+      var top = rect.Y;
+      var right = left + rect.Size;
+      var bottom = top + rect.Size;
+
+      if (x < left || x > right || y < top || y > bottom)
+        continue;
+
+      return rect;
+    }
+
+    return null;
+  }
+
   private SegmentEditMode _getEditMode(double x, double y, SegmentM segment) {
     var xDiff = Math.Abs(segment.X + segment.Size / 2 - x);
     var yDiff = Math.Abs(segment.Y + segment.Size / 2 - y);
