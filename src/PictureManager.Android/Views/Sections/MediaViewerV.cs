@@ -111,7 +111,7 @@ public class MediaViewerV : LinearLayout {
       _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
       _zoomAndPanHost.ImageTransformUpdatedEvent += _onImageTransformUpdated;
 
-      _segmentRectS = new(Core.S.Segment);
+      _segmentRectS = new(Core.S.Segment) { EditLimit = 20 };
       _segmentRectVM = Core.VM.Segment.Rect;
       _segmentsRectsV = new SegmentsRectsV(context, _segmentRectVM, _segmentRectS);      
 
