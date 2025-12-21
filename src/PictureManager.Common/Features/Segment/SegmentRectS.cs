@@ -15,7 +15,6 @@ using Orientation = MH.Utils.Imaging.Orientation;
 namespace PictureManager.Common.Features.Segment;
 
 public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
-  private const int _editLimit = 10;
   private double _scale;
   private double _startX;
   private double _startY;
@@ -26,6 +25,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   private bool _isEditOn;
 
   public bool IsEditOn { get => _isEditOn; set { _isEditOn = value; OnPropertyChanged(); } }
+  public int EditLimit { get; set; } = 10;
   public MediaItemM? MediaItem { get; private set; }
   public SegmentRectM? Current { get; set; }
   public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = [];
@@ -83,7 +83,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   private SegmentEditMode _getEditMode(double x, double y, SegmentM segment) {
     var xDiff = Math.Abs(segment.X + segment.Size / 2 - x);
     var yDiff = Math.Abs(segment.Y + segment.Size / 2 - y);
-    var limit = _editLimit / _scale;
+    var limit = EditLimit / _scale;
 
     if (xDiff < limit && yDiff < limit && segment.Size > 20)
       return SegmentEditMode.Move;
