@@ -186,9 +186,8 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     if (Current == null) return;
 
     if (_isCurrentModified) {
-      segmentS.DataAdapter.IsModified = true;
-      File.Delete(Current.Segment.FilePathCache);
-      Current.Segment.OnPropertyChanged(nameof(Current.Segment.FilePathCache));
+      segmentS.DeleteCache(Current.Segment);
+      segmentS.DataAdapter.IsModified = true;      
       _isCurrentModified = false;
       _isNew = false;
       IsEditOn = false;
