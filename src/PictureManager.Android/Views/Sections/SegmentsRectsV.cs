@@ -33,11 +33,10 @@ public class SegmentsRectsV : FrameLayout {
   public bool HandleTouchEvent(MotionEvent e, double x, double y) {
     if (!_segmentRectVM.ShowOverMediaItem) return false;
 
-    if (e.ActionMasked == MotionEventActions.Down) {
-      if (_segmentRectS.GetBy(x, y) is not { } rect) return false;
-      _segmentRectS.SetCurrent(rect, x, y);
+    if (e.ActionMasked == MotionEventActions.Down
+      && _segmentRectS.GetBy(x, y) is { } rect
+      && _segmentRectS.SetCurrent(rect, x, y))
       return true;
-    }
 
     if (!_segmentRectVM.IsEditEnabled) return false;
 

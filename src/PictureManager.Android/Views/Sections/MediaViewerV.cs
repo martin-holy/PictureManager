@@ -147,9 +147,7 @@ public class MediaViewerV : LinearLayout {
       var y = e.GetY() - _zoomAndPan.TransformY;
 
       if (e.ActionMasked == MotionEventActions.Down)
-        return _segmentRectS.GetBy(x, y) != null;
-
-      if (_segmentRectVM.IsEditEnabled) return true;
+        return _segmentRectS.GetBy(x, y) != null || _segmentRectVM.IsEditEnabled;
 
       return false;
     }
