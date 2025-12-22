@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Person;
+using System.IO;
 
 namespace PictureManager.Common.Features.Segment;
 
@@ -122,5 +123,13 @@ public sealed class SegmentS : ObservableObject {
         .ThenBy(x => x.FileName);
 
     return new[] { segment.MediaItem };
+  }
+
+  public void DeleteCache(SegmentM segment) {
+    var filePathCache = segment.FilePathCache;
+    if (File.Exists(filePathCache)) {
+      File.Delete(filePathCache);
+      segment.OnPropertyChanged(nameof(SegmentM.FilePathCache));
+    }
   }
 }
