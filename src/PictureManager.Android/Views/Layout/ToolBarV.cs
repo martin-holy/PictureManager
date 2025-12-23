@@ -32,7 +32,13 @@ public class ToolBarV : LinearLayout {
 
     AddView(new IconButton(context).WithCommand(CoreUI.ShareMediaItemsCommand));
 
-    AddView(new CheckBox(context).BindChecked(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem),
-      x => x.ShowOverMediaItem, (s, p) => s.ShowOverMediaItem = p, out var _));
+    AddView(new IconToggleButton(context, Res.IconSegmentPerson)
+      .BindToggled(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem),
+        x => x.ShowOverMediaItem, (s, p) => s.ShowOverMediaItem = p, out var _));
+
+    AddView(new IconToggleButton(context, Res.IconSegmentEdit)
+      .BindToggled(Core.VM.Segment.Rect, nameof(SegmentRectVM.IsEditEnabled),
+        x => x.IsEditEnabled, (s, p) => s.IsEditEnabled = p, out var _)
+      .BindVisibility(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem));
   }
 }
