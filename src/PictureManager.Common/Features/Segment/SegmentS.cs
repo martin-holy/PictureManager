@@ -91,7 +91,7 @@ public sealed class SegmentS : ObservableObject {
   }
 
   public void ViewMediaItemsWithSegment(object source, SegmentM? segment) {
-    var items = GetMediaItemsWithSegment(source, segment).ToArray();
+    var items = _getMediaItemsWithSegment(source, segment).ToArray();
     var rmis = items.OfType<RealMediaItemM>()
       .Concat(items.OfType<VideoItemM>().Select(x => x.Video))
       .Distinct().Cast<MediaItemM>().ToList();
@@ -102,7 +102,7 @@ public sealed class SegmentS : ObservableObject {
     Core.VM.MainWindow.IsInViewMode = true;
   }
 
-  private IEnumerable<MediaItemM> GetMediaItemsWithSegment(object source, SegmentM? segment) {
+  private IEnumerable<MediaItemM> _getMediaItemsWithSegment(object source, SegmentM? segment) {
     if (segment == null) return [];
 
     if (source is SegmentsViewVM { LastSelectedRow.Parent: CollectionViewGroup<SegmentM> group })
