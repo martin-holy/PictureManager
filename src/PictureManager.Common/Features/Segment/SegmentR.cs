@@ -115,7 +115,8 @@ public class SegmentR : TableDataAdapter<SegmentM> {
     });
 
   protected override void _onItemDeleted(object sender, SegmentM item) {
-    File.Delete(item.FilePathCache);
+    var path = item.FilePathCache;
+    if (File.Exists(path)) File.Delete(path);
   }
 
   public IEnumerable<SegmentM> GetBy(KeywordM keyword, bool recursive) =>
