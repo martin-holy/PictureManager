@@ -32,6 +32,7 @@ public sealed class SegmentVM : ObservableObject {
   public static RelayCommand<PersonM> RemoveSelectedFromPersonsTopSegmentsCommand { get; set; } = null!;
   public static AsyncRelayCommand SetSelectedAsSamePersonCommand { get; set; } = null!;
   public static AsyncRelayCommand SetSelectedAsUnknownCommand { get; set; } = null!;
+  public static AsyncRelayCommand DeleteSelectedCommand { get; set; } = null!;
 
   public SegmentVM(CoreVM coreVM, SegmentS s, SegmentR r) {
     _coreVM = coreVM;
@@ -46,6 +47,7 @@ public sealed class SegmentVM : ObservableObject {
     RemoveSelectedFromPersonsTopSegmentsCommand = new(_removeSelectedFromPersonsTopSegments, _canRemoveSelectedFromPersonsTopSegments, null, "Remove selected from Top segments");
     SetSelectedAsSamePersonCommand = new(_setSelectedAsSamePerson, Res.IconEquals, "Set selected as same person");
     SetSelectedAsUnknownCommand = new(_setSelectedAsUnknown, _canSetSelectedAsUnknown, Res.IconUnknownSegment, "Set selected as Unknown");
+    DeleteSelectedCommand = new(_deleteSelected, _canDeleteSelected, Res.IconSegmentDelete, "Delete selected");
 
     _s.Selected.ItemsChangedEvent += _onSelectedSegmentsChanged;
   }
@@ -86,11 +88,22 @@ public sealed class SegmentVM : ObservableObject {
     r.ChangePerson(null, segments, segments.GetPeople().ToArray());
   }
 
+  private async Task _deleteSelected(CancellationToken token) {
+    var items = _s.Selected.Items.ToArray();
+    var msg = "Do you really want to delete {0} item{1}?".Plural(items.Length);
+    if (await Dialog.ShowAsync(new MessageDialog("Delete Confirmation", msg, MH.UI.Res.IconQuestion, true)) != 1) return;
+    _r.ItemsDelete(items);
+  }
+
+  private bool _canDeleteSelected() =>
+    _s.Selected.Items.Count > 0;
+
   private void _onSelectedSegmentsChanged(object? sender, SegmentM[] e) {
     AddSelectedToPersonsTopSegmentsCommand.RaiseCanExecuteChanged();
     RemoveSelectedFromPersonsTopSegmentsCommand.RaiseCanExecuteChanged();
     SetSelectedAsSamePersonCommand.RaiseCanExecuteChanged();
     SetSelectedAsUnknownCommand.RaiseCanExecuteChanged();
+    DeleteSelectedCommand.RaiseCanExecuteChanged();
   }
 
   public static void SetSegmentUiSize(double scale) {
