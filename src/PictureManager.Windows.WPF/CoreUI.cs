@@ -52,6 +52,8 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     LoadPlugins();
     SegmentRectUiVM = new(Core.VM.Segment.Rect, new(Core.S.Segment));
 
+    Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
+
     this.Bind(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
       (t, p) => { if (p) t.SegmentRectUiVM.SegmentRectS.ReloadMediaItemSegmentRects(); });
 
@@ -139,4 +141,8 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
   public string GetFolderPathCache(FolderM folder) =>
     folder.FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath);
+
+  private void _onSegmentItemDeleted(object? sender, SegmentM e) {
+    SegmentRectUiVM.SegmentRectS.RemoveIfContains(e);
+  }
 }
