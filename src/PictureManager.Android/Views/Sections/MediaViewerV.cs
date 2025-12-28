@@ -122,6 +122,8 @@ public class MediaViewerV : LinearLayout {
       AddView(_zoomAndPanHost, new LayoutParams(LPU.Match, LPU.Match));
       AddView(_segmentsRectsV, new LayoutParams(LPU.Match, LPU.Match));
 
+      Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
+
       this.Bind(_zoomAndPan, nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, (t, p) => {
         t._mediaViewer.UserInputMode = p
           ? MediaViewerVM.UserInputModes.Transform
@@ -174,6 +176,10 @@ public class MediaViewerV : LinearLayout {
       _segmentsRectsV.SetY((float)_zoomAndPan.TransformY);
     }
 
+    private void _onSegmentItemDeleted(object? sender, SegmentM e) {
+      _segmentRectS.RemoveIfContains(e);
+    }
+
     public void Bind(MediaItemM? mi) {
       if (mi == null) {
         _zoomAndPanHost.SetImagePath(null);
@@ -203,6 +209,7 @@ public class MediaViewerV : LinearLayout {
     protected override void Dispose(bool disposing) {
       if (_disposed) return;
       if (disposing) {
+        Core.R.Segment.ItemDeletedEvent -= _onSegmentItemDeleted;
         _zoomAndPanHost.SingleTapConfirmedEvent -= _onSingleTap;
         _zoomAndPanHost.ImageTransformUpdatedEvent -= _onImageTransformUpdated;
         _segmentsRectsV.Dispose();
