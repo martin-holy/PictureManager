@@ -187,7 +187,7 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
 
     if (_isCurrentModified) {
       segmentS.DeleteCache(Current.Segment);
-      segmentS.DataAdapter.IsModified = true;      
+      segmentS.DataAdapter.IsModified = true;
       _isCurrentModified = false;
       _isNew = false;
       IsEditOn = false;
@@ -204,7 +204,6 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
           true)) != 1) return;
 
     segmentS.DataAdapter.ItemDelete(item.Segment);
-    MediaItemSegmentsRects.Remove(item);
   }
 
   public static void MousePosToRawImage(ref double x, ref double y, double scale, MediaItemM mediaItem) {
@@ -288,5 +287,14 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
     }
 
     return output;
+  }
+
+  public void RemoveIfContains(SegmentM segment) {
+    foreach (var segmentRect in MediaItemSegmentsRects) {
+      if (ReferenceEquals(segmentRect.Segment, segment)) {
+        MediaItemSegmentsRects.Remove(segmentRect);
+        return;
+      }
+    }
   }
 }
