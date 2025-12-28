@@ -40,5 +40,7 @@ public class ToolBarV : LinearLayout {
       .BindToggled(Core.VM.Segment.Rect, nameof(SegmentRectVM.IsEditEnabled),
         x => x.IsEditEnabled, (s, p) => s.IsEditEnabled = p, out var _)
       .BindVisibility(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem));
+
+    AddView(new IconButton(context).WithCommand(SegmentVM.DeleteSelectedCommand));
   }
 }
