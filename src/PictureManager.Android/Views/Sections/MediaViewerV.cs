@@ -205,6 +205,7 @@ public class MediaViewerV : LinearLayout {
       if (disposing) {
         _zoomAndPanHost.SingleTapConfirmedEvent -= _onSingleTap;
         _zoomAndPanHost.ImageTransformUpdatedEvent -= _onImageTransformUpdated;
+        _segmentsRectsV.Dispose();
       }
       _disposed = true;
       base.Dispose(disposing);

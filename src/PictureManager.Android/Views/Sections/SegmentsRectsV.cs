@@ -5,12 +5,16 @@ using MH.UI.Android.Utils;
 using MH.Utils;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.Segment;
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace PictureManager.Android.Views.Sections;
 
 public class SegmentsRectsV : FrameLayout {
   private readonly SegmentRectVM _segmentRectVM;
   private readonly SegmentRectS _segmentRectS;
+  private readonly IDisposable[] _bindings;
 
   public SegmentsRectsV(Context context, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS) : base(context) {
     _segmentRectVM = segmentRectVM;
@@ -19,15 +23,10 @@ public class SegmentsRectsV : FrameLayout {
     SetClipChildren(false);
     SetClipToPadding(false);
 
-    this.BindVisibility(_segmentRectVM, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem);
-
-    // TODO optimize it for adding one by one
-    this.Bind(_segmentRectS.MediaItemSegmentsRects, (t, c, e) => {
-      t.RemoveAllViews();
-      if (c == null) return;
-      foreach (var item in c)
-        t.AddView(new SegmentRectV(t.Context!, item));
-    });
+    _bindings = [
+      this.BindVisibility(_segmentRectVM, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem),
+      this.Bind(_segmentRectS.MediaItemSegmentsRects, _updateSegmentRects)
+    ];
   }
 
   public bool HandleTouchEvent(MotionEvent e, double x, double y) {
@@ -58,5 +57,51 @@ public class SegmentsRectsV : FrameLayout {
       default:
         return false;
     }
+  }
+
+  private static void _updateSegmentRects(SegmentsRectsV target, ObservableCollection<SegmentRectM>? col, NotifyCollectionChangedEventArgs e) {
+    switch (e.Action) {
+      case NotifyCollectionChangedAction.Add:
+        if (e.NewItems == null) break;
+
+        foreach (var item in e.NewItems)
+          target.AddView(new SegmentRectV(target.Context!, (SegmentRectM)item));
+
+        break;
+
+      case NotifyCollectionChangedAction.Remove:
+        if (e.OldItems == null) break;
+
+        foreach (var item in e.OldItems) {
+          for (int i = target.ChildCount - 1; i >= 0; i--) {
+            if (target.GetChildAt(i) is not SegmentRectV child || !ReferenceEquals(item, child.DataContext)) continue;
+            target.RemoveViewAt(i);
+            child.Dispose();
+          }
+        }
+
+        break;
+
+      case NotifyCollectionChangedAction.Reset:
+        for (int i = target.ChildCount - 1; i >= 0; i--) {
+          if (target.GetChildAt(i) is not { } child) continue;
+          target.RemoveViewAt(i);
+          child.Dispose();
+        }
+
+        if (col == null) break;
+
+        foreach (var item in col)
+          target.AddView(new SegmentRectV(target.Context!, item));
+
+        break;
+    }
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (disposing)
+      foreach (var bind in _bindings) bind.Dispose();
+
+    base.Dispose(disposing);
   }
 }
