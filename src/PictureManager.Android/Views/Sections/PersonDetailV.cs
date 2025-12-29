@@ -33,13 +33,13 @@ public sealed class PersonDetailV : LinearLayout {
     iconMenu.SetImageDrawable(Icons.GetIcon(context, Res.IconThreeBars));
 
     _personName = new TextView(context) {
-      TextSize = DisplayU.DpToPx(12),
+      TextSize = 24f,
       TextAlignment = TextAlignment.Center
     };
     _personName.SetPadding(DimensU.Spacing);
 
     var iconMenuAndName = new FrameLayout(context) { Background = BackgroundFactory.Dark() };
-    iconMenuAndName.AddView(_personName, new FrameLayout.LayoutParams(LPU.Match, LPU.Wrap));
+    iconMenuAndName.AddView(_personName, new FrameLayout.LayoutParams(LPU.Match, LPU.Wrap) { Gravity = GravityFlags.Center });
     iconMenuAndName.AddView(iconMenu, new FrameLayout.LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterVertical | GravityFlags.Left }.WithDpMargin(2));
 
     _keywords = new IconItemsLayout(context, Res.IconTag, _getKeywordView) {
