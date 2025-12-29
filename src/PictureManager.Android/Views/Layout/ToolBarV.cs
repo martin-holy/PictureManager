@@ -32,14 +32,21 @@ public class ToolBarV : LinearLayout {
 
     AddView(new IconButton(context).WithCommand(CoreUI.ShareMediaItemsCommand));
 
+    _addSegmentRect(context, Core.VM.Segment.Rect);
+  }
+
+  private void _addSegmentRect(Context context, SegmentRectVM vm) {
     AddView(new IconToggleButton(context, Res.IconSegmentPerson)
-      .BindToggled(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem),
-        x => x.ShowOverMediaItem, (s, p) => s.ShowOverMediaItem = p, out var _));
+      .BindToggled(vm, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem, (s, p) => s.ShowOverMediaItem = p, out var _));
 
     AddView(new IconToggleButton(context, Res.IconSegmentEdit)
-      .BindToggled(Core.VM.Segment.Rect, nameof(SegmentRectVM.IsEditEnabled),
-        x => x.IsEditEnabled, (s, p) => s.IsEditEnabled = p, out var _)
-      .BindVisibility(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem));
+      .BindToggled(vm, nameof(SegmentRectVM.IsEditEnabled), x => x.IsEditEnabled, (s, p) => s.IsEditEnabled = p, out var _)
+      .BindVisibility(vm, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem));
+
+    AddView(new IconToggleButton(context, Res.IconSegmentNew)
+      .BindToggled(vm, nameof(SegmentRectVM.CanCreateNew), x => x.CanCreateNew, (s, p) => s.CanCreateNew = p, out var _)
+      .BindVisibility(vm, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem && x.IsEditEnabled)
+      .BindVisibility(vm, nameof(SegmentRectVM.IsEditEnabled), x => x.ShowOverMediaItem && x.IsEditEnabled));
 
     AddView(new IconButton(context).WithCommand(SegmentVM.DeleteSelectedCommand));
   }
