@@ -41,7 +41,8 @@ public class SegmentsRectsV : FrameLayout {
 
     switch (e.ActionMasked) {
       case MotionEventActions.Down:
-        _segmentRectS.CreateNew(x, y);
+        if (_segmentRectVM.CanCreateNew)
+          _segmentRectS.CreateNew(x, y);
         return true;
 
       case MotionEventActions.Move:
@@ -52,6 +53,7 @@ public class SegmentsRectsV : FrameLayout {
       case MotionEventActions.Up:
       case MotionEventActions.Cancel:
         _segmentRectS.EndEdit();
+        _segmentRectVM.CanCreateNew = false;
         return true;
 
       default:
