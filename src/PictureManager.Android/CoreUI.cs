@@ -11,6 +11,7 @@ using PictureManager.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Video;
+using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Layout;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,8 @@ public class CoreUI : ICoreP, IDisposable {
     MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     VideoVM.GetVideoMetadataFunc = ImagingU.GetVideoMetadata;
-    CoreVM.DisplayScale = DisplayU.Metrics.Density / 3.0;
+    SegmentVM.SegmentSize = 80; // TODO move this to settings
+    CoreVM.DisplayScale = 1.0 / DisplayU.Metrics.Density;
     MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
   }
 
