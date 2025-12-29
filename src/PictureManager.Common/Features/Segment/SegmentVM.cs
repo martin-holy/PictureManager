@@ -43,8 +43,8 @@ public sealed class SegmentVM : ObservableObject {
 
     LoadByKeywordCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
-    AddSelectedToPersonsTopSegmentsCommand = new(_addSelectedToPersonsTopSegments, _canAddSelectedToPersonsTopSegments, null, "Add selected to Top segments");
-    RemoveSelectedFromPersonsTopSegmentsCommand = new(_removeSelectedFromPersonsTopSegments, _canRemoveSelectedFromPersonsTopSegments, null, "Remove selected from Top segments");
+    AddSelectedToPersonsTopSegmentsCommand = new(_addSelectedToPersonsTopSegments, _canAddSelectedToPersonsTopSegments, Res.IconSegmentAdd, "Add selected to Top segments");
+    RemoveSelectedFromPersonsTopSegmentsCommand = new(_removeSelectedFromPersonsTopSegments, _canRemoveSelectedFromPersonsTopSegments, Res.IconSegmentRemove, "Remove selected from Top segments");
     SetSelectedAsSamePersonCommand = new(_setSelectedAsSamePerson, Res.IconEquals, "Set selected as same person");
     SetSelectedAsUnknownCommand = new(_setSelectedAsUnknown, _canSetSelectedAsUnknown, Res.IconUnknownSegment, "Set selected as Unknown");
     DeleteSelectedCommand = new(_deleteSelected, _canDeleteSelected, Res.IconSegmentDelete, "Delete selected");
