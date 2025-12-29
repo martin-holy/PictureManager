@@ -39,6 +39,7 @@ public class MainMenuVM : TreeView {
     mediaItem.Add(new(MediaItemsViewsVM.ViewModifiedCommand));
 
     var segments = new MenuItem(Res.IconSegment, "Segments");
+    segments.Add(new(Features.Segment.SegmentVM.DeleteSelectedCommand));
     segments.Add(new(CoreVM.ExportSegmentsCommand));
     segments.Add(new(CoreVM.OpenSegmentsViewsCommand));
 
