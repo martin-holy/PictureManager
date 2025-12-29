@@ -23,7 +23,7 @@ public class SplashScreenV : LinearLayout {
 
     var appName = new TextView(context) {
       Text = Resources.GetString(Resource.String.app_name, null),
-      TextSize = _dpToPx(14)
+      TextSize = 28
     };
     appName.SetTypeface(null, TypefaceStyle.Bold);
 
