@@ -56,6 +56,7 @@ public static class Res {
   public const string IconSegmentAdd = "IconSegmentAdd";
   public const string IconSegmentDelete = "IconSegmentDelete";
   public const string IconSegmentEdit = "IconSegmentEdit";
+  public const string IconSegmentNew = "IconSegmentNew";
   public const string IconSegmentPerson = "IconSegmentPerson";
   public const string IconSegmentRemove = "IconSegmentRemove";
   public const string IconSettings = "IconSettings";
