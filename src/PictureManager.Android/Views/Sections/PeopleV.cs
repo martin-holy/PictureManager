@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Controls;
 using MH.UI.Interfaces;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.Person;
@@ -17,11 +18,13 @@ public sealed class PeopleV : FrameLayout {
     AddView(new CollectionViewHost(context, dataContext, GetPersonV));
   }
 
-  // TODO group.ViewModes
   public static View? GetPersonV(LinearLayout container, ICollectionViewGroup group, object? item) {
     if (item is not PersonM person) return null;
     return group.ViewMode switch {
-      _ => new PersonThumbV(container.Context!, person)
+      CollectionView.ViewMode.ThumbSmall => new PersonThumbV(container.Context!, person),
+      CollectionView.ViewMode.List => new PersonListItemV(container.Context!, person),
+      CollectionView.ViewMode.Tiles => new PersonTileV(container.Context!, person),
+      _ => null
     };
   }
 }
