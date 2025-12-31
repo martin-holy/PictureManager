@@ -1,10 +1,10 @@
 - RebuildThumbnailsCommand: remove from menu because FilePathCache is not used
 - open MediaItems in new tab command
+- selection lost in PeopleV when scrolled out off view
 
 # icons
 
 # CoreUI:
- - SegmentRectVM
  - MH.UI.Android.Utils.Init.SetDelegates()
  - ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata
  - CoreVM.UiFullVideo = new MediaPlayer()
@@ -21,10 +21,7 @@
 
 # Views
  - Entities/MediaItemV
- - Entities/PersonV
  - Entities/RatingV
- - Entities/SegmentRectV
- - Entities/SegmentV
  - Entities/TreeItemV
  - Entities/VideoItemV
  - Entities/ViewerV
@@ -43,13 +40,11 @@
  - Sections/MediaViewerV
  - Sections/PeopleToolsTabV
  - Sections/SegmentsDrawerV
- - Sections/SegmentsViewsV
  - Sections/SelectedItemsStatusBarV
  - Sections/TreeViewSearchV
  - Sections/VideoDetailV
  - Sections/ViewersToolBarV
  - Sections/WhatIsNewV
- - SegmentsRectsV
  - Layout/StatusBarV
  - Layout/ToolBarV
  - Layout/TreeViewCategoriesV
