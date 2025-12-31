@@ -9,6 +9,7 @@ using PictureManager.Android.Views.Sections;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.Person;
+using PictureManager.Common.Features.Segment;
 
 namespace PictureManager.Android.Views.Layout;
 
@@ -18,6 +19,7 @@ public sealed class MainTabsV(Context context, TabControl dataContext) : TabCont
       AllSettings allSettings => new SettingsV(container.Context!, allSettings),
       MediaItemsViewVM miv => new MediaItemsViewV(container.Context!, miv),
       PeopleVM people => new PeopleV(container.Context!, people),
+      SegmentsViewsVM segmentsViews => new SegmentsViewsV(container.Context!, segmentsViews),
       LogVM log => new LogV(container.Context!, log),
       View view => view,
       _ => null
