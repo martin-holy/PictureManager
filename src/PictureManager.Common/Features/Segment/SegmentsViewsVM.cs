@@ -21,11 +21,9 @@ public sealed class SegmentsViewsVM : ObservableObject {
 
   public SegmentsViewsTabsVM Tabs { get; } = new();
   public SegmentsViewVM? Current { get => _current; private set => _setCurrent(value); }
-  public static RelayCommand AddViewCommand { get; set; } = null!;
 
   public SegmentsViewsVM(SegmentS segmentS) {
     _segmentS = segmentS;
-    AddViewCommand = new(() => _addView(string.Empty), Res.IconPlus, "Add Segments View Tab");
     Tabs.PropertyChanged += _onTabsPropertyChanged;
     Tabs.TabClosedEvent += _onTabsTabClosed;
   }
@@ -84,6 +82,9 @@ public sealed class SegmentsViewsVM : ObservableObject {
 
     return view;
   }
+
+  public SegmentsViewVM AddEmptyView() =>
+    _addView(string.Empty);
 
   private SegmentsViewVM _addView(string tabName) {
     var view = new SegmentsViewVM();

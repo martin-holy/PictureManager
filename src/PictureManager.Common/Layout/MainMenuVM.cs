@@ -4,6 +4,7 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Common.Features.GeoName;
 using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Features.WhatIsNew;
 using System.Collections.Specialized;
 
@@ -42,6 +43,7 @@ public class MainMenuVM : TreeView {
     segments.Add(new(Features.Segment.SegmentVM.DeleteSelectedCommand));
     segments.Add(new(CoreVM.ExportSegmentsCommand));
     segments.Add(new(CoreVM.OpenSegmentsViewsCommand));
+    segments.Add(new(SegmentVM.AddEmptyViewCommand));
 
     _initTabs(coreVM.MainWindow.TreeViewCategories, _leftTabs);
     _initTabs(coreVM.MainTabs, _middleTabs);

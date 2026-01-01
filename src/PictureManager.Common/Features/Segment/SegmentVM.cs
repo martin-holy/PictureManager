@@ -6,7 +6,9 @@ using MH.Utils.Extensions;
 using PictureManager.Common.Features.Keyword;
 using PictureManager.Common.Features.Person;
 using PictureManager.Common.Interfaces;
+using PictureManager.Common.Layout;
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +28,7 @@ public sealed class SegmentVM : ObservableObject {
   public SegmentsViewsVM Views { get; }
   public SegmentRectVM Rect { get; }
 
+  public static RelayCommand AddEmptyViewCommand { get; set; } = null!;
   public static AsyncRelayCommand<KeywordM> LoadByKeywordCommand { get; set; } = null!;
   public static AsyncRelayCommand<PersonM> LoadByPersonCommand { get; set; } = null!;
   public static RelayCommand<PersonM> AddSelectedToPersonsTopSegmentsCommand { get; set; } = null!;
@@ -41,6 +44,7 @@ public sealed class SegmentVM : ObservableObject {
     Views = new(_s);
     Rect = new();
 
+    AddEmptyViewCommand = new(_addEmptyView, Res.IconPlus, "Add Segments View Tab");
     LoadByKeywordCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     AddSelectedToPersonsTopSegmentsCommand = new(_addSelectedToPersonsTopSegments, _canAddSelectedToPersonsTopSegments, Res.IconSegmentAdd, "Add selected to Top segments");
@@ -50,6 +54,11 @@ public sealed class SegmentVM : ObservableObject {
     DeleteSelectedCommand = new(_deleteSelected, _canDeleteSelected, Res.IconSegmentDelete, "Delete selected");
 
     _s.Selected.ItemsChangedEvent += _onSelectedSegmentsChanged;
+  }
+
+  private void _addEmptyView() {
+    _coreVM.MainTabs.Activate(Res.IconSegment, "Segments", Views);
+    Views.AddEmptyView();
   }
 
   private Task _loadBy(KeywordM k) =>
