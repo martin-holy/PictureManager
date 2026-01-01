@@ -13,7 +13,7 @@
 
   <DataTemplate DataType="{x:Type ftSegment:SegmentsViewsTabsSlotVM}">
     <c:IconButton
-      Command="ftSegment:SegmentsViewsVM.AddViewCommand"
+      Command="ftSegment:SegmentVM.AddEmptyViewCommand"
       ap:Icon.Size="13"
       Width="20"
       Height="20"/>
