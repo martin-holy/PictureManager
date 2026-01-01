@@ -1,9 +1,7 @@
-﻿using MH.UI.BaseClasses;
-using MH.UI.Controls;
+﻿using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
-using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.Segment;
 using System;
 using System.Collections.Generic;
@@ -18,31 +16,19 @@ public sealed class PersonDetailVM : ObservableObject {
   private readonly PersonS _personS;
   private readonly SegmentS _segmentS;
   private PersonM? _personM;
-  private readonly MenuItem _miLoadByPerson = new(MediaItemVM.LoadByPersonCommand);
-  private readonly MenuItem _miItemRename = new(TreeCategory.ItemRenameCommand);
-  private readonly MenuItem _miAddTopSegments = new(SegmentVM.AddSelectedToPersonsTopSegmentsCommand);
-  private readonly MenuItem _miRemoveTopSegments = new(SegmentVM.RemoveSelectedFromPersonsTopSegmentsCommand);
   private IDisposable? _topSegmentsBind;
-  private IDisposable? _topSegmentsCollectionBind;
 
   public SegmentCollectionView AllSegments { get; } = new();
   public SegmentCollectionView TopSegments { get; } = new() { AddInOrder = false };
   public PersonM? PersonM { get => _personM; private set { _personM = value; OnPropertyChanged(); } }
   public CanDropFunc CanDropFunc { get; }
   public DoDropAction TopSegmentsDropAction { get; }
-  public MenuItem[] Menu { get; }
 
   public PersonDetailVM(PersonS personS, SegmentS segmentS) {
     _personS = personS;
     _segmentS = segmentS;
     CanDropFunc = _canDrop;
     TopSegmentsDropAction = _topSegmentsDrop;
-    Menu = [
-      _miLoadByPerson,
-      _miItemRename,
-      new(SegmentVM.SetSelectedAsUnknownCommand),
-      _miAddTopSegments,
-      _miRemoveTopSegments];
   }
 
   private MH.Utils.DragDropEffects _canDrop(object? target, object? data, bool haveSameOrigin) {
@@ -62,12 +48,6 @@ public sealed class PersonDetailVM : ObservableObject {
 
   public void Reload(PersonM? person) {
     PersonM = person;
-
-    _miLoadByPerson.CommandParameter = person;
-    _miItemRename.CommandParameter = person;
-    _miAddTopSegments.CommandParameter = person;
-    _miRemoveTopSegments.CommandParameter = person;
-
     _topSegmentsBind?.Dispose();
 
     if (PersonM == null) {
