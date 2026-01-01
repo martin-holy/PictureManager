@@ -88,12 +88,8 @@ public sealed class MediaItemVM : ObservableObject {
       _s.SetComment(mi, StringUtils.NormalizeComment(commentDialog.Answer!));
   }
 
-  private Task _loadBy(object? o, CancellationToken token) {
-    if (_coreVM.MediaViewer.IsVisible)
-      _coreVM.MainWindow.IsInViewMode = false;
-
-    return _coreVM.MediaItem.Views.LoadByTag(o, token);
-  }
+  private Task _loadBy(object? o, CancellationToken token) =>
+    _coreVM.MediaItem.Views.LoadByTag(o, token);
 
   private async Task _loadByPeopleOrSegments(CancellationToken token) {
     var md = new MessageDialog(
