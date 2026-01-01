@@ -1,6 +1,5 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.BaseClasses;
-using PictureManager.Common;
 using PictureManager.Common.Features.FavoriteFolder;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.FolderKeyword;
@@ -32,6 +31,7 @@ public static class MenuFactory {
       ViewerM => _createViewerTreeMenu(item),
       KeywordCategoryGroupM => _createKeywordCategoryGroupMenu(item),
       PersonCategoryGroupM => _createPersonCategoryGroupMenu(item),
+      PersonDetailVM pd => _createPersonDetailMenu(pd),
       _ => []
     };
 
@@ -135,4 +135,13 @@ public static class MenuFactory {
     new(TreeCategory.GroupRenameCommand, item),
     new(TreeCategory.GroupDeleteCommand, item),
     new(PersonVM.LoadByCategoryGroupCommand, item)];
+
+  // PersonDetail
+  private static IEnumerable<MenuItem> _createPersonDetailMenu(PersonDetailVM item) => [
+    new(MediaItemVM.LoadByPersonCommand, item.PersonM),
+    new(TreeCategory.ItemRenameCommand, item.PersonM),
+    new(SegmentVM.SetSelectedAsUnknownCommand),
+    new(SegmentVM.AddSelectedToPersonsTopSegmentsCommand, item.PersonM),
+    new(SegmentVM.RemoveSelectedFromPersonsTopSegmentsCommand, item.PersonM)
+  ];
 }
