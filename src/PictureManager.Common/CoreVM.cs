@@ -128,6 +128,7 @@ public sealed class CoreVM : ObservableObject {
 
   internal void AttachEvents() {
     MainTabs.PropertyChanged += _onMainTabsPropertyChanged;
+    MainTabs.TabActivatedEvent += _onMainTabsTabActivated;
     MainTabs.TabClosedEvent += _onMainTabsTabClosed;
     MainWindow.PropertyChanged += _onMainWindowPropertyChanged;
     MediaItem.PropertyChanged += _onMediaItemPropertyChanged;    
@@ -173,6 +174,11 @@ public sealed class CoreVM : ObservableObject {
   private void _onMainTabsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(MainTabs.Selected)))
       MediaItem.OnViewSelected(MainTabs.Selected?.Data as MediaItemsViewVM);
+  }
+
+  private void _onMainTabsTabActivated(object? sender, IListItem e) {
+    if (MediaViewer.IsVisible)
+      MainWindow.IsInViewMode = false;
   }
 
   private void _onMainTabsTabClosed(object? sender, IListItem tab) {
