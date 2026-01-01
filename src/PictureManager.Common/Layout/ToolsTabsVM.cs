@@ -1,6 +1,10 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Common.Features.Person;
+using PictureManager.Common.Utils;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Layout;
@@ -28,4 +32,8 @@ public sealed class ToolsTabsVM : TabControl {
     PersonDetailTab.Reload(person);
     Activate(Res.IconPeople, "Person", PersonDetailTab);
   }
+
+  public override IEnumerable<MenuItem> ItemMenuFactory(object item) =>
+    MenuFactory.GetMenu(((IListItem)item).Data!)
+    .Append(new(CloseTabCommand, item));
 }
