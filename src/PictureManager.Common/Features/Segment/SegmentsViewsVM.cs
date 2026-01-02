@@ -137,7 +137,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
       view.OnSegmentsPersonChanged(segments);
   }
 
-  public void OnPersonsKeywordsChanged(PersonM[] items) {
+  public void OnPersonsChanged(PersonM[] items) {
     foreach (var view in _views.Keys)
       view.CvPeople.Update(items);
   }

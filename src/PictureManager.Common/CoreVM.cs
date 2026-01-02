@@ -326,7 +326,7 @@ public sealed class CoreVM : ObservableObject {
     MainWindow.ToolsTabs.PersonDetailTab?.UpdateDisplayKeywordsIfContains(items);
     MainWindow.ToolsTabs.PeopleTab?.Update(items);
     People?.Update(items);
-    Segment.Views.OnPersonsKeywordsChanged(items);
+    Segment.Views.OnPersonsChanged(items);
   }
 
   private void _onSegmentCreated(object? sender, SegmentM e) =>
