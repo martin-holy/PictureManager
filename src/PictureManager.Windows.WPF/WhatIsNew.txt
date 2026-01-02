@@ -6,6 +6,8 @@
 2.32.0:
  - [N] PersonDetailV: Add/Remove selected segments to/from person's Top segments in menu
  - [N] MainMenu: Delete selected segments
+ - [U] Update all views with person when is moved to different group
+ - [N] Move selected people to group in menu
 
 2.31.0:
  - [N] MediaItems: CopySelectedToFolderCommand in folder menu
