@@ -149,6 +149,7 @@ public sealed class CoreVM : ObservableObject {
     _coreR.MediaItem.OrientationChangedEvent += _onMediaItemsOrientationChanged;
 
     _coreR.Person.ItemCreatedEvent += _onPersonCreated;
+    _coreR.Person.ItemMovedEvent += _onPersonMoved;
     _coreR.Person.ItemDeletedEvent += _onPersonDeleted;
     _coreR.Person.PersonsKeywordsChangedEvent += _onPersonsKeywordsChanged;
 
@@ -311,6 +312,12 @@ public sealed class CoreVM : ObservableObject {
   private void _onPersonCreated(object? sender, PersonM item) {
     MainWindow.ToolsTabs.PeopleTab?.Insert(item);
     People?.Insert(item);
+  }
+
+  private void _onPersonMoved(object? sender, PersonM item) {
+    MainWindow.ToolsTabs.PeopleTab?.Update(item);
+    People?.Update(item);
+    Segment.Views.OnPersonsChanged([item]);
   }
 
   private void _onPersonDeleted(object? sender, PersonM item) {
