@@ -134,6 +134,7 @@ public static class MenuFactory {
     new(TreeCategory.ItemCreateCommand, item),
     new(TreeCategory.GroupRenameCommand, item),
     new(TreeCategory.GroupDeleteCommand, item),
+    new(TreeCategory.GroupMoveInItemsCommand, item),
     new(PersonVM.LoadByCategoryGroupCommand, item)];
 
   // PersonDetail
