@@ -81,6 +81,7 @@
     <ContextMenu.ItemsSource>
       <CompositeCollection>
         <CollectionContainer Collection="{StaticResource TreeContextMenuGroupCommon}"/>
+        <MenuItem Command="mhuibc:TreeCategory.GroupMoveInItemsCommand" CommandParameter="{Binding}"/>
         <Separator/>
         <MenuItem Command="ftPerson:PersonVM.LoadByCategoryGroupCommand" CommandParameter="{Binding}"/>
       </CompositeCollection>
