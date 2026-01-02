@@ -1,5 +1,7 @@
 ﻿using MH.UI.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Common.Features.CategoryGroup;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Common.Features.Person;
@@ -34,4 +36,10 @@ public sealed class PersonTreeCategory : TreeCategory<PersonM, CategoryGroupM> {
         break;
     }
   }
+
+  public override IEnumerable<ITreeItem> GroupGetItemsToMove(ITreeGroup group) =>
+    Core.S.Person.Selected.Items.Where(x => !ReferenceEquals(x.Parent, group));
+
+  public override bool GroupAnyItemsToMove(ITreeGroup group) =>
+    Core.S.Person.Selected.Items.Where(x => !ReferenceEquals(x.Parent, group)).Any();
 }
