@@ -5,6 +5,7 @@ using MH.UI.Android.Controls;
 using MH.UI.Controls;
 using PictureManager.Android.Views.Sections;
 using PictureManager.Common.Features.Person;
+using PictureManager.Common.Features.Segment;
 
 namespace PictureManager.Android.Views.Layout;
 
@@ -13,6 +14,7 @@ public sealed class ToolsTabsV(Context context, TabControl dataContext) : TabCon
     item switch {
       PeopleToolsTabVM peopleToolsTab => new PeopleToolsTabV(container.Context!, peopleToolsTab),
       PersonDetailVM personDetail => new PersonDetailV(container.Context!, personDetail),
+      SegmentsDrawerVM segmentsDrawer => new SegmentsDrawerV(container.Context!, segmentsDrawer),
       _ => null
     };
 }
