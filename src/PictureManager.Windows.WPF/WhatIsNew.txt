@@ -8,6 +8,8 @@
  - [N] MainMenu: Delete selected segments
  - [U] Update all views with person when is moved to different group
  - [N] Move selected people to group in menu
+ - [N] Segments drawer commands in main menu
+ - [N] Remove selected from Segments drawer in main menu
 
 2.31.0:
  - [N] MediaItems: CopySelectedToFolderCommand in folder menu
