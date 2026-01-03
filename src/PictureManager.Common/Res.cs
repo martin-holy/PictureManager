@@ -27,6 +27,7 @@ public static class Res {
   public const string IconDatabase = "IconDatabase";
   public const string IconDrawer = "IconDrawer";
   public const string IconDrawerAdd = "IconDrawerAdd";
+  public const string IconDrawerRemove = "IconDrawerRemove";
   public const string IconDrive = "IconDrive";
   public const string IconDriveError = "IconDriveError";
   public const string IconEmpty = "";
