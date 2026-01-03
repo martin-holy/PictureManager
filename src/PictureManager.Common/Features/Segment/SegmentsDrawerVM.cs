@@ -19,6 +19,7 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
   public DoDropAction DoDropAction { get; }
 
   public static AsyncRelayCommand AddSelectedCommand { get; set; } = null!;
+  public static AsyncRelayCommand RemoveSelectedCommand { get; set; } = null!;
   public static RelayCommand OpenCommand { get; set; } = null!;
 
   public SegmentsDrawerVM(SegmentS segmentS, List<SegmentM> items) {
@@ -31,7 +32,10 @@ public sealed class SegmentsDrawerVM : SegmentCollectionView {
 
     AddSelectedCommand = new(
       _ => _addOrRemove(_segmentS.Selected.Items.ToArray(), true),
-      () => _segmentS.Selected.Items.Count > 0, Res.IconDrawerAdd, "Add selected to Segments drawer");
+      () => _segmentS.Selected.Items.Except(Items).Any(), Res.IconDrawerAdd, "Add to Segments drawer");
+    RemoveSelectedCommand = new(
+      _ => _addOrRemove(_segmentS.Selected.Items.Intersect(Items).ToArray(), false),
+      () => _segmentS.Selected.Items.Intersect(Items).Any(), Res.IconDrawerRemove, "Remove from Segments drawer");
     OpenCommand = new(() => _open(Core.VM.MainWindow.ToolsTabs), Res.IconDrawer, "Open Segments drawer");
   }
 
