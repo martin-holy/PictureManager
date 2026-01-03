@@ -32,6 +32,7 @@ public static class MenuFactory {
       KeywordCategoryGroupM => _createKeywordCategoryGroupMenu(item),
       PersonCategoryGroupM => _createPersonCategoryGroupMenu(item),
       PersonDetailVM pd => _createPersonDetailMenu(pd),
+      SegmentsDrawerVM drawer => _createSegmentsDrawerMenu(drawer),
       _ => []
     };
 
@@ -144,5 +145,11 @@ public static class MenuFactory {
     new(SegmentVM.SetSelectedAsUnknownCommand),
     new(SegmentVM.AddSelectedToPersonsTopSegmentsCommand, item.PersonM),
     new(SegmentVM.RemoveSelectedFromPersonsTopSegmentsCommand, item.PersonM)
+  ];
+
+  // SegmentsDrawer
+  private static IEnumerable<MenuItem> _createSegmentsDrawerMenu(SegmentsDrawerVM drawer) => [
+    new(SegmentsDrawerVM.AddSelectedCommand),
+    new(SegmentsDrawerVM.RemoveSelectedCommand)
   ];
 }
