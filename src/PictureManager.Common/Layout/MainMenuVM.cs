@@ -39,11 +39,15 @@ public class MainMenuVM : TreeView {
     mediaItem.Add(new(CoreVM.SaveImageMetadataToFilesCommand));
     mediaItem.Add(new(MediaItemsViewsVM.ViewModifiedCommand));
 
-    var segments = new MenuItem(Res.IconSegment, "Segments");
-    segments.Add(new(Features.Segment.SegmentVM.DeleteSelectedCommand));
-    segments.Add(new(CoreVM.ExportSegmentsCommand));
-    segments.Add(new(CoreVM.OpenSegmentsViewsCommand));
-    segments.Add(new(SegmentVM.AddEmptyViewCommand));
+    var segments = new MenuItem(Res.IconSegment, "Segments", [
+      new(Features.Segment.SegmentVM.DeleteSelectedCommand),
+      new(CoreVM.ExportSegmentsCommand),
+      new(CoreVM.OpenSegmentsViewsCommand),
+      new(SegmentVM.AddEmptyViewCommand),
+      new(SegmentsDrawerVM.OpenCommand),
+      new(SegmentsDrawerVM.AddSelectedCommand),
+      new(SegmentsDrawerVM.RemoveSelectedCommand)
+    ]);
 
     _initTabs(coreVM.MainWindow.TreeViewCategories, _leftTabs);
     _initTabs(coreVM.MainTabs, _middleTabs);
