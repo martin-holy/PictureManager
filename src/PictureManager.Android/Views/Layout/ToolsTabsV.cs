@@ -11,6 +11,7 @@ namespace PictureManager.Android.Views.Layout;
 public sealed class ToolsTabsV(Context context, TabControl dataContext) : TabControlHost(context, dataContext) {
   protected override View? _getItemView(LinearLayout container, object? item) =>
     item switch {
+      PeopleToolsTabVM peopleToolsTab => new PeopleToolsTabV(container.Context!, peopleToolsTab),
       PersonDetailVM personDetail => new PersonDetailV(container.Context!, personDetail),
       _ => null
     };
