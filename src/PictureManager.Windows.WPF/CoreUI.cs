@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common;
+using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
@@ -14,6 +15,7 @@ using PictureManager.Windows.WPF.ShellStuff;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -46,6 +48,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     SegmentS.ExportSegment = Utils.Imaging.ExportSegment;
     SegmentVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst;
     MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst;
+    AboutDialog.OpenUrl = _openUrl;
   }
 
   public void AfterInit() {
@@ -145,4 +148,9 @@ public sealed class CoreUI : ObservableObject, ICoreP {
   private void _onSegmentItemDeleted(object? sender, SegmentM e) {
     SegmentRectUiVM.SegmentRectS.RemoveIfContains(e);
   }
+
+  private void _openUrl(string url) =>
+    Process.Start(new ProcessStartInfo(url) {
+    UseShellExecute = true
+  });
 }
