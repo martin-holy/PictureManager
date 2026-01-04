@@ -16,16 +16,10 @@
 
 # MainWindowV:
  - FullScreen
- - TreeViewCategories.TreeViewSearch.OpenCommand
  - CoreVM.AppClosingCommand
 
 # Views
- - Entities/MediaItemV
  - Entities/RatingV
- - Entities/TreeItemV
- - Entities/VideoItemV
- - Entities/ViewerV
- - Dialogs/AboutDialogV
  - Dialogs/CompressImagesDialogV
  - Dialogs/ExportSegmentsDialogV
  - Dialogs/FileOperationCollisionDialogV
@@ -36,16 +30,17 @@
  - Dialogs/MergePeopleDialogV
  - Dialogs/ResizeImagesDialogV
  - Dialogs/RotationDialogV
- - Sections/MediaItemsFilterV
- - Sections/MediaViewerV
- - Sections/PeopleToolsTabV
- - Sections/SegmentsDrawerV
- - Sections/SelectedItemsStatusBarV
  - Sections/TreeViewSearchV
- - Sections/VideoDetailV
- - Sections/ViewersToolBarV
- - Sections/WhatIsNewV
  - Layout/StatusBarV
  - Layout/ToolBarV
- - Layout/TreeViewCategoriesV
-   - VM.MainWindow.TreeViewCategories.MarkedTags
+
+Priority:
+ - Low:
+  - VM.MainWindow.TreeViewCategories.MarkedTags
+  - Sections/WhatIsNewV
+  - Sections/ViewersToolBarV
+  - Sections/VideoDetailV
+  - Sections/SelectedItemsStatusBarV
+  - Sections/MediaItemsFilterV
+  - Entities/VideoItemV
+  - Entities/ViewerV
