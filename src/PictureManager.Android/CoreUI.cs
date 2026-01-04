@@ -8,6 +8,7 @@ using MH.Utils.Interfaces;
 using PictureManager.Android.Utils;
 using PictureManager.Android.Views.Layout;
 using PictureManager.Common;
+using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Video;
@@ -41,6 +42,7 @@ public class CoreUI : ICoreP, IDisposable {
     SegmentVM.SegmentSize = 80; // TODO move this to settings
     CoreVM.DisplayScale = 1.0 / DisplayU.Metrics.Density;
     MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
+    AboutDialog.OpenUrl = _openUrl;
   }
 
   public void AfterInit(Context context) {
@@ -131,4 +133,12 @@ public class CoreUI : ICoreP, IDisposable {
 
   private void _shareMediaItems(RealMediaItemM[] items) =>
     MediaStoreU.ShareFiles(_mainActivity, items.Select(x => x.FilePath));
+
+  private void _openUrl(string url) {
+    if (_mainActivity.PackageManager is not { } pm) return;
+    if (global::Android.Net.Uri.Parse(url) is not { } uri) return;
+    if (new Intent(Intent.ActionView, uri) is not { } intent) return;
+    if (intent.ResolveActivity(pm) == null) return;
+    _mainActivity.StartActivity(intent);
+  }
 }
