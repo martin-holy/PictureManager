@@ -65,6 +65,7 @@ public static class Res {
   public const string IconStar = "IconStar";
   public const string IconTabLeft = "IconTabLeft";
   public const string IconTabMiddle = "IconTabMiddle";
+  public const string IconTabPlus = "IconTabPlus";
   public const string IconTabRight = "IconTabRight";
   public const string IconTag = "IconTag";
   public const string IconThreeBars = "IconThreeBars";
