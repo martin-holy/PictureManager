@@ -44,7 +44,7 @@ public sealed class SegmentVM : ObservableObject {
     Views = new(_s);
     Rect = new();
 
-    AddEmptyViewCommand = new(_addEmptyView, Res.IconPlus, "Add Segments View Tab");
+    AddEmptyViewCommand = new(_addEmptyView, Res.IconTabPlus, "Add Segments View Tab");
     LoadByKeywordCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     LoadByPersonCommand = new((x, _) => _loadBy(x!), x => x != null, Res.IconSegment, "Load Segments");
     AddSelectedToPersonsTopSegmentsCommand = new(_addSelectedToPersonsTopSegments, _canAddSelectedToPersonsTopSegments, Res.IconSegmentAdd, "Add selected to Top segments");
