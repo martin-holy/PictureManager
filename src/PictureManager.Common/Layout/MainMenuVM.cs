@@ -44,6 +44,7 @@ public class MainMenuVM : TreeView {
       new(Features.Segment.SegmentVM.DeleteSelectedCommand),
       new(CoreVM.ExportSegmentsCommand),
       new(CoreVM.OpenSegmentsViewsCommand),
+      new(SegmentVM.SetSelectedAsSamePersonCommand),
       new(SegmentVM.AddEmptyViewCommand),
       new(SegmentsDrawerVM.OpenCommand),
       new(SegmentsDrawerVM.AddSelectedCommand),
