@@ -39,7 +39,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
     FilterSetOrCommand = new(item => Current!.Filter.Set(item, DisplayFilter.Or), _ => Current != null, Res.IconFilter, "Filter Or");
     FilterSetNotCommand = new(item => Current!.Filter.Set(item, DisplayFilter.Not), _ => Current != null, Res.IconFilter, "Filter Not");
 
-    AddViewCommand = new(() => _addView(string.Empty), Res.IconPlus, "Add Media Items View Tab");
+    AddViewCommand = new(() => _addView(string.Empty), Res.IconTabPlus, "Add Media Items View Tab");
     CopyPathsCommand = new(
       () => Clipboard.SetText(string.Join("\n", Current!.Selected.Items.Select(x => x.FilePath))),
       () => Current?.Selected.Items.Any() == true, null, "Copy Paths");
