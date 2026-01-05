@@ -26,6 +26,7 @@ public class MainMenuVM : TreeView {
     geoLocation.Add(new(CoreVM.ReadGeoLocationFromFilesCommand));
 
     var mediaItem = new MenuItem(Res.IconImageMultiple, "Media Items");
+    mediaItem.Add(new(MediaItemsViewsVM.AddViewCommand));
     mediaItem.Add(new(MediaItemVM.CommentCommand) { InputGestureText = "Ctrl+K"});
     mediaItem.Add(new(CoreVM.CompressImagesCommand));
     mediaItem.Add(new(MediaItemsViewsVM.CopyPathsCommand));
