@@ -11,10 +11,6 @@
   </DataTemplate>
 
   <DataTemplate DataType="{x:Type layout:MainTabsSlotVM}">
-    <c:IconButton
-      Command="ftMediaItem:MediaItemsViewsVM.AddViewCommand"
-      ap:Icon.Size="13"
-      Width="20"
-      Height="20"/>
+    <c:IconButton Command="ftMediaItem:MediaItemsViewsVM.AddViewCommand"/>
   </DataTemplate>
 </ResourceDictionary>
