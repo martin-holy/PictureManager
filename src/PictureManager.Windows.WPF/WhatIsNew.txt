@@ -10,6 +10,10 @@
  - [N] Move selected people to group in menu
  - [N] Segments drawer commands in main menu
  - [N] Remove selected from Segments drawer in main menu
+ - [U] New icon for new MediaItems View tab
+ - [U] New icon for new Segments View tab
+ - [N] MainMenu: Add MediaItems view tab
+ - [N] MainMenu: Set selected segments as same person
 
 2.31.0:
  - [N] MediaItems: CopySelectedToFolderCommand in folder menu
