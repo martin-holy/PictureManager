@@ -15,6 +15,7 @@ public static class DialogFactory {
   public static View? GetDialog(Context context, Dialog dataContext) {
     return dataContext switch {
       AboutDialog => new AboutDialogV(context, (AboutDialog)dataContext),
+      CompressImagesDialog => new CompressImagesDialogV(context, (CompressImagesDialog)dataContext),
       ComputeImageHashesDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       GetGeoNamesFromWebDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       ReadGeoLocationFromFilesDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
