@@ -8,6 +8,7 @@ using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.GeoLocation;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
+using PictureManager.Common.Features.Person;
 
 namespace PictureManager.Android.Utils;
 
@@ -19,6 +20,7 @@ public static class DialogFactory {
       ComputeImageHashesDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       FileOperationDialog => new FileOperationDialogV(context, (FileOperationDialog)dataContext),
       GetGeoNamesFromWebDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
+      MergePeopleDialog => new MergePeopleDialogV(context, (MergePeopleDialog)dataContext),
       ReadGeoLocationFromFilesDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       ReloadMetadataDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       SaveMetadataDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
