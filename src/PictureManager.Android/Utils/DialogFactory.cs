@@ -18,6 +18,7 @@ public static class DialogFactory {
       AboutDialog => new AboutDialogV(context, (AboutDialog)dataContext),
       CompressImagesDialog => new CompressImagesDialogV(context, (CompressImagesDialog)dataContext),
       ComputeImageHashesDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
+      FileOperationCollisionDialog => new FileOperationCollisionDialogV(context, (FileOperationCollisionDialog)dataContext),
       FileOperationDialog => new FileOperationDialogV(context, (FileOperationDialog)dataContext),
       GetGeoNamesFromWebDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       MergePeopleDialog => new MergePeopleDialogV(context, (MergePeopleDialog)dataContext),
