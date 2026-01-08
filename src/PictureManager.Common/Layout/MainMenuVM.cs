@@ -1,4 +1,5 @@
 ﻿using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -7,6 +8,8 @@ using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Features.WhatIsNew;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Windows.Input;
 
 namespace PictureManager.Common.Layout;
 
@@ -65,6 +68,12 @@ public class MainMenuVM : TreeView {
     RootHolder.Add(new MenuItem(CoreVM.OpenSettingsCommand));
     RootHolder.Add(new MenuItem(WhatIsNewVM.OpenCommand));
     RootHolder.Add(new MenuItem(CoreVM.OpenAboutCommand));
+  }
+
+  public void HideMenuItems(ICommand[] commands) {
+    foreach (var menuItem in RootHolder.Flatten().OfType<MenuItem>())
+      if (commands.Contains(menuItem.Command))
+        menuItem.IsHidden = true;
   }
 
   private void _initTabs(TabControl tabControl, MenuItem root) {
