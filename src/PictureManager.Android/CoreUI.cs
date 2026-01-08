@@ -48,6 +48,8 @@ public class CoreUI : ICoreP, IDisposable {
   public void AfterInit(Context context) {
     ShareMediaItemsCommand = new(x => _shareMediaItems(Core.VM.GetActive<RealMediaItemM>(x)), Core.VM.AnyActive<RealMediaItemM>, Res.IconShare, "Share");
 
+    _disableNotSupportedMainMenuItems(Core.VM.MainWindow.MainMenu);
+
     Core.VM.MainWindow.SlidePanelsGrid.PinLayouts = [
         [true, true, true, false, false], // browse mode
         [true, true, true, false, false]  // view mode
@@ -116,6 +118,14 @@ public class CoreUI : ICoreP, IDisposable {
   private void _onMainWindowIsInViewModeChanged(CoreUI coreUI, bool isInViewMode) {
     coreUI._updateMediaItemCommands();
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
+  }
+
+  private static void _disableNotSupportedMainMenuItems(MainMenuVM mm) {
+    mm.HideMenuItems([
+      CoreVM.CompressImagesCommand,
+      CoreVM.ImagesToVideoCommand,
+      CoreVM.SaveImageMetadataToFilesCommand,
+      MediaItemsViewsVM.ViewModifiedCommand]);
   }
 
   public void Dispose() {
