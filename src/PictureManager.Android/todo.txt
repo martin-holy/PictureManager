@@ -1,6 +1,6 @@
-- RebuildThumbnailsCommand: remove from menu because FilePathCache is not used
 - open MediaItems in new tab command
 - selection lost in PeopleV when scrolled out off view
+- FileOperationCollisionDialog is not awaited so rename doesn't work. maybe it is because it is opened from another dialog
 
 # icons
 
@@ -20,14 +20,10 @@
 
 # Views
  - Entities/RatingV
- - Dialogs/CompressImagesDialogV
  - Dialogs/ExportSegmentsDialogV
  - Dialogs/FileOperationCollisionDialogV
- - Dialogs/FileOperationDialogV
  - Dialogs/FolderBrowserDialogV
  - Dialogs/FolderKeywordsDialogV
- - Dialogs/ImagesToVideoDialogV
- - Dialogs/MergePeopleDialogV
  - Dialogs/ResizeImagesDialogV
  - Dialogs/RotationDialogV
  - Sections/TreeViewSearchV
@@ -44,3 +40,4 @@ Priority:
   - Sections/MediaItemsFilterV
   - Entities/VideoItemV
   - Entities/ViewerV
+  - Dialogs/ImagesToVideoDialogV
