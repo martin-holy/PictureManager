@@ -12,7 +12,8 @@
         <Setter Property="Command" Value="{Binding Command}"/>
         <Setter Property="CommandParameter" Value="{Binding Data}"/>
         <Setter Property="ItemsSource" Value="{Binding Items}"/>
-        <Setter Property="InputGestureText" Value="{Binding InputGestureText}"/>            
+        <Setter Property="InputGestureText" Value="{Binding InputGestureText}"/>       
+        <Setter Property="Visibility" Value="{Binding IsHidden, Converter={x:Static conv:VisibilityConverter.FalseToVisible}}"/>
       </Style>
     </DataTemplate.Resources>
     
