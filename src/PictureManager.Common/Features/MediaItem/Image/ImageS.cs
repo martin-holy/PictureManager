@@ -19,4 +19,19 @@ public sealed class ImageS(ImageR r) {
     r.IsModified = true;
     return !img.IsOnlyInDb;
   }
+
+  public static List<Tuple<PersonM?, string?, string[]?>>? GetPeopleSegmentsKeywords(ImageM img) {
+    var peopleOnSegments = img.Segments.EmptyIfNull().Select(x => x.Person).Distinct().ToHashSet();
+
+    return img.Segments?
+      .Select(x => new Tuple<PersonM?, string?, string[]?>(
+        x.Person,
+        x.ToMsRect(),
+        x.Keywords?.Select(k => k.FullName).ToArray()))
+      .Concat(img.People
+        .EmptyIfNull()
+        .Where(x => !peopleOnSegments.Contains(x))
+        .Select(x => new Tuple<PersonM?, string?, string[]?>(x, null, null)))
+      .ToList();
+  }
 }
