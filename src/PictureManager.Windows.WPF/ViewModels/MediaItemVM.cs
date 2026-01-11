@@ -170,7 +170,7 @@ public static class MediaItemVM {
   }
 
   private static void WritePeople(BitmapMetadata bm, ImageM img) {
-    var peopleRects = GetPeopleSegmentsKeywords(img);
+    var peopleRects = ImageS.GetPeopleSegmentsKeywords(img);
     if (peopleRects == null) {
       if (bm.ContainsQuery(_msRegionInfo))
         bm.RemoveQuery(_msRegionInfo);
@@ -211,21 +211,6 @@ public static class MediaItemVM {
 
     if (regions.GetQuery<object>(_msRegionInfo) is { } ri)
       bm.SetQuery(_msRegionInfo, ri);
-  }
-
-  private static List<Tuple<PersonM?, string?, string[]?>>? GetPeopleSegmentsKeywords(ImageM img) {
-    var peopleOnSegments = img.Segments.EmptyIfNull().Select(x => x.Person).Distinct().ToHashSet();
-
-    return img.Segments?
-      .Select(x => new Tuple<PersonM?, string?, string[]?>(
-        x.Person,
-        x.ToMsRect(),
-        x.Keywords?.Select(k => k.FullName).ToArray()))
-      .Concat(img.People
-        .EmptyIfNull()
-        .Where(x => !peopleOnSegments.Contains(x))
-        .Select(x => new Tuple<PersonM?, string?, string[]?>(x, null, null)))
-      .ToList();
   }
 
   private static void WritePersonRectangleKeywords(BitmapMetadata bm, string query, string[]? keywords) {
