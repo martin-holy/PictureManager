@@ -1,5 +1,7 @@
-﻿using Android.Graphics;
+﻿using Android.Content;
+using Android.Graphics;
 using Android.Media;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils;
 using PictureManager.Common.Features.MediaItem;
@@ -68,7 +70,7 @@ public static class MediaItemVM {
     _readExif(mim, exif, gpsOnly);
     if (gpsOnly) return;
 
-    var xmpXml = _readXmpFromJpeg(filePath);
+    var xmpXml = XmpU.ReadFromJpeg(filePath);
     if (!string.IsNullOrEmpty(xmpXml))
       _readXmpMetadata(mim, xmpXml);
   }
@@ -86,144 +88,6 @@ public static class MediaItemVM {
     mim.Orientation = ImagingU.ConvertOrientationFromAndroidToMH(orientationTag);
 
     mim.Comment = StringUtils.NormalizeComment(exif.GetAttribute(ExifInterface.TagUserComment));
-
-    if (int.TryParse(exif.GetAttribute("Rating"), out int rating))
-      mim.Rating = rating;
-  }
-
-  private static string? _readXmpFromJpeg(string path) {
-    var xmpHeader = System.Text.Encoding.ASCII.GetBytes("http://ns.adobe.com/xap/1.0/");
-
-    using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-    using var br = new BinaryReader(fs);
-
-    // Check SOI
-    if (fs.Length < 2) return null;
-    var soi0 = br.ReadByte();
-    var soi1 = br.ReadByte();
-    if (soi0 != 0xFF || soi1 != 0xD8) return null; // Not JPEG SOI
-
-    while (fs.Position + 1 < fs.Length) {
-      // Find 0xFF
-      var b = br.ReadByte();
-      while (b != 0xFF && fs.Position < fs.Length)
-        b = br.ReadByte();
-
-      if (b != 0xFF) break; // no marker found
-
-      // Skip any padding 0xFF bytes (fill bytes) and read marker
-      var marker = br.ReadByte();
-      while (marker == 0xFF) marker = br.ReadByte();
-
-      if (marker == 0xD9) break; // EOI
-      if (marker == 0xDA) break; // SOS - start of stream for image data; XMP won't be after this
-
-      // Read segment length (big-endian). For markers that have length field.
-      if (fs.Position + 2 > fs.Length) break;
-      var segLen = _readBigEndianUInt16(br);
-      if (segLen < 2) break;
-      var payloadLen = segLen - 2;
-
-      if (fs.Position + payloadLen > fs.Length) break;
-
-      if (marker == 0xE1) { // APP1
-        var payload = br.ReadBytes(payloadLen);
-
-        // There are two common APP1 structures:
-        //  - "Exif\0\0" + TIFF payload  (EXIF)
-        //  - "http://ns.adobe.com/xap/1.0/" + XMP packet
-        // So check for XMP header anywhere near the start of payload.
-        var headerIndex = _indexOf(payload, xmpHeader, 0);
-        if (headerIndex >= 0) {
-          // XMP often follows header and optionally a null byte.
-          var xmlStartIndex = headerIndex + xmpHeader.Length;
-          // skip a single 0x00 if present
-          if (xmlStartIndex < payload.Length && payload[xmlStartIndex] == 0x00) xmlStartIndex++;
-
-          // We assume the rest of the payload contains the XMP packet text.
-          var xmlLen = payload.Length - xmlStartIndex;
-          if (xmlLen > 0) {
-            // Try UTF8 first, fallback to UTF16 little/big-endian heuristics
-            var xml = _tryDecodeXml(payload, xmlStartIndex, xmlLen);
-            if (!string.IsNullOrEmpty(xml)) {
-              // find xpacket boundaries if present
-              var st = xml.IndexOf("<?xpacket", StringComparison.Ordinal);
-              var ed = xml.IndexOf("<?xpacket end=\"w\"?>", StringComparison.Ordinal);
-              if (st >= 0 && ed > st)
-                return xml[st..(ed + "<?xpacket end=\"w\"?>".Length)];
-
-              // some images might not wrap in xpacket, return entire string if it looks like XML
-              if (xml.TrimStart().StartsWith('<')) return xml;
-            }
-          }
-        }
-
-        // otherwise continue scanning other segments
-      }
-      else {
-        // not APP1 — skip payload
-        fs.Seek(payloadLen, SeekOrigin.Current);
-      }
-    }
-
-    return null;
-  }
-
-  // Try to decode XML payload; handle UTF-8 and UTF-16 BOMs heuristically
-  private static string? _tryDecodeXml(byte[] buffer, int offset, int length) {
-    if (length <= 0) return null;
-
-    // Check BOM
-    if (length >= 3 && buffer[offset] == 0xEF && buffer[offset + 1] == 0xBB && buffer[offset + 2] == 0xBF)
-      return System.Text.Encoding.UTF8.GetString(buffer, offset + 3, length - 3);
-
-    if (length >= 2) {
-      // UTF-16 LE BOM
-      if (buffer[offset] == 0xFF && buffer[offset + 1] == 0xFE)
-        return System.Text.Encoding.Unicode.GetString(buffer, offset + 2, length - 2);
-
-      // UTF-16 BE BOM
-      if (buffer[offset] == 0xFE && buffer[offset + 1] == 0xFF)
-        return System.Text.Encoding.BigEndianUnicode.GetString(buffer, offset + 2, length - 2);
-    }
-
-    // Try UTF8 decode, and if it produces a valid-looking XML string, return it.
-    try {
-      var s = System.Text.Encoding.UTF8.GetString(buffer, offset, length);
-      if (s.Contains("<x:xmpmeta") || s.Contains("<rdf:RDF") || s.Contains("<?xpacket") || s.TrimStart().StartsWith("<"))
-        return s;
-    }
-    catch { }
-
-    // fallback: try UTF-16 LE without BOM (some producers might be inconsistent)
-    try {
-      var s2 = System.Text.Encoding.Unicode.GetString(buffer, offset, length);
-      if (s2.Contains("<x:xmpmeta") || s2.Contains("<rdf:RDF") || s2.Contains("<?xpacket"))
-        return s2;
-    }
-    catch { }
-
-    return null;
-  }
-
-  private static ushort _readBigEndianUInt16(BinaryReader br) {
-    var b0 = br.ReadByte();
-    var b1 = br.ReadByte();
-    return (ushort)((b0 << 8) | b1);
-  }
-
-  private static int _indexOf(byte[] buffer, byte[] pattern, int start) {
-    for (int i = start; i <= buffer.Length - pattern.Length; i++) {
-      bool ok = true;
-      for (int j = 0; j < pattern.Length; j++) {
-        if (buffer[i + j] != pattern[j]) {
-          ok = false;
-          break;
-        }
-      }
-      if (ok) return i;
-    }
-    return -1;
   }
 
   private static void _readXmpMetadata(MediaItemMetadata mim, string xml) {
@@ -232,6 +96,9 @@ public static class MediaItemVM {
 
       if (int.TryParse(doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "GeoNameId")?.Value, out var geoNameId))
         mim.GeoNameId = geoNameId;
+
+      if (int.TryParse(doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "Rating")?.Value, out var rating))
+        mim.Rating = rating;
 
       mim.PeopleSegmentsKeywords = _readPeopleSegmentsKeywords(doc);
 
@@ -296,5 +163,58 @@ public static class MediaItemVM {
     }
 
     return output.Count > 0 ? output : null;
+  }
+
+  public static bool WriteMetadata(ImageM img, Context context) {
+    var srcPath = img.FilePath;
+
+    try {
+      _writeExif(srcPath, img);
+
+      if (_writeXmp(srcPath, img))
+        MediaStoreU.ScanFileAsync(context, srcPath);
+
+      return true;
+    }
+    catch (Exception ex) {
+      Log.Error(ex, srcPath);      
+      return false;
+    }
+  }
+
+  private static void _writeExif(string srcPath, ImageM img) {
+    var changed = false;
+    using var exif = new ExifInterface(srcPath);
+    exif.SetUserComment(img.Comment, ref changed);
+    exif.SetOrientation(ImagingU.ConvertOrientationFromMHToAndroid(img.Orientation), ref changed);
+    exif.SetLatLong(img.GeoLocation?.Lat, img.GeoLocation?.Lng, ref changed);
+    if (changed) exif.SaveAttributes();
+  }
+
+  private static bool _writeXmp(string srcPath, ImageM img) {
+    var existingXmp = XmpU.ReadFromJpeg(srcPath);
+    var mergedXmp = ImageS.BuildXmp(existingXmp, img);
+
+    if (string.Equals(existingXmp, mergedXmp, StringComparison.Ordinal))
+      return false;
+
+    var tmpPath = srcPath + ".tmp";
+    try {
+      using var input = File.OpenRead(srcPath);
+      using var output = File.Create(tmpPath);
+      XmpU.WriteToJpeg(input, output, mergedXmp);
+      File.Delete(srcPath);
+      File.Move(tmpPath, srcPath);
+      return true;
+    }
+    catch (Exception ex) {
+      Log.Error(ex, srcPath);
+      try {
+        if (File.Exists(tmpPath))
+          File.Delete(tmpPath);
+      }
+      catch { }
+      return false;
+    }
   }
 }
