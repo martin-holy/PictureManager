@@ -22,7 +22,8 @@ public sealed class ImageS(ImageR r) {
 
   public bool TryWriteMetadata(ImageM img, int quality) {
     try {
-      var xmp = BuildXmp(null, img);
+      var existingXmp = XmpU.ReadFromJpeg(img.FilePath);
+      var xmp = BuildXmp(existingXmp, img);
       if (!WriteMetadata(img, quality)) throw new("Error writing metadata");
       img.IsOnlyInDb = false;
     }
@@ -36,68 +37,161 @@ public sealed class ImageS(ImageR r) {
   }
 
   public static string? BuildXmp(string? existingXmp, ImageM img) {
-    // TODO do compare instead and include rating as well
-    if (img.Keywords == null &&
-        img.GeoLocation?.GeoName == null &&
-        img.People == null &&
-        img.Segments == null)
-      return null;
+    if (_tryParseXmp(existingXmp) is not { } doc)
+      doc = new XDocument(new XElement(_nsX + "xmpmeta", new XAttribute(XNamespace.Xmlns + "x", _nsX)));
 
-    var doc =
-      new XDocument(
-        new XElement(_nsX + "xmpmeta", new XAttribute(XNamespace.Xmlns + "x", _nsX),
-          new XElement(_nsRdf + "RDF", new XAttribute(XNamespace.Xmlns + "rdf", _nsRdf),
-            new XElement(_nsRdf + "Description",
-              _buildRating(img),
-              _buildKeywords(img),
-              _buildGeoName(img),
-              _buildPeople(img)))));
+    if (doc.Descendants(_nsRdf + "RDF").FirstOrDefault() is not { } rdf) {
+      rdf = new XElement(_nsRdf + "RDF", new XAttribute(XNamespace.Xmlns + "rdf", _nsRdf));
+      doc.Add(rdf);
+    }
+
+    _mergeRating(rdf, img.Rating);
+    _mergeKeywords(rdf, img);
+    _mergeGeoName(rdf, img);
+    _mergePeople(rdf, img);
 
     return doc.ToString(SaveOptions.DisableFormatting);
   }
 
-  private static XElement? _buildRating(ImageM img) =>
-    new XElement(_nsXmp + "Rating", new XAttribute(XNamespace.Xmlns + "xmp", _nsXmp), img.Rating);
+  private static XDocument? _tryParseXmp(string? xmp) {
+    try {
+      if (!string.IsNullOrEmpty(xmp))
+        return XDocument.Parse(xmp, LoadOptions.PreserveWhitespace);
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
 
-  private static XElement? _buildKeywords(ImageM img) {
+    return null;
+  }
+
+  private static XElement? _getDescriptionFor(XElement rdf, XNamespace propertyNs, XName propertyName) =>
+    rdf.Elements(_nsRdf + "Description").FirstOrDefault(
+      d => d.Element(propertyName) != null ||
+      d.Attributes().Any(a => a.IsNamespaceDeclaration && a.Value == propertyNs));
+
+  private static XElement _addDescription(XElement rdf) {
+    var desc = new XElement(_nsRdf + "Description");
+    rdf.Add(desc);
+    return desc;
+  }
+
+  private static void _mergeRating(XElement rdf, int rating) {
+    var desc = _getDescriptionFor(rdf, _nsXmp, _nsXmp + "Rating") ?? _addDescription(rdf);
+    desc.SetAttributeValue(XNamespace.Xmlns + "xmp", _nsXmp);
+    desc.Element(_nsXmp + "Rating")?.Remove();
+    desc.Add(new XElement(_nsXmp + "Rating", rating));
+  }
+
+  private static void _mergeKeywords(XElement rdf, ImageM img) {
+    var desc = _getDescriptionFor(rdf, _nsDc, _nsDc + "subject");
+
     var keywords = img.Keywords?.Select(k => k.FullName).ToArray();
-    if (keywords == null || keywords.Length == 0) return null;
+    if (keywords == null || keywords.Length == 0) {
+      desc?.Element(_nsDc + "subject")?.Remove();
+      return;
+    }
 
-    return new XElement(_nsDc + "subject", new XAttribute(XNamespace.Xmlns + "dc", _nsDc),
+    desc ??= _addDescription(rdf);
+    desc.SetAttributeValue(XNamespace.Xmlns + "dc", _nsDc);
+    desc.Element(_nsDc + "subject")?.Remove();
+    desc.Add(new XElement(_nsDc + "subject",
       new XElement(_nsRdf + "Bag",
-        keywords.Select(k => new XElement(_nsRdf + "li", k))));
+        keywords.Select(k => new XElement(_nsRdf + "li", k)))));
   }
 
-  private static XElement? _buildGeoName(ImageM img) {
+  private static void _mergeGeoName(XElement rdf, ImageM img) {
     var id = img.GeoLocation?.GeoName?.Id.ToString();
-    return id == null
-      ? null
-      : new XElement(_nsGn + "GeoNameId", new XAttribute(XNamespace.Xmlns + "GeoNames", _nsGn), id);
+    var desc = _getDescriptionFor(rdf, _nsGn, _nsGn + "GeoNameId");
+
+    if (id == null) {
+      desc?.Element(_nsGn + "GeoNameId")?.Remove();
+      return;
+    }
+
+    desc ??= _addDescription(rdf);
+    desc.SetAttributeValue(XNamespace.Xmlns + "GeoNameId", _nsGn);
+    desc.Element(_nsGn + "GeoNameId")?.Remove();
+    desc.Add(new XElement(_nsXmp + "GeoNameId", id));
   }
 
-  private static XElement? _buildPeople(ImageM img) {
-    var peopleRects = GetPeopleSegmentsKeywords(img);
-    if (peopleRects == null || peopleRects.Count == 0) return null;
+  private static void _mergePeople(XElement rdf, ImageM img) {
+    var desc = _getDescriptionFor(rdf, _nsMp, _nsMp + "RegionInfo");
 
-    return new XElement(_nsMp + "RegionInfo",
-      new XAttribute(XNamespace.Xmlns + "MP", _nsMp),
-      new XAttribute(XNamespace.Xmlns + "MPRI", _nsMpRi),
-      new XAttribute(XNamespace.Xmlns + "MPReg", _nsMpReg),
-      new XElement(_nsMpRi + "Regions",
-        new XElement(_nsRdf + "Bag",
-          peopleRects.Select(pr =>
-            new XElement(_nsRdf + "li",
-              new XElement(_nsRdf + "Description",
-                pr.Item1 == null ? null : new XElement(_nsMpReg + "PersonDisplayName", pr.Item1.Name),
-                pr.Item2 == null ? null : new XElement(_nsMpReg + "Rectangle", pr.Item2),
-                pr.Item3 == null ? null : new XElement(_nsMpReg + "RectangleKeywords",
-                  new XElement(_nsRdf + "Bag", pr.Item3.Select(k => new XElement(_nsRdf + "li", k))))
-              )
+    var people = GetPeopleSegmentsKeywords(img);
+    if (people == null || people.Count == 0) {
+      desc?.Element(_nsMp + "RegionInfo")?.Remove();
+      return;
+    }
+
+    desc ??= _addDescription(rdf);
+
+    if (desc.Element(_nsMp + "RegionInfo") is not { } regionInfo) {
+      regionInfo =
+        new XElement(_nsMp + "RegionInfo",
+          new XAttribute(XNamespace.Xmlns + "MP", _nsMp),
+          new XAttribute(XNamespace.Xmlns + "MPRI", _nsMpRi),
+          new XAttribute(XNamespace.Xmlns + "MPReg", _nsMpReg));
+      desc.Add(regionInfo);
+    }
+
+    if (regionInfo.Element(_nsMpRi + "Regions") is not { } regions) {
+      regions = new XElement(_nsMpRi + "Regions");
+      regionInfo.Add(regions);
+    }
+
+    if (regions.Element(_nsRdf + "Bag") is not { } bag) {
+      bag = new XElement(_nsRdf + "Bag");
+      regions.Add(bag);
+    }
+
+    // WARN person can have multiple regions on one image
+    // TODO review from here down
+
+    // Index existing regions by PersonDisplayName
+    var existing =
+      bag.Elements(_nsRdf + "li")?
+         .Select(li => li.Element(_nsRdf + "Description"))
+         .Where(d => d != null)
+         .ToDictionary(
+           d => (string?)d.Element(_nsMpReg + "PersonDisplayName"),
+           d => d,
+           StringComparer.Ordinal
+         );
+
+    foreach (var (person, rect, keywords) in people) {
+      var name = person?.Name;
+      if (string.IsNullOrWhiteSpace(name))
+        continue;
+
+      if (!existing.TryGetValue(name, out var rDesc)) {
+        // Create new region
+        rDesc = new XElement(_nsRdf + "Description",
+          new XElement(_nsMpReg + "PersonDisplayName", name));
+
+        bag.Add(new XElement(_nsRdf + "li", rDesc));
+      }
+
+      // Rectangle: update only if provided
+      if (rect != null) {
+        rDesc.Element(_nsMpReg + "Rectangle")?.Remove();
+        rDesc.Add(new XElement(_nsMpReg + "Rectangle", rect));
+      }
+
+      // RectangleKeywords: replace entirely if provided
+      if (keywords != null) {
+        rDesc.Element(_nsMpReg + "RectangleKeywords")?.Remove();
+
+        if (keywords.Length > 0) {
+          rDesc.Add(
+            new XElement(_nsMpReg + "RectangleKeywords",
+              new XElement(_nsRdf + "Bag",
+                keywords.Select(k => new XElement(_nsRdf + "li", k)))
             )
-          )
-        )
-      )
-    );
+          );
+        }
+      }
+    }
   }
 
   public static List<Tuple<PersonM?, string?, string[]?>>? GetPeopleSegmentsKeywords(ImageM img) {
