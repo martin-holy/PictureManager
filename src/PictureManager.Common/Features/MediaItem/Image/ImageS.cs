@@ -127,15 +127,15 @@ public sealed class ImageS(ImageR r) {
     desc ??= _addDescription(rdf);
 
     if (desc.Element(_nsMp + "RegionInfo") is not { } regionInfo) {
-      regionInfo =
-        new XElement(_nsMp + "RegionInfo",
-          new XAttribute(XNamespace.Xmlns + "MP", _nsMp),
-          new XAttribute(XNamespace.Xmlns + "MPRI", _nsMpRi),
-          new XAttribute(XNamespace.Xmlns + "MPReg", _nsMpReg));
+      regionInfo = new XElement(_nsMp + "RegionInfo");
       desc.Add(regionInfo);
     }
 
-    if (regionInfo.Element(_nsMpRi + "Regions") is not { } regions) {
+    regionInfo.SetAttributeValue(XNamespace.Xmlns + "MP", _nsMp);
+    regionInfo.SetAttributeValue(XNamespace.Xmlns + "MPRI", _nsMpRi);
+    regionInfo.SetAttributeValue(XNamespace.Xmlns + "MPReg", _nsMpReg);
+
+    if (regionInfo.Descendants(_nsMpRi + "Regions").FirstOrDefault() is not { } regions) {
       regions = new XElement(_nsMpRi + "Regions");
       regionInfo.Add(regions);
     }
@@ -145,53 +145,61 @@ public sealed class ImageS(ImageR r) {
       regions.Add(bag);
     }
 
-    // WARN person can have multiple regions on one image
-    // TODO review from here down
-
-    // Index existing regions by PersonDisplayName
-    var existing =
-      bag.Elements(_nsRdf + "li")?
-         .Select(li => li.Element(_nsRdf + "Description"))
-         .Where(d => d != null)
-         .ToDictionary(
-           d => (string?)d.Element(_nsMpReg + "PersonDisplayName"),
-           d => d,
-           StringComparer.Ordinal
-         );
+    var used = new List<XElement>();
+    var existing = bag.Elements(_nsRdf + "li")
+      .Select(li => li.Element(_nsRdf + "Description"))
+      .Where(d => d != null)
+      .Select(d => new {
+        Desc = d!,
+        Name = (string?)d!.Element(_nsMpReg + "PersonDisplayName"),
+        Rect = (string?)d!.Element(_nsMpReg + "Rectangle")})
+      .ToArray();
 
     foreach (var (person, rect, keywords) in people) {
+      XElement? rDesc = null;
       var name = person?.Name;
-      if (string.IsNullOrWhiteSpace(name))
-        continue;
 
-      if (!existing.TryGetValue(name, out var rDesc)) {
-        // Create new region
-        rDesc = new XElement(_nsRdf + "Description",
-          new XElement(_nsMpReg + "PersonDisplayName", name));
+      // Named region → match by PersonDisplayName
+      if (!string.IsNullOrWhiteSpace(name))
+        rDesc = existing
+          .Where(x => x.Name == name && !used.Contains(x.Desc))
+          .Select(x => x.Desc)
+          .FirstOrDefault();
 
+      // Anonymous region → match by Rectangle
+      if (rDesc == null && name == null && rect != null)
+        rDesc = existing
+          .Where(x => x.Name == null && x.Rect == rect && !used.Contains(x.Desc))
+          .Select(x => x.Desc)
+          .FirstOrDefault();
+
+      if (rDesc == null) {
+        rDesc = new XElement(_nsRdf + "Description");        
         bag.Add(new XElement(_nsRdf + "li", rDesc));
-      }
 
-      // Rectangle: update only if provided
-      if (rect != null) {
+        if (!string.IsNullOrWhiteSpace(name))
+          rDesc.Add(new XElement(_nsMpReg + "PersonDisplayName", name));
+      }
+      else {
         rDesc.Element(_nsMpReg + "Rectangle")?.Remove();
-        rDesc.Add(new XElement(_nsMpReg + "Rectangle", rect));
+        rDesc.Element(_nsMpReg + "RectangleKeywords")?.Remove();
       }
 
-      // RectangleKeywords: replace entirely if provided
-      if (keywords != null) {
-        rDesc.Element(_nsMpReg + "RectangleKeywords")?.Remove();
+      used.Add(rDesc);
 
-        if (keywords.Length > 0) {
-          rDesc.Add(
-            new XElement(_nsMpReg + "RectangleKeywords",
-              new XElement(_nsRdf + "Bag",
-                keywords.Select(k => new XElement(_nsRdf + "li", k)))
-            )
-          );
-        }
+      if (rect != null)
+        rDesc.Add(new XElement(_nsMpReg + "Rectangle", rect));
+
+      if (keywords?.Length > 0) {
+        rDesc.Add(
+          new XElement(_nsMpReg + "RectangleKeywords",
+            new XElement(_nsRdf + "Bag",
+              keywords.Select(k => new XElement(_nsRdf + "li", k)))));
       }
     }
+
+    foreach (var eDesc in existing.Select(x => x.Desc).Where(x => !used.Contains(x)))
+      eDesc.Parent?.Remove();
   }
 
   public static List<Tuple<PersonM?, string?, string[]?>>? GetPeopleSegmentsKeywords(ImageM img) {
