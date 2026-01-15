@@ -12,10 +12,15 @@ public sealed class ExportSegmentsDialog : ParallelProgressDialog<SegmentM> {
   private string? _destDir;
 
   public string? DestDir { get => _destDir; set { _destDir = value; OnPropertyChanged(); } }
-  public AsyncRelayCommand OpenFolderBrowserCommand { get; }
+  public AsyncRelayCommand? OpenFolderBrowserCommand { get; }
 
   public ExportSegmentsDialog(SegmentM[] items) : base("Export Segments", Res.IconSegment, items, null, "Export") {
     OpenFolderBrowserCommand = new(_openFolderBrowser, Res.IconFolder, "Select folder");
+  }
+
+  public ExportSegmentsDialog(SegmentM[] items, string destDir) : base("Export Segments", Res.IconSegment, items) {
+    _destDir = destDir;
+    _autoRun();
   }
 
   protected override bool _canAction() =>
