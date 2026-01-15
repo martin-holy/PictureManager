@@ -122,6 +122,13 @@
       <MenuItem Command="core:CoreVM.ResizeImagesCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="core:CoreVM.SaveImageMetadataToFilesCommand" CommandParameter="{Binding}"/>
     </MenuItem>
+    
+    <MenuItem Header="Segments">
+      <MenuItem.Icon>
+        <Path Data="{StaticResource IconSegment}" Style="{StaticResource MH.S.Icon.Shadow}"/>
+      </MenuItem.Icon>
+      <MenuItem Command="core:CoreVM.ExportSegmentsToCommand" CommandParameter="{Binding}"/>
+    </MenuItem>
   </ContextMenu>
   
   <!-- Favorite Folder -->
