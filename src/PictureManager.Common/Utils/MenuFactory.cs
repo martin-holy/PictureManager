@@ -57,7 +57,9 @@ public static class MenuFactory {
       new(MediaItemsViewsVM.RebuildThumbnailsCommand, item),
       new(CoreVM.ReloadMetadataCommand, item),
       new(CoreVM.ResizeImagesCommand, item),
-      new(CoreVM.SaveImageMetadataToFilesCommand, item)])];
+      new(CoreVM.SaveImageMetadataToFilesCommand, item)]),
+    new(Res.IconSegment, "Segments", [
+      new(CoreVM.ExportSegmentsToCommand, item)])];
 
   // Favorite Folder
   private static IEnumerable<MenuItem> _createFavoriteFolderMenu(object item) => [
