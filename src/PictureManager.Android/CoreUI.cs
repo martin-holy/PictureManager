@@ -40,9 +40,10 @@ public class CoreUI : ICoreP, IDisposable {
     MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     ImageS.WriteMetadata = (img, _) => ViewModels.MediaItemVM.WriteMetadata(img, _mainActivity);
-    VideoVM.GetVideoMetadataFunc = ImagingU.GetVideoMetadata;
+    VideoVM.GetVideoMetadataFunc = MH.UI.Android.Utils.ImagingU.GetVideoMetadata;
     SegmentVM.SegmentSize = 80; // TODO move this to settings
     CoreVM.DisplayScale = 1.0 / DisplayU.Metrics.Density;
+    SegmentS.ExportSegment = Utils.ImagingU.ExportSegment;
     MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
     AboutDialog.OpenUrl = _openUrl;
   }
@@ -127,7 +128,8 @@ public class CoreUI : ICoreP, IDisposable {
       CoreVM.CompressImagesCommand,
       CoreVM.ImagesToVideoCommand,
       MediaItemsViewsVM.RebuildThumbnailsCommand,
-      MediaItemsViewsVM.ViewModifiedCommand]);
+      MediaItemsViewsVM.ViewModifiedCommand,
+      CoreVM.ExportSegmentsCommand]);
   }
 
   public void Dispose() {
