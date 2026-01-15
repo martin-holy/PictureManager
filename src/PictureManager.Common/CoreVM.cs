@@ -60,6 +60,7 @@ public sealed class CoreVM : ObservableObject {
 
   public static AsyncRelayCommand AppClosingCommand { get; private set; } = null!;
   public static RelayCommand ExportSegmentsCommand { get; private set; } = null!;
+  public static AsyncRelayCommand<FolderM> ExportSegmentsToCommand { get; private set; } = null!;
   public static RelayCommand OpenAboutCommand { get; } = new(() => _ = Dialog.ShowAsync(new AboutDialog()), null, "About");
   public static RelayCommand OpenLogCommand { get; private set; } = null!;
   public static AsyncRelayCommand OpenSegmentsViewsCommand { get; private set; } = null!;
@@ -98,6 +99,7 @@ public sealed class CoreVM : ObservableObject {
 
     AppClosingCommand = new(_onAppClosing);
     ExportSegmentsCommand = new(_exportSegments, () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export Segments");
+    ExportSegmentsToCommand = new((x, _) => _exportSegmentsTo(x), () => _coreS.Segment.Selected.Items.Any(x => x.MediaItem is ImageM), Res.IconSegment, "Export");
     OpenLogCommand = new(_openLog, MH.UI.Res.IconSort, "Open log");
     OpenSettingsCommand = new(_openSettings, Res.IconSettings, "Settings");
     OpenSegmentsViewsCommand = new(_ => OpenSegmentsViews(null, string.Empty), Res.IconSegment, "Segments View");
@@ -373,6 +375,20 @@ public sealed class CoreVM : ObservableObject {
 
   private void _exportSegments() =>
     _ = Dialog.ShowAsync(new ExportSegmentsDialog(_coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray()));
+
+  private async Task _exportSegmentsTo(FolderM? folder) {
+    if (folder == null ||
+      await Dialog.ShowAsync(new MessageDialog(
+        "Export Segments",
+        $"Do you really want to export segments to \"{folder.Name}\"?",
+        MH.UI.Res.IconQuestion,
+        true)) != 1)
+      return;
+
+    await Dialog.ShowAsync(new ExportSegmentsDialog(
+      _coreS.Segment.Selected.Items.Where(x => x.MediaItem is ImageM).ToArray(),
+      folder.FullPath));
+  }
 
   private void _openLog() {
     if (System.OperatingSystem.IsWindows())
