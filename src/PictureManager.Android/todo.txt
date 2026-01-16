@@ -2,25 +2,17 @@
 - selection lost in PeopleV when scrolled out off view
 - FileOperationCollisionDialog is not awaited so rename doesn't work. maybe it is because it is opened from another dialog
 
-# icons
-
 # CoreUI:
  - MH.UI.Android.Utils.Init.SetDelegates()
- - ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata
  - CoreVM.UiFullVideo = new MediaPlayer()
  - CoreVM.UiDetailVideo = new MediaPlayer()
  - CoreVM.VideoFrameSaver = new VideoFrameSaver()
- - SegmentS.ExportSegment = Utils.Imaging.ExportSegment
- - maybe SegmentVM.ThumbConverter = SegmentThumbnailSourceConverter.Inst
- - maybe MediaItemVM.ThumbConverter = MediaItemThumbSourceConverter.Inst
 
 # MainWindowV:
  - FullScreen
- - CoreVM.AppClosingCommand
 
 # Views
  - Entities/RatingV
- - Dialogs/ExportSegmentsDialogV
  - Dialogs/FileOperationCollisionDialogV
  - Dialogs/FolderBrowserDialogV
  - Dialogs/FolderKeywordsDialogV
