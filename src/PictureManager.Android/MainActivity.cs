@@ -61,6 +61,11 @@ public class MainActivity : FragmentActivity {
     base.OnBackPressed();
   }
 
+  protected override void OnStop() {
+    Core.R.BackUp();
+    base.OnStop();
+  }
+
   public override void OnConfigurationChanged(Configuration newConfig) {
     base.OnConfigurationChanged(newConfig);
     // TODO CollectionView ReWrap, ...
