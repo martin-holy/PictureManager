@@ -88,7 +88,10 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
   }
 
   private static string _getCommonRoot(string[] paths) {
-    if (paths.Length == 0) return String.Empty;
+    if (paths.Length == 0) return string.Empty;
+
+    if (paths.Length == 1)
+      return Path.GetDirectoryName(Path.GetFullPath(paths[0])) ?? string.Empty;
 
     var separated = paths
       .Select(x => Path
