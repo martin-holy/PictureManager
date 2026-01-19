@@ -16,6 +16,7 @@
  - [N] MainMenu: Set selected segments as same person
  - [N] Export Segments in Folder menu
  - [B] ImageResizeDialog: resizing only one image
+ - [B] ImageResizeDialog: not preserve folders was ingnored
 
 2.31.0:
  - [N] MediaItems: CopySelectedToFolderCommand in folder menu
