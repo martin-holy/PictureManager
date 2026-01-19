@@ -71,7 +71,9 @@ public sealed class CoreVM : ObservableObject {
   public static RelayCommand<FolderM> ImagesToVideoCommand { get; private set; } = null!;
   public static AsyncRelayCommand<FolderM> ReadGeoLocationFromFilesCommand { get; private set; } = null!;
   public static AsyncRelayCommand<FolderM> ReloadMetadataCommand { get; private set; } = null!;
-  public static RelayCommand<FolderM> ResizeImagesCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> ResizeImagesInFolderCommand { get; private set; } = null!;
+  public static RelayCommand<FolderM> ResizeImagesToFolderCommand { get; private set; } = null!;
+  public static RelayCommand ResizeSelectedImagesCommand { get; private set; } = null!;
   public static AsyncRelayCommand<FolderM> RotateMediaItemsCommand { get; private set; } = null!;
   public static AsyncRelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; private set; } = null!;
 
@@ -109,7 +111,11 @@ public sealed class CoreVM : ObservableObject {
     ImagesToVideoCommand = new(x => _imagesToVideo(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Images to Video");
     ReadGeoLocationFromFilesCommand = new((f, _) => _readGeoLocationFromFiles(GetActive<ImageM>(f)), AnyActive<ImageM>, Res.IconLocationCheckin, "Read GeoLocation from files");
     ReloadMetadataCommand = new((x, _) => MediaItem.ReloadMetadata(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Reload metadata");
-    ResizeImagesCommand = new(x => _resizeImages(GetActive<ImageM>(x)), AnyActive<ImageM>, null, "Resize Images");
+    
+    ResizeImagesInFolderCommand = new(x => _resizeImages(GetActive<ImageM>(x)), null, "Resize Images in folder");
+    ResizeImagesToFolderCommand = new(x => _resizeImages(GetActive<ImageM>(null), x!.FullPath), x => AnyActive<ImageM>(null), null, "Resize Images to folder");
+    ResizeSelectedImagesCommand = new(() => _resizeImages(GetActive<ImageM>(null)), () => AnyActive<ImageM>(null), null, "Resize selected Images");
+
     RotateMediaItemsCommand = new((x, _) => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
     SaveImageMetadataToFilesCommand = new((x, _) => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, MH.UI.Res.IconSave, "Save Image metadata to files");
 
@@ -169,7 +175,8 @@ public sealed class CoreVM : ObservableObject {
     ImagesToVideoCommand.RaiseCanExecuteChanged();
     ReadGeoLocationFromFilesCommand.RaiseCanExecuteChanged();
     ReloadMetadataCommand.RaiseCanExecuteChanged();
-    ResizeImagesCommand.RaiseCanExecuteChanged();
+    ResizeImagesToFolderCommand.RaiseCanExecuteChanged();
+    ResizeSelectedImagesCommand.RaiseCanExecuteChanged();
     RotateMediaItemsCommand.RaiseCanExecuteChanged();
     SaveImageMetadataToFilesCommand.RaiseCanExecuteChanged();
   }
@@ -450,6 +457,9 @@ public sealed class CoreVM : ObservableObject {
 
   private static void _resizeImages(ImageM[] items) =>
     _ = Dialog.ShowAsync(new ImageResizeDialog(items));
+
+  private static void _resizeImages(ImageM[] items, string destDir) =>
+    _ = Dialog.ShowAsync(new ImageResizeDialog(items, destDir));
 
   private async Task _rotateMediaItems(RealMediaItemM[] items) {
     var rotation = await RotationDialog.Open();
