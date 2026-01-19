@@ -127,6 +127,7 @@ public class CoreUI : ICoreP, IDisposable {
     mm.HideMenuItems([
       CoreVM.CompressImagesCommand,
       CoreVM.ImagesToVideoCommand,
+      CoreVM.ResizeSelectedImagesCommand,
       MediaItemsViewsVM.RebuildThumbnailsCommand,
       MediaItemsViewsVM.ViewModifiedCommand,
       CoreVM.ExportSegmentsCommand]);
