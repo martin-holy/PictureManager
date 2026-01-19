@@ -17,6 +17,9 @@
  - [N] Export Segments in Folder menu
  - [B] ImageResizeDialog: resizing only one image
  - [B] ImageResizeDialog: not preserve folders was ingnored
+ - [U] Resize images in MainMenu renamed to Resize selected images
+ - [U] Resize images command in folder menu remaned to Resize images in folder
+ - [N] Resize images to folder command in folder menu
 
 2.31.0:
  - [N] MediaItems: CopySelectedToFolderCommand in folder menu
