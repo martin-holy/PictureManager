@@ -4,7 +4,6 @@ using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
-using MH.Utils;
 using PictureManager.Common.Features.MediaItem.Image;
 
 namespace PictureManager.Android.Views.Dialogs;
@@ -18,8 +17,10 @@ public sealed class CompressImagesDialogV : LinearLayout {
 
     AddView(_createQualityLayout(), new LayoutParams(LPU.Match, LPU.Wrap));
     AddView(_createProgressSizesLayout(), new LayoutParams(LPU.Match, DisplayU.DpToPx(64)));
-    AddView(_createProgressTextLayout(), new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    AddView(_createProgressBarLayout(), new LayoutParams(DisplayU.DpToPx(256), LPU.Wrap).WithMargin(DimensU.Spacing));
+    AddView(new TextView(context).BindProgressText(dataContext, out var _),
+      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+    AddView(new ProgressBar(context).BindProgressBar(dataContext, out var _),
+      new LayoutParams(DisplayU.DpToPx(256), LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 
   private LinearLayout _createQualityLayout() {
@@ -58,15 +59,5 @@ public sealed class CompressImagesDialogV : LinearLayout {
     layout.AddView(compressedLayout, new LinearLayout.LayoutParams(0, LPU.Match, 1f));
 
     return layout;
-  }
-
-  private TextView? _createProgressTextLayout() =>
-    new TextView(Context)
-      .BindText(_dataContext, nameof(CompressImagesDialog.ProgressText), x => x.ProgressText, x => x ?? string.Empty, out var _);
-
-  private ProgressBar? _createProgressBarLayout() {
-    var progress = new ProgressBar(Context) { Max = _dataContext.ProgressMax };
-    progress.Bind(_dataContext, nameof(CompressImagesDialog.ProgressValue), x => x.ProgressValue, (s, v) => s.Progress = v);
-    return progress;
   }
 }
