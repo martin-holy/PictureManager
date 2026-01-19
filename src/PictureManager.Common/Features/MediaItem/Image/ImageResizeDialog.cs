@@ -79,14 +79,20 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
     return Task.CompletedTask;
   }
 
-  private static Dictionary<ImageM, string> _buildPathMap(ImageM[] files, string destinationRoot) {
-    var commonRoot = _getCommonRoot(files.Select(x => x.FilePath).ToArray());
+  private Dictionary<ImageM, string> _buildPathMap(ImageM[] files, string destinationRoot) {
     var map = new Dictionary<ImageM, string>();
 
+    if (!_preserveFolders) {
+      foreach (var file in files)
+        map[file] = Path.Combine(destinationRoot, file.FileName);
+
+      return map;
+    }
+
+    var commonRoot = _getCommonRoot(files.Select(x => x.FilePath).ToArray());
     foreach (var file in files) {
       var relative = Path.GetRelativePath(commonRoot, file.FilePath);
-      var output = Path.Combine(destinationRoot, relative);
-      map[file] = output;
+      map[file] = Path.Combine(destinationRoot, relative);
     }
 
     return map;
