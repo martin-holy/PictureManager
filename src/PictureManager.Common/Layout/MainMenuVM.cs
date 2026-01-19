@@ -37,7 +37,7 @@ public class MainMenuVM : TreeView {
     mediaItem.Add(new(CoreVM.ImagesToVideoCommand));
     mediaItem.Add(new(MediaItemsViewsVM.RebuildThumbnailsCommand));
     mediaItem.Add(new(MediaItemVM.RenameCommand) { InputGestureText = "F2"});
-    mediaItem.Add(new(CoreVM.ResizeImagesCommand));
+    mediaItem.Add(new(CoreVM.ResizeSelectedImagesCommand));
     mediaItem.Add(new(CoreVM.ReloadMetadataCommand));
     mediaItem.Add(new(CoreVM.RotateMediaItemsCommand) { InputGestureText = "Ctrl+R"});
     mediaItem.Add(new(CoreVM.SaveImageMetadataToFilesCommand));
