@@ -29,10 +29,15 @@ public sealed class ImageResizeDialog : ParallelProgressDialog<ImageM> {
   public double Mpx { get => _mpx; set { _mpx = value; OnPropertyChanged(); } }
   public double MaxMpx { get => _maxMpx; set { _maxMpx = value; OnPropertyChanged(); } }
 
-  public AsyncRelayCommand OpenFolderBrowserCommand { get; }
+  public AsyncRelayCommand? OpenFolderBrowserCommand { get; }
 
   public ImageResizeDialog(ImageM[] items) : base("Resize Images", Res.IconImageMultiple, items, null, "Resize") {
     OpenFolderBrowserCommand = new(_openFolderBrowser, Res.IconFolder, "Select folder");
+    _setMaxMpx(items);
+  }
+
+  public ImageResizeDialog(ImageM[] items, string destDir) : base("Resize Images", Res.IconImageMultiple, items, null, "Resize") {
+    _destDir = destDir;
     _setMaxMpx(items);
   }
 
