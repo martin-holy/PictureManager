@@ -14,6 +14,8 @@
  - [U] New icon for new Segments View tab
  - [N] MainMenu: Add MediaItems view tab
  - [N] MainMenu: Set selected segments as same person
+ - [N] Export Segments in Folder menu
+ - [B] ImageResizeDialog: resizing only one image
 
 2.31.0:
  - [N] MediaItems: CopySelectedToFolderCommand in folder menu
