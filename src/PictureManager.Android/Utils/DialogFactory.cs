@@ -21,6 +21,7 @@ public static class DialogFactory {
       FileOperationCollisionDialog => new FileOperationCollisionDialogV(context, (FileOperationCollisionDialog)dataContext),
       FileOperationDialog => new FileOperationDialogV(context, (FileOperationDialog)dataContext),
       GetGeoNamesFromWebDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
+      ImageResizeDialog => new ImageResizeDialogV(context, (ImageResizeDialog)dataContext),
       MergePeopleDialog => new MergePeopleDialogV(context, (MergePeopleDialog)dataContext),
       ReadGeoLocationFromFilesDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       ReloadMetadataDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
