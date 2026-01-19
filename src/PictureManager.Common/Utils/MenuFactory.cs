@@ -56,7 +56,8 @@ public static class MenuFactory {
       new(CoreVM.CompressImagesCommand, item),
       new(MediaItemsViewsVM.RebuildThumbnailsCommand, item),
       new(CoreVM.ReloadMetadataCommand, item),
-      new(CoreVM.ResizeImagesCommand, item),
+      new(CoreVM.ResizeImagesInFolderCommand, item),
+      new(CoreVM.ResizeImagesToFolderCommand, item),
       new(CoreVM.SaveImageMetadataToFilesCommand, item)]),
     new(Res.IconSegment, "Segments", [
       new(CoreVM.ExportSegmentsToCommand, item)])];
