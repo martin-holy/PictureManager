@@ -119,7 +119,8 @@
       <MenuItem Command="core:CoreVM.CompressImagesCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="ftMediaItem:MediaItemsViewsVM.RebuildThumbnailsCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="core:CoreVM.ReloadMetadataCommand" CommandParameter="{Binding}"/>
-      <MenuItem Command="core:CoreVM.ResizeImagesCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="core:CoreVM.ResizeImagesInFolderCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="core:CoreVM.ResizeImagesToFolderCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="core:CoreVM.SaveImageMetadataToFilesCommand" CommandParameter="{Binding}"/>
     </MenuItem>
     
