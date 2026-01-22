@@ -22,8 +22,6 @@ public sealed class ImageS(ImageR r) {
 
   public bool TryWriteMetadata(ImageM img, int quality) {
     try {
-      var existingXmp = XmpU.ReadFromJpeg(img.FilePath);
-      var xmp = BuildXmp(existingXmp, img);
       if (!WriteMetadata(img, quality)) throw new("Error writing metadata");
       img.IsOnlyInDb = false;
     }
@@ -40,9 +38,9 @@ public sealed class ImageS(ImageR r) {
     if (_tryParseXmp(existingXmp) is not { } doc)
       doc = new XDocument(new XElement(_nsX + "xmpmeta", new XAttribute(XNamespace.Xmlns + "x", _nsX)));
 
-    if (doc.Descendants(_nsRdf + "RDF").FirstOrDefault() is not { } rdf) {
+    if (doc.Root!.Elements(_nsRdf + "RDF").FirstOrDefault() is not { } rdf) {
       rdf = new XElement(_nsRdf + "RDF", new XAttribute(XNamespace.Xmlns + "rdf", _nsRdf));
-      doc.Add(rdf);
+      doc.Root.Add(rdf);
     }
 
     _mergeRating(rdf, img.Rating);
