@@ -34,10 +34,6 @@ public sealed class ImageResizeDialogV : LinearLayout {
     var container = new LinearLayout(Context) { Orientation = Orientation.Horizontal };
 
     container.AddView(new TextView(Context) { Text = "Preserve:" });
-
-    container.AddView(new CheckBox(Context) { Text = "Thumbnail" }
-      .BindChecked(_dataContext, nameof(ImageResizeDialog.PreserveThumbnail),
-      x => x.PreserveThumbnail, (s, v) => s.PreserveThumbnail = v, out var _));
     
     container.AddView(new CheckBox(Context) { Text = "Metadata" }
       .BindChecked(_dataContext, nameof(ImageResizeDialog.PreserveMetadata),
