@@ -198,23 +198,6 @@ public static class MediaItemVM {
     if (string.Equals(existingXmp, mergedXmp, StringComparison.Ordinal))
       return false;
 
-    var tmpPath = srcPath + ".tmp";
-    try {
-      using var input = File.OpenRead(srcPath);
-      using var output = File.Create(tmpPath);
-      XmpU.WriteToJpeg(input, output, mergedXmp);
-      File.Delete(srcPath);
-      File.Move(tmpPath, srcPath);
-      return true;
-    }
-    catch (Exception ex) {
-      Log.Error(ex, srcPath);
-      try {
-        if (File.Exists(tmpPath))
-          File.Delete(tmpPath);
-      }
-      catch { }
-      return false;
-    }
+    return XmpU.WriteToJpeg(srcPath, mergedXmp);
   }
 }
