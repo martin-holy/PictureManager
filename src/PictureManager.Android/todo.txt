@@ -3,7 +3,6 @@
 - FileOperationCollisionDialog is not awaited so rename doesn't work. maybe it is because it is opened from another dialog
 - TextView and CheckBox have different text size, RadioButton maybe too
 - Slider can't be slided to the max in image resize dialog
-- Sliders can't be slided on the LoopPager
 
 # CoreUI:
  - MH.UI.Android.Utils.Init.SetDelegates()
@@ -15,11 +14,9 @@
  - FullScreen
 
 # Views
- - Entities/RatingV
  - Dialogs/FileOperationCollisionDialogV
  - Dialogs/FolderBrowserDialogV
  - Dialogs/FolderKeywordsDialogV
- - Dialogs/ResizeImagesDialogV
  - Dialogs/RotationDialogV
  - Sections/TreeViewSearchV
  - Layout/StatusBarV
