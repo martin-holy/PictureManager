@@ -7,14 +7,19 @@ using PictureManager.Common.Features.Rating;
 namespace PictureManager.Android.Views.Entities;
 
 public sealed class RatingV : LinearLayout {
-  public RatingV(Context context, RatingM dataContext) : base(context) {
+  public RatingV(Context context) : base(context) {
     Orientation = Orientation.Horizontal;
 
-    AddView(new IconView(context, Res.IconStar, _getColor(0, dataContext)));
-    AddView(new IconView(context, Res.IconStar, _getColor(1, dataContext)));
-    AddView(new IconView(context, Res.IconStar, _getColor(2, dataContext)));
-    AddView(new IconView(context, Res.IconStar, _getColor(3, dataContext)));
-    AddView(new IconView(context, Res.IconStar, _getColor(4, dataContext)));
+    AddView(new IconView(context));
+    AddView(new IconView(context));
+    AddView(new IconView(context));
+    AddView(new IconView(context));
+    AddView(new IconView(context));
+  }
+
+  public void Bind(RatingM rating) {
+    for (int i = 0; i < 5; i++)
+      ((IconView)GetChildAt(i)!).Bind(Res.IconStar, _getColor(i, rating));
   }
 
   private static int _getColor(int position, RatingM rating) =>
