@@ -7,6 +7,7 @@ using PictureManager.Common.Features.GeoName;
 using PictureManager.Common.Features.Keyword;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.Person;
+using PictureManager.Common.Features.Rating;
 using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Features.Viewer;
 using PictureManager.Common.Layout;
@@ -32,6 +33,7 @@ public static class MenuFactory {
       KeywordCategoryGroupM => _createKeywordCategoryGroupMenu(item),
       PersonCategoryGroupM => _createPersonCategoryGroupMenu(item),
       PersonDetailVM pd => _createPersonDetailMenu(pd),
+      RatingTreeM r => _createRatingTreeMenu(r),
       SegmentsDrawerVM drawer => _createSegmentsDrawerMenu(drawer),
       _ => []
     };
@@ -148,6 +150,12 @@ public static class MenuFactory {
     new(SegmentVM.SetSelectedAsUnknownCommand),
     new(SegmentVM.AddSelectedToPersonsTopSegmentsCommand, item.PersonM),
     new(SegmentVM.RemoveSelectedFromPersonsTopSegmentsCommand, item.PersonM)
+  ];
+
+  // RatingTree
+  private static IEnumerable<MenuItem> _createRatingTreeMenu(RatingTreeM item) => [
+    new(MediaItemsViewsVM.LoadByTagCommand, item),
+    new(MediaItemsViewsVM.FilterSetOrCommand, item.Rating)
   ];
 
   // SegmentsDrawer
