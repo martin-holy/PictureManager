@@ -25,6 +25,7 @@ public static class DialogFactory {
       MergePeopleDialog => new MergePeopleDialogV(context, (MergePeopleDialog)dataContext),
       ReadGeoLocationFromFilesDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       ReloadMetadataDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
+      RotationDialog => new RotationDialogV(context, (RotationDialog)dataContext),
       SaveMetadataDialog => new ProgressDialogV(context, (IProgressDialog)dataContext),
       _ => null
     };
