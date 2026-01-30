@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 		<TrimMode>full</TrimMode>
 		
-    <ApplicationId>cz.martinholy.picturemanager.android</ApplicationId>
+    <ApplicationId>cz.martinholy.picturemanager</ApplicationId>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
 		
