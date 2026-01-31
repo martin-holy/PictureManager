@@ -45,7 +45,11 @@ public class MainActivity : FragmentActivity {
 
     _core = Core.Inst;
     Task.Run(async () => {
-      await _core.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
+      var appDir = GetExternalFilesDir(null)?.AbsolutePath
+        ?? FilesDir?.AbsolutePath
+        ?? throw new InvalidOperationException("Unable to resolve app storage directory.");
+
+      await _core.InitAsync(splashScreen.ProgressMessage, appDir);
       _coreUI = new(this);
       _core.AfterInit(_coreUI);
       _coreUI.AfterInit(this);
