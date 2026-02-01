@@ -2,8 +2,6 @@
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
-using MH.Utils;
-using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Layout;
 
 namespace PictureManager.Android.Views.Layout;
@@ -29,8 +27,5 @@ public class MainWindowV : LinearLayout {
       MiddleContent);
 
     AddView(SlidePanels, new LayoutParams(LPU.Match, LPU.Match));
-
-    this.Bind(Common.Core.VM.MediaViewer, nameof(MediaViewerVM.UserInputMode), x => x.UserInputMode, (v, p) =>
-      v.SlidePanels.ViewPager.UserInputEnabled = p == MediaViewerVM.UserInputModes.Disabled);
   }
 }
