@@ -108,7 +108,6 @@ public class MediaViewerV : LinearLayout {
       };
 
       _zoomAndPanHost = new(context, _zoomAndPan);
-      _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
       _zoomAndPanHost.ImageTransformUpdatedEvent += _onImageTransformUpdated;
 
       _segmentRectS = new(Core.S.Segment) { EditLimit = 20 };
@@ -161,14 +160,6 @@ public class MediaViewerV : LinearLayout {
       return _segmentsRectsV.HandleTouchEvent(e, x, y);
     }
 
-    private void _onSingleTap(object? sender, EventArgs e) {
-      _mediaViewer.UserInputMode = _mediaViewer.UserInputMode != MediaViewerVM.UserInputModes.Disabled
-        ? MediaViewerVM.UserInputModes.Disabled
-        : _zoomAndPan.IsZoomed
-          ? MediaViewerVM.UserInputModes.Transform
-          : MediaViewerVM.UserInputModes.Browse;
-    }
-
     private void _onImageTransformUpdated(object? sender, EventArgs e) {
       if (!_segmentRectVM.ShowOverMediaItem) return;
       _segmentRectS.UpdateScale(_zoomAndPan.ScaleX);
@@ -210,7 +201,6 @@ public class MediaViewerV : LinearLayout {
       if (_disposed) return;
       if (disposing) {
         Core.R.Segment.ItemDeletedEvent -= _onSegmentItemDeleted;
-        _zoomAndPanHost.SingleTapConfirmedEvent -= _onSingleTap;
         _zoomAndPanHost.ImageTransformUpdatedEvent -= _onImageTransformUpdated;
         _segmentsRectsV.Dispose();
       }
