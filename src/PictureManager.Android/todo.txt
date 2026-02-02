@@ -1,8 +1,9 @@
 - open MediaItems in new tab command
-- selection lost in PeopleV when scrolled out off view
 - FileOperationCollisionDialog is not awaited so rename doesn't work. maybe it is because it is opened from another dialog
 - TextView and CheckBox have different text size, RadioButton maybe too
 - Slider can't be slided to the max in image resize dialog
+- People groups doesn't have expand arrow after new group is added and person is moved to it
+- sometimes unhandeled exception for CollectionViewItem when selected/opened
 
 # CoreUI:
  - MH.UI.Android.Utils.Init.SetDelegates()
@@ -17,8 +18,6 @@
  - Dialogs/FileOperationCollisionDialogV
  - Dialogs/FolderBrowserDialogV
  - Dialogs/FolderKeywordsDialogV
- - Dialogs/RotationDialogV
- - Sections/TreeViewSearchV
  - Layout/StatusBarV
  - Layout/ToolBarV
 
