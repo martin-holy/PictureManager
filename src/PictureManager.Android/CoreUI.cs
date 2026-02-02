@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.OS;
 using MH.UI.Android.Utils;
+using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
@@ -58,7 +59,8 @@ public class CoreUI : ICoreP, IDisposable {
         [true, true, true, false, false]  // view mode
       ];
     Core.VM.MainWindow.SlidePanelsGrid.ActiveLayout = 0;
-    Core.VM.MainTabs.TabStrip = new(MH.UI.Controls.Dock.Top, MH.UI.Controls.Dock.Left, new MainTabsSlotVM());
+    Core.VM.MainTabs.TabStrip = new(Dock.Top, Dock.Left, new MainTabsSlotVM());
+    Core.VM.Segment.Views.Tabs.TabStrip = new(Dock.Top, Dock.Left, new SegmentsViewsTabsSlotVM());
     MainWindow = new MainWindowV(context, Core.VM.MainWindow);
     _attachEvents();
   }
