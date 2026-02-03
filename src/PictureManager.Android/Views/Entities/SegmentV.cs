@@ -1,5 +1,7 @@
 ﻿using Android.Content;
+using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
 using PictureManager.Common.Features.Segment;
 using System;
@@ -7,11 +9,22 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Android.Views.Entities;
 
-public sealed class SegmentV : FrameLayout {
-  public SegmentV(Context context, SegmentM segment) : base(context) {
-    var image = new ImageView(context);
-    AddView(image, new LayoutParams(LPU.Match, LPU.Match));
-    _loadThumbnailAsync(segment, image);
+public sealed class SegmentV : FrameLayout, ICollectionViewItemContent {
+  private readonly ImageView _image;
+
+  public View View => this;
+
+  public SegmentV(Context context) : base(context) {
+    AddView(_image = new ImageView(context), new LayoutParams(LPU.Match, LPU.Match));
+  }
+
+  public void Bind(object? item) {
+    if (item is not SegmentM segment) return;
+    _loadThumbnailAsync(segment, _image);
+  }
+
+  public void Unbind() {
+    _image.SetImageBitmap(null);
   }
 
   private static async void _loadThumbnailAsync(SegmentM segment, ImageView imageView) {
