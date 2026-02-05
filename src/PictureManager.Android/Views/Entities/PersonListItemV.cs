@@ -6,13 +6,17 @@ using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils;
 using PictureManager.Common.Features.Person;
+using System;
 
 namespace PictureManager.Android.Views.Entities;
 
-public sealed class PersonListItemV : LinearLayout {
+public sealed class PersonListItemV : LinearLayout, ICollectionViewItemContent {
   private readonly TextView _name;
+  private IDisposable? _personNameBinding;
 
-  public PersonListItemV(Context context, PersonM person) : base(context) {
+  public View View => this;
+
+  public PersonListItemV(Context context) : base(context) {
     Orientation = Orientation.Horizontal;
 
     AddView(new IconView(context).Bind(Resource.Drawable.icon_people, Resource.Color.colorPeople),
@@ -20,7 +24,16 @@ public sealed class PersonListItemV : LinearLayout {
 
     AddView(_name = new TextView(context),
       new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Center }.WithMargin(DimensU.Spacing, 0, 0, 0));
+  }
 
-    this.Bind(person, nameof(PersonM.Name), x => x.Name, (t, p) => t._name.Text = p);
+  public void Bind(object item) {
+    if (item is not PersonM person) return;
+    _personNameBinding?.Dispose();
+    _personNameBinding = this.Bind(person, nameof(PersonM.Name), x => x.Name, (t, p) => t._name.Text = p);
+  }
+
+  public void Unbind() {
+    _personNameBinding?.Dispose();
+    _personNameBinding = null;
   }
 }
