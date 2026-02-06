@@ -38,6 +38,7 @@ public class MainActivity : FragmentActivity {
     if (permissions.Any(p => ContextCompat.CheckSelfPermission(this, p) != Permission.Granted))
       ActivityCompat.RequestPermissions(this, permissions, 0);
 
+    MH.UI.Android.Utils.Init.SetDelegates();
     Core.UiVersion = PackageManager!.GetPackageInfo(PackageName!, 0)?.VersionName ?? "?";
 
     var splashScreen = new SplashScreenV(this);
@@ -48,7 +49,7 @@ public class MainActivity : FragmentActivity {
       var appDir = GetExternalFilesDir(null)?.AbsolutePath
         ?? FilesDir?.AbsolutePath
         ?? throw new InvalidOperationException("Unable to resolve app storage directory.");
-
+      
       await _core.InitAsync(splashScreen.ProgressMessage, appDir);
       _coreUI = new(this);
       _core.AfterInit(_coreUI);

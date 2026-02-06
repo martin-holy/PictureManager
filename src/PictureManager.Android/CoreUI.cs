@@ -36,7 +36,6 @@ public class CoreUI : ICoreP, IDisposable {
     CoreR.FileOperationDelete = _fileOperationDelete;
     // TODO PORT
     MH.UI.Android.Utils.Init.Utils(mainActivity);
-    MH.UI.Android.Utils.Init.SetDelegates();
     MH.UI.Android.Utils.Icons.IconNameToColor = Resources.Res.IconToColorDic;
     MH.UI.Controls.CollectionView.ItemBorderSize = MH.UI.Android.Utils.DisplayU.DpToPx(3);
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
