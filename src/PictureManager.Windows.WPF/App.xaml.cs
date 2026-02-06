@@ -20,6 +20,7 @@ public partial class App {
       Dialog.ShowAsync(new ErrorDialog((Exception)args.ExceptionObject));
     };
 
+    MH.UI.WPF.Utils.Init.SetDelegates();
     MH.UI.WPF.Utils.ColorHelper.AddColorsToResources();
     Core.UiVersion = Core.GetVersionWithoutHash(Assembly.GetEntryAssembly());
 
