@@ -157,6 +157,7 @@
         <MenuItem Command="mhuibc:TreeCategory.ItemCreateCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemRenameCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="mhuibc:TreeCategory.ItemDeleteCommand" CommandParameter="{Binding}"/>
+        <MenuItem Command="mhuibc:TreeCategory.ItemMoveToGroupCommand" CommandParameter="{Binding}"/>
         <Separator/>
         <MenuItem Command="ftMediaItem:MediaItemVM.LoadByKeywordCommand" CommandParameter="{Binding}"/>
         <MenuItem Command="ftPerson:PersonVM.LoadByKeywordCommand" CommandParameter="{Binding}"/>
