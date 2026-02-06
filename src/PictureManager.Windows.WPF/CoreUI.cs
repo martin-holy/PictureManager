@@ -33,7 +33,6 @@ public sealed class CoreUI : ObservableObject, ICoreP {
   public CoreUI() {
     CoreR.FileOperationDelete = FileOperationDelete;
 
-    MH.UI.WPF.Utils.Init.SetDelegates();
     MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
     GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
