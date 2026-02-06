@@ -1,6 +1,6 @@
 ﻿using Android.Content;
 using Android.Widget;
-using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
@@ -15,14 +15,14 @@ public sealed class MergePeopleDialogV : LinearLayout {
     Orientation = Orientation.Vertical;
     LayoutParameters = new LinearLayout.LayoutParams(LPU.Match, 0, 1f);
 
-    AddView(new CollectionViewHost(context, dataContext.PeopleView, PeopleV.GetPersonV),
+    AddView(new CollectionViewHost(context, dataContext.PeopleView, PeopleV.CreatePersonV),
       new LayoutParams(LPU.Match, _getPeopleViewHeight()));
 
     AddView(new TextView(context) { Background = BackgroundFactory.RoundDarker() }
       .BindText(dataContext, nameof(MergePeopleDialog.Person), x => x.Person.Name, x => x, out var _),
       new LayoutParams(LPU.Wrap, LPU.Wrap).WithMargin(DimensU.Spacing));
 
-    AddView(new CollectionViewHost(context, dataContext.SegmentsView, SegmentsViewV.GetSegmentV),
+    AddView(new CollectionViewHost(context, dataContext.SegmentsView, SegmentsViewV.CreateSegmentV),
       new LayoutParams(LPU.Match, 0, 1f));
   }
 

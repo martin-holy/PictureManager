@@ -1,7 +1,6 @@
 ﻿using Android.Content;
-using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
 using PictureManager.Android.Views.Entities;
@@ -15,16 +14,14 @@ public sealed class PeopleV : FrameLayout {
   public PeopleV(Context context, PeopleVM dataContext) : base(context) {
     DataContext = dataContext;
     SetBackgroundResource(Resource.Color.c_static_ba);
-    AddView(new CollectionViewHost(context, dataContext, GetPersonV));
+    AddView(new CollectionViewHost(context, dataContext, CreatePersonV));
   }
 
-  public static View? GetPersonV(LinearLayout container, ICollectionViewGroup group, object? item) {
-    if (item is not PersonM person) return null;
-    return group.ViewMode switch {
-      CollectionView.ViewMode.ThumbSmall => new PersonThumbV(container.Context!, person),
-      CollectionView.ViewMode.List => new PersonListItemV(container.Context!, person),
-      CollectionView.ViewMode.Tiles => new PersonTileV(container.Context!, person),
-      _ => null
+  public static ICollectionViewItemContent CreatePersonV(Context context, ICollectionViewGroup group) =>
+    group.ViewMode switch {
+      CollectionView.ViewMode.ThumbSmall => new PersonThumbV(context),
+      CollectionView.ViewMode.List => new PersonListItemV(context),
+      CollectionView.ViewMode.Tiles => new PersonTileV(context),
+      _ => new PersonThumbV(context)
     };
-  }
 }

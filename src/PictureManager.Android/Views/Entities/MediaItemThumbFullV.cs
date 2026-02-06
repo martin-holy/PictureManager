@@ -1,7 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Utils;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
@@ -30,7 +30,7 @@ public class MediaItemThumbFullV : FrameLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
-    _cts?.Cancel();
+    Unbind();
     if (item is not MediaItemM mi) return;
     _videoOverlayer.Visibility = mi is VideoM ? ViewStates.Visible : ViewStates.Gone;
     _cts = new CancellationTokenSource();

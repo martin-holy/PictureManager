@@ -1,7 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
@@ -41,7 +41,7 @@ public class MediaItemsViewV : LinearLayout {
     _importContainer.AddView(_importCancelButton, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.End }.WithDpMargin(0, 6, 6, 0));
     AddView(_importContainer, new LayoutParams(LPU.Match, LPU.Match));
 
-    _host = new CollectionViewHost(context, dataContext, _getItemView);
+    _host = new CollectionViewHost(context, dataContext, _createItemContent);
     AddView(_host);
 
     this.Bind(dataContext, nameof(MediaItemsViewVM.IsLoading), x => x.IsLoading, (t, _) => t._updateVisibility());
@@ -53,13 +53,8 @@ public class MediaItemsViewV : LinearLayout {
     _importProgress.Bind(dataContext.Import, nameof(MediaItemsImport.DoneCount), x => x.DoneCount, (view, doneCount) => view.Progress = doneCount);
   }
 
-  private View? _getItemView(LinearLayout container, ICollectionViewGroup group, object? item) {
-    if (item is not MediaItemM mi) return null;
-    return group.GetItemTemplateName() switch {
-      "PM.DT.MediaItem.Thumb-Full" => new MediaItemThumbFullV(container.Context!).Bind(mi),
-      _ => null
-    };
-  }
+  private MediaItemThumbFullV _createItemContent(Context context, ICollectionViewGroup group) =>
+    new(context);
 
   private void _updateVisibility() {
     _loadingText.Visibility = DataContext.IsLoading && !DataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;

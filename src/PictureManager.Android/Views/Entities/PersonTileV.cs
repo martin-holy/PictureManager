@@ -1,21 +1,40 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils;
 using PictureManager.Common.Features.Person;
+using System;
 
 namespace PictureManager.Android.Views.Entities;
 
-public sealed class PersonTileV : LinearLayout {
+public sealed class PersonTileV : LinearLayout, ICollectionViewItemContent {
+  private readonly PersonThumbV _personThumbV;
   private readonly TextView _name;
+  private IDisposable? _personNameBinding;
 
-  public PersonTileV(Context context, PersonM person) : base(context) {
+  public View View => this;
+
+  public PersonTileV(Context context) : base(context) {
     Orientation = Orientation.Horizontal;
-    AddView(new PersonThumbV(context, person), new LayoutParams(PersonVM.PersonTileSegmentWidth, PersonVM.PersonTileSegmentWidth));
-    AddView(_name = new TextView(context), 
+    AddView(_personThumbV = new PersonThumbV(context),
+      new LayoutParams(PersonVM.PersonTileSegmentWidth, PersonVM.PersonTileSegmentWidth));
+    AddView(_name = new TextView(context),
       new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Center }.WithMargin(DimensU.Spacing, 0, 0, 0));
-    this.Bind(person, nameof(PersonM.Name), x => x.Name, (t, p) => t._name.Text = p);
+  }
+
+  public void Bind(object item) {
+    Unbind();
+    if (item is not PersonM person) return;
+    _personThumbV.Bind(person);
+    _personNameBinding = this.Bind(person, nameof(PersonM.Name), x => x.Name, (t, p) => t._name.Text = p);
+  }
+
+  public void Unbind() {
+    _personThumbV.Unbind();
+    _personNameBinding?.Dispose();
+    _personNameBinding = null;
   }
 }

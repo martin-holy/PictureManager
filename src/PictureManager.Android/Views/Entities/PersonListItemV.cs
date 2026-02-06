@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils;
@@ -27,8 +28,8 @@ public sealed class PersonListItemV : LinearLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
+    Unbind();
     if (item is not PersonM person) return;
-    _personNameBinding?.Dispose();
     _personNameBinding = this.Bind(person, nameof(PersonM.Name), x => x.Name, (t, p) => t._name.Text = p);
   }
 
