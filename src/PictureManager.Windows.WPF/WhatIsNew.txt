@@ -3,6 +3,9 @@
 [U] - Update
 [B] - Bug fix
 
+2.33.0:
+ - [N] Move keyword to group command in menu
+
 2.32.0:
  - [N] PersonDetailV: Add/Remove selected segments to/from person's Top segments in menu
  - [N] MainMenu: Delete selected segments
