@@ -100,6 +100,7 @@ public static class MenuFactory {
     new(TreeCategory.ItemCreateCommand, item),
     new(TreeCategory.ItemRenameCommand, item),
     new(TreeCategory.ItemDeleteCommand, item),
+    new(TreeCategory.ItemMoveToGroupCommand, item),
     new(MediaItemVM.LoadByKeywordCommand, item),
     new(PersonVM.LoadByKeywordCommand, item),
     new(SegmentVM.LoadByKeywordCommand, item),
