@@ -50,6 +50,7 @@ public static class Res {
   public const string IconPeopleMultiple = "IconPeopleMultiple";
   public const string IconPlus = "IconPlus";
   public const string IconRotateClockwise = "IconRotateClockwise";
+  public const string IconRotate = "IconRotate";
   public const string IconRotateLeft = "IconRotateLeft";
   public const string IconRotateRight = "IconRotateRight";
   public const string IconRuler = "IconRuler";
