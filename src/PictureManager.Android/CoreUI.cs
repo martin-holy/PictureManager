@@ -60,7 +60,7 @@ public class CoreUI : ICoreP, IDisposable {
     Core.VM.MainWindow.SlidePanelsGrid.ActiveLayout = 0;
     Core.VM.MainTabs.TabStrip = new(Dock.Top, Dock.Left, new MainTabsSlotVM());
     Core.VM.Segment.Views.Tabs.TabStrip = new(Dock.Top, Dock.Left, new SegmentsViewsTabsSlotVM());
-    MainWindow = new MainWindowV(context, Core.VM.MainWindow);
+    MainWindow = new MainWindowV(context, Core.VM);
     _attachEvents();
   }
 

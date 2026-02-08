@@ -1,53 +1,59 @@
 ﻿using Android.Content;
 using Android.Views;
-using Android.Widget;
 using MH.UI.Android.Controls;
-using MH.UI.Android.Utils;
+using MH.UI.Controls;
 using MH.Utils;
+using MH.Utils.Interfaces;
+using PictureManager.Android.Views.Sections.ToolBarPanels;
 using PictureManager.Common;
-using PictureManager.Common.Features.Segment;
-using PictureManager.Common.Layout;
-using System.Collections;
+using PictureManager.Common.Features.MediaItem;
 
 namespace PictureManager.Android.Views.Layout;
 
-public class ToolBarV : LinearLayout {
-  public ToolBarV(Context context, MainWindowVM mainWindowVM) : base(context) {
-    Orientation = Orientation.Horizontal;
-    AddView(new ButtonMenu(Context!, mainWindowVM.MainMenu, mainWindowVM.MainMenu.Icon));
+public sealed class ToolBarV : ToolBar {
+  private readonly CoreVM _coreVM;
+  private LoopPager? _loopPager;
 
-    AddView(new CompactIconTextButton(context)
-      .WithCommand(CoreVM.OpenLogCommand)
-      .WithBind(Core.VM.Log.Items, nameof(ICollection.Count), x => x.Count, (view, count) => {
-        view.Visibility = count > 0 ? ViewStates.Visible : ViewStates.Gone;
-        view.Text.Text = count.ToString();
-      }));
-
-    AddView(new CompactIconTextButton(context)
-      .WithCommand(CoreVM.SaveDbCommand)
-      .WithBind(Core.R, nameof(CoreR.Changes), x => x.Changes, (view, changes) => {
-        view.Visibility = changes > 0 ? ViewStates.Visible : ViewStates.Gone;
-        view.Text.Text = changes.ToString();
-      }));
-
-    AddView(new IconButton(context).WithCommand(CoreUI.ShareMediaItemsCommand));
-
-    _addSegmentRect(context, Core.VM.Segment.Rect);
+  public ToolBarV(Context context, CoreVM coreVM) : base(context) {
+    _coreVM = coreVM;
   }
 
-  private void _addSegmentRect(Context context, SegmentRectVM vm) {
-    AddView(new IconToggleButton(context, Res.IconSegmentPerson)
-      .BindToggled(vm, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem, (s, p) => s.ShowOverMediaItem = p, out var _));
+  public void Init(LoopPager loopPager) {
+    _loopPager = loopPager;
+    DefaultPanelsKeys = ["common"];
 
-    AddView(new IconToggleButton(context, Res.IconSegmentEdit)
-      .BindToggled(vm, nameof(SegmentRectVM.IsEditEnabled), x => x.IsEditEnabled, (s, p) => s.IsEditEnabled = p, out var _)
-      .BindVisibility(vm, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem));
+    RegisterPanel("common", () => new CommonToolBarPanel(Context!, _coreVM.MainWindow));
+    RegisterPanel("mediaItems", () => new MediaItemsToolBarPanel(Context!));
+    RegisterPanel("mediaViewer", () => new MediaViewerToolBarPanel(Context!, _coreVM));
 
-    AddView(new IconToggleButton(context, Res.IconSegmentNew)
-      .BindToggled(vm, nameof(SegmentRectVM.CanCreateNew), x => x.CanCreateNew, (s, p) => s.CanCreateNew = p, out var _)
-      .BindVisibility(vm, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem && x.IsEditEnabled)
-      .BindVisibility(vm, nameof(SegmentRectVM.IsEditEnabled), x => x.ShowOverMediaItem && x.IsEditEnabled));
+    RegisterType(typeof(MediaViewerVM), ["common", "mediaViewer"]);
+    RegisterType(typeof(MediaItemsViewVM), ["common", "mediaItems"]);
 
-    AddView(new IconButton(context).WithCommand(SegmentVM.DeleteSelectedCommand));
+    loopPager.PageChangedEvent += (_, page) => _updateToolBar(null, page);
+    this.Bind(_coreVM.MainWindow.TreeViewCategories, nameof(TabControl.Selected), x => x.Selected, (t, p) => t._updateToolBar(p, null), false);
+    this.Bind(_coreVM.MainTabs, nameof(TabControl.Selected), x => x.Selected, (t, p) => t._updateToolBar(p, null), false);
+    this.Bind(_coreVM.MainWindow.ToolsTabs, nameof(TabControl.Selected), x => x.Selected, (t, p) => t._updateToolBar(p, null), false);
+    this.Bind(_coreVM.MediaViewer, nameof(MediaViewerVM.IsVisible), x => x.IsVisible, (t, _) => t._updateToolBar(null, null), false);
+    _updateToolBar(null, null);
   }
+
+  private void _updateToolBar(IListItem? tab, View? page) {
+    page ??= _loopPager?.GetCurrentItem();
+
+    if (_coreVM.MediaViewer.IsVisible && page is MiddleContentV) {
+      Activate(typeof(MediaViewerVM));
+      return;
+    }
+
+    tab ??= _pageToSelectedTab(page);
+    Activate(tab?.Data?.GetType());
+  }
+
+  private IListItem? _pageToSelectedTab(View? page) =>
+    page switch {
+      TreeViewCategoriesV => _coreVM.MainWindow.TreeViewCategories.Selected,
+      MiddleContentV => _coreVM.MainTabs.Selected,
+      ToolsTabsV => _coreVM.ToolsTabs.Selected,
+      _ => null
+    };
 }
