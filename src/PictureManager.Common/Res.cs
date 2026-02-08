@@ -71,6 +71,7 @@ public static class Res {
   public const string IconTag = "IconTag";
   public const string IconThreeBars = "IconThreeBars";
   public const string IconTagLabel = "IconTagLabel";
+  public const string IconTrash = "IconTrash";
   public const string IconUnknownSegment = "IconUnknownSegment";
   
   public static readonly Dictionary<object, object> IconToBrushDic = new() {
