@@ -116,7 +116,7 @@ public sealed class CoreVM : ObservableObject {
     ResizeImagesToFolderCommand = new(x => _resizeImages(GetActive<ImageM>(null), x!.FullPath), x => AnyActive<ImageM>(null), null, "Resize Images to folder");
     ResizeSelectedImagesCommand = new(() => _resizeImages(GetActive<ImageM>(null)), () => AnyActive<ImageM>(null), null, "Resize selected Images");
 
-    RotateMediaItemsCommand = new((x, _) => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, null, "Rotate");
+    RotateMediaItemsCommand = new((x, _) => _rotateMediaItems(GetActive<RealMediaItemM>(x)), AnyActive<RealMediaItemM>, Res.IconRotate, "Rotate");
     SaveImageMetadataToFilesCommand = new((x, _) => _saveImageMetadataToFiles(GetActive<ImageM>(x)), AnyActive<ImageM>, MH.UI.Res.IconSave, "Save Image metadata to files");
 
     MainWindow.MainMenu.Build(this);
