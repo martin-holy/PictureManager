@@ -52,7 +52,7 @@ public sealed class MediaItemVM : ObservableObject {
     _coreVM = coreVM;
     _s = s;
     CommentCommand = new(_ => _comment(Current!), () => Current != null, Res.IconNotification, "Comment");
-    DeleteCommand = new(_ => Delete(_coreVM.GetActive<MediaItemM>()), () => _coreVM.AnyActive<MediaItemM>(), MH.UI.Res.IconXCross, "Delete");
+    DeleteCommand = new(_ => Delete(_coreVM.GetActive<MediaItemM>()), () => _coreVM.AnyActive<MediaItemM>(), Res.IconTrash, "Delete");
     LoadByGeoNameCommand = new(_loadBy, Res.IconImageMultiple, "Load Media items");
     LoadByKeywordCommand = new(_loadBy, Res.IconImageMultiple, "Load Media items");
     LoadByPersonCommand = new(_loadBy, Res.IconImageMultiple, "Load Media items");
