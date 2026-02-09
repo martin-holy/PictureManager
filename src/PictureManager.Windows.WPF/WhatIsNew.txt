@@ -7,6 +7,7 @@
  - [N] Move keyword to group command in menu
  - [N] Rotate icon for rotate images
  - [U] Trash icon for delete items
+ - [N] Set selected segments as unknown command in main menu
 
 2.32.0:
  - [N] PersonDetailV: Add/Remove selected segments to/from person's Top segments in menu
