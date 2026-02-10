@@ -19,6 +19,8 @@ public sealed class MediaViewerVM : ObservableObject {
   private MediaItemM? _current;
   private bool _isVisible;
   private UserInputModes _userInputMode;
+  private bool _expandToFill;
+  private bool _shrinkToFill;
 
   public int ContentWidth { get => _contentWidth; set { _contentWidth = value; OnPropertyChanged(); } }
   public int ContentHeight { get => _contentHeight; set { _contentHeight = value; OnPropertyChanged(); } }
@@ -26,6 +28,8 @@ public sealed class MediaViewerVM : ObservableObject {
   public int IndexOfCurrent { get => _indexOfCurrent; }
   public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
   public UserInputModes UserInputMode { get => _userInputMode; set { _userInputMode = value; OnPropertyChanged(); } }
+  public bool ExpandToFill { get => _expandToFill; set { _expandToFill = value; OnPropertyChanged(); } }
+  public bool ShrinkToFill { get => _shrinkToFill; set { _shrinkToFill = value; OnPropertyChanged(); } }
   public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
   public List<MediaItemM> MediaItems { get; private set; } = [];
   public SlideshowVM Slideshow { get; }
@@ -36,8 +40,11 @@ public sealed class MediaViewerVM : ObservableObject {
   public RelayCommand<MouseWheelEventArgs> NavigateCommand { get; }
 
   public MediaViewerVM() {
-    ZoomAndPan.ExpandToFill = Core.Settings.MediaViewer.ExpandToFill;
-    ZoomAndPan.ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill;
+    // shared state for android implementation // TODO try to make it same for WPF too
+    _expandToFill = Core.Settings.MediaViewer.ExpandToFill;
+    _shrinkToFill = Core.Settings.MediaViewer.ShrinkToFill;
+    ZoomAndPan.ExpandToFill = _expandToFill;
+    ZoomAndPan.ShrinkToFill = _shrinkToFill;
 
     Slideshow = new(this, ZoomAndPan);
     NextCommand = new(_next, _canNext);
