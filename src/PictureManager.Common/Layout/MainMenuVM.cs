@@ -23,25 +23,26 @@ public class MainMenuVM : TreeView {
   public void Build(CoreVM coreVM) {
     RootHolder.Clear();
 
-    var geoLocation = new MenuItem(Res.IconLocationCheckin, "GeoLocation");
-    geoLocation.Add(new(CoreVM.GetGeoNamesFromWebCommand));
-    geoLocation.Add(new(GeoNameVM.NewGeoNameFromGpsCommand));
-    geoLocation.Add(new(CoreVM.ReadGeoLocationFromFilesCommand));
+    var geoLocation = new MenuItem(Res.IconLocationCheckin, "GeoLocation", [
+      new(CoreVM.GetGeoNamesFromWebCommand),
+      new(GeoNameVM.NewGeoNameFromGpsCommand),
+      new(CoreVM.ReadGeoLocationFromFilesCommand)]);
 
-    var mediaItem = new MenuItem(Res.IconImageMultiple, "Media Items");
-    mediaItem.Add(new(MediaItemsViewsVM.AddViewCommand));
-    mediaItem.Add(new(MediaItemVM.CommentCommand) { InputGestureText = "Ctrl+K"});
-    mediaItem.Add(new(CoreVM.CompressImagesCommand));
-    mediaItem.Add(new(MediaItemsViewsVM.CopyPathsCommand));
-    mediaItem.Add(new(MediaItemVM.DeleteCommand));
-    mediaItem.Add(new(CoreVM.ImagesToVideoCommand));
-    mediaItem.Add(new(MediaItemsViewsVM.RebuildThumbnailsCommand));
-    mediaItem.Add(new(MediaItemVM.RenameCommand) { InputGestureText = "F2"});
-    mediaItem.Add(new(CoreVM.ResizeSelectedImagesCommand));
-    mediaItem.Add(new(CoreVM.ReloadMetadataCommand));
-    mediaItem.Add(new(CoreVM.RotateMediaItemsCommand) { InputGestureText = "Ctrl+R"});
-    mediaItem.Add(new(CoreVM.SaveImageMetadataToFilesCommand));
-    mediaItem.Add(new(MediaItemsViewsVM.ViewModifiedCommand));
+    var mediaItem = new MenuItem(Res.IconImageMultiple, "Media Items", [
+      new(MediaItemsViewsVM.AddViewCommand),
+      new(MediaItemVM.CommentCommand) { InputGestureText = "Ctrl+K"},
+      new(CoreVM.CompressImagesCommand),
+      new(MediaItemsViewsVM.CopyPathsCommand),
+      new(MediaItemVM.DeleteCommand),
+      new(CoreVM.ImagesToVideoCommand),
+      new(MediaItemsViewsVM.RebuildThumbnailsCommand),
+      new(MediaItemVM.RenameCommand) { InputGestureText = "F2"},
+      new(CoreVM.ResizeSelectedImagesCommand),
+      new(CoreVM.ReloadMetadataCommand),
+      new(CoreVM.RotateMediaItemsCommand) { InputGestureText = "Ctrl+R"},
+      new(CoreVM.SaveImageMetadataToFilesCommand),
+      new(MediaItemsViewsVM.ViewModifiedCommand),
+      new(MediaItemVM.ViewSelectedCommand)]);
 
     var segments = new MenuItem(Res.IconSegment, "Segments", [
       new(Features.Segment.SegmentVM.DeleteSelectedCommand),
