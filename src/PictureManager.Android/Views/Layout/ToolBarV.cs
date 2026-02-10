@@ -24,10 +24,11 @@ public sealed class ToolBarV : ToolBar {
 
     RegisterPanel("common", () => new CommonToolBarPanel(Context!, _coreVM.MainWindow));
     RegisterPanel("mediaItems", () => new MediaItemsToolBarPanel(Context!));
+    RegisterPanel("mediaItemThumbs", () => new MediaItemThumbsToolBarPanel(Context!));
     RegisterPanel("mediaViewer", () => new MediaViewerToolBarPanel(Context!, _coreVM));
 
-    RegisterType(typeof(MediaViewerVM), ["common", "mediaViewer"]);
-    RegisterType(typeof(MediaItemsViewVM), ["common", "mediaItems"]);
+    RegisterType(typeof(MediaViewerVM), ["common", "mediaItems", "mediaViewer"]);
+    RegisterType(typeof(MediaItemsViewVM), ["common", "mediaItems", "mediaItemThumbs"]);
 
     loopPager.PageChangedEvent += (_, page) => _updateToolBar(null, page);
     this.Bind(_coreVM.MainWindow.TreeViewCategories, nameof(TabControl.Selected), x => x.Selected, (t, p) => t._updateToolBar(p, null), false);
