@@ -98,14 +98,12 @@ public class MediaViewerV : LinearLayout {
     private readonly SegmentsRectsV _segmentsRectsV;
     private readonly SegmentRectS _segmentRectS;
     private readonly SegmentRectVM _segmentRectVM;
+    private MediaItemM? _dataContext;
     private bool _disposed;
 
     public MediaViewerMediaItemView(Context context, MediaViewerVM mediaViewer) : base(context) {
       _mediaViewer = mediaViewer;
-      _zoomAndPan = new() {
-        ExpandToFill = Core.Settings.MediaViewer.ExpandToFill,
-        ShrinkToFill = Core.Settings.MediaViewer.ShrinkToFill
-      };
+      _zoomAndPan = new();
 
       _zoomAndPanHost = new(context, _zoomAndPan);
       _zoomAndPanHost.ImageTransformUpdatedEvent += _onImageTransformUpdated;
@@ -138,6 +136,11 @@ public class MediaViewerV : LinearLayout {
           t._onImageTransformUpdated(null, EventArgs.Empty);
           t._segmentRectS.ReloadMediaItemSegmentRects();
         });
+
+      this.Bind(mediaViewer, nameof(MediaViewerVM.ExpandToFill), x => x.ExpandToFill,
+        (t, p) => { t._zoomAndPan.ExpandToFill = p; t.Bind(_dataContext); });
+      this.Bind(mediaViewer, nameof(MediaViewerVM.ShrinkToFill), x => x.ShrinkToFill,
+        (t, p) => { t._zoomAndPan.ShrinkToFill = p; t.Bind(_dataContext); });
     }
 
     public override bool OnInterceptTouchEvent(MotionEvent? e) {
@@ -172,6 +175,8 @@ public class MediaViewerV : LinearLayout {
     }
 
     public void Bind(MediaItemM? mi) {
+      _dataContext = mi;
+
       if (mi == null) {
         _zoomAndPanHost.SetImagePath(null);
         _zoomAndPanHost.SetVideoPath(null);
