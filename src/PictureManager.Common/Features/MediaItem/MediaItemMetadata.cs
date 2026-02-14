@@ -75,6 +75,9 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
           }
         }
       }
+
+      if (person != null && person.Segment == null)
+        person.Segment = MediaItem.Segments[0];
     }
 
     Core.R.Segment.ItemsDelete(oldSegments?.Except(MediaItem.Segments.EmptyIfNull()).ToList());
