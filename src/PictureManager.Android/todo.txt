@@ -4,6 +4,8 @@
 - Slider can't be slided to the max in image resize dialog
 - People groups doesn't have expand arrow after new group is added and person is moved to it
 - sometimes unhandeled exception for CollectionViewItem when selected/opened
+- CollectionViewHost: unselect on long touch
+- thumbs size in ToolBar
 
 # CoreUI:
  - MH.UI.Android.Utils.Init.SetDelegates()
