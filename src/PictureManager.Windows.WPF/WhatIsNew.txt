@@ -9,6 +9,7 @@
  - [U] Trash icon for delete items
  - [N] Set selected segments as unknown command in main menu
  - [N] View selected media items command in main menu
+ - [B] Set segment to new person when reading metadata
 
 2.32.0:
  - [N] PersonDetailV: Add/Remove selected segments to/from person's Top segments in menu
