@@ -24,7 +24,7 @@ public sealed class ToolBarV : ToolBar {
 
     RegisterPanel("common", () => new CommonToolBarPanel(Context!, _coreVM.MainWindow));
     RegisterPanel("mediaItems", () => new MediaItemsToolBarPanel(Context!));
-    RegisterPanel("mediaItemThumbs", () => new MediaItemThumbsToolBarPanel(Context!));
+    RegisterPanel("mediaItemThumbs", () => new MediaItemThumbsToolBarPanel(Context!, _coreVM.MediaItem.Views));
     RegisterPanel("mediaViewer", () => new MediaViewerToolBarPanel(Context!, _coreVM));
 
     RegisterType(typeof(MediaViewerVM), ["common", "mediaItems", "mediaViewer"]);
