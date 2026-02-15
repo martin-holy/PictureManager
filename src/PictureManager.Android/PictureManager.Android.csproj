@@ -30,17 +30,18 @@
   </PropertyGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="MH.UI" Version="[4.1.0,5.0.0)" />
-		<PackageReference Include="MH.Utils" Version="[3.3.0,4.0.0)" />
+		<PackageReference Include="MH.UI" Version="4.2.0" />
+		<PackageReference Include="MH.UI.Android" Version="1.4.0" />
+		<PackageReference Include="MH.Utils" Version="3.4.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">
 		<ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
+		<ProjectReference Include="..\..\..\MH.UI.Android\src\MH.UI.Android\MH.UI.Android.csproj" />
 		<ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-    <ProjectReference Include="..\..\..\MH.UI.Android\src\MH.UI.Android\MH.UI.Android.csproj" />    
     <ProjectReference Include="..\PictureManager.Common\PictureManager.Common.csproj" />
   </ItemGroup>
 </Project>
