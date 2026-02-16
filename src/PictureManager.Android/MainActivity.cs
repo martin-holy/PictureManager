@@ -16,7 +16,7 @@ using Perm = Android.Manifest.Permission;
 
 namespace PictureManager.Android;
 
-[Activity(Label = "@string/app_name", MainLauncher = true, ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
+[Activity(MainLauncher = true, ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
 public class MainActivity : FragmentActivity {
   private Core _core = null!;
   private CoreUI _coreUI = null!;

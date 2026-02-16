@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
 		<TrimMode>full</TrimMode>
 		
-    <ApplicationId>cz.martinholy.picturemanager</ApplicationId>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
 		
@@ -19,15 +18,24 @@
 		
     <AndroidSigningKeyStore>PictureManager.Android.keystore</AndroidSigningKeyStore>
   </PropertyGroup>
-	
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AndroidKeyStore>True</AndroidKeyStore>
-    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-    <AndroidSigningStorePass>$(AndroidSigningStorePass)</AndroidSigningStorePass>
-    <AndroidSigningKeyPass>$(AndroidSigningKeyPass)</AndroidSigningKeyPass>
-    <AndroidSigningKeyAlias>PictureManagerAndroidKeystore</AndroidSigningKeyAlias>
-    <AndroidPackageFormat>apk</AndroidPackageFormat>
-  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<ApplicationId>cz.martinholy.picturemanager</ApplicationId>
+		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+		<AndroidSigningStorePass>$(AndroidSigningStorePass)</AndroidSigningStorePass>
+		<AndroidSigningKeyPass>$(AndroidSigningKeyPass)</AndroidSigningKeyPass>
+		<AndroidSigningKeyAlias>PictureManagerAndroidKeystore</AndroidSigningKeyAlias>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<ApplicationId>cz.martinholy.picturemanager.debug</ApplicationId>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<AndroidManifestOverlay Include="AndroidManifest.Debug.xml" />
+	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
 		<PackageReference Include="MH.UI" Version="4.2.0" />

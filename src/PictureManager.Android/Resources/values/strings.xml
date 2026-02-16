@@ -1,4 +1,4 @@
 <resources>
   <string name="app_name">Picture Manager</string>
-  <string name="app_text">Hello, Android!</string>
+	<string name="app_name_debug">(Debug) Picture Manager</string>
 </resources>
