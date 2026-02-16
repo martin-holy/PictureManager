@@ -1,5 +1,6 @@
 ﻿using Android.Content;
 using Android.OS;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
@@ -123,6 +124,10 @@ public class CoreUI : ICoreP, IDisposable {
   private void _onMainWindowIsInViewModeChanged(CoreUI coreUI, bool isInViewMode) {
     coreUI._updateMediaItemCommands();
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
+    if (isInViewMode)
+      _mainActivity.Window!.EnterFullScreen();
+    else
+      _mainActivity.Window!.ExitFullScreen();
   }
 
   private static void _disableNotSupportedMainMenuItems(MainMenuVM mm) {
