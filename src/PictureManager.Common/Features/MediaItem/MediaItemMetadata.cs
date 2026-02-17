@@ -75,9 +75,6 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
           }
         }
       }
-
-      if (person != null && person.Segment == null)
-        person.Segment = MediaItem.Segments[0];
     }
 
     Core.R.Segment.ItemsDelete(oldSegments?.Except(MediaItem.Segments.EmptyIfNull()).ToList());
@@ -100,6 +97,9 @@ public class MediaItemMetadata(RealMediaItemM mediaItem) {
       segment = Core.R.Segment.ItemCreate(x, y, s, mi);
 
     segment.Person = person;
+
+    if (person != null && person.Segment == null)
+      person.Segment = segment;
 
     return segment;
   }
