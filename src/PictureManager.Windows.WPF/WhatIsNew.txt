@@ -3,6 +3,9 @@
 [U] - Update
 [B] - Bug fix
 
+2.34.0:
+	- [B] Set segment to new person when reading metadata
+
 2.33.0:
  - [N] Move keyword to group command in menu
  - [N] Rotate icon for rotate images
