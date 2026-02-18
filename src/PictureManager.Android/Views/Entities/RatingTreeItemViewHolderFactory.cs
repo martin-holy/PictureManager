@@ -1,5 +1,9 @@
 ﻿using Android.Views;
+using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.TreeViewHost;
+using MH.UI.Android.Controls.Recycler;
+using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Rating;
 
@@ -12,9 +16,9 @@ public class RatingTreeItemViewHolderFactory : ITreeItemViewHolderFactory {
       _ => 0
     };
 
-  public FlatTreeItemViewHolderBase Create(ViewGroup parent, int viewType, IAndroidTreeViewHost host) =>
+  public RecyclerView.ViewHolder Create(ViewGroup parent, int viewType, IAndroidTreeViewHost host) =>
     viewType switch {
-      1 => new RatingTreeV(parent.Context!, (TreeViewHost)host),
-      _ => new FlatTreeItemViewHolder(parent.Context!, (TreeViewHost)host)
+      1 => new BaseViewHolder(new RatingTreeV(parent.Context!, (TreeViewHost)host), new(LPU.Match, LPU.Wrap)),
+      _ => new BaseViewHolder(new FlatTreeItemV(parent.Context!, (TreeViewHost)host), new(LPU.Match, LPU.Wrap))
     };
 }
