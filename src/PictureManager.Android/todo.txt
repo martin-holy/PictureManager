@@ -1,10 +1,10 @@
 - open MediaItems in new tab command
 - FileOperationCollisionDialog is not awaited so rename doesn't work. maybe it is because it is opened from another dialog
-- TextView and CheckBox have different text size, RadioButton maybe too
 - Slider can't be slided to the max in image resize dialog
 - People groups doesn't have expand arrow after new group is added and person is moved to it
 - sometimes unhandeled exception for CollectionViewItem when selected/opened
 - CollectionViewHost: unselect on long touch
+- InputDialog: set focus, open keyboard
 
 # CoreUI:
  - MH.UI.Android.Utils.Init.SetDelegates()
