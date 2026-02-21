@@ -9,10 +9,7 @@ using PictureManager.Common.Features.Person;
 namespace PictureManager.Android.Views.Sections;
 
 public sealed class PeopleV : FrameLayout {
-  public PeopleVM DataContext { get; }
-
   public PeopleV(Context context, PeopleVM dataContext) : base(context) {
-    DataContext = dataContext;
     SetBackgroundResource(Resource.Color.c_static_ba);
     AddView(new CollectionViewHost(context, dataContext, CreatePersonV));
   }
