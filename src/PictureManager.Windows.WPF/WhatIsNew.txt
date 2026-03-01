@@ -4,8 +4,10 @@
 [B] - Bug fix
 
 2.34.0:
-	- [B] Set segment to new person when reading metadata
-	- [B] App crash when person moved to open group using dialog
+ - [B] Set segment to new person when reading metadata
+ - [B] App crash when person moved to open group using dialog
+ - [U] CollectionView: Separator in sort menu
+ - [U] MainMenu: separator
 
 2.33.0:
  - [N] Move keyword to group command in menu
