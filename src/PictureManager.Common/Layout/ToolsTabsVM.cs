@@ -33,7 +33,7 @@ public sealed class ToolsTabsVM : TabControl {
     Activate(Res.IconPeople, "Person", PersonDetailTab);
   }
 
-  public override IEnumerable<MenuItem> ItemMenuFactory(object item) =>
+  public override IEnumerable<ITreeItem> ItemMenuFactory(object item) =>
     MenuFactory.GetMenu(((IListItem)item).Data!)
-    .Append(new(CloseTabCommand, item));
+    .Append(new MenuItem(CloseTabCommand, item));
 }

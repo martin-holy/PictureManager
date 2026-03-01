@@ -24,36 +24,36 @@ public class MainMenuVM : TreeView {
     RootHolder.Clear();
 
     var geoLocation = new MenuItem(Res.IconLocationCheckin, "GeoLocation", [
-      new(CoreVM.GetGeoNamesFromWebCommand),
-      new(GeoNameVM.NewGeoNameFromGpsCommand),
-      new(CoreVM.ReadGeoLocationFromFilesCommand)]);
+      new MenuItem(CoreVM.GetGeoNamesFromWebCommand),
+      new MenuItem(GeoNameVM.NewGeoNameFromGpsCommand),
+      new MenuItem(CoreVM.ReadGeoLocationFromFilesCommand)]);
 
     var mediaItem = new MenuItem(Res.IconImageMultiple, "Media Items", [
-      new(MediaItemsViewsVM.AddViewCommand),
-      new(MediaItemVM.CommentCommand) { InputGestureText = "Ctrl+K"},
-      new(CoreVM.CompressImagesCommand),
-      new(MediaItemsViewsVM.CopyPathsCommand),
-      new(MediaItemVM.DeleteCommand),
-      new(CoreVM.ImagesToVideoCommand),
-      new(MediaItemsViewsVM.RebuildThumbnailsCommand),
-      new(MediaItemVM.RenameCommand) { InputGestureText = "F2"},
-      new(CoreVM.ResizeSelectedImagesCommand),
-      new(CoreVM.ReloadMetadataCommand),
-      new(CoreVM.RotateMediaItemsCommand) { InputGestureText = "Ctrl+R"},
-      new(CoreVM.SaveImageMetadataToFilesCommand),
-      new(MediaItemsViewsVM.ViewModifiedCommand),
-      new(MediaItemVM.ViewSelectedCommand)]);
+      new MenuItem(MediaItemsViewsVM.AddViewCommand),
+      new MenuItem(MediaItemVM.CommentCommand) { InputGestureText = "Ctrl+K"},
+      new MenuItem(CoreVM.CompressImagesCommand),
+      new MenuItem(MediaItemsViewsVM.CopyPathsCommand),
+      new MenuItem(MediaItemVM.DeleteCommand),
+      new MenuItem(CoreVM.ImagesToVideoCommand),
+      new MenuItem(MediaItemsViewsVM.RebuildThumbnailsCommand),
+      new MenuItem(MediaItemVM.RenameCommand) { InputGestureText = "F2"},
+      new MenuItem(CoreVM.ResizeSelectedImagesCommand),
+      new MenuItem(CoreVM.ReloadMetadataCommand),
+      new MenuItem(CoreVM.RotateMediaItemsCommand) { InputGestureText = "Ctrl+R"},
+      new MenuItem(CoreVM.SaveImageMetadataToFilesCommand),
+      new MenuItem(MediaItemsViewsVM.ViewModifiedCommand),
+      new MenuItem(MediaItemVM.ViewSelectedCommand)]);
 
     var segments = new MenuItem(Res.IconSegment, "Segments", [
-      new(Features.Segment.SegmentVM.DeleteSelectedCommand),
-      new(CoreVM.ExportSegmentsCommand),
-      new(CoreVM.OpenSegmentsViewsCommand),
-      new(SegmentVM.SetSelectedAsSamePersonCommand),
-      new(SegmentVM.SetSelectedAsUnknownCommand),
-      new(SegmentVM.AddEmptyViewCommand),
-      new(SegmentsDrawerVM.OpenCommand),
-      new(SegmentsDrawerVM.AddSelectedCommand),
-      new(SegmentsDrawerVM.RemoveSelectedCommand)
+      new MenuItem(Features.Segment.SegmentVM.DeleteSelectedCommand),
+      new MenuItem(CoreVM.ExportSegmentsCommand),
+      new MenuItem(CoreVM.OpenSegmentsViewsCommand),
+      new MenuItem(SegmentVM.SetSelectedAsSamePersonCommand),
+      new MenuItem(SegmentVM.SetSelectedAsUnknownCommand),
+      new MenuItem(SegmentVM.AddEmptyViewCommand),
+      new MenuItem(SegmentsDrawerVM.OpenCommand),
+      new MenuItem(SegmentsDrawerVM.AddSelectedCommand),
+      new MenuItem(SegmentsDrawerVM.RemoveSelectedCommand)
     ]);
 
     _initTabs(coreVM.MainWindow.TreeViewCategories, _leftTabs);
@@ -63,9 +63,11 @@ public class MainMenuVM : TreeView {
     RootHolder.Add(geoLocation);
     RootHolder.Add(mediaItem);
     RootHolder.Add(segments);
+    RootHolder.Add(new MenuItemSeparator());
     RootHolder.Add(_leftTabs);
     RootHolder.Add(_middleTabs);
     RootHolder.Add(_rightTabs);
+    RootHolder.Add(new MenuItemSeparator());
     RootHolder.Add(new MenuItem(CoreVM.SaveDbCommand));
     RootHolder.Add(new MenuItem(CoreVM.OpenSettingsCommand));
     RootHolder.Add(new MenuItem(WhatIsNewVM.OpenCommand));

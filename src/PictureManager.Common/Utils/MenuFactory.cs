@@ -1,5 +1,6 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Common.Features.FavoriteFolder;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.FolderKeyword;
@@ -16,7 +17,7 @@ using System.Collections.Generic;
 namespace PictureManager.Common.Utils;
 
 public static class MenuFactory {
-  public static IEnumerable<MenuItem> GetMenu(object item) =>
+  public static IEnumerable<ITreeItem> GetMenu(object item) =>
     item switch {
       DriveM => _createDriveMenu(item),
       FolderM => _createFolderMenu(item),
@@ -39,129 +40,129 @@ public static class MenuFactory {
     };
 
   // Drive
-  private static IEnumerable<MenuItem> _createDriveMenu(object item) => [
-    new(TreeCategory.ItemCreateCommand, item)];
+  private static IEnumerable<ITreeItem> _createDriveMenu(object item) => [
+    new MenuItem(TreeCategory.ItemCreateCommand, item)];
 
   // Folder
-  private static IEnumerable<MenuItem> _createFolderMenu(object item) => [
-    new(TreeCategory.ItemCreateCommand, item),
-    new(TreeCategory.ItemRenameCommand, item),
-    new(TreeCategory.ItemDeleteCommand, item),
-    new(FavoriteFolderTreeCategory.AddToFavoritesCommand, item),
-    new(FolderKeywordTreeCategory.SetAsFolderKeywordCommand, item),
-    new(Res.IconLocationCheckin, "GeoLocation", [
-      new(CoreVM.GetGeoNamesFromWebCommand, item),
-      new(CoreVM.ReadGeoLocationFromFilesCommand, item)]),
-    new(Res.IconImageMultiple, "Media Items", [
-      new(MediaItemVM.CopySelectedToFolderCommand, item),
-      new(MediaItemVM.MoveSelectedToFolderCommand, item),
-      new(CoreVM.CompressImagesCommand, item),
-      new(MediaItemsViewsVM.RebuildThumbnailsCommand, item),
-      new(CoreVM.ReloadMetadataCommand, item),
-      new(CoreVM.ResizeImagesInFolderCommand, item),
-      new(CoreVM.ResizeImagesToFolderCommand, item),
-      new(CoreVM.SaveImageMetadataToFilesCommand, item)]),
-    new(Res.IconSegment, "Segments", [
-      new(CoreVM.ExportSegmentsToCommand, item)])];
+  private static IEnumerable<ITreeItem> _createFolderMenu(object item) => [
+    new MenuItem(TreeCategory.ItemCreateCommand, item),
+    new MenuItem(TreeCategory.ItemRenameCommand, item),
+    new MenuItem(TreeCategory.ItemDeleteCommand, item),
+    new MenuItem(FavoriteFolderTreeCategory.AddToFavoritesCommand, item),
+    new MenuItem(FolderKeywordTreeCategory.SetAsFolderKeywordCommand, item),
+    new MenuItem(Res.IconLocationCheckin, "GeoLocation", [
+      new MenuItem(CoreVM.GetGeoNamesFromWebCommand, item),
+      new MenuItem(CoreVM.ReadGeoLocationFromFilesCommand, item)]),
+    new MenuItem(Res.IconImageMultiple, "Media Items", [
+      new MenuItem(MediaItemVM.CopySelectedToFolderCommand, item),
+      new MenuItem(MediaItemVM.MoveSelectedToFolderCommand, item),
+      new MenuItem(CoreVM.CompressImagesCommand, item),
+      new MenuItem(MediaItemsViewsVM.RebuildThumbnailsCommand, item),
+      new MenuItem(CoreVM.ReloadMetadataCommand, item),
+      new MenuItem(CoreVM.ResizeImagesInFolderCommand, item),
+      new MenuItem(CoreVM.ResizeImagesToFolderCommand, item),
+      new MenuItem(CoreVM.SaveImageMetadataToFilesCommand, item)]),
+    new MenuItem(Res.IconSegment, "Segments", [
+      new MenuItem(CoreVM.ExportSegmentsToCommand, item)])];
 
   // Favorite Folder
-  private static IEnumerable<MenuItem> _createFavoriteFolderMenu(object item) => [
-    new(TreeCategory.ItemRenameCommand, item),
-    new(TreeCategory.ItemDeleteCommand, item)];
+  private static IEnumerable<ITreeItem> _createFavoriteFolderMenu(object item) => [
+    new MenuItem(TreeCategory.ItemRenameCommand, item),
+    new MenuItem(TreeCategory.ItemDeleteCommand, item)];
 
   // Person TreeCategory
-  private static IEnumerable<MenuItem> _createPersonTreeCategoryMenu(object item) => [
-    new(TreeCategory.ItemCreateCommand, item),
-    new(TreeCategory.GroupCreateCommand, item)];
+  private static IEnumerable<ITreeItem> _createPersonTreeCategoryMenu(object item) => [
+    new MenuItem(TreeCategory.ItemCreateCommand, item),
+    new MenuItem(TreeCategory.GroupCreateCommand, item)];
 
   // Person Tree
-  private static IEnumerable<MenuItem> _createPersonTreeMenu(object item) => [
-    new(ToolsTabsVM.OpenPersonTabCommand, item),
-    new(TreeCategory.ItemRenameCommand, item),
-    new(TreeCategory.ItemDeleteCommand, item),
-    new(TreeCategory.ItemMoveToGroupCommand, item),
-    new(MediaItemVM.LoadByPersonCommand, item),
-    new(SegmentVM.LoadByPersonCommand, item),
-    new(MediaItemsViewsVM.FilterSetAndCommand, item),
-    new(MediaItemsViewsVM.FilterSetOrCommand, item),
-    new(MediaItemsViewsVM.FilterSetNotCommand, item)];
+  private static IEnumerable<ITreeItem> _createPersonTreeMenu(object item) => [
+    new MenuItem(ToolsTabsVM.OpenPersonTabCommand, item),
+    new MenuItem(TreeCategory.ItemRenameCommand, item),
+    new MenuItem(TreeCategory.ItemDeleteCommand, item),
+    new MenuItem(TreeCategory.ItemMoveToGroupCommand, item),
+    new MenuItem(MediaItemVM.LoadByPersonCommand, item),
+    new MenuItem(SegmentVM.LoadByPersonCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetAndCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetOrCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetNotCommand, item)];
 
   // Folder Keywords
-  private static IEnumerable<MenuItem> _createFolderKeywordTreeCategoryMenu(object item) => [
-    new(FolderKeywordsDialog.OpenCommand, item)];
+  private static IEnumerable<ITreeItem> _createFolderKeywordTreeCategoryMenu(object item) => [
+    new MenuItem(FolderKeywordsDialog.OpenCommand, item)];
 
   // Keyword TreeCategory
-  private static IEnumerable<MenuItem> _createKeywordTreeCategoryMenu(object item) => [
-    new(TreeCategory.ItemCreateCommand, item),
-    new(TreeCategory.GroupCreateCommand, item)];
+  private static IEnumerable<ITreeItem> _createKeywordTreeCategoryMenu(object item) => [
+    new MenuItem(TreeCategory.ItemCreateCommand, item),
+    new MenuItem(TreeCategory.GroupCreateCommand, item)];
 
   // Keyword tree
-  private static IEnumerable<MenuItem> _createKeywordTreeMenu(object item) => [
-    new(TreeCategory.ItemCreateCommand, item),
-    new(TreeCategory.ItemRenameCommand, item),
-    new(TreeCategory.ItemDeleteCommand, item),
-    new(TreeCategory.ItemMoveToGroupCommand, item),
-    new(MediaItemVM.LoadByKeywordCommand, item),
-    new(PersonVM.LoadByKeywordCommand, item),
-    new(SegmentVM.LoadByKeywordCommand, item),
-    new(MediaItemsViewsVM.FilterSetAndCommand, item),
-    new(MediaItemsViewsVM.FilterSetOrCommand, item),
-    new(MediaItemsViewsVM.FilterSetNotCommand, item)];
+  private static IEnumerable<ITreeItem> _createKeywordTreeMenu(object item) => [
+    new MenuItem(TreeCategory.ItemCreateCommand, item),
+    new MenuItem(TreeCategory.ItemRenameCommand, item),
+    new MenuItem(TreeCategory.ItemDeleteCommand, item),
+    new MenuItem(TreeCategory.ItemMoveToGroupCommand, item),
+    new MenuItem(MediaItemVM.LoadByKeywordCommand, item),
+    new MenuItem(PersonVM.LoadByKeywordCommand, item),
+    new MenuItem(SegmentVM.LoadByKeywordCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetAndCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetOrCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetNotCommand, item)];
 
   // GeoNames TreeCategory
-  private static IEnumerable<MenuItem> _createGeoNamesTreeCategoryMenu(object item) => [
-    new(CoreVM.GetGeoNamesFromWebCommand, item),
-    new(GeoNameVM.NewGeoNameFromGpsCommand, item),
-    new(CoreVM.ReadGeoLocationFromFilesCommand, item)];
+  private static IEnumerable<ITreeItem> _createGeoNamesTreeCategoryMenu(object item) => [
+    new MenuItem(CoreVM.GetGeoNamesFromWebCommand, item),
+    new MenuItem(GeoNameVM.NewGeoNameFromGpsCommand, item),
+    new MenuItem(CoreVM.ReadGeoLocationFromFilesCommand, item)];
 
   // GeoName Tree
-  private static IEnumerable<MenuItem> _createGeoNameTreeMenu(object item) => [
-    new(MediaItemVM.LoadByGeoNameCommand, item),
-    new(MediaItemsViewsVM.FilterSetAndCommand, item),
-    new(MediaItemsViewsVM.FilterSetOrCommand, item),
-    new(MediaItemsViewsVM.FilterSetNotCommand, item)];
+  private static IEnumerable<ITreeItem> _createGeoNameTreeMenu(object item) => [
+    new MenuItem(MediaItemVM.LoadByGeoNameCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetAndCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetOrCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetNotCommand, item)];
 
   // Viewer TreeCategory
-  private static IEnumerable<MenuItem> _createViewerTreeCategoryMenu(object item) => [
-    new(TreeCategory.ItemCreateCommand, item)];
+  private static IEnumerable<ITreeItem> _createViewerTreeCategoryMenu(object item) => [
+    new MenuItem(TreeCategory.ItemCreateCommand, item)];
 
   // Viewer tree
-  private static IEnumerable<MenuItem> _createViewerTreeMenu(object item) => [
-    new(TreeCategory.ItemRenameCommand, item),
-    new(TreeCategory.ItemDeleteCommand, item)];
+  private static IEnumerable<ITreeItem> _createViewerTreeMenu(object item) => [
+    new MenuItem(TreeCategory.ItemRenameCommand, item),
+    new MenuItem(TreeCategory.ItemDeleteCommand, item)];
 
   // Keyword Category Group
-  private static IEnumerable<MenuItem> _createKeywordCategoryGroupMenu(object item) => [
-    new(TreeCategory.ItemCreateCommand, item),
-    new(TreeCategory.GroupRenameCommand, item),
-    new(TreeCategory.GroupDeleteCommand, item)];
+  private static IEnumerable<ITreeItem> _createKeywordCategoryGroupMenu(object item) => [
+    new MenuItem(TreeCategory.ItemCreateCommand, item),
+    new MenuItem(TreeCategory.GroupRenameCommand, item),
+    new MenuItem(TreeCategory.GroupDeleteCommand, item)];
 
   // Person Category Group
-  private static IEnumerable<MenuItem> _createPersonCategoryGroupMenu(object item) => [
-    new(TreeCategory.ItemCreateCommand, item),
-    new(TreeCategory.GroupRenameCommand, item),
-    new(TreeCategory.GroupDeleteCommand, item),
-    new(TreeCategory.GroupMoveInItemsCommand, item),
-    new(PersonVM.LoadByCategoryGroupCommand, item)];
+  private static IEnumerable<ITreeItem> _createPersonCategoryGroupMenu(object item) => [
+    new MenuItem(TreeCategory.ItemCreateCommand, item),
+    new MenuItem(TreeCategory.GroupRenameCommand, item),
+    new MenuItem(TreeCategory.GroupDeleteCommand, item),
+    new MenuItem(TreeCategory.GroupMoveInItemsCommand, item),
+    new MenuItem(PersonVM.LoadByCategoryGroupCommand, item)];
 
   // PersonDetail
-  private static IEnumerable<MenuItem> _createPersonDetailMenu(PersonDetailVM item) => [
-    new(MediaItemVM.LoadByPersonCommand, item.PersonM),
-    new(TreeCategory.ItemRenameCommand, item.PersonM),
-    new(SegmentVM.SetSelectedAsUnknownCommand),
-    new(SegmentVM.AddSelectedToPersonsTopSegmentsCommand, item.PersonM),
-    new(SegmentVM.RemoveSelectedFromPersonsTopSegmentsCommand, item.PersonM)
+  private static IEnumerable<ITreeItem> _createPersonDetailMenu(PersonDetailVM item) => [
+    new MenuItem(MediaItemVM.LoadByPersonCommand, item.PersonM),
+    new MenuItem(TreeCategory.ItemRenameCommand, item.PersonM),
+    new MenuItem(SegmentVM.SetSelectedAsUnknownCommand),
+    new MenuItem(SegmentVM.AddSelectedToPersonsTopSegmentsCommand, item.PersonM),
+    new MenuItem(SegmentVM.RemoveSelectedFromPersonsTopSegmentsCommand, item.PersonM)
   ];
 
   // RatingTree
-  private static IEnumerable<MenuItem> _createRatingTreeMenu(RatingTreeM item) => [
-    new(MediaItemsViewsVM.LoadByTagCommand, item),
-    new(MediaItemsViewsVM.FilterSetOrCommand, item.Rating)
+  private static IEnumerable<ITreeItem> _createRatingTreeMenu(RatingTreeM item) => [
+    new MenuItem(MediaItemsViewsVM.LoadByTagCommand, item),
+    new MenuItem(MediaItemsViewsVM.FilterSetOrCommand, item.Rating)
   ];
 
   // SegmentsDrawer
-  private static IEnumerable<MenuItem> _createSegmentsDrawerMenu(SegmentsDrawerVM drawer) => [
-    new(SegmentsDrawerVM.AddSelectedCommand),
-    new(SegmentsDrawerVM.RemoveSelectedCommand)
+  private static IEnumerable<ITreeItem> _createSegmentsDrawerMenu(SegmentsDrawerVM drawer) => [
+    new MenuItem(SegmentsDrawerVM.AddSelectedCommand),
+    new MenuItem(SegmentsDrawerVM.RemoveSelectedCommand)
   ];
 }
