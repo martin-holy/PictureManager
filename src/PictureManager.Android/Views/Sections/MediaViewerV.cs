@@ -3,7 +3,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
-using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.ZoomAndPanHost;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
