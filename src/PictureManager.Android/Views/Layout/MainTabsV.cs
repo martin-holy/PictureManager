@@ -1,7 +1,6 @@
 ﻿using Android.Content;
 using Android.Views;
-using Android.Widget;
-using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.TabControlHost;
 using MH.UI.Android.Views;
 using MH.UI.Controls;
 using MH.UI.ViewModels;
@@ -13,14 +12,16 @@ using PictureManager.Common.Features.Segment;
 
 namespace PictureManager.Android.Views.Layout;
 
-public sealed class MainTabsV(Context context, TabControl dataContext) : TabControlHost(context, dataContext) {
-  protected override View? _getItemView(LinearLayout container, object? item) =>
+public sealed class MainTabsV : TabControlHost {
+  public MainTabsV(Context context, TabControl dataContext) : base(context, dataContext) { }
+
+  protected override View? _getItemView(Context context, object? item) =>
     item switch {
-      AllSettings allSettings => new SettingsV(container.Context!, allSettings),
-      MediaItemsViewVM miv => new MediaItemsViewV(container.Context!, miv),
-      PeopleVM people => new PeopleV(container.Context!, people),
-      SegmentsViewsVM segmentsViews => new SegmentsViewsV(container.Context!, segmentsViews),
-      LogVM log => new LogV(container.Context!, log),
+      AllSettings allSettings => new SettingsV(context, allSettings),
+      MediaItemsViewVM miv => new MediaItemsViewV(context, miv),
+      PeopleVM people => new PeopleV(context, people),
+      SegmentsViewsVM segmentsViews => new SegmentsViewsV(context, segmentsViews),
+      LogVM log => new LogV(context, log),
       View view => view,
       _ => null
     };

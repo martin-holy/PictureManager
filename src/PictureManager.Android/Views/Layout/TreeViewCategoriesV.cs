@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.TabControlHost;
 using MH.UI.Android.Controls.Hosts.TreeViewHost;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
@@ -11,7 +12,6 @@ using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Rating;
 using PictureManager.Common.Utils;
 using System;
-using System.Linq;
 
 namespace PictureManager.Android.Views.Layout;
 
@@ -39,16 +39,17 @@ public sealed class TreeViewCategoriesV : FrameLayout {
     }
   }
 
-  private sealed class TabsV(Context context, TabControl dataContext, Func<object?, View?>? slotFactory)
-    : TabControlHost(context, dataContext, slotFactory) {
+  private sealed class TabsV : TabControlHost {
+    public TabsV(Context context, TabControl dataContext, Func<object?, View?>? slotFactory)
+      : base(context, dataContext, slotFactory) { }
 
-    protected override View? _getItemView(LinearLayout container, object? item) {
+    protected override View? _getItemView(Context context, object? item) {
       if (item is not TreeView tv) return null;
 
-      if (tv.RootHolder.FirstOrDefault() is RatingTreeCategory rating)
-        return new TreeViewHost(container.Context!, tv, MenuFactory.GetMenu, new RatingTreeItemViewHolderFactory());
+      if (tv.RootHolder.Count > 0 && tv.RootHolder[0] is RatingTreeCategory rating)
+        return new TreeViewHost(context, tv, MenuFactory.GetMenu, new RatingTreeItemViewHolderFactory());
 
-      return new TreeViewHost(container.Context!, tv, MenuFactory.GetMenu);
+      return new TreeViewHost(context, tv, MenuFactory.GetMenu);
     }
   }
 }
