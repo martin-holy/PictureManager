@@ -1,6 +1,6 @@
 ﻿using Android.Content;
 using Android.Widget;
-using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Hosts.SlidePanelsGridHost;
 using MH.UI.Android.Utils;
 using PictureManager.Common;
 
