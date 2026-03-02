@@ -1,5 +1,6 @@
 ﻿using Android.Content;
 using Android.OS;
+using MH.UI.Android.Controls.Hosts.DialogHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
@@ -45,7 +46,7 @@ public class CoreUI : ICoreP, IDisposable {
     SegmentVM.SegmentSize = 80; // TODO move this to settings
     CoreVM.DisplayScale = 1.0 / DisplayU.Metrics.Density;
     SegmentS.ExportSegment = Utils.ImagingU.ExportSegment;
-    MH.UI.Android.Controls.DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
+    DialogHost.Initialize(mainActivity, DialogFactory.GetDialog);
     AboutDialog.OpenUrl = _openUrl;
   }
 
