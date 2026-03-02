@@ -108,7 +108,7 @@ public sealed class TreeViewSearchV : LinearLayout {
       if (item == null) return;
 
       _navigateToCommandBinding.Parameter = item;
-      _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, item.Icon));
+      _icon.SetImageDrawable(IconU.GetIcon(ItemView.Context, item.Icon));
       _name.Text = item.Name;
     }
 
