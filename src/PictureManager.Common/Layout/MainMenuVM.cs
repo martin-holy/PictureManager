@@ -7,6 +7,8 @@ using PictureManager.Common.Features.GeoName;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Features.WhatIsNew;
+using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Input;
@@ -19,6 +21,7 @@ public class MainMenuVM : TreeView {
   private readonly MenuItem _rightTabs = new(Res.IconTabRight, "Right tabs");
 
   public string Icon { get; } = Res.IconThreeBars;
+  public Func<IEnumerable<ITreeItem>> BuildMenu => () => RootHolder;
 
   public void Build(CoreVM coreVM) {
     RootHolder.Clear();
