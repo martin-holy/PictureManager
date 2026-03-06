@@ -5,6 +5,6 @@
   xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common">
   
   <DataTemplate x:Key="PM.DT.MainMenu" DataType="{x:Type layout:MainMenuVM}">
-    <c:TreeMenuHost Menu="{Binding RootHolder}" Icon="{Binding Icon}"/>
-   </DataTemplate>
+    <c:TreeMenuHost Icon="{Binding Icon}" MenuFactory="{Binding BuildMenu}"/>
+  </DataTemplate>
 </ResourceDictionary>
