@@ -3,6 +3,7 @@ using Android.Views;
 using MH.UI.Android.Controls;
 using MH.UI.Controls;
 using MH.Utils;
+using MH.Utils.Disposables;
 using MH.Utils.Interfaces;
 using PictureManager.Android.Views.Sections.ToolBarPanels;
 using PictureManager.Common;
@@ -18,23 +19,25 @@ public sealed class ToolBarV : ToolBar {
     _coreVM = coreVM;
   }
 
-  public void Init(LoopPager loopPager) {
+  public void Init(LoopPager loopPager, BindingScope bindings) {
     _loopPager = loopPager;
     DefaultPanelsKeys = ["common"];
 
-    RegisterPanel("common", () => new CommonToolBarPanel(Context!, _coreVM.MainWindow));
-    RegisterPanel("mediaItems", () => new MediaItemsToolBarPanel(Context!));
-    RegisterPanel("mediaItemThumbs", () => new MediaItemThumbsToolBarPanel(Context!, _coreVM.MediaItem.Views));
-    RegisterPanel("mediaViewer", () => new MediaViewerToolBarPanel(Context!, _coreVM));
+    RegisterPanel("common", () => new CommonToolBarPanel(Context!, _coreVM.MainWindow, bindings));
+    RegisterPanel("mediaItems", () => new MediaItemsToolBarPanel(Context!, bindings));
+    RegisterPanel("mediaItemThumbs", () => new MediaItemThumbsToolBarPanel(Context!, _coreVM.MediaItem.Views, bindings));
+    RegisterPanel("mediaViewer", () => new MediaViewerToolBarPanel(Context!, _coreVM, bindings));
 
     RegisterType(typeof(MediaViewerVM), ["common", "mediaItems", "mediaViewer"]);
     RegisterType(typeof(MediaItemsViewVM), ["common", "mediaItems", "mediaItemThumbs"]);
 
     loopPager.PageChangedEvent += (_, page) => _updateToolBar(null, page);
-    this.Bind(_coreVM.MainWindow.TreeViewCategories, nameof(TabControl.Selected), x => x.Selected, (t, p) => t._updateToolBar(p, null), false);
-    this.Bind(_coreVM.MainTabs, nameof(TabControl.Selected), x => x.Selected, (t, p) => t._updateToolBar(p, null), false);
-    this.Bind(_coreVM.MainWindow.ToolsTabs, nameof(TabControl.Selected), x => x.Selected, (t, p) => t._updateToolBar(p, null), false);
-    this.Bind(_coreVM.MediaViewer, nameof(MediaViewerVM.IsVisible), x => x.IsVisible, (t, _) => t._updateToolBar(null, null), false);
+    bindings.AddRange([
+      _coreVM.MainWindow.TreeViewCategories.Bind(nameof(TabControl.Selected), x => x.Selected, x => _updateToolBar(x, null), false),
+      _coreVM.MainTabs.Bind(nameof(TabControl.Selected), x => x.Selected, x => _updateToolBar(x, null), false),
+      _coreVM.MainWindow.ToolsTabs.Bind(nameof(TabControl.Selected), x => x.Selected, x => _updateToolBar(x, null), false),
+      _coreVM.MediaViewer.Bind(nameof(MediaViewerVM.IsVisible), x => x.IsVisible, _ => _updateToolBar(null, null), false)]);
+    
     _updateToolBar(null, null);
   }
 

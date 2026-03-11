@@ -1,13 +1,15 @@
 ﻿using Android.Content;
 using Android.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
+using MH.Utils.Disposables;
 using PictureManager.Common.Features.Common;
 
 namespace PictureManager.Android.Views.Dialogs;
 
 public sealed class AboutDialogV : LinearLayout {
-  public AboutDialogV(Context context, AboutDialog dataContext) : base(context) {
+  public AboutDialogV(Context context, AboutDialog dataContext, BindingScope bindings) : base(context) {
     Orientation = Orientation.Vertical;
 
     AddView(new TextView(context) { Text = Resources!.GetString(Resource.String.app_name, null), TextSize = 26 },
@@ -22,12 +24,12 @@ public sealed class AboutDialogV : LinearLayout {
 
     AddView(new TextView(context) { Text = dataContext.HomePageUrl }
       .WithTextColor(Resource.Color.c_accent)
-      .WithCommand(dataContext.OpenHomePageCommand),
+      .WithClickCommand(dataContext.OpenHomePageCommand, bindings),
       new LayoutParams(LPU.Wrap, LPU.Wrap).WithMargin(DimensU.Spacing));
 
     AddView(new TextView(context) { Text = dataContext.TelegramUrl }
       .WithTextColor(Resource.Color.c_accent)
-      .WithCommand(dataContext.OpenTelegramCommand),
+      .WithClickCommand(dataContext.OpenTelegramCommand, bindings),
       new LayoutParams(LPU.Wrap, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 }

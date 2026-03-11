@@ -4,13 +4,14 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils;
+using MH.Utils.Disposables;
 using PictureManager.Common.Features.Common;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 
 namespace PictureManager.Android.Views.Sections;
 
@@ -22,33 +23,29 @@ public sealed class TreeViewSearchV : LinearLayout {
 
   public TreeViewSearchVM DataContext { get; }
 
-  public TreeViewSearchV(Context context, TreeViewSearchVM dataContext) : base(context) {
+  public TreeViewSearchV(Context context, TreeViewSearchVM dataContext, BindingScope bindings) : base(context) {
     DataContext = dataContext;
     _adapter = new(dataContext.SearchResult, this);
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_black5);
 
     _searchText = new EditText(context)
-      .BindText(dataContext, nameof(TreeViewSearchVM.SearchText), x => x.SearchText, (s, p) => s.SearchText = p, out var _);
+      .BindText(dataContext, nameof(TreeViewSearchVM.SearchText), x => x.SearchText, (s, p) => s.SearchText = p, bindings);
 
     var searchBar = new LinearLayout(context) { Orientation = Orientation.Horizontal };
     searchBar.SetBackgroundResource(Resource.Color.c_static_ba);
     searchBar.AddView(_searchText, new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
-    searchBar.AddView(new IconButton(context).WithCommand(dataContext.CloseCommand));
+    searchBar.AddView(new IconButton(context).WithClickCommand(dataContext.CloseCommand, bindings));
 
     _searchResult = new(context);
     _searchResult.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
     _searchResult.SetAdapter(_adapter);
-    _searchResult.BindVisibility(DataContext.SearchResult, "Count", x => x.Count > 0);
+    _searchResult.BindVisibility(DataContext.SearchResult, "Count", x => x.Count > 0, bindings);
 
     AddView(searchBar, new LayoutParams(LPU.Match, LPU.Wrap));
     AddView(_searchResult, new LayoutParams(LPU.Match, 0, 1).WithMargin(DimensU.Spacing));
 
-    DataContext.SearchResult.CollectionChanged += _onItemsCollectionChanged;
-  }
-
-  private void _onItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
-    Tasks.Dispatch(_adapter.NotifyDataSetChanged);
+    dataContext.SearchResult.Bind((c, e) => Tasks.Dispatch(_adapter.NotifyDataSetChanged)).DisposeWith(bindings);
   }
 
   protected override void OnVisibilityChanged(View changedView, [GeneratedEnum] ViewStates visibility) {
@@ -70,7 +67,6 @@ public sealed class TreeViewSearchV : LinearLayout {
     if (disposing) {
       _searchResult.SetAdapter(null);
       _adapter.Dispose();
-      DataContext.SearchResult.CollectionChanged -= _onItemsCollectionChanged;
     }
     _disposed = true;
     base.Dispose(disposing);
@@ -84,32 +80,44 @@ public sealed class TreeViewSearchV : LinearLayout {
 
     public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
       ((TreeViewSearchItemViewHolder)holder).Bind(items[position]);
+
+    public override void OnViewRecycled(Java.Lang.Object holder) {
+      ((TreeViewSearchItemViewHolder)holder).Unbind();
+      base.OnViewRecycled(holder);
+    }
   }
 
   private class TreeViewSearchItemViewHolder : RecyclerView.ViewHolder {
+    private readonly TreeViewSearchV _treeViewSearchV;
     private readonly LinearLayout _container;
     private readonly IconButton _icon;
     private readonly TextView _name;
     private readonly CommandBinding _navigateToCommandBinding;
+    private bool _disposed;
 
     public TreeViewSearchItemM? DataContext { get; private set; }
 
     public TreeViewSearchItemViewHolder(Context context, TreeViewSearchV treeViewSearchV) : base(_createContainerView(context)) {
+      _treeViewSearchV = treeViewSearchV;
       _icon = new IconButton(context);
       _name = new TextView(context);
       _container = (LinearLayout)ItemView;
       _container.AddView(_icon);
       _container.AddView(_name);
-      _navigateToCommandBinding = _container.Bind(treeViewSearchV.DataContext.NavigateToCommand);
+      _navigateToCommandBinding = new(_container);
     }
 
     public void Bind(TreeViewSearchItemM? item) {
       DataContext = item;
       if (item == null) return;
 
-      _navigateToCommandBinding.Parameter = item;
+      _navigateToCommandBinding.Bind(_treeViewSearchV.DataContext.NavigateToCommand, item);
       _icon.SetImageDrawable(IconU.GetIcon(ItemView.Context, item.Icon));
       _name.Text = item.Name;
+    }
+
+    public void Unbind() {
+      _navigateToCommandBinding.Unbind();
     }
 
     private static LinearLayout _createContainerView(Context context) {
@@ -124,6 +132,16 @@ public sealed class TreeViewSearchV : LinearLayout {
       container.SetBackgroundResource(Resource.Color.c_static_ba);
 
       return container;
+    }
+
+    protected override void Dispose(bool disposing) {
+      if (_disposed) return;
+      if (disposing) {
+        Unbind();
+        _navigateToCommandBinding.Dispose();
+      }
+      _disposed = true;
+      base.Dispose(disposing);
     }
   }
 }

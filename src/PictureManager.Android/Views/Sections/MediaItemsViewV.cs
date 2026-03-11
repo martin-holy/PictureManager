@@ -1,11 +1,13 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils;
+using MH.Utils.Disposables;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.MediaItem;
 
@@ -18,6 +20,7 @@ public class MediaItemsViewV : LinearLayout {
   private readonly TextView _importText;
   private readonly ProgressBar _importProgress;
   private readonly Button _importCancelButton;
+  private readonly BindingScope _bindings = new();
 
   public MediaItemsViewVM DataContext { get; }
 
@@ -31,8 +34,8 @@ public class MediaItemsViewV : LinearLayout {
 
     _importText = new TextView(context);
     _importProgress = new ProgressBar(context);
-    _importCancelButton = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0);
-    _importCancelButton.Bind(DataContext.Import.CancelCommand);
+    _importCancelButton = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0)
+      .WithClickCommand(DataContext.Import.CancelCommand, _bindings);
     _importContainer = new LinearLayout(context) { Orientation = Orientation.Vertical };
     _importContainer.SetGravity(GravityFlags.Center);
     _importContainer.SetPadding(DimensU.Spacing);
@@ -44,13 +47,14 @@ public class MediaItemsViewV : LinearLayout {
     _host = new CollectionViewHost(context, dataContext, _createItemContent);
     AddView(_host);
 
-    this.Bind(dataContext, nameof(MediaItemsViewVM.IsLoading), x => x.IsLoading, (t, _) => t._updateVisibility());
-    this.Bind(dataContext.Import, nameof(MediaItemsImport.IsImporting), x => x.IsImporting, (t, _) => t._updateVisibility());
-    this.Bind(dataContext.Import, nameof(MediaItemsImport.Count), x => x.Count, (t, count) => {
-      t._importText.Text = $"Importing {count} new items ...";
-      t._importProgress.Max = count;
-    });
-    _importProgress.Bind(dataContext.Import, nameof(MediaItemsImport.DoneCount), x => x.DoneCount, (view, doneCount) => view.Progress = doneCount);
+    _bindings.AddRange([
+      dataContext.Bind(nameof(MediaItemsViewVM.IsLoading), x => x.IsLoading, _ => _updateVisibility()),
+      dataContext.Import.Bind(nameof(MediaItemsImport.IsImporting), x => x.IsImporting, _ => _updateVisibility()),
+      dataContext.Import.Bind(nameof(MediaItemsImport.Count), x => x.Count, count => {
+        _importText.Text = $"Importing {count} new items ...";
+        _importProgress.Max = count;
+      }),
+      dataContext.Import.Bind(nameof(MediaItemsImport.DoneCount), x => x.DoneCount, x => _importProgress.Progress = x)]);
   }
 
   private MediaItemThumbFullV _createItemContent(Context context, ICollectionViewGroup group) =>
@@ -60,5 +64,10 @@ public class MediaItemsViewV : LinearLayout {
     _loadingText.Visibility = DataContext.IsLoading && !DataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
     _importContainer.Visibility = DataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
     _host.Visibility = !DataContext.IsLoading && !DataContext.Import.IsImporting ? ViewStates.Visible : ViewStates.Gone;
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (disposing) _bindings.Dispose();
+    base.Dispose(disposing);
   }
 }

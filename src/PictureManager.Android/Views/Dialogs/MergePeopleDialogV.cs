@@ -1,9 +1,11 @@
 ﻿using Android.Content;
 using Android.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
+using MH.Utils.Disposables;
 using PictureManager.Android.Views.Sections;
 using PictureManager.Common.Features.Person;
 using PictureManager.Common.Features.Segment;
@@ -11,7 +13,7 @@ using PictureManager.Common.Features.Segment;
 namespace PictureManager.Android.Views.Dialogs;
 
 public sealed class MergePeopleDialogV : LinearLayout {
-  public MergePeopleDialogV(Context context, MergePeopleDialog dataContext) : base(context) {
+  public MergePeopleDialogV(Context context, MergePeopleDialog dataContext, BindingScope bindings) : base(context) {
     Orientation = Orientation.Vertical;
     LayoutParameters = new LinearLayout.LayoutParams(LPU.Match, 0, 1f);
 
@@ -19,7 +21,7 @@ public sealed class MergePeopleDialogV : LinearLayout {
       new LayoutParams(LPU.Match, _getPeopleViewHeight()));
 
     AddView(new TextView(context) { Background = BackgroundFactory.RoundDarker() }
-      .BindText(dataContext, nameof(MergePeopleDialog.Person), x => x.Person.Name, x => x, out var _),
+      .BindText(dataContext, nameof(MergePeopleDialog.Person), x => x.Person.Name, x => x, bindings),
       new LayoutParams(LPU.Wrap, LPU.Wrap).WithMargin(DimensU.Spacing));
 
     AddView(new CollectionViewHost(context, dataContext.SegmentsView, SegmentsViewV.CreateSegmentV),

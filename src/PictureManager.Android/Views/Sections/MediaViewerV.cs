@@ -7,6 +7,7 @@ using MH.UI.Android.Controls.Hosts.ZoomAndPanHost;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
+using MH.Utils.Disposables;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
@@ -24,7 +25,7 @@ public class MediaViewerV : LinearLayout {
 
   public MediaViewerVM DataContext { get; }
 
-  public MediaViewerV(Context context, MediaViewerVM dataContext) : base(context) {
+  public MediaViewerV(Context context, MediaViewerVM dataContext, BindingScope bindings) : base(context) {
     DataContext = dataContext;
     _adapter = new MediaViewerAdapter(dataContext);
 
@@ -35,19 +36,21 @@ public class MediaViewerV : LinearLayout {
     _viewPager.RegisterOnPageChangeCallback(_pageChangeCallback);
     AddView(_viewPager, new LayoutParams(LPU.Match, LPU.Match));
 
-    this.Bind(dataContext, nameof(MediaViewerVM.IsVisible), x => x.IsVisible, (v, p) =>
-      v.DataContext.UserInputMode = p
-      ? MediaViewerVM.UserInputModes.Browse
-      : MediaViewerVM.UserInputModes.Disabled);
+    bindings.AddRange([
+      dataContext.Bind(nameof(MediaViewerVM.IsVisible), x => x.IsVisible, x =>
+        DataContext.UserInputMode = x
+          ? MediaViewerVM.UserInputModes.Browse
+          : MediaViewerVM.UserInputModes.Disabled),
 
-    this.Bind(dataContext, nameof(MediaViewerVM.MediaItems), x => x.MediaItems, (v, p) => {
-      v._adapter.NotifyDataSetChanged();
-      if (p!.Count > 0)
-        v._viewPager.SetCurrentItem(v.DataContext.IndexOfCurrent, false);
-    });
+      dataContext.Bind(nameof(MediaViewerVM.MediaItems), x => x.MediaItems, x => {
+        _adapter.NotifyDataSetChanged();
+        if (x!.Count > 0)
+          _viewPager.SetCurrentItem(DataContext.IndexOfCurrent, false);
+      }),
 
-    this.Bind(dataContext, nameof(MediaViewerVM.UserInputMode), x => x.UserInputMode, (v, p) =>
-      v._viewPager.UserInputEnabled = p == MediaViewerVM.UserInputModes.Browse);
+      dataContext.Bind(nameof(MediaViewerVM.UserInputMode), x => x.UserInputMode, x =>
+        _viewPager.UserInputEnabled = x == MediaViewerVM.UserInputModes.Browse)
+    ]);
   }
 
   protected override void Dispose(bool disposing) {
@@ -98,6 +101,7 @@ public class MediaViewerV : LinearLayout {
     private readonly SegmentsRectsV _segmentsRectsV;
     private readonly SegmentRectS _segmentRectS;
     private readonly SegmentRectVM _segmentRectVM;
+    private readonly BindingScope _bindings = new();
     private MediaItemM? _dataContext;
     private bool _disposed;
 
@@ -110,7 +114,7 @@ public class MediaViewerV : LinearLayout {
 
       _segmentRectS = new(Core.S.Segment) { EditLimit = 20 };
       _segmentRectVM = Core.VM.Segment.Rect;
-      _segmentsRectsV = new SegmentsRectsV(context, _segmentRectVM, _segmentRectS);      
+      _segmentsRectsV = new SegmentsRectsV(context, _segmentRectVM, _segmentRectS, _bindings);      
 
       Clickable = true;
       Focusable = true;
@@ -121,26 +125,28 @@ public class MediaViewerV : LinearLayout {
 
       Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 
-      this.Bind(_zoomAndPan, nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, (t, p) => {
-        t._mediaViewer.UserInputMode = p
-          ? MediaViewerVM.UserInputModes.Transform
-          : MediaViewerVM.UserInputModes.Browse;
-      });
+      _bindings.AddRange([
+        _zoomAndPan.Bind(nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, x => {
+          _mediaViewer.UserInputMode = x
+            ? MediaViewerVM.UserInputModes.Transform
+            : MediaViewerVM.UserInputModes.Browse;
+        }),
 
-      this.Bind(_zoomAndPan, nameof(ZoomAndPan.ScaleX), x => x.ScaleX,
-        (t, p) => t._segmentRectS.UpdateScale(p));
+        _zoomAndPan.Bind(nameof(ZoomAndPan.ScaleX), x => x.ScaleX, x => _segmentRectS.UpdateScale(x)),
 
-      this.Bind(_segmentRectVM, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
-        (t, p) => {
-          if (!p) return;
-          t._onImageTransformUpdated(null, EventArgs.Empty);
-          t._segmentRectS.ReloadMediaItemSegmentRects();
-        });
+        _segmentRectVM.Bind(nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
+          show => {
+            if (!show) return;
+            _onImageTransformUpdated(null, EventArgs.Empty);
+            _segmentRectS.ReloadMediaItemSegmentRects();
+          }),
 
-      this.Bind(mediaViewer, nameof(MediaViewerVM.ExpandToFill), x => x.ExpandToFill,
-        (t, p) => { t._zoomAndPan.ExpandToFill = p; t.Bind(_dataContext); });
-      this.Bind(mediaViewer, nameof(MediaViewerVM.ShrinkToFill), x => x.ShrinkToFill,
-        (t, p) => { t._zoomAndPan.ShrinkToFill = p; t.Bind(_dataContext); });
+        mediaViewer.Bind(nameof(MediaViewerVM.ExpandToFill), x => x.ExpandToFill,
+          x => { _zoomAndPan.ExpandToFill = x; Bind(_dataContext); }),
+
+        mediaViewer.Bind(nameof(MediaViewerVM.ShrinkToFill), x => x.ShrinkToFill,
+          x => { _zoomAndPan.ShrinkToFill = x; Bind(_dataContext); })
+      ]);
     }
 
     public override bool OnInterceptTouchEvent(MotionEvent? e) {
@@ -207,7 +213,7 @@ public class MediaViewerV : LinearLayout {
       if (disposing) {
         Core.R.Segment.ItemDeletedEvent -= _onSegmentItemDeleted;
         _zoomAndPanHost.ImageTransformUpdatedEvent -= _onImageTransformUpdated;
-        _segmentsRectsV.Dispose();
+        _bindings.Dispose();
       }
       _disposed = true;
       base.Dispose(disposing);

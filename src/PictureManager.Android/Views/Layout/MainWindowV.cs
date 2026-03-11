@@ -2,6 +2,7 @@
 using Android.Widget;
 using MH.UI.Android.Controls.Hosts.SlidePanelsGridHost;
 using MH.UI.Android.Utils;
+using MH.Utils.Disposables;
 using PictureManager.Common;
 
 namespace PictureManager.Android.Views.Layout;
@@ -11,18 +12,20 @@ public class MainWindowV : LinearLayout {
   private readonly ToolBarV _toolBarV;
   private readonly ToolsTabsV _toolsTabsV;
   private readonly MiddleContentV _middleContent;
+  private readonly BindingScope _bindings = new();
 
   public SlidePanelsGridHost SlidePanels { get; }
 
   public MainWindowV(Context context, CoreVM coreVM) : base(context) {
-    _treeViewCategories = new(context, coreVM.MainWindow.TreeViewCategories);
+    _treeViewCategories = new(context, coreVM.MainWindow.TreeViewCategories, _bindings);
     _toolBarV = new ToolBarV(context, coreVM);
     _toolsTabsV = new ToolsTabsV(context, coreVM.MainWindow.ToolsTabs);
-    _middleContent = new(context, coreVM);
+    _middleContent = new(context, coreVM, _bindings);
 
     SlidePanels = new(
       context,
       coreVM.MainWindow.SlidePanelsGrid,
+      _bindings,
       _treeViewCategories,
       _toolBarV,
       _toolsTabsV,
@@ -31,6 +34,11 @@ public class MainWindowV : LinearLayout {
 
     AddView(SlidePanels, new LayoutParams(LPU.Match, LPU.Match));
 
-    _toolBarV.Init(SlidePanels.ViewPager);
+    _toolBarV.Init(SlidePanels.ViewPager, _bindings);
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (disposing) _bindings.Dispose();
+    base.Dispose(disposing);
   }
 }

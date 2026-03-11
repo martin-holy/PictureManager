@@ -1,17 +1,21 @@
 ﻿using Android.Content;
 using Android.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
+using MH.Utils.Disposables;
 using PictureManager.Common.Features.MediaItem.Image;
 
 namespace PictureManager.Android.Views.Dialogs;
 
 public sealed class ImageResizeDialogV : LinearLayout {
   private readonly ImageResizeDialog _dataContext;
+  private readonly BindingScope _bindings;
 
-  public ImageResizeDialogV(Context context, ImageResizeDialog dataContext) : base(context) {
+  public ImageResizeDialogV(Context context, ImageResizeDialog dataContext, BindingScope bindings) : base(context) {
     _dataContext = dataContext;
+    _bindings = bindings;
     Orientation = Orientation.Vertical;
     LayoutParameters = new LayoutParams(LPU.Match, 0, 1f);
 
@@ -20,13 +24,13 @@ public sealed class ImageResizeDialogV : LinearLayout {
     
     AddView(new CheckBox(Context) { Text = "Skip if file exists" }
       .BindChecked(_dataContext, nameof(ImageResizeDialog.SkipIfExists),
-        x => x.SkipIfExists, (s, v) => s.SkipIfExists = v, out var _),
+        x => x.SkipIfExists, (s, v) => s.SkipIfExists = v, bindings),
       new LayoutParams(LPU.Wrap, LPU.Wrap).WithMargin(DimensU.Spacing));
     
-    AddView(new TextView(context).BindProgressText(dataContext, out var _),
+    AddView(new TextView(context).BindProgressText(dataContext, bindings),
       new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
     
-    AddView(new ProgressBar(context).BindProgressBar(dataContext, out var _),
+    AddView(new ProgressBar(context).BindProgressBar(dataContext, bindings),
       new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
   }
 
@@ -37,11 +41,11 @@ public sealed class ImageResizeDialogV : LinearLayout {
     
     container.AddView(new CheckBox(Context) { Text = "Metadata" }
       .BindChecked(_dataContext, nameof(ImageResizeDialog.PreserveMetadata),
-      x => x.PreserveMetadata, (s, v) => s.PreserveMetadata = v, out var _));
+      x => x.PreserveMetadata, (s, v) => s.PreserveMetadata = v, _bindings));
     
     container.AddView(new CheckBox(Context) { Text = "Folders" }
       .BindChecked(_dataContext, nameof(ImageResizeDialog.PreserveFolders),
-      x => x.PreserveFolders, (s, v) => s.PreserveFolders = v, out var _));
+      x => x.PreserveFolders, (s, v) => s.PreserveFolders = v, _bindings));
 
     return container;
   }
@@ -51,12 +55,12 @@ public sealed class ImageResizeDialogV : LinearLayout {
 
     layout.AddView(new TextView(Context)
       .BindText(_dataContext, nameof(ImageResizeDialog.Mpx),
-        x => x.Mpx, mpx => $"{mpx:F1} MPx", out var _),
+        x => x.Mpx, mpx => $"{mpx:F1} MPx", _bindings),
         new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
 
     layout.AddView(new Slider(Context, 0.1, _dataContext.MaxMpx, 0.1)
       .BindProgress(_dataContext, nameof(ImageResizeDialog.Mpx),
-        x => x.Mpx, (s, p) => s.Mpx = p, out var _),
+        x => x.Mpx, (s, p) => s.Mpx = p, _bindings),
         new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
 
     return layout;
