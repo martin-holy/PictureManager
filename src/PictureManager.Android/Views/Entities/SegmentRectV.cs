@@ -4,13 +4,13 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
 using MH.Utils;
+using MH.Utils.Disposables;
 using PictureManager.Common.Features.Segment;
-using System;
 
 namespace PictureManager.Android.Views.Entities;
 
 public class SegmentRectV : View {
-  private readonly IDisposable[] _bindings;
+  private readonly BindingScope _bindings = new();
 
   private Drawable? _bgSelected;
   private Drawable? _bgWithPerson;
@@ -22,14 +22,14 @@ public class SegmentRectV : View {
   public SegmentRectV(Context context, SegmentRectM dataContext) : base(context) {
     DataContext = dataContext;
 
-    _bindings = [
-      this.Bind(dataContext, nameof(SegmentRectM.Size), x => x.Size,
-        (t, p) => t.LayoutParameters = new FrameLayout.LayoutParams((int)p, (int)p)),
-      this.Bind(dataContext, nameof(SegmentRectM.X), x => x.X, (t, p) => t.SetX((float)p)),
-      this.Bind(dataContext, nameof(SegmentRectM.Y), x => x.Y, (t, p) => t.SetY((float)p)),
-      this.Bind(dataContext.Segment, nameof(SegmentM.Person), x => x.Person, (t, _) => t._setBackground()),
-      this.Bind(dataContext.Segment, nameof(SegmentM.IsSelected), x => x.IsSelected, (t, _) => t._setBackground())
-    ];
+    _bindings.AddRange([
+      dataContext.Bind(nameof(SegmentRectM.Size), x => x.Size,
+        x => LayoutParameters = new FrameLayout.LayoutParams((int)x, (int)x)),
+      dataContext.Bind(nameof(SegmentRectM.X), x => x.X, x => SetX((float)x)),
+      dataContext.Bind(nameof(SegmentRectM.Y), x => x.Y, x => SetY((float)x)),
+      dataContext.Segment.Bind(nameof(SegmentM.Person), x => x.Person, _ => _setBackground()),
+      dataContext.Segment.Bind(nameof(SegmentM.IsSelected), x => x.IsSelected, _ => _setBackground())
+    ]);
   }
 
   private void _setBackground() {
@@ -49,9 +49,7 @@ public class SegmentRectV : View {
       Resource.Color.c_black5);
 
   protected override void Dispose(bool disposing) {
-    if (disposing)
-      foreach (var bind in _bindings) bind.Dispose();
-
+    if (disposing) _bindings.Dispose();
     base.Dispose(disposing);
   }
 }

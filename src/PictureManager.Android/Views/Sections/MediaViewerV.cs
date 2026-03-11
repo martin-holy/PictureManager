@@ -4,8 +4,10 @@ using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls.Hosts.ZoomAndPanHost;
+using MH.UI.Android.Controls.Recycler;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
+using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.Disposables;
 using PictureManager.Common;
@@ -75,26 +77,19 @@ public class MediaViewerV : LinearLayout {
     public override int ItemCount => _mediaViewer.MediaItems.Count;
 
     public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-      new MediaViewerMediaItemViewHolder(parent.Context!, _mediaViewer);
+      new BaseViewHolder(new MediaViewerMediaItemView(parent.Context!, _mediaViewer), new(LPU.Match, LPU.Match));
 
-    public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-      ((MediaViewerMediaItemViewHolder)holder).Bind(_mediaViewer.MediaItems[position]);
-  }
+    public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+      (holder.ItemView as IBindable<MediaItemM>)?.Rebind(_mediaViewer.MediaItems[position]); ;
+    }
 
-  private class MediaViewerMediaItemViewHolder : RecyclerView.ViewHolder {
-    public MediaViewerMediaItemViewHolder(Context context, MediaViewerVM mediaViewer)
-      : base(_createContainerView(context, mediaViewer)) { }
-
-    private static MediaViewerMediaItemView _createContainerView(Context context, MediaViewerVM mediaViewer) =>
-      new(context, mediaViewer) { LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match) };
-
-    public void Bind(MediaItemM? mi) {
-      if (ItemView is MediaViewerMediaItemView view)
-        view.Bind(mi);
+    public override void OnViewRecycled(Java.Lang.Object holder) {
+      (((RecyclerView.ViewHolder)holder).ItemView as IUnbindable)?.Unbind();
+      base.OnViewRecycled(holder);
     }
   }
 
-  private class MediaViewerMediaItemView : FrameLayout {
+  private class MediaViewerMediaItemView : FrameLayout, IBindable<MediaItemM> {
     private readonly MediaViewerVM _mediaViewer;
     private readonly ZoomAndPan _zoomAndPan;
     private readonly ZoomAndPanHost _zoomAndPanHost;
@@ -182,19 +177,13 @@ public class MediaViewerV : LinearLayout {
 
     public void Bind(MediaItemM? mi) {
       _dataContext = mi;
-
-      if (mi == null) {
-        _zoomAndPanHost.SetImagePath(null);
-        _zoomAndPanHost.SetVideoPath(null);
-        return;
-      }
+      if (mi == null) return;
 
       var rotated = mi.Orientation is Imaging.Orientation.Rotate90 or Imaging.Orientation.Rotate270;
       var width = rotated ? mi.Height : mi.Width;
       var height = rotated ? mi.Width : mi.Height;
       _zoomAndPan.ContentWidth = width;
       _zoomAndPan.ContentHeight = height;
-
 
       if (mi is ImageM)
         _zoomAndPanHost.SetImagePath(mi.FilePath, mi.Orientation);
@@ -206,6 +195,11 @@ public class MediaViewerV : LinearLayout {
         _zoomAndPanHost.UpdateImageTransform();
         _segmentRectS.SetMediaItem(mi, _segmentRectVM.ShowOverMediaItem);
       });
+    }
+
+    public void Unbind() {
+      _zoomAndPanHost.SetImagePath(null);
+      _zoomAndPanHost.SetVideoPath(null);
     }
 
     protected override void Dispose(bool disposing) {
