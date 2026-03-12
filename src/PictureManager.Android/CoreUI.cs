@@ -106,8 +106,8 @@ public class CoreUI : ICoreP, IDisposable {
     Core.VM.MainTabs.TabActivatedEvent += _onMainTabsTabActivated;
     Core.VM.ToolsTabs.TabActivatedEvent += _onToolsTabsTabActivated;
     Core.VM.MediaItem.Views.CurrentViewSelectionChangedEvent += (_, _) => _updateMediaItemCommands();
-    this.Bind(Core.VM.MediaItem, nameof(MediaItemVM.Current), x => x.Current, (t, _) => t._updateMediaItemCommands(), false);
-    this.Bind(Core.VM.MainWindow, nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _onMainWindowIsInViewModeChanged, false);
+    Core.VM.MediaItem.Bind(nameof(MediaItemVM.Current), x => x.Current, _ => _updateMediaItemCommands(), false);
+    Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _onMainWindowIsInViewModeChanged, false);
   }
 
   private void _onMainTabsTabActivated(object? sender, IListItem e) {
@@ -122,8 +122,8 @@ public class CoreUI : ICoreP, IDisposable {
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
   }
 
-  private void _onMainWindowIsInViewModeChanged(CoreUI coreUI, bool isInViewMode) {
-    coreUI._updateMediaItemCommands();
+  private void _onMainWindowIsInViewModeChanged(bool isInViewMode) {
+    _updateMediaItemCommands();
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
     if (isInViewMode)
       _mainActivity.Window!.EnterFullScreen();
