@@ -30,7 +30,6 @@ public class MediaItemThumbFullV : FrameLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
-    Unbind();
     if (item is not MediaItemM mi) return;
     _videoOverlayer.Visibility = mi is VideoM ? ViewStates.Visible : ViewStates.Gone;
     _cts = new CancellationTokenSource();

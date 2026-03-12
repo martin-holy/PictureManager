@@ -28,9 +28,8 @@ public sealed class PersonListItemV : LinearLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
-    Unbind();
     if (item is not PersonM person) return;
-    _personNameBinding = this.Bind(person, nameof(PersonM.Name), x => x.Name, (t, p) => t._name.Text = p);
+    _personNameBinding = person.Bind(nameof(PersonM.Name), x => x.Name, x => _name.Text = x);
   }
 
   public void Unbind() {

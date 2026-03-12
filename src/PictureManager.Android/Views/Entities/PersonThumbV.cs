@@ -28,9 +28,8 @@ public sealed class PersonThumbV : FrameLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
-    Unbind();
     if (item is not PersonM person) return;
-    _personSegmentBinding = this.Bind(person, nameof(PersonM.Segment), x => x.Segment, _onSegmentChanged);
+    _personSegmentBinding = person.Bind(nameof(PersonM.Segment), x => x.Segment, _onSegmentChanged);
   }
 
   public void Unbind() {
@@ -39,7 +38,7 @@ public sealed class PersonThumbV : FrameLayout, ICollectionViewItemContent {
     _segmentV.Unbind();
   }
 
-  private void _onSegmentChanged(PersonThumbV self, SegmentM? segment) {
+  private void _onSegmentChanged(SegmentM? segment) {
     _segmentV.Unbind();
 
     if (segment == null) {

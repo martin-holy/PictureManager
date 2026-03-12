@@ -21,7 +21,6 @@ public sealed class SegmentV : FrameLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
-    Unbind();
     if (item is not SegmentM segment) return;
     _cts = new CancellationTokenSource();
     _ = _loadThumbnailAsync(segment, _image, _cts.Token);
