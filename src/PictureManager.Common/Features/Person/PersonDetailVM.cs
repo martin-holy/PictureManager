@@ -59,19 +59,18 @@ public sealed class PersonDetailVM : ObservableObject {
     _reloadAllSegments(_segmentS.DataAdapter.GetBy(PersonM).ToList());
     _reloadTopSegments();
 
-    _topSegmentsBind = this.Bind<PersonDetailVM, PersonM, ExtObservableCollection<SegmentM>>(
-      PersonM,
+    _topSegmentsBind = PersonM.Bind<PersonM, ExtObservableCollection<SegmentM>>(
       nameof(PersonM.TopSegments),
       x => x.TopSegments,
-      (t, c, e) => {
+      (_, e) => {
         switch (e.Action) {
           case NotifyCollectionChangedAction.Add:
             if (e.NewItems?.Cast<SegmentM>().ToArray() is { } toAdd)
-              t.TopSegments.Insert(toAdd);
+              TopSegments.Insert(toAdd);
             break;
           case NotifyCollectionChangedAction.Remove:
             if (e.OldItems?.Cast<SegmentM>().ToArray() is { } toRemove)
-              t.TopSegments.Remove(toRemove);
+              TopSegments.Remove(toRemove);
             break;
           case NotifyCollectionChangedAction.Reset:
             _reloadTopSegments();
