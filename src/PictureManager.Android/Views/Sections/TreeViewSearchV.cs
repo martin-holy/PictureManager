@@ -6,8 +6,10 @@ using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Binding;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Controls.Recycler;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
+using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.Disposables;
 using PictureManager.Common.Features.Common;
@@ -76,20 +78,19 @@ public sealed class TreeViewSearchV : LinearLayout {
     public override int ItemCount => items.Count;
 
     public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-      new TreeViewSearchItemViewHolder(parent.Context!, treeViewSearchV);
+      new BaseViewHolder(new TreeViewSearchItemV(parent.Context!, treeViewSearchV), new(LPU.Match, LPU.Wrap));
 
     public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-      ((TreeViewSearchItemViewHolder)holder).Bind(items[position]);
+      (holder.ItemView as IBindable<TreeViewSearchItemM>)?.Bind(items[position]);
 
     public override void OnViewRecycled(Java.Lang.Object holder) {
-      ((TreeViewSearchItemViewHolder)holder).Unbind();
+      (((RecyclerView.ViewHolder)holder).ItemView as IUnbindable)?.Unbind();
       base.OnViewRecycled(holder);
     }
   }
 
-  private class TreeViewSearchItemViewHolder : RecyclerView.ViewHolder {
+  private class TreeViewSearchItemV : LinearLayout, IBindable<TreeViewSearchItemM> {
     private readonly TreeViewSearchV _treeViewSearchV;
-    private readonly LinearLayout _container;
     private readonly IconButton _icon;
     private readonly TextView _name;
     private readonly CommandBinding _navigateToCommandBinding;
@@ -97,14 +98,20 @@ public sealed class TreeViewSearchV : LinearLayout {
 
     public TreeViewSearchItemM? DataContext { get; private set; }
 
-    public TreeViewSearchItemViewHolder(Context context, TreeViewSearchV treeViewSearchV) : base(_createContainerView(context)) {
+    public TreeViewSearchItemV(Context context, TreeViewSearchV treeViewSearchV) : base(context) {
+      Orientation = Orientation.Horizontal;
+      Clickable = true;
+      Focusable = true;
+      SetGravity(GravityFlags.CenterVertical);
+      this.SetPadding(DimensU.Spacing);
+      SetBackgroundResource(Resource.Color.c_static_ba);
+
       _treeViewSearchV = treeViewSearchV;
       _icon = new IconButton(context);
       _name = new TextView(context);
-      _container = (LinearLayout)ItemView;
-      _container.AddView(_icon);
-      _container.AddView(_name);
-      _navigateToCommandBinding = new(_container);
+      AddView(_icon);
+      AddView(_name);
+      _navigateToCommandBinding = new(this);
     }
 
     public void Bind(TreeViewSearchItemM? item) {
@@ -112,26 +119,12 @@ public sealed class TreeViewSearchV : LinearLayout {
       if (item == null) return;
 
       _navigateToCommandBinding.Bind(_treeViewSearchV.DataContext.NavigateToCommand, item);
-      _icon.SetImageDrawable(IconU.GetIcon(ItemView.Context, item.Icon));
+      _icon.SetImageDrawable(IconU.GetIcon(Context, item.Icon));
       _name.Text = item.Name;
     }
 
     public void Unbind() {
       _navigateToCommandBinding.Unbind();
-    }
-
-    private static LinearLayout _createContainerView(Context context) {
-      var container = new LinearLayout(context) {
-        Orientation = Orientation.Horizontal,
-        LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Wrap),
-        Clickable = true,
-        Focusable = true
-      };
-      container.SetGravity(GravityFlags.CenterVertical);
-      container.SetPadding(DimensU.Spacing);
-      container.SetBackgroundResource(Resource.Color.c_static_ba);
-
-      return container;
     }
 
     protected override void Dispose(bool disposing) {
