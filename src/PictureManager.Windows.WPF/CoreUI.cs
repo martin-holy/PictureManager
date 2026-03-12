@@ -56,28 +56,28 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
     Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 
-    this.Bind(Core.VM.Segment.Rect, nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
-      (t, p) => { if (p) t.SegmentRectUiVM.SegmentRectS.ReloadMediaItemSegmentRects(); });
+    Core.VM.Segment.Rect.Bind(nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
+      x => { if (x) SegmentRectUiVM.SegmentRectS.ReloadMediaItemSegmentRects(); });
 
-    this.Bind(Core.VM.MainWindow, nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, (t, p) => {
-      if (p) t.SegmentRectUiVM.SegmentRectS.SetMediaItem(Core.VM.MediaItem.Current, Core.VM.Segment.Rect.ShowOverMediaItem);
+    Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, x => {
+      if (x) SegmentRectUiVM.SegmentRectS.SetMediaItem(Core.VM.MediaItem.Current, Core.VM.Segment.Rect.ShowOverMediaItem);
     });
 
-    this.Bind(Core.VM.MediaItem, nameof(MediaItemVM.Current), x => x.Current, (t, p) => {
+    Core.VM.MediaItem.Bind(nameof(MediaItemVM.Current), x => x.Current, x => {
       if (Core.VM.MainWindow.IsInViewMode)
-        t.SegmentRectUiVM.SegmentRectS.SetMediaItem(p, Core.VM.Segment.Rect.ShowOverMediaItem);
+        SegmentRectUiVM.SegmentRectS.SetMediaItem(x, Core.VM.Segment.Rect.ShowOverMediaItem);
     });
 
-    this.Bind(Core.VM.MediaViewer.ZoomAndPan, nameof(MH.UI.Controls.ZoomAndPan.ScaleX), x => x.ScaleX,
-      (t, p) => t.SegmentRectUiVM.SegmentRectS.UpdateScale(p));
+    Core.VM.MediaViewer.ZoomAndPan.Bind(nameof(MH.UI.Controls.ZoomAndPan.ScaleX), x => x.ScaleX,
+      x => SegmentRectUiVM.SegmentRectS.UpdateScale(x));
 
-    this.Bind(Core.VM.Video.MediaPlayer, nameof(MH.UI.Controls.MediaPlayer.TimelinePosition), x => x.TimelinePosition, (t, p) => {
+    Core.VM.Video.MediaPlayer.Bind(nameof(MH.UI.Controls.MediaPlayer.TimelinePosition), x => x.TimelinePosition, _ => {
       var vm = Core.VM;
       if (!vm.Segment.Rect.ShowOverMediaItem || !vm.MediaViewer.IsVisible || vm.MediaItem.Current == null) return;
 
       var pos = vm.MediaItem.Current is VideoItemM vi ? vi.TimeStart : 0;
       MediaItemM? mi = vm.Video.MediaPlayer.TimelinePosition == pos ? vm.MediaItem.Current : null;
-      t.SegmentRectUiVM.SegmentRectS.SetMediaItem(mi, true);
+      SegmentRectUiVM.SegmentRectS.SetMediaItem(mi, true);
     });
   }
 
