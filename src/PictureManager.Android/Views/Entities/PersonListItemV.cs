@@ -20,11 +20,11 @@ public sealed class PersonListItemV : LinearLayout, ICollectionViewItemContent {
   public PersonListItemV(Context context) : base(context) {
     Orientation = Orientation.Horizontal;
 
-    AddView(new IconView(context).Bind(Resource.Drawable.icon_people, Resource.Color.colorPeople),
-      new LayoutParams(DimensU.IconSize, DimensU.IconSize) { Gravity = GravityFlags.Center }.WithDpMargin(DimensU.Spacing));
+    var icon = new IconView(context).Bind(Resource.Drawable.icon_people, Resource.Color.colorPeople);
+    _name = new TextView(context);
 
-    AddView(_name = new TextView(context),
-      new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Center }.WithMargin(DimensU.Spacing, 0, 0, 0));
+    AddView(icon, LPU.Linear(DimensU.IconSize, DimensU.IconSize, GravityFlags.Center).WithDpMargin(DimensU.Spacing));
+    AddView(_name, LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.Center).WithMargin(DimensU.Spacing, 0, 0, 0));
   }
 
   public void Bind(object item) {

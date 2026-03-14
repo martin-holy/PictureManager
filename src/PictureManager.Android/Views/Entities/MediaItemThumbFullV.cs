@@ -25,8 +25,8 @@ public class MediaItemThumbFullV : FrameLayout, ICollectionViewItemContent {
     _videoOverlayer = new(context) { Visibility = ViewStates.Gone };
     _videoOverlayer.SetImageResource(Resource.Drawable.icon_play_circle);
 
-    AddView(_image, new LayoutParams(LPU.Match, LPU.Match));
-    AddView(_videoOverlayer, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Center });
+    AddView(_image, LPU.FrameMatch());
+    AddView(_videoOverlayer, LPU.Frame(LPU.Wrap, LPU.Wrap, GravityFlags.Center));
   }
 
   public void Bind(object item) {

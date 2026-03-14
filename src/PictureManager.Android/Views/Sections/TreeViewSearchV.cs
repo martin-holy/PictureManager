@@ -33,19 +33,20 @@ public sealed class TreeViewSearchV : LinearLayout {
 
     _searchText = new EditText(context)
       .BindText(dataContext, nameof(TreeViewSearchVM.SearchText), x => x.SearchText, (s, p) => s.SearchText = p, bindings);
+    var closeBtn = new IconButton(context).WithClickCommand(dataContext.CloseCommand, bindings);
 
-    var searchBar = new LinearLayout(context) { Orientation = Orientation.Horizontal };
+    var searchBar = LayoutU.Horizontal(context)
+      .Add(_searchText, LPU.Linear(0, LPU.Wrap, 1f))
+      .Add(closeBtn, LPU.LinearWrap());
     searchBar.SetBackgroundResource(Resource.Color.c_static_ba);
-    searchBar.AddView(_searchText, new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
-    searchBar.AddView(new IconButton(context).WithClickCommand(dataContext.CloseCommand, bindings));
 
     _searchResult = new(context);
     _searchResult.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
     _searchResult.SetAdapter(_adapter);
     _searchResult.BindVisibility(DataContext.SearchResult, "Count", x => x.Count > 0, bindings);
 
-    AddView(searchBar, new LayoutParams(LPU.Match, LPU.Wrap));
-    AddView(_searchResult, new LayoutParams(LPU.Match, 0, 1).WithMargin(DimensU.Spacing));
+    AddView(searchBar, LPU.LinearMatchWrap());
+    AddView(_searchResult, LPU.Linear(LPU.Match, 0, 1).WithMargin(DimensU.Spacing));
 
     dataContext.SearchResult.Bind((c, e) => Tasks.Dispatch(_adapter.NotifyDataSetChanged)).DisposeWith(bindings);
   }

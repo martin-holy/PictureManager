@@ -19,10 +19,10 @@ public sealed class PersonTileV : LinearLayout, ICollectionViewItemContent {
 
   public PersonTileV(Context context) : base(context) {
     Orientation = Orientation.Horizontal;
-    AddView(_personThumbV = new PersonThumbV(context),
-      new LayoutParams(PersonVM.PersonTileSegmentWidth, PersonVM.PersonTileSegmentWidth));
-    AddView(_name = new TextView(context),
-      new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Center }.WithMargin(DimensU.Spacing, 0, 0, 0));
+    _personThumbV = new PersonThumbV(context);
+    _name = new TextView(context);
+    AddView(_personThumbV, LPU.Linear(PersonVM.PersonTileSegmentWidth, PersonVM.PersonTileSegmentWidth));
+    AddView(_name, LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.Center).WithMargin(DimensU.Spacing, 0, 0, 0));
   }
 
   public void Bind(object item) {

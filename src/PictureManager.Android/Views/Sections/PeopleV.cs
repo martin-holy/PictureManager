@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Widget;
 using MH.UI.Android.Controls.Hosts.CollectionViewHost;
+using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
 using PictureManager.Android.Views.Entities;
@@ -11,7 +12,7 @@ namespace PictureManager.Android.Views.Sections;
 public sealed class PeopleV : FrameLayout {
   public PeopleV(Context context, PeopleVM dataContext) : base(context) {
     SetBackgroundResource(Resource.Color.c_static_ba);
-    AddView(new CollectionViewHost(context, dataContext, CreatePersonV));
+    AddView(new CollectionViewHost(context, dataContext, CreatePersonV), LPU.FrameMatch());
   }
 
   public static ICollectionViewItemContent CreatePersonV(Context context, ICollectionViewGroup group) =>

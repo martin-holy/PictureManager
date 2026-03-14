@@ -35,10 +35,13 @@ public sealed class PersonDetailV : LinearLayout {
       MaxHeight = DisplayU.DpToPx((float)(DimensU.IconSize * 1.5))
     };
 
-    AddView(_personName, new LayoutParams(LPU.Match, LPU.Wrap) { Gravity = GravityFlags.Center }.WithDpMargin(2, 0, 2, 0));
-    AddView(_keywords, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(2, 2, 2, 0));
-    AddView(new CollectionViewHost(context, dataContext.TopSegments, SegmentsViewV.CreateSegmentV), new LayoutParams(LPU.Match, _getTopSegmentsHeight()));
-    AddView(new CollectionViewHost(context, dataContext.AllSegments, SegmentsViewV.CreateSegmentV), new LayoutParams(LPU.Match, LPU.Wrap));
+    var topSegments = new CollectionViewHost(context, dataContext.TopSegments, SegmentsViewV.CreateSegmentV);
+    var allSegments = new CollectionViewHost(context, dataContext.AllSegments, SegmentsViewV.CreateSegmentV);
+
+    AddView(_personName, LPU.Linear(LPU.Match, LPU.Wrap, GravityFlags.Center).WithDpMargin(2, 0, 2, 0));
+    AddView(_keywords, LPU.LinearMatchWrap().WithDpMargin(2, 2, 2, 0));
+    AddView(topSegments, LPU.Linear(LPU.Match, _getTopSegmentsHeight()));
+    AddView(allSegments, LPU.LinearMatchWrap());
 
     dataContext.Bind<string>(
       [nameof(PersonDetailVM.PersonM), nameof(PersonM.Name)],

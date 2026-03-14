@@ -13,7 +13,7 @@ public sealed class RatingTreeV : FlatTreeItemV {
 
   public RatingTreeV(Context context, TreeViewHost treeViewHost) : base(context, treeViewHost) {
     _ratingV = new RatingV(context);
-    AddView(_ratingV, new LayoutParams(LPU.Wrap, LPU.Wrap).WithMargin(DimensU.Spacing, 0,0,0));
+    AddView(_ratingV, LPU.LinearWrap().WithMargin(DimensU.Spacing, 0,0,0));
   }
 
   public override void Bind(FlatTreeItem? item) {

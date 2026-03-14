@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Utils;
 using PictureManager.Common;
 using PictureManager.Common.Features.Rating;
 
@@ -10,11 +11,8 @@ public sealed class RatingV : LinearLayout {
   public RatingV(Context context) : base(context) {
     Orientation = Orientation.Horizontal;
 
-    AddView(new IconView(context));
-    AddView(new IconView(context));
-    AddView(new IconView(context));
-    AddView(new IconView(context));
-    AddView(new IconView(context));
+    for (int i = 0; i < 5; i++)
+      AddView(new IconView(context), LPU.LinearWrap());
   }
 
   public void Bind(RatingM rating) {

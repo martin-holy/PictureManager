@@ -7,7 +7,7 @@ using PictureManager.Common;
 
 namespace PictureManager.Android.Views.Layout;
 
-public class MainWindowV : LinearLayout {
+public class MainWindowV : FrameLayout {
   private readonly TreeViewCategoriesV _treeViewCategories;
   private readonly ToolBarV _toolBarV;
   private readonly ToolsTabsV _toolsTabsV;
@@ -32,7 +32,7 @@ public class MainWindowV : LinearLayout {
       new TextView(context) { Text = "Bottom Panel" },
       _middleContent);
 
-    AddView(SlidePanels, new LayoutParams(LPU.Match, LPU.Match));
+    AddView(SlidePanels, LPU.FrameMatch());
 
     _toolBarV.Init(SlidePanels.ViewPager, _bindings);
   }

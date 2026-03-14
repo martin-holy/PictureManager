@@ -17,52 +17,48 @@ public sealed class ImageResizeDialogV : LinearLayout {
     _dataContext = dataContext;
     _bindings = bindings;
     Orientation = Orientation.Vertical;
-    LayoutParameters = new LayoutParams(LPU.Match, 0, 1f);
+    LayoutParameters = LPU.Linear(LPU.Match, 0, 1f);
 
-    AddView(_createOptionsLayout(), new LayoutParams(LPU.Wrap, LPU.Wrap).WithMargin(DimensU.Spacing));
-    AddView(_createSizeLayout(), new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    
-    AddView(new CheckBox(Context) { Text = "Skip if file exists" }
+    var skipIf = new CheckBox(Context) { Text = "Skip if file exists" }
       .BindChecked(_dataContext, nameof(ImageResizeDialog.SkipIfExists),
-        x => x.SkipIfExists, (s, v) => s.SkipIfExists = v, bindings),
-      new LayoutParams(LPU.Wrap, LPU.Wrap).WithMargin(DimensU.Spacing));
-    
-    AddView(new TextView(context).BindProgressText(dataContext, bindings),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
-    
-    AddView(new ProgressBar(context).BindProgressBar(dataContext, bindings),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithMargin(DimensU.Spacing));
+        x => x.SkipIfExists, (s, v) => s.SkipIfExists = v, bindings);
+
+    var progressText = new TextView(context).BindProgressText(dataContext, bindings);
+    var progressBar = new ProgressBar(context).BindProgressBar(dataContext, bindings);
+
+    AddView(_optionsLayout(), LPU.LinearWrap().WithMargin(DimensU.Spacing));
+    AddView(_sizeLayout(), LPU.LinearMatchWrap().WithMargin(DimensU.Spacing));
+    AddView(skipIf, LPU.LinearWrap().WithMargin(DimensU.Spacing));
+    AddView(progressText, LPU.LinearMatchWrap().WithMargin(DimensU.Spacing));
+    AddView(progressBar, LPU.LinearMatchWrap().WithMargin(DimensU.Spacing));
   }
 
-  private LinearLayout _createOptionsLayout() {
-    var container = new LinearLayout(Context) { Orientation = Orientation.Horizontal };
-
-    container.AddView(new TextView(Context) { Text = "Preserve:" });
+  private LinearLayout _optionsLayout() {
+    var preserve = new TextView(Context) { Text = "Preserve:" };
     
-    container.AddView(new CheckBox(Context) { Text = "Metadata" }
+    var metadata = new CheckBox(Context) { Text = "Metadata" }
       .BindChecked(_dataContext, nameof(ImageResizeDialog.PreserveMetadata),
-      x => x.PreserveMetadata, (s, v) => s.PreserveMetadata = v, _bindings));
+      x => x.PreserveMetadata, (s, v) => s.PreserveMetadata = v, _bindings);
     
-    container.AddView(new CheckBox(Context) { Text = "Folders" }
+    var folders = new CheckBox(Context) { Text = "Folders" }
       .BindChecked(_dataContext, nameof(ImageResizeDialog.PreserveFolders),
-      x => x.PreserveFolders, (s, v) => s.PreserveFolders = v, _bindings));
+      x => x.PreserveFolders, (s, v) => s.PreserveFolders = v, _bindings);
 
-    return container;
+    return LayoutU.Horizontal(Context)
+      .Add(preserve, LPU.LinearWrap())
+      .Add(metadata, LPU.LinearWrap())
+      .Add(folders, LPU.LinearWrap());
   }
 
-  private LinearLayout _createSizeLayout() {
-    var layout = new LinearLayout(Context) { Orientation = Orientation.Horizontal };
+  private LinearLayout _sizeLayout() {
+    var text = new TextView(Context)
+      .BindText(_dataContext, nameof(ImageResizeDialog.Mpx), x => x.Mpx, mpx => $"{mpx:F1} MPx", _bindings);
+    
+    var slider = new Slider(Context, 0.1, _dataContext.MaxMpx, 0.1)
+      .BindProgress(_dataContext, nameof(ImageResizeDialog.Mpx), x => x.Mpx, (s, p) => s.Mpx = p, _bindings);
 
-    layout.AddView(new TextView(Context)
-      .BindText(_dataContext, nameof(ImageResizeDialog.Mpx),
-        x => x.Mpx, mpx => $"{mpx:F1} MPx", _bindings),
-        new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
-
-    layout.AddView(new Slider(Context, 0.1, _dataContext.MaxMpx, 0.1)
-      .BindProgress(_dataContext, nameof(ImageResizeDialog.Mpx),
-        x => x.Mpx, (s, p) => s.Mpx = p, _bindings),
-        new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
-
-    return layout;
+    return LayoutU.Horizontal(Context)
+      .Add(text, LPU.LinearWrap())
+      .Add(slider, LPU.Linear(0, LPU.Wrap, 1f));
   }
 }

@@ -19,7 +19,7 @@ using System;
 
 namespace PictureManager.Android.Views.Sections;
 
-public class MediaViewerV : LinearLayout {
+public class MediaViewerV : FrameLayout {
   private readonly ViewPager2 _viewPager;
   private readonly MediaViewerAdapter _adapter;
   private readonly PageChangeCallback _pageChangeCallback;
@@ -36,7 +36,7 @@ public class MediaViewerV : LinearLayout {
     _pageChangeCallback = new PageChangeCallback(this);
     _viewPager = new(context) { Adapter = _adapter };
     _viewPager.RegisterOnPageChangeCallback(_pageChangeCallback);
-    AddView(_viewPager, new LayoutParams(LPU.Match, LPU.Match));
+    AddView(_viewPager, LPU.FrameMatch());
 
     bindings.AddRange([
       dataContext.Bind(nameof(MediaViewerVM.IsVisible), x => x.IsVisible, x =>
@@ -115,8 +115,8 @@ public class MediaViewerV : LinearLayout {
       Focusable = true;
       SetClipChildren(false);
       SetClipToPadding(false);
-      AddView(_zoomAndPanHost, new LayoutParams(LPU.Match, LPU.Match));
-      AddView(_segmentsRectsV, new LayoutParams(LPU.Match, LPU.Match));
+      AddView(_zoomAndPanHost, LPU.FrameMatch());
+      AddView(_segmentsRectsV, LPU.FrameMatch());
 
       Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 

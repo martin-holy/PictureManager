@@ -23,8 +23,8 @@ public sealed class PersonThumbV : FrameLayout, ICollectionViewItemContent {
     _noSegmentIcon = new IconView(context).Bind(Resource.Drawable.icon_people, Resource.Color.gray5);
     _segmentV = new(context);
 
-    AddView(_noSegmentIcon, 0, new LayoutParams(LPU.Match, LPU.Match) { Gravity = GravityFlags.Center }.WithDpMargin(DimensU.Spacing));
-    AddView(_segmentV, 0, new LayoutParams(LPU.Match, LPU.Match));
+    AddView(_noSegmentIcon, 0, LPU.FrameMatch().WithDpMargin(DimensU.Spacing));
+    AddView(_segmentV, 0, LPU.FrameMatch());
   }
 
   public void Bind(object item) {

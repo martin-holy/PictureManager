@@ -13,7 +13,7 @@ using PictureManager.Common.Features.MediaItem;
 
 namespace PictureManager.Android.Views.Sections;
 
-public class MediaItemsViewV : LinearLayout {
+public class MediaItemsViewV : FrameLayout {
   private readonly CollectionViewHost _host;
   private readonly TextView _loadingText;
   private readonly LinearLayout _importContainer;
@@ -26,26 +26,25 @@ public class MediaItemsViewV : LinearLayout {
 
   public MediaItemsViewV(Context context, MediaItemsViewVM dataContext) : base(context) {
     DataContext = dataContext;
-    Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
     _loadingText = new TextView(context) { Text = "Loading ...", TextSize = 18 };
-    AddView(_loadingText, new LayoutParams(LPU.Match, LPU.Match) { Gravity = GravityFlags.Center });
-
     _importText = new TextView(context);
     _importProgress = new ProgressBar(context);
     _importCancelButton = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0)
       .WithClickCommand(DataContext.Import.CancelCommand, _bindings);
-    _importContainer = new LinearLayout(context) { Orientation = Orientation.Vertical };
+
+    _importContainer = LayoutU.Vertical(context)
+      .Add(_importText, LPU.LinearWrap().WithDpMargin(0, 0, 0, 6))
+      .Add(_importProgress, LPU.LinearMatchWrap().WithDpMargin(6, 0, 6, 0))
+      .Add(_importCancelButton, LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.End).WithDpMargin(0, 6, 6, 0));
     _importContainer.SetGravity(GravityFlags.Center);
-    _importContainer.SetPadding(DimensU.Spacing);
-    _importContainer.AddView(_importText, new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(0, 0, 0, 6));
-    _importContainer.AddView(_importProgress, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(6, 0, 6, 0));
-    _importContainer.AddView(_importCancelButton, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.End }.WithDpMargin(0, 6, 6, 0));
-    AddView(_importContainer, new LayoutParams(LPU.Match, LPU.Match));
 
     _host = new CollectionViewHost(context, dataContext, _createItemContent);
-    AddView(_host);
+
+    AddView(_loadingText, LPU.Frame(LPU.Wrap, LPU.Wrap, GravityFlags.Center));
+    AddView(_importContainer, LPU.FrameMatch().WithMargin(DimensU.Spacing));
+    AddView(_host, LPU.FrameMatch());
 
     _bindings.AddRange([
       dataContext.Bind(nameof(MediaItemsViewVM.IsLoading), x => x.IsLoading, _ => _updateVisibility()),

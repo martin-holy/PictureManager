@@ -10,7 +10,7 @@ using PictureManager.Common.Features.MediaItem;
 
 namespace PictureManager.Android.Views.Layout;
 
-public class MiddleContentV : LinearLayout {
+public class MiddleContentV : FrameLayout {
   private readonly MainTabsV _mainTabs;
   private readonly MediaViewerV _mediaViewer;
 
@@ -18,8 +18,8 @@ public class MiddleContentV : LinearLayout {
     _mainTabs = new(context, coreVM.MainTabs);
     _mediaViewer = new(context, coreVM.MediaViewer, bindings);
 
-    AddView(_mainTabs, new LayoutParams(LPU.Match, LPU.Match));
-    AddView(_mediaViewer, new LayoutParams(LPU.Match, LPU.Match));
+    AddView(_mainTabs, LPU.FrameMatch());
+    AddView(_mediaViewer, LPU.FrameMatch());
 
     coreVM.MediaViewer.Bind(nameof(MediaViewerVM.IsVisible), x => x.IsVisible, _updateVisibility);
   }

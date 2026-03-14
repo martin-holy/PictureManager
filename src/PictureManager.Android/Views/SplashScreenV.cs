@@ -35,9 +35,9 @@ public class SplashScreenV : LinearLayout {
 
     ProgressMessage = new Progress<string>(msg => message.Text = msg);
 
-    AddView(appName, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterHorizontal }.WithMargin(_dpToPx(4)));
-    AddView(version, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterHorizontal }.WithMargin(_dpToPx(4)));
-    AddView(message, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.CenterHorizontal }.WithMargin(_dpToPx(4)));
+    AddView(appName, LPU.LinearWrap().WithMargin(_dpToPx(4)));
+    AddView(version, LPU.LinearWrap().WithMargin(_dpToPx(4)));
+    AddView(message, LPU.LinearWrap().WithMargin(_dpToPx(4)));
   }
 
   private int _dpToPx(float dp) => (int)(dp * _dm.Density);

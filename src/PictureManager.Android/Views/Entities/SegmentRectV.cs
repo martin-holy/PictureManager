@@ -1,7 +1,6 @@
 ﻿using Android.Content;
 using Android.Graphics.Drawables;
 using Android.Views;
-using Android.Widget;
 using MH.UI.Android.Utils;
 using MH.Utils;
 using MH.Utils.Disposables;
@@ -23,8 +22,7 @@ public class SegmentRectV : View {
     DataContext = dataContext;
 
     _bindings.AddRange([
-      dataContext.Bind(nameof(SegmentRectM.Size), x => x.Size,
-        x => LayoutParameters = new FrameLayout.LayoutParams((int)x, (int)x)),
+      dataContext.Bind(nameof(SegmentRectM.Size), x => x.Size, x => LayoutParameters = LPU.Frame((int)x, (int)x)),
       dataContext.Bind(nameof(SegmentRectM.X), x => x.X, x => SetX((float)x)),
       dataContext.Bind(nameof(SegmentRectM.Y), x => x.Y, x => SetY((float)x)),
       dataContext.Segment.Bind(nameof(SegmentM.Person), x => x.Person, _ => _setBackground()),

@@ -30,8 +30,8 @@ public sealed class TreeViewCategoriesV : FrameLayout {
     _searchV = new TreeViewSearchV(context, dataContext.TreeViewSearch, bindings);
     _searchV.BindVisibility(dataContext.TreeViewSearch, nameof(TreeViewSearchVM.IsOpen), x => x.IsOpen, bindings);
 
-    AddView(_tabsV, new LayoutParams(LPU.Match, LPU.Match));
-    AddView(_searchV, new LayoutParams(LPU.Match, LPU.Match));
+    AddView(_tabsV, LPU.FrameMatch());
+    AddView(_searchV, LPU.FrameMatch());
   }
 
   private TreeViewCategoriesSlotV? _slotFactory(object? o) =>

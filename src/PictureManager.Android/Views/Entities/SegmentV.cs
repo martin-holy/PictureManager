@@ -17,7 +17,7 @@ public sealed class SegmentV : FrameLayout, ICollectionViewItemContent {
   public View View => this;
 
   public SegmentV(Context context) : base(context) {
-    AddView(_image = new ImageView(context), new LayoutParams(LPU.Match, LPU.Match));
+    AddView(_image = new ImageView(context), LPU.FrameMatch());
   }
 
   public void Bind(object item) {
