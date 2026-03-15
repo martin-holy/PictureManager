@@ -16,6 +16,7 @@ using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Segment;
 using System;
+using System.Threading;
 
 namespace PictureManager.Android.Views.Sections;
 
@@ -98,6 +99,7 @@ public class MediaViewerV : FrameLayout {
     private readonly SegmentRectVM _segmentRectVM;
     private readonly BindingScope _bindings = new();
     private MediaItemM? _dataContext;
+    private CancellationTokenSource? _cts;
     private bool _disposed;
 
     public MediaViewerMediaItemView(Context context, MediaViewerVM mediaViewer) : base(context) {
@@ -185,20 +187,21 @@ public class MediaViewerV : FrameLayout {
       _zoomAndPan.ContentWidth = width;
       _zoomAndPan.ContentHeight = height;
 
-      if (mi is ImageM)
-        _zoomAndPanHost.SetImagePath(mi.FilePath, mi.Orientation);
+      if (mi is ImageM) {
+        _cts = new CancellationTokenSource();
+        _ = _zoomAndPanHost.SetImagePathAsync(mi.FilePath, width, height, mi.Orientation, _cts.Token, Context!);
+      }
       else if (mi is VideoM)
         _zoomAndPanHost.SetVideoPath(mi.FilePath);
 
-      _zoomAndPanHost.Post(() => {
-        _zoomAndPan.ScaleToFitContent(width, height);
-        _zoomAndPanHost.UpdateImageTransform();
-        _segmentRectS.SetMediaItem(mi, _segmentRectVM.ShowOverMediaItem);
-      });
+      _zoomAndPanHost.Post(() => _segmentRectS.SetMediaItem(mi, _segmentRectVM.ShowOverMediaItem));
     }
 
     public void Unbind() {
-      _zoomAndPanHost.SetImagePath(null);
+      _cts?.Cancel();
+      _cts?.Dispose();
+      _cts = null;
+      _zoomAndPanHost.UnsetImage();
       _zoomAndPanHost.SetVideoPath(null);
     }
 
