@@ -13,23 +13,26 @@ using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.Disposables;
 using PictureManager.Common.Features.Common;
-using System.Collections.ObjectModel;
 
 namespace PictureManager.Android.Views.Sections;
 
 public sealed class TreeViewSearchV : LinearLayout {
   private readonly EditText _searchText;
   private readonly RecyclerView _searchResult;
-  private readonly SearchAdapter _adapter;
+  private readonly BindableAdapter<TreeViewSearchItemM> _adapter;
   private bool _disposed;
 
   public TreeViewSearchVM DataContext { get; }
 
   public TreeViewSearchV(Context context, TreeViewSearchVM dataContext, BindingScope bindings) : base(context) {
     DataContext = dataContext;
-    _adapter = new(dataContext.SearchResult, this);
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_black5);
+
+    _adapter = new(
+      () => dataContext.SearchResult,
+      ctx => new TreeViewSearchItemV(ctx, this),
+      () => new(LPU.Match, LPU.Wrap));
 
     _searchText = new EditText(context)
       .BindText(dataContext, nameof(TreeViewSearchVM.SearchText), x => x.SearchText, (s, p) => s.SearchText = p, bindings);
@@ -73,21 +76,6 @@ public sealed class TreeViewSearchV : LinearLayout {
     }
     _disposed = true;
     base.Dispose(disposing);
-  }
-
-  private class SearchAdapter(ObservableCollection<TreeViewSearchItemM> items, TreeViewSearchV treeViewSearchV) : RecyclerView.Adapter {
-    public override int ItemCount => items.Count;
-
-    public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-      new BaseViewHolder(new TreeViewSearchItemV(parent.Context!, treeViewSearchV), new(LPU.Match, LPU.Wrap));
-
-    public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-      (holder.ItemView as IBindable<TreeViewSearchItemM>)?.Bind(items[position]);
-
-    public override void OnViewRecycled(Java.Lang.Object holder) {
-      (((RecyclerView.ViewHolder)holder).ItemView as IUnbindable)?.Unbind();
-      base.OnViewRecycled(holder);
-    }
   }
 
   private class TreeViewSearchItemV : LinearLayout, IBindable<TreeViewSearchItemM> {

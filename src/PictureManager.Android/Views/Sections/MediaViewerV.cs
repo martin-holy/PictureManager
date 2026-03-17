@@ -1,7 +1,6 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls.Hosts.ZoomAndPanHost;
 using MH.UI.Android.Controls.Recycler;
@@ -22,7 +21,7 @@ namespace PictureManager.Android.Views.Sections;
 
 public class MediaViewerV : FrameLayout {
   private readonly ViewPager2 _viewPager;
-  private readonly MediaViewerAdapter _adapter;
+  private readonly BindableAdapter<MediaItemM> _adapter;
   private readonly PageChangeCallback _pageChangeCallback;
   private bool _disposed;
 
@@ -30,7 +29,10 @@ public class MediaViewerV : FrameLayout {
 
   public MediaViewerV(Context context, MediaViewerVM dataContext, BindingScope bindings) : base(context) {
     DataContext = dataContext;
-    _adapter = new MediaViewerAdapter(dataContext);
+    _adapter = new(
+      () => dataContext.MediaItems,
+      ctx => new MediaViewerMediaItemView(ctx, dataContext),
+      () => new(LPU.Match, LPU.Match));
 
     SetBackgroundResource(Resource.Color.c_static_ba);
 
@@ -71,22 +73,6 @@ public class MediaViewerV : FrameLayout {
   private class PageChangeCallback(MediaViewerV _viewer) : ViewPager2.OnPageChangeCallback {
     public override void OnPageSelected(int position) {
       _viewer.DataContext.Current = _viewer.DataContext.MediaItems[position];
-    }
-  }
-
-  private class MediaViewerAdapter(MediaViewerVM _mediaViewer) : RecyclerView.Adapter {
-    public override int ItemCount => _mediaViewer.MediaItems.Count;
-
-    public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-      new BaseViewHolder(new MediaViewerMediaItemView(parent.Context!, _mediaViewer), new(LPU.Match, LPU.Match));
-
-    public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-      (holder.ItemView as IBindable<MediaItemM>)?.Rebind(_mediaViewer.MediaItems[position]); ;
-    }
-
-    public override void OnViewRecycled(Java.Lang.Object holder) {
-      (((RecyclerView.ViewHolder)holder).ItemView as IUnbindable)?.Unbind();
-      base.OnViewRecycled(holder);
     }
   }
 
