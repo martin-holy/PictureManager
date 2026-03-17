@@ -18,6 +18,7 @@ public class MediaItemThumbFullV : FrameLayout, ICollectionViewItemContent {
   private readonly ImageView _videoOverlayer;
   private CancellationTokenSource? _cts;
 
+  public object? DataContext { get; private set; }
   public View View => this;
 
   public MediaItemThumbFullV(Context context) : base(context) {
@@ -30,6 +31,7 @@ public class MediaItemThumbFullV : FrameLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
+    DataContext = item;
     if (item is not MediaItemM mi) return;
     _videoOverlayer.Visibility = mi is VideoM ? ViewStates.Visible : ViewStates.Gone;
     _cts = new CancellationTokenSource();

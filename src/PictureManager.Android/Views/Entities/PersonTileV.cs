@@ -15,6 +15,7 @@ public sealed class PersonTileV : LinearLayout, ICollectionViewItemContent {
   private readonly TextView _name;
   private IDisposable? _personNameBinding;
 
+  public object? DataContext { get; private set; }
   public View View => this;
 
   public PersonTileV(Context context) : base(context) {
@@ -26,6 +27,7 @@ public sealed class PersonTileV : LinearLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
+    DataContext = item;
     if (item is not PersonM person) return;
     _personThumbV.Bind(person);
     _personNameBinding = person.Bind(nameof(PersonM.Name), x => x.Name, x => _name.Text = x);

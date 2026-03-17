@@ -14,6 +14,7 @@ public sealed class SegmentV : FrameLayout, ICollectionViewItemContent {
   private readonly ImageView _image;
   private CancellationTokenSource? _cts;
 
+  public object? DataContext { get; private set; }
   public View View => this;
 
   public SegmentV(Context context) : base(context) {
@@ -21,6 +22,7 @@ public sealed class SegmentV : FrameLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
+    DataContext = item;
     if (item is not SegmentM segment) return;
     _cts = new CancellationTokenSource();
     _ = _loadThumbnailAsync(segment, _image, _cts.Token);

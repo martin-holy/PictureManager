@@ -98,9 +98,10 @@ public class MediaViewerV : FrameLayout {
     private readonly SegmentRectS _segmentRectS;
     private readonly SegmentRectVM _segmentRectVM;
     private readonly BindingScope _bindings = new();
-    private MediaItemM? _dataContext;
     private CancellationTokenSource? _cts;
     private bool _disposed;
+
+    public MediaItemM? DataContext { get; private set; }
 
     public MediaViewerMediaItemView(Context context, MediaViewerVM mediaViewer) : base(context) {
       _mediaViewer = mediaViewer;
@@ -139,10 +140,10 @@ public class MediaViewerV : FrameLayout {
           }),
 
         mediaViewer.Bind(nameof(MediaViewerVM.ExpandToFill), x => x.ExpandToFill,
-          x => { _zoomAndPan.ExpandToFill = x; Bind(_dataContext); }),
+          x => { _zoomAndPan.ExpandToFill = x; Bind(DataContext); }),
 
         mediaViewer.Bind(nameof(MediaViewerVM.ShrinkToFill), x => x.ShrinkToFill,
-          x => { _zoomAndPan.ShrinkToFill = x; Bind(_dataContext); })
+          x => { _zoomAndPan.ShrinkToFill = x; Bind(DataContext); })
       ]);
     }
 
@@ -178,7 +179,7 @@ public class MediaViewerV : FrameLayout {
     }
 
     public void Bind(MediaItemM? mi) {
-      _dataContext = mi;
+      DataContext = mi;
       if (mi == null) return;
 
       var rotated = mi.Orientation is Imaging.Orientation.Rotate90 or Imaging.Orientation.Rotate270;

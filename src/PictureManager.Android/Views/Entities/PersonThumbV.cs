@@ -17,6 +17,7 @@ public sealed class PersonThumbV : FrameLayout, ICollectionViewItemContent {
   private readonly SegmentV _segmentV;
   private IDisposable? _personSegmentBinding;
 
+  public object? DataContext { get; private set; }
   public View View => this;
 
   public PersonThumbV(Context context) : base(context) {
@@ -28,6 +29,7 @@ public sealed class PersonThumbV : FrameLayout, ICollectionViewItemContent {
   }
 
   public void Bind(object item) {
+    DataContext = item;
     if (item is not PersonM person) return;
     _personSegmentBinding = person.Bind(nameof(PersonM.Segment), x => x.Segment, _onSegmentChanged);
   }
