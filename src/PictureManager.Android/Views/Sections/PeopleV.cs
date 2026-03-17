@@ -3,7 +3,6 @@ using Android.Widget;
 using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
-using MH.UI.Interfaces;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.Person;
 
@@ -15,8 +14,8 @@ public sealed class PeopleV : FrameLayout {
     AddView(new CollectionViewHost(context, dataContext, CreatePersonV), LPU.FrameMatch());
   }
 
-  public static ICollectionViewItemContent CreatePersonV(Context context, ICollectionViewGroup group) =>
-    group.ViewMode switch {
+  public static ICollectionViewItemContent CreatePersonV(Context context, CollectionView.ViewMode viewMode) =>
+    viewMode switch {
       CollectionView.ViewMode.ThumbSmall => new PersonThumbV(context),
       CollectionView.ViewMode.List => new PersonListItemV(context),
       CollectionView.ViewMode.Tiles => new PersonTileV(context),

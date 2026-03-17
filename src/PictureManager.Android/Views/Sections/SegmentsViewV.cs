@@ -3,7 +3,7 @@ using Android.Widget;
 using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
-using MH.UI.Interfaces;
+using MH.UI.Controls;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common.Features.Segment;
 
@@ -19,6 +19,6 @@ public sealed class SegmentsViewV : LinearLayout {
     AddView(people, LPU.Linear(LPU.Match, 0, 1f).WithMargin(0, DimensU.Spacing, 0, 0));
   }
 
-  public static ICollectionViewItemContent CreateSegmentV(Context context, ICollectionViewGroup group) =>
+  public static ICollectionViewItemContent CreateSegmentV(Context context, CollectionView.ViewMode viewMode) =>
     new SegmentV(context);
 }

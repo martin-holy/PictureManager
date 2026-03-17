@@ -5,7 +5,7 @@ using MH.UI.Android.Binding;
 using MH.UI.Android.Controls.Hosts.CollectionViewHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
-using MH.UI.Interfaces;
+using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.Disposables;
 using PictureManager.Android.Views.Entities;
@@ -56,7 +56,7 @@ public class MediaItemsViewV : FrameLayout {
       dataContext.Import.Bind(nameof(MediaItemsImport.DoneCount), x => x.DoneCount, x => _importProgress.Progress = x)]);
   }
 
-  private MediaItemThumbFullV _createItemContent(Context context, ICollectionViewGroup group) =>
+  private MediaItemThumbFullV _createItemContent(Context context, CollectionView.ViewMode viewMode) =>
     new(context);
 
   private void _updateVisibility() {
