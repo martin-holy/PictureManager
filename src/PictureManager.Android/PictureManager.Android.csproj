@@ -38,9 +38,9 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="MH.UI" Version="4.2.0" />
-		<PackageReference Include="MH.UI.Android" Version="1.4.0" />
-		<PackageReference Include="MH.Utils" Version="3.4.0" />
+		<PackageReference Include="MH.UI" Version="4.3.0" />
+		<PackageReference Include="MH.UI.Android" Version="2.0.0" />
+		<PackageReference Include="MH.Utils" Version="3.5.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">
