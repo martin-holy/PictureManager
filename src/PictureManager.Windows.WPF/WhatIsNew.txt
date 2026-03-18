@@ -3,12 +3,6 @@
 [U] - Update
 [B] - Bug fix
 
-2.34.0:
- - [B] Set segment to new person when reading metadata
- - [B] App crash when person moved to open group using dialog
- - [U] CollectionView: Separator in sort menu
- - [U] MainMenu: separator
-
 2.33.0:
  - [N] Move keyword to group command in menu
  - [N] Rotate icon for rotate images
@@ -16,6 +10,10 @@
  - [N] Set selected segments as unknown command in main menu
  - [N] View selected media items command in main menu
  - [B] Set segment to new person when reading metadata
+ - [B] App crash when person moved to open group using dialog
+ - [U] CollectionView: Separator in sort menu
+ - [U] MainMenu: separator
+ - [U] MainMenu: Removed Left, Middle and Right Tabs from menu
 
 2.32.0:
  - [N] PersonDetailV: Add/Remove selected segments to/from person's Top segments in menu
