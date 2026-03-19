@@ -17,6 +17,7 @@ public sealed class ToolsTabsVM : TabControl {
   public static AsyncRelayCommand OpenPeopleTabCommand { get; set; } = null!;
 
   public ToolsTabsVM() : base(new(Dock.Top, Dock.Right, new SlidePanelPinButton()) { JustifyTabSize = true }) {
+    NoTabsText = "Tools tabs";
     OpenPersonTabCommand = new(OpenPersonTab, Res.IconInformation, "Detail");
     OpenPeopleTabCommand = new(_ => OpenPeopleTab(null), Res.IconPeopleMultiple, "People");
   }
