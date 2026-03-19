@@ -18,8 +18,8 @@ public class MainWindowV : FrameLayout {
 
   public MainWindowV(Context context, CoreVM coreVM) : base(context) {
     _treeViewCategories = new(context, coreVM.MainWindow.TreeViewCategories, _bindings);
-    _toolBarV = new ToolBarV(context, coreVM);
-    _toolsTabsV = new ToolsTabsV(context, coreVM.MainWindow.ToolsTabs);
+    _toolBarV = new(context, coreVM);
+    _toolsTabsV = new(context, coreVM.MainWindow.ToolsTabs);
     _middleContent = new(context, coreVM, _bindings);
 
     SlidePanels = new(
