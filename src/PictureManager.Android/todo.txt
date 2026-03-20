@@ -5,6 +5,10 @@
 - CollectionViewHost: unselect on long touch
 - set TreeItem.IsExpanded to false when last item is removed. for example when I move last person in group to another group the old group is still expanded
 - new MediaItems tab is without text initialy but it should change when items are loaded but it changes after tabs change
+- first context menu open in tree is off screen
+- delete button disabled on first full image
+
+- derive FileOperationDialog from ProgressDialog
 
 # CoreUI:
  - MH.UI.Android.Utils.Init.SetDelegates()
