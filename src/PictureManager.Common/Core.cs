@@ -27,9 +27,7 @@ public sealed class Core {
   public static string Version => GetVersionWithoutHash(Assembly.GetExecutingAssembly());
   public static string UiVersion { get; set; } = "?";
 
-  private Core() {
-    Tasks.SetUiTaskScheduler();
-  }
+  private Core() { }
 
   public Task InitAsync(IProgress<string> progress, string appDir) {
     Settings = Settings.Load(Path.Combine(appDir, "settings.json"));
