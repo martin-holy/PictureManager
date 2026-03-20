@@ -35,7 +35,7 @@ public sealed class MediaItemsImport : ObservableObject {
     DoneCount = 0;
 
     try {
-      await _task.Start(new(() => _readMetadata(items)));
+      await _task.Start(token => Task.Run(() => _readMetadata(items), token));
 
       Tasks.Dispatch(delegate { DoneCount = 0; }); // new counter for loading GeoNames if any
 
@@ -56,7 +56,7 @@ public sealed class MediaItemsImport : ObservableObject {
     }
   }
 
-  private void _readMetadata(List<MediaItemMetadata> items) {
+  private async Task _readMetadata(List<MediaItemMetadata> items) {
     try {
       var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _task.Token };
       Parallel.ForEach(items.Where(x => x.MediaItem is ImageM), po, mim => {
@@ -68,10 +68,10 @@ public sealed class MediaItemsImport : ObservableObject {
 
     foreach (var mim in items.Where(x => x.MediaItem is VideoM)) {
       if (_task.Token.IsCancellationRequested) break;
-      Tasks.RunOnUiThread(() => {
+      await Tasks.RunOnUiThread(() => {
         MediaItemS.ReadMetadata(mim, false);
         Tasks.Dispatch(delegate { DoneCount++; });
-      }).Wait();
+      });
     }
   }
 
