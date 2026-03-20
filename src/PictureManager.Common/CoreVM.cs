@@ -435,19 +435,19 @@ public sealed class CoreVM : ObservableObject {
 
   private void _imagesToVideo(ImageM[] items) {
     if (items.Length < 2) return;
-    _ = Dialog.ShowAsync(new ImagesToVideoDialog(
-      items,
-      (folder, fileName) => {
-        var mi = _coreR.Video.ItemCreate(folder, fileName);
-        var mim = new MediaItemMetadata(mi);
-        MediaItemS.ReadMetadata(mim, false);
-        if (mim.Success)
-          mim.FindRefs().ContinueWith(delegate {
-            mi.SetThumbSize();
-            MediaItem.Views.Current?.Add(mi);
-          }, Tasks.UiTaskScheduler);
-      })
-    );
+    _ = Dialog.ShowAsync(new ImagesToVideoDialog(items, _handleVideoCreatedAsync));
+  }
+
+  private async Task _handleVideoCreatedAsync(FolderM folder, string fileName) {
+    var mi = _coreR.Video.ItemCreate(folder, fileName);
+    var mim = new MediaItemMetadata(mi);
+    MediaItemS.ReadMetadata(mim, false);
+    if (!mim.Success) return;
+    await mim.FindRefs();
+    await Tasks.RunOnUiThread(() => {
+      mi.SetThumbSize();
+      MediaItem.Views.Current?.Add(mi);
+    });
   }
 
   private async Task _readGeoLocationFromFiles(ImageM[] items) {

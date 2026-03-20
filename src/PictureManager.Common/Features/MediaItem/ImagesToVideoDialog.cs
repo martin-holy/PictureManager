@@ -25,12 +25,11 @@ public sealed class ImagesToVideoDialog : Dialog {
   private readonly string _outputFilePath;
   private readonly string _outputFileName;
   private readonly FolderM _outputFolder;
-  private readonly OnSuccess _onSuccess;
+  private readonly Func<FolderM, string, Task> _onVideoCreated;
 
-  public delegate void OnSuccess(FolderM folder, string fileName);
   public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
 
-  public ImagesToVideoDialog(ImageM[] items, OnSuccess onSuccess) : base("Images to Video", MH.UI.Res.IconMovieClapper) {
+  public ImagesToVideoDialog(ImageM[] items, Func<FolderM, string, Task> onVideoCreated) : base("Images to Video", MH.UI.Res.IconMovieClapper) {
     Buttons = [
       new(new AsyncRelayCommand(_createVideo, () => !IsBusy, MH.UI.Res.IconMovieClapper, "Create Video"), true),
       new(CloseCommand, false, true)
@@ -44,7 +43,7 @@ public sealed class ImagesToVideoDialog : Dialog {
     _outputFilePath = IOExtensions.PathCombine(firstMi.Folder.FullPath, fileName);
     _outputFileName = fileName;
     _outputFolder = firstMi.Folder;
-    _onSuccess = onSuccess;
+    _onVideoCreated = onVideoCreated;
   }
 
   protected override Task _onResultChanged(int result) {
@@ -143,7 +142,7 @@ public sealed class ImagesToVideoDialog : Dialog {
     if (_createTempListFile()) {
       await CreateVideoAsync();
       _deleteFile(_inputListPath);
-      _onSuccess.Invoke(_outputFolder, _outputFileName);
+      await _onVideoCreated(_outputFolder, _outputFileName);
     }
 
     Result = 1;
