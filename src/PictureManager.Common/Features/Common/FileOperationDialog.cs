@@ -44,10 +44,12 @@ public sealed class FileOperationDialog : Dialog {
   }
 
   public void SetWorkTask<T>(Task<T> work) {
-    WorkTask = work.ContinueWith(res => {
-      WorkResult = res.Result;
-      return Tasks.RunOnUiThread(() => Result = 1);
-    });
+    WorkTask = _handleWorkAsync(work);
+  }
+
+  private async Task _handleWorkAsync<T>(Task<T> work) {
+    WorkResult = await work;
+    await Tasks.RunOnUiThread(() => Result = 1);
   }
 
   protected override Task _onResultChanged(int result) {
