@@ -26,7 +26,7 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
   public async Task<T> Do<T>(Task<T> work) {
     _dlg.SetWorkTask(work);
     await Dialog.ShowAsync(_dlg);
-    return work.Result;
+    return await work;
   }
 
   public static async Task CopyMoveFolder(FolderM src, FolderM dest, FileOperationMode mode) {
