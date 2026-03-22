@@ -208,20 +208,21 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     }
   }
 
-  private async Task<(string, string, RealMediaItemM?)?> ResolveTargetFileName(FolderM src, FolderM target, string srcFileName, string targetPath, RealMediaItemM? mi) {
+  private async Task<(string, string, RealMediaItemM?)?> ResolveTargetFileName(FolderM src, FolderM target, string srcFileName, string targetPath, RealMediaItemM? srcMi) {
     var targetFileName = srcFileName;
     var targetFilePath = IOExtensions.PathCombine(targetPath, targetFileName);
-    if (!File.Exists(targetFilePath)) return new(targetFilePath, targetFileName, mi);
+    if (!File.Exists(targetFilePath)) return new(targetFilePath, targetFileName, srcMi);
 
-    if (mi == null) mi = CreateMediaItemAndReadMetadata(src, srcFileName);
+    if (srcMi == null) srcMi = await CreateMediaItemAndReadMetadata(src, srcFileName);
+    var dstMi = target.MediaItems.GetByFileName(targetFileName) ?? await CreateMediaItemAndReadMetadata(target, targetFileName);
     RealMediaItemM? replacedMi = null;
-    var result = await FileOperationCollisionDialog.Open(src, target, mi, targetFileName, replacedMi);
+    var result = await FileOperationCollisionDialog.Open(src, target, srcMi, dstMi, targetFileName, replacedMi);
     targetFileName = result.Item2;
     replacedMi = result.Item3;
 
     switch (result.Item1) {
       case CollisionResult.Rename: {
-        if (mi != null) _renamed.Add(mi, targetFileName);
+        if (srcMi != null) _renamed.Add(srcMi, targetFileName);
         targetFilePath = IOExtensions.PathCombine(targetPath, targetFileName);
         break;
       }
@@ -230,12 +231,12 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
         break;
       }
       case CollisionResult.Skip: {
-        if (mi != null) Skipped.Add(mi);
+        if (srcMi != null) Skipped.Add(srcMi);
         return null;
       }
     }
 
-    return new(targetFilePath, targetFileName, mi);
+    return new(targetFilePath, targetFileName, srcMi);
   }
 
   private void CopyMoveFileOnDrive(string src, string dest) {
@@ -303,11 +304,11 @@ public sealed class CopyMoveU(FileOperationMode mode, CoreR coreR) {
     }
   }
 
-  public static RealMediaItemM? CreateMediaItemAndReadMetadata(FolderM folder, string fileName) {
+  public static async Task<RealMediaItemM?> CreateMediaItemAndReadMetadata(FolderM folder, string fileName) {
     if (Core.R.MediaItem.ItemCreate(folder, fileName) is not { } mi) return null;
     var mim = new MediaItemMetadata(mi);
     MediaItemS.ReadMetadata(mim, false);
-    if (mim.Success) mim.FindRefs().Wait();
+    if (mim.Success) await mim.FindRefs();
     return mi;
   }
 

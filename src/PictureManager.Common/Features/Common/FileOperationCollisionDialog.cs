@@ -8,6 +8,7 @@ using PictureManager.Common.Utils;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Common.Features.Common;
@@ -24,28 +25,29 @@ public sealed class FileOperationCollisionDialog : Dialog {
   public FileCollisionInfo SrcFile { get; }
   public FileCollisionInfo DstFile { get => _dstFile; set { _dstFile = value; OnPropertyChanged(); } }
 
-  public FileOperationCollisionDialog(FolderM srcFolder, FolderM dstFolder, RealMediaItemM? srcMi, string fileName) : base("File already exists", Res.IconImageMultiple) {
+  public FileOperationCollisionDialog(FolderM srcFolder, FolderM dstFolder, RealMediaItemM? srcMi, RealMediaItemM? dstMi, string fileName) : base("File already exists", Res.IconImageMultiple) {
     _destFolder = dstFolder;
     SrcFile = new(srcMi, IOExtensions.PathCombine(srcFolder.FullPath, fileName));
-    _dstFile = new(_getMediaItem(dstFolder, fileName), IOExtensions.PathCombine(dstFolder.FullPath, fileName));
+    _dstFile = new(dstMi, IOExtensions.PathCombine(dstFolder.FullPath, fileName));
     _fileName = fileName;
 
     Buttons = [
-      new(new RelayCommand(_rename, null, "Rename")),
+      new(new AsyncRelayCommand(_rename, null, "Rename")),
       new(new RelayCommand(() => Result = (int)CollisionResult.Replace, null, "Replace")),
       new(new RelayCommand(() => Result = (int)CollisionResult.Skip, null, "Skip"))
     ]; 
   }
 
-  public static async Task<(CollisionResult, string, RealMediaItemM?)> Open(FolderM src, FolderM dest, RealMediaItemM? srcMi, string fileName, RealMediaItemM? replacedMi) {
+  public static async Task<(CollisionResult, string, RealMediaItemM?)> Open(FolderM src, FolderM dest, RealMediaItemM? srcMi, RealMediaItemM? dstMi, string fileName, RealMediaItemM? replacedMi) {
     var result = CollisionResult.Skip;
     var outFileName = fileName;
     var outReplacedMi = replacedMi;
 
     _initThumb(srcMi);
+    _initThumb(dstMi);
 
     await Tasks.RunOnUiThread(async () => {
-      var cd = new FileOperationCollisionDialog(src, dest, srcMi, outFileName);
+      var cd = new FileOperationCollisionDialog(src, dest, srcMi, dstMi, outFileName);
       result = (CollisionResult)await ShowAsync(cd);
       outFileName = cd.FileName;
       outReplacedMi = cd.DstFile.MediaItem;
@@ -60,15 +62,15 @@ public sealed class FileOperationCollisionDialog : Dialog {
     mi.SetThumbSize();
   }
 
-  private static RealMediaItemM? _getMediaItem(FolderM folder, string fileName) {
+  private static async Task<RealMediaItemM?> _getMediaItem(FolderM folder, string fileName) {
     var mi = folder.MediaItems.GetByFileName(fileName)
-             ?? CopyMoveU.CreateMediaItemAndReadMetadata(folder, fileName);
+             ?? await CopyMoveU.CreateMediaItemAndReadMetadata(folder, fileName);
 
     _initThumb(mi);
     return mi;
   }
 
-  private void _rename() {
+  private async Task _rename(CancellationToken token) {
     Error = string.Empty;
 
     if (string.IsNullOrEmpty(FileName)) {
@@ -83,7 +85,7 @@ public sealed class FileOperationCollisionDialog : Dialog {
 
     var newFilePath = Path.Combine(_destFolder.FullPath, FileName);
     if (File.Exists(newFilePath)) {
-      DstFile = new(_getMediaItem(_destFolder, FileName), newFilePath);
+      DstFile = new(await _getMediaItem(_destFolder, FileName), newFilePath);
       return;
     }
 
