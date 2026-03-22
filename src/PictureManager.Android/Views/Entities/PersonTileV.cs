@@ -23,7 +23,7 @@ public sealed class PersonTileV : LinearLayout, ICollectionViewItemContent {
     _personThumbV = new PersonThumbV(context);
     _name = new TextView(context);
     AddView(_personThumbV, LPU.Linear(PersonVM.PersonTileSegmentWidth, PersonVM.PersonTileSegmentWidth));
-    AddView(_name, LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.Center).WithMargin(DimensU.Spacing, 0, 0, 0));
+    AddView(_name, LPU.LinearWrap(GravityFlags.Center).WithMargin(DimensU.Spacing, 0, 0, 0));
   }
 
   public void Bind(object item) {

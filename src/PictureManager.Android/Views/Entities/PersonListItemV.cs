@@ -25,7 +25,7 @@ public sealed class PersonListItemV : LinearLayout, ICollectionViewItemContent {
     _name = new TextView(context);
 
     AddView(icon, LPU.Linear(DimensU.IconSize, DimensU.IconSize, GravityFlags.Center).WithDpMargin(DimensU.Spacing));
-    AddView(_name, LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.Center).WithMargin(DimensU.Spacing, 0, 0, 0));
+    AddView(_name, LPU.LinearWrap(GravityFlags.Center).WithMargin(DimensU.Spacing, 0, 0, 0));
   }
 
   public void Bind(object item) {

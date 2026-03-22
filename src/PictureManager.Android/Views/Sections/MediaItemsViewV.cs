@@ -37,7 +37,7 @@ public class MediaItemsViewV : FrameLayout {
     _importContainer = LayoutU.Vertical(context)
       .Add(_importText, LPU.LinearWrap().WithDpMargin(0, 0, 0, 6))
       .Add(_importProgress, LPU.LinearMatchWrap().WithDpMargin(6, 0, 6, 0))
-      .Add(_importCancelButton, LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.End).WithDpMargin(0, 6, 6, 0));
+      .Add(_importCancelButton, LPU.LinearWrap(GravityFlags.End).WithDpMargin(0, 6, 6, 0));
     _importContainer.SetGravity(GravityFlags.Center);
 
     _host = new CollectionViewHost(context, dataContext, _createItemContent);

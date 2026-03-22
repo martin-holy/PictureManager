@@ -58,7 +58,7 @@ public sealed class CompressImagesDialogV : LinearLayout {
       .BindText(_dataContext, propertyName, getter, x => x, _bindings);
 
     return LayoutU.Vertical(Context)
-      .Add(label, LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.CenterHorizontal))
-      .Add(size, LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.CenterHorizontal));
+      .Add(label, LPU.LinearWrap(GravityFlags.CenterHorizontal))
+      .Add(size, LPU.LinearWrap(GravityFlags.CenterHorizontal));
   }
 }

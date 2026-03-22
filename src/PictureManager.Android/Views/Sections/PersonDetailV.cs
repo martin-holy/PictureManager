@@ -38,7 +38,7 @@ public sealed class PersonDetailV : LinearLayout {
     var topSegments = new CollectionViewHost(context, dataContext.TopSegments, SegmentsViewV.CreateSegmentV);
     var allSegments = new CollectionViewHost(context, dataContext.AllSegments, SegmentsViewV.CreateSegmentV);
 
-    AddView(_personName, LPU.Linear(LPU.Match, LPU.Wrap, GravityFlags.Center).WithDpMargin(2, 0, 2, 0));
+    AddView(_personName, LPU.LinearWrap(GravityFlags.Center).WithDpMargin(2, 0, 2, 0));
     AddView(_keywords, LPU.LinearMatchWrap().WithDpMargin(2, 2, 2, 0));
     AddView(topSegments, LPU.Linear(LPU.Match, _getTopSegmentsHeight()));
     AddView(allSegments, LPU.LinearMatchWrap());
