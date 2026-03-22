@@ -61,16 +61,16 @@
 
       <!-- Source Thumbnail -->
       <ContentControl
-        Content="{Binding SrcMediaItem, TargetNullValue={StaticResource UnknownFile1}}"
+        Content="{Binding SrcFile.MediaItem, TargetNullValue={StaticResource UnknownFile1}}"
         ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"
-        ToolTip="{Binding SrcPath}"
+        ToolTip="{Binding SrcFile.Path}"
         Grid.Column="0"/>
 
       <!-- Destination Thumbnail -->
       <ContentControl
-        Content="{Binding DestMediaItem, TargetNullValue={StaticResource UnknownFile2}}"
+        Content="{Binding DstFile.MediaItem, TargetNullValue={StaticResource UnknownFile2}}"
         ContentTemplate="{StaticResource PM.DT.MediaItem.Thumb-Lite}"
-        ToolTip="{Binding DestPath}"
+        ToolTip="{Binding DstFile.Path}"
         Grid.Column="2"/>
 
       <!-- Info -->
@@ -95,29 +95,29 @@
         <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource InfoValue}">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0}x{1}">
-              <Binding Path="SrcMediaItem.Width" FallbackValue="0"/>
-              <Binding Path="SrcMediaItem.Height" FallbackValue="0"/>
+              <Binding Path="SrcFile.MediaItem.Width" FallbackValue="0"/>
+              <Binding Path="SrcFile.MediaItem.Height" FallbackValue="0"/>
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
         <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource InfoValue}">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0}x{1}">
-              <Binding Path="DestMediaItem.Width" FallbackValue="0"/>
-              <Binding Path="DestMediaItem.Height" FallbackValue="0"/>
+              <Binding Path="DstFile.MediaItem.Width" FallbackValue="0"/>
+              <Binding Path="DstFile.MediaItem.Height" FallbackValue="0"/>
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
 
         <Rectangle Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
         <TextBlock Text="File size:" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
-        <TextBlock Text="{Binding SrcSize}" Grid.Row="2" Grid.Column="1" Style="{StaticResource InfoValue}"/>
-        <TextBlock Text="{Binding DestSize}" Grid.Row="3" Grid.Column="1" Style="{StaticResource InfoValue}"/>
+        <TextBlock Text="{Binding SrcFile.Size}" Grid.Row="2" Grid.Column="1" Style="{StaticResource InfoValue}"/>
+        <TextBlock Text="{Binding DstFile.Size}" Grid.Row="3" Grid.Column="1" Style="{StaticResource InfoValue}"/>
 
         <Rectangle Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
         <TextBlock Text="Modified:" Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
-        <TextBlock Text="{Binding SrcLastWrite}" Grid.Row="4" Grid.Column="1" Style="{StaticResource InfoValue}"/>
-        <TextBlock Text="{Binding DestLastWrite}" Grid.Row="5" Grid.Column="1" Style="{StaticResource InfoValue}"/>
+        <TextBlock Text="{Binding SrcFile.LastWrite}" Grid.Row="4" Grid.Column="1" Style="{StaticResource InfoValue}"/>
+        <TextBlock Text="{Binding DstFile.LastWrite}" Grid.Row="5" Grid.Column="1" Style="{StaticResource InfoValue}"/>
 
         <Rectangle Grid.Row="6" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
         <TextBlock
