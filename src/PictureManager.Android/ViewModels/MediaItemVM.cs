@@ -1,9 +1,11 @@
 ﻿using Android.Content;
 using Android.Graphics;
 using Android.Media;
+using Android.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils;
+using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
@@ -12,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace PictureManager.Android.ViewModels;
@@ -199,5 +203,47 @@ public static class MediaItemVM {
       return false;
 
     return XmpU.WriteToJpeg(srcPath, mergedXmp);
+  }
+
+  public static async Task LoadThumbnailAsync(MediaItemM mi, ImageView imageView, Context context, CancellationToken token) {
+    try {
+      var bitmap = await Task.Run(async () => {
+        try {
+          token.ThrowIfCancellationRequested();
+
+          var filePath = mi.FilePath;
+          var thumbSize = Core.Settings.MediaItem.ThumbSize;
+
+          var thumb = mi switch {
+            ImageM => await MediaStoreU.GetImageThumbnail(filePath, context, 512)
+                      ?? ImagingU.CreateImageThumbnail(filePath, thumbSize),
+            VideoM => await MediaStoreU.GetVideoThumbnail(filePath, context, 512)
+                      ?? ImagingU.CreateVideoThumbnail(filePath, thumbSize),
+            _ => null
+          };
+
+          token.ThrowIfCancellationRequested();
+
+          return thumb?.ApplyOrientation(mi.Orientation);
+        }
+        catch (OperationCanceledException) {
+          throw;
+        }
+        catch (Exception ex) {
+          MH.Utils.Log.Error(ex);
+          return null;
+        }
+      }, token);
+
+      if (token.IsCancellationRequested) return;
+
+      imageView.Post(() => {
+        if (!token.IsCancellationRequested)
+          imageView.SetImageBitmap(bitmap);
+      });
+    }
+    catch (OperationCanceledException) {
+      // ignored
+    }
   }
 }
