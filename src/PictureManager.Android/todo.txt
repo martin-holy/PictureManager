@@ -1,10 +1,8 @@
 - open MediaItems in new tab command
-- FileOperationCollisionDialog is not awaited so rename doesn't work. maybe it is because it is opened from another dialog
+- show error text in FileOperationCollisionDialog
 - Slider can't be slided to the max in image resize dialog
 - sometimes unhandeled exception for CollectionViewItem when selected/opened
 - CollectionViewHost: unselect on long touch
-- set TreeItem.IsExpanded to false when last item is removed. for example when I move last person in group to another group the old group is still expanded
-- new MediaItems tab is without text initialy but it should change when items are loaded but it changes after tabs change
 - first context menu open in tree is off screen
 - delete button disabled on first full image
 
@@ -17,7 +15,6 @@
  - CoreVM.VideoFrameSaver = new VideoFrameSaver()
 
 # Views
- - Dialogs/FileOperationCollisionDialogV
  - Dialogs/FolderBrowserDialogV
  - Dialogs/FolderKeywordsDialogV
  - Layout/StatusBarV
