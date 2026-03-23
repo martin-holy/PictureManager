@@ -179,6 +179,7 @@ public sealed class CoreVM : ObservableObject {
     ResizeSelectedImagesCommand.RaiseCanExecuteChanged();
     RotateMediaItemsCommand.RaiseCanExecuteChanged();
     SaveImageMetadataToFilesCommand.RaiseCanExecuteChanged();
+    MediaItemVM.DeleteCommand.RaiseCanExecuteChanged();
   }
 
   private void _onMainTabsPropertyChanged(object? sender, PropertyChangedEventArgs e) {
