@@ -4,7 +4,9 @@
 - sometimes unhandeled exception for CollectionViewItem when selected/opened
 - CollectionViewHost: unselect on long touch
 - first context menu open in tree is off screen
-- delete button disabled on first full image
+
+- review the logic behind RecyclerView payloads in TreeViewHostAdapterBase where I subscribe to _flatTree.TreeItemPropertyChangedEvent
+  to create payloads vs FlatTreeItemV binding directly to FlatTreeItem
 
 - derive FileOperationDialog from ProgressDialog
 
