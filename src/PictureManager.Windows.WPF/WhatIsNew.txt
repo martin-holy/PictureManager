@@ -15,6 +15,7 @@
  - [U] MainMenu: separator
  - [U] MainMenu: Removed Left, Middle and Right Tabs from menu
  - [N] MainTabs: No open tabs text
+ - [B] ZoomAndPan: GetFitScale
 
 2.32.0:
  - [N] PersonDetailV: Add/Remove selected segments to/from person's Top segments in menu
