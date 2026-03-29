@@ -277,10 +277,6 @@
         ToolTip="Expand to fill"
         ap:Icon.Data="{StaticResource IconExpandRect}"
         IsChecked="{Binding MediaViewer.ZoomAndPan.ExpandToFill}"/>
-      <c:IconToggleButton
-        ToolTip="Shrink to fill"
-        ap:Icon.Data="{StaticResource IconShrinkRect}"
-        IsChecked="{Binding MediaViewer.ZoomAndPan.ShrinkToFill}"/>
     </StackPanel>
   </DataTemplate>
 </ResourceDictionary>
