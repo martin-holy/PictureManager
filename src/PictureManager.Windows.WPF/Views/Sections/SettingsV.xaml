@@ -235,10 +235,6 @@
             <TextBlock Text="Expand content to fill:"/>
             <CheckBox IsChecked="{Binding ExpandToFill, Mode=TwoWay}"/>
           </x:Array>
-          <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Shrink content to fill:"/>
-            <CheckBox IsChecked="{Binding ShrinkToFill, Mode=TwoWay}"/>
-          </x:Array>
         </x:Array>
       </ItemsControl.ItemsSource>
     </ItemsControl>
