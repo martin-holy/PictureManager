@@ -17,6 +17,7 @@
  - [N] MainTabs: No open tabs text
  - [B] ZoomAndPan: GetFitScale
  - [U] ToolBar: Shrink to fill button removed
+ - [U] Settings: Shrink content to fill removed
 
 2.32.0:
  - [N] PersonDetailV: Add/Remove selected segments to/from person's Top segments in menu
