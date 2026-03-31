@@ -12,7 +12,7 @@ namespace PictureManager.Common.Features.MediaItem;
 public enum SlideshowState { On, Paused, Stopped }
 
 public sealed class SlideshowVM : ObservableObject {
-  private readonly ZoomAndPan _zoomAndPan;
+  private ZoomAndPan? _zoomAndPan;
   private bool _isTimerOn;
   private int _repeatCount;
   private readonly MediaViewerVM _mediaViewer;
@@ -29,16 +29,22 @@ public sealed class SlideshowVM : ObservableObject {
   public RelayCommand StartCommand { get; }
   public RelayCommand StopCommand { get; }
 
-  public SlideshowVM(MediaViewerVM mediaViewer, ZoomAndPan zoomAndPan) {
-    _zoomAndPan = zoomAndPan;
+  public SlideshowVM(MediaViewerVM mediaViewer) {
     _mediaViewer = mediaViewer;
-    zoomAndPan.AnimationEndedEvent += _onZoomAndPanAnimationEnded;
-    zoomAndPan.ContentMouseDownEvent += _onZoomAndPanContentMouseDown;
     StartCommand = new(_slideshow, MH.UI.Res.IconPlay, "Start slideshow");
     StopCommand = new(_slideshow, MH.UI.Res.IconStop, "Stop slideshow");
   }
 
-  public void OnCurrentChanged(MediaItemM current) {
+  /// <summary>
+  /// Slideshow is now only for WPF
+  /// </summary>
+  public void Init(ZoomAndPan zoomAndPan) {
+    _zoomAndPan = zoomAndPan;
+    zoomAndPan.AnimationEndedEvent += _onZoomAndPanAnimationEnded;
+    zoomAndPan.ContentMouseDownEvent += _onZoomAndPanContentMouseDown;
+  }
+
+  public void OnCurrentChanged(MediaItemM? current) {
     _current = current;
     if (_state != SlideshowState.Stopped)
       _next(true);
@@ -73,7 +79,7 @@ public sealed class SlideshowVM : ObservableObject {
   public bool Stop() {
     if (_state == SlideshowState.Stopped) return false;
     State = SlideshowState.Stopped;
-    _zoomAndPan.StopAnimation();
+    _zoomAndPan?.StopAnimation();
     return true;
   }
 
@@ -85,7 +91,7 @@ public sealed class SlideshowVM : ObservableObject {
 
     switch (_current) {
       case ImageM:
-        if (_playPanoramicImages && _zoomAndPan.IsContentPanoramic() && _zoomAndPan.CanStartAnimation()) {
+        if (_playPanoramicImages && _zoomAndPan != null && _zoomAndPan.IsContentPanoramic() && _zoomAndPan.CanStartAnimation()) {
           State = SlideshowState.Paused;
           _zoomAndPan.StartAnimation(_interval * 1000);
         }
