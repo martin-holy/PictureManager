@@ -53,6 +53,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
   public void AfterInit() {
     LoadPlugins();
     SegmentRectUiVM = new(Core.VM.Segment.Rect, new(Core.S.Segment));
+    Core.VM.MediaViewer.Slideshow.Init(Core.VM.MediaViewer.CurrentFull.ZoomAndPan);
 
     Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 
@@ -66,6 +67,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     Core.VM.MediaItem.Bind(nameof(MediaItemVM.Current), x => x.Current, x => {
       if (Core.VM.MainWindow.IsInViewMode)
         SegmentRectUiVM.SegmentRectS.SetMediaItem(x, Core.VM.Segment.Rect.ShowOverMediaItem);
+      Core.VM.MediaViewer.Slideshow.OnCurrentChanged(x);
     });
 
     Core.VM.MediaViewer.ZoomAndPan.Bind(nameof(MH.UI.Controls.ZoomAndPan.ScaleX), x => x.ScaleX,
