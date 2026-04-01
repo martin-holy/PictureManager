@@ -7,7 +7,7 @@
 
   <DataTemplate DataType="{x:Type vm:SegmentRectUiVM}">
     <ItemsControl
-      ItemsSource="{Binding SegmentRectS.MediaItemSegmentsRects}"
+      ItemsSource="{Binding MediaItemFullVM.SegmentRectS.MediaItemSegmentsRects}"
       Visibility="{Binding SegmentRectVM.ShowOverMediaItem,
                    Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
 
