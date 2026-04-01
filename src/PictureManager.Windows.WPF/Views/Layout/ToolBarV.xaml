@@ -262,7 +262,7 @@
           <Style.Triggers>
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
-                <Condition Binding="{Binding MediaViewer.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="False"/>
+                <Condition Binding="{Binding MediaViewer.CurrentFull.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="False"/>
                 <Condition Binding="{Binding MediaViewer.IsVisible}" Value="True"/>
               </MultiDataTrigger.Conditions>
               <Setter Property="Visibility" Value="Visible"/>
@@ -276,7 +276,7 @@
       <c:IconToggleButton
         ToolTip="Expand to fill"
         ap:Icon.Data="{StaticResource IconExpandRect}"
-        IsChecked="{Binding MediaViewer.ZoomAndPan.ExpandToFill}"/>
+        IsChecked="{Binding MediaViewer.ExpandToFill}"/>
     </StackPanel>
   </DataTemplate>
 </ResourceDictionary>

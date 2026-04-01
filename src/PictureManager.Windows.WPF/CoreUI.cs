@@ -52,26 +52,18 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
   public void AfterInit() {
     LoadPlugins();
-    SegmentRectUiVM = new(Core.VM.Segment.Rect, new(Core.S.Segment));
+    Core.VM.MediaViewer.CurrentFull = new(Core.VM.MediaViewer, Core.VM.Segment.Rect, new(Core.S.Segment));
     Core.VM.MediaViewer.Slideshow.Init(Core.VM.MediaViewer.CurrentFull.ZoomAndPan);
+    SegmentRectUiVM = new(Core.VM.Segment.Rect, Core.VM.MediaViewer.CurrentFull);
 
     Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 
-    Core.VM.Segment.Rect.Bind(nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
-      x => { if (x) SegmentRectUiVM.SegmentRectS.ReloadMediaItemSegmentRects(); });
-
-    Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, x => {
-      if (x) SegmentRectUiVM.SegmentRectS.SetMediaItem(Core.VM.MediaItem.Current, Core.VM.Segment.Rect.ShowOverMediaItem);
-    });
-
     Core.VM.MediaItem.Bind(nameof(MediaItemVM.Current), x => x.Current, x => {
-      if (Core.VM.MainWindow.IsInViewMode)
-        SegmentRectUiVM.SegmentRectS.SetMediaItem(x, Core.VM.Segment.Rect.ShowOverMediaItem);
+      if (!Core.VM.MainWindow.IsInViewMode) return;
+      if (!Core.S.MediaItem.Exists(x)) return;
+      Core.VM.MediaViewer.CurrentFull?.SetMediaItem(x);
       Core.VM.MediaViewer.Slideshow.OnCurrentChanged(x);
     });
-
-    Core.VM.MediaViewer.ZoomAndPan.Bind(nameof(MH.UI.Controls.ZoomAndPan.ScaleX), x => x.ScaleX,
-      x => SegmentRectUiVM.SegmentRectS.UpdateScale(x));
 
     Core.VM.Video.MediaPlayer.Bind(nameof(MH.UI.Controls.MediaPlayer.TimelinePosition), x => x.TimelinePosition, _ => {
       var vm = Core.VM;
@@ -79,7 +71,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
       var pos = vm.MediaItem.Current is VideoItemM vi ? vi.TimeStart : 0;
       MediaItemM? mi = vm.Video.MediaPlayer.TimelinePosition == pos ? vm.MediaItem.Current : null;
-      SegmentRectUiVM.SegmentRectS.SetMediaItem(mi, true);
+      Core.VM.MediaViewer.CurrentFull?.SegmentRectS.SetMediaItem(mi);
     });
   }
 
@@ -147,7 +139,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     folder.FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.Common.CachePath);
 
   private void _onSegmentItemDeleted(object? sender, SegmentM e) {
-    SegmentRectUiVM.SegmentRectS.RemoveIfContains(e);
+    Core.VM.MediaViewer.CurrentFull?.SegmentRectS.RemoveIfContains(e);
   }
 
   private void _openUrl(string url) =>

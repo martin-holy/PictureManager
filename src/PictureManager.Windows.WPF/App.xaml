@@ -72,6 +72,7 @@
 
         <!-- Picture Manager -->
         <ResourceDictionary Source="/Views/Entities/MediaItemV.xaml"/>
+        <ResourceDictionary Source="/Views/Entities/MediaItemFullV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/PersonV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/RatingV.xaml"/>
         <ResourceDictionary Source="/Views/Entities/SegmentRectV.xaml"/>

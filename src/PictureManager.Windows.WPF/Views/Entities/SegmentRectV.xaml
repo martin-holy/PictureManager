@@ -70,7 +70,7 @@
       </Trigger>
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
-          <Condition Binding="{Binding SegmentRectUiVM.SegmentRectS.IsEditOn, Source={x:Static pm:App.Ui}}" Value="False"/>
+          <Condition Binding="{Binding SegmentRectUiVM.MediaItemFullVM.SegmentRectS.IsEditOn, Source={x:Static pm:App.Ui}}" Value="False"/>
           <Condition Binding="{Binding IsMouseOver2, ElementName=PART_ResizeBorder}" Value="True"/>
         </MultiDataTrigger.Conditions>
         <Setter TargetName="buttons" Property="Visibility" Value="Visible"/>
