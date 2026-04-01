@@ -79,7 +79,7 @@
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconMagnify"
           ap:Text.Text="{Binding Core.VM.MediaViewer.CurrentFull.ZoomAndPan.ActualZoom, StringFormat={}{0:####}%}"
-          Visibility="{Binding Core.VM.MediaViewer.IsVisible, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
+          Visibility="{Binding Core.VM.MainWindow.IsInViewMode, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
 
         <!-- Rating -->
         <c:IconTextBlock
@@ -144,14 +144,14 @@
 
     <DataTemplate.Triggers>
       <!--TODO store PositionSlashCount just in one location-->
-      <DataTrigger Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="True">
+      <DataTrigger Binding="{Binding Core.VM.MainWindow.IsInViewMode}" Value="True">
         <Setter
           TargetName="tbPositionSlashCount"
           Property="ap:Text.Text"
           Value="{Binding Core.VM.MediaViewer.PositionSlashCount}"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding Core.VM.MediaViewer.IsVisible}" Value="False">
+      <DataTrigger Binding="{Binding Core.VM.MainWindow.IsInViewMode}" Value="False">
         <Setter TargetName="keywords" Property="Visibility" Value="Collapsed"/>
         <Setter TargetName="comment" Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
