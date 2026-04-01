@@ -142,8 +142,6 @@ public sealed class SegmentSettings : ObservableObject {
 
 public sealed class MediaViewerSettings : ObservableObject {
   private bool _expandToFill;
-  private bool _shrinkToFill = true;
 
   public bool ExpandToFill { get => _expandToFill; set { _expandToFill = value; OnPropertyChanged(); } }
-  public bool ShrinkToFill { get => _shrinkToFill; set { _shrinkToFill = value; OnPropertyChanged(); } }
 }
