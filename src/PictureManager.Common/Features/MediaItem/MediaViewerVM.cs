@@ -16,13 +16,11 @@ public sealed class MediaViewerVM : ObservableObject {
   private readonly MediaItemVM _mediaItemVM;
   private int _indexOfCurrent;
   private MediaItemFullVM? _currentFull;
-  private bool _isVisible;
   private UserInputModes _userInputMode;
   private bool _expandToFill;
 
   public MediaItemFullVM? CurrentFull { get => _currentFull; set { _currentFull = value; OnPropertyChanged(); } }
   public int IndexOfCurrent { get => _indexOfCurrent; }
-  public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
   public UserInputModes UserInputMode { get => _userInputMode; set { _userInputMode = value; OnPropertyChanged(); } }
   public bool ExpandToFill { get => _expandToFill; set { _expandToFill = value; OnPropertyChanged(); } }
   public string PositionSlashCount => $"{_indexOfCurrent + 1}/{MediaItems.Count}";
@@ -44,6 +42,7 @@ public sealed class MediaViewerVM : ObservableObject {
   }
 
   public void Deactivate() {
+    UserInputMode = UserInputModes.Disabled;
     Slideshow.Stop();
     MediaItems.Clear();
     OnPropertyChanged(nameof(MediaItems));

@@ -31,9 +31,11 @@ public class MainWindowVM : ObservableObject {
   public bool IsInViewMode {
     get => _isInViewMode;
     set {
+      if (_isInViewMode == value) return;
       _isInViewMode = value;
       SlidePanelsGrid.ActiveLayout = value ? 1 : 0;
       IsFullScreen = SlidePanelsGrid.PinLayouts[SlidePanelsGrid.ActiveLayout][4];
+      StatusBar.Update();
       OnPropertyChanged();
     }
   }
@@ -53,7 +55,7 @@ public class MainWindowVM : ObservableObject {
         [false, false, false, true, false] // view mode
       ]);
     
-    SwitchToBrowserCommand = new(() => IsInViewMode = false, () => Core.VM.MediaViewer.IsVisible);
+    SwitchToBrowserCommand = new(() => IsInViewMode = false, () => IsInViewMode);
     AttachEvents();
   }
 

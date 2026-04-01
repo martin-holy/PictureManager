@@ -9,6 +9,7 @@ namespace PictureManager.Common.Features.MediaItem;
 
 public sealed class MediaItemFullVM : ObservableObject, IDisposable {
   private readonly BindingScope _bindings = new();
+  private readonly MediaViewerVM _mediaViewerVM;
   private readonly SegmentRectVM _segmentRectVM;
   private MediaItemM? _current;
 
@@ -16,13 +17,19 @@ public sealed class MediaItemFullVM : ObservableObject, IDisposable {
   public SegmentRectS SegmentRectS { get; }
   public MediaItemM? Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
 
-  public MediaItemFullVM(MediaViewerVM mediaViewer, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS) {
+  public MediaItemFullVM(MediaViewerVM mediaViewerVM, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS) {
+    _mediaViewerVM = mediaViewerVM;
     _segmentRectVM = segmentRectVM;
     SegmentRectS = segmentRectS;
+
     _bindings.AddRange([
       ZoomAndPan.Bind(nameof(MH.UI.Controls.ZoomAndPan.ScaleX), x => x.ScaleX, x => SegmentRectS.UpdateScale(x)),
-      mediaViewer.Bind(nameof(MediaViewerVM.ExpandToFill), x => x.ExpandToFill, x => ZoomAndPan.ExpandToFill = x),
-      segmentRectVM.Bind(nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem, x => { if (x) SegmentRectS.SetMediaItem(Current); })
+      ZoomAndPan.Bind(nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, x => 
+        _mediaViewerVM.UserInputMode = x
+          ? MediaViewerVM.UserInputModes.Transform
+          : MediaViewerVM.UserInputModes.Browse),
+      _mediaViewerVM.Bind(nameof(MediaViewerVM.ExpandToFill), x => x.ExpandToFill, x => ZoomAndPan.ExpandToFill = x),
+      _segmentRectVM.Bind(nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem, x => { if (x) SegmentRectS.SetMediaItem(Current); })
     ]);
   }
 

@@ -161,7 +161,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     _load(items, and, false);
     IsLoading = false;
 
-    if (Core.VM.MediaViewer.IsVisible && Root.Source.Count > 0)
+    if (Core.VM.MainWindow.IsInViewMode && Root.Source.Count > 0)
       OpenItem(Root.Source[0]);
   }
 

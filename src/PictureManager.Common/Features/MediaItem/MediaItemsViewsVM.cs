@@ -93,7 +93,7 @@ public sealed class MediaItemsViewsVM : ObservableObject {
   }
 
   private void _onViewSelectionChanged(object? o, EventArgs e) {
-    if (!ReferenceEquals(o, Current) || Core.VM.MediaViewer.IsVisible) return;
+    if (!ReferenceEquals(o, Current) || Core.VM.MainWindow.IsInViewMode) return;
 
     CurrentViewSelectionChangedEvent?.Invoke(this, EventArgs.Empty);
     Core.VM.MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();

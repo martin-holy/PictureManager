@@ -143,7 +143,6 @@ public sealed class CoreVM : ObservableObject {
     MediaItem.PropertyChanged += _onMediaItemPropertyChanged;    
     MediaItem.Views.PropertyChanged += _onMediaItemViewsPropertyChanged;
     MediaItem.Views.CurrentViewSelectionChangedEvent += (_, _) => _updateMediaItemCommands();
-    MediaViewer.PropertyChanged += _onMediaViewerPropertyChanged;
     MediaViewer.Slideshow.PropertyChanged += _onMediaViewerSlideshowPropertyChanged;
     Video.MediaPlayer.MediaEndedEvent += MediaViewer.Slideshow.OnPlayerMediaEnded;
     Video.CurrentVideoItems.Selected.ItemsChangedEvent += _onVideoItemsSelectionChanged;
@@ -189,8 +188,7 @@ public sealed class CoreVM : ObservableObject {
   }
 
   private void _onMainTabsTabActivated(object? sender, IListItem e) {
-    if (MediaViewer.IsVisible)
-      MainWindow.IsInViewMode = false;
+    MainWindow.IsInViewMode = false;
   }
 
   private void _onMainTabsTabClosed(object? sender, IListItem tab) {
@@ -209,12 +207,10 @@ public sealed class CoreVM : ObservableObject {
 
   private void _onMainWindowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (!e.Is(nameof(MainWindow.IsInViewMode))) return;
-    var isInViewMode = MainWindow.IsInViewMode;
 
-    MediaViewer.IsVisible = isInViewMode;
-
-    if (isInViewMode) {
+    if (MainWindow.IsInViewMode) {
       Video.MediaPlayer.SetView(UiFullVideo);
+      MediaViewer.UserInputMode = MediaViewerVM.UserInputModes.Browse;
     }
     else {
       MediaItem.Views.SelectAndScrollToCurrentMediaItem();
@@ -242,15 +238,6 @@ public sealed class CoreVM : ObservableObject {
     MainWindow.StatusBar.OnPropertyChanged(nameof(MainWindow.StatusBar.IsCountVisible));
   }
 
-  private void _onMediaViewerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    switch (e.PropertyName) {
-      case nameof(MediaViewer.IsVisible):
-        MainWindow.StatusBar.Update();
-        MainWindow.StatusBar.OnPropertyChanged(nameof(MainWindow.StatusBar.IsCountVisible));
-        break;
-    }
-  }
-
   private void _onMediaViewerSlideshowPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(SlideshowVM.State)) && ((SlideshowVM)sender!).State == SlideshowState.On)
       Video.MediaPlayer.PlayType = MediaPlayer.MediaPlayType.Video;
@@ -266,8 +253,7 @@ public sealed class CoreVM : ObservableObject {
     MainWindow.StatusBar.UpdateFilePath();
 
   private void _onFolderTreeItemSelected(object? sender, ITreeItem item) {
-    if (MediaViewer.IsVisible)
-      MainWindow.IsInViewMode = false;
+    MainWindow.IsInViewMode = false;
   }
 
   private void _onMediaItemCreated(object? sender, MediaItemM item) =>
@@ -278,7 +264,7 @@ public sealed class CoreVM : ObservableObject {
     MediaItem.Views.RemoveMediaItems(items);
     Video.CurrentVideoItems.Remove(items.OfType<VideoItemM>().ToArray());
 
-    if (!MediaViewer.IsVisible) return;
+    if (!MainWindow.IsInViewMode) return;
 
     if (items.FirstOrDefault() is VideoItemM vi && MediaViewer.MediaItems.Contains(vi.Video))
       MediaItem.Current = vi.Video;
@@ -306,7 +292,7 @@ public sealed class CoreVM : ObservableObject {
   }
 
   private void _onMediaItemsOrientationChanged(object? sender, RealMediaItemM[] items) {
-    if (MediaViewer.IsVisible && items.Contains(MediaItem.Current))
+    if (MainWindow.IsInViewMode && items.Contains(MediaItem.Current))
       MediaItem.Current = MediaItem.Current;
 
     MediaItem.Views.ReWrapViews(items.Cast<MediaItemM>().ToArray());
@@ -417,7 +403,7 @@ public sealed class CoreVM : ObservableObject {
     }
     
     MainTabs.Activate(Res.IconSegment, "Segments", Segment.Views);
-    if (MediaViewer.IsVisible) MainWindow.IsInViewMode = false;
+    MainWindow.IsInViewMode = false;
     Segment.Views.Load(segments, tabTitle);
   }
 

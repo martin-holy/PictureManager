@@ -114,7 +114,7 @@ public sealed class SegmentsViewsVM : ObservableObject {
   public static IEnumerable<SegmentM> GetSegments(int mode) {
     switch (mode) {
       case 1:
-        var items = Core.VM.MediaViewer.IsVisible
+        var items = Core.VM.MainWindow.IsInViewMode
           ? Core.VM.MediaItem.Current != null ? [Core.VM.MediaItem.Current] : []
           : Core.VM.MediaItem.Views.Current?.GetSelectedOrAll().ToArray() ?? [];
 
