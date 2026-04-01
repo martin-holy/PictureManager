@@ -30,10 +30,10 @@ public sealed class SegmentRectS(SegmentS segmentS) : ObservableObject {
   public SegmentRectM? Current { get; set; }
   public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = [];
 
-  public void SetMediaItem(MediaItemM? mediaItem, bool reloadRects) {
+  public void SetMediaItem(MediaItemM? mediaItem) {
     if (ReferenceEquals(MediaItem, mediaItem)) return;
     MediaItem = mediaItem;
-    if (reloadRects) ReloadMediaItemSegmentRects();
+    ReloadMediaItemSegmentRects();
   }
 
   public void CreateNew(double x, double y) {

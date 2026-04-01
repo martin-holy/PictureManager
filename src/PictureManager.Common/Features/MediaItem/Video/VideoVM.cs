@@ -26,7 +26,7 @@ public sealed class VideoVM : ObservableObject {
     MediaPlayer.MarkerSetEvent += _onMarkerSet;
   }
 
-  public void SetCurrent(MediaItemM? item, bool setSource = false) {
+  public void SetCurrent(MediaItemM? item) {
     var vid = item as VideoM ?? (item as VideoItemM)?.Video;
 
     if (vid == null) {
@@ -37,7 +37,7 @@ public sealed class VideoVM : ObservableObject {
       return;
     }
 
-    if (ReferenceEquals(Current, vid) && !setSource) return;
+    if (ReferenceEquals(Current, vid)) return;
 
     CurrentVideoItems.Selected.DeselectAll();
     Current = vid;

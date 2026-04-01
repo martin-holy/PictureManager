@@ -44,7 +44,7 @@ public sealed class CoreVM : ObservableObject {
 
   public MainTabsVM MainTabs { get; } = new();
   public MainWindowVM MainWindow { get; }
-  public MediaViewerVM MediaViewer { get; } = new();
+  public MediaViewerVM MediaViewer { get; }
   public PeopleVM? People { get; set; }
   public SegmentsDrawerVM SegmentsDrawer { get; }
   public TitleProgressBarVM TitleProgressBar { get; } = new();
@@ -93,6 +93,7 @@ public sealed class CoreVM : ObservableObject {
     Video = new();
     Viewer = new(_coreR.Viewer, _coreS.Viewer);
     
+    MediaViewer = new(MediaItem);
     SegmentsDrawer = new(_coreS.Segment, _coreR.Segment.Drawer);
     _addToolBars(MainWindow.ToolBar.ToolBars);
 
@@ -247,12 +248,6 @@ public sealed class CoreVM : ObservableObject {
         MainWindow.StatusBar.Update();
         MainWindow.StatusBar.OnPropertyChanged(nameof(MainWindow.StatusBar.IsCountVisible));
         break;
-      case nameof(MediaViewer.Current):
-        if (MediaViewer.Current != null && !ReferenceEquals(MediaItem.Current, MediaViewer.Current))
-          MediaItem.Current = MediaViewer.Current;
-        else
-          Video.SetCurrent(MediaViewer.Current, true);
-        break;
     }
   }
 
@@ -311,8 +306,8 @@ public sealed class CoreVM : ObservableObject {
   }
 
   private void _onMediaItemsOrientationChanged(object? sender, RealMediaItemM[] items) {
-    if (MediaViewer.IsVisible && items.Contains(MediaViewer.Current))
-      MediaViewer.Current = MediaViewer.Current;
+    if (MediaViewer.IsVisible && items.Contains(MediaItem.Current))
+      MediaItem.Current = MediaItem.Current;
 
     MediaItem.Views.ReWrapViews(items.Cast<MediaItemM>().ToArray());
     if (items.Contains(Video.Current))
