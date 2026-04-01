@@ -30,8 +30,5 @@ public sealed class MediaViewerToolBarPanel : LinearLayout {
 
     AddView(new IconToggleButton(context, MH.UI.Res.IconExpandRect)
       .BindToggled(coreVM.MediaViewer, nameof(MediaViewerVM.ExpandToFill), x => x.ExpandToFill, (s, p) => s.ExpandToFill = p, bindings));
-
-    AddView(new IconToggleButton(context, MH.UI.Res.IconShrinkRect)
-      .BindToggled(coreVM.MediaViewer, nameof(MediaViewerVM.ShrinkToFill), x => x.ShrinkToFill, (s, p) => s.ShrinkToFill = p, bindings));
   }
 }

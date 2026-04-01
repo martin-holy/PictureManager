@@ -31,12 +31,12 @@ public class MediaViewerV : FrameLayout {
     DataContext = dataContext;
     _adapter = new(
       () => dataContext.MediaItems,
-      ctx => new MediaViewerMediaItemView(ctx, dataContext),
+      ctx => new MediaViewerMediaItemView(ctx, dataContext, Core.VM.Segment.Rect, new(Core.S.Segment) { EditLimit = 20 }),
       () => new(LPU.Match, LPU.Match));
 
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _pageChangeCallback = new PageChangeCallback(this);
+    _pageChangeCallback = new PageChangeCallback(dataContext);
     _viewPager = new(context) { Adapter = _adapter };
     _viewPager.RegisterOnPageChangeCallback(_pageChangeCallback);
     AddView(_viewPager, LPU.FrameMatch());
@@ -70,18 +70,17 @@ public class MediaViewerV : FrameLayout {
     base.Dispose(disposing);
   }
 
-  private class PageChangeCallback(MediaViewerV _viewer) : ViewPager2.OnPageChangeCallback {
+  private class PageChangeCallback(MediaViewerVM mediaViewerVM) : ViewPager2.OnPageChangeCallback {
     public override void OnPageSelected(int position) {
-      _viewer.DataContext.Current = _viewer.DataContext.MediaItems[position];
+      mediaViewerVM.GoTo(position);
     }
   }
 
   private class MediaViewerMediaItemView : FrameLayout, IBindable<MediaItemM> {
+    private readonly MediaItemFullVM _mediaItemFullVM;
     private readonly MediaViewerVM _mediaViewer;
-    private readonly ZoomAndPan _zoomAndPan;
     private readonly ZoomAndPanHost _zoomAndPanHost;
     private readonly SegmentsRectsV _segmentsRectsV;
-    private readonly SegmentRectS _segmentRectS;
     private readonly SegmentRectVM _segmentRectVM;
     private readonly BindingScope _bindings = new();
     private CancellationTokenSource? _cts;
@@ -89,16 +88,15 @@ public class MediaViewerV : FrameLayout {
 
     public MediaItemM? DataContext { get; private set; }
 
-    public MediaViewerMediaItemView(Context context, MediaViewerVM mediaViewer) : base(context) {
+    public MediaViewerMediaItemView(Context context, MediaViewerVM mediaViewer, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS) : base(context) {
       _mediaViewer = mediaViewer;
-      _zoomAndPan = new();
+      _segmentRectVM = segmentRectVM;
+      _mediaItemFullVM = new(mediaViewer, segmentRectVM, segmentRectS);
 
-      _zoomAndPanHost = new(context, _zoomAndPan);
+      _zoomAndPanHost = new(context, _mediaItemFullVM.ZoomAndPan);
       _zoomAndPanHost.ImageTransformUpdatedEvent += _onImageTransformUpdated;
 
-      _segmentRectS = new(Core.S.Segment) { EditLimit = 20 };
-      _segmentRectVM = Core.VM.Segment.Rect;
-      _segmentsRectsV = new SegmentsRectsV(context, _segmentRectVM, _segmentRectS, _bindings);      
+      _segmentsRectsV = new(context, segmentRectVM, segmentRectS, _bindings);      
 
       Clickable = true;
       Focusable = true;
@@ -110,26 +108,17 @@ public class MediaViewerV : FrameLayout {
       Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 
       _bindings.AddRange([
-        _zoomAndPan.Bind(nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, x => {
+        _mediaItemFullVM.ZoomAndPan.Bind(nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, x => {
           _mediaViewer.UserInputMode = x
             ? MediaViewerVM.UserInputModes.Transform
             : MediaViewerVM.UserInputModes.Browse;
         }),
 
-        _zoomAndPan.Bind(nameof(ZoomAndPan.ScaleX), x => x.ScaleX, x => _segmentRectS.UpdateScale(x)),
+        // TODO don't do full Bind
+        _mediaItemFullVM.ZoomAndPan.Bind(nameof(ZoomAndPan.ExpandToFill), x => x.ExpandToFill, _ => Bind(DataContext)),
 
         _segmentRectVM.Bind(nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem,
-          show => {
-            if (!show) return;
-            _onImageTransformUpdated(null, EventArgs.Empty);
-            _segmentRectS.ReloadMediaItemSegmentRects();
-          }),
-
-        mediaViewer.Bind(nameof(MediaViewerVM.ExpandToFill), x => x.ExpandToFill,
-          x => { _zoomAndPan.ExpandToFill = x; Bind(DataContext); }),
-
-        mediaViewer.Bind(nameof(MediaViewerVM.ShrinkToFill), x => x.ShrinkToFill,
-          x => { _zoomAndPan.ShrinkToFill = x; Bind(DataContext); })
+          show => { if (show) _onImageTransformUpdated(null, EventArgs.Empty); })
       ]);
     }
 
@@ -137,51 +126,45 @@ public class MediaViewerV : FrameLayout {
       if (e == null) return false;
       if (!_segmentRectVM.ShowOverMediaItem) return false;
 
-      var x = e.GetX() - _zoomAndPan.TransformX;
-      var y = e.GetY() - _zoomAndPan.TransformY;
+      var x = e.GetX() - _mediaItemFullVM.ZoomAndPan.TransformX;
+      var y = e.GetY() - _mediaItemFullVM.ZoomAndPan.TransformY;
 
       if (e.ActionMasked == MotionEventActions.Down)
-        return _segmentRectS.GetBy(x, y) != null || _segmentRectVM.IsEditEnabled;
+        return _mediaItemFullVM.SegmentRectS.GetBy(x, y) != null || _segmentRectVM.IsEditEnabled;
 
       return false;
     }
 
     public override bool OnTouchEvent(MotionEvent? e) {
       if (e == null) return false;
-      var x = e.GetX() - _zoomAndPan.TransformX;
-      var y = e.GetY() - _zoomAndPan.TransformY;
+      var x = e.GetX() - _mediaItemFullVM.ZoomAndPan.TransformX;
+      var y = e.GetY() - _mediaItemFullVM.ZoomAndPan.TransformY;
       return _segmentsRectsV.HandleTouchEvent(e, x, y);
     }
 
     private void _onImageTransformUpdated(object? sender, EventArgs e) {
       if (!_segmentRectVM.ShowOverMediaItem) return;
-      _segmentRectS.UpdateScale(_zoomAndPan.ScaleX);
-      _segmentsRectsV.SetX((float)_zoomAndPan.TransformX);
-      _segmentsRectsV.SetY((float)_zoomAndPan.TransformY);
+      _mediaItemFullVM.SegmentRectS.UpdateScale(_mediaItemFullVM.ZoomAndPan.ScaleX);
+      _segmentsRectsV.SetX((float)_mediaItemFullVM.ZoomAndPan.TransformX);
+      _segmentsRectsV.SetY((float)_mediaItemFullVM.ZoomAndPan.TransformY);
     }
 
     private void _onSegmentItemDeleted(object? sender, SegmentM e) {
-      _segmentRectS.RemoveIfContains(e);
+      _mediaItemFullVM.SegmentRectS.RemoveIfContains(e);
     }
 
     public void Bind(MediaItemM? mi) {
       DataContext = mi;
       if (mi == null) return;
-
-      var rotated = mi.Orientation is Imaging.Orientation.Rotate90 or Imaging.Orientation.Rotate270;
-      var width = rotated ? mi.Height : mi.Width;
-      var height = rotated ? mi.Width : mi.Height;
-      _zoomAndPan.ContentWidth = width;
-      _zoomAndPan.ContentHeight = height;
+      if (!Core.S.MediaItem.Exists(mi)) return;
+      _mediaItemFullVM.SetMediaItem(mi);
 
       if (mi is ImageM) {
         _cts = new CancellationTokenSource();
-        _ = _zoomAndPanHost.SetImagePathAsync(mi.FilePath, width, height, mi.Orientation, _cts.Token, Context!);
+        _ = _zoomAndPanHost.SetImagePathAsync(mi.FilePath, mi.Orientation, _cts.Token, Context!);
       }
       else if (mi is VideoM)
         _zoomAndPanHost.SetVideoPath(mi.FilePath);
-
-      _zoomAndPanHost.Post(() => _segmentRectS.SetMediaItem(mi, _segmentRectVM.ShowOverMediaItem));
     }
 
     public void Unbind() {
@@ -197,6 +180,7 @@ public class MediaViewerV : FrameLayout {
       if (disposing) {
         Core.R.Segment.ItemDeletedEvent -= _onSegmentItemDeleted;
         _zoomAndPanHost.ImageTransformUpdatedEvent -= _onImageTransformUpdated;
+        _mediaItemFullVM.Dispose();
         _bindings.Dispose();
       }
       _disposed = true;
