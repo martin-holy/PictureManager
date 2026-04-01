@@ -103,10 +103,7 @@ public sealed class SettingsV : ScrollView {
   private static void _createMediaViewerSettings(Context context, LinearLayout container, MediaViewerSettings settings, BindingScope bindings) {
     _addViews(container, [
       new TextView(context) { Text = "Expand content to fill:" },
-      new CheckBox(context).BindChecked(settings, nameof(MediaViewerSettings.ExpandToFill), x => x.ExpandToFill, (s, v) => s.ExpandToFill = v, bindings),
-      
-      new TextView(context) { Text = "Shrink content to fill:" },
-      new CheckBox(context).BindChecked(settings, nameof(MediaViewerSettings.ShrinkToFill), x => x.ShrinkToFill, (s, p) => s.ShrinkToFill = p, bindings)
+      new CheckBox(context).BindChecked(settings, nameof(MediaViewerSettings.ExpandToFill), x => x.ExpandToFill, (s, v) => s.ExpandToFill = v, bindings)
     ]);
   }
 
