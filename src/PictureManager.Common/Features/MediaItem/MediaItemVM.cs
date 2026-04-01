@@ -119,8 +119,7 @@ public sealed class MediaItemVM : ObservableObject {
 
   private void _viewSelected() {
     var items = Views.Current!.Selected.Items.ToList();
-    _coreVM.MainWindow.IsInViewMode = true;
-    _coreVM.MediaViewer.SetMediaItems(items, items[0]);
+    _coreVM.OpenMediaItems(items, items[0]);
   }
 
   private bool _canViewSelected() =>

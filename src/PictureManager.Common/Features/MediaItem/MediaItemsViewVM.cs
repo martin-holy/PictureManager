@@ -56,8 +56,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     Selected.DeselectAll();
 
     if (LastSelectedRow?.Parent is not CollectionViewGroup<MediaItemM> group) return;
-    Core.VM.MainWindow.IsInViewMode = true;
-    Core.VM.MediaViewer.SetMediaItems(group.Source.ToList(), item);
+    Core.VM.OpenMediaItems(group.Source.ToList(), item);
   }
 
   protected override void _onItemSelected(SelectionEventArgs<MediaItemM> e) {

@@ -536,11 +536,11 @@ public sealed class CoreVM : ObservableObject {
     ToggleDialog.SourceTypes.Add(stRating);
   }
 
-  public void OpenMediaItems(MediaItemM[]? items, MediaItemM item) {
+  public void OpenMediaItems(List<MediaItemM>? items, MediaItemM item) {
     items ??= [item];
 
     MainWindow.IsInViewMode = true;
-    MediaViewer.SetMediaItems(items.ToList(), item);
+    MediaViewer.SetMediaItems(items, item);
   }
 
   public static async Task<string?> BrowseForFolder() {
