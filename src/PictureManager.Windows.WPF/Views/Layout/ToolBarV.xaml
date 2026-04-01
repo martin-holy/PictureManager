@@ -148,7 +148,7 @@
       VerticalAlignment="Center"
       Orientation="Horizontal"
       DataContext="{Binding Slideshow}"
-      Visibility="{Binding VM.MediaViewer.IsVisible, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
+      Visibility="{Binding VM.MainWindow.IsInViewMode, Source={x:Static pm:App.Core}, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
 
       <Separator/>
   
