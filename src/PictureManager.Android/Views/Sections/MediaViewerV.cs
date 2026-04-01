@@ -42,11 +42,6 @@ public class MediaViewerV : FrameLayout {
     AddView(_viewPager, LPU.FrameMatch());
 
     bindings.AddRange([
-      dataContext.Bind(nameof(MediaViewerVM.IsVisible), x => x.IsVisible, x =>
-        DataContext.UserInputMode = x
-          ? MediaViewerVM.UserInputModes.Browse
-          : MediaViewerVM.UserInputModes.Disabled),
-
       dataContext.Bind(nameof(MediaViewerVM.MediaItems), x => x.MediaItems, x => {
         _adapter.NotifyDataSetChanged();
         if (x!.Count > 0)
@@ -108,12 +103,6 @@ public class MediaViewerV : FrameLayout {
       Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 
       _bindings.AddRange([
-        _mediaItemFullVM.ZoomAndPan.Bind(nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, x => {
-          _mediaViewer.UserInputMode = x
-            ? MediaViewerVM.UserInputModes.Transform
-            : MediaViewerVM.UserInputModes.Browse;
-        }),
-
         // TODO don't do full Bind
         _mediaItemFullVM.ZoomAndPan.Bind(nameof(ZoomAndPan.ExpandToFill), x => x.ExpandToFill, _ => Bind(DataContext)),
 

@@ -6,7 +6,7 @@ using MH.Utils;
 using MH.Utils.Disposables;
 using PictureManager.Android.Views.Sections;
 using PictureManager.Common;
-using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Layout;
 
 namespace PictureManager.Android.Views.Layout;
 
@@ -21,11 +21,11 @@ public class MiddleContentV : FrameLayout {
     AddView(_mainTabs, LPU.FrameMatch());
     AddView(_mediaViewer, LPU.FrameMatch());
 
-    coreVM.MediaViewer.Bind(nameof(MediaViewerVM.IsVisible), x => x.IsVisible, _updateVisibility);
+    coreVM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _updateVisibility);
   }
 
-  private void _updateVisibility(bool viewerIsVisible) {
-    _mainTabs.Visibility = viewerIsVisible ? ViewStates.Gone : ViewStates.Visible;
-    _mediaViewer.Visibility = viewerIsVisible ? ViewStates.Visible : ViewStates.Gone;
+  private void _updateVisibility(bool isInViewMode) {
+    _mainTabs.Visibility = isInViewMode ? ViewStates.Gone : ViewStates.Visible;
+    _mediaViewer.Visibility = isInViewMode ? ViewStates.Visible : ViewStates.Gone;
   }
 }

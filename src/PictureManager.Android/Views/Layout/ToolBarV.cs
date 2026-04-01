@@ -8,6 +8,7 @@ using MH.Utils.Interfaces;
 using PictureManager.Android.Views.Sections.ToolBarPanels;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
+using PictureManager.Common.Layout;
 
 namespace PictureManager.Android.Views.Layout;
 
@@ -36,7 +37,7 @@ public sealed class ToolBarV : ToolBar {
       _coreVM.MainWindow.TreeViewCategories.Bind(nameof(TabControl.Selected), x => x.Selected, x => _updateToolBar(x, null), false),
       _coreVM.MainTabs.Bind(nameof(TabControl.Selected), x => x.Selected, x => _updateToolBar(x, null), false),
       _coreVM.MainWindow.ToolsTabs.Bind(nameof(TabControl.Selected), x => x.Selected, x => _updateToolBar(x, null), false),
-      _coreVM.MediaViewer.Bind(nameof(MediaViewerVM.IsVisible), x => x.IsVisible, _ => _updateToolBar(null, null), false)]);
+      _coreVM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _ => _updateToolBar(null, null), false)]);
     
     _updateToolBar(null, null);
   }
@@ -44,7 +45,7 @@ public sealed class ToolBarV : ToolBar {
   private void _updateToolBar(IListItem? tab, View? page) {
     page ??= _loopPager?.GetCurrentItem();
 
-    if (_coreVM.MediaViewer.IsVisible && page is MiddleContentV) {
+    if (_coreVM.MainWindow.IsInViewMode && page is MiddleContentV) {
       Activate(typeof(MediaViewerVM));
       return;
     }
