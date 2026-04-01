@@ -67,7 +67,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
     Core.VM.Video.MediaPlayer.Bind(nameof(MH.UI.Controls.MediaPlayer.TimelinePosition), x => x.TimelinePosition, _ => {
       var vm = Core.VM;
-      if (!vm.Segment.Rect.ShowOverMediaItem || !vm.MediaViewer.IsVisible || vm.MediaItem.Current == null) return;
+      if (!vm.Segment.Rect.ShowOverMediaItem || !vm.MainWindow.IsInViewMode || vm.MediaItem.Current == null) return;
 
       var pos = vm.MediaItem.Current is VideoItemM vi ? vi.TimeStart : 0;
       MediaItemM? mi = vm.Video.MediaPlayer.TimelinePosition == pos ? vm.MediaItem.Current : null;

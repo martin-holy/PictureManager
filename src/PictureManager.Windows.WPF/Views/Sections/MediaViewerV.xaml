@@ -10,8 +10,7 @@
       x:Name="Root"
       Background="Transparent"
       Focusable="True"
-      FocusVisualStyle="{x:Null}"
-      Visibility="{Binding IsVisible, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}">
+      FocusVisualStyle="{x:Null}">
 
       <Grid.InputBindings>
         <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
