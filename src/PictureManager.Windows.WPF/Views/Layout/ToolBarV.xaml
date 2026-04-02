@@ -263,7 +263,7 @@
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
                 <Condition Binding="{Binding MediaViewer.CurrentFull.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="False"/>
-                <Condition Binding="{Binding MediaViewer.IsVisible}" Value="True"/>
+                <Condition Binding="{Binding MainWindow.IsInViewMode}" Value="True"/>
               </MultiDataTrigger.Conditions>
               <Setter Property="Visibility" Value="Visible"/>
             </MultiDataTrigger>
