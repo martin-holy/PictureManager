@@ -10,25 +10,26 @@ using PictureManager.Common.Features.MediaItem;
 
 namespace PictureManager.Common.Layout;
 
-public class StatusBarVM(Core core) : ObservableObject {
+public class StatusBarVM(CoreVM coreVM) : ObservableObject {
   private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
   private string _fileSize = string.Empty;
 
-  public Core Core { get; } = core;
+  public CoreVM CoreVM { get; } = coreVM;
+  public MediaItemM? Current { get; private set; }
   public bool IsCountVisible => Core.VM.MediaItem.Views.Current != null || Core.VM.MainWindow.IsInViewMode;
   public string FileSize { get => _fileSize; set { _fileSize = value; OnPropertyChanged(); } }
 
   public ObservableCollection<string> FilePath {
     get {
       var paths = new ObservableCollection<string>();
-      if (Core.VM.MediaItem.Current == null) return paths;
+      if (Current == null) return paths;
 
-      if (Core.VM.MediaItem.Current.Folder.FolderKeyword == null) {
-        paths.Add(Core.VM.MediaItem.Current.FilePath);
+      if (Current.Folder.FolderKeyword == null) {
+        paths.Add(Current.FilePath);
         return paths;
       }
 
-      var fks = Core.VM.MediaItem.Current.Folder.FolderKeyword.GetThisAndParents().ToList();
+      var fks = Current.Folder.FolderKeyword.GetThisAndParents().ToList();
       fks.Reverse();
       foreach (var fk in fks)
         if (fk.Parent != null) {
@@ -40,8 +41,8 @@ public class StatusBarVM(Core core) : ObservableObject {
         }
 
       var fileName = string.IsNullOrEmpty(DateAndTime)
-        ? Core.VM.MediaItem.Current.FileName
-        : Core.VM.MediaItem.Current.FileName[15..];
+        ? Current.FileName
+        : Current.FileName[15..];
       paths.Add(fileName);
 
       return paths;
@@ -49,13 +50,13 @@ public class StatusBarVM(Core core) : ObservableObject {
   }
 
   public string DateAndTime =>
-    DateTimeExtensions.DateTimeFromString(Core.VM.MediaItem.Current?.FileName, _dateFormats, "H:mm:ss");
+    DateTimeExtensions.DateTimeFromString(Current?.FileName, _dateFormats, "H:mm:ss");
 
   public ObservableCollection<int> Rating { get; } = [];
 
   public void UpdateRating() {
     Rating.Clear();
-    for (var i = 0; i < Core.VM.MediaItem.Current?.Rating; i++)
+    for (var i = 0; i < Current?.Rating; i++)
       Rating.Add(0);
   }
 
@@ -76,7 +77,9 @@ public class StatusBarVM(Core core) : ObservableObject {
     });
   }
 
-  public void Update() {
+  public void Update(MediaItemM? mi) {
+    Current = mi;
+    OnPropertyChanged(nameof(Current));
     OnPropertyChanged(nameof(DateAndTime));
     OnPropertyChanged(nameof(IsCountVisible));
     UpdateRating();

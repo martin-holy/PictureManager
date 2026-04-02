@@ -7,6 +7,7 @@ using PictureManager.Common.Features.Segment;
 namespace PictureManager.Common.Layout;
 
 public class MainWindowVM : ObservableObject {
+  private readonly CoreVM _coreVM;
   private bool _isFullScreen;
   private bool _isInViewMode;
 
@@ -35,15 +36,16 @@ public class MainWindowVM : ObservableObject {
       _isInViewMode = value;
       SlidePanelsGrid.ActiveLayout = value ? 1 : 0;
       IsFullScreen = SlidePanelsGrid.PinLayouts[SlidePanelsGrid.ActiveLayout][4];
-      StatusBar.Update();
+      StatusBar.Update(_coreVM.MediaItem.Current);
       OnPropertyChanged();
     }
   }
 
   public static RelayCommand SwitchToBrowserCommand { get; set; } = null!;
 
-  public MainWindowVM() {
-    StatusBar = new(Core.Inst);
+  public MainWindowVM(CoreVM coreVM) {
+    _coreVM = coreVM;
+    StatusBar = new(coreVM);
     SlidePanelsGrid = new(
       new(Dock.Left, TreeViewCategories, 380),
       new(Dock.Top, ToolBar, 30),

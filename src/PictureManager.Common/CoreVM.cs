@@ -84,7 +84,7 @@ public sealed class CoreVM : ObservableObject {
     SegmentVM.SetSegmentUiSize(DisplayScale);
     PersonVM.SetPersonUiSize(DisplayScale);
 
-    MainWindow = new();
+    MainWindow = new(this);
 
     GeoName = new(_coreR.GeoName);
     MediaItem = new(this, _coreS.MediaItem);
@@ -224,7 +224,7 @@ public sealed class CoreVM : ObservableObject {
 
   private void _onMediaItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (!e.Is(nameof(MediaItem.Current))) return;
-    MainWindow.StatusBar.Update();
+    MainWindow.StatusBar.Update(MediaItem.Current);
     Video.SetCurrent(MediaItem.Current);
     _updateMediaItemCommands();
 
@@ -245,7 +245,7 @@ public sealed class CoreVM : ObservableObject {
 
   private void _onVideoItemsSelectionChanged(object? sender, VideoItemM[] e) {
     var vi = e.FirstOrDefault();
-    MediaItem.Current = vi as MediaItemM ?? Video.Current;
+    MainWindow.StatusBar.Update(vi as MediaItemM ?? Video.Current);
     Video.MediaPlayer.SetCurrent(vi);
   }
 
