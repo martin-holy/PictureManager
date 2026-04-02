@@ -24,7 +24,7 @@ public sealed class MediaItemFullVM : ObservableObject, IDisposable {
 
     _bindings.AddRange([
       ZoomAndPan.Bind(nameof(MH.UI.Controls.ZoomAndPan.ScaleX), x => x.ScaleX, x => SegmentRectS.UpdateScale(x)),
-      ZoomAndPan.Bind(nameof(ZoomAndPan.IsZoomed), x => x.IsZoomed, x => 
+      ZoomAndPan.Bind(nameof(ZoomAndPan.IsOverflowing), x => x.IsOverflowing, x => 
         _mediaViewerVM.UserInputMode = x
           ? MediaViewerVM.UserInputModes.Transform
           : MediaViewerVM.UserInputModes.Browse),
