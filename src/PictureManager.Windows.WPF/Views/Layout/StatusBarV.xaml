@@ -5,6 +5,7 @@
   xmlns:conv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager.Windows.WPF"
   xmlns:layout="clr-namespace:PictureManager.Common.Layout;assembly=PictureManager.Common"
   xmlns:ftPerson="clr-namespace:PictureManager.Common.Features.Person;assembly=PictureManager.Common">
 
@@ -31,14 +32,14 @@
         <MouseBinding
           MouseAction="LeftClick"
           Command="mhc:SlidePanelsGrid.PinCommand"
-          CommandParameter="{Binding Core.VM.MainWindow.SlidePanelsGrid.PanelBottom}"/>
+          CommandParameter="{Binding CoreVM.MainWindow.SlidePanelsGrid.PanelBottom}"/>
       </Grid.InputBindings>
 
       <WrapPanel Margin="1,0,0,0" VerticalAlignment="Center">
         <!-- Selected items -->
         <ContentPresenter
           Height="32"
-          Content="{Binding Core}"
+          Content="{Binding Source={x:Static pm:App.Core}}"
           ContentTemplate="{StaticResource PM.DT.SelectedItemsStatusBar}"/>
 
         <!-- PositionSlashCount -->
@@ -46,20 +47,20 @@
           x:Name="tbPositionSlashCount"
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconImageMultiple"
-          ap:Text.Text="{Binding Core.VM.MediaItem.Views.Current.PositionSlashCount}"
+          ap:Text.Text="{Binding CoreVM.MediaItem.Views.Current.PositionSlashCount}"
           Visibility="{Binding IsCountVisible, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
 
         <!-- Dimension -->
         <c:IconTextBlock
           ap:Icon.Res="IconRuler"
-          Visibility="{Binding Core.VM.MediaItem.Current, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}">
+          Visibility="{Binding Current, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}">
           <c:IconTextBlock.Style>
             <Style TargetType="c:IconTextBlock" BasedOn="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}">
               <Setter Property="ap:Text.Text">
                 <Setter.Value>
                   <MultiBinding StringFormat="{}{0}x{1}">
-                    <Binding Path="Core.VM.MediaItem.Current.Width"/>
-                    <Binding Path="Core.VM.MediaItem.Current.Height"/>
+                    <Binding Path="Current.Width"/>
+                    <Binding Path="Current.Height"/>
                   </MultiBinding>
                 </Setter.Value>
               </Setter>
@@ -78,8 +79,8 @@
         <c:IconTextBlock
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconMagnify"
-          ap:Text.Text="{Binding Core.VM.MediaViewer.CurrentFull.ZoomAndPan.ActualZoom, StringFormat={}{0:####}%}"
-          Visibility="{Binding Core.VM.MainWindow.IsInViewMode, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
+          ap:Text.Text="{Binding CoreVM.MediaViewer.CurrentFull.ZoomAndPan.ActualZoom, StringFormat={}{0:####}%}"
+          Visibility="{Binding CoreVM.MainWindow.IsInViewMode, Converter={x:Static conv:VisibilityConverter.TrueToVisible}}"/>
 
         <!-- Rating -->
         <c:IconTextBlock
@@ -97,8 +98,8 @@
         <c:IconTextBlock
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconLocationCheckin"
-          ToolTip="{Binding Core.VM.MediaItem.CurrentGeoName.FullName}"
-          Visibility="{Binding Core.VM.MediaItem.CurrentGeoName, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
+          ToolTip="{Binding CoreVM.MediaItem.CurrentGeoName.FullName}"
+          Visibility="{Binding CoreVM.MediaItem.CurrentGeoName, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
 
         <!-- FilePath -->
         <c:IconTextBlockItemsControl
@@ -106,7 +107,7 @@
           ItemsSource="{Binding FilePath}"
           ap:Icon.Res="IconFolder"
           Visibility="{Binding FilePath, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"
-          ToolTip="{Binding Core.VM.MediaItem.Current.FilePath}"/>
+          ToolTip="{Binding Current.FilePath}"/>
 
         <!-- DateAndTime -->
         <c:IconTextBlock
@@ -119,44 +120,44 @@
         <c:IconTextBlockItemsControl
           x:Name="people"
           Style="{StaticResource MH.S.IconTextBlockItemsControl.Borders.RoundDark}"
-          ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayPeople}"
+          ItemsSource="{Binding Current.DisplayPeople}"
           ItemTemplate="{StaticResource _person}"
           ap:Icon.Res="IconPeople"
-          Visibility="{Binding Core.VM.MediaItem.Current.DisplayPeople, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
+          Visibility="{Binding Current.DisplayPeople, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
 
         <!-- Keywords -->
         <c:IconTextBlockItemsControl
           x:Name="keywords"
           Style="{StaticResource MH.S.IconTextBlockItemsControl.Borders.RoundDark}"
-          ItemsSource="{Binding Core.VM.MediaItem.Current.DisplayKeywords}"
+          ItemsSource="{Binding Current.DisplayKeywords}"
           ap:Icon.Res="IconTag"
-          Visibility="{Binding Core.VM.MediaItem.Current.DisplayKeywords, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
+          Visibility="{Binding Current.DisplayKeywords, Converter={x:Static conv:VisibilityConverter.NotNullToVisible}}"/>
 
         <!-- Comment -->
         <c:IconTextBlock
           x:Name="comment"
           Style="{StaticResource MH.S.IconTextBlock.Borders.RoundDark}"
           ap:Icon.Res="IconNotification"
-          ap:Text.Text="{Binding Core.VM.MediaItem.Current.Comment}"
-          Visibility="{Binding Core.VM.MediaItem.Current.Comment, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
+          ap:Text.Text="{Binding Current.Comment}"
+          Visibility="{Binding Current.Comment, Converter={x:Static conv:VisibilityConverter.NotEmptyToVisible}}"/>
       </WrapPanel>
     </Grid>
 
     <DataTemplate.Triggers>
       <!--TODO store PositionSlashCount just in one location-->
-      <DataTrigger Binding="{Binding Core.VM.MainWindow.IsInViewMode}" Value="True">
+      <DataTrigger Binding="{Binding CoreVM.MainWindow.IsInViewMode}" Value="True">
         <Setter
           TargetName="tbPositionSlashCount"
           Property="ap:Text.Text"
-          Value="{Binding Core.VM.MediaViewer.PositionSlashCount}"/>
+          Value="{Binding CoreVM.MediaViewer.PositionSlashCount}"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding Core.VM.MainWindow.IsInViewMode}" Value="False">
+      <DataTrigger Binding="{Binding CoreVM.MainWindow.IsInViewMode}" Value="False">
         <Setter TargetName="keywords" Property="Visibility" Value="Collapsed"/>
         <Setter TargetName="comment" Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
 
-      <DataTrigger Binding="{Binding Core.VM.MediaItem.Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="True">
+      <DataTrigger Binding="{Binding Current, Converter={x:Static conv:ToBoolConverter.IsNull}}" Value="True">
         <Setter TargetName="people" Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
     </DataTemplate.Triggers>
