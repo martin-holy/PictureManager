@@ -153,6 +153,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     var items = toProcess.Except(notImported).Where(Core.S.Viewer.CanViewerSee).ToArray();
     _load(items, and, hide);
     IsLoading = false;
+    _openItemIfInViewMode();
   }
 
   public async Task LoadByTag(MediaItemM[] items, bool and, CancellationToken token) {
@@ -160,9 +161,7 @@ public class MediaItemsViewVM : MediaItemCollectionView {
     items = await _filterByViewer(items, token);
     _load(items, and, false);
     IsLoading = false;
-
-    if (Core.VM.MainWindow.IsInViewMode && Root.Source.Count > 0)
-      OpenItem(Root.Source[0]);
+    _openItemIfInViewMode();
   }
 
   private void _load(MediaItemM[] items, bool and, bool hide) {
@@ -190,6 +189,13 @@ public class MediaItemsViewVM : MediaItemCollectionView {
 
     Filter.UpdateSizeRanges(GetUnfilteredItems().ToArray());
     _selectionChanged();
+  }
+
+  private void _openItemIfInViewMode() {
+    if (Core.VM.MainWindow.IsInViewMode && Root.Source.Count > 0) {
+      SelectFirstItem();
+      OpenItem(Root.Source[0]);
+    }
   }
 
   private async Task<MediaItemM[]> _filterByViewer(MediaItemM[] items, CancellationToken token) {

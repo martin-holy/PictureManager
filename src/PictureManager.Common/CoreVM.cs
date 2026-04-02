@@ -148,7 +148,6 @@ public sealed class CoreVM : ObservableObject {
     Video.CurrentVideoItems.Selected.ItemsChangedEvent += _onVideoItemsSelectionChanged;
 
     _coreR.Folder.ItemRenamedEvent += _onFolderRenamed;
-    _coreR.Folder.Tree.ItemSelectedEvent += _onFolderTreeItemSelected;
 
     _coreR.MediaItem.ItemCreatedEvent += _onMediaItemCreated;
     _coreR.MediaItem.ItemRenamedEvent += _onMediaItemRenamed;
@@ -187,8 +186,9 @@ public sealed class CoreVM : ObservableObject {
       MediaItem.OnViewSelected(MainTabs.Selected?.Data as MediaItemsViewVM);
   }
 
-  private void _onMainTabsTabActivated(object? sender, IListItem e) {
-    MainWindow.IsInViewMode = false;
+  private void _onMainTabsTabActivated(object? sender, IListItem tab) {
+    if (tab.Data is not MediaItemsViewVM)
+      MainWindow.IsInViewMode = false;
   }
 
   private void _onMainTabsTabClosed(object? sender, IListItem tab) {
@@ -251,10 +251,6 @@ public sealed class CoreVM : ObservableObject {
 
   private void _onFolderRenamed(object? sender, FolderM item) =>
     MainWindow.StatusBar.UpdateFilePath();
-
-  private void _onFolderTreeItemSelected(object? sender, ITreeItem item) {
-    MainWindow.IsInViewMode = false;
-  }
 
   private void _onMediaItemCreated(object? sender, MediaItemM item) =>
     _updateMediaItemsCount();
