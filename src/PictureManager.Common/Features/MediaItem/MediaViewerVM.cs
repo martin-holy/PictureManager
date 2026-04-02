@@ -8,7 +8,6 @@ namespace PictureManager.Common.Features.MediaItem;
 
 public sealed class MediaViewerVM : ObservableObject {
   public enum UserInputModes {
-    Disabled = 0,
     Browse = 1,
     Transform = 2
   }
@@ -42,7 +41,6 @@ public sealed class MediaViewerVM : ObservableObject {
   }
 
   public void Deactivate() {
-    UserInputMode = UserInputModes.Disabled;
     Slideshow.Stop();
     MediaItems.Clear();
     OnPropertyChanged(nameof(MediaItems));
