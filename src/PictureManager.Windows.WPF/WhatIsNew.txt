@@ -19,6 +19,7 @@
  - [U] ToolBar: Shrink to fill button removed
  - [U] Settings: Shrink content to fill removed
  - [N] Open first item after load when in view mode
+ - [U] Video detail tab auto-open disabled
 
 2.32.0:
  - [N] PersonDetailV: Add/Remove selected segments to/from person's Top segments in menu
