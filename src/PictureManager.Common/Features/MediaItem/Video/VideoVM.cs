@@ -23,8 +23,6 @@ public sealed class VideoVM : ObservableObject {
   public VideoVM(IPlatformSpecificUiMediaPlayer fullPlayer, IPlatformSpecificUiMediaPlayer detailPlayer) {
     UiFullVideo = fullPlayer;
     UiDetailVideo = detailPlayer;
-    MediaPlayer.SetView(UiFullVideo);
-    MediaPlayer.SetView(UiDetailVideo);
 
     MediaPlayer.SelectNextItemAction = CurrentVideoItems.SelectNextOrFirstItem;
     MediaPlayer.GetNewClipFunc = _getNewClip;

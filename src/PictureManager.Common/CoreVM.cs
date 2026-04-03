@@ -207,13 +207,11 @@ public sealed class CoreVM : ObservableObject {
     if (!e.Is(nameof(MainWindow.IsInViewMode))) return;
 
     if (MainWindow.IsInViewMode) {
-      Video.MediaPlayer.SetView(Video.UiFullVideo);
       MediaViewer.UserInputMode = MediaViewerVM.UserInputModes.Browse;
     }
     else {
       MediaItem.Views.SelectAndScrollToCurrentMediaItem();
       MediaViewer.Deactivate();
-      Video.MediaPlayer.SetView(Video.UiDetailVideo);
     }
 
     MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();
