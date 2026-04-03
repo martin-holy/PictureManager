@@ -11,6 +11,7 @@ using PictureManager.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.Windows.WPF.Converters;
@@ -89,8 +90,12 @@ public sealed class MediaItemThumbSourceConverter : BaseMultiConverter, IImageSo
       Core.Settings.Common.JpegQuality);
 
   private static void CreateVideoItemThumbnail(VideoItemM vi) {
-    if (ReferenceEquals(Core.VM.Video.MediaPlayer.CurrentItem, vi)) {
-      CoreUI.CurrentMediaPlayer()
+    var videoVM = Core.VM.Video;
+
+    if (ReferenceEquals(videoVM.MediaPlayer.CurrentItem, vi)) {
+      var player = (FrameworkElement)(Core.VM.MainWindow.IsInViewMode ? videoVM.UiFullVideo : videoVM.UiDetailVideo);
+
+      player
         .ToBitmap()
         .Resize(Core.Settings.MediaItem.ThumbSize)
         .SaveAsJpeg(vi.FilePathCache, Core.Settings.Common.JpegQuality);

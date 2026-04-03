@@ -1,4 +1,5 @@
-﻿using MH.UI.WPF.Controls;
+﻿using MH.UI.Interfaces;
+using MH.UI.WPF.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
@@ -40,8 +41,6 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
     VideoVM.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
     CoreVM.DisplayScale = GetDisplayScale();
-    CoreVM.UiFullVideo = new MediaPlayer();
-    CoreVM.UiDetailVideo = new MediaPlayer();
     CoreVM.VideoFrameSaver = new VideoFrameSaver();
 
     SegmentS.ExportSegment = Utils.Imaging.ExportSegment;
@@ -75,6 +74,8 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     });
   }
 
+  public IPlatformSpecificUiMediaPlayer CreatePlayer() => new MediaPlayer();
+
   private static double GetDisplayScale() =>
     Application.Current.MainWindow == null
       ? 1.0
@@ -98,9 +99,6 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
     return fops.FileOperationResult;
   }
-
-  public static MediaPlayer CurrentMediaPlayer() =>
-    (MediaPlayer)(Core.VM.MainWindow.IsInViewMode ? CoreVM.UiFullVideo : CoreVM.UiDetailVideo);
 
   private static void LoadPlugins() {
     foreach (var plugin in Core.Inst.Plugins) {

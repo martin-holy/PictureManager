@@ -39,7 +39,7 @@
 
           <!-- Video -->
           <ContentControl
-            Content="{Binding Path=VM.UiFullVideo, Source={x:Static pm:App.Core}}"
+            Content="{Binding Path=VM.Video.UiFullVideo, Source={x:Static pm:App.Core}}"
             Visibility="{Binding Current,
              Converter={x:Static conv:VisibilityConverter.TypeToVisible},
              ConverterParameter={x:Type ftVideo:VideoM}}">
