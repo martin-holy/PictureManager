@@ -1,6 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
+using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Person;
 using PictureManager.Common.Features.Segment;
 
@@ -62,8 +63,9 @@ public class MainWindowVM : ObservableObject {
   }
 
   private void AttachEvents() {
-    ToolsTabs.TabActivatedEvent += (_, _) => {
-      SlidePanelsGrid.PanelRight!.IsOpen = true;
+    ToolsTabs.TabActivatedEvent += (_, tab) => {
+      if (tab.Data is not VideoVM)
+        SlidePanelsGrid.PanelRight!.IsOpen = true;
     };
 
     ToolsTabs.TabClosedEvent += (_, tab) => {
@@ -72,11 +74,8 @@ public class MainWindowVM : ObservableObject {
       }
     };
 
-    ToolsTabs.Tabs.CollectionChanged += (_, e) => {
+    ToolsTabs.Tabs.CollectionChanged += (_, e) =>
       SlidePanelsGrid.PanelRight!.CanOpen = ToolsTabs.Tabs.Count > 0;
-      if (e.NewItems != null)
-        SlidePanelsGrid.PanelRight.IsOpen = true;
-    };
   }
 
   // (segment size + 1) * count + ScrollBar + Margin + ToBeSure
