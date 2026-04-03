@@ -49,7 +49,7 @@ public sealed class Core {
   public void AfterInit(ICoreP coreP) {
     P = coreP;
     S = new(R);
-    VM = new(S, R);
+    VM = new(S, R, P);
     AllSettings = new(Settings, Plugins);
 
     R.AttachEvents();
@@ -67,8 +67,6 @@ public sealed class Core {
     VM.MainWindow.TreeViewCategories.AddCategories();
     R.CategoryGroup.AddCategory(R.Person.Tree);
     R.CategoryGroup.AddCategory(R.Keyword.Tree);
-    VM.Video.MediaPlayer.SetView(CoreVM.UiFullVideo);
-    VM.Video.MediaPlayer.SetView(CoreVM.UiDetailVideo);
   }
 
   private async Task LoadPlugins(IProgress<string> progress) {

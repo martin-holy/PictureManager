@@ -52,8 +52,6 @@ public sealed class CoreVM : ObservableObject {
 
   public TabControl ToolsTabs => MainWindow.ToolsTabs;
   public static double DisplayScale { get; set; }
-  public static IPlatformSpecificUiMediaPlayer UiFullVideo { get; set; } = null!;
-  public static IPlatformSpecificUiMediaPlayer UiDetailVideo { get; set; } = null!;
   public static IVideoFrameSaver VideoFrameSaver { get; set; } = null!;
 
   public event EventHandler AppClosingEvent = delegate { };
@@ -77,7 +75,7 @@ public sealed class CoreVM : ObservableObject {
   public static AsyncRelayCommand<FolderM> RotateMediaItemsCommand { get; private set; } = null!;
   public static AsyncRelayCommand<FolderM> SaveImageMetadataToFilesCommand { get; private set; } = null!;
 
-  internal CoreVM(CoreS coreS, CoreR coreR) {
+  internal CoreVM(CoreS coreS, CoreR coreR, ICoreP coreP) {
     _coreS = coreS;
     _coreR = coreR;
 
@@ -90,7 +88,7 @@ public sealed class CoreVM : ObservableObject {
     MediaItem = new(this, _coreS.MediaItem);
     Person = new(this, _coreR.Person);
     Segment = new(this, _coreS.Segment, _coreR.Segment);
-    Video = new();
+    Video = new(coreP.CreatePlayer(), coreP.CreatePlayer());
     Viewer = new(_coreR.Viewer, _coreS.Viewer);
     
     MediaViewer = new(MediaItem);
@@ -209,13 +207,13 @@ public sealed class CoreVM : ObservableObject {
     if (!e.Is(nameof(MainWindow.IsInViewMode))) return;
 
     if (MainWindow.IsInViewMode) {
-      Video.MediaPlayer.SetView(UiFullVideo);
+      Video.MediaPlayer.SetView(Video.UiFullVideo);
       MediaViewer.UserInputMode = MediaViewerVM.UserInputModes.Browse;
     }
     else {
       MediaItem.Views.SelectAndScrollToCurrentMediaItem();
       MediaViewer.Deactivate();
-      Video.MediaPlayer.SetView(UiDetailVideo);
+      Video.MediaPlayer.SetView(Video.UiDetailVideo);
     }
 
     MainWindow.TreeViewCategories.MarkUsedKeywordsAndPeople();

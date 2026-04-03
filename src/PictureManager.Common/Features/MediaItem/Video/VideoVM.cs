@@ -15,10 +15,17 @@ public sealed class VideoVM : ObservableObject {
   public VideoItemCollectionView CurrentVideoItems { get; } = new();
   public VideoM? Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
   public MediaPlayer MediaPlayer { get; } = new();
+  public IPlatformSpecificUiMediaPlayer UiFullVideo { get; }
+  public IPlatformSpecificUiMediaPlayer UiDetailVideo { get; }
 
   public static Func<string, string, object[]?> GetVideoMetadataFunc { get; set; } = null!;
 
-  public VideoVM() {
+  public VideoVM(IPlatformSpecificUiMediaPlayer fullPlayer, IPlatformSpecificUiMediaPlayer detailPlayer) {
+    UiFullVideo = fullPlayer;
+    UiDetailVideo = detailPlayer;
+    MediaPlayer.SetView(UiFullVideo);
+    MediaPlayer.SetView(UiDetailVideo);
+
     MediaPlayer.SelectNextItemAction = CurrentVideoItems.SelectNextOrFirstItem;
     MediaPlayer.GetNewClipFunc = _getNewClip;
     MediaPlayer.GetNewImageFunc = _getNewImage;
