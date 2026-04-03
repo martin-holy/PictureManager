@@ -55,6 +55,10 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     Core.VM.MediaViewer.Slideshow.Init(Core.VM.MediaViewer.CurrentFull.ZoomAndPan);
     SegmentRectUiVM = new(Core.VM.Segment.Rect, Core.VM.MediaViewer.CurrentFull);
 
+    // init required by WPF
+    Core.VM.Video.MediaPlayer.SetView(Core.VM.Video.UiFullVideo);
+    Core.VM.Video.MediaPlayer.SetView(Core.VM.Video.UiDetailVideo);
+
     Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 
     Core.VM.MediaItem.Bind(nameof(MediaItemVM.Current), x => x.Current, x => {
@@ -72,6 +76,9 @@ public sealed class CoreUI : ObservableObject, ICoreP {
       MediaItemM? mi = vm.Video.MediaPlayer.TimelinePosition == pos ? vm.MediaItem.Current : null;
       Core.VM.MediaViewer.CurrentFull?.SegmentRectS.SetMediaItem(mi);
     });
+
+    Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, x =>
+      Core.VM.Video.MediaPlayer.SetView(x ? Core.VM.Video.UiFullVideo : Core.VM.Video.UiDetailVideo));
   }
 
   public IPlatformSpecificUiMediaPlayer CreatePlayer() => new MediaPlayer();
