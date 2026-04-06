@@ -115,6 +115,7 @@ public class CoreUI : ICoreP, IDisposable {
   }
 
   private void _onToolsTabsTabActivated(object? sender, IListItem e) {
+    if (e.Data is not VideoVM)
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(2, true);
   }
 
