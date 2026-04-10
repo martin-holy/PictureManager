@@ -93,8 +93,12 @@ public sealed class VideoVM : ObservableObject {
   }
 
   private void _setVideoSource(VideoM? vid) {
+    MediaPlayer.IsPlaying = false;
+
     if (vid == null) {
       MediaPlayer.Source = string.Empty;
+      UiDetailVideo.Source = null;
+      UiFullVideo.Source = null;
       return;
     }
 
@@ -102,8 +106,11 @@ public sealed class VideoVM : ObservableObject {
       ? (double)data[3]
       : 30.0;
     var smallChange = Math.Round(1000 / fps, 0);
+    var filePath = vid.FilePath;
 
-    MediaPlayer.Source = vid.FilePath;
+    MediaPlayer.Source = filePath;
     MediaPlayer.TimelineSmallChange = smallChange;
+    UiDetailVideo.Source = new Uri(filePath);
+    UiFullVideo.Source = new Uri(filePath);
   }
 }
