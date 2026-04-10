@@ -1,9 +1,11 @@
 ﻿using Android.Content;
 using Android.OS;
+using MH.UI.Android.Controls;
 using MH.UI.Android.Controls.Hosts.DialogHost;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
+using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
@@ -116,7 +118,7 @@ public class CoreUI : ICoreP, IDisposable {
 
   private void _onToolsTabsTabActivated(object? sender, IListItem e) {
     if (e.Data is not VideoVM)
-    MainWindow.SlidePanels.ViewPager.SetCurrentItem(2, true);
+      MainWindow.SlidePanels.ViewPager.SetCurrentItem(2, true);
   }
 
   private void _onFolderTreeItemSelected(object? sender, ITreeItem e) {
@@ -165,4 +167,6 @@ public class CoreUI : ICoreP, IDisposable {
     if (intent.ResolveActivity(pm) == null) return;
     _mainActivity.StartActivity(intent);
   }
+
+  public IPlatformSpecificUiMediaPlayer CreatePlayer() => new AndroidMediaPlayer();
 }
