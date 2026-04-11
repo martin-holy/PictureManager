@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Views;
 using Android.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Controls.Recycler;
@@ -8,6 +9,7 @@ using MH.Utils.Disposables;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
+using System.Collections.Generic;
 
 namespace PictureManager.Android.Views.Sections;
 
@@ -18,17 +20,20 @@ public class MediaViewerV : FrameLayout {
   private bool _disposed;
 
   public MediaViewerVM DataContext { get; }
+  public static Java.Lang.Object DeactivatedPagePayload { get; } = new Java.Lang.String("DeactivatedPage");
 
   public MediaViewerV(Context context, MediaViewerVM dataContext, BindingScope bindings) : base(context) {
     DataContext = dataContext;
     _adapter = new(
       () => dataContext.MediaItems,
       ctx => new MediaItemFullV(ctx, dataContext, Core.VM.Segment.Rect, new(Core.S.Segment) { EditLimit = 20 }),
-      () => new(LPU.Match, LPU.Match));
+      () => new(LPU.Match, LPU.Match),
+      null,
+      _onPayloadBind);
 
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _pageChangeCallback = new PageChangeCallback(dataContext);
+    _pageChangeCallback = new PageChangeCallback(_adapter, dataContext);
     _viewPager = new(context) { Adapter = _adapter };
     _viewPager.RegisterOnPageChangeCallback(_pageChangeCallback);
     AddView(_viewPager, LPU.FrameMatch());
@@ -45,6 +50,16 @@ public class MediaViewerV : FrameLayout {
     ]);
   }
 
+  private bool _onPayloadBind(View view, int position, IList<Java.Lang.Object> payloads) {
+    foreach (var payload in payloads)
+      if (Equals(payload, DeactivatedPagePayload) && view is MediaItemFullV miView) {
+        miView.ResetForInactivePage();
+        return true;
+      }
+
+    return false;
+  }
+
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
@@ -57,8 +72,15 @@ public class MediaViewerV : FrameLayout {
     base.Dispose(disposing);
   }
 
-  private class PageChangeCallback(MediaViewerVM mediaViewerVM) : ViewPager2.OnPageChangeCallback {
+  private class PageChangeCallback(BindableAdapter<MediaItemM> adapter, MediaViewerVM mediaViewerVM) : ViewPager2.OnPageChangeCallback {
+    private int _lastPosition = -1;
+
     public override void OnPageSelected(int position) {
+      if (_lastPosition >= 0)
+        adapter.NotifyItemChanged(_lastPosition, DeactivatedPagePayload);
+
+      _lastPosition = position;
+
       mediaViewerVM.GoTo(position);
     }
   }
