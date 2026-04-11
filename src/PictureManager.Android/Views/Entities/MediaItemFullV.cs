@@ -122,6 +122,10 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
     _video.UnsetImage();
   }
 
+  public void ResetForInactivePage() {
+    _video.PreviewOnly = true;
+  }
+
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
