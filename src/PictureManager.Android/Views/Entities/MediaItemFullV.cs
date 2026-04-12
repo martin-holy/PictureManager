@@ -24,6 +24,7 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
   private readonly ZoomAndPanHost _zoomAndPanHost;
   private readonly SegmentsRectsV _segmentsRectsV;
   private readonly SegmentRectVM _segmentRectVM;
+  private readonly VideoVM _videoVM;
   private readonly ZoomableImageView _image;
   private readonly ZoomableVideoView _video;
   private readonly BindingScope _bindings = new();
@@ -32,14 +33,15 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
 
   public MediaItemM? DataContext { get; private set; }
 
-  public MediaItemFullV(Context context, MediaViewerVM mediaViewer, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS) : base(context) {
+  public MediaItemFullV(Context context, MediaViewerVM mediaViewer, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS, VideoVM videoVM) : base(context) {
     _segmentRectVM = segmentRectVM;
     _mediaItemFullVM = new(mediaViewer, segmentRectVM, segmentRectS);
     _mediaItemFullVM.ZoomAndPan.ViewportChangedEvent += _onZoomAndPanViewportChanged;
     _zoomAndPanHost = new(context, _mediaItemFullVM.ZoomAndPan);
     _segmentsRectsV = new(context, segmentRectVM, segmentRectS, _bindings);
+    _videoVM = videoVM;
     _image = new(context, _mediaItemFullVM.ZoomAndPan);
-    _video = new(context, _mediaItemFullVM.ZoomAndPan, Core.VM.Video.MediaPlayer, (AndroidMediaPlayer)Core.VM.Video.UiFullVideo);
+    _video = new(context, _mediaItemFullVM.ZoomAndPan, _videoVM.MediaPlayer, (AndroidMediaPlayer)_videoVM.UiFullVideo);
 
     Clickable = true;
     Focusable = true;
