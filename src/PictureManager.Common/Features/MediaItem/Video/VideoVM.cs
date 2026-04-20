@@ -51,6 +51,26 @@ public sealed class VideoVM : ObservableObject {
     Core.VM.MainWindow.ToolsTabs.Activate(MH.UI.Res.IconMovieClapper, "Video", this);
   }
 
+  public void PlayInFullView() =>
+    _playIn(UiFullVideo);
+
+  public void PlayInDetailView() =>
+    _playIn(UiDetailVideo);
+
+  public void _playIn(IPlatformSpecificUiMediaPlayer player) {
+    var wasPlaying = MediaPlayer.IsPlaying;
+    MediaPlayer.SetView(player);
+
+    if (wasPlaying)
+      player.Play();
+    else
+      MediaPlayer.IsPlaying = true;
+  }
+
+  public void Stop() {
+    MediaPlayer.IsPlaying = false;
+  }
+
   private void _reloadCurrentVideoItems() {
     List<VideoItemM> items = [];
     var sortSource = true;
