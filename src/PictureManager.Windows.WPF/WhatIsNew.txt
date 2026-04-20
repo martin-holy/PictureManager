@@ -5,8 +5,8 @@
 
 2.33.0:
  - [N] Move keyword to group command in menu
- - [N] Rotate icon for rotate images
- - [U] Trash icon for delete items
+ - [N] Rotate icon for rotating images
+ - [U] Trash icon for deleting items
  - [N] Set selected segments as unknown command in main menu
  - [N] View selected media items command in main menu
  - [B] Set segment to new person when reading metadata
