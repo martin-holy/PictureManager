@@ -20,13 +20,16 @@ using System.Threading;
 namespace PictureManager.Android.Views.Entities;
 
 public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
-  private readonly MediaItemFullVM _mediaItemFullVM;
-  private readonly ZoomAndPanHost _zoomAndPanHost;
-  private readonly SegmentsRectsV _segmentsRectsV;
   private readonly SegmentRectVM _segmentRectVM;
   private readonly VideoVM _videoVM;
+  private readonly MediaItemFullVM _mediaItemFullVM;
+
+  private readonly ZoomAndPanHost _zoomAndPanHost;
   private readonly ZoomableImageView _image;
   private readonly ZoomableVideoView _video;
+  private readonly MediaPlayerControlPanel _controlPanel;
+  private readonly SegmentsRectsV _segmentsRectsV;
+
   private readonly BindingScope _bindings = new();
   private CancellationTokenSource? _cts;
   private bool _disposed;
@@ -35,13 +38,16 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
 
   public MediaItemFullV(Context context, MediaViewerVM mediaViewer, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS, VideoVM videoVM) : base(context) {
     _segmentRectVM = segmentRectVM;
+    _videoVM = videoVM;
+
     _mediaItemFullVM = new(mediaViewer, segmentRectVM, segmentRectS);
     _mediaItemFullVM.ZoomAndPan.ViewportChangedEvent += _onZoomAndPanViewportChanged;
+    
     _zoomAndPanHost = new(context, _mediaItemFullVM.ZoomAndPan);
-    _segmentsRectsV = new(context, segmentRectVM, segmentRectS, _bindings);
-    _videoVM = videoVM;
     _image = new(context, _mediaItemFullVM.ZoomAndPan);
-    _video = new(context, _mediaItemFullVM.ZoomAndPan, _videoVM.MediaPlayer, (AndroidMediaPlayer)_videoVM.UiFullVideo);
+    _video = new(context, _mediaItemFullVM.ZoomAndPan, (AndroidMediaPlayer)videoVM.UiFullVideo);
+    _controlPanel = new(context, videoVM.MediaPlayer) { Visibility = ViewStates.Gone };
+    _segmentsRectsV = new(context, segmentRectVM, segmentRectS, _bindings);
 
     Clickable = true;
     Focusable = true;
@@ -52,14 +58,18 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
     AddView(_zoomAndPanHost, LPU.FrameMatch());
     AddView(_image, LPU.FrameMatch());
     AddView(_video, LPU.FrameMatch());
+    AddView(_controlPanel, LPU.Frame(LPU.Match, LPU.Wrap, GravityFlags.CenterHorizontal | GravityFlags.Bottom));
     AddView(_segmentsRectsV, LPU.FrameMatch());
 
     Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
+    _video.PlayRequested += videoVM.PlayInFullView;
+    _video.PreviewOnlyChanged += _onVideoPreviewOnlyChanged;
 
     _bindings.AddRange([
       // TODO don't do full Bind
       _mediaItemFullVM.ZoomAndPan.Bind(nameof(ZoomAndPan.ExpandToFill), x => x.ExpandToFill, _ => Bind(DataContext)),
-      _segmentRectVM.Bind(nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem, _ => _updateSetmentsRectsViewport())
+      _segmentRectVM.Bind(nameof(SegmentRectVM.ShowOverMediaItem), x => x.ShowOverMediaItem, _ => _updateSetmentsRectsViewport()),
+      videoVM.Bind(nameof(VideoVM.Current), x => x.Current, _ => _video.ShowPreview())
     ]);
   }
 
@@ -97,6 +107,9 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
     _mediaItemFullVM.SegmentRectS.RemoveIfContains(e);
   }
 
+  private void _onVideoPreviewOnlyChanged(bool previewOnly) =>
+    _controlPanel.Visibility = previewOnly ? ViewStates.Gone : ViewStates.Visible;
+
   public void Bind(MediaItemM? mi) {
     DataContext = mi; 
     if (mi == null) return;
@@ -121,11 +134,12 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
     _cts?.Dispose();
     _cts = null;
     _image.UnsetImage();
-    _video.UnsetImage();
+    _video.Clear();
   }
 
-  public void ResetForInactivePage() {
-    _video.PreviewOnly = true;
+  public void ActivatePage() {
+    if (_videoVM.MediaPlayer.IsPlaying)
+      _video.RequestPlay();
   }
 
   protected override void Dispose(bool disposing) {
@@ -133,7 +147,9 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
     if (disposing) {
       Core.R.Segment.ItemDeletedEvent -= _onSegmentItemDeleted;
       _image.Dispose();
+      _video.PreviewOnlyChanged -= _onVideoPreviewOnlyChanged;
       _video.Dispose();
+      _controlPanel.Dispose();
       _mediaItemFullVM.ZoomAndPan.ViewportChangedEvent -= _onZoomAndPanViewportChanged;
       _mediaItemFullVM.Dispose();
       _bindings.Dispose();
