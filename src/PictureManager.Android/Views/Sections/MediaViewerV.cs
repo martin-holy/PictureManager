@@ -20,7 +20,7 @@ public class MediaViewerV : FrameLayout {
   private bool _disposed;
 
   public MediaViewerVM DataContext { get; }
-  public static Java.Lang.Object DeactivatedPagePayload { get; } = new Java.Lang.String("DeactivatedPage");
+  public static Java.Lang.Object ActivatedPagePayload { get; } = new Java.Lang.String("ActivatedPage");
 
   public MediaViewerV(Context context, MediaViewerVM dataContext, BindingScope bindings) : base(context) {
     DataContext = dataContext;
@@ -33,7 +33,7 @@ public class MediaViewerV : FrameLayout {
 
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _pageChangeCallback = new PageChangeCallback(_adapter, dataContext);
+    _pageChangeCallback = new PageChangeCallback(dataContext);
     _viewPager = new(context) { Adapter = _adapter };
     _viewPager.RegisterOnPageChangeCallback(_pageChangeCallback);
     AddView(_viewPager, LPU.FrameMatch());
@@ -50,10 +50,15 @@ public class MediaViewerV : FrameLayout {
     ]);
   }
 
+  public void ActivateCurrentPage() =>
+    _adapter.NotifyItemChanged(_viewPager.CurrentItem, ActivatedPagePayload);
+
   private bool _onPayloadBind(View view, int position, IList<Java.Lang.Object> payloads) {
+    if (view is not MediaItemFullV miView) return false;
+
     foreach (var payload in payloads)
-      if (Equals(payload, DeactivatedPagePayload) && view is MediaItemFullV miView) {
-        miView.ResetForInactivePage();
+      if (Equals(payload, ActivatedPagePayload)) {
+        miView.ActivatePage();
         return true;
       }
 
@@ -72,15 +77,8 @@ public class MediaViewerV : FrameLayout {
     base.Dispose(disposing);
   }
 
-  private class PageChangeCallback(BindableAdapter<MediaItemM> adapter, MediaViewerVM mediaViewerVM) : ViewPager2.OnPageChangeCallback {
-    private int _lastPosition = -1;
-
+  private class PageChangeCallback(MediaViewerVM mediaViewerVM) : ViewPager2.OnPageChangeCallback {
     public override void OnPageSelected(int position) {
-      if (_lastPosition >= 0)
-        adapter.NotifyItemChanged(_lastPosition, DeactivatedPagePayload);
-
-      _lastPosition = position;
-
       mediaViewerVM.GoTo(position);
     }
   }
