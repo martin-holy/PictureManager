@@ -170,5 +170,5 @@ public class CoreUI : ICoreP, IDisposable {
     _mainActivity.StartActivity(intent);
   }
 
-  public IPlatformSpecificUiMediaPlayer CreatePlayer() => new AndroidMediaPlayer();
+  public IUiMediaPlayer CreatePlayer() => new AndroidMediaPlayer();
 }
