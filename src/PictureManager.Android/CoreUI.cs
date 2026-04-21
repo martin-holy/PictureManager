@@ -130,8 +130,10 @@ public class CoreUI : ICoreP, IDisposable {
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
     if (isInViewMode)
       _mainActivity.Window!.EnterFullScreen();
-    else
+    else {
+      Core.VM.Video.MediaPlayer.IsPlaying = false;
       _mainActivity.Window!.ExitFullScreen();
+    }
   }
 
   private static void _disableNotSupportedMainMenuItems(MainMenuVM mm) {
