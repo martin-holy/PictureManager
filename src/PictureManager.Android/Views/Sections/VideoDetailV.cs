@@ -62,8 +62,8 @@ public sealed class VideoDetailV : LinearLayout {
       return;
     }
 
-    // TODO add rotation like in MediaItemFullVM._updateSize
-    _zoomAndPanHost.DataContext.SetContentSize(current.Width, current.Height);
+    var (width, height) = current.GetRotatedSize();
+    _zoomAndPanHost.DataContext.SetContentSize(width, height);
     _cts = new CancellationTokenSource();
     _ = _video.SetPath(current.FilePath, current.Orientation, _cts.Token, Context!);
   }
