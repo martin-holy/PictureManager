@@ -106,20 +106,20 @@ public abstract class MediaItemM(int id) : ObservableObject, ISelectable, IEquat
   }
 
   public void SetThumbSize(bool reload = false) {
-    if (ThumbWidth != 0 && ThumbHeight != 0 && !reload) return;
+    if (!reload && ThumbWidth != 0 && ThumbHeight != 0) return;
     if (Width == 0 || Height == 0) return;
 
-    var rotated = Orientation is Orientation.Rotate90 or Orientation.Rotate270;
-    Imaging.GetThumbSize(
-      rotated ? Height : Width,
-      rotated ? Width : Height,
-      Core.Settings.MediaItem.ThumbSize,
-      out var w,
-      out var h);
+    var size = GetRotatedSize();
+    Imaging.GetThumbSize(size.width, size.height, Core.Settings.MediaItem.ThumbSize, out var w, out var h);
 
     ThumbWidth = w;
     ThumbHeight = h;
   }
+
+  public (int width, int height) GetRotatedSize() =>
+    Orientation is Orientation.Rotate90 or Orientation.Rotate270
+      ? (Height, Width)
+      : (Width, Height);
 }
 
 public static class MediaItemExtensions {
