@@ -15,12 +15,12 @@ public sealed class VideoVM : ObservableObject {
   public VideoItemCollectionView CurrentVideoItems { get; } = new();
   public VideoM? Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
   public MediaPlayer MediaPlayer { get; } = new();
-  public IPlatformSpecificUiMediaPlayer UiFullVideo { get; }
-  public IPlatformSpecificUiMediaPlayer UiDetailVideo { get; }
+  public IUiMediaPlayer UiFullVideo { get; }
+  public IUiMediaPlayer UiDetailVideo { get; }
 
   public static Func<string, string, object[]?> GetVideoMetadataFunc { get; set; } = null!;
 
-  public VideoVM(IPlatformSpecificUiMediaPlayer fullPlayer, IPlatformSpecificUiMediaPlayer detailPlayer) {
+  public VideoVM(IUiMediaPlayer fullPlayer, IUiMediaPlayer detailPlayer) {
     UiFullVideo = fullPlayer;
     UiDetailVideo = detailPlayer;
 
@@ -57,7 +57,7 @@ public sealed class VideoVM : ObservableObject {
   public void PlayInDetailView() =>
     _playIn(UiDetailVideo);
 
-  public void _playIn(IPlatformSpecificUiMediaPlayer player) {
+  public void _playIn(IUiMediaPlayer player) {
     var wasPlaying = MediaPlayer.IsPlaying;
     MediaPlayer.SetView(player);
 
@@ -113,8 +113,6 @@ public sealed class VideoVM : ObservableObject {
   }
 
   private void _setVideoSource(VideoM? vid) {
-    MediaPlayer.IsPlaying = false;
-
     if (vid == null) {
       MediaPlayer.Source = string.Empty;
       UiDetailVideo.Source = null;
