@@ -53,7 +53,7 @@ public class MainWindowVM : ObservableObject {
       new(Dock.Right, ToolsTabs, GetToolsTabsWidth(SegmentVM.SegmentUiFullWidth)) { CanOpen = false },
       new(Dock.Bottom, StatusBar, 0),
       MiddleContent,
-      [ // Left, Top, Right, Bottom, FullScreen (not part of SlidePanelsGrid)
+      [ // Left, Top, Right, Bottom, FullScreen (FullScreen is not part of SlidePanelsGrid)
         [true, true, false, true, false], // browse mode
         [false, false, false, true, false] // view mode
       ]);
@@ -61,6 +61,9 @@ public class MainWindowVM : ObservableObject {
     SwitchToBrowserCommand = new(() => IsInViewMode = false, () => IsInViewMode);
     AttachEvents();
   }
+
+  public bool IsVideoPlayerVisible() =>
+    IsInViewMode || (SlidePanelsGrid.PanelRight.IsPinned && ToolsTabs.Selected?.Data is VideoVM);
 
   private void AttachEvents() {
     ToolsTabs.TabActivatedEvent += (_, tab) => {
