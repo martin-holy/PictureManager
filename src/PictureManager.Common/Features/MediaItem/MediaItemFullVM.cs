@@ -44,10 +44,8 @@ public sealed class MediaItemFullVM : ObservableObject, IDisposable {
 
   private void _updateSize(MediaItemM? mi) {
     if (mi == null) return;
-    var rotated = mi.Orientation is Imaging.Orientation.Rotate90 or Imaging.Orientation.Rotate270;
-    var contentWidth = rotated ? mi.Height : mi.Width;
-    var contentHeight = rotated ? mi.Width : mi.Height;
-    ZoomAndPan.SetContentSize(contentWidth, contentHeight);
+    var size = mi.GetRotatedSize();
+    ZoomAndPan.SetContentSize(size.width, size.height);
   }
 
   public void Dispose() {
