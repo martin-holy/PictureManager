@@ -59,6 +59,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     Core.VM.Video.MediaPlayer.SetView(Core.VM.Video.UiFullVideo);
     Core.VM.Video.MediaPlayer.SetView(Core.VM.Video.UiDetailVideo);
 
+    Core.VM.Video.MediaPlayer.MediaOpenedEvent += _onMediaPlayerMediaOpened;
     Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
 
     Core.VM.MediaItem.Bind(nameof(MediaItemVM.Current), x => x.Current, x => {
@@ -77,11 +78,10 @@ public sealed class CoreUI : ObservableObject, ICoreP {
       Core.VM.MediaViewer.CurrentFull?.SegmentRectS.SetMediaItem(mi);
     });
 
-    Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, x =>
-      Core.VM.Video.MediaPlayer.SetView(x ? Core.VM.Video.UiFullVideo : Core.VM.Video.UiDetailVideo));
+    Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _ => _swapVideoPlayer());
   }
 
-  public IPlatformSpecificUiMediaPlayer CreatePlayer() => new MediaPlayer();
+  public IUiMediaPlayer CreatePlayer() => new MediaPlayer();
 
   private static double GetDisplayScale() =>
     Application.Current.MainWindow == null
@@ -145,6 +145,26 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
   private void _onSegmentItemDeleted(object? sender, SegmentM e) {
     Core.VM.MediaViewer.CurrentFull?.SegmentRectS.RemoveIfContains(e);
+  }
+
+  private static void _swapVideoPlayer() {
+    var vid = Core.VM.Video;
+    var mw = Core.VM.MainWindow;
+    var uimp = mw.IsInViewMode ? vid.UiFullVideo : vid.UiDetailVideo;
+
+    vid.MediaPlayer.SetView(uimp);
+
+    if (!vid.MediaPlayer.IsPlaying) return;
+
+    if (mw.IsVideoPlayerVisible())
+      uimp.Play();
+    else
+      vid.Stop();
+  }
+
+  private void _onMediaPlayerMediaOpened(object? sender, EventArgs e) {
+    if (Core.VM.Video.MediaPlayer.AutoPlay && Core.VM.MainWindow.IsVideoPlayerVisible())
+      Core.VM.Video.MediaPlayer.IsPlaying = true;
   }
 
   private void _openUrl(string url) =>
