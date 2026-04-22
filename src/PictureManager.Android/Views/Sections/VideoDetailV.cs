@@ -24,16 +24,20 @@ public sealed class VideoDetailV : LinearLayout {
   private readonly MediaPlayerControlPanel _controlPanel;
   private readonly CollectionViewHost _videoItems;
 
+  private readonly RelayCommand _playCommand;
+
   private CancellationTokenSource? _cts;
 
   public VideoDetailV(Context context, VideoVM videoVM) : base(context) {
     _videoVM = videoVM;
     Orientation = Orientation.Vertical;
 
+    _playCommand = new(_play, () => !string.IsNullOrEmpty(_videoVM.MediaPlayer.Source), Res.IconPlay, "Play");
+
     // TODO maybe I should have this ZoomAndPan instance in VideoVM
     _zoomAndPanHost = new(context, new ZoomAndPan() { ExpandToFill = true });
     _video = new(context, _zoomAndPanHost.DataContext, (AndroidMediaPlayer)videoVM.UiDetailVideo) { AutoHeightFromAspectRatio = true };
-    _controlPanel = new(context, videoVM.MediaPlayer, new RelayCommand(_play, Res.IconPlay, "Play"));
+    _controlPanel = new(context, videoVM.MediaPlayer, _playCommand);
     _videoItems = new(context, videoVM.CurrentVideoItems, CreateVideoItemV);
 
     var video = new FrameLayout(context)
@@ -47,6 +51,10 @@ public sealed class VideoDetailV : LinearLayout {
     _video.PlayRequested += videoVM.PlayInDetailView;
 
     videoVM.Bind(nameof(VideoVM.Current), x => x.Current, _onCurrentVideoChanged);
+    videoVM.MediaPlayer.Bind(nameof(MediaPlayer.Source), x => x.Source, source => {
+      _playCommand.RaiseCanExecuteChanged();
+      _video.CanPlay = !string.IsNullOrEmpty(source);
+    });
   }
 
   public void Activate() {
