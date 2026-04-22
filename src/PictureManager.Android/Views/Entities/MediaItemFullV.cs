@@ -120,12 +120,12 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
     if (mi is ImageM) {
       _video.Visibility = ViewStates.Gone;
       _image.Visibility = ViewStates.Visible;
-      _ = _image.SetPath(mi.FilePath, mi.Orientation, _cts.Token, Context!);
+      _ = _image.SetPath(mi.FilePath, mi.Orientation, Context!, _cts.Token);
     }
     else if (mi is VideoM) {
       _video.Visibility = ViewStates.Visible;
       _image.Visibility = ViewStates.Gone;
-      _ = _video.SetPath(mi.FilePath, mi.Orientation, _cts.Token, Context!);
+      _ = _video.SetPath(mi.FilePath, mi.Orientation, Context!, _cts.Token);
     }
   }
 

@@ -65,7 +65,7 @@ public sealed class VideoDetailV : LinearLayout {
     var (width, height) = current.GetRotatedSize();
     _zoomAndPanHost.DataContext.SetContentSize(width, height);
     _cts = new CancellationTokenSource();
-    _ = _video.SetPath(current.FilePath, current.Orientation, _cts.Token, Context!);
+    _ = _video.SetPath(current.FilePath, current.Orientation, Context!, _cts.Token);
   }
 
   private void _play() {
