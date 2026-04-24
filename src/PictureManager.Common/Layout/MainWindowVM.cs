@@ -3,7 +3,6 @@ using MH.Utils.BaseClasses;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Person;
-using PictureManager.Common.Features.Segment;
 
 namespace PictureManager.Common.Layout;
 
@@ -48,10 +47,10 @@ public class MainWindowVM : ObservableObject {
     _coreVM = coreVM;
     StatusBar = new(coreVM);
     SlidePanelsGrid = new(
-      new(Dock.Left, TreeViewCategories, 380),
-      new(Dock.Top, ToolBar, 30),
-      new(Dock.Right, ToolsTabs, GetToolsTabsWidth(SegmentVM.SegmentUiFullWidth)) { CanOpen = false },
-      new(Dock.Bottom, StatusBar, 0),
+      new(Dock.Left, TreeViewCategories),
+      new(Dock.Top, ToolBar),
+      new(Dock.Right, ToolsTabs) { CanOpen = false },
+      new(Dock.Bottom, StatusBar),
       MiddleContent,
       [ // Left, Top, Right, Bottom, FullScreen (FullScreen is not part of SlidePanelsGrid)
         [true, true, false, true, false], // browse mode
@@ -80,8 +79,4 @@ public class MainWindowVM : ObservableObject {
     ToolsTabs.Tabs.CollectionChanged += (_, e) =>
       SlidePanelsGrid.PanelRight!.CanOpen = ToolsTabs.Tabs.Count > 0;
   }
-
-  // (segment size + 1) * count + ScrollBar + Margin + ToBeSure
-  private static double GetToolsTabsWidth(int segmentSize) =>
-    (segmentSize + 1) * 4 + 15 + 2 + 1;
 }
