@@ -12,8 +12,6 @@
 
 # CoreUI:
  - MH.UI.Android.Utils.Init.SetDelegates()
- - CoreVM.UiFullVideo = new MediaPlayer()
- - CoreVM.UiDetailVideo = new MediaPlayer()
  - CoreVM.VideoFrameSaver = new VideoFrameSaver()
 
 # Views
