@@ -1,4 +1,5 @@
-﻿using MH.UI.Interfaces;
+﻿using MH.UI.Controls;
+using MH.UI.Interfaces;
 using MH.UI.WPF.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
@@ -51,6 +52,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
   public void AfterInit() {
     LoadPlugins();
+    _setDefaultSlidePanelsSizes(Core.VM.MainWindow.SlidePanelsGrid);
     Core.VM.MediaViewer.CurrentFull = new(Core.VM.MediaViewer, Core.VM.Segment.Rect, new(Core.S.Segment));
     Core.VM.MediaViewer.Slideshow.Init(Core.VM.MediaViewer.CurrentFull.ZoomAndPan);
     SegmentRectUiVM = new(Core.VM.Segment.Rect, Core.VM.MediaViewer.CurrentFull);
@@ -81,7 +83,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _ => _swapVideoPlayer());
   }
 
-  public IUiMediaPlayer CreatePlayer() => new MediaPlayer();
+  public IUiMediaPlayer CreatePlayer() => new MH.UI.WPF.Controls.MediaPlayer();
 
   private static double GetDisplayScale() =>
     Application.Current.MainWindow == null
@@ -171,4 +173,11 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     Process.Start(new ProcessStartInfo(url) {
     UseShellExecute = true
   });
+
+  private static void _setDefaultSlidePanelsSizes(SlidePanelsGrid grid) {
+    grid.PanelLeft.Size = 380;
+    grid.PanelTop.Size = 30;
+    // (segment size + 1) * count + ScrollBar + Margin + ToBeSure
+    grid.PanelRight.Size = (SegmentVM.SegmentUiFullWidth + 1) * 4 + 15 + 2 + 1;
+  }
 }
