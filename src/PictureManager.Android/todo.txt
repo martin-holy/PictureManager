@@ -4,6 +4,7 @@
 - sometimes unhandeled exception for CollectionViewItem when selected/opened
 - CollectionViewHost: unselect on long touch
 - first context menu open in tree is off screen
+- _disableNotSupportedMainMenuItems doesn't work
 
 - review the logic behind RecyclerView payloads in TreeViewHostAdapterBase where I subscribe to _flatTree.TreeItemPropertyChangedEvent
   to create payloads vs FlatTreeItemV binding directly to FlatTreeItem
