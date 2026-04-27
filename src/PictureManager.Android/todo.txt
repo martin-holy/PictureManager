@@ -6,6 +6,9 @@
 - first context menu open in tree is off screen
 - _disableNotSupportedMainMenuItems doesn't work
 
+bug in wpf:
+ - opening video previously openned doesn't start playback
+
 - review the logic behind RecyclerView payloads in TreeViewHostAdapterBase where I subscribe to _flatTree.TreeItemPropertyChangedEvent
   to create payloads vs FlatTreeItemV binding directly to FlatTreeItem
 
