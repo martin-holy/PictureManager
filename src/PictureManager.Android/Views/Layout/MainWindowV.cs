@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls.Hosts.SlidePanelsGridHost;
 using MH.UI.Android.Utils;
@@ -17,6 +16,7 @@ public class MainWindowV : FrameLayout {
   private readonly TreeViewCategoriesV _treeViewCategories;
   private readonly ToolBarV _toolBarV;
   private readonly ToolsTabsV _toolsTabsV;
+  private readonly StatusBarV _statusBarV;
   private readonly MiddleContentV _middleContent;
   private readonly BindingScope _bindings = new();
 
@@ -24,45 +24,61 @@ public class MainWindowV : FrameLayout {
 
   public MainWindowV(Context context, CoreVM coreVM) : base(context) {
     _coreVM = coreVM;
-    _treeViewCategories = new(context, coreVM.MainWindow.TreeViewCategories, _bindings);
-    _toolBarV = new(context, coreVM);
-    _toolsTabsV = new(context, coreVM.MainWindow.ToolsTabs);
-    _middleContent = new(context, coreVM, _bindings);
+    _treeViewCategories = new(context, _coreVM.MainWindow.TreeViewCategories, _bindings);
+    _toolBarV = new(context, _coreVM);
+    _toolsTabsV = new(context, _coreVM.MainWindow.ToolsTabs);
+    _statusBarV = new(context, _coreVM.MainWindow.StatusBar);
+    _middleContent = new(context, _coreVM, _bindings);
 
     SlidePanels = new(
       context,
-      coreVM.MainWindow.SlidePanelsGrid,
+      _coreVM.MainWindow.SlidePanelsGrid,
       _bindings,
+      TopAndBottomPanelsPlacement.MiddleOnly,
       _treeViewCategories,
       _toolBarV,
       _toolsTabsV,
-      new TextView(context) { Text = "Bottom Panel" },
+      _statusBarV,
       _middleContent);
 
     AddView(SlidePanels, LPU.FrameMatch());
 
     _toolBarV.Init(SlidePanels.ViewPager, _bindings);
-    SlidePanels.ViewPager.PageChangedEvent += _onPanelChanged;
-    coreVM.MainWindow.ToolsTabs
+    SlidePanels.ViewPager.PageChanged += _onPanelChanged;
+    _coreVM.MainWindow.ToolsTabs
       .Bind(nameof(TabControl.Selected), x => x.Selected, _onToolsTabChange, false)
       .DisposeWith(_bindings);
+    _middleContent.MediaViewer.ContentTapped += _onMediaViewerContentTapped;
   }
 
-  private void _onPanelChanged(object? sender, View? view) {
-    if (view is MiddleContentV && _coreVM.MainWindow.IsInViewMode)
+  private void _onMediaViewerContentTapped() {
+    _coreVM.MainWindow.SlidePanelsGrid.PanelTop.IsOpen = true;
+    _coreVM.MainWindow.SlidePanelsGrid.PanelBottom.IsOpen = true;
+  }
+
+  private void _onPanelChanged(int index) {
+    if (index == 1 && _coreVM.MainWindow.IsInViewMode)
       _middleContent.MediaViewer.ActivateCurrentPage();
-    else if (view is ToolsTabsV toolsTabsV)
-      _onToolsTabChange(toolsTabsV.DataContext.Selected);
+    else if (index == 2)
+      _onToolsTabChange(_toolsTabsV.DataContext.Selected);
     else
       _coreVM.Video.Stop();
+
+    UpdateTopAndBottomPanels(_coreVM.MainWindow.SlidePanelsGrid, _coreVM.MainWindow.IsInViewMode, index == 1);
   }
 
   private void _onToolsTabChange(IListItem? tab) {
-    var toolsTabsV = SlidePanels.ViewPager.GetCurrentItem() as ToolsTabsV;
-    if (toolsTabsV?.GetTabView(tab) is VideoDetailV videoDetailV)
+    if (SlidePanels.ViewPager.GetCurrentIndex() == 2 && _toolsTabsV.GetTabView(tab) is VideoDetailV videoDetailV)
       videoDetailV.Activate();
     else
       _coreVM.Video.Stop();
+  }
+
+  public static void UpdateTopAndBottomPanels(SlidePanelsGrid grid, bool isInViewMode, bool isMiddleActive) {
+    grid.PanelTop.IsPinned = !isInViewMode;
+    if (!isMiddleActive) return;
+    grid.PanelTop.IsOpen = true;
+    if (isInViewMode) grid.PanelBottom.IsOpen = true;
   }
 
   protected override void Dispose(bool disposing) {
