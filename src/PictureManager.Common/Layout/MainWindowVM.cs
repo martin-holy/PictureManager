@@ -51,11 +51,7 @@ public class MainWindowVM : ObservableObject {
       new(Dock.Top, ToolBar),
       new(Dock.Right, ToolsTabs) { CanOpen = false },
       new(Dock.Bottom, StatusBar),
-      MiddleContent,
-      [ // Left, Top, Right, Bottom, FullScreen (FullScreen is not part of SlidePanelsGrid)
-        [true, true, false, true, false], // browse mode
-        [false, false, false, true, false] // view mode
-      ]);
+      MiddleContent);
     
     SwitchToBrowserCommand = new(() => IsInViewMode = false, () => IsInViewMode);
     AttachEvents();
