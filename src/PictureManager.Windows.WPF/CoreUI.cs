@@ -52,7 +52,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
   public void AfterInit() {
     LoadPlugins();
-    _setDefaultSlidePanelsSizes(Core.VM.MainWindow.SlidePanelsGrid);
+    _initSlidePanelsGrid(Core.VM.MainWindow.SlidePanelsGrid);
     Core.VM.MediaViewer.CurrentFull = new(Core.VM.MediaViewer, Core.VM.Segment.Rect, new(Core.S.Segment));
     Core.VM.MediaViewer.Slideshow.Init(Core.VM.MediaViewer.CurrentFull.ZoomAndPan);
     SegmentRectUiVM = new(Core.VM.Segment.Rect, Core.VM.MediaViewer.CurrentFull);
@@ -174,10 +174,17 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     UseShellExecute = true
   });
 
-  private static void _setDefaultSlidePanelsSizes(SlidePanelsGrid grid) {
+  private static void _initSlidePanelsGrid(SlidePanelsGrid grid) {
+    // Left, Top, Right, Bottom, FullScreen (FullScreen is not part of SlidePanelsGrid)
+    grid.PinLayouts = [ 
+      [true, true, false, true, false], // browse mode
+      [false, false, false, true, false] // view mode
+    ];
     grid.PanelLeft.Size = 380;
     grid.PanelTop.Size = 30;
     // (segment size + 1) * count + ScrollBar + Margin + ToBeSure
     grid.PanelRight.Size = (SegmentVM.SegmentUiFullWidth + 1) * 4 + 15 + 2 + 1;
+
+    grid.ActiveLayout = 0;
   }
 }
