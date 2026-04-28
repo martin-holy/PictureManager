@@ -54,14 +54,8 @@ public class CoreUI : ICoreP, IDisposable {
 
   public void AfterInit(Context context) {
     ShareMediaItemsCommand = new(x => _shareMediaItems(Core.VM.GetActive<RealMediaItemM>(x)), Core.VM.AnyActive<RealMediaItemM>, Res.IconShare, "Share");
-
+    _initSlidePanelsGrid(Core.VM.MainWindow.SlidePanelsGrid);
     _disableNotSupportedMainMenuItems(Core.VM.MainWindow.MainMenu);
-
-    Core.VM.MainWindow.SlidePanelsGrid.PinLayouts = [
-        [true, true, true, false, false], // browse mode
-        [true, true, true, false, false]  // view mode
-      ];
-    Core.VM.MainWindow.SlidePanelsGrid.ActiveLayout = 0;
     Core.VM.MainTabs.TabStrip = new(Dock.Top, Dock.Left, new MainTabsSlotVM());
     Core.VM.Segment.Views.Tabs.TabStrip = new(Dock.Top, Dock.Left, new SegmentsViewsTabsSlotVM());
     MainWindow = new MainWindowV(context, Core.VM);
@@ -127,13 +121,30 @@ public class CoreUI : ICoreP, IDisposable {
 
   private void _onMainWindowIsInViewModeChanged(bool isInViewMode) {
     _updateMediaItemCommands();
-    MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true);
+    MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true); // TODO this might be bad UX
+
+    MainWindowV.UpdateTopAndBottomPanels(
+      Core.VM.MainWindow.SlidePanelsGrid,
+      isInViewMode,
+      MainWindow.SlidePanels.ViewPager.GetCurrentIndex() == 1);
+
     if (isInViewMode)
-      _mainActivity.Window!.EnterFullScreen();
+      _mainActivity.Window!.EnterFullScreen(); // TODO bind to Core.VM.MainWindow.IsFullScreen and remove this
     else {
       Core.VM.Video.MediaPlayer.IsPlaying = false;
       _mainActivity.Window!.ExitFullScreen();
     }
+  }
+
+  private static void _initSlidePanelsGrid(SlidePanelsGrid grid) {
+    // Left, Top, Right, Bottom, FullScreen (FullScreen is not part of SlidePanelsGrid)
+    grid.PinLayouts = [
+      [true, true, true, false, false], // browse mode
+      [true, false, true, false, true]  // view mode
+    ];
+    grid.PanelTop.AutoCloseDelay = 3000;
+    grid.PanelBottom.AutoCloseDelay = 3000;
+    grid.ActiveLayout = 0;
   }
 
   private static void _disableNotSupportedMainMenuItems(MainMenuVM mm) {
