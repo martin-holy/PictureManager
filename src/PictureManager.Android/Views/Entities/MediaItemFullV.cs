@@ -36,6 +36,8 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
 
   public MediaItemM? DataContext { get; private set; }
 
+  public event Action? ContentTapped;
+
   public MediaItemFullV(Context context, MediaViewerVM mediaViewer, SegmentRectVM segmentRectVM, SegmentRectS segmentRectS, VideoVM videoVM) : base(context) {
     _segmentRectVM = segmentRectVM;
     _videoVM = videoVM;
@@ -64,6 +66,7 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
     Core.R.Segment.ItemDeletedEvent += _onSegmentItemDeleted;
     _video.PlayRequested += videoVM.PlayInFullView;
     _video.PreviewOnlyChanged += _onVideoPreviewOnlyChanged;
+    _zoomAndPanHost.SingleTapConfirmedEvent += _onSingleTap;
 
     _bindings.AddRange([
       // TODO don't do full Bind
@@ -109,6 +112,9 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
 
   private void _onVideoPreviewOnlyChanged(bool previewOnly) =>
     _controlPanel.Visibility = previewOnly ? ViewStates.Gone : ViewStates.Visible;
+
+  private void _onSingleTap(object? sender, EventArgs e) =>
+    ContentTapped?.Invoke();
 
   public void Bind(MediaItemM? mi) {
     DataContext = mi; 

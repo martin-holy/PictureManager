@@ -9,6 +9,7 @@ using MH.Utils.Disposables;
 using PictureManager.Android.Views.Entities;
 using PictureManager.Common;
 using PictureManager.Common.Features.MediaItem;
+using System;
 using System.Collections.Generic;
 
 namespace PictureManager.Android.Views.Sections;
@@ -20,6 +21,7 @@ public class MediaViewerV : FrameLayout {
   private bool _disposed;
 
   public MediaViewerVM DataContext { get; }
+  public event Action? ContentTapped;
   public static Java.Lang.Object ActivatedPagePayload { get; } = new Java.Lang.String("ActivatedPage");
 
   public MediaViewerV(Context context, MediaViewerVM dataContext, BindingScope bindings) : base(context) {
@@ -28,7 +30,7 @@ public class MediaViewerV : FrameLayout {
       () => dataContext.MediaItems,
       ctx => new MediaItemFullV(ctx, dataContext, Core.VM.Segment.Rect, new(Core.S.Segment) { EditLimit = 20 }, Core.VM.Video),
       () => new(LPU.Match, LPU.Match),
-      null,
+      _onViewCreated,
       _onPayloadBind);
 
     SetBackgroundResource(Resource.Color.c_static_ba);
@@ -52,6 +54,12 @@ public class MediaViewerV : FrameLayout {
 
   public void ActivateCurrentPage() =>
     _adapter.NotifyItemChanged(_viewPager.CurrentItem, ActivatedPagePayload);
+
+  private void _raiseContentTapped() =>
+    ContentTapped?.Invoke();
+
+  private void _onViewCreated(View view) =>
+    ((MediaItemFullV)view).ContentTapped += _raiseContentTapped;
 
   private bool _onPayloadBind(View view, int position, IList<Java.Lang.Object> payloads) {
     if (view is not MediaItemFullV miView) return false;
