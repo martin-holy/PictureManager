@@ -24,7 +24,7 @@ public class VideoItemV : FrameLayout, ICollectionViewItemContent {
     _videoDuration = new(context);
 
     AddView(_image, LPU.FrameMatch());
-    AddView(_videoDuration, LPU.Frame(LPU.Wrap, LPU.Wrap));
+    AddView(_videoDuration, LPU.FrameWrap());
   }
 
   public void Bind(object item) {
