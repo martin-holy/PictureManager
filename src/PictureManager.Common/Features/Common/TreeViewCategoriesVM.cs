@@ -12,12 +12,13 @@ public sealed class TreeViewCategoriesSlotVM;
 
 public sealed class TreeViewCategoriesVM : TabControl {
   public TreeViewSearchVM TreeViewSearch { get; }
-  public Dictionary<object, int> MarkedTags { get; } = new();
+  public Dictionary<object, int> MarkedTags { get; } = [];
   public RatingTreeCategory RatingsTreeCategory { get; } = new();
   public SlidePanelPinButton SlidePanelPinButton { get; } = new();
 
   public TreeViewCategoriesVM() :
-    base(new(Dock.Top, Dock.Right, new TreeViewCategoriesSlotVM()) { IconTextVisibility = IconTextVisibility.Icon }) {
+    base(new(Dock.Top) { EndSlot = new TreeViewCategoriesSlotVM(), IconTextVisibility = IconTextVisibility.Icon }) {
+
     TreeViewSearch = new(this);
   }
 

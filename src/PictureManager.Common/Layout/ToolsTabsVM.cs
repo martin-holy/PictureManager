@@ -16,9 +16,9 @@ public sealed class ToolsTabsVM : TabControl {
   public static RelayCommand<PersonM> OpenPersonTabCommand { get; set; } = null!;
   public static AsyncRelayCommand OpenPeopleTabCommand { get; set; } = null!;
 
-  public ToolsTabsVM() : base(new(Dock.Top, Dock.Right, new SlidePanelPinButton()) { JustifyTabSize = true }) {
+  public ToolsTabsVM() : base(new(Dock.Top) { EndSlot = new SlidePanelPinButton(), JustifyTabSize = true }) {
     NoTabsText = "Tools tabs";
-    OpenPersonTabCommand = new(OpenPersonTab, Res.IconInformation, "Detail");
+    OpenPersonTabCommand = new(_openPersonTab, Res.IconInformation, "Detail");
     OpenPeopleTabCommand = new(_ => OpenPeopleTab(null), Res.IconPeopleMultiple, "People");
   }
 
@@ -28,7 +28,7 @@ public sealed class ToolsTabsVM : TabControl {
     Activate(Res.IconPeopleMultiple, "People", PeopleTab);
   }
 
-  private void OpenPersonTab(PersonM? person) {
+  private void _openPersonTab(PersonM? person) {
     PersonDetailTab ??= new(Core.S.Person, Core.S.Segment);
     PersonDetailTab.Reload(person);
     Activate(Res.IconPeople, "Person", PersonDetailTab);
