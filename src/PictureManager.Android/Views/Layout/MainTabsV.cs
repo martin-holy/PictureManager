@@ -13,9 +13,11 @@ using PictureManager.Common.Features.Segment;
 namespace PictureManager.Android.Views.Layout;
 
 public sealed class MainTabsV : TabControlHost {
-  public MainTabsV(Context context, TabControl dataContext) : base(context, dataContext) { }
+  public MainTabsV(Context context, TabControl dataContext) : base(context, dataContext) {
+    _initialize();
+  }
 
-  protected override View? _getItemView(Context context, object? item) =>
+  protected override View? _viewFactory(Context context, object? item) =>
     item switch {
       AllSettings allSettings => new SettingsV(context, allSettings),
       MediaItemsViewVM miv => new MediaItemsViewV(context, miv),

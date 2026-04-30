@@ -7,8 +7,10 @@ using PictureManager.Common.Features.Segment;
 namespace PictureManager.Android.Views.Sections;
 
 public sealed class SegmentsViewsTabsV : TabControlHost {
-  public SegmentsViewsTabsV(Context context, TabControl dataContext) : base(context, dataContext) { }
+  public SegmentsViewsTabsV(Context context, TabControl dataContext) : base(context, dataContext) {
+    _initialize();
+  }
 
-  protected override View? _getItemView(Context context, object? item) =>
+  protected override View? _viewFactory(Context context, object? item) =>
     item is SegmentsViewVM segmentsView ? new SegmentsViewV(context, segmentsView) : null;
 }

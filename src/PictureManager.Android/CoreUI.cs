@@ -56,8 +56,10 @@ public class CoreUI : ICoreP, IDisposable {
     ShareMediaItemsCommand = new(x => _shareMediaItems(Core.VM.GetActive<RealMediaItemM>(x)), Core.VM.AnyActive<RealMediaItemM>, Res.IconShare, "Share");
     _initSlidePanelsGrid(Core.VM.MainWindow.SlidePanelsGrid);
     _disableNotSupportedMainMenuItems(Core.VM.MainWindow.MainMenu);
-    Core.VM.MainTabs.TabStrip = new(Dock.Top, Dock.Left, new MainTabsSlotVM());
-    Core.VM.Segment.Views.Tabs.TabStrip = new(Dock.Top, Dock.Left, new SegmentsViewsTabsSlotVM());
+    Core.VM.MainTabs.TabStrip = new(Dock.Top) { StartSlot = new MainTabsSlotVM() };
+    Core.VM.Segment.Views.Tabs.TabStrip = new(Dock.Top) { StartSlot = new SegmentsViewsTabsSlotVM() };
+    Core.VM.MainWindow.TreeViewCategories.TabStrip.StartSlot = Core.VM.MainWindow.MainMenu;
+    Core.VM.MainWindow.ToolsTabs.TabStrip.StartSlot = Core.VM.MainWindow.MainMenu;
     MainWindow = new MainWindowV(context, Core.VM);
     _attachEvents();
   }
