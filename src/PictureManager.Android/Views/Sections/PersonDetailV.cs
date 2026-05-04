@@ -1,8 +1,8 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Controls;
 using MH.UI.Android.Controls.Hosts.CollectionViewHost;
+using MH.UI.Android.Controls.Items;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
@@ -18,7 +18,7 @@ namespace PictureManager.Android.Views.Sections;
 
 public sealed class PersonDetailV : LinearLayout {
   private readonly TextView _personName;
-  private readonly IconItemsLayout _keywords;
+  private readonly IconWrappedItemsView _keywords;
   private readonly BindingScope _bindings = new();
 
   public PersonDetailV(Context context, PersonDetailVM dataContext) : base(context) {
@@ -31,15 +31,15 @@ public sealed class PersonDetailV : LinearLayout {
     };
     _personName.SetPadding(DimensU.Spacing);
 
-    _keywords = new IconItemsLayout(context, Res.IconTag, _getKeywordView) {
+    _keywords = new IconWrappedItemsView(context, Res.IconTag, _getKeywordView) {
       MaxHeight = DisplayU.DpToPx((float)(DimensU.IconSize * 1.5))
     };
 
     var topSegments = new CollectionViewHost(context, dataContext.TopSegments, SegmentsViewV.CreateSegmentV);
     var allSegments = new CollectionViewHost(context, dataContext.AllSegments, SegmentsViewV.CreateSegmentV);
 
-    AddView(_personName, LPU.LinearMatchWrap().WithDpMargin(2, 0, 2, 0));
-    AddView(_keywords, LPU.LinearMatchWrap().WithDpMargin(2, 2, 2, 0));
+    AddView(_personName, LPU.LinearMatchWrap().WithMargin(DimensU.CompactSpacing, 0, DimensU.CompactSpacing, 0));
+    AddView(_keywords, LPU.LinearMatchWrap());
     AddView(topSegments, LPU.Linear(LPU.Match, _getTopSegmentsHeight()));
     AddView(allSegments, LPU.LinearMatchWrap());
 
@@ -54,7 +54,7 @@ public sealed class PersonDetailV : LinearLayout {
       x => {
         var empty = x == null || x.Length == 0;
         _keywords.Visibility = empty ? ViewStates.Gone : ViewStates.Visible;
-        _keywords.WrapLayout.Items = empty ? null : x;
+        _keywords.Items = empty ? null : x;
       }).DisposeWith(_bindings);
   }
 
