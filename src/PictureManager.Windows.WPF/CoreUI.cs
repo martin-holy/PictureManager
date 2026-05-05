@@ -80,7 +80,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
       Core.VM.MediaViewer.CurrentFull?.SegmentRectS.SetMediaItem(mi);
     });
 
-    Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _ => _swapVideoPlayer());
+    Core.VM.MainWindow.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _onViewModeChanged);
   }
 
   public IUiMediaPlayer CreatePlayer() => new MH.UI.WPF.Controls.MediaPlayer();
@@ -147,6 +147,11 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
   private void _onSegmentItemDeleted(object? sender, SegmentM e) {
     Core.VM.MediaViewer.CurrentFull?.SegmentRectS.RemoveIfContains(e);
+  }
+
+  private void _onViewModeChanged(bool isInViewMode) {
+    _swapVideoPlayer();
+    if (isInViewMode) Core.VM.Video.PlayIfCan();
   }
 
   private static void _swapVideoPlayer() {
