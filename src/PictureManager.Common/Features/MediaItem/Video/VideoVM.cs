@@ -11,6 +11,7 @@ namespace PictureManager.Common.Features.MediaItem.Video;
 
 public sealed class VideoVM : ObservableObject {
   private VideoM? _current;
+  private bool _isMediaReady;
 
   public VideoItemCollectionView CurrentVideoItems { get; } = new();
   public VideoM? Current { get => _current; private set { _current = value; OnPropertyChanged(); } }
@@ -24,6 +25,7 @@ public sealed class VideoVM : ObservableObject {
     UiFullVideo = fullPlayer;
     UiDetailVideo = detailPlayer;
 
+    MediaPlayer.MediaOpenedEvent += _onMediaOpened;
     MediaPlayer.SelectNextItemAction = CurrentVideoItems.SelectNextOrFirstItem;
     MediaPlayer.GetNewClipFunc = _getNewClip;
     MediaPlayer.GetNewImageFunc = _getNewImage;
@@ -49,6 +51,11 @@ public sealed class VideoVM : ObservableObject {
     _setVideoSource(Current);
     _reloadCurrentVideoItems();
     Core.VM.MainWindow.ToolsTabs.Activate(MH.UI.Res.IconMovieClapper, "Video", this);
+  }
+
+  public void PlayIfCan() {
+    if (MediaPlayer.AutoPlay && _isMediaReady)
+      MediaPlayer.IsPlaying = true;
   }
 
   public void PlayInFullView() =>
@@ -112,7 +119,12 @@ public sealed class VideoVM : ObservableObject {
     item.OnPropertyChanged(nameof(item.FilePathCache));
   }
 
+  private void _onMediaOpened(object? sender, EventArgs e) =>
+    _isMediaReady = true;
+
   private void _setVideoSource(VideoM? vid) {
+    _isMediaReady = false;
+
     if (vid == null) {
       MediaPlayer.Source = string.Empty;
       UiDetailVideo.Source = null;
