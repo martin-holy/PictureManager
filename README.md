@@ -11,6 +11,14 @@
 
 > [Picture Manager Telegram Channel](https://t.me/PictureManager)
 
+## Downloads
+
+### Android
+- v1.0.0: https://github.com/martin-holy/PictureManager/releases/tag/android-v1.0.0
+
+### Windows (WPF)
+- v2.33.0: https://github.com/martin-holy/PictureManager/releases/tag/v2.33.0
+
 ### Screenshots and description is outdated! 🙃
 
 Picture Manager is a simple image and video viewer with the ability of creating clips from video, tagging faces and editing keywords like rating, people, hierarchical keywords, comments and geo names.
