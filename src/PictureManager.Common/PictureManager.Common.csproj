@@ -12,14 +12,14 @@
 		<Company>Martin Holý</Company>
 		<Copyright>Martin Holý (2015 - 2026)</Copyright>
 
-		<Version>2.32.0</Version>
-		<AssemblyVersion>2.32.0.0</AssemblyVersion>
-		<FileVersion>2.32.0.0</FileVersion>
+		<Version>2.33.0</Version>
+		<AssemblyVersion>2.33.0.0</AssemblyVersion>
+		<FileVersion>2.33.0.0</FileVersion>
   </PropertyGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="MH.UI" Version="4.2.0" />
-		<PackageReference Include="MH.Utils" Version="3.5.0" />
+		<PackageReference Include="MH.UI" Version="5.0.0" />
+		<PackageReference Include="MH.Utils" Version="4.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">
