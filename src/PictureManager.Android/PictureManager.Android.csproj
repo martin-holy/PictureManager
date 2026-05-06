@@ -24,7 +24,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<ApplicationId>cz.martinholy.picturemanager</ApplicationId>
 		<AndroidKeyStore>True</AndroidKeyStore>
-		<AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		<AndroidSigningStorePass>$(AndroidSigningStorePass)</AndroidSigningStorePass>
 		<AndroidSigningKeyPass>$(AndroidSigningKeyPass)</AndroidSigningKeyPass>
 		<AndroidSigningKeyAlias>PictureManagerAndroidKeystore</AndroidSigningKeyAlias>
