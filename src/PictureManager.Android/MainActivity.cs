@@ -5,6 +5,7 @@ using Android.OS;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using AndroidX.Fragment.App;
+using MH.UI.Android.Extensions;
 using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Layout;
@@ -54,7 +55,10 @@ public class MainActivity : FragmentActivity {
       _coreUI = new(this);
       _core.AfterInit(_coreUI);
       _coreUI.AfterInit(this);
-      RunOnUiThread(() => SetContentView(_coreUI.MainWindow));
+      RunOnUiThread(() => {
+        SetContentView(_coreUI.MainWindow);
+        _coreUI.MainWindow.ApplySystemBarInsets();
+      });
     });
   }
 
