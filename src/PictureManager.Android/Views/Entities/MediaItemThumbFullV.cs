@@ -31,7 +31,7 @@ public class MediaItemThumbFullV : FrameLayout, ICollectionViewItemContent {
     if (item is not MediaItemM mi) return;
     _videoOverlayer.Visibility = mi is VideoM ? ViewStates.Visible : ViewStates.Gone;
     _cts = new CancellationTokenSource();
-    _ = ViewModels.MediaItemVM.LoadThumbnailAsync(mi, _image, Context!, _cts.Token);
+    _ = ViewModels.MediaItemVM.LoadThumb(mi, _image, Context!, _cts.Token);
   }
 
   public void Unbind() {

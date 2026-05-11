@@ -181,7 +181,7 @@ public static class MediaItemVM {
       return true;
     }
     catch (Exception ex) {
-      Log.Error(ex, srcPath);      
+      Log.Error(ex, srcPath);
       return false;
     }
   }
@@ -205,35 +205,21 @@ public static class MediaItemVM {
     return XmpU.WriteToJpeg(srcPath, mergedXmp);
   }
 
-  public static async Task LoadThumbnailAsync(MediaItemM mi, ImageView imageView, Context context, CancellationToken token) {
+  public static Task<Bitmap?> GetFullImage(MediaItemM mi, CancellationToken token) =>
+    Task.Run(() => {
+      token.ThrowIfCancellationRequested();
+      var bmp = BitmapFactory.DecodeFile(mi.FilePath);
+      token.ThrowIfCancellationRequested();
+      return bmp?.ApplyOrientation(mi.Orientation);
+    }, token);
+
+  public static async Task LoadThumb(MediaItemM mi, ImageView imageView, Context context, CancellationToken token) {
     try {
-      var bitmap = await Task.Run(async () => {
-        try {
-          token.ThrowIfCancellationRequested();
-
-          var filePath = mi.FilePath;
-          var thumbSize = Core.Settings.MediaItem.ThumbSize;
-
-          var thumb = mi switch {
-            ImageM => await MediaStoreU.GetImageThumbnail(filePath, context, 512)
-                      ?? ImagingU.CreateImageThumbnail(filePath, thumbSize),
-            VideoM => await MediaStoreU.GetVideoThumbnail(filePath, context, 512)
-                      ?? ImagingU.CreateVideoThumbnail(filePath, thumbSize),
-            _ => null
-          };
-
-          token.ThrowIfCancellationRequested();
-
-          return thumb?.ApplyOrientation(mi.Orientation);
-        }
-        catch (OperationCanceledException) {
-          throw;
-        }
-        catch (Exception ex) {
-          MH.Utils.Log.Error(ex);
-          return null;
-        }
-      }, token);
+      var bitmap = mi switch {
+        ImageM => await GetImageThumb(mi, context, token),
+        VideoM => await GetVideoThumb(mi, context, token),
+        _ => null
+      };
 
       if (token.IsCancellationRequested) return;
 
@@ -245,5 +231,81 @@ public static class MediaItemVM {
     catch (OperationCanceledException) {
       // ignored
     }
+  }
+
+  public static Task<Bitmap?> GetMediaStoreImageThumb(MediaItemM mi, Context context) =>
+    MediaStoreU.GetImageThumbnail(mi.FilePath, context, 512);
+
+  public static Task<Bitmap?> GetMediaStoreVideoThumb(MediaItemM mi, Context context) =>
+    MediaStoreU.GetVideoThumbnail(mi.FilePath, context, 512);
+
+  public static Bitmap? CreateImageThumb(MediaItemM mi, int thumbSize) =>
+    ImagingU.CreateImageThumbnail(mi.FilePath, thumbSize)?.ApplyOrientation(mi.Orientation);
+
+  public static Bitmap? CreateVideoThumb(MediaItemM mi, int thumbSize) =>
+    ImagingU.CreateVideoThumbnail(mi.FilePath, thumbSize);
+
+  public static Task<Bitmap?> GetImageThumb(MediaItemM mi, Context context, CancellationToken token) =>
+    GetThumb(mi, context, GetMediaStoreImageThumb, CreateImageThumb, token);
+
+  public static Task<Bitmap?> GetVideoThumb(MediaItemM mi, Context context, CancellationToken token) =>
+    GetThumb(mi, context, GetMediaStoreVideoThumb, CreateVideoThumb, token);
+
+  public static async Task<Bitmap?> GetThumb(
+    MediaItemM mi,
+    Context context,
+    Func<MediaItemM, Context, Task<Bitmap?>> getMediaStoreThumb,
+    Func<MediaItemM, int, Bitmap?> createThumb,
+    CancellationToken token) {
+
+    return await Task.Run(async () => {
+      try {
+        token.ThrowIfCancellationRequested();
+
+        // 1. Custom cache
+        var cachePath = mi.FilePathCache;
+        if (File.Exists(cachePath) && BitmapFactory.DecodeFile(cachePath) is { } cached)
+          return cached;
+
+        token.ThrowIfCancellationRequested();
+
+        Bitmap? thumb = null;
+
+        // 2. MediaStore only for normal orientation
+        if (mi.Orientation == Imaging.Orientation.Normal)
+          thumb = await getMediaStoreThumb(mi, context);
+
+        token.ThrowIfCancellationRequested();
+
+        // 3. Custom cache fallback
+        if (thumb == null) {
+          thumb = createThumb(mi, Core.Settings.MediaItem.ThumbSize);
+
+          if (thumb != null)
+            _saveThumbToCache(thumb, cachePath);
+        }
+
+        token.ThrowIfCancellationRequested();
+
+        return thumb;
+      }
+      catch (OperationCanceledException) {
+        throw;
+      }
+      catch (Exception ex) {
+        MH.Utils.Log.Error(ex);
+        return null;
+      }
+    }, token);
+  }
+
+  private static void _saveThumbToCache(Bitmap thumb, string cachePath) {
+    var folder = System.IO.Path.GetDirectoryName(cachePath);
+
+    if (!string.IsNullOrWhiteSpace(folder))
+      Directory.CreateDirectory(folder);
+
+    using var stream = File.Open(cachePath, FileMode.Create, FileAccess.Write, FileShare.None);
+    thumb.Compress(Bitmap.CompressFormat.Jpeg!, 80, stream);
   }
 }

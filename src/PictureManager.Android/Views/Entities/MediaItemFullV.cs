@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
@@ -16,6 +17,7 @@ using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Segment;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PictureManager.Android.Views.Entities;
 
@@ -126,14 +128,23 @@ public class MediaItemFullV : FrameLayout, IBindable<MediaItemM> {
     if (mi is ImageM) {
       _video.Visibility = ViewStates.Gone;
       _image.Visibility = ViewStates.Visible;
-      _ = _image.SetPath(mi.FilePath, mi.Orientation, Context!, _cts.Token);
+      _ = _image.SetImage(_getImageThumb, _getFullImage, _cts.Token);
     }
     else if (mi is VideoM) {
       _video.Visibility = ViewStates.Visible;
       _image.Visibility = ViewStates.Gone;
-      _ = _video.SetPath(mi.FilePath, mi.Orientation, Context!, _cts.Token);
+      _ = _video.SetPreview(_getVideoThumb, _cts.Token);
     }
   }
+
+  private Task<Bitmap?> _getImageThumb(CancellationToken token) =>
+    ViewModels.MediaItemVM.GetImageThumb(DataContext!, Context!, token);
+
+  private Task<Bitmap?> _getFullImage(CancellationToken token) =>
+    ViewModels.MediaItemVM.GetFullImage(DataContext!, token);
+
+  private Task<Bitmap?> _getVideoThumb(CancellationToken token) =>
+    ViewModels.MediaItemVM.GetVideoThumb(DataContext!, Context!, token);
 
   public void Unbind() {
     _cts?.Cancel();

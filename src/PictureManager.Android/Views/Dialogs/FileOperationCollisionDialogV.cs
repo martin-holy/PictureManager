@@ -100,7 +100,7 @@ public sealed class FileOperationCollisionDialogV : LinearLayout {
       AspectRatio = (float)info.MediaItem.Height / info.MediaItem.Width;
 
       _cts = new CancellationTokenSource();
-      _ = MediaItemVM.LoadThumbnailAsync(info.MediaItem, _thumb, Context!, _cts.Token);
+      _ = MediaItemVM.LoadThumb(info.MediaItem, _thumb, Context!, _cts.Token);
     }
 
     public void SetImageHeight(int height) {
