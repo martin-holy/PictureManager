@@ -22,7 +22,6 @@ using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Layout;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace PictureManager.Android;
@@ -30,6 +29,8 @@ namespace PictureManager.Android;
 public class CoreUI : ICoreP, IDisposable {
   private readonly MainActivity _mainActivity;
   private readonly string[] _mediaRoots = ["DCIM", "Pictures"];
+  private const string _storagePrefix = "/storage/";
+  private string? _cacheRoot;
   private bool _disposed;
 
   public MainWindowV MainWindow { get; private set; } = null!;
@@ -75,12 +76,23 @@ public class CoreUI : ICoreP, IDisposable {
     IOExtensions.PathCombine(folder.FullPathCache, fileNameCache);
 
   public string GetFolderPathCache(FolderM folder) {
-    var parts = folder.GetThisAndParents().Reverse().Select(x => x.Name).ToArray();
-    var driveRoot = parts[0];
-    var relativePath = string.Join(Path.DirectorySeparatorChar, parts.Skip(1));
-    var cacheSubPath = Core.Settings.Common.CachePath.TrimStart(':').Replace('\\', Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+    var fullPath = folder.FullPath;
 
-    return string.Concat(driveRoot, cacheSubPath, relativePath);
+    if (!fullPath.StartsWith(_storagePrefix, StringComparison.OrdinalIgnoreCase))
+      throw new Exception($"Unexpected folder path: {fullPath}.");
+
+    return IOExtensions.PathCombine(_getCacheRoot(), fullPath[_storagePrefix.Length..]);
+  }
+
+  private string _getCacheRoot() {
+    if (_cacheRoot != null) return _cacheRoot;
+
+    var cacheRoot = _mainActivity.GetExternalFilesDir(null)?.AbsolutePath
+                    ?? _mainActivity.FilesDir?.AbsolutePath
+                    ?? throw new Exception("Unable to resolve cache root.");
+    _cacheRoot = IOExtensions.PathCombine(cacheRoot, "cache");
+
+    return _cacheRoot;
   }
 
   // TODO currently not used. remove it?
