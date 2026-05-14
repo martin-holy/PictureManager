@@ -18,13 +18,14 @@ public class MainWindowVM : ObservableObject {
   public ToolsTabsVM ToolsTabs { get; } = new() { CanCloseTabs = true };
   public TreeViewCategoriesVM TreeViewCategories { get; } = new();
   public MainMenuVM MainMenu { get; } = new();
+  public bool[] FullScreenInLayout { get; set; } = [];
 
   public bool IsFullScreen {
     get => _isFullScreen;
     set {
       if (_isFullScreen == value) return;
       _isFullScreen = value;
-      SlidePanelsGrid.PinLayouts[SlidePanelsGrid.ActiveLayout][4] = value;
+      FullScreenInLayout[SlidePanelsGrid.ActiveLayout] = value;
       OnPropertyChanged();
     }
   }
@@ -35,7 +36,7 @@ public class MainWindowVM : ObservableObject {
       if (_isInViewMode == value) return;
       _isInViewMode = value;
       SlidePanelsGrid.ActiveLayout = value ? 1 : 0;
-      IsFullScreen = SlidePanelsGrid.PinLayouts[SlidePanelsGrid.ActiveLayout][4];
+      IsFullScreen = FullScreenInLayout[SlidePanelsGrid.ActiveLayout];
       StatusBar.Update(_coreVM.MediaItem.Current);
       OnPropertyChanged();
     }
