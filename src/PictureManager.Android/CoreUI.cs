@@ -55,6 +55,7 @@ public class CoreUI : ICoreP, IDisposable {
 
   public void AfterInit(Context context) {
     ShareMediaItemsCommand = new(x => _shareMediaItems(Core.VM.GetActive<RealMediaItemM>(x)), Core.VM.AnyActive<RealMediaItemM>, Res.IconShare, "Share");
+    Core.VM.MainWindow.FullScreenInLayout = [false, true];
     _initSlidePanelsGrid(Core.VM.MainWindow.SlidePanelsGrid);
     _disableNotSupportedMainMenuItems(Core.VM.MainWindow.MainMenu);
     Core.VM.MainTabs.TabStrip = new(Dock.Top) { StartSlot = new MainTabsSlotVM() };
