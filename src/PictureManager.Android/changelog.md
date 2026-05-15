@@ -2,6 +2,7 @@
 	- [B] SystemBar insets
 	- [B] Popup menu height
 	- [U] Custom cache for rotated images and images on SD card
+	- [U] SlidePanelsGrid: Click to toggle overlay, LongClick to toggle pinned
 
 1.0.0:
 	- initial release
