@@ -63,8 +63,6 @@ public class MainWindowV : FrameLayout {
       _onToolsTabChange(_toolsTabsV.DataContext.Selected);
     else
       _coreVM.Video.Stop();
-
-    UpdateTopAndBottomPanels(_coreVM.MainWindow.SlidePanelsGrid, _coreVM.MainWindow.IsInViewMode, index == 1);
   }
 
   private void _onToolsTabChange(IListItem? tab) {
@@ -72,13 +70,6 @@ public class MainWindowV : FrameLayout {
       videoDetailV.Activate();
     else
       _coreVM.Video.Stop();
-  }
-
-  public static void UpdateTopAndBottomPanels(SlidePanelsGrid grid, bool isInViewMode, bool isMiddleActive) {
-    grid.PanelTop.IsPinned = !isInViewMode;
-    if (!isMiddleActive) return;
-    grid.PanelTop.IsOpen = true;
-    if (isInViewMode) grid.PanelBottom.IsOpen = true;
   }
 
   protected override void Dispose(bool disposing) {

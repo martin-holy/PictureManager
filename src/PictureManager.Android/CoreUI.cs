@@ -138,13 +138,12 @@ public class CoreUI : ICoreP, IDisposable {
     _updateMediaItemCommands();
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true); // TODO this might be bad UX
 
-    MainWindowV.UpdateTopAndBottomPanels(
-      Core.VM.MainWindow.SlidePanelsGrid,
-      isInViewMode,
-      MainWindow.SlidePanels.ViewPager.GetCurrentIndex() == 1);
-
-    if (isInViewMode)
+    if (isInViewMode) {
       _mainActivity.Window!.EnterFullScreen(); // TODO bind to Core.VM.MainWindow.IsFullScreen and remove this
+      // TODO do this only when middle page is active when fixing changing page change logic
+      Core.VM.MainWindow.SlidePanelsGrid.PanelTop.IsOpen = true;
+      Core.VM.MainWindow.SlidePanelsGrid.PanelBottom.IsOpen = true;
+    }
     else {
       Core.VM.Video.MediaPlayer.IsPlaying = false;
       _mainActivity.Window!.ExitFullScreen();
@@ -152,10 +151,10 @@ public class CoreUI : ICoreP, IDisposable {
   }
 
   private static void _initSlidePanelsGrid(SlidePanelsGrid grid) {
-    // Left, Top, Right, Bottom, FullScreen (FullScreen is not part of SlidePanelsGrid)
-    grid.PinLayouts = [
-      [true, true, true, false, false], // browse mode
-      [true, false, true, false, true]  // view mode
+    // Left, Top, Right, Bottom
+    grid.Layouts = [
+      [SlidePanel.LayoutMode.Docked, SlidePanel.LayoutMode.Docked, SlidePanel.LayoutMode.Docked, SlidePanel.LayoutMode.None], // browse mode
+      [SlidePanel.LayoutMode.Docked, SlidePanel.LayoutMode.None, SlidePanel.LayoutMode.Docked, SlidePanel.LayoutMode.None] // view mode
     ];
     grid.PanelTop.AutoCloseDelay = 3000;
     grid.PanelBottom.AutoCloseDelay = 3000;
