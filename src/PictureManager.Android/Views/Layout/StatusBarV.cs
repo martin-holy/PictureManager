@@ -30,6 +30,8 @@ public sealed class StatusBarV : WrapLayout {
     AddView(_people, LPU.ViewGroupWrap());
     AddView(_keywords, LPU.ViewGroupWrap());
 
+    SetBackgroundResource(Resource.Color.c_black2);
+
     _statusBarVM.Bind(nameof(StatusBarVM.Current), x => x.Current, _onCurrentChanged).DisposeWith(bindings);
   }
 
