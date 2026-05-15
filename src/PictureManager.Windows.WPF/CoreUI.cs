@@ -181,10 +181,10 @@ public sealed class CoreUI : ObservableObject, ICoreP {
   });
 
   private static void _initSlidePanelsGrid(SlidePanelsGrid grid) {
-    // Left, Top, Right, Bottom, FullScreen (FullScreen is not part of SlidePanelsGrid)
-    grid.PinLayouts = [ 
-      [true, true, false, true, false], // browse mode
-      [false, false, false, true, false] // view mode
+    // Left, Top, Right, Bottom
+    grid.Layouts = [
+      [SlidePanel.LayoutMode.Docked, SlidePanel.LayoutMode.Docked, SlidePanel.LayoutMode.None, SlidePanel.LayoutMode.Docked], // browse mode
+      [SlidePanel.LayoutMode.None, SlidePanel.LayoutMode.None, SlidePanel.LayoutMode.None, SlidePanel.LayoutMode.Docked] // view mode
     ];
     grid.PanelLeft.Size = 380;
     grid.PanelTop.Size = 30;
