@@ -37,7 +37,7 @@
   </ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="MH.UI" Version="5.0.0" />
+		<PackageReference Include="MH.UI" Version="5.1.0" />
 		<PackageReference Include="MH.UI.WPF" Version="4.0.0" />
 		<PackageReference Include="MH.Utils" Version="4.0.0" />
 	</ItemGroup>
