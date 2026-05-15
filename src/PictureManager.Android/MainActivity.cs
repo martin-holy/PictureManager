@@ -10,6 +10,7 @@ using PictureManager.Android.Views;
 using PictureManager.Common;
 using PictureManager.Common.Layout;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,13 +32,19 @@ public class MainActivity : FragmentActivity {
       e.Handled = true;
     };
 
-    var permissions = new string[] {
-      Perm.ReadExternalStorage,
-      Perm.WriteExternalStorage
-    };
+    var permissions = new List<string>();
+
+    if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu) {
+      permissions.Add(Perm.ReadMediaImages);
+      permissions.Add(Perm.ReadMediaVideo);
+    }                 
+    else {            
+      permissions.Add(Perm.ReadExternalStorage);
+      permissions.Add(Perm.WriteExternalStorage);
+    }
 
     if (permissions.Any(p => ContextCompat.CheckSelfPermission(this, p) != Permission.Granted))
-      ActivityCompat.RequestPermissions(this, permissions, 0);
+      ActivityCompat.RequestPermissions(this, [.. permissions], 0);
 
     MH.UI.Android.Utils.Init.SetDelegates();
     Core.UiVersion = PackageManager!.GetPackageInfo(PackageName!, 0)?.VersionName ?? "?";
