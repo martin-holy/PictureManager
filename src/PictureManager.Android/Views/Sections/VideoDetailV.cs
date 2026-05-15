@@ -36,9 +36,9 @@ public sealed class VideoDetailV : LinearLayout {
 
     // TODO maybe I should have this ZoomAndPan instance in VideoVM
     _zoomAndPanHost = new(context, new ZoomAndPan() { ExpandToFill = true });
-    _video = new(context, _zoomAndPanHost.DataContext, (AndroidMediaPlayer)videoVM.UiDetailVideo) { AutoHeightFromAspectRatio = true };
-    _controlPanel = new(context, videoVM.MediaPlayer, _playCommand);
-    _videoItems = new(context, videoVM.CurrentVideoItems, CreateVideoItemV);
+    _video = new(context, _zoomAndPanHost.DataContext, (AndroidMediaPlayer)_videoVM.UiDetailVideo) { AutoHeightFromAspectRatio = true };
+    _controlPanel = new(context, _videoVM.MediaPlayer, _playCommand);
+    _videoItems = new(context, _videoVM.CurrentVideoItems, CreateVideoItemV);
 
     var video = new FrameLayout(context)
       .Add(_zoomAndPanHost, LPU.FrameMatch())
@@ -48,10 +48,10 @@ public sealed class VideoDetailV : LinearLayout {
     AddView(_controlPanel, LPU.Linear(LPU.Match, LPU.Wrap, GravityFlags.CenterHorizontal));
     AddView(_videoItems, LPU.Linear(LPU.Match, 0, 1));
 
-    _video.PlayRequested += videoVM.PlayInDetailView;
+    _video.PlayRequested += _videoVM.PlayInDetailView;
 
-    videoVM.Bind(nameof(VideoVM.Current), x => x.Current, _onCurrentVideoChanged);
-    videoVM.MediaPlayer.Bind(nameof(MediaPlayer.Source), x => x.Source, source => {
+    _videoVM.Bind(nameof(VideoVM.Current), x => x.Current, _onCurrentVideoChanged);
+    _videoVM.MediaPlayer.Bind(nameof(MediaPlayer.Source), x => x.Source, source => {
       _playCommand.RaiseCanExecuteChanged();
       _video.CanPlay = !string.IsNullOrEmpty(source);
     });
@@ -73,7 +73,7 @@ public sealed class VideoDetailV : LinearLayout {
     var (width, height) = current.GetRotatedSize();
     _zoomAndPanHost.DataContext.SetContentSize(width, height);
     _cts = new CancellationTokenSource();
-    _ = _video.SetPath(current.FilePath, current.Orientation, Context!, _cts.Token);
+    _ = _video.SetPreview(token => ViewModels.MediaItemVM.GetVideoThumb(current, Context!, token), _cts.Token);
   }
 
   private void _play() {
