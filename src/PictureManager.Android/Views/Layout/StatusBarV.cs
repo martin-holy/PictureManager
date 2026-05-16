@@ -43,12 +43,12 @@ public sealed class StatusBarV : WrapLayout {
     _current?.Bind(nameof(MediaItemM.DisplayPeople), x => x.DisplayPeople, people => {
       _people.Items = people;
       _people.Visibility = people?.Length > 0 ? ViewStates.Visible : ViewStates.Gone;
-    });
+    }).DisposeWith(_currentBindings);
 
     _current?.Bind(nameof(MediaItemM.DisplayKeywords), x => x.DisplayKeywords, keywords => {
       _keywords.Items = keywords;
       _keywords.Visibility = keywords?.Length > 0 ? ViewStates.Visible : ViewStates.Gone;
-    });
+    }).DisposeWith(_currentBindings);
   }
 
   private TextView? _getPersonView(object item) =>
