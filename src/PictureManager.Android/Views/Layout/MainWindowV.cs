@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Widget;
 using MH.UI.Android.Controls.Hosts.SlidePanelsGridHost;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
@@ -8,6 +9,7 @@ using MH.Utils.Disposables;
 using MH.Utils.Interfaces;
 using PictureManager.Android.Views.Sections;
 using PictureManager.Common;
+using PictureManager.Common.Layout;
 
 namespace PictureManager.Android.Views.Layout;
 
@@ -20,19 +22,30 @@ public class MainWindowV : FrameLayout {
   private readonly MiddleContentV _middleContent;
   private readonly BindingScope _bindings = new();
 
+  public MainWindowVM DataContext { get; }
   public SlidePanelsGridHost SlidePanels { get; }
 
   public MainWindowV(Context context, CoreVM coreVM) : base(context) {
     _coreVM = coreVM;
-    _treeViewCategories = new(context, _coreVM.MainWindow.TreeViewCategories, _bindings);
-    _toolBarV = new(context, _coreVM);
-    _toolsTabsV = new(context, _coreVM.MainWindow.ToolsTabs);
-    _statusBarV = new(context, _coreVM.MainWindow.StatusBar, _bindings);
+    DataContext = _coreVM.MainWindow;
+
+    _treeViewCategories = new(context, DataContext.TreeViewCategories, _bindings);
+
+    _toolBarV = new ToolBarV(context, _coreVM)
+      .WithClickAction(_onToolBarClick)
+      .WithLongClickAction(_onToolBarLongClick);
+
+    _toolsTabsV = new(context, DataContext.ToolsTabs);
+
+    _statusBarV = new StatusBarV(context, DataContext.StatusBar, _bindings)
+      .WithClickAction(_onStatusBarClick)
+      .WithLongClickAction(_onStatusBarLongClick);
+
     _middleContent = new(context, _coreVM, _bindings);
 
     SlidePanels = new(
       context,
-      _coreVM.MainWindow.SlidePanelsGrid,
+      DataContext.SlidePanelsGrid,
       _bindings,
       TopAndBottomPanelsPlacement.MiddleOnly,
       _treeViewCategories,
@@ -45,19 +58,39 @@ public class MainWindowV : FrameLayout {
 
     _toolBarV.Init(SlidePanels.ViewPager, _bindings);
     SlidePanels.ViewPager.PageChanged += _onPanelChanged;
-    _coreVM.MainWindow.ToolsTabs
+    DataContext.ToolsTabs
       .Bind(nameof(TabControl.Selected), x => x.Selected, _onToolsTabChange, false)
       .DisposeWith(_bindings);
     _middleContent.MediaViewer.ContentTapped += _onMediaViewerContentTapped;
   }
 
+  private void _onToolBarClick(ToolBarV _) {
+    if (DataContext.IsInViewMode)
+      DataContext.SlidePanelsGrid.PanelTop.ToggleOverlay();
+  }
+
+  private void _onToolBarLongClick(ToolBarV _) {
+    if (DataContext.IsInViewMode)
+      DataContext.SlidePanelsGrid.PanelTop.TogglePinned();
+  }
+
+  private void _onStatusBarClick(StatusBarV _) {
+    if (DataContext.IsInViewMode)
+      DataContext.SlidePanelsGrid.PanelBottom.ToggleOverlay();
+  }
+
+  private void _onStatusBarLongClick(StatusBarV _) {
+    if (DataContext.IsInViewMode)
+      DataContext.SlidePanelsGrid.PanelBottom.TogglePinned();
+  }
+
   private void _onMediaViewerContentTapped() {
-    _coreVM.MainWindow.SlidePanelsGrid.PanelTop.IsOpen = true;
-    _coreVM.MainWindow.SlidePanelsGrid.PanelBottom.IsOpen = true;
+    DataContext.SlidePanelsGrid.PanelTop.IsOpen = true;
+    DataContext.SlidePanelsGrid.PanelBottom.IsOpen = true;
   }
 
   private void _onPanelChanged(int index) {
-    if (index == 1 && _coreVM.MainWindow.IsInViewMode)
+    if (index == 1 && DataContext.IsInViewMode)
       _middleContent.MediaViewer.ActivateCurrentPage();
     else if (index == 2)
       _onToolsTabChange(_toolsTabsV.DataContext.Selected);
