@@ -59,7 +59,7 @@ public class MainWindowVM : ObservableObject {
   }
 
   public bool IsVideoPlayerVisible() =>
-    IsInViewMode || (SlidePanelsGrid.PanelRight.IsPinned && ToolsTabs.Selected?.Data is VideoVM);
+    IsInViewMode || (SlidePanelsGrid.PanelRight.Mode == SlidePanel.LayoutMode.Docked && ToolsTabs.Selected?.Data is VideoVM);
 
   private void AttachEvents() {
     ToolsTabs.TabActivatedEvent += (_, tab) => {
