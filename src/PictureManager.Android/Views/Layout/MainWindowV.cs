@@ -62,6 +62,13 @@ public class MainWindowV : FrameLayout {
       .Bind(nameof(TabControl.Selected), x => x.Selected, _onToolsTabChange, false)
       .DisposeWith(_bindings);
     _middleContent.MediaViewer.ContentTapped += _onMediaViewerContentTapped;
+
+    DataContext.Bind(nameof(MainWindowVM.IsFullScreen), x => x.IsFullScreen, _onIsFullScreenChanged, false).DisposeWith(_bindings);
+  }
+
+  private void _onIsFullScreenChanged(bool isFullScreen) {
+    if (Context is not MainActivity { Window : { } window }) return;
+    if (isFullScreen) window.EnterFullScreen(); else window.ExitFullScreen();
   }
 
   private void _onToolBarClick(ToolBarV _) {

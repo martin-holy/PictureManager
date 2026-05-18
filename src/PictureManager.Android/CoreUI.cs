@@ -139,14 +139,12 @@ public class CoreUI : ICoreP, IDisposable {
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true); // TODO this might be bad UX
 
     if (isInViewMode) {
-      _mainActivity.Window!.EnterFullScreen(); // TODO bind to Core.VM.MainWindow.IsFullScreen and remove this
       // TODO do this only when middle page is active when fixing changing page change logic
       Core.VM.MainWindow.SlidePanelsGrid.PanelTop.IsOpen = true;
       Core.VM.MainWindow.SlidePanelsGrid.PanelBottom.IsOpen = true;
     }
     else {
       Core.VM.Video.MediaPlayer.IsPlaying = false;
-      _mainActivity.Window!.ExitFullScreen();
     }
   }
 
