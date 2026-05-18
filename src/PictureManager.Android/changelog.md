@@ -1,3 +1,8 @@
+1.2.0:
+	- [B] SlidePanelsGrid: Pinned/Overlay layouts
+	- [B] StatusBarV: People and Keywords update
+	- [U] Play video in loop
+
 1.1.0:
 	- [B] SystemBar insets
 	- [B] Popup menu height
@@ -5,7 +10,6 @@
 	- [U] SlidePanelsGrid: Click to toggle overlay, LongClick to toggle pinned
 	- [U] Permissions
 	- [U] StatusBar: Background
-	- [B] StatusBarV: People and Keywords update
 
 1.0.0:
 	- initial release
