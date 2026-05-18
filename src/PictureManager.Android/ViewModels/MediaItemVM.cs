@@ -11,6 +11,7 @@ using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Utils;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -299,13 +300,20 @@ public static class MediaItemVM {
     }, token);
   }
 
+  private static readonly ConcurrentDictionary<string, object> _thumbLocks = new();
+
   private static void _saveThumbToCache(Bitmap thumb, string cachePath) {
     var folder = System.IO.Path.GetDirectoryName(cachePath);
 
     if (!string.IsNullOrWhiteSpace(folder))
       Directory.CreateDirectory(folder);
 
-    using var stream = File.Open(cachePath, FileMode.Create, FileAccess.Write, FileShare.None);
-    thumb.Compress(Bitmap.CompressFormat.Jpeg!, 80, stream);
+    var sync = _thumbLocks.GetOrAdd(cachePath, _ => new object());
+
+    lock (sync) {
+      if (File.Exists(cachePath)) return;
+      using var stream = File.Open(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read);
+      thumb.Compress(Bitmap.CompressFormat.Jpeg!, 80, stream);
+    }
   }
 }
