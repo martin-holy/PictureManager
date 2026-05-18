@@ -2,6 +2,7 @@
 	- [B] SlidePanelsGrid: Pinned/Overlay layouts
 	- [B] StatusBarV: People and Keywords update
 	- [U] Play video in loop
+	- [U] Horizontal panels activation logic
 
 1.1.0:
 	- [B] SystemBar insets
