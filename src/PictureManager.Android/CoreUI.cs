@@ -138,14 +138,8 @@ public class CoreUI : ICoreP, IDisposable {
     _updateMediaItemCommands();
     MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true); // TODO this might be bad UX
 
-    if (isInViewMode) {
-      // TODO do this only when middle page is active when fixing changing page change logic
-      Core.VM.MainWindow.SlidePanelsGrid.PanelTop.IsOpen = true;
-      Core.VM.MainWindow.SlidePanelsGrid.PanelBottom.IsOpen = true;
-    }
-    else {
+    if (!isInViewMode)
       Core.VM.Video.MediaPlayer.IsPlaying = false;
-    }
   }
 
   private static void _initSlidePanelsGrid(SlidePanelsGrid grid) {

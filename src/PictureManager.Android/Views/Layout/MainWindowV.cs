@@ -64,11 +64,19 @@ public class MainWindowV : FrameLayout {
     _middleContent.MediaViewer.ContentTapped += _onMediaViewerContentTapped;
 
     DataContext.Bind(nameof(MainWindowVM.IsFullScreen), x => x.IsFullScreen, _onIsFullScreenChanged, false).DisposeWith(_bindings);
+    DataContext.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _onIsInViewModeChanged, false).DisposeWith(_bindings);
   }
 
   private void _onIsFullScreenChanged(bool isFullScreen) {
     if (Context is not MainActivity { Window : { } window }) return;
     if (isFullScreen) window.EnterFullScreen(); else window.ExitFullScreen();
+  }
+
+  private void _onIsInViewModeChanged(bool isInViewMode) {
+    if (isInViewMode) {
+      DataContext.SlidePanelsGrid.PanelTop.IsOpen = true;
+      DataContext.SlidePanelsGrid.PanelBottom.IsOpen = true;
+    }
   }
 
   private void _onToolBarClick(ToolBarV _) {
