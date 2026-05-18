@@ -2,7 +2,6 @@
 using Android.OS;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Controls.Hosts.DialogHost;
-using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
@@ -136,7 +135,6 @@ public class CoreUI : ICoreP, IDisposable {
 
   private void _onMainWindowIsInViewModeChanged(bool isInViewMode) {
     _updateMediaItemCommands();
-    MainWindow.SlidePanels.ViewPager.SetCurrentItem(1, true); // TODO this might be bad UX
 
     if (!isInViewMode)
       Core.VM.Video.MediaPlayer.IsPlaying = false;

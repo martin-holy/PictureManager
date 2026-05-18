@@ -21,6 +21,7 @@ public class MainWindowV : FrameLayout {
   private readonly StatusBarV _statusBarV;
   private readonly MiddleContentV _middleContent;
   private readonly BindingScope _bindings = new();
+  private int _lastPageIndex;
 
   public MainWindowVM DataContext { get; }
   public SlidePanelsGridHost SlidePanels { get; }
@@ -58,11 +59,9 @@ public class MainWindowV : FrameLayout {
 
     _toolBarV.Init(SlidePanels.ViewPager, _bindings);
     SlidePanels.ViewPager.PageChanged += _onPanelChanged;
-    DataContext.ToolsTabs
-      .Bind(nameof(TabControl.Selected), x => x.Selected, _onToolsTabChange, false)
-      .DisposeWith(_bindings);
     _middleContent.MediaViewer.ContentTapped += _onMediaViewerContentTapped;
 
+    DataContext.ToolsTabs.Bind(nameof(TabControl.Selected), x => x.Selected, _onToolsTabChange, false).DisposeWith(_bindings);
     DataContext.Bind(nameof(MainWindowVM.IsFullScreen), x => x.IsFullScreen, _onIsFullScreenChanged, false).DisposeWith(_bindings);
     DataContext.Bind(nameof(MainWindowVM.IsInViewMode), x => x.IsInViewMode, _onIsInViewModeChanged, false).DisposeWith(_bindings);
   }
@@ -74,8 +73,16 @@ public class MainWindowV : FrameLayout {
 
   private void _onIsInViewModeChanged(bool isInViewMode) {
     if (isInViewMode) {
+      _lastPageIndex = SlidePanels.ViewPager.GetCurrentIndex();
+      SlidePanels.ViewPager.SetCurrentItem(1, true);
+
       DataContext.SlidePanelsGrid.PanelTop.IsOpen = true;
       DataContext.SlidePanelsGrid.PanelBottom.IsOpen = true;
+    }
+    else {
+      var pageIndex = SlidePanels.ViewPager.GetCurrentIndex();
+      if (pageIndex == 1 && _lastPageIndex != pageIndex)
+        SlidePanels.ViewPager.SetCurrentItem(_lastPageIndex, true);
     }
   }
 
