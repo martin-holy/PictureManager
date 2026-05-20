@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
     <Nullable>enable</Nullable>
-    <AvaloniaVersion>11.2.3</AvaloniaVersion>
 
     <EnableSourceControlManagerQueries>true</EnableSourceControlManagerQueries>
     <MainAppTargetDir>C:\Programs\PictureManager\$(Configuration)\net8.0-windows\</MainAppTargetDir>

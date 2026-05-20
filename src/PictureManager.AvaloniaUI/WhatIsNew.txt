@@ -1,4 +1,0 @@
-*** What's new in the Picture Manager ***
-[N] - New
-[U] - Update
-[B] - Bug fix
