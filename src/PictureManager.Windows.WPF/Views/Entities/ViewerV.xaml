@@ -121,7 +121,7 @@
 
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <ContentPresenter Content="{Binding Content}"/>
+                <ContentPresenter Content="{Binding Data}"/>
               </DataTemplate>
             </ListBox.ItemTemplate>
 
