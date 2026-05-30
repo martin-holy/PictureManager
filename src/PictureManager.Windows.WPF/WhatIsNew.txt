@@ -5,6 +5,7 @@
 
 2.33.1:
  - [B] StatusBar docking
+ - [B] Crash when displaying segment from deleted image
 
 2.33.0:
  - [N] Move keyword to group command in menu
