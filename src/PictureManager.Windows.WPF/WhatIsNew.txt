@@ -3,9 +3,10 @@
 [U] - Update
 [B] - Bug fix
 
-2.33.1:
+2.34.0:
  - [B] StatusBar docking
  - [B] Crash when displaying segment from deleted image
+ - [N] Viewers in MainMenu
 
 2.33.0:
  - [N] Move keyword to group command in menu
