@@ -8,6 +8,7 @@
  - [B] Crash when displaying segment from deleted image
  - [N] Viewers in MainMenu
  - [U] Full screen in view mode back as default
+ - [U] SimpleDB reducing ~50% memory allocation
 
 2.33.0:
  - [N] Move keyword to group command in menu
