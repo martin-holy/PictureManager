@@ -108,7 +108,7 @@
         ap:Icon.Data="{StaticResource IconImageMultiple}"
         ap:Text.Text="{Binding VM.MediaItem.ItemsCount}"/>
 
-      <c:IconTextButton Command="core:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.Changes}"/>
+      <c:IconTextButton Command="core:CoreVM.SaveDbCommand" ap:Text.Text="{Binding R.DB.Changes}"/>
 
       <!-- Log Button -->
       <c:IconTextButton
