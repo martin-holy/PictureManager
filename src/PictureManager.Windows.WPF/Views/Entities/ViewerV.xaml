@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:bc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
+  xmlns:mhut="clr-namespace:MH.Utils.Tree;assembly=MH.Utils"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:ftViewer="clr-namespace:PictureManager.Common.Features.Viewer;assembly=PictureManager.Common"
@@ -29,7 +29,7 @@
         <Setter Property="Border.CornerRadius" Value="0"/>
       </Style>
 
-      <DataTemplate DataType="{x:Type bc:TreeItem}">
+      <DataTemplate DataType="{x:Type mhut:TreeItem}">
         <c:IconTextBlock
           ap:Icon.Res="{Binding Icon}"
           ap:Text.Text="{Binding Name}"
