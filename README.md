@@ -14,7 +14,7 @@
 ## Downloads
 
 ### Android
-- v1.1.0: https://github.com/martin-holy/PictureManager/releases/tag/android-v1.1.0
+- v1.2.0: https://github.com/martin-holy/PictureManager/releases/tag/android-v1.2.0
 
 ### Windows (WPF)
 - v2.33.0: https://github.com/martin-holy/PictureManager/releases/tag/v2.33.0
