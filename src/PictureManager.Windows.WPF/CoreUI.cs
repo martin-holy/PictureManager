@@ -38,6 +38,8 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
     GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
+    CollectionView.ItemBorderSize = 2;
+
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
     ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
     VideoVM.GetVideoMetadataFunc = FileInformation.GetVideoMetadata;
