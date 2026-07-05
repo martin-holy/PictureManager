@@ -15,9 +15,9 @@
 		<Company>Martin Holý</Company>
 		<Copyright>Martin Holý (2015 - 2026)</Copyright>
 
-		<Version>2.33.1</Version>
+		<Version>2.34.0</Version>
 		<AssemblyVersion>2.0.0.0</AssemblyVersion>
-		<FileVersion>2.33.1.0</FileVersion>
+		<FileVersion>2.34.0.0</FileVersion>
 
 		<ApplicationIcon>modryhory.ico</ApplicationIcon>
 		<AssemblyName>PictureManager</AssemblyName>
@@ -37,9 +37,9 @@
   </ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="MH.UI" Version="5.1.1" />
-		<PackageReference Include="MH.UI.WPF" Version="4.0.1" />
-		<PackageReference Include="MH.Utils" Version="4.0.0" />
+		<PackageReference Include="MH.UI" Version="6.0.0" />
+		<PackageReference Include="MH.UI.WPF" Version="5.0.0" />
+		<PackageReference Include="MH.Utils" Version="5.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">

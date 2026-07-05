@@ -3,7 +3,7 @@
 [U] - Update
 [B] - Bug fix
 
-2.34.0 (not released):
+2.34.0:
  - [B] StatusBar docking
  - [B] Crash when displaying segment from deleted image
  - [N] Viewers in MainMenu
