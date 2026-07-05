@@ -1,10 +1,10 @@
 ﻿using MH.UI.WPF.Extensions;
 using MH.Utils;
 using MH.Utils.Extensions;
+using MH.Utils.Imaging;
 using PictureManager.Common.Features.MediaItem;
 using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
-using PictureManager.Common.Features.Person;
 using PictureManager.Common.Utils;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
-using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Windows.WPF.ViewModels;
 

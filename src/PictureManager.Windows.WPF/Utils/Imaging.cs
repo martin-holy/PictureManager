@@ -1,5 +1,6 @@
 ﻿using MH.UI.WPF.Extensions;
 using MH.Utils.Extensions;
+using MH.Utils.Imaging;
 using PictureManager.Common;
 using PictureManager.Common.Features.Segment;
 using System;
@@ -7,7 +8,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Orientation = MH.Utils.Imaging.Orientation;
 
 namespace PictureManager.Windows.WPF.Utils;
 
@@ -40,7 +40,7 @@ public static class Imaging {
     var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
     var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
 
-    MH.Utils.Imaging.GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
+    ImagingU.GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
 
     var output = new TransformedBitmap(frame, new ScaleTransform(thumbWidth / pxw, thumbHeight / pxh, 0, 0));
     var metadata = new BitmapMetadata("jpg");
