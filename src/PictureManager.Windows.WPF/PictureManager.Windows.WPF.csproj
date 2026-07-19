@@ -15,9 +15,9 @@
 		<Company>Martin Holý</Company>
 		<Copyright>Martin Holý (2015 - 2026)</Copyright>
 
-		<Version>2.34.0</Version>
+		<Version>2.34.1</Version>
 		<AssemblyVersion>2.0.0.0</AssemblyVersion>
-		<FileVersion>2.34.0.0</FileVersion>
+		<FileVersion>2.34.1.0</FileVersion>
 
 		<ApplicationIcon>modryhory.ico</ApplicationIcon>
 		<AssemblyName>PictureManager</AssemblyName>
