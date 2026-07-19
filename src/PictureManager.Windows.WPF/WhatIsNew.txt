@@ -3,6 +3,11 @@
 [U] - Update
 [B] - Bug fix
 
+2.34.1:
+	- [B] GeoLocation: Saving to DB
+	- [B] GeoName: Saving to DB
+	- [B] Viewer: Saving to DB
+
 2.34.0:
  - [B] StatusBar docking
  - [B] Crash when displaying segment from deleted image
