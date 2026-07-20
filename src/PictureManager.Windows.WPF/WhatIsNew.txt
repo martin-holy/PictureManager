@@ -3,6 +3,9 @@
 [U] - Update
 [B] - Bug fix
 
+2.34.2(not released):
+	- [B] Loading folders when new folder was created not in the app
+
 2.34.1:
 	- [B] GeoLocation: Saving to DB
 	- [B] GeoName: Saving to DB
