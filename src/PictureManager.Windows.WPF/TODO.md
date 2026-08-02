@@ -45,6 +45,8 @@
   - when image is ExpandToFill
 ## PeopleTabsView
   - items not sorted after person change
+## SegmentsView
+  - naming tabs: with 3 tabs when second is deleted and than another created => 2 tabs are named "Segments 3"
 
           # Movie Manager
   - seen date can't be set to already selected date in calendar
