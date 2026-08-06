@@ -5,6 +5,7 @@
 
 2.34.2(not released):
 	- [B] Loading folders when new folder was created not in the app
+	- [C] PictureManager.Common v2.36.x
 
 2.34.1:
 	- [B] GeoLocation: Saving to DB
