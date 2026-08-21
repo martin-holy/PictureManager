@@ -7,6 +7,7 @@
  - [B] Loading folders when new folder was created not in the app
  - [C] PictureManager.Common v2.36.x
  - [U] WhatIsNew file renamed to changelog
+ - [B] Read GeoLocation from files dialog
 
 2.34.1:
  - [B] GeoLocation: Saving to DB
