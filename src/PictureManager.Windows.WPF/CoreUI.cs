@@ -5,6 +5,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common;
+using PictureManager.Common.Features;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
@@ -41,6 +42,10 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     CollectionView.ItemBorderSize = 2;
 
     MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
+
+    if (FF.XPlatformMetadata)
+      MediaItemS.ReadMetadata = MediaItemS.ReadMetadata2;
+
     MediaItemS.GetVideoMetadata = FileInformation.GetVideoMetadata;
     ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
     CoreVM.DisplayScale = GetDisplayScale();
