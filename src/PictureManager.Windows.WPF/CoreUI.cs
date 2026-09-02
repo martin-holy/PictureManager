@@ -41,10 +41,9 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
     CollectionView.ItemBorderSize = 2;
 
-    MediaItemS.ReadMetadata = ViewModels.MediaItemVM.ReadMetadata;
-
-    if (FF.XPlatformMetadata)
-      MediaItemS.ReadMetadata = MediaItemS.ReadMetadata2;
+    MediaItemS.ReadMetadata = FF.XPlatformMetadata
+      ? MediaItemS.ReadMetadata2
+      : ViewModels.MediaItemVM.ReadMetadata;
 
     MediaItemS.GetVideoMetadata = FileInformation.GetVideoMetadata;
     ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
