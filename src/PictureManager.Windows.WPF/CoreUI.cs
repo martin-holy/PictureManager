@@ -5,11 +5,9 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Common;
-using PictureManager.Common.Features;
 using PictureManager.Common.Features.Common;
 using PictureManager.Common.Features.Folder;
 using PictureManager.Common.Features.MediaItem;
-using PictureManager.Common.Features.MediaItem.Image;
 using PictureManager.Common.Features.MediaItem.Video;
 using PictureManager.Common.Features.Segment;
 using PictureManager.Common.Layout;
@@ -41,12 +39,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
     CollectionView.ItemBorderSize = 2;
 
-    MediaItemS.ReadMetadata = FF.XPlatformMetadata
-      ? MediaItemS.ReadMetadata2
-      : ViewModels.MediaItemVM.ReadMetadata;
-
     MediaItemS.GetVideoMetadata = FileInformation.GetVideoMetadata;
-    ImageS.WriteMetadata = ViewModels.MediaItemVM.WriteMetadata;
     CoreVM.DisplayScale = GetDisplayScale();
     CoreVM.VideoFrameSaver = new VideoFrameSaver();
 
