@@ -3,11 +3,11 @@
 [U] - Update
 [B] - Bug fix
 
-2.34.2(not released):
+2.35.0(not released):
  - [B] Loading folders when new folder was created not in the app
- - [C] PictureManager.Common v2.36.x
  - [U] WhatIsNew file renamed to changelog
  - [B] Read GeoLocation from files dialog
+ - [U] Saving image metadata does not re-encode the image data
 
 2.34.1:
  - [B] GeoLocation: Saving to DB
@@ -53,9 +53,9 @@
  - [N] MainMenu: Set selected segments as same person
  - [N] Export Segments in Folder menu
  - [B] ImageResizeDialog: resizing only one image
- - [B] ImageResizeDialog: not preserve folders was ingnored
+ - [B] ImageResizeDialog: not preserve folders was ignored
  - [U] Resize images in MainMenu renamed to Resize selected images
- - [U] Resize images command in folder menu remaned to Resize images in folder
+ - [U] Resize images command in folder menu renamed to Resize images in folder
  - [N] Resize images to folder command in folder menu
 
 2.31.0:
@@ -129,7 +129,7 @@
  - [N] ToolBar toggle button: Show MediaItem thumbnail info
  - [U] MediaItem open will load just other items from the group
  - [U] PersonDetailV: buttons moved to menu
- - [N] PersonDetailV: Rename commad in menu
+ - [N] PersonDetailV: Rename command in menu
  - [B] Close MediaViewer before loading MediaItems
  - [N] CTRL+F shortcut for opening search in main tree
 
