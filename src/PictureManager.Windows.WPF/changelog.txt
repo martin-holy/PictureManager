@@ -3,7 +3,7 @@
 [U] - Update
 [B] - Bug fix
 
-2.35.0(not released):
+2.35.0:
  - [B] Loading folders when new folder was created not in the app
  - [U] WhatIsNew file renamed to changelog
  - [B] Read GeoLocation from files dialog
