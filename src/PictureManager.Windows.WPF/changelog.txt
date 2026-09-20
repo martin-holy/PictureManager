@@ -3,6 +3,9 @@
 [U] - Update
 [B] - Bug fix
 
+2.36.0(not released):
+	-	[U] 75x faster video metadata reading
+
 2.35.0:
  - [B] Loading folders when new folder was created not in the app
  - [U] WhatIsNew file renamed to changelog
