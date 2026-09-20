@@ -39,7 +39,6 @@ public sealed class CoreUI : ObservableObject, ICoreP {
 
     CollectionView.ItemBorderSize = 2;
 
-    MediaItemS.GetVideoMetadata = FileInformation.GetVideoMetadata;
     CoreVM.DisplayScale = GetDisplayScale();
     CoreVM.VideoFrameSaver = new VideoFrameSaver();
 
