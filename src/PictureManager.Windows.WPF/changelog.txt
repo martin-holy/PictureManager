@@ -5,7 +5,7 @@
 
 2.36.0(not released):
 	-	[U] 75x faster video metadata reading
-	- [U] Reading rating, comment, keywords, people and GeoNameId from MP4
+	- [N] MediaItem: Read and write of rating, comment, keywords, people and GeoNameId from/to MP4 files
 	- [N] MediaItem Settings: Allow full rewrite of video files smaller than threshold
 
 2.35.0:
