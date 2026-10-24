@@ -121,7 +121,7 @@
       <MenuItem Command="core:CoreVM.ReloadMetadataCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="core:CoreVM.ResizeImagesInFolderCommand" CommandParameter="{Binding}"/>
       <MenuItem Command="core:CoreVM.ResizeImagesToFolderCommand" CommandParameter="{Binding}"/>
-      <MenuItem Command="core:CoreVM.SaveImageMetadataToFilesCommand" CommandParameter="{Binding}"/>
+      <MenuItem Command="core:CoreVM.SaveMetadataToFilesCommand" CommandParameter="{Binding}"/>
     </MenuItem>
     
     <MenuItem Header="Segments">
