@@ -209,6 +209,16 @@
               LargeChange="0.05"
               Value="{Binding VideoItemThumbScale, Mode=TwoWay}"/>
           </x:Array>
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="{Binding VideoMetadataFullRewriteThreshold, StringFormat='Allow full rewrite of video files smaller than: {0} MB'}"/>
+            <Slider
+              Minimum="0"
+              Maximum="1000"
+              TickFrequency="10"
+              SmallChange="10"
+              LargeChange="100"
+              Value="{Binding VideoMetadataFullRewriteThreshold, Mode=TwoWay}"/>
+          </x:Array>
         </x:Array>
       </ItemsControl.ItemsSource>
     </ItemsControl>
