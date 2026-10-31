@@ -119,6 +119,7 @@ Clone the public repositories:
 git clone https://github.com/martin-holy/MH.Utils.git
 git clone https://github.com/martin-holy/MH.UI.git
 git clone https://github.com/martin-holy/MH.UI.WPF.git
+git clone https://github.com/martin-holy/PictureManager.Common.git
 git clone https://github.com/martin-holy/PictureManager.git
 git clone https://github.com/martin-holy/MovieManager.git
 ```
