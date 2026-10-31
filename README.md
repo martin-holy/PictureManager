@@ -1,121 +1,119 @@
 # Picture Manager
 
-- Multilevel grouping of images/videos, people and segments by date, folder, keyword or person.
-- Filtering images/videos by geoNames, keywords, people, rating, height, width or size.
-- Editing metadata of images/videos like a comment, geoNames, keywords, people or a rating.
-- Marking segments of images and adding a person and keywords to it.
-- Defining clips in videos and adding people or keywords to them, changing speed, volume and play modes.
-- Creating videos from selected images.
-- Batch compressing and resizing images and rotating images/videos.
-- Finding image duplicities.
+**Picture Manager is a photo and video library manager for browsing, organizing, annotating and viewing media files.** It combines folder-based browsing with a searchable metadata catalog, people and keyword organization, image-region annotations, video clips, and batch media operations.
 
-> [Picture Manager Telegram Channel](https://t.me/PictureManager)
+The application is also a real-world example of the UI and infrastructure libraries used to build it: [MH.Utils](https://github.com/martin-holy/MH.Utils), [MH.UI](https://github.com/martin-holy/MH.UI) and [MH.UI.WPF](https://github.com/martin-holy/MH.UI.WPF).
+
+[![Windows release](https://img.shields.io/badge/Windows-v2.35.0-blue)](https://github.com/martin-holy/PictureManager/releases/tag/v2.35.0)
+[![Android release](https://img.shields.io/badge/Android-v1.2.0-blue)](https://github.com/martin-holy/PictureManager/releases/tag/android-v1.2.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+
+[Telegram channel](https://t.me/PictureManager)
+
+## Screenshots
+
+![People, Grouping, Thumbnails, Person detail](./screenshots/people_thumbnails_grouping_person-detail.jpg)
+People, Grouping, Thumbnails, Person detail
+
+![Keywords, Segments, People](./screenshots/keywords_segments_people.jpg)
+Keywords, Segments, People
+
+![Fullscreen video, Video detail](./screenshots/fullscreen-video_video-detail.jpg)
+Fullscreen video, Video detail
+
+## Features
+
+### Browse and organize a media library
+
+- Browse images and videos from their existing folders. The application indexes media items and creates cached thumbnails; it does not require importing or moving the original files into a separate library.
+- Organize folders with favorites and **Folder Keywords**. A Folder Keyword can combine the contents of multiple folders into one logical collection.
+- Create **Viewers** as working sets with included and excluded folders. Use them to focus on a particular part of a larger library.
+- Navigate the library through categories for folders, ratings, image sizes, people, folder keywords, keywords and geographic locations.
+- Search across the category tree and load media by folder, person, keyword or GeoName.
+- Browse large collections through thumbnail views with configurable size, scale, sorting, grouping and shuffling. Multiple media views can be opened independently.
+
+### Metadata, keywords and filtering
+
+- Organize media with ratings, comments, hierarchical keywords, people and geographic names.
+- Create groups of people and keywords, and arrange them with drag-and-drop.
+- Apply **And**, **Or** and **Not** filters to combine or exclude selected tags.
+- Read geographic coordinates from media files, create GeoNames from GPS coordinates, or look up place names using the GeoNames service.
+- Edit comments directly and edit ratings, people, keywords and locations across selected media items.
+- Save supported image metadata back to JPEG files without re-encoding the image data. The application also stores image-region annotations in JPEG metadata.
+
+### Image and video viewing
+
+- Open images and videos in a dedicated viewer with keyboard and mouse navigation.
+- Zoom, pan and fit images to the available view; inspect images at their actual size.
+- Run a slideshow with a configurable interval, including support for panoramic images.
+- Play videos and define timestamp-based clips. Clips can be grouped, reordered and played individually or as collections, with playback speed and volume settings.
+- View video details and thumbnails independently of the main media browser.
+
+### People and image segments
+
+- Select square regions of images as **segments** and associate them with people and keywords.
+- Use segments as person thumbnails and profile images. Each person can have a curated set of top segments.
+- Review and organize segments in multiple segment views, or collect them in the Segments drawer.
+- Load media items from a person or selected segments, assign selected segments to the same person, and mark segments as unknown.
+- Export selected segments to image files.
+
+### Batch operations and tools
+
+- Copy, move, rename and delete media files from the browser.
+- Rotate, resize and compress selected images or images in a folder.
+- Rebuild thumbnails and reload or save media metadata.
+- Create a video from a selection of images. FFmpeg can be configured in application settings for this operation.
+- Compare images using average-hash or perceptual-hash comparison, with an adjustable similarity threshold.
+
+## Application structure
+
+Picture Manager separates its shared application logic from the platform-specific presentation:
+
+- **PictureManager.Common** – shared application and domain layer used by the platform front-ends.
+- **PictureManager.Windows.WPF** – Windows desktop front-end, WPF views, platform integration, dialogs, converters and media presentation.
+- **PictureManager.Android** – Android front-end maintained as a separate project.
+
+The Windows application uses the following libraries:
+
+- **[MH.Utils](https://github.com/martin-holy/MH.Utils)** – common utilities and infrastructure, including the SimpleDB storage engine and imaging/metadata functionality.
+- **[MH.UI](https://github.com/martin-holy/MH.UI)** – platform-independent UI controls, view models and interaction logic.
+- **[MH.UI.WPF](https://github.com/martin-holy/MH.UI.WPF)** – WPF presentation layer and platform-specific control implementations.
+
+The application is a useful example of these libraries working together in a non-trivial product: the shared UI logic is hosted by WPF controls, while the application-specific views and platform services are kept in the Windows front-end.
+
+### A few implementation details
+
+- The media files remain in their original folders. The application maintains its own database and thumbnail cache for browsing and organization.
+- The UI is built around MVVM and the collection/tree controls provided by MH.UI and MH.UI.WPF.
+- Media browsing uses virtualized collection views with grouping, sorting, selection and multiple independent views.
+- Image metadata writing is designed to preserve the encoded image data; saving supported metadata does not require recompressing the JPEG.
+- The Windows front-end loads optional UI plugins from the `plugins` directory. The solution includes **MovieManager**, which adds a separate movie-management feature set.
 
 ## Downloads
 
-### Android
-- v1.2.0: https://github.com/martin-holy/PictureManager/releases/tag/android-v1.2.0
+| Platform | Version | Download |
+|---|---:|---|
+| Windows (WPF) | 2.35.0 | [GitHub release](https://github.com/martin-holy/PictureManager/releases/tag/v2.35.0) |
+| Android | 1.2.0 | [GitHub release](https://github.com/martin-holy/PictureManager/releases/tag/android-v1.2.0) |
 
-### Windows (WPF)
-- v2.35.0: https://github.com/martin-holy/PictureManager/releases/tag/v2.35.0
+## Building from source
 
-### Screenshots and description is outdated! 🙃
+The Windows project targets **.NET 8 for Windows** and uses WPF. The project currently targets **x86**.
 
-Picture Manager is a simple image and video viewer with the ability of creating clips from video, tagging faces and editing keywords like rating, people, hierarchical keywords, comments and geo names.
+The solution is organized to use sibling checkouts of the related repositories. For a local development setup, place the repositories next to each other:
 
-![](./screenshot0.jpg)
-![](./screenshot1.jpg)
-![](./screenshot2.jpg)
-![](./screenshot3.jpg)
+```text
+workspace/
+├── MH.Utils/
+├── MH.UI/
+├── MH.UI.WPF/
+├── PictureManager.Common/
+├── PictureManager/
+├── PictureManager.Android/    # Android front-end
+└── MovieManager/               # Optional plugin and its projects
+```
 
-## Browser
-
-### 1. Side bar
-On top of the side bar there are shortcuts to scroll to each category in the tree and button to search across all categories in the tree.
-
-- ### Favorite Folders
-  Favorite Folders are shortcuts to Folders. They can be added by `right-click` on the Folder choosing **Add to Favorites** or removed by `right-click` on the favorite folder choosing **Remove from Favorites**. Folder tree is expanded to the chosen Favorite Folder by `left-click` on the favorite folder.
-- ### Folders
-  Folders are main entry points for browsing media items. Media items are imported and thumbnails are created after `left-click` on a folder. Media items import and thumbnail creation is done only once. Each next load is much faster. Media items can be also loaded from subdirectories by `Shift + left-click` on the folder.
-  A folder can be moved by `drag-and-drop` or copied with `Ctrl + drag-and-drop`. Folders can also be renamed or deleted from `right-click` menu on the folder.
-- ### Ratings
-- ### Sizes
-  Sizes show a range of MegaPixels of the loaded media items. It can be used to filter the loaded media items by adjusting this range.
-- ### People
-  This category can contain a group of people or only a person.
-  A group can be created by choosing **New Group** from the `right-click` menu on the category. It can also be renamed or deleted from `right-click` menu on the group. When a group is deleted, all people in the group are moved to the root of this category.
-  A person can be created by choosing **New** from the `right-click` menu on the category or the group. It can be renamed or deleted from the `right-click` menu on the person. When a person is deleted, it is just deleted from the internal database and not from the actual media items!
-  People can be moved between the groups by `drag-and-drop`.
-- ### Folder Keywords
-  _Folder Keywords_ are something like _Folders_ but one _Folder Keyword_ can be linked to multiple folders. The contents of the folders will be merged under one _Folder Keyword_.
-  For example: When two folders (`D:\Pictures\subfolder\subfolder\` and `P:\subfolder\`) are set as _Folder Keywords_ from the `right-click` menu on the folder, the contents of these folders will be merged under the _Folder Keywords_ category.
-- ### Keywords
-  This category can contain a group of keywords or only a keyword.
-  A group can be created by choosing **New Group** from the `right-click` menu on the category. It can also be renamed or deleted from the `right-click` menu on the group. When a group is deleted, all keywords in the group are moved to the root of this category.
-  A keyword can be created by choosing **New** from the `right-click` menu on the category, a group or another keyword and renamed or deleted from the `right-click` menu on the keyword. When a keyword is deleted, it is just deleted from the internal database and not from the actual media items!
-  Keywords can be moved between groups by `drag-and-drop`. Sort order of the keywords can be changed by `drag-and-drop`.
-- ### GeoNames
-  _GeoNames_ are added from http://geonames.org by selecting the media items with GPS coordinates and `left-click` on **Tools/GeoNames** or by `right-click` on _GeoNames_ category and entering GPS coordinates in this format **N36.75847,W3.84609**.
-- ### Viewers
-  A viewer is something like a workspace with included and excluded folders. The folders can be added from the `right-click` menu on a viewer or removed from the `right-click` menu on a folder.
-  When no viewer is present, the application works with all available folders.
-
-### 2. Thumbnails
-
-The size of thumbnails can be set in **Tools/Settings**. Thumbnails can be created again when the size is changed through **Media Items/Rebuild Thumbnails**. Thumbnails can be zoomed in or out with `Ctrl + mouse scroll` without changing the size in the settings.
-The selection can be made by `left-click` or with the combination `Shift or Ctrl + left-click` or selecting all with `Ctrl + A`.
-
-### 3. Keywords
-
-Keywords are additional data for media items. Media items can be filtered or loaded by keywords only if they have been imported through `left-click` on the Folder.
-
-Media items can be loaded by `left-click` on the _Ratings_, _People_, _Folder Keywords_, _Keywords_ and _GeoNames_. Loading can also be applied to subdirectories with the `Shift + left-click`.
-
-The filter is applied to the previously loaded media items and can by edited from `right-click` menu on _Ratings_, _People_, _Keywords_ and _GeoNames_:
-
-- _Filter And_: for having all selected keywords on loaded media items
-- _Filter Or_: for one or more selected keywords on loaded media items
-- _Filter Not_: for excluding media items with selected keywords
-
-The Keywords on media items can be edited by entering the edit mode with `Ctrl + E`. In this mode the Keywords will be added or removed from selected media items by `left-click` on _Rating_, _Person_, _Keyword_ or _GeoName_. The edit can be saved with `Ctrl + S` or canceled with `Ctrl + Q`.
-
-The Comments on media items can be edited with `Ctrl + K` without the need of entering the edit mode.
-
-## Viewer
-
-Viewer can be opened from the browser by `double-click` on the thumbnail and closed by `double-click` or `Esc`. The navigation between media items is done by `left and right arrow key` or with `mouse-scroll`. An image can be zoomed to 100% by holding `left-mouse-button` or changed to any zoom with `Ctrl + mouse-scroll`. An image can also be moved around if it is bigger than the screen by holding `left-mouse-button`.
-The presentation can be turned on/off with `Ctrl + P`.
-### 1. Video Player
-  Video player plays a video in the infinite loop. Speed, volume and timeline is located on the top. Each video can contain clips (sections of video defined by time stamps). Clips can be added, renamed, deleted, moved to groups and reordered in the slide panel on the right side of the screen.
-  
-  Defining clips can be done either with buttons `A` and `B` or with `Alt + S` shortcut. Each clip gets its own volume and speed set durning setting the time stamps with `A` or `B` button.
-  
-  Play type defines what should be played. If clips or groups are selected, clips are looped for at least the time set on "repeat for" slider before the next clip is played.
-   - Video: plays video file in infinite loop
-   - Clip: plays selected clip in infinite loop
-   - Clips: plays all clips regardless of location (in groups or not)
-   - Groups: plays clips in a group
-
-
-## Segments
-A segment is a square selection from an image that can be connected to a person and can have multiple keywords. Segment is used as a tool tip on the person in the tree and as a profile photo in the People view for each person. Segment used for this can be changed by dragging one of the person's segments to the top segments in the person's detail (select People category in the tree and click on `i` button on person).
-
-Segments can be created, edited or deleted in the viewer by clicking on the toggle button from the top toolbar. To create new segments use `Ctrl + left-mouse-button` or just `right-mouse-button`.
-
-You can set a person to a selected segment from the tree one by one or select multiple images in the browser (if nothing is selected => all images are taken) and select `Media Items => Segments Matching` from the top menu.
-
-### Segments Matching
-This is just experimental! I tried an automatic face detection and face recognition, but the detection is not 100% and I want a nice looking face selection so I ended up with removing the detection (so just a manual selection is available) and keeping recognition for now even if it has also very poor results (I tried serval methods).
-
-Selected segments can be set as the same person with the `=` button on the selected segments. These segments get a new temporary person with a negative ID and this person can be later changed to a named person by selecting any segment and selecting the person from the tree.
-
-All segments linked to one named person can be viewed by clicking on `i` button on the segment.
-
-All source images with segments linked to the same person as is the person on the segment can be viewed by `double-click` on the segment.
-
-## Cloning PictureManager with Dependencies
-
-To clone and set up PictureManager with its dependencies (MH.Utils, MH.UI, MH.UI.WPF, MovieManager), follow these steps:
+Clone the public repositories:
 
 ```bash
 git clone https://github.com/martin-holy/MH.Utils.git
@@ -124,3 +122,13 @@ git clone https://github.com/martin-holy/MH.UI.WPF.git
 git clone https://github.com/martin-holy/PictureManager.git
 git clone https://github.com/martin-holy/MovieManager.git
 ```
+
+`PictureManager.Common` is a required project reference and must also be available at the sibling path shown above. The Android front-end and `MH.UI.Android` are needed only when building the Android project. MovieManager is an optional plugin at runtime, although its projects are included in the solution.
+
+Open `PictureManager.sln` in Visual Studio 2022 or later. The project uses local project references in **Debug** configuration and NuGet packages in **Release** configuration. If you do not use the expected sibling directory layout, update the project references accordingly.
+
+The Windows application loads optional plugins from `plugins/<PluginName>`; the MovieManager plugin is configured to load from `plugins/MovieManager`.
+
+## License
+
+Picture Manager is licensed under the [MIT License](./LICENSE).
