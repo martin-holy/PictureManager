@@ -8,6 +8,7 @@
  - [N] MediaItem: Read and write of rating, comment, keywords, people and GeoNameId from/to MP4 files
  - [N] MediaItem Settings: Allow full rewrite of video files smaller than threshold
  - [B] MediaItem: Removing comment
+ - [B] XMP Microsoft Photo structure
 
 2.35.0:
  - [B] Loading folders when new folder was created not in the app
