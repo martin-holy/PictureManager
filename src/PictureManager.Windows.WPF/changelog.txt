@@ -11,6 +11,7 @@
  - [B] XMP Microsoft Photo structure
  - [B] Resize image
  - [B] Compress images with big thumbnail
+ - [U] Remove MediaItem from thumbnail error cache when rebuilding thumbnail
 
 2.35.0:
  - [B] Loading folders when new folder was created not in the app
