@@ -13,6 +13,7 @@
  - [B] Compress images with big thumbnail
  - [U] Remove MediaItem from thumbnail error cache when rebuilding thumbnail
  - [N] TreeViewItem highlight when drag over
+ - [U] Compress images: write metadata even if image doesn't need re-encoding
 
 2.35.0:
  - [B] Loading folders when new folder was created not in the app
