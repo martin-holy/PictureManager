@@ -15,6 +15,7 @@
  - [N] TreeViewItem highlight when drag over
  - [U] Compress images: write metadata even if image doesn't need re-encoding
  - [B] PeopleToolsTab: Clear the view if load didn't return any person
+ - [B] View modified media items filtered by current viewer
 
 2.35.0:
  - [B] Loading folders when new folder was created not in the app
