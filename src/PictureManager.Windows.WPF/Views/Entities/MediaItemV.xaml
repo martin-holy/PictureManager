@@ -23,6 +23,7 @@
       <Setter.Value>
         <Style>
           <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+          <Setter Property="ContentPresenter.VerticalAlignment" Value="Top"/>
         </Style>
       </Setter.Value>
     </Setter>
