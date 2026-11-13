@@ -20,6 +20,7 @@
  - [B] Updating filter size ranges and marked tags after MediaItems load
  - [U] MediaItem thumbnail info box: comment is now last item
  - [B] MediaItem thumbnail info box: rating stretched
+ - [B] SegmentsViews: Remove segment when deleted right after creation
 
 2.35.0:
  - [B] Loading folders when new folder was created not in the app
