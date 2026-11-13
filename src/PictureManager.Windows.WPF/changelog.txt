@@ -18,6 +18,8 @@
  - [B] View modified media items filtered by current viewer
  - [B] Duplicated segment size group when segment keywords changed
  - [B] Updating filter size ranges and marked tags after MediaItems load
+ - [U] MediaItem thumbnail info box: comment is now last item
+ - [B] MediaItem thumbnail info box: rating stretched
 
 2.35.0:
  - [B] Loading folders when new folder was created not in the app
