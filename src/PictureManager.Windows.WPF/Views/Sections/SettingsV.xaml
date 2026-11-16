@@ -139,6 +139,10 @@
             <TextBlock Text="{Binding JpegQuality, StringFormat='Jpeg quality: {0}'}"/>
             <Slider Minimum="80" Maximum="95" Value="{Binding JpegQuality, Mode=TwoWay}"/>
           </x:Array>
+          <x:Array Type="{x:Type sys:Object}">
+            <TextBlock Text="Languages:"/>
+            <TextBox Text="{Binding Languages, Mode=TwoWay}"/>
+          </x:Array>
         </x:Array>
       </ItemsControl.ItemsSource>
     </ItemsControl>
