@@ -21,6 +21,7 @@
  - [U] MediaItem thumbnail info box: comment is now last item
  - [B] MediaItem thumbnail info box: rating stretched
  - [B] SegmentsViews: Remove segment when deleted right after creation
+ - [N] Settings: Preferred app language with multiple fallback languages for missing translations
 
 2.35.0:
  - [B] Loading folders when new folder was created not in the app
