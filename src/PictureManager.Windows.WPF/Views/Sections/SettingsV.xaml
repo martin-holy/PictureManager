@@ -187,7 +187,7 @@
             <TextBlock Text="Sort field:"/>
             <ComboBox
               ItemsSource="{Binding Source={x:Static ftMediaItem:MediaItemCollectionView.SortFields}}"
-              DisplayMemberPath="Name"
+              DisplayMemberPath="Title"
               SelectedValuePath="Name"
               SelectedValue="{Binding SortField, Mode=TwoWay}"/>
           </x:Array>          
