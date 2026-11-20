@@ -23,9 +23,9 @@
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="From: "/>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="To: "/>
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="File: "/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TxtFrom}"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding TxtTo}"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding TxtFile}"/>
 
         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DirFrom}"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DirTo}"/>
