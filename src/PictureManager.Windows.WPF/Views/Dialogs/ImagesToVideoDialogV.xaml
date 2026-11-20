@@ -41,7 +41,7 @@
         Grid.Row="0"
         Grid.Column="1"
         TextAlignment="Right"
-        Text="{Binding ElementName=SldSpeed, Path=Value, StringFormat='{}{0:0.00}s per Image'}"/>
+        Text="{Binding TxtSpeed}"/>
 
       <!-- Quality and Scale -->
       <Grid Grid.Column="0" Grid.Row="1" ColumnSpan="2">
@@ -56,7 +56,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Quality -->
-        <TextBlock Text="{Binding ElementName=SldQuality, Path=Value, StringFormat='{}Quality: {0}'}"/>
+        <TextBlock Text="{Binding TxtQuality}"/>
         <Slider
           Grid.Column="1"
           x:Name="SldQuality" 
@@ -69,7 +69,7 @@
           Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideo.Quality, Mode=TwoWay}"/>
 
         <!-- Height -->
-        <TextBlock Grid.Column="2" Text="Height:" TextAlignment="Right"/>
+        <TextBlock Grid.Column="2" Text="{Binding TxtHeight}" TextAlignment="Right"/>
         <TextBox
           Grid.Column="3"
           Text="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideo.Height, Mode=TwoWay}"/>
