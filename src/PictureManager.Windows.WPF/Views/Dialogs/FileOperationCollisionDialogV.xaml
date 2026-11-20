@@ -91,7 +91,7 @@
         </Grid.ColumnDefinitions>
 
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
-        <TextBlock Text="Dimensions:" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
+        <TextBlock Text="{Binding TxtDimensions}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
         <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource InfoValue}">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0}x{1}">
@@ -110,18 +110,18 @@
         </TextBlock>
 
         <Rectangle Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
-        <TextBlock Text="File size:" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
+        <TextBlock Text="{Binding TxtFileSize}" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
         <TextBlock Text="{Binding SrcFile.Size}" Grid.Row="2" Grid.Column="1" Style="{StaticResource InfoValue}"/>
         <TextBlock Text="{Binding DstFile.Size}" Grid.Row="3" Grid.Column="1" Style="{StaticResource InfoValue}"/>
 
         <Rectangle Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
-        <TextBlock Text="Modified:" Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
+        <TextBlock Text="{Binding TxtModified}" Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource InfoText}"/>
         <TextBlock Text="{Binding SrcFile.LastWrite}" Grid.Row="4" Grid.Column="1" Style="{StaticResource InfoValue}"/>
         <TextBlock Text="{Binding DstFile.LastWrite}" Grid.Row="5" Grid.Column="1" Style="{StaticResource InfoValue}"/>
 
         <Rectangle Grid.Row="6" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource InfoBackground}"/>
         <TextBlock
-          Text="File name:"
+          Text="{Binding TxtFileName}"
           Grid.Row="6"
           Grid.Column="0"
           VerticalAlignment="Bottom"
