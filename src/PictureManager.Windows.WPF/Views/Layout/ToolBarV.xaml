@@ -223,7 +223,7 @@
 
         <c:PopupSlider.Content>
           <c:IconTextButton
-            ToolTip="Thumbnails scale"
+            ToolTip="{Binding TxtThumbScale}"
             ap:Icon.Data="{StaticResource IconMagnify}"
             ap:Text.Text="{Binding MediaItemViews.Current.ThumbScale, StringFormat={}{0:G2}}"/>
         </c:PopupSlider.Content>
@@ -231,7 +231,7 @@
 
       <!-- Show thumb info -->
       <c:IconToggleButton
-        ToolTip="Show thumbnail info"
+        ToolTip="{Binding TxtShowThumbInfo}"
         ap:Icon.Data="{StaticResource IconInformation}"
         IsChecked="{Binding MediaItemViews.Current.ShowThumbInfo}"/>
 
@@ -246,7 +246,7 @@
         Value="{Binding MediaItemViews.Current.ImageComparer.Diff, Mode=TwoWay, FallbackValue=0}">
         <c:PopupSlider.Content>
           <c:IconTextButton
-            ToolTip="Compare limit"
+            ToolTip="{Binding TxtCompareLimit}"
             ap:Icon.Data="{StaticResource IconCompare}"
             ap:Text.Text="{Binding MediaItemViews.Current.ImageComparer.Diff, FallbackValue=0, StringFormat={}{0:G2}}"/>
         </c:PopupSlider.Content>
