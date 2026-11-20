@@ -47,7 +47,7 @@
             <RowDefinition Height="*"/>
           </Grid.RowDefinitions>
 
-          <c:IconTextBlock ap:Icon.Res="IconFolder" ap:Text.Text="Included Folders" Style="{StaticResource _header}"/>
+          <c:IconTextBlock ap:Icon.Res="IconFolder" ap:Text.Text="{Binding TxtIncludedFolders}" Style="{StaticResource _header}"/>
 
           <ListBox
             Grid.Row="1"
@@ -76,7 +76,7 @@
             <RowDefinition Height="*"/>
           </Grid.RowDefinitions>
 
-          <c:IconTextBlock ap:Icon.Res="IconFolder" ap:Text.Text="Excluded Folders" Style="{StaticResource _header}"/>
+          <c:IconTextBlock ap:Icon.Res="IconFolder" ap:Text.Text="{Binding TxtExcludedFolders}" Style="{StaticResource _header}"/>
 
           <ListBox
             Grid.Row="1"
@@ -105,7 +105,7 @@
             <RowDefinition Height="*"/>
           </Grid.RowDefinitions>
 
-          <c:IconTextBlock ap:Icon.Res="IconGroup" ap:Text.Text="Category Groups" Style="{StaticResource _header}"/>
+          <c:IconTextBlock ap:Icon.Res="IconGroup" ap:Text.Text="{Binding TxtCategoryGroups}" Style="{StaticResource _header}"/>
 
           <ListBox
             Grid.Row="1"
@@ -142,7 +142,7 @@
             <RowDefinition Height="*"/>
           </Grid.RowDefinitions>
 
-          <c:IconTextBlock ap:Icon.Res="IconTagLabel" ap:Text.Text="Excluded Keywords" Style="{StaticResource _header}"/>
+          <c:IconTextBlock ap:Icon.Res="IconTagLabel" ap:Text.Text="{Binding TxtExcludedKeywords}" Style="{StaticResource _header}"/>
 
           <ListBox
             Grid.Row="1"
