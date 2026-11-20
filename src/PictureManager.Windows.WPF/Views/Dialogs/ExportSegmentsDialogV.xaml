@@ -25,7 +25,7 @@
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
 
-      <TextBlock Text="Export to:" Grid.Row="0" Grid.Column="0"/>
+      <TextBlock Text="{Binding ExportToText}" Grid.Row="0" Grid.Column="0"/>
       <DockPanel Grid.Row="0" Grid.Column="1">
         <mhc:IconButton
           Command="{Binding OpenFolderBrowserCommand}"
