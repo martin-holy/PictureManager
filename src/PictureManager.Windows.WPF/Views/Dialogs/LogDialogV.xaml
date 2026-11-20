@@ -37,7 +37,7 @@
       <CheckBox
         x:Name="wrap"
         Grid.Row="3"
-        Content="Wrap text"
+        Content="{Binding TxtWrapText}"
         IsChecked="True"
         HorizontalAlignment="Left"/>
     </Grid>
