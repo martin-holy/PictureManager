@@ -26,7 +26,7 @@
         <TextBlock
           DockPanel.Dock="Left"
           VerticalAlignment="Center"
-          Text="{Binding JpegQualityLevel, StringFormat='JPG quality level: {0}'}"/>
+          Text="{Binding JpegQualityLevelText}"/>
 
         <Slider
           Margin="10,0,0,0"
@@ -42,13 +42,13 @@
         Grid.Column="0"
         Grid.Row="1"
         HorizontalAlignment="Center"
-        Content="Original"/>
+        Content="{Binding OriginalText}"/>
     
       <Label
         Grid.Column="1"
         Grid.Row="1"
         HorizontalAlignment="Center"
-        Content="Compressed"/>
+        Content="{Binding CompressedText}"/>
 
       <Label
         Grid.Column="0"
