@@ -123,7 +123,7 @@
       <Separator/>
 
       <c:IconToggleButton
-        ToolTip="Segments edit"
+        ToolTip="{Binding TxtShowSegments}"
         ap:Icon.Data="{StaticResource IconPeople}"
         IsChecked="{Binding SegmentVM.Rect.ShowOverMediaItem}"/>
 
