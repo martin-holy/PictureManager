@@ -52,7 +52,7 @@ public sealed class CoreUI : ObservableObject, ICoreP {
     LoadPlugins();
     Core.VM.MainWindow.FullScreenInLayout = [false, true];
     _initSlidePanelsGrid(Core.VM.MainWindow.SlidePanelsGrid);
-    Core.VM.MediaViewer.CurrentFull = new(Core.VM.MediaViewer, Core.VM.Segment.Rect, new(Core.S.Segment));
+    Core.VM.MediaViewer.CurrentFull = new(Core.VM.MediaViewer, Core.VM.Segment.Rect, Core.S.Segment.Rect);
     Core.VM.MediaViewer.Slideshow.Init(Core.VM.MediaViewer.CurrentFull.ZoomAndPan);
     SegmentRectUiVM = new(Core.VM.Segment.Rect, Core.VM.MediaViewer.CurrentFull);
 

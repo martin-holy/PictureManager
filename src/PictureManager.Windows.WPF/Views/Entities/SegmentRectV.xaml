@@ -45,7 +45,7 @@
 
         <!-- Delete Segment -->
         <mhc:IconButton
-          Command="vmWin:SegmentRectUiVM.DeleteCommand"
+          Command="ftSegment:SegmentRectVM.DeleteCommand"
           CommandParameter="{Binding}"
           Width="16"
           Height="16"

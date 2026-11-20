@@ -17,7 +17,6 @@ public sealed class SegmentRectUiVM : ObservableObject {
   public static RelayCommand<MouseButtonEventArgs> CreateCommand { get; set; } = null!;
   public static RelayCommand<MouseEventArgs> EditCommand { get; set; } = null!;
   public static RelayCommand EndEditCommand { get; set; } = null!;
-  public static AsyncRelayCommand<SegmentRectM> DeleteCommand { get; set; } = null!;
 
   public SegmentRectUiVM(SegmentRectVM segmentRectVM, MediaItemFullVM mediaItemFullVM) {
     SegmentRectVM = segmentRectVM;
@@ -28,7 +27,6 @@ public sealed class SegmentRectUiVM : ObservableObject {
     CreateCommand = new(_create, () => SegmentRectVM.ShowOverMediaItem);
     EditCommand = new(_edit);
     EndEditCommand = new(MediaItemFullVM.SegmentRectS.EndEdit);
-    DeleteCommand = new((x, _) => MediaItemFullVM.SegmentRectS.Delete(x!), x => x != null, MH.UI.Res.IconXCross, "Delete");
   }
 
   private void _setCurrent(MouseEventArgs? e) {
