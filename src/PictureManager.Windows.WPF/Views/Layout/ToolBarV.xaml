@@ -274,7 +274,7 @@
       <Separator/>
 
       <c:IconToggleButton
-        ToolTip="Expand to fill"
+        ToolTip="{Binding TxtExpandToFill}"
         ap:Icon.Data="{StaticResource IconExpandRect}"
         IsChecked="{Binding MediaViewer.ExpandToFill}"/>
     </StackPanel>
