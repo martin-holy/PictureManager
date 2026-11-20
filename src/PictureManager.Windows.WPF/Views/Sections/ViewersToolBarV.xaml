@@ -13,7 +13,10 @@
 
         <MenuItem.ItemsSource>
           <CompositeCollection>
-            <MenuItem Header="All" Command="ftViewer:ViewerVM.ChangeCurrentCommand" DataContext="{x:Null}"/>
+            <MenuItem
+              Header="{Binding VM.Viewer.TxtToolBarAll, Source={x:Static pm:App.Core}}"
+              Command="ftViewer:ViewerVM.ChangeCurrentCommand"
+              DataContext="{x:Null}"/>
             <CollectionContainer Collection="{Binding VM.Viewer.All, Source={x:Static pm:App.Core}}"/>
           </CompositeCollection>
         </MenuItem.ItemsSource>
