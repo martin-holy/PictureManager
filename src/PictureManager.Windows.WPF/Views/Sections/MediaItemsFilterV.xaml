@@ -86,13 +86,13 @@
               <ToggleButton
                 IsChecked="{Binding ShowImages}"
                 ap:Icon.Data="{StaticResource IconImage}"
-                ap:Text.Text="Image"/>
+                ap:Text.Text="{Binding BtnImage}"/>
 
               <ToggleButton
                 Grid.Column="1" 
                 IsChecked="{Binding ShowVideos}"
                 ap:Icon.Data="{StaticResource IconMovieClapper}"
-                ap:Text.Text="Video"/>
+                ap:Text.Text="{Binding BtnVideo}"/>
 
               <Button
                 Grid.Column="2"
@@ -119,7 +119,7 @@
                     DockPanel.Dock="Top"
                     Margin="2,0"
                     Background="{StaticResource PM.B.And}">
-                    <TextBlock Text="And" Style="{StaticResource AndOrNotText}"/>
+                    <TextBlock Text="{Binding TxtAnd}" Style="{StaticResource AndOrNotText}"/>
                   </Border>
                   <ItemsControl ItemsSource="{Binding FilterAnd}"/>
                 </DockPanel>
@@ -129,7 +129,7 @@
                     DockPanel.Dock="Top"
                     Margin="2,0"
                     Background="{StaticResource PM.B.Or}">
-                    <TextBlock Text="Or" Style="{StaticResource AndOrNotText}"/>
+                    <TextBlock Text="{Binding TxtOr}" Style="{StaticResource AndOrNotText}"/>
                   </Border>
                   <ItemsControl ItemsSource="{Binding FilterOr}"/>
                 </DockPanel>
@@ -139,19 +139,19 @@
                     DockPanel.Dock="Top"
                     Margin="2,0"
                     Background="{StaticResource PM.B.Not}">
-                    <TextBlock Text="Not" Style="{StaticResource AndOrNotText}"/>
+                    <TextBlock Text="{Binding TxtNot}" Style="{StaticResource AndOrNotText}"/>
                   </Border>
                   <ItemsControl ItemsSource="{Binding FilterNot}"/>
                 </DockPanel>
               </UniformGrid>
 
-              <TextBlock Text="Height:" Grid.Row="1" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+              <TextBlock Text="{Binding TxtHeight}" Grid.Row="1" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
               <c:RangeSlider Range="{Binding Height}" Grid.Row="1" Grid.Column="1"/>
 
-              <TextBlock Text="Width:" Grid.Row="2" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+              <TextBlock Text="{Binding TxtWidth}" Grid.Row="2" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
               <c:RangeSlider Range="{Binding Width}" Grid.Row="2" Grid.Column="1"/>
 
-              <TextBlock Text="Size Mpx:" Grid.Row="3" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
+              <TextBlock Text="{Binding TxtSize}" Grid.Row="3" Grid.Column="0" Style="{StaticResource SizeTexts}"/>
               <c:RangeSlider Range="{Binding Size}" Grid.Row="3" Grid.Column="1" TickFrequency="0.1"/>
             </Grid>
           </DockPanel>
