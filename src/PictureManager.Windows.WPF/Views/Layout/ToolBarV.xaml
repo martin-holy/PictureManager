@@ -173,7 +173,7 @@
         Value="{Binding Interval, Mode=TwoWay}">
         <c:PopupSlider.Content>
           <c:IconTextButton
-            ToolTip="Slideshow interval"
+            ToolTip="{Binding TxtInterval}"
             ap:Icon.Data="{StaticResource IconTimer}"
             ap:Text.Text="{Binding Interval, StringFormat={}{0:G2}}"/>
         </c:PopupSlider.Content>
@@ -182,7 +182,7 @@
       <!-- Play Panoramic Images -->
       <CheckBox
         IsChecked="{Binding PlayPanoramicImages}"
-        ToolTip="Play Panoramic Images"
+        ToolTip="{Binding TxtPlayPanoramicImages}"
         Margin="2"/>
     </StackPanel>
   </DataTemplate>
