@@ -28,20 +28,20 @@
       </Grid.ColumnDefinitions>
 
       <!-- Preserve Thumbnail/Metadata/Folders -->
-      <TextBlock Text="Preserve:" Grid.Row="0" Grid.Column="0"/>
+      <TextBlock Text="{Binding TxtPreserve}" Grid.Row="0" Grid.Column="0"/>
       <StackPanel
         Orientation="Horizontal"
         Grid.Row="0"
         Grid.Column="1"
         VerticalAlignment="Center">
 
-        <CheckBox Content="Thumbnail" IsChecked="{Binding PreserveThumbnail}"/>
-        <CheckBox Content="Metadata" IsChecked="{Binding PreserveMetadata}" Margin="15,0,0,0"/>
-        <CheckBox Content="Folders" IsChecked="{Binding PreserveFolders}" Margin="15,0,0,0"/>
+        <CheckBox Content="{Binding TxtPreserveThumbnail}" IsChecked="{Binding PreserveThumbnail}"/>
+        <CheckBox Content="{Binding TxtPreserveMetadata}" IsChecked="{Binding PreserveMetadata}" Margin="15,0,0,0"/>
+        <CheckBox Content="{Binding TxtPreserveFolders}" IsChecked="{Binding PreserveFolders}" Margin="15,0,0,0"/>
       </StackPanel>
 
       <!-- Resize to -->
-      <TextBlock Text="Resize to:" Grid.Row="1" Grid.Column="0"/>
+      <TextBlock Text="{Binding TxtResizeTo}" Grid.Row="1" Grid.Column="0"/>
       <DockPanel Grid.Row="1" Grid.Column="1">
         <c:IconButton
           Command="{Binding OpenFolderBrowserCommand}"
@@ -57,7 +57,7 @@
       <TextBlock
         Grid.Row="2"
         Grid.Column="0"
-        Text="{Binding Mpx, StringFormat={}{0:F1} MPx}"/>
+        Text="{Binding TxtMPx}"/>
 
       <Slider
         Grid.Row="2"
@@ -73,7 +73,7 @@
         Grid.Row="3"
         Grid.Column="0"
         Grid.ColumnSpan="2"
-        Content="Skip if file exists"
+        Content="{Binding TxtSkipIfExists}"
         IsChecked="{Binding SkipIfExists}"
         Margin="4,0,0,0"/>
 
