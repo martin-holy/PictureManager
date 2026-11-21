@@ -153,11 +153,11 @@
       <ItemsControl.ItemsSource>
         <x:Array Type="{x:Type sys:Object}">
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Load from web:"/>
+            <TextBlock Text="{Binding TxtLoadFromWeb}"/>
             <CheckBox IsChecked="{Binding LoadFromWeb, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="User name:"/>
+            <TextBlock Text="{Binding TxtUserName}"/>
             <TextBox Text="{Binding UserName, Mode=TwoWay}"/>
           </x:Array>
         </x:Array>
