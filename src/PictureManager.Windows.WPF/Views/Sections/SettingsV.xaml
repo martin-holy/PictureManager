@@ -128,19 +128,19 @@
       <ItemsControl.ItemsSource>
         <x:Array Type="{x:Type sys:Object}">
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Cache path:"/>
+            <TextBlock Text="{Binding TxtCachePath}"/>
             <TextBox Text="{Binding CachePath, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="FFMPEG path:"/>
+            <TextBlock Text="{Binding TxtFfmpegPath}"/>
             <TextBox Text="{Binding FfmpegPath, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding JpegQuality, StringFormat='Jpeg quality: {0}'}"/>
+            <TextBlock Text="{Binding TxtJpegQuality}"/>
             <Slider Minimum="80" Maximum="95" Value="{Binding JpegQuality, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Languages:"/>
+            <TextBlock Text="{Binding TxtLanguages}"/>
             <TextBox Text="{Binding Languages, Mode=TwoWay}"/>
           </x:Array>
         </x:Array>
