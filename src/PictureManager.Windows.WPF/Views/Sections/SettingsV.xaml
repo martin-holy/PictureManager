@@ -233,7 +233,7 @@
       <ItemsControl.ItemsSource>
         <x:Array Type="{x:Type sys:Object}">
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding GroupSize, StringFormat='Group size: {0}'}"/>
+            <TextBlock Text="{Binding TxtGroupSize}"/>
             <Slider Minimum="100" Maximum="1000" TickFrequency="50" Value="{Binding GroupSize, Mode=TwoWay}"/>
           </x:Array>
         </x:Array>
