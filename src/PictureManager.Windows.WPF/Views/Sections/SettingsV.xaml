@@ -170,7 +170,7 @@
       <ItemsControl.ItemsSource>
         <x:Array Type="{x:Type sys:Object}">
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding MediaItemThumbScale, StringFormat='Media item thumbnail scale: {0:G2}'}"/>
+            <TextBlock Text="{Binding TxtMediaItemThumbScale}"/>
             <Slider
               Minimum="0.2"
               Maximum="2"
@@ -180,11 +180,11 @@
               Value="{Binding MediaItemThumbScale, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Scroll exactly to MediaItem in thumbnails:"/>
+            <TextBlock Text="{Binding TxtScrollExactlyToMediaItem}"/>
             <CheckBox IsChecked="{Binding ScrollExactlyToMediaItem, Mode=TwoWay}"/>
           </x:Array>          
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Sort field:"/>
+            <TextBlock Text="{Binding TxtSortField}"/>
             <ComboBox
               ItemsSource="{Binding Source={x:Static ftMediaItem:MediaItemCollectionView.SortFields}}"
               DisplayMemberPath="Title"
@@ -192,7 +192,7 @@
               SelectedValue="{Binding SortField, Mode=TwoWay}"/>
           </x:Array>          
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="Sort order:"/>
+            <TextBlock Text="{Binding TxtSortOrder}"/>
             <ComboBox
               ItemsSource="{Binding Source={x:Static uic:CollectionView.SortOrderTextMap}}"
               DisplayMemberPath="Value"
@@ -200,11 +200,11 @@
               SelectedValue="{Binding SortOrder, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding ThumbSize, StringFormat='Thumbnail size: {0}'}"/>
+            <TextBlock Text="{Binding TxtThumbSize}"/>
             <Slider Minimum="200" Maximum="500" Value="{Binding ThumbSize, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding VideoItemThumbScale, StringFormat='Video item thumbnail scale: {0:G3}'}"/>
+            <TextBlock Text="{Binding TxtVideoItemThumbScale}"/>
             <Slider
               Minimum="0.2"
               Maximum="0.6"
@@ -214,7 +214,7 @@
               Value="{Binding VideoItemThumbScale, Mode=TwoWay}"/>
           </x:Array>
           <x:Array Type="{x:Type sys:Object}">
-            <TextBlock Text="{Binding VideoMetadataFullRewriteThreshold, StringFormat='Allow full rewrite of video files smaller than: {0} MB'}"/>
+            <TextBlock Text="{Binding TxtVideoMetadataFullRewriteThreshold}"/>
             <Slider
               Minimum="0"
               Maximum="1000"
