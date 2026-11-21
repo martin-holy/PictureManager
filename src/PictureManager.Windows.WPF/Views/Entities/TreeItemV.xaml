@@ -4,7 +4,7 @@
   xmlns:mhut="clr-namespace:MH.Utils.Tree;assembly=MH.Utils"
   xmlns:mhuit="clr-namespace:MH.UI.Tree;assembly=MH.UI"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:pmd="clr-namespace:PictureManager.Common;assembly=PictureManager.Common"
+  xmlns:pmuiu="clr-namespace:PictureManager.Windows.WPF.Utils"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
   xmlns:ap="clr-namespace:MH.UI.WPF.AttachedProperties;assembly=MH.UI.WPF"
   xmlns:ftFavoriteFolder="clr-namespace:PictureManager.Common.Features.FavoriteFolder;assembly=PictureManager.Common"
@@ -20,10 +20,7 @@
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
-          <b:ChangePropertyAction
-            PropertyName="ContextMenu"
-            Value="{Binding Converter={x:Static mhConv:ResourceConverter.Inst},
-                    ConverterParameter={x:Static pmd:Res.TypeToTreeContextMenuDic}}"/>
+          <pmuiu:TreeContextMenuAction/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
