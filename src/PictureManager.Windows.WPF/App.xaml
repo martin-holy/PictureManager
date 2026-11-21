@@ -114,7 +114,6 @@
         <ResourceDictionary Source="/Views/Sections/WhatIsNewV.xaml"/>
 
         <ResourceDictionary Source="/Views/SegmentsRectsV.xaml"/>
-        <ResourceDictionary Source="/Views/TreeContextMenus.xaml"/>
 
         <ResourceDictionary Source="/Views/Layout/MainTabsV.xaml"/>
         <ResourceDictionary Source="/Views/Layout/MiddleContentV.xaml"/>
