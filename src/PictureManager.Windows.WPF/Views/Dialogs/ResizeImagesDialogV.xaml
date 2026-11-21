@@ -57,7 +57,7 @@
       <TextBlock
         Grid.Row="2"
         Grid.Column="0"
-        Text="{Binding TxtMPx}"/>
+        Text="{Binding TxtMpx}"/>
 
       <Slider
         Grid.Row="2"
