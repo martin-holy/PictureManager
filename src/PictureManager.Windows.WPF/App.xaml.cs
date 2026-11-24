@@ -20,15 +20,17 @@ public partial class App {
       Dialog.ShowAsync(new ErrorDialog((Exception)args.ExceptionObject));
     };
 
-    MH.UI.WPF.Utils.Init.SetDelegates();
     MH.UI.WPF.Utils.ColorHelper.AddColorsToResources();
     Core.UiVersion = Core.GetVersionWithoutHash(Assembly.GetEntryAssembly());
+    MH.UI.WPF.Utils.Init.SetDelegates();
 
     var splashScreen = new SplashScreenV();
     MainWindow = splashScreen;
     MainWindow.Show();
 
     await Core.Inst.InitAsync(splashScreen.ProgressMessage, AppDomain.CurrentDomain.BaseDirectory);
+
+    MH.UI.WPF.Utils.Init.SetDialogImplementation();
 
     Core = Core.Inst;
     Ui = new();
